@@ -11,7 +11,12 @@
 
 **Orochia** is an enterprise-grade, privacy-first, adult-friendly video streaming and creator monetization platform engineered by **Krizaka**. Built to eliminate platform censorship and payment provider deplatforming risks through direct Bunny.net edge streaming, tokenized HMAC paywalls, and multi-rail adult payment adapters (CCBill, Segpay, Crypto).
 
-[Explore Architecture](docs/ARCHITECTURE.md) • [Media Pipeline](docs/MEDIA_PIPELINE.md) • [Deployment Guide](docs/DEPLOYMENT.md) • [Project Board](https://github.com/orgs/krizaka/projects/1)
+### 🌐 The Orochia Ecosystem
+- **Consumer Web App**: [`krizaka/orochia`](https://github.com/krizaka/orochia) (Port 3000)
+- **Admin Control Plane & 2257 Vault**: [`krizaka/orochia-admin`](https://github.com/krizaka/orochia-admin) (Port 3001)
+- **Design System & Tokens**: [`krizaka/orochia-design-system`](https://github.com/krizaka/orochia-design-system) (Port 3002)
+
+[Explore Architecture](docs/ARCHITECTURE.md) • [Media Pipeline](docs/MEDIA_PIPELINE.md) • [Market Analysis & Lore](docs/MARKET_ANALYSIS_AND_LORE.md) • [Deployment Guide](docs/DEPLOYMENT.md)
 
 </div>
 
@@ -19,9 +24,11 @@
 
 ## 🌟 Key Architectural Highlights
 
-- ⚡ **Direct-to-Bunny Edge Ingest**: Creator browsers stream media directly to Bunny.net via the resumable Tus protocol — zero video payload proxies through application server memory.
+- ⚡ **Dual-Mode DevX Storage**: Zero-latency local filesystem uploads (`public/uploads`) during development; auto-switches to Bunny Edge Storage and Bunny Stream Tus protocol in staging and production.
+- 📺 **Bunny.net Native Feature Suite**: Video libraries, curated series collections, adaptive 4K HLS ladders (AV1, VP9, H.264), global 114 PoP cache telemetry, and emergency sub-250ms CDN cache invalidation.
+- 🛡️ **18 U.S.C. § 2257 Performer Compliance**: Encrypted primary producer government ID archives, federal custodian record locations, and certified audit log generation.
+- 💰 **4-Tier Platform Administrator Monetization**: 10% protocol rake, $49 federal onboarding audit fees, Sanctuary Spotlight homepage auctions ($25/day), and 1.5% instant crypto/fiat payout fees.
 - 🔒 **Token-Authenticated HLS Streams**: Signed HMAC-SHA256 playlist tokens prevent hotlinking, URL scraping, and unauthorized downloading of paywalled content.
-- 🛡️ **Zero-Trust IDOR Defense**: Video streaming routes perform server-side permission evaluations against contacts matrices and tips ledgers before generating playback tokens.
 - 💳 **Adult-Compliant Payment Rails**: Out-of-the-box adapters for CCBill Dynamic Pricing, Segpay One-Time Billing, and NowPayments / BTCPay Crypto with atomic double-entry bookkeeping.
 - 🚀 **1-Click DigitalOcean Deploy**: Native `app-spec.yaml` configured for DigitalOcean App Platform with managed PostgreSQL and Redis clusters.
 
