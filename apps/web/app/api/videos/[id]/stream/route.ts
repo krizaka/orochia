@@ -6,7 +6,7 @@ import { db, videos } from "@orochia/db";
 import { eq, sql } from "drizzle-orm";
 
 export async function GET(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {

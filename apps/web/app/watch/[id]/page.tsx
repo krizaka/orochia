@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { TipModal } from "@/components/TipModal";
-import { Sparkles, Eye, Lock, ShieldCheck, Heart, Share2, AlertCircle } from "lucide-react";
+import { Sparkles, Eye, ShieldCheck, Share2 } from "lucide-react";
 
 export default function WatchPage({ params }: { params: { id: string } }) {
   const videoId = params.id;

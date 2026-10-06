@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "./schema";
@@ -29,7 +30,7 @@ export const db = getDb();
 export async function checkDbHealth(): Promise<boolean> {
   try {
     const client = getDb();
-    await client.execute("SELECT 1");
+    await client.execute(sql`SELECT 1`);
     return true;
   } catch (error) {
     console.error("Database health check failed:", error);

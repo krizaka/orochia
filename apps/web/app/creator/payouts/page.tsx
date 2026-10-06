@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Wallet, DollarSign, ArrowUpRight, ShieldCheck, History, CheckCircle2 } from "lucide-react";
+import { Wallet, History, CheckCircle2 } from "lucide-react";
 
 export default function CreatorPayoutsPage() {
   const [payoutMethod, setPayoutMethod] = useState("CRYPTO_USDT");

@@ -11,7 +11,6 @@ import {
   Lock,
   Users,
   Sparkles,
-  Settings,
 } from "lucide-react";
 
 interface VideoPlayerProps {
