@@ -1,0 +1,179 @@
+{
+  "product": "orochia",
+  "title": "Orochia Ecosystem Architecture",
+  "generatedAt": "2026-10-06T20:44:06.694Z",
+  "source": "generated from code by products/orochia/scripts/generate-docs.mjs — do not hand-edit",
+  "repositories": [
+    {
+      "name": "orochia",
+      "repo": "krizaka/orochia",
+      "url": "https://github.com/krizaka/orochia",
+      "port": 3000,
+      "role": "Consumer Platform & 4K HLS Stream Player",
+      "stack": [
+        "Next.js 14 App Router",
+        "Drizzle ORM",
+        "Bunny.net Stream",
+        "PostgreSQL 16",
+        "Redis 7"
+      ],
+      "description": "Direct-to-Bunny edge streaming, 18 U.S.C. § 2257 age gates, dual-mode DevX storage, and tokenized creator tips."
+    },
+    {
+      "name": "orochia-admin",
+      "repo": "krizaka/orochia-admin",
+      "url": "https://github.com/krizaka/orochia-admin",
+      "port": 3001,
+      "role": "Control Plane, 2257 Compliance Vault & Treasury",
+      "stack": [
+        "Next.js 14 App Router",
+        "Tailwind CSS",
+        "Bunny Telemetry SDK",
+        "Lucide Icons"
+      ],
+      "description": "Primary producer KYC vault, single-click emergency worldwide CDN purge (<250ms), and 4-tier platform monetization."
+    },
+    {
+      "name": "orochia-design-system",
+      "repo": "krizaka/orochia-design-system",
+      "url": "https://github.com/krizaka/orochia-design-system",
+      "port": 3002,
+      "role": "UX Design System & Tokens (Obsidian Velvet Noir)",
+      "stack": [
+        "React 18",
+        "Tailwind CSS",
+        "TypeScript",
+        "Micro-Interactions"
+      ],
+      "description": "Obsidian Velvet Noir & Cyber-Sensual Luxury component library and live interactive showcase for adult creator platforms."
+    }
+  ],
+  "modules": [
+    {
+      "id": "media-ingest",
+      "name": "Media Ingest & Bunny Stream Driver",
+      "path": "packages/media",
+      "features": [
+        "Tus Resumable Chunking",
+        "Direct Edge Storage Upload",
+        "HMAC SHA-256 Token Signing",
+        "HLS Adaptive Ladders"
+      ]
+    },
+    {
+      "id": "data-persistence",
+      "name": "Data Persistence & Ledger",
+      "path": "packages/db",
+      "tablesCount": 0,
+      "tables": []
+    },
+    {
+      "id": "creator-monetization",
+      "name": "Platform Treasury & Rake Engine",
+      "path": "apps/web/app/api/platform/treasury",
+      "streams": [
+        "10% Protocol Take Rate",
+        "$49 2257 Audit Onboarding Fee",
+        "$25/day Spotlight Auction",
+        "1.5% Express Fast-Lane Fee"
+      ]
+    },
+    {
+      "id": "compliance-vault",
+      "name": "18 U.S.C. § 2257 Federal Custodian Vault",
+      "path": "apps/web/app/legal/2257",
+      "features": [
+        "Government ID Archival",
+        "Perjury Age Verification",
+        "Certified Federal Audit Dossier"
+      ]
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "path": "/api/auth/login",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/auth/logout",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/auth/register",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/bunny/analytics",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/bunny/collections",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/health",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/legal/report",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/metrics",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/platform/treasury",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/uploads",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/videos/[id]/stream",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/videos/create-upload-session",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/videos/unlock-video",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/webhooks/bunny",
+      "methods": [
+        "POST"
+      ]
+    }
+  ]
+}
