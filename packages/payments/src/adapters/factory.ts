@@ -1,42 +1,72 @@
-import { PaymentGatewayAdapter, GatewayType } from "../types";
+import { PaymentGatewayAdapter, GatewayType, GatewayConfigurationError } from "../types";
 import { CCBillAdapter } from "./ccbill";
 import { SegpayAdapter } from "./segpay";
 import { CryptoGatewayAdapter } from "./crypto";
 import { StripeAdapter } from "./stripe";
 
-export function getPaymentGateway(preferredGateway?: GatewayType): PaymentGatewayAdapter {
-  const gateway = preferredGateway || (process.env.PAYMENT_DEFAULT_GATEWAY?.toUpperCase() as GatewayType) || "CCBILL";
+type Env = Record<string, string | undefined>;
 
+function required(env: Env, gateway: GatewayType, names: string[]): Record<string, string> {
+  const missing = names.filter((n) => !env[n] || !env[n]!.trim());
+  if (missing.length) throw new GatewayConfigurationError(gateway, missing);
+  return Object.fromEntries(names.map((n) => [n, env[n]!.trim()]));
+}
+
+/**
+ * The adapter for a gateway, configured from the environment. There are no placeholder
+ * credentials: a gateway whose secrets are missing is not offered, and asking for it throws.
+ */
+export function getPaymentGateway(gateway: GatewayType, env: Env = process.env): PaymentGatewayAdapter {
   switch (gateway) {
-    case "CCBILL":
+    case "CCBILL": {
+      const c = required(env, gateway, [
+        "CCBILL_CLIENT_ACCOUNT",
+        "CCBILL_CLIENT_SUBACCOUNT",
+        "CCBILL_FORM_NAME",
+        "CCBILL_SALT",
+        "CCBILL_WEBHOOK_SECRET",
+      ]);
       return new CCBillAdapter({
-        clientAccount: process.env.CCBILL_CLIENT_ACCOUNT || "950000",
-        clientSubaccount: process.env.CCBILL_CLIENT_SUBACCOUNT || "0000",
-        formName: process.env.CCBILL_FORM_NAME || "0000",
-        salt: process.env.CCBILL_SALT || "demo_ccbill_salt_secret",
-        flexFormId: process.env.CCBILL_FLEXFORM_ID,
+        clientAccount: c.CCBILL_CLIENT_ACCOUNT,
+        clientSubaccount: c.CCBILL_CLIENT_SUBACCOUNT,
+        formName: c.CCBILL_FORM_NAME,
+        salt: c.CCBILL_SALT,
+        webhookSecret: c.CCBILL_WEBHOOK_SECRET,
       });
-
-    case "SEGPAY":
+    }
+    case "SEGPAY": {
+      const c = required(env, gateway, ["SEGPAY_MERCHANT_ID", "SEGPAY_PACKAGE_ID", "SEGPAY_SECRET_KEY"]);
       return new SegpayAdapter({
-        merchantId: process.env.SEGPAY_MERCHANT_ID || "12345",
-        packageId: process.env.SEGPAY_PACKAGE_ID || "67890",
-        secretKey: process.env.SEGPAY_SECRET_KEY || "demo_segpay_secret",
+        merchantId: c.SEGPAY_MERCHANT_ID,
+        packageId: c.SEGPAY_PACKAGE_ID,
+        secretKey: c.SEGPAY_SECRET_KEY,
       });
-
-    case "CRYPTO":
+    }
+    case "CRYPTO": {
+      const c = required(env, gateway, ["NOWPAYMENTS_API_KEY", "NOWPAYMENTS_IPN_SECRET", "NEXT_PUBLIC_APP_URL"]);
       return new CryptoGatewayAdapter({
-        apiKey: process.env.NOWPAYMENTS_API_KEY || "demo_crypto_key",
-        ipnSecret: process.env.NOWPAYMENTS_IPN_SECRET || "demo_ipn_secret",
+        apiKey: c.NOWPAYMENTS_API_KEY,
+        ipnSecret: c.NOWPAYMENTS_IPN_SECRET,
+        callbackUrl: `${c.NEXT_PUBLIC_APP_URL.replace(/\/$/, "")}/api/webhooks/payments/crypto`,
       });
-
-    case "STRIPE":
-      return new StripeAdapter({
-        secretKey: process.env.STRIPE_SECRET_KEY || "sk_test_demo",
-        webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || "whsec_demo",
-      });
-
+    }
+    case "STRIPE": {
+      const c = required(env, gateway, ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"]);
+      return new StripeAdapter({ secretKey: c.STRIPE_SECRET_KEY, webhookSecret: c.STRIPE_WEBHOOK_SECRET });
+    }
     default:
-      throw new Error(`Unsupported payment gateway: ${gateway}`);
+      throw new GatewayConfigurationError(String(gateway), ["unsupported gateway"]);
   }
+}
+
+/** The gateways this deployment can actually charge through, in display order. */
+export function configuredGateways(env: Env = process.env): GatewayType[] {
+  return (["CCBILL", "SEGPAY", "CRYPTO", "STRIPE"] as GatewayType[]).filter((g) => {
+    try {
+      getPaymentGateway(g, env);
+      return true;
+    } catch {
+      return false;
+    }
+  });
 }

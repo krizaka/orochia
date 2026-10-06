@@ -1,11 +1,14 @@
 import { db, tipsLedger, videoAccessGrants, profiles, videos, payoutRequests } from "@orochia/db";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, ne, sql } from "drizzle-orm";
 import { GatewayType } from "./types";
 
+/** A database handle or an open transaction — every ledger write can join a caller's transaction. */
+export type LedgerExecutor = Parameters<Parameters<typeof db.transaction>[0]>[0] | typeof db;
+
 export interface RecordTipOptions {
-  senderId?: string;
+  senderId?: string | null;
   creatorId: string;
-  videoId?: string;
+  videoId?: string | null;
   grossAmountCents: number;
   gateway: GatewayType;
   gatewayTransactionRef: string;
@@ -20,167 +23,164 @@ export interface TipResult {
   netAmountCents: number;
 }
 
+/** The platform fee percentage (0–100), from PLATFORM_FEE_PERCENTAGE; 10 by default. */
+export function platformFeePercent(env: Record<string, string | undefined> = process.env): number {
+  const raw = env.PLATFORM_FEE_PERCENTAGE;
+  const pct = raw === undefined || raw === "" ? 10 : Number(raw);
+  if (!Number.isFinite(pct) || pct < 0 || pct > 100) {
+    throw new Error(`PLATFORM_FEE_PERCENTAGE must be between 0 and 100 (got ${raw})`);
+  }
+  return pct;
+}
+
+/** Splits a gross amount into platform fee and creator net; the two always add up to the gross. */
+export function splitPlatformFee(grossAmountCents: number, feePercent: number) {
+  if (!Number.isInteger(grossAmountCents) || grossAmountCents <= 0) {
+    throw new Error("gross amount must be a positive integer number of cents");
+  }
+  const platformFeeCents = Math.round(grossAmountCents * (feePercent / 100));
+  return { platformFeeCents, netAmountCents: grossAmountCents - platformFeeCents };
+}
+
 /**
- * Atomically records a creator tip, extracts platform fee, credits creator ledger,
- * updates profile/video counters, and provisions a video access grant if applicable.
+ * Records a creator credit, its platform fee, the counters it moves and — for a video — the
+ * buyer's access grant, inside the caller's transaction.
  */
-export async function recordTipAndUnlock(options: RecordTipOptions): Promise<TipResult> {
-  const feePct = parseInt(process.env.PLATFORM_FEE_PERCENTAGE || "10", 10);
-  const platformFeeCents = Math.round(options.grossAmountCents * (feePct / 100));
-  const netAmountCents = options.grossAmountCents - platformFeeCents;
+export async function creditTip(tx: LedgerExecutor, options: RecordTipOptions): Promise<TipResult> {
+  const { platformFeeCents, netAmountCents } = splitPlatformFee(options.grossAmountCents, platformFeePercent());
 
-  return await db.transaction(async (tx) => {
-    // 1. If video is provided, verify minimum unlock requirements
-    if (options.videoId) {
-      const [targetVideo] = await tx
-        .select()
-        .from(videos)
-        .where(eq(videos.id, options.videoId))
-        .limit(1);
-
-      if (targetVideo && targetVideo.minTipAmountCents > options.grossAmountCents) {
-        throw new Error(
-          `Tip amount of $${(options.grossAmountCents / 100).toFixed(
-            2
-          )} is below required minimum of $${(targetVideo.minTipAmountCents / 100).toFixed(2)} to unlock.`
-        );
-      }
+  if (options.videoId) {
+    const [targetVideo] = await tx.select().from(videos).where(eq(videos.id, options.videoId)).limit(1);
+    if (!targetVideo) throw new Error("Video not found");
+    if (targetVideo.creatorId !== options.creatorId) throw new Error("Video does not belong to creator");
+    if (targetVideo.minTipAmountCents > options.grossAmountCents) {
+      throw new Error("Amount is below the video's unlock minimum");
     }
+  }
 
-    // 2. Insert primary ledger credit record
-    const [ledgerEntry] = await tx
-      .insert(tipsLedger)
-      .values({
-        entryType: "CREATOR_CREDIT",
-        senderId: options.senderId || null,
-        creatorId: options.creatorId,
-        videoId: options.videoId || null,
-        grossAmountCents: options.grossAmountCents,
-        platformFeeCents,
-        netAmountCents,
-        gateway: options.gateway,
-        gatewayTransactionRef: options.gatewayTransactionRef,
-        note: options.note || "Creator tip & video unlock",
-      })
-      .returning();
-
-    // 3. Increment creator earnings counter in profile
-    await tx
-      .update(profiles)
-      .set({
-        totalTipsEarnedCents: sql`${profiles.totalTipsEarnedCents} + ${netAmountCents}`,
-        updatedAt: new Date(),
-      })
-      .where(eq(profiles.userId, options.creatorId));
-
-    // 4. Update video tip counter if tied to a specific video
-    let grantId: string | undefined;
-    if (options.videoId) {
-      await tx
-        .update(videos)
-        .set({
-          tipsCount: sql`${videos.tipsCount} + 1`,
-          updatedAt: new Date(),
-        })
-        .where(eq(videos.id, options.videoId));
-
-      // 5. If sender is identified, provision a VideoAccessGrant
-      if (options.senderId) {
-        const [grant] = await tx
-          .insert(videoAccessGrants)
-          .values({
-            videoId: options.videoId,
-            userId: options.senderId,
-            grantedVia: "TIP_PAYMENT",
-            amountPaidCents: options.grossAmountCents,
-            transactionRef: options.gatewayTransactionRef,
-          })
-          .onConflictDoNothing()
-          .returning();
-
-        grantId = grant?.id;
-      }
-    }
-
-    return {
-      ledgerId: ledgerEntry.id,
-      grantId,
+  const [ledgerEntry] = await tx
+    .insert(tipsLedger)
+    .values({
+      entryType: "CREATOR_CREDIT",
+      senderId: options.senderId || null,
+      creatorId: options.creatorId,
+      videoId: options.videoId || null,
       grossAmountCents: options.grossAmountCents,
       platformFeeCents,
       netAmountCents,
-    };
-  });
+      gateway: options.gateway,
+      gatewayTransactionRef: options.gatewayTransactionRef,
+      note: options.note || "Creator tip & video unlock",
+    })
+    .returning();
+
+  await tx
+    .update(profiles)
+    .set({
+      totalTipsEarnedCents: sql`${profiles.totalTipsEarnedCents} + ${netAmountCents}`,
+      updatedAt: new Date(),
+    })
+    .where(eq(profiles.userId, options.creatorId));
+
+  let grantId: string | undefined;
+  if (options.videoId) {
+    await tx
+      .update(videos)
+      .set({ tipsCount: sql`${videos.tipsCount} + 1`, updatedAt: new Date() })
+      .where(eq(videos.id, options.videoId));
+
+    if (options.senderId) {
+      const [grant] = await tx
+        .insert(videoAccessGrants)
+        .values({
+          videoId: options.videoId,
+          userId: options.senderId,
+          grantedVia: "TIP_PAYMENT",
+          amountPaidCents: options.grossAmountCents,
+          transactionRef: options.gatewayTransactionRef,
+        })
+        .onConflictDoNothing()
+        .returning();
+      grantId = grant?.id;
+    }
+  }
+
+  return {
+    ledgerId: ledgerEntry.id,
+    grantId,
+    grossAmountCents: options.grossAmountCents,
+    platformFeeCents,
+    netAmountCents,
+  };
+}
+
+/** {@link creditTip} in its own transaction. */
+export async function recordTipAndUnlock(options: RecordTipOptions): Promise<TipResult> {
+  return db.transaction((tx) => creditTip(tx, options));
 }
 
 /**
- * Calculates current available un-payout balance for a creator.
+ * A creator's balance available for payout: every credit received minus every payout that has
+ * not failed. Credits and payouts are each counted once — payout ledger rows are a journal of the
+ * same payouts and are not subtracted a second time.
  */
-export async function getCreatorAvailableBalanceCents(creatorId: string): Promise<number> {
-  const result = await db
-    .select({
-      totalNetEarnings: sql<number>`coalesce(sum(${tipsLedger.netAmountCents}), 0)`,
-    })
+export async function getCreatorAvailableBalanceCents(
+  creatorId: string,
+  executor: LedgerExecutor = db,
+): Promise<number> {
+  const [credits] = await executor
+    .select({ total: sql<string>`coalesce(sum(${tipsLedger.netAmountCents}), 0)` })
     .from(tipsLedger)
-    .where(eq(tipsLedger.creatorId, creatorId));
+    .where(and(eq(tipsLedger.creatorId, creatorId), eq(tipsLedger.entryType, "CREATOR_CREDIT")));
 
-  const totalCredits = Number(result[0]?.totalNetEarnings || 0);
-
-  const payoutResult = await db
-    .select({
-      totalPaidOut: sql<number>`coalesce(sum(${payoutRequests.amountCents}), 0)`,
-    })
+  const [payouts] = await executor
+    .select({ total: sql<string>`coalesce(sum(${payoutRequests.amountCents}), 0)` })
     .from(payoutRequests)
-    .where(
-      sql`${payoutRequests.creatorId} = ${creatorId} AND ${payoutRequests.status} NOT IN ('FAILED')`
-    );
+    .where(and(eq(payoutRequests.creatorId, creatorId), ne(payoutRequests.status, "FAILED")));
 
-  const totalPaidOut = Number(payoutResult[0]?.totalPaidOut || 0);
-
-  return Math.max(0, totalCredits - totalPaidOut);
+  return Math.max(0, Number(credits?.total ?? 0) - Number(payouts?.total ?? 0));
 }
 
 /**
- * Submits a creator payout request with atomic balance verification.
+ * Submits a payout request. Concurrent requests of one creator are serialised by a transaction
+ * lock, so two requests can never both spend the same balance.
  */
 export async function requestPayout(
   creatorId: string,
   amountCents: number,
   payoutMethod: string,
-  payoutDestination: string
+  payoutDestination: string,
 ) {
-  return await db.transaction(async (tx) => {
-    const available = await getCreatorAvailableBalanceCents(creatorId);
+  if (!Number.isInteger(amountCents) || amountCents <= 0) {
+    throw new Error("Payout amount must be a positive integer number of cents");
+  }
+  return db.transaction(async (tx) => {
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${creatorId}))`);
+
+    const available = await getCreatorAvailableBalanceCents(creatorId, tx);
     if (available < amountCents) {
       throw new Error(
-        `Insufficient available creator balance ($${(available / 100).toFixed(
-          2
-        )}) for payout request ($${(amountCents / 100).toFixed(2)}).`
+        `Insufficient available creator balance ($${(available / 100).toFixed(2)}) for payout request ($${(
+          amountCents / 100
+        ).toFixed(2)}).`,
       );
     }
 
     const [request] = await tx
       .insert(payoutRequests)
-      .values({
-        creatorId,
-        amountCents,
-        payoutMethod,
-        payoutDestination,
-        status: "REQUESTED",
-      })
+      .values({ creatorId, amountCents, payoutMethod, payoutDestination, status: "REQUESTED" })
       .returning();
 
-    // Log corresponding ledger entry for tracking
-    await tx.insert(tipsLedger)
-      .values({
-        entryType: "PAYOUT_REQUESTED",
-        creatorId,
-        grossAmountCents: amountCents,
-        platformFeeCents: 0,
-        netAmountCents: -amountCents,
-        gateway: "CRYPTO", // or generic
-        gatewayTransactionRef: `payout_req_${request.id}`,
-        note: `Payout requested via ${payoutMethod}`,
-      });
+    await tx.insert(tipsLedger).values({
+      entryType: "PAYOUT_REQUESTED",
+      creatorId,
+      grossAmountCents: amountCents,
+      platformFeeCents: 0,
+      netAmountCents: -amountCents,
+      gateway: "CRYPTO",
+      gatewayTransactionRef: `payout_req_${request.id}`,
+      note: `Payout requested via ${payoutMethod}`,
+    });
 
     return request;
   });

@@ -4,88 +4,68 @@ import {
   CreateCheckoutOptions,
   CheckoutSessionResult,
   ParsedPaymentEvent,
+  requireString,
+  dollarsToCents,
 } from "../types";
+import { header, hmacHex, safeEqual } from "../signature";
 
 export interface CCBillConfig {
   clientAccount: string;
   clientSubaccount: string;
   formName: string;
   salt: string;
-  flexFormId?: string;
+  /** Secret shared with the CCBill webhook relay that signs postbacks (HMAC-SHA256). */
+  webhookSecret: string;
 }
 
+/** CCBill FlexForms (dynamic pricing) — the buyer is redirected to CCBill's hosted form. */
 export class CCBillAdapter implements PaymentGatewayAdapter {
-  readonly gatewayName = "CCBILL";
-  private config: CCBillConfig;
+  readonly gatewayName = "CCBILL" as const;
 
-  constructor(config: CCBillConfig) {
-    this.config = config;
-  }
+  constructor(private readonly config: CCBillConfig) {}
 
   async createCheckoutSession(options: CreateCheckoutOptions): Promise<CheckoutSessionResult> {
-    const amountInDollars = (options.amountCents / 100).toFixed(2);
-    const initialPeriod = 30; // standard 30-day access or one-time
-    const currencyCode = "840"; // USD ISO 4217 numeric code
+    const formPrice = (options.amountCents / 100).toFixed(2);
+    const formPeriod = "2"; // one-time charge: shortest allowed access period
+    const currencyCode = "840"; // USD (ISO 4217 numeric)
+    // CCBill dynamic pricing digest: md5(formPrice + formPeriod + currencyCode + salt)
+    const formDigest = crypto
+      .createHash("md5")
+      .update(`${formPrice}${formPeriod}${currencyCode}${this.config.salt}`)
+      .digest("hex");
 
-    // CCBill MD5 form digest: md5(formPrice + formPeriod + currencyCode + salt)
-    const digestSource = `${amountInDollars}${initialPeriod}${currencyCode}${this.config.salt}`;
-    const formDigest = crypto.createHash("md5").update(digestSource).digest("hex");
-
-    const queryParams = new URLSearchParams({
+    const query = new URLSearchParams({
       clientAccnum: this.config.clientAccount,
       clientSubacc: this.config.clientSubaccount,
       formName: this.config.formName,
-      formPrice: amountInDollars,
-      formPeriod: String(initialPeriod),
+      formPrice,
+      formPeriod,
       currencyCode,
       formDigest,
-      creatorId: options.creatorId,
-      senderId: options.senderId || "anonymous",
-      videoId: options.videoId || "",
-      returnUrl: options.returnUrl,
+      // Custom fields are echoed back on the postback: the intent id is the only one we read.
+      orochiaIntentId: options.intentId,
     });
 
-    const checkoutUrl = `https://bill.ccbill.com/jpost/signup.cgi?${queryParams.toString()}`;
-    const sessionId = `ccbill_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-
     return {
-      checkoutUrl,
-      sessionId,
+      checkoutUrl: `https://bill.ccbill.com/jpost/signup.cgi?${query.toString()}`,
+      sessionId: options.intentId,
       gateway: this.gatewayName,
-      metadata: { formDigest, amountInDollars },
     };
   }
 
   verifyWebhookSignature(rawBody: string, headers: Record<string, string>): boolean {
-    // CCBill sends responseDigest or dynamic pricing postback hash
-    const signature = headers["x-ccbill-signature"] || headers["signature"];
-    if (!signature) {
-      // In staging/development, pass through if secret salt is dummy
-      return process.env.NODE_ENV !== "production";
-    }
-
-    const expected = crypto
-      .createHmac("sha256", this.config.salt)
-      .update(rawBody)
-      .digest("hex");
-
-    return signature === expected;
+    const signature = header(headers, "x-ccbill-signature");
+    if (!signature || !this.config.webhookSecret) return false;
+    return safeEqual(signature, hmacHex("sha256", this.config.webhookSecret, rawBody));
   }
 
   parseWebhookEvent(payload: Record<string, unknown>): ParsedPaymentEvent {
-    const transactionId = String(payload.subscriptionId || payload.transactionId || `tx_${Date.now()}`);
-    const amount = typeof payload.billedAmount === "number"
-      ? Math.round(payload.billedAmount * 100)
-      : Math.round(parseFloat(String(payload.billedAmount || "0")) * 100);
-
+    const eventType = String(payload.eventType ?? "");
     return {
-      gatewayTransactionRef: transactionId,
-      amountCents: amount,
-      creatorId: String(payload.creatorId || ""),
-      senderId: payload.senderId ? String(payload.senderId) : undefined,
-      videoId: payload.videoId ? String(payload.videoId) : undefined,
-      status: payload.reasonForDecline ? "FAILED" : "SUCCESS",
-      rawEvent: payload,
+      intentId: requireString(payload, "orochiaIntentId", "X-orochiaIntentId"),
+      gatewayTransactionRef: requireString(payload, "transactionId", "subscriptionId"),
+      amountCents: dollarsToCents(payload.billedAmount ?? payload.accountingAmount),
+      status: payload.reasonForDecline || eventType === "Denial" ? "FAILED" : "SUCCESS",
     };
   }
 }

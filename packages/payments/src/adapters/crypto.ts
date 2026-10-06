@@ -1,73 +1,77 @@
-import crypto from "crypto";
 import {
   PaymentGatewayAdapter,
   CreateCheckoutOptions,
   CheckoutSessionResult,
   ParsedPaymentEvent,
+  requireString,
+  dollarsToCents,
 } from "../types";
+import { header, hmacHex, safeEqual, sortedJson } from "../signature";
 
 export interface CryptoGatewayConfig {
   apiKey: string;
   ipnSecret: string;
+  callbackUrl: string;
+  apiBaseUrl?: string;
 }
 
+/** NowPayments invoices; IPN callbacks signed with HMAC-SHA512 over the key-sorted JSON body. */
 export class CryptoGatewayAdapter implements PaymentGatewayAdapter {
-  readonly gatewayName = "CRYPTO";
-  private config: CryptoGatewayConfig;
+  readonly gatewayName = "CRYPTO" as const;
 
-  constructor(config: CryptoGatewayConfig) {
-    this.config = config;
-  }
+  constructor(
+    private readonly config: CryptoGatewayConfig,
+    private readonly http: typeof fetch = fetch,
+  ) {}
 
   async createCheckoutSession(options: CreateCheckoutOptions): Promise<CheckoutSessionResult> {
-    const amountInDollars = (options.amountCents / 100).toFixed(2);
-    const orderId = `crypto_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-
-    // In a live integration, calls NowPayments / BTCPay REST API:
-    // POST /v1/invoice
-    const checkoutUrl = `https://nowpayments.io/payment/?iid=${orderId}&price_amount=${amountInDollars}&price_currency=usd`;
-
-    return {
-      checkoutUrl,
-      sessionId: orderId,
-      gateway: this.gatewayName,
-      metadata: {
-        creatorId: options.creatorId,
-        videoId: options.videoId,
-        orderId,
-      },
-    };
+    const response = await this.http(`${this.config.apiBaseUrl ?? "https://api.nowpayments.io"}/v1/invoice`, {
+      method: "POST",
+      headers: { "x-api-key": this.config.apiKey, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        price_amount: options.amountCents / 100,
+        price_currency: options.currency.toLowerCase(),
+        order_id: options.intentId,
+        order_description: options.description,
+        ipn_callback_url: this.config.callbackUrl,
+        success_url: options.returnUrl,
+        cancel_url: options.cancelUrl,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error(`NowPayments refused the invoice (HTTP ${response.status})`);
+    }
+    const invoice = (await response.json()) as { id?: string | number; invoice_url?: string };
+    if (!invoice.invoice_url || invoice.id === undefined) {
+      throw new Error("NowPayments returned no invoice URL");
+    }
+    return { checkoutUrl: invoice.invoice_url, sessionId: String(invoice.id), gateway: this.gatewayName };
   }
 
   verifyWebhookSignature(rawBody: string, headers: Record<string, string>): boolean {
-    const signature = headers["x-nowpayments-sig"] || headers["x-btcpay-sig"];
-    if (!signature) {
-      return process.env.NODE_ENV !== "production";
+    const signature = header(headers, "x-nowpayments-sig");
+    if (!signature || !this.config.ipnSecret) return false;
+    let body: unknown;
+    try {
+      body = JSON.parse(rawBody);
+    } catch {
+      return false;
     }
-
-    const calculatedSig = crypto
-      .createHmac("sha512", this.config.ipnSecret)
-      .update(rawBody)
-      .digest("hex");
-
-    return calculatedSig === signature;
+    return safeEqual(signature, hmacHex("sha512", this.config.ipnSecret, sortedJson(body)));
   }
 
   parseWebhookEvent(payload: Record<string, unknown>): ParsedPaymentEvent {
-    const amount = typeof payload.price_amount === "number"
-      ? Math.round(payload.price_amount * 100)
-      : Math.round(parseFloat(String(payload.price_amount || "0")) * 100);
-
-    const isFinished = payload.payment_status === "finished" || payload.payment_status === "confirmed";
-
+    const status = String(payload.payment_status ?? "");
     return {
-      gatewayTransactionRef: String(payload.payment_id || `crypto_${Date.now()}`),
-      amountCents: amount,
-      creatorId: String(payload.order_description || payload.creator_id || ""),
-      senderId: payload.sender_id ? String(payload.sender_id) : undefined,
-      videoId: payload.video_id ? String(payload.video_id) : undefined,
-      status: isFinished ? "SUCCESS" : "PENDING",
-      rawEvent: payload,
+      intentId: requireString(payload, "order_id"),
+      gatewayTransactionRef: requireString(payload, "payment_id"),
+      amountCents: dollarsToCents(payload.price_amount),
+      status:
+        status === "finished" || status === "confirmed"
+          ? "SUCCESS"
+          : status === "failed" || status === "expired" || status === "refunded"
+            ? "FAILED"
+            : "PENDING",
     };
   }
 }
