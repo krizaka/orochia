@@ -1,0 +1,11 @@
+{
+  "name": "@orochia/config",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./eslint/index.js",
+  "files": [
+    "eslint",
+    "tsconfig",
+    "tailwind"
+  ]
+}
