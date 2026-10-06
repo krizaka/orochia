@@ -1,0 +1,69 @@
+name: orochia
+region: nyc
+services:
+  - name: web
+    github:
+      repo: krizaka/orochia
+      branch: main
+      deploy_on_push: true
+    dockerfile_path: deploy/docker/Dockerfile
+    source_dir: /
+    http_port: 3000
+    instance_count: 1
+    instance_size_slug: professional-xs
+    health_check:
+      http_path: /api/health
+      initial_delay_seconds: 15
+      period_seconds: 10
+      timeout_seconds: 5
+      failure_threshold: 3
+    routes:
+      - path: /
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${orochia-db.DATABASE_URL}
+      - key: REDIS_URL
+        scope: RUN_TIME
+        value: ${orochia-redis.REDIS_URL}
+      - key: BUNNY_STREAM_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: BUNNY_STREAM_LIBRARY_ID
+        scope: RUN_TIME
+        type: GENERAL
+      - key: BUNNY_STREAM_HOSTNAME
+        scope: RUN_TIME
+        type: GENERAL
+      - key: BUNNY_STREAM_TOKEN_AUTH_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: BUNNY_WEBHOOK_SECRET
+        scope: RUN_TIME
+        type: SECRET
+      - key: SESSION_SECRET
+        scope: RUN_TIME
+        type: SECRET
+      - key: PLATFORM_FEE_PERCENTAGE
+        scope: RUN_TIME
+        value: "10"
+      - key: PAYMENT_DEFAULT_GATEWAY
+        scope: RUN_TIME
+        value: "ccbill"
+
+databases:
+  - name: orochia-db
+    engine: PG
+    version: "16"
+    production: false
+    cluster_name: orochia-pg-cluster
+    db_name: orochia_db
+    db_user: orochia_user
+
+  - name: orochia-redis
+    engine: REDIS
+    version: "7"
+    production: false
+    cluster_name: orochia-redis-cluster

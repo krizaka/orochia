@@ -1,0 +1,84 @@
+version: "3.9"
+
+services:
+  web:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+    container_name: orochia-web-prod
+    restart: always
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://orochia_user:${POSTGRES_PASSWORD}@postgres:5432/orochia_db?sslmode=disable
+      REDIS_URL: redis://redis:6379
+      BUNNY_STREAM_API_KEY: ${BUNNY_STREAM_API_KEY}
+      BUNNY_STREAM_LIBRARY_ID: ${BUNNY_STREAM_LIBRARY_ID}
+      BUNNY_STREAM_HOSTNAME: ${BUNNY_STREAM_HOSTNAME}
+      BUNNY_STREAM_TOKEN_AUTH_KEY: ${BUNNY_STREAM_TOKEN_AUTH_KEY}
+      BUNNY_WEBHOOK_SECRET: ${BUNNY_WEBHOOK_SECRET}
+      SESSION_SECRET: ${SESSION_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - orochia-internal
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: orochia-caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+    networks:
+      - orochia-internal
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: orochia-postgres-prod
+    restart: always
+    environment:
+      POSTGRES_USER: orochia_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: orochia_db
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    networks:
+      - orochia-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orochia_user -d orochia_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: orochia-redis-prod
+    restart: always
+    volumes:
+      - redis_prod_data:/data
+    networks:
+      - orochia-internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  orochia-internal:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:
+  postgres_prod_data:
+  redis_prod_data:
