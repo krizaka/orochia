@@ -1,79 +1,51 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { evaluateVideoAccess } from "@/lib/access";
 import { BunnyStreamClient } from "@orochia/media";
 import { db, videos } from "@orochia/db";
 import { eq, sql } from "drizzle-orm";
+import { bunnyStreamConfig, STREAM_TOKEN_TTL_SECONDS } from "@/lib/env";
+import { errorResponse, jsonError } from "@/lib/http";
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export const dynamic = "force-dynamic";
+
+/** Authorises a viewer and returns a short-lived signed HLS URL (AGENTS.md §2.A). */
+export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const videoId = params.id;
+    const id = z.string().uuid().safeParse(params.id);
+    if (!id.success) return jsonError(404, "Video not found");
     const user = await getCurrentUser();
 
-    // 1. Evaluate permissions via access control matrix
-    const access = await evaluateVideoAccess(videoId, user?.id);
-
+    const access = await evaluateVideoAccess(id.data, user?.id);
     if (!access.allowed) {
       return NextResponse.json(
-        {
-          allowed: false,
-          reason: access.reason,
-          minTipAmountCents: access.minTipAmountCents,
-          videoTitle: access.videoTitle,
-        },
-        { status: 403 }
+        { allowed: false, reason: access.reason, minTipAmountCents: access.minTipAmountCents, videoTitle: access.videoTitle },
+        { status: access.reason === "NOT_FOUND" ? 404 : 403 },
       );
     }
 
-    // 2. Retrieve video details
-    const [video] = await db
-      .select()
-      .from(videos)
-      .where(eq(videos.id, videoId))
-      .limit(1);
+    const [video] = await db.select().from(videos).where(eq(videos.id, id.data)).limit(1);
+    if (!video || video.status !== "READY") return jsonError(409, "Video is not ready yet");
 
-    if (!video) {
-      return NextResponse.json({ error: "Video not found" }, { status: 404 });
-    }
+    const signed = new BunnyStreamClient(bunnyStreamConfig()).getSignedStreamUrl(
+      video.bunnyVideoId,
+      STREAM_TOKEN_TTL_SECONDS,
+    );
 
-    // 3. Initialize Bunny Stream SDK
-    const apiKey = process.env.BUNNY_STREAM_API_KEY || "demo_bunny_api_key";
-    const libraryId = parseInt(process.env.BUNNY_STREAM_LIBRARY_ID || "123456", 10);
-    const hostname = process.env.BUNNY_STREAM_HOSTNAME || "vz-demo.b-cdn.net";
-    const tokenAuthKey = process.env.BUNNY_STREAM_TOKEN_AUTH_KEY || "demo_token_auth_key";
-
-    const bunnyClient = new BunnyStreamClient({
-      apiKey,
-      libraryId,
-      hostname,
-      tokenAuthKey,
-    });
-
-    // 4. Generate expiring HMAC-SHA256 signed HLS URL
-    const signedToken = bunnyClient.getSignedStreamUrl(video.bunnyVideoId, 14400);
-
-    // 5. Fire-and-forget view count increment
     db.update(videos)
       .set({ viewsCount: sql`${videos.viewsCount} + 1` })
-      .where(eq(videos.id, videoId))
-      .catch((err) => console.warn("Failed to increment views:", err));
+      .where(eq(videos.id, video.id))
+      .catch((err: unknown) => console.warn("Failed to increment views:", err));
 
     return NextResponse.json({
       allowed: true,
       videoId: video.id,
       title: video.title,
-      streamUrl: signedToken.directM3u8Url,
-      token: signedToken.token,
-      expires: signedToken.expires,
+      streamUrl: signed.directM3u8Url,
+      expires: signed.expires,
     });
-  } catch (error: any) {
-    console.error("Error generating signed stream:", error);
-    return NextResponse.json(
-      { error: error?.message || "Failed to generate stream" },
-      { status: 500 }
-    );
+  } catch (error) {
+    return errorResponse(error, "videos/stream");
   }
 }

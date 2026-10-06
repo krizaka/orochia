@@ -1,25 +1,65 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Wallet, History, CheckCircle2 } from "lucide-react";
+
+interface PayoutSummary {
+  availableCents: number;
+  lifetimeNetCents: number;
+  creditsCount: number;
+  platformFeePercent: number;
+  history: { id: string; amountCents: number; status: string; payoutMethod: string; createdAt: string }[];
+}
 
 export default function CreatorPayoutsPage() {
   const [payoutMethod, setPayoutMethod] = useState("CRYPTO_USDT");
   const [destination, setDestination] = useState("");
-  const [amountDollars, setAmountDollars] = useState("500.00");
+  const [amountDollars, setAmountDollars] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
 
-  const availableBalance = 3150.0;
-  const lifetimeEarnings = 14820.0;
+  const [summary, setSummary] = useState<PayoutSummary | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmitPayout = (e: React.FormEvent) => {
+  const load = useCallback(async () => {
+    const res = await fetch("/api/creator/payouts", { cache: "no-store" });
+    if (res.status === 401 || res.status === 403) {
+      setError("Payouts are available to creator accounts only.");
+      return;
+    }
+    if (res.ok) setSummary(((await res.json()) as { data: PayoutSummary }).data);
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const availableBalance = (summary?.availableCents ?? 0) / 100;
+  const lifetimeEarnings = (summary?.lifetimeNetCents ?? 0) / 100;
+
+  const handleSubmitPayout = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setError(null);
+    try {
+      const res = await fetch("/api/creator/payouts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amountCents: Math.round(parseFloat(amountDollars || "0") * 100),
+          payoutMethod,
+          payoutDestination: destination,
+        }),
+      });
+      const body = (await res.json()) as { error?: string };
+      if (!res.ok) throw new Error(body.error || "Payout request failed");
       setSuccessMsg(true);
-    }, 1000);
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Payout request failed");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -59,7 +99,7 @@ export default function CreatorPayoutsPage() {
             ${lifetimeEarnings.toLocaleString("en-US", { minimumFractionDigits: 2 })}
           </div>
           <span className="mt-2 block text-[11px] text-zinc-500 font-mono">
-            350+ fan tip transactions
+            {summary?.creditsCount ?? 0} payments received
           </span>
         </div>
 
@@ -67,9 +107,9 @@ export default function CreatorPayoutsPage() {
           <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
             Platform Retained Fee
           </span>
-          <div className="mt-2 text-3xl font-extrabold text-zinc-300">10.0%</div>
+          <div className="mt-2 text-3xl font-extrabold text-zinc-300">{(summary?.platformFeePercent ?? 0).toFixed(1)}%</div>
           <span className="mt-2 block text-[11px] text-zinc-500">
-            Zero hidden merchant reserves
+            Deducted from each payment received
           </span>
         </div>
       </div>
@@ -79,7 +119,7 @@ export default function CreatorPayoutsPage() {
         <div className="rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl">
           <h2 className="text-lg font-bold text-white mb-2">Request Payout Disbursement</h2>
           <p className="text-xs text-zinc-400 mb-6">
-            Disbursements processed within 24 business hours. Fully compliant with adult banking rails.
+            Requests are reviewed by the platform before settlement; the amount is reserved immediately.
           </p>
 
           {successMsg ? (
@@ -87,7 +127,7 @@ export default function CreatorPayoutsPage() {
               <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-400 mb-2" />
               <h3 className="text-sm font-bold text-white">Disbursement Initiated</h3>
               <p className="text-xs text-zinc-400 mt-1">
-                Your payout request has been queued in the atomic ledger for automated settlement.
+                Your payout request is recorded and the amount is reserved until it is settled.
               </p>
             </div>
           ) : (
@@ -114,7 +154,8 @@ export default function CreatorPayoutsPage() {
                 </label>
                 <input
                   type="number"
-                  step="10.00"
+                  step="0.01"
+                  min="10"
                   max={availableBalance}
                   value={amountDollars}
                   onChange={(e) => setAmountDollars(e.target.value)}
@@ -136,9 +177,12 @@ export default function CreatorPayoutsPage() {
                 />
               </div>
 
+              {error && (
+                <p role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">{error}</p>
+              )}
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || availableBalance < 10}
                 className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 text-white font-bold text-sm shadow-xl shadow-fuchsia-600/25 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50"
               >
                 {isSubmitting ? "Submitting Request..." : "Request Payout Now"}
@@ -151,30 +195,23 @@ export default function CreatorPayoutsPage() {
         <div className="rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl">
           <div className="flex items-center gap-2 mb-4">
             <History className="h-4 w-4 text-violet-400" />
-            <h3 className="text-sm font-bold text-white">Recent Ledger Transactions</h3>
+            <h3 className="text-sm font-bold text-white">Payout requests</h3>
           </div>
 
           <div className="space-y-3">
-            {[
-              { type: "TIP_RECEIVED", desc: "Velvet Lounge Private Tip", amount: "+$25.00", date: "Today" },
-              { type: "TIP_RECEIVED", desc: "Tokyo Horizons Fan Tip", amount: "+$10.00", date: "Yesterday" },
-              { type: "PAYOUT_COMPLETED", desc: "Disbursement to USDT TRC20", amount: "-$1,200.00", date: "Oct 02, 2026" },
-              { type: "TIP_RECEIVED", desc: "Direct Video Unlock Tip", amount: "+$50.00", date: "Oct 01, 2026" },
-            ].map((tx, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-between p-3 rounded-2xl border border-white/5 bg-zinc-900/40"
-              >
+            {(summary?.history ?? []).length === 0 && (
+              <p className="text-xs text-zinc-500">No payout requested yet.</p>
+            )}
+            {(summary?.history ?? []).map((payout) => (
+              <div key={payout.id} className="flex items-center justify-between p-3 rounded-2xl border border-white/5 bg-zinc-900/40">
                 <div>
-                  <div className="text-xs font-semibold text-white">{tx.desc}</div>
-                  <div className="text-[10px] text-zinc-500 font-mono">{tx.date}</div>
+                  <div className="text-xs font-semibold text-white">{payout.payoutMethod.replace(/_/g, " ")}</div>
+                  <div className="text-[10px] text-zinc-500 font-mono">
+                    {new Date(payout.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} • {payout.status.replace(/_/g, " ").toLowerCase()}
+                  </div>
                 </div>
-                <div
-                  className={`text-xs font-bold font-mono ${
-                    tx.amount.startsWith("+") ? "text-emerald-400" : "text-rose-400"
-                  }`}
-                >
-                  {tx.amount}
+                <div className={`text-xs font-bold font-mono ${payout.status === "FAILED" ? "text-zinc-500 line-through" : "text-rose-400"}`}>
+                  -${(payout.amountCents / 100).toFixed(2)}
                 </div>
               </div>
             ))}

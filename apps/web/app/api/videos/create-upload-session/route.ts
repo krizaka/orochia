@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/redis";
 import { BunnyStreamClient, CreateUploadSessionSchema } from "@orochia/media";
-import { db, videos } from "@orochia/db";
+import { db, videos, users } from "@orochia/db";
+import { eq } from "drizzle-orm";
+import { bunnyStreamConfig } from "@/lib/env";
+import { errorResponse } from "@/lib/http";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,6 +16,15 @@ export async function POST(req: NextRequest) {
     if (!user || (user.role !== "CREATOR" && user.role !== "ADMIN")) {
       return NextResponse.json(
         { error: "Forbidden: Only verified creators can upload video content." },
+        { status: 403 }
+      );
+    }
+
+    // 1b. 18 U.S.C. § 2257: a creator publishes only once the custodian review verified them.
+    const [account] = await db.select({ isVerified: users.isVerified }).from(users).where(eq(users.id, user.id)).limit(1);
+    if (!account?.isVerified) {
+      return NextResponse.json(
+        { error: "Creator verification (18 U.S.C. § 2257 records) is pending." },
         { status: 403 }
       );
     }
@@ -36,18 +50,8 @@ export async function POST(req: NextRequest) {
 
     const input = parseResult.data;
 
-    // 4. Initialize Bunny Stream Client
-    const apiKey = process.env.BUNNY_STREAM_API_KEY || "demo_bunny_api_key";
-    const libraryId = parseInt(process.env.BUNNY_STREAM_LIBRARY_ID || "123456", 10);
-    const hostname = process.env.BUNNY_STREAM_HOSTNAME || "vz-demo.b-cdn.net";
-    const tokenAuthKey = process.env.BUNNY_STREAM_TOKEN_AUTH_KEY || "demo_token_auth_key";
-
-    const bunnyClient = new BunnyStreamClient({
-      apiKey,
-      libraryId,
-      hostname,
-      tokenAuthKey,
-    });
+    // 4. Bunny Stream client (credentials are mandatory in production)
+    const bunnyClient = new BunnyStreamClient(bunnyStreamConfig());
 
     // 5. Generate Bunny Tus upload credentials
     const session = await bunnyClient.createTusUploadSession(input.title, 7200);
@@ -72,11 +76,7 @@ export async function POST(req: NextRequest) {
       videoId: videoRecord.id,
       session,
     });
-  } catch (error: any) {
-    console.error("Error creating upload session:", error);
-    return NextResponse.json(
-      { error: error?.message || "Internal server error" },
-      { status: 500 }
-    );
+  } catch (error) {
+    return errorResponse(error, "videos/create-upload-session");
   }
 }

@@ -27,6 +27,10 @@ export default function RegisterPage() {
       setError("You must certify that you are at least 18 years of age.");
       return;
     }
+    if (password.length < 10) {
+      setError("Choose a password of at least 10 characters.");
+      return;
+    }
     if (!acceptTerms) {
       setError("You must accept the Terms of Service and 2257 Record-Keeping Covenant.");
       return;
@@ -38,12 +42,14 @@ export default function RegisterPage() {
         username,
         displayName: displayName || username,
         email,
+        password,
         role,
         isAgeVerified,
+        acceptTerms,
       });
       router.push("/dashboard");
-    } catch (err: any) {
-      setError(err?.message || "Registration failed");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
       setIsLoading(false);
     }
@@ -130,6 +136,8 @@ export default function RegisterPage() {
               <Lock className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500" />
               <input
                 type="password"
+                autoComplete="new-password"
+                minLength={10}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

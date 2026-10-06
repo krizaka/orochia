@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 
 export function Navbar() {
-  const { user, logout, switchProfile } = useAuth();
+  const { user, logout, switchProfile, demoMode } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -191,6 +191,7 @@ export function Navbar() {
                   </div>
 
                   {/* Switch Demo Role (For easy client evaluation) */}
+                  {demoMode && (
                   <div className="border-t border-white/5 pt-2 mt-2">
                     <p className="px-3 text-[10px] uppercase font-semibold text-zinc-500 mb-1">
                       Quick Demo Switcher
@@ -224,6 +225,7 @@ export function Navbar() {
                       </button>
                     </div>
                   </div>
+                  )}
 
                   {/* Logout */}
                   <div className="border-t border-white/5 pt-1 mt-2">
@@ -370,6 +372,7 @@ export function Navbar() {
           </div>
 
           {/* Quick Demo Switcher on mobile */}
+          {demoMode && (
           <div className="mt-4 border-t border-white/5 pt-3">
             <p className="text-[10px] uppercase font-semibold text-zinc-500 mb-2">
               Quick Demo Role Switcher
@@ -403,6 +406,7 @@ export function Navbar() {
               </button>
             </div>
           </div>
+          )}
 
           {user && (
             <div className="mt-3 border-t border-white/5 pt-2">

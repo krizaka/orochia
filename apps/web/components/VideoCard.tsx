@@ -87,7 +87,7 @@ export function VideoCard({
         <div className="flex gap-3">
           <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full border border-white/10 bg-zinc-800">
             <img
-              src={creatorAvatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"}
+              src={creatorAvatar || "/avatar-placeholder.svg"}
               alt={creatorName}
               className="h-full w-full object-cover"
             />

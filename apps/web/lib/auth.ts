@@ -1,83 +1,108 @@
 import crypto from "crypto";
 import { cookies } from "next/headers";
-import { db, users } from "@orochia/db";
-import { eq } from "drizzle-orm";
+import type { NextResponse } from "next/server";
+import { HttpError } from "./http";
+import { isProduction, sessionSecret } from "./env";
+
+export type Role = "ADMIN" | "CREATOR" | "MEMBER";
 
 export interface SessionUser {
   id: string;
   username: string;
   email: string;
-  role: "ADMIN" | "CREATOR" | "MEMBER";
+  role: Role;
   isAgeVerified: boolean;
 }
 
-const SESSION_COOKIE_NAME = "orochia_session";
-const SESSION_SECRET = process.env.SESSION_SECRET || "default_orochia_dev_secret_key_change_me_in_prod";
-
-/**
- * Signs user payload into a tamper-proof session token.
- */
-export function signSessionToken(payload: SessionUser): string {
-  const json = JSON.stringify(payload);
-  const data = Buffer.from(json).toString("base64url");
-  const signature = crypto
-    .createHmac("sha256", SESSION_SECRET)
-    .update(data)
-    .digest("base64url");
-  return `${data}.${signature}`;
+interface SessionPayload extends SessionUser {
+  /** Expiry, seconds since epoch. */
+  exp: number;
 }
 
-/**
- * Validates and decodes signed session token.
- */
-export function verifySessionToken(token: string): SessionUser | null {
+export const SESSION_COOKIE_NAME = "orochia_session";
+export const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7;
+
+function sign(data: string, secret: string): string {
+  return crypto.createHmac("sha256", secret).update(data).digest("base64url");
+}
+
+/** Signs a session that expires after {@link SESSION_TTL_SECONDS}. */
+export function signSessionToken(
+  user: SessionUser,
+  secret: string = sessionSecret(),
+  now: number = Date.now(),
+): string {
+  const payload: SessionPayload = {
+    id: user.id,
+    username: user.username,
+    email: user.email,
+    role: user.role,
+    isAgeVerified: user.isAgeVerified,
+    exp: Math.floor(now / 1000) + SESSION_TTL_SECONDS,
+  };
+  const data = Buffer.from(JSON.stringify(payload)).toString("base64url");
+  return `${data}.${sign(data, secret)}`;
+}
+
+/** The session a token carries, or null when it is malformed, forged or expired. */
+export function verifySessionToken(
+  token: string,
+  secret: string = sessionSecret(),
+  now: number = Date.now(),
+): SessionUser | null {
+  const parts = token.split(".");
+  if (parts.length !== 2) return null;
+  const [data, signature] = parts;
+  const expected = Buffer.from(sign(data, secret));
+  const given = Buffer.from(signature);
+  if (expected.length !== given.length || !crypto.timingSafeEqual(expected, given)) return null;
   try {
-    const parts = token.split(".");
-    if (parts.length !== 2) return null;
-    const [data, signature] = parts;
-
-    const expectedSignature = crypto
-      .createHmac("sha256", SESSION_SECRET)
-      .update(data)
-      .digest("base64url");
-
-    if (signature !== expectedSignature) {
-      return null;
-    }
-
-    const json = Buffer.from(data, "base64url").toString("utf-8");
-    return JSON.parse(json) as SessionUser;
+    const payload = JSON.parse(Buffer.from(data, "base64url").toString("utf-8")) as SessionPayload;
+    if (typeof payload.exp !== "number" || payload.exp * 1000 <= now) return null;
+    if (!["ADMIN", "CREATOR", "MEMBER"].includes(payload.role)) return null;
+    return {
+      id: payload.id,
+      username: payload.username,
+      email: payload.email,
+      role: payload.role,
+      isAgeVerified: payload.isAgeVerified === true,
+    };
   } catch {
     return null;
   }
 }
 
-/**
- * Retrieves the currently authenticated user in Server Components and Server Actions.
- */
-export async function getCurrentUser(): Promise<SessionUser | null> {
-  const cookieStore = cookies();
-  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-  if (!token) return null;
-
-  const session = verifySessionToken(token);
-  if (!session) return null;
-
-  return session;
+/** Sets the session cookie on a response (httpOnly, SameSite=Lax, Secure in production). */
+export function setSessionCookie(response: NextResponse, user: SessionUser): void {
+  response.cookies.set(SESSION_COOKIE_NAME, signSessionToken(user), {
+    httpOnly: true,
+    secure: isProduction(),
+    sameSite: "lax",
+    path: "/",
+    maxAge: SESSION_TTL_SECONDS,
+  });
 }
 
-/**
- * Enforces role authorization (e.g. Creator or Admin). Throws error or returns user.
- */
-export async function requireUserWithRole(roles: Array<"ADMIN" | "CREATOR" | "MEMBER">): Promise<SessionUser> {
+export function clearSessionCookie(response: NextResponse): void {
+  response.cookies.set(SESSION_COOKIE_NAME, "", {
+    httpOnly: true,
+    secure: isProduction(),
+    sameSite: "lax",
+    path: "/",
+    maxAge: 0,
+  });
+}
+
+/** The authenticated user of the current request, if any. */
+export async function getCurrentUser(): Promise<SessionUser | null> {
+  const token = cookies().get(SESSION_COOKIE_NAME)?.value;
+  return token ? verifySessionToken(token) : null;
+}
+
+/** The authenticated user, or a 401/403 HttpError. */
+export async function requireUserWithRole(roles: Role[]): Promise<SessionUser> {
   const user = await getCurrentUser();
-  if (!user) {
-    throw new Error("UNAUTHORIZED: Authentication required");
-  }
-
-  if (!roles.includes(user.role)) {
-    throw new Error(`FORBIDDEN: Requires one of [${roles.join(", ")}] roles`);
-  }
-
+  if (!user) throw new HttpError(401, "Authentication required");
+  if (!roles.includes(user.role)) throw new HttpError(403, "Insufficient role");
   return user;
 }

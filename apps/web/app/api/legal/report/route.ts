@@ -1,44 +1,56 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { db, complianceReports, videos } from "@orochia/db";
+import { eq } from "drizzle-orm";
+import { getCurrentUser } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/redis";
+import { errorResponse, jsonError } from "@/lib/http";
+
+export const dynamic = "force-dynamic";
 
 const ReportSchema = z.object({
-  videoId: z.string().uuid().or(z.string()),
-  videoTitle: z.string().min(1),
-  reason: z.enum([
-    "NON_CONSENSUAL",
-    "UNDERAGE",
-    "DMCA_COPYRIGHT",
-    "TERMS_VIOLATION",
-    "FRAUD_SCAM",
-  ]),
-  details: z.string().min(5),
-  reporterEmail: z.string().email(),
+  videoId: z.string().max(64),
+  videoTitle: z.string().trim().min(1).max(255),
+  reason: z.enum(["NON_CONSENSUAL", "UNDERAGE", "DMCA_COPYRIGHT", "TERMS_VIOLATION", "FRAUD_SCAM"]),
+  details: z.string().trim().min(5).max(5000),
+  reporterEmail: z.string().trim().email().max(255),
 });
 
+/**
+ * Content reports. Persisted before they are acknowledged — the ticket id returned is the row id —
+ * and triaged in the admin control plane. Anonymous reports are accepted: the people most likely
+ * to report non-consensual content are not account holders.
+ */
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const validated = ReportSchema.parse(body);
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    const limit = await checkRateLimit(`report:${ip}`, 20, 60 * 60);
+    if (!limit.success) return jsonError(429, "Too many reports. Try again later.");
 
-    // In production, insert into compliance_tickets or notify Slack/Webhook/Legal inbox
-    console.warn(`[LEGAL REPORT LOGGED] Reason: ${validated.reason} on Video: ${validated.videoId} by ${validated.reporterEmail}`);
+    const input = ReportSchema.parse(await req.json());
+    const videoId = z.string().uuid().safeParse(input.videoId);
+    const [video] = videoId.success
+      ? await db.select({ id: videos.id }).from(videos).where(eq(videos.id, videoId.data)).limit(1)
+      : [];
+    const reporter = await getCurrentUser();
 
-    return NextResponse.json({
-      success: true,
-      ticketId: `TICKET-${Date.now()}`,
-      status: "TRIAGED",
-      message: "Report received. Immediate compliance investigation initiated.",
-    });
-  } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { success: false, error: "Validation failed", details: error.errors },
-        { status: 400 }
-      );
-    }
+    const [report] = await db
+      .insert(complianceReports)
+      .values({
+        videoId: video?.id ?? null,
+        videoTitle: input.videoTitle,
+        reason: input.reason,
+        details: input.details,
+        reporterEmail: input.reporterEmail,
+        reporterId: reporter?.id ?? null,
+      })
+      .returning({ id: complianceReports.id });
+
     return NextResponse.json(
-      { success: false, error: "Internal server error" },
-      { status: 500 }
+      { success: true, ticketId: report.id, status: "OPEN", message: "Report received. It will be reviewed." },
+      { status: 201 },
     );
+  } catch (error) {
+    return errorResponse(error, "legal/report");
   }
 }

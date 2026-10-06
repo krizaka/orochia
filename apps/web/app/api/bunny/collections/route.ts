@@ -1,114 +1,49 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, playlists, playlistItems, videos, users } from "@orochia/db";
-import { eq, desc } from "drizzle-orm";
+import { z } from "zod";
+import { db, playlists } from "@orochia/db";
+import { and, desc, eq, or } from "drizzle-orm";
+import { getCurrentUser, requireUserWithRole } from "@/lib/auth";
+import { errorResponse } from "@/lib/http";
 
 export const dynamic = "force-dynamic";
 
+/** Public collections, plus the signed-in creator's own private ones. */
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const creatorId = searchParams.get("creatorId");
-
-    // Fetch collections from PostgreSQL
-    let collectionsList: any[] = [];
-    try {
-      collectionsList = await db
-        .select()
-        .from(playlists)
-        .orderBy(desc(playlists.createdAt));
-    } catch (e) {
-      console.warn("DB query failed for collections, returning mock:", e);
-    }
-
-    if (collectionsList.length === 0) {
-      collectionsList = [
-        {
-          id: "col-tokyo-4k",
-          title: "Tokyo Neon Nights [Bunny Collection]",
-          description: "Official 4K episodic documentary on Tokyo underground nightlife and art lounges.",
-          isPrivate: false,
-          videosCount: 6,
-          totalDurationMinutes: 184,
-          bunnyCollectionId: "bny-col-7721",
-        },
-        {
-          id: "col-vault-uncut",
-          title: "Velvet Private Vault [Bunny Collection]",
-          description: "Exclusive unreleased performance recordings and private patron streams.",
-          isPrivate: true,
-          videosCount: 4,
-          totalDurationMinutes: 142,
-          bunnyCollectionId: "bny-col-8839",
-        },
-        {
-          id: "col-acoustic-noir",
-          title: "Midnight Noir Acoustic Sessions",
-          description: "Late-night studio acoustics with intimate vocals and spatial audio.",
-          isPrivate: false,
-          videosCount: 3,
-          totalDurationMinutes: 98,
-          bunnyCollectionId: "bny-col-9902",
-        },
-      ];
-    }
-
-    return NextResponse.json({
-      success: true,
-      collections: collectionsList,
-      meta: {
-        bunnyStreamIntegration: "Bunny Stream Video Library API v2",
-        features: ["Adaptive Bitrate HLS", "Direct Token HMAC", "Collection Paywall Bundles"],
-      },
-    });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    const user = await getCurrentUser();
+    const creatorId = z.string().uuid().safeParse(new URL(req.url).searchParams.get("creatorId"));
+    const visible = user
+      ? or(eq(playlists.isPrivate, false), eq(playlists.creatorId, user.id))
+      : eq(playlists.isPrivate, false);
+    const collections = await db
+      .select()
+      .from(playlists)
+      .where(creatorId.success ? and(visible, eq(playlists.creatorId, creatorId.data)) : visible)
+      .orderBy(desc(playlists.createdAt))
+      .limit(100);
+    return NextResponse.json({ success: true, collections });
+  } catch (error) {
+    return errorResponse(error, "collections/get");
   }
 }
 
+const CollectionSchema = z.object({
+  title: z.string().trim().min(1).max(255),
+  description: z.string().trim().max(2000).optional().default(""),
+  isPrivate: z.boolean().optional().default(false),
+});
+
+/** Creates a collection owned by the signed-in creator. */
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { title, description, isPrivate, creatorId } = body;
-
-    if (!title) {
-      return NextResponse.json({ error: "Title is required" }, { status: 400 });
-    }
-
-    // Generate simulated or real Bunny Collection ID
-    const bunnyCollectionId = `bny-col-${Math.random().toString(36).substring(2, 9)}`;
-
-    let newCollection: any = {
-      id: `col-${Date.now()}`,
-      title,
-      description: description || "",
-      isPrivate: !!isPrivate,
-      bunnyCollectionId,
-      createdAt: new Date().toISOString(),
-    };
-
-    try {
-      if (creatorId) {
-        const [inserted] = await db
-          .insert(playlists)
-          .values({
-            creatorId,
-            title,
-            description: description || "",
-            isPrivate: !!isPrivate,
-          })
-          .returning();
-        if (inserted) newCollection = inserted;
-      }
-    } catch (e) {
-      console.warn("DB insert for playlist failed:", e);
-    }
-
-    return NextResponse.json({
-      success: true,
-      collection: newCollection,
-      message: "Bunny Stream Collection created successfully",
-    });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    const user = await requireUserWithRole(["CREATOR", "ADMIN"]);
+    const input = CollectionSchema.parse(await req.json());
+    const [collection] = await db
+      .insert(playlists)
+      .values({ creatorId: user.id, title: input.title, description: input.description, isPrivate: input.isPrivate })
+      .returning();
+    return NextResponse.json({ success: true, collection }, { status: 201 });
+  } catch (error) {
+    return errorResponse(error, "collections/post");
   }
 }

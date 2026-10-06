@@ -1,81 +1,83 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth";
-import { recordTipAndUnlock, GatewayTypeSchema } from "@orochia/payments";
+import { z } from "zod";
 import { db, videos } from "@orochia/db";
 import { eq } from "drizzle-orm";
-import { z } from "zod";
+import {
+  GatewayTypeSchema,
+  attachGatewaySession,
+  configuredGateways,
+  createPaymentIntent,
+  getPaymentGateway,
+  settlePaymentIntent,
+} from "@orochia/payments";
+import { requireUserWithRole } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/redis";
+import { appUrl, isDemoMode } from "@/lib/env";
+import { errorResponse, jsonError } from "@/lib/http";
+
+export const dynamic = "force-dynamic";
 
 const UnlockVideoRequestSchema = z.object({
-  videoId: z.string().uuid("Valid video ID required"),
-  amountCents: z.number().int().positive("Amount must be greater than 0"),
+  videoId: z.string().uuid(),
+  amountCents: z.number().int().positive().max(100_000_00),
   gateway: GatewayTypeSchema,
-  transactionRef: z.string().min(3),
-  note: z.string().optional(),
 });
 
+/**
+ * Starts the purchase of a video unlock. The client is never trusted to say it paid: this records
+ * a payment intent and returns the gateway's checkout URL; the access grant is created only when
+ * the gateway's signed webhook confirms the payment (/api/webhooks/payments/[gateway]).
+ *
+ * Demo mode (never in production, no gateway configured) settles the intent at once, so the
+ * showcase works without merchant accounts.
+ */
 export async function POST(req: NextRequest) {
   try {
-    const user = await getCurrentUser();
-    if (!user) {
-      return NextResponse.json(
-        { error: "Authentication required to tip and unlock videos" },
-        { status: 401 }
-      );
-    }
+    const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
+    const limit = await checkRateLimit(`checkout:${user.id}`, 20, 60 * 60);
+    if (!limit.success) return jsonError(429, "Too many payment attempts. Try again later.");
 
-    const body = await req.json();
-    const parseResult = UnlockVideoRequestSchema.safeParse(body);
-    if (!parseResult.success) {
-      return NextResponse.json(
-        { error: "Invalid payload", details: parseResult.error.flatten() },
-        { status: 400 }
-      );
-    }
+    const { videoId, amountCents, gateway } = UnlockVideoRequestSchema.parse(await req.json());
 
-    const { videoId, amountCents, gateway, transactionRef, note } = parseResult.data;
-
-    // Fetch video to retrieve creator ID and verify minimum unlock threshold
-    const [video] = await db
-      .select()
-      .from(videos)
-      .where(eq(videos.id, videoId))
-      .limit(1);
-
-    if (!video) {
-      return NextResponse.json({ error: "Video not found" }, { status: 404 });
-    }
-
+    const [video] = await db.select().from(videos).where(eq(videos.id, videoId)).limit(1);
+    if (!video || video.status !== "READY") return jsonError(404, "Video not found");
+    if (video.creatorId === user.id) return jsonError(400, "You already own this video");
     if (amountCents < video.minTipAmountCents) {
-      return NextResponse.json(
-        {
-          error: `Minimum tip to unlock is $${(video.minTipAmountCents / 100).toFixed(2)}`,
-        },
-        { status: 400 }
-      );
+      return jsonError(400, `Minimum to unlock is $${(video.minTipAmountCents / 100).toFixed(2)}`);
     }
 
-    // Atomically execute ledger transaction and issue access grant
-    const result = await recordTipAndUnlock({
+    const intent = await createPaymentIntent({
+      gateway,
       senderId: user.id,
       creatorId: video.creatorId,
       videoId: video.id,
-      grossAmountCents: amountCents,
-      gateway,
-      gatewayTransactionRef: transactionRef,
-      note,
+      amountCents,
     });
 
-    return NextResponse.json({
-      success: true,
-      message: "Video unlocked successfully",
-      grantId: result.grantId,
-      ledgerId: result.ledgerId,
+    const configured = configuredGateways();
+    if (configured.length === 0 && isDemoMode()) {
+      const outcome = await settlePaymentIntent(gateway, {
+        intentId: intent.id,
+        gatewayTransactionRef: `demo_${intent.id}`,
+        amountCents,
+        status: "SUCCESS",
+      });
+      return NextResponse.json({ success: true, settled: outcome.kind === "SETTLED", demo: true });
+    }
+    if (!configured.includes(gateway)) return jsonError(400, "This payment method is not available");
+
+    const session = await getPaymentGateway(gateway).createCheckoutSession({
+      intentId: intent.id,
+      amountCents,
+      currency: "USD",
+      description: `Unlock: ${video.title}`.slice(0, 120),
+      returnUrl: `${appUrl()}/watch/${video.id}?payment=success`,
+      cancelUrl: `${appUrl()}/watch/${video.id}?payment=cancelled`,
     });
-  } catch (error: any) {
-    console.error("Error unlocking video:", error);
-    return NextResponse.json(
-      { error: error?.message || "Failed to process unlock request" },
-      { status: 500 }
-    );
+    await attachGatewaySession(intent.id, session.sessionId);
+
+    return NextResponse.json({ success: true, checkoutUrl: session.checkoutUrl });
+  } catch (error) {
+    return errorResponse(error, "videos/unlock-video");
   }
 }

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { checkDbHealth } from "@orochia/db";
 import { checkRedisHealth } from "@/lib/redis";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const dbHealthy = await checkDbHealth();
   const redisHealthy = await checkRedisHealth();

@@ -8,18 +8,21 @@ import { Flame, LogIn, Lock, Mail, ArrowRight, Sparkles } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, switchProfile } = useAuth();
+  const { login, switchProfile, demoMode } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"CREATOR" | "MEMBER">("CREATOR");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
     try {
-      await login(email, role);
+      await login(email, password);
       router.push("/dashboard");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Sign in failed");
     } finally {
       setIsLoading(false);
     }
@@ -41,7 +44,8 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Quick Demo Login Preset Buttons */}
+        {/* Demo accounts — only in demo mode (never in production) */}
+        {demoMode && (
         <div className="mb-6 rounded-2xl border border-violet-500/20 bg-violet-950/20 p-3.5">
           <p className="text-[11px] font-semibold text-violet-300 mb-2 flex items-center gap-1.5">
             <Sparkles className="h-3.5 w-3.5 text-fuchsia-400" />
@@ -70,16 +74,18 @@ export default function LoginPage() {
             </button>
           </div>
         </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block">
-              Email Address
+              Email or Username
             </label>
             <div className="relative">
               <Mail className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500" />
               <input
-                type="email"
+                type="text"
+                autoComplete="username"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -97,6 +103,7 @@ export default function LoginPage() {
               <Lock className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500" />
               <input
                 type="password"
+                autoComplete="current-password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -106,19 +113,11 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div>
-            <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block">
-              Account Role
-            </label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value as any)}
-              className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3.5 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none"
-            >
-              <option value="CREATOR">Sovereign Creator</option>
-              <option value="MEMBER">Patron / Supporter</option>
-            </select>
-          </div>
+          {error && (
+            <p role="alert" className="rounded-xl border border-red-500/30 bg-red-950/30 px-3.5 py-2.5 text-xs text-red-300">
+              {error}
+            </p>
+          )}
 
           <button
             type="submit"

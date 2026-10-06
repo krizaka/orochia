@@ -6,12 +6,16 @@ import {
 } from "@orochia/media";
 import { db, videos } from "@orochia/db";
 import { eq } from "drizzle-orm";
+import { bunnyStreamConfig, bunnyWebhookSecret } from "@/lib/env";
+import { errorResponse } from "@/lib/http";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
     const rawBody = await req.text();
     const signature = req.headers.get("bunnycdn-signature") || req.headers.get("x-signature");
-    const webhookSecret = process.env.BUNNY_WEBHOOK_SECRET || "";
+    const webhookSecret = bunnyWebhookSecret();
 
     // 1. Verify webhook signature
     const isValid = verifyBunnyWebhookSignature({
@@ -41,7 +45,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Video not tracked" }, { status: 200 });
     }
 
-    const hostname = process.env.BUNNY_STREAM_HOSTNAME || "vz-demo.b-cdn.net";
+    const { hostname } = bunnyStreamConfig();
     const generatedThumbnail =
       payload.ThumbnailUrl || `https://${hostname}/${payload.VideoGuid}/thumbnail.jpg`;
     const generatedPreview =
@@ -64,11 +68,7 @@ export async function POST(req: NextRequest) {
       videoId: existingVideo.id,
       status: targetStatus,
     });
-  } catch (error: any) {
-    console.error("Bunny webhook processing failure:", error);
-    return NextResponse.json(
-      { error: error?.message || "Webhook handling error" },
-      { status: 500 }
-    );
+  } catch (error) {
+    return errorResponse(error, "webhooks/bunny");
   }
 }

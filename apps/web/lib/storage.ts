@@ -1,3 +1,4 @@
+import { ConfigurationError } from "./env";
 import fs from "fs";
 import path from "path";
 
@@ -20,6 +21,10 @@ export async function uploadMediaFile(
   category: "avatars" | "thumbnails" | "videos" | "documents" = "videos"
 ): Promise<UploadResult> {
   const driver = process.env.STORAGE_DRIVER === "bunny" ? "bunny" : "local";
+  // Container filesystems are ephemeral: production stores media on Bunny Edge Storage only.
+  if (process.env.NODE_ENV === "production" && (driver !== "bunny" || !process.env.BUNNY_STORAGE_API_KEY)) {
+    throw new ConfigurationError("STORAGE_DRIVER=bunny and BUNNY_STORAGE_API_KEY");
+  }
   const ext = path.extname(originalFilename) || (category === "videos" ? ".mp4" : ".jpg");
   const sanitizedName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}${ext}`;
 
@@ -36,7 +41,7 @@ export async function uploadMediaFile(
         AccessKey: process.env.BUNNY_STORAGE_API_KEY,
         "Content-Type": "application/octet-stream",
       },
-      body: fileBuffer,
+      body: new Uint8Array(fileBuffer),
     });
 
     if (!res.ok) {

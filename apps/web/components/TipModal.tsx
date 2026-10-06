@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X, Sparkles, CreditCard, ShieldCheck, Bitcoin, CheckCircle2 } from "lucide-react";
 
 interface TipModalProps {
@@ -26,6 +26,27 @@ export function TipModal({
   const [selectedGateway, setSelectedGateway] = useState<"CCBILL" | "SEGPAY" | "CRYPTO" | "STRIPE">("CCBILL");
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [gateways, setGateways] = useState<string[] | null>(null);
+  const [demoMode, setDemoMode] = useState(false);
+
+  // Only the gateways this deployment is configured for are offered.
+  useEffect(() => {
+    if (!isOpen) return;
+    fetch("/api/payments/gateways", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data: { gateways: string[]; demoMode: boolean }) => {
+        setGateways(data.gateways);
+        setDemoMode(data.demoMode);
+        if (data.gateways.length > 0 && !data.gateways.includes(selectedGateway)) {
+          setSelectedGateway(data.gateways[0] as typeof selectedGateway);
+        }
+      })
+      .catch(() => setGateways([]));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
+  const offers = (gateway: string) => demoMode || (gateways ?? []).includes(gateway);
+  const unavailable = gateways !== null && gateways.length === 0 && !demoMode;
 
   if (!isOpen) return null;
 
@@ -41,28 +62,28 @@ export function TipModal({
     setErrorMsg(null);
 
     try {
-      // In production, triggers the checkout redirect or processes confirmed tip
+      // The server records a payment intent and answers with the gateway's checkout page; access
+      // is granted when the gateway's signed webhook confirms the payment.
       const res = await fetch("/api/videos/unlock-video", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          videoId,
-          amountCents: selectedAmount,
-          gateway: selectedGateway,
-          transactionRef: `tx_demo_${Date.now()}`,
-          note: `Tip for ${creatorName}`,
-        }),
+        body: JSON.stringify({ videoId, amountCents: selectedAmount, gateway: selectedGateway }),
       });
 
-      const data = await res.json();
+      const data = (await res.json()) as { error?: string; checkoutUrl?: string; settled?: boolean };
       if (!res.ok) {
-        throw new Error(data.error || "Failed to process tip");
+        throw new Error(data.error || `Could not start the payment for ${creatorName}`);
       }
-
-      onUnlockedSuccess();
-      onClose();
-    } catch (err: any) {
-      setErrorMsg(err?.message || "An unexpected error occurred");
+      if (data.checkoutUrl) {
+        window.location.assign(data.checkoutUrl);
+        return;
+      }
+      if (data.settled) {
+        onUnlockedSuccess();
+        onClose();
+      }
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : "An unexpected error occurred");
     } finally {
       setIsProcessing(false);
     }
@@ -131,6 +152,7 @@ export function TipModal({
             Select Adult-Friendly Gateway
           </label>
           <div className="space-y-2">
+            {offers("CCBILL") && (
             <label
               onClick={() => setSelectedGateway("CCBILL")}
               className={`flex items-center justify-between p-3 rounded-2xl border cursor-pointer transition-all ${
@@ -148,7 +170,9 @@ export function TipModal({
               </div>
               {selectedGateway === "CCBILL" && <CheckCircle2 className="h-5 w-5 text-violet-400" />}
             </label>
+            )}
 
+            {offers("CRYPTO") && (
             <label
               onClick={() => setSelectedGateway("CRYPTO")}
               className={`flex items-center justify-between p-3 rounded-2xl border cursor-pointer transition-all ${
@@ -166,7 +190,9 @@ export function TipModal({
               </div>
               {selectedGateway === "CRYPTO" && <CheckCircle2 className="h-5 w-5 text-amber-400" />}
             </label>
+            )}
 
+            {offers("SEGPAY") && (
             <label
               onClick={() => setSelectedGateway("SEGPAY")}
               className={`flex items-center justify-between p-3 rounded-2xl border cursor-pointer transition-all ${
@@ -184,12 +210,35 @@ export function TipModal({
               </div>
               {selectedGateway === "SEGPAY" && <CheckCircle2 className="h-5 w-5 text-emerald-400" />}
             </label>
+            )}
+            {offers("STRIPE") && (
+            <label
+              onClick={() => setSelectedGateway("STRIPE")}
+              className={`flex items-center justify-between p-3 rounded-2xl border cursor-pointer transition-all ${
+                selectedGateway === "STRIPE"
+                  ? "border-sky-500 bg-sky-500/10 text-white"
+                  : "border-white/10 bg-zinc-900/80 text-zinc-300 hover:border-white/20"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <CreditCard className="h-5 w-5 text-sky-400" />
+                <div>
+                  <div className="text-sm font-semibold">Stripe Checkout</div>
+                  <div className="text-xs text-zinc-400">Cards and wallets</div>
+                </div>
+              </div>
+              {selectedGateway === "STRIPE" && <CheckCircle2 className="h-5 w-5 text-sky-400" />}
+            </label>
+            )}
           </div>
         </div>
 
         {/* Action Button */}
+        {unavailable && (
+          <p className="mb-3 text-xs text-amber-300">Payments are not available on this server yet.</p>
+        )}
         <button
-          disabled={isProcessing}
+          disabled={isProcessing || unavailable}
           onClick={handleProcessTip}
           className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white font-bold text-sm shadow-xl shadow-fuchsia-600/25 transition-all disabled:opacity-50"
         >
