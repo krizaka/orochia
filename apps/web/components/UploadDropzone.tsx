@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import Link from "next/link";
 import * as tus from "tus-js-client";
-import { UploadCloud, CheckCircle, Film, Sparkles, DollarSign } from "lucide-react";
+import { UploadCloud, CheckCircle, Film, DollarSign, ShieldAlert, Sparkles, HelpCircle } from "lucide-react";
 
 export function UploadDropzone() {
   const [file, setFile] = useState<File | null>(null);
@@ -14,6 +15,11 @@ export function UploadDropzone() {
   const [progress, setProgress] = useState(0);
   const [uploadComplete, setUploadComplete] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Mandatory Legal Attestation states
+  const [certifyAdultConsent, setCertifyAdultConsent] = useState(false);
+  const [certify2257Records, setCertify2257Records] = useState(false);
+  const [certifyCopyrightOwnership, setCertifyCopyrightOwnership] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -30,6 +36,11 @@ export function UploadDropzone() {
   const handleStartUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) return;
+
+    if (!certifyAdultConsent || !certify2257Records || !certifyCopyrightOwnership) {
+      setErrorMessage("You must accept all mandatory legal and 2257 compliance declarations prior to publishing.");
+      return;
+    }
 
     setIsUploading(true);
     setErrorMessage(null);
@@ -95,6 +106,18 @@ export function UploadDropzone() {
     }
   };
 
+  const parsedTipAmount = parseFloat(minTipAmountDollars || "0");
+  const creatorEarningsDollars = (parsedTipAmount * 0.9).toFixed(2);
+  const platformFeeDollars = (parsedTipAmount * 0.1).toFixed(2);
+
+  const canSubmit =
+    file &&
+    title.trim().length > 0 &&
+    !isUploading &&
+    certifyAdultConsent &&
+    certify2257Records &&
+    certifyCopyrightOwnership;
+
   return (
     <div className="w-full max-w-2xl mx-auto rounded-3xl border border-white/10 bg-zinc-950 p-8 shadow-2xl">
       <div className="flex items-center gap-3 mb-6">
@@ -102,7 +125,7 @@ export function UploadDropzone() {
           <Film className="h-6 w-6" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-white">Upload New Video</h2>
+          <h2 className="text-xl font-bold text-white font-display">Upload New Video</h2>
           <p className="text-xs text-zinc-400">
             Direct-to-Bunny global edge streaming with automatic 4K HLS transcoding
           </p>
@@ -114,10 +137,10 @@ export function UploadDropzone() {
           <div className="h-16 w-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4 border border-emerald-500/30">
             <CheckCircle className="h-8 w-8" />
           </div>
-          <h3 className="text-lg font-bold text-white mb-2">Video Uploaded Successfully!</h3>
+          <h3 className="text-lg font-bold text-white mb-2 font-display">Video Uploaded Successfully!</h3>
           <p className="text-sm text-zinc-400 max-w-sm mb-6">
             Bunny.net Stream is transcoding your video into adaptive HLS resolutions (2160p, 1080p, 720p).
-            It will appear in your gallery automatically once encoding is complete.
+            It will appear in your creator gallery automatically once encoding is complete.
           </p>
           <button
             onClick={() => {
@@ -125,6 +148,9 @@ export function UploadDropzone() {
               setUploadComplete(false);
               setTitle("");
               setDescription("");
+              setCertifyAdultConsent(false);
+              setCertify2257Records(false);
+              setCertifyCopyrightOwnership(false);
             }}
             className="px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-medium text-sm transition-all"
           >
@@ -199,15 +225,15 @@ export function UploadDropzone() {
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Give your viewers context and highlights..."
+                placeholder="Give your viewers context, performer credits, and highlights..."
                 className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block">
-                  Visibility
+                  Access & Monetization Model
                 </label>
                 <select
                   value={visibility}
@@ -216,8 +242,8 @@ export function UploadDropzone() {
                 >
                   <option value="PUBLIC">Public (Free for All)</option>
                   <option value="TIPPED_UNLOCKED">Tipped Paywall (Tip to Unlock)</option>
-                  <option value="CONTACTS_ONLY">Contacts Only (Mutuals)</option>
-                  <option value="APPROVED_FOLLOWERS_ONLY">Approved Followers</option>
+                  <option value="CONTACTS_ONLY">Contacts Only (Private Mutuals)</option>
+                  <option value="APPROVED_FOLLOWERS_ONLY">VIP Approved Followers</option>
                 </select>
               </div>
 
@@ -240,6 +266,81 @@ export function UploadDropzone() {
                 </div>
               )}
             </div>
+
+            {/* Monetization Split Calculator Preview */}
+            {visibility === "TIPPED_UNLOCKED" && (
+              <div className="rounded-2xl border border-violet-500/20 bg-violet-950/20 p-4 text-xs">
+                <div className="flex items-center justify-between font-semibold text-white mb-2">
+                  <span className="flex items-center gap-1.5 text-violet-300">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    <span>Sovereign Creator Revenue Split</span>
+                  </span>
+                  <span className="text-emerald-400 font-mono">90% Payout Rate</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-center pt-2 border-t border-white/5">
+                  <div className="rounded-lg bg-zinc-900/60 p-2">
+                    <span className="text-zinc-500 block text-[10px]">Patron Tip</span>
+                    <span className="font-mono font-bold text-white">${parsedTipAmount.toFixed(2)}</span>
+                  </div>
+                  <div className="rounded-lg bg-zinc-900/60 p-2">
+                    <span className="text-zinc-500 block text-[10px]">Platform Protocol (10%)</span>
+                    <span className="font-mono text-zinc-400">${platformFeeDollars}</span>
+                  </div>
+                  <div className="rounded-lg bg-emerald-950/40 border border-emerald-500/30 p-2">
+                    <span className="text-emerald-400 block text-[10px] font-bold">You Receive (90%)</span>
+                    <span className="font-mono font-bold text-emerald-400">${creatorEarningsDollars}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Mandatory Legal & 2257 Declarations */}
+          <div className="space-y-3 rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white mb-1">
+              <ShieldAlert className="h-4 w-4 text-fuchsia-400" />
+              <span>Mandatory Performer & Legal Attestations</span>
+            </div>
+
+            <label className="flex items-start gap-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={certifyAdultConsent}
+                onChange={(e) => setCertifyAdultConsent(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-violet-600 focus:ring-violet-500"
+              />
+              <span className="text-xs text-zinc-300 leading-relaxed group-hover:text-white">
+                <strong className="text-white">Age & Consent:</strong> I certify under penalty of perjury that all performers depicted are at least 18 years of age and provided explicit, voluntary written consent.
+              </span>
+            </label>
+
+            <label className="flex items-start gap-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={certify2257Records}
+                onChange={(e) => setCertify2257Records(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-violet-600 focus:ring-violet-500"
+              />
+              <span className="text-xs text-zinc-300 leading-relaxed group-hover:text-white">
+                <strong className="text-white">18 U.S.C. § 2257 Records:</strong> I maintain complete performer identification and verification records pursuant to 18 U.S.C. § 2257 and 28 C.F.R. Part 75 (
+                <Link href="/legal/2257" target="_blank" className="text-violet-400 underline">
+                  see requirements
+                </Link>
+                ).
+              </span>
+            </label>
+
+            <label className="flex items-start gap-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={certifyCopyrightOwnership}
+                onChange={(e) => setCertifyCopyrightOwnership(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-violet-600 focus:ring-violet-500"
+              />
+              <span className="text-xs text-zinc-300 leading-relaxed group-hover:text-white">
+                <strong className="text-white">Intellectual Property:</strong> I hold full commercial rights and copyright to all audio, visual, and performance elements included in this upload.
+              </span>
+            </label>
           </div>
 
           {/* Upload Progress Bar */}
@@ -261,10 +362,10 @@ export function UploadDropzone() {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={!file || !title || isUploading}
-            className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white font-bold text-sm shadow-xl shadow-fuchsia-600/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!canSubmit}
+            className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white font-bold text-sm shadow-xl shadow-fuchsia-600/25 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {isUploading ? `Uploading (${progress}%)...` : "Start Direct Resumable Upload"}
+            {isUploading ? `Uploading (${progress}%)...` : "Certify & Start Direct Resumable Upload"}
           </button>
         </form>
       )}

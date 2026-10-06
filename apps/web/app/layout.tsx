@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
+import { AgeVerificationModal } from "@/components/AgeVerificationModal";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -16,16 +18,45 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="min-h-screen bg-zinc-950 text-zinc-100 antialiased selection:bg-violet-600 selection:text-white">
+        <AgeVerificationModal />
         <Navbar />
         <main className="min-h-[calc(100vh-4rem)]">{children}</main>
-        <footer className="border-t border-white/5 bg-zinc-950 py-10 text-center text-xs text-zinc-500">
-          <div className="mx-auto max-w-7xl px-4">
-            <p className="font-semibold text-zinc-400">
-              OROCHIA — An Open-Source Creator Platform by Krizaka
-            </p>
-            <p className="mt-1">
-              Built with Next.js App Router, PostgreSQL, Drizzle ORM, Bunny.net Stream, and CCBill / Crypto gateways.
-            </p>
+        <footer className="border-t border-white/5 bg-zinc-950/80 backdrop-blur-xl py-12 text-xs text-zinc-500">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-white/5">
+              <div className="text-center md:text-left">
+                <span className="text-base font-black tracking-wider text-white font-display">
+                  OROCHIA<span className="text-violet-400">.</span>
+                </span>
+                <p className="mt-1 text-zinc-400 max-w-md text-xs">
+                  The Sovereign Sanctuary for Independent Creators. 4K HLS Streams, Zero-Chargeback Crypto & Adult Rails.
+                </p>
+              </div>
+
+              {/* Navigation & Legal Links */}
+              <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-zinc-400">
+                <Link href="/codex" className="hover:text-violet-400 transition-colors">
+                  The Codex (Lore)
+                </Link>
+                <Link href="/legal/terms" className="hover:text-white transition-colors">
+                  Terms of Service
+                </Link>
+                <Link href="/legal/privacy" className="hover:text-white transition-colors">
+                  Privacy Policy
+                </Link>
+                <Link href="/legal/2257" className="hover:text-white transition-colors">
+                  18 U.S.C. § 2257 Notice
+                </Link>
+                <Link href="/legal/dmca" className="hover:text-white transition-colors">
+                  DMCA / Takedowns
+                </Link>
+              </div>
+            </div>
+
+            <div className="pt-8 text-center text-[11px] text-zinc-600">
+              <p>© {new Date().getFullYear()} Orochia. Open-source software released under Apache-2.0. Built by Krizaka Core Team.</p>
+              <p className="mt-1">All performers depicted on this website are 18 years of age or older.</p>
+            </div>
           </div>
         </footer>
       </body>

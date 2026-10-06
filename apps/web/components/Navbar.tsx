@@ -30,6 +30,12 @@ export function Navbar() {
             Explore
           </Link>
           <Link
+            href="/codex"
+            className="text-sm font-medium text-zinc-300 hover:text-violet-400 transition-colors"
+          >
+            The Codex
+          </Link>
+          <Link
             href="/creator/payouts"
             className="flex items-center gap-1.5 text-sm font-medium text-zinc-300 hover:text-white transition-colors"
           >

@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { TipModal } from "@/components/TipModal";
-import { Sparkles, Eye, ShieldCheck, Share2 } from "lucide-react";
+import { ReportModal } from "@/components/ReportModal";
+import { Sparkles, Eye, ShieldCheck, Share2, Flag } from "lucide-react";
 
 export default function WatchPage({ params }: { params: { id: string } }) {
   const videoId = params.id;
@@ -18,6 +19,7 @@ export default function WatchPage({ params }: { params: { id: string } }) {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isTipModalOpen, setIsTipModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   const fetchStreamAccess = async () => {
     setIsLoading(true);
@@ -87,6 +89,13 @@ export default function WatchPage({ params }: { params: { id: string } }) {
                 <button className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 transition-colors">
                   <Share2 className="h-4 w-4" />
                   <span>Share</span>
+                </button>
+                <button
+                  onClick={() => setIsReportModalOpen(true)}
+                  className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                >
+                  <Flag className="h-3.5 w-3.5" />
+                  <span>Report</span>
                 </button>
               </div>
             </div>
@@ -186,6 +195,14 @@ export default function WatchPage({ params }: { params: { id: string } }) {
         onUnlockedSuccess={() => {
           fetchStreamAccess();
         }}
+      />
+
+      {/* Report Modal */}
+      <ReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        videoId={videoId}
+        videoTitle={videoTitle}
       />
     </div>
   );
