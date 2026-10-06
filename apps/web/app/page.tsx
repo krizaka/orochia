@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { VideoCard } from "@/components/VideoCard";
-import { Flame, Shield, Sparkles, Tv, Lock, ArrowRight } from "lucide-react";
+import { Flame, Shield, Sparkles, Tv, Lock, ArrowRight, LayoutDashboard, User, CheckCircle2 } from "lucide-react";
 
 export default function HomePage() {
   // Demo showcase videos matching seeded content
@@ -81,17 +81,24 @@ export default function HomePage() {
             with tokenized HMAC anti-hotlink paywalls.
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-4">
+          <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href="/watch/2d7f8c91-9921-4d30-b2aa-c819a5f255cc"
-              className="inline-flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-fuchsia-600/30 transition-all hover:scale-105 active:scale-95"
+              className="inline-flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 px-5 py-3 text-xs sm:text-sm font-bold text-white shadow-lg shadow-fuchsia-600/30 transition-all hover:scale-105 active:scale-95"
             >
               <Tv className="h-4 w-4" />
               <span>Watch Tipped Showcase</span>
             </Link>
             <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-2 rounded-2xl border border-violet-500/40 bg-violet-600/20 px-5 py-3 text-xs sm:text-sm font-semibold text-white transition-all hover:bg-violet-600/30 shadow-md shadow-violet-600/20"
+            >
+              <LayoutDashboard className="h-4 w-4 text-violet-400" />
+              <span>Mon Espace</span>
+            </Link>
+            <Link
               href="/creator/upload"
-              className="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-zinc-900/80 px-6 py-3.5 text-sm font-semibold text-white transition-all hover:bg-zinc-800"
+              className="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-zinc-900/80 px-5 py-3 text-xs sm:text-sm font-semibold text-white transition-all hover:bg-zinc-800"
             >
               <span>Creator Studio</span>
               <ArrowRight className="h-4 w-4 text-zinc-400" />
@@ -132,6 +139,54 @@ export default function HomePage() {
           <div>
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">Adult Gateways</h4>
             <p className="text-xs text-zinc-400">CCBill, Segpay, and USDT Crypto tipping</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Featured Sovereign Creator Spotlight */}
+      <div className="mb-12 overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-950 via-zinc-900/90 to-violet-950/40 p-6 sm:p-8 relative">
+        <div className="flex flex-col md:flex-row items-center gap-6 justify-between">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 text-center sm:text-left">
+            <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border-2 border-violet-500/60 shadow-xl shadow-violet-500/20">
+              <img
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"
+                alt="Elena Vox"
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute bottom-1 right-1 h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-zinc-950" />
+            </div>
+            <div>
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-violet-500/30 bg-violet-500/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-violet-300 mb-1.5">
+                <CheckCircle2 className="h-3 w-3 text-emerald-400" />
+                <span>Featured Sovereign Creator · 18 U.S.C. § 2257 Verified</span>
+              </div>
+              <h3 className="text-xl font-bold text-white">Elena Vox</h3>
+              <p className="text-xs text-zinc-400 mt-1 max-w-lg leading-relaxed">
+                Visual artist & nocturnal director exploring high-production 4K narrative streams.
+                Directly funded by sovereign patrons with zero third-party payment censorship.
+              </p>
+              <div className="mt-3 flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs font-mono text-zinc-400">
+                <span><strong className="text-white">14.2K</strong> Patrons</span>
+                <span><strong className="text-white">142.8K</strong> Views</span>
+                <span><strong className="text-emerald-400">90%</strong> Net Creator Split</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap sm:flex-nowrap gap-3 shrink-0 w-full sm:w-auto">
+            <Link
+              href="/profile"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-xs font-bold text-white shadow-lg shadow-violet-600/30 hover:scale-105 transition-all"
+            >
+              <User className="h-4 w-4" />
+              <span>View Creator Profile</span>
+            </Link>
+            <Link
+              href="/auth/register"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-zinc-900/90 px-5 py-3 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all"
+            >
+              <span>Join as Patron</span>
+            </Link>
           </div>
         </div>
       </div>
