@@ -2,80 +2,68 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
-    branches: [main, master]
+    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
-  lint-and-typecheck:
-    name: Lint & Typecheck
+  verify:
+    name: Lint · Typecheck · Unit tests · Build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js 20
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run linter
+          cache: npm
+      - run: npm ci
+      - name: Lint (ESLint + package typecheck)
         run: npm run lint
-
-      - name: Run build & typecheck
+      - name: Typecheck web app
+        run: npm run typecheck
+      - name: Unit tests
+        run: npm test
+      - name: Docs are generated from this code
+        run: node scripts/generate-docs.mjs --check
+      - name: Production build
         run: npm run build
         env:
           NEXT_PUBLIC_APP_URL: http://localhost:3000
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/orochia_test
-          BUNNY_STREAM_API_KEY: test_key
-          BUNNY_STREAM_LIBRARY_ID: 1000
-          BUNNY_STREAM_HOSTNAME: vz-test.b-cdn.net
-          BUNNY_STREAM_TOKEN_AUTH_KEY: test_token_auth
-          BUNNY_WEBHOOK_SECRET: test_webhook_secret
 
-  test:
-    name: Unit & Integration Tests
+  database:
+    name: Migrations & seed on PostgreSQL 16
     runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:16-alpine
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: orochia_test
+          POSTGRES_USER: orochia_user
+          POSTGRES_PASSWORD: orochia_secret
+          POSTGRES_DB: orochia_db
         ports:
           - 5432:5432
-        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 5
-
-      redis:
-        image: redis:7-alpine
-        ports:
-          - 6379:6379
-        options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 5s --health-retries 5
-
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://orochia_user:orochia_secret@localhost:5432/orochia_db
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js 20
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests
-        run: npm run test
-        env:
-          DATABASE_URL: postgresql://postgres:password@localhost:5432/orochia_test
-          REDIS_URL: redis://localhost:6379
+          cache: npm
+      - run: npm ci
+      - name: Bundled production migrator
+        run: |
+          npm run build:migrator -w packages/db
+          MIGRATIONS_DIR=packages/db/drizzle node packages/db/dist/migrate.cjs
+      - name: Migrations are idempotent
+        run: MIGRATIONS_DIR=packages/db/drizzle node packages/db/dist/migrate.cjs
+      - name: Development seed loads
+        run: npm run db:seed

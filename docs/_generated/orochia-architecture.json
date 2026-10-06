@@ -1,7 +1,6 @@
 {
   "product": "orochia",
   "title": "Orochia Ecosystem Architecture",
-  "generatedAt": "2026-10-06T20:44:06.694Z",
   "source": "generated from code by products/orochia/scripts/generate-docs.mjs — do not hand-edit",
   "repositories": [
     {
@@ -9,171 +8,246 @@
       "repo": "krizaka/orochia",
       "url": "https://github.com/krizaka/orochia",
       "port": 3000,
-      "role": "Consumer Platform & 4K HLS Stream Player",
+      "role": "Consumer platform, creator studio & 4K HLS player",
       "stack": [
         "Next.js 14 App Router",
         "Drizzle ORM",
-        "Bunny.net Stream",
         "PostgreSQL 16",
-        "Redis 7"
+        "Redis 7",
+        "Bunny.net Stream"
       ],
-      "description": "Direct-to-Bunny edge streaming, 18 U.S.C. § 2257 age gates, dual-mode DevX storage, and tokenized creator tips."
+      "description": "Direct-to-Bunny streaming with short-lived signed URLs, server-side access control, gateway-confirmed unlocks and an idempotent double-entry ledger."
     },
     {
       "name": "orochia-admin",
       "repo": "krizaka/orochia-admin",
       "url": "https://github.com/krizaka/orochia-admin",
       "port": 3001,
-      "role": "Control Plane, 2257 Compliance Vault & Treasury",
+      "role": "Control plane: 2257 records, moderation & treasury",
       "stack": [
         "Next.js 14 App Router",
         "Tailwind CSS",
-        "Bunny Telemetry SDK",
         "Lucide Icons"
       ],
-      "description": "Primary producer KYC vault, single-click emergency worldwide CDN purge (<250ms), and 4-tier platform monetization."
+      "description": "Administrative console for performer records, content reports and platform revenue."
     },
     {
       "name": "orochia-design-system",
       "repo": "krizaka/orochia-design-system",
       "url": "https://github.com/krizaka/orochia-design-system",
       "port": 3002,
-      "role": "UX Design System & Tokens (Obsidian Velvet Noir)",
+      "role": "Design system & tokens (Obsidian Velvet Noir)",
       "stack": [
         "React 18",
         "Tailwind CSS",
-        "TypeScript",
-        "Micro-Interactions"
+        "TypeScript"
       ],
-      "description": "Obsidian Velvet Noir & Cyber-Sensual Luxury component library and live interactive showcase for adult creator platforms."
+      "description": "Component library and tokens shared by the Orochia applications."
     }
   ],
   "modules": [
     {
-      "id": "media-ingest",
-      "name": "Media Ingest & Bunny Stream Driver",
+      "id": "media",
+      "name": "Media ingest & delivery",
       "path": "packages/media",
       "features": [
-        "Tus Resumable Chunking",
-        "Direct Edge Storage Upload",
-        "HMAC SHA-256 Token Signing",
-        "HLS Adaptive Ladders"
+        "Tus resumable upload sessions",
+        "HMAC-signed HLS URLs (300 s)",
+        "Signed Bunny webhooks"
       ]
     },
     {
-      "id": "data-persistence",
-      "name": "Data Persistence & Ledger",
-      "path": "packages/db",
-      "tablesCount": 0,
-      "tables": []
-    },
-    {
-      "id": "creator-monetization",
-      "name": "Platform Treasury & Rake Engine",
-      "path": "apps/web/app/api/platform/treasury",
-      "streams": [
-        "10% Protocol Take Rate",
-        "$49 2257 Audit Onboarding Fee",
-        "$25/day Spotlight Auction",
-        "1.5% Express Fast-Lane Fee"
-      ]
-    },
-    {
-      "id": "compliance-vault",
-      "name": "18 U.S.C. § 2257 Federal Custodian Vault",
-      "path": "apps/web/app/legal/2257",
+      "id": "payments",
+      "name": "Payments & ledger",
+      "path": "packages/payments",
       "features": [
-        "Government ID Archival",
-        "Perjury Age Verification",
-        "Certified Federal Audit Dossier"
+        "Payment intents recorded before checkout",
+        "CCBill · Segpay · NowPayments · Stripe adapters",
+        "Constant-time webhook signatures, no lenient mode",
+        "Exactly-once settlement",
+        "Platform fee 10% (PLATFORM_FEE_PERCENTAGE)"
+      ]
+    },
+    {
+      "id": "data",
+      "name": "Data persistence",
+      "path": "packages/db",
+      "tablesCount": 11,
+      "tables": [
+        "compliance_reports",
+        "contacts",
+        "tips_ledger",
+        "payment_intents",
+        "payout_requests",
+        "playlists",
+        "playlist_items",
+        "users",
+        "profiles",
+        "videos",
+        "video_access_grants"
+      ]
+    },
+    {
+      "id": "compliance",
+      "name": "Compliance",
+      "path": "apps/web/app/api/legal/report",
+      "features": [
+        "18+ certification at registration",
+        "Creator verification before upload",
+        "Persisted content reports"
       ]
     }
   ],
   "apiEndpoints": [
     {
+      "method": "POST",
       "path": "/api/auth/login",
-      "methods": [
-        "POST"
-      ]
+      "access": "public",
+      "summary": "Password login."
     },
     {
+      "method": "POST",
       "path": "/api/auth/logout",
-      "methods": [
-        "POST"
-      ]
+      "access": "public",
+      "summary": ""
     },
     {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "access": "public · session-aware",
+      "summary": "The signed-in account, or `user: null`."
+    },
+    {
+      "method": "POST",
       "path": "/api/auth/register",
-      "methods": [
-        "POST"
-      ]
+      "access": "public",
+      "summary": "Creates a member or creator account (never an administrator) and signs it in."
     },
     {
+      "method": "GET",
       "path": "/api/bunny/analytics",
-      "methods": [
-        "GET"
-      ]
+      "access": "session · ADMIN",
+      "summary": "Catalogue statistics for administrators, from the database."
     },
     {
+      "method": "GET",
       "path": "/api/bunny/collections",
-      "methods": [
-        "GET",
-        "POST"
-      ]
+      "access": "public · session-aware",
+      "summary": "Public collections, plus the signed-in creator's own private ones."
     },
     {
+      "method": "POST",
+      "path": "/api/bunny/collections",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "Creates a collection owned by the signed-in creator."
+    },
+    {
+      "method": "GET",
+      "path": "/api/creator/payouts",
+      "access": "session · CREATOR",
+      "summary": "The signed-in creator's balance, lifetime earnings and payout history — from the ledger."
+    },
+    {
+      "method": "POST",
+      "path": "/api/creator/payouts",
+      "access": "session · CREATOR",
+      "summary": "Requests a payout; balances are checked and reserved atomically (requestPayout)."
+    },
+    {
+      "method": "GET",
+      "path": "/api/creators/[username]",
+      "access": "public",
+      "summary": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/feed",
+      "access": "public",
+      "summary": ""
+    },
+    {
+      "method": "GET",
       "path": "/api/health",
-      "methods": [
-        "GET"
-      ]
+      "access": "public",
+      "summary": ""
     },
     {
+      "method": "POST",
       "path": "/api/legal/report",
-      "methods": [
-        "POST"
-      ]
+      "access": "public · session-aware",
+      "summary": "Content reports."
     },
     {
+      "method": "GET",
+      "path": "/api/me/dashboard",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": ""
+    },
+    {
+      "method": "PUT",
+      "path": "/api/me/profile",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "Updates the signed-in user's own profile."
+    },
+    {
+      "method": "GET",
       "path": "/api/metrics",
-      "methods": [
-        "GET"
-      ]
+      "access": "bearer token",
+      "summary": "Prometheus metrics, behind a bearer token (METRICS_AUTH_TOKEN)."
     },
     {
+      "method": "GET",
+      "path": "/api/payments/gateways",
+      "access": "public",
+      "summary": "The gateways a buyer can pay through on this deployment."
+    },
+    {
+      "method": "GET",
       "path": "/api/platform/treasury",
-      "methods": [
-        "GET"
-      ]
+      "access": "session · ADMIN",
+      "summary": "Platform revenue, computed from the ledger only (administrators)."
     },
     {
+      "method": "POST",
       "path": "/api/uploads",
-      "methods": [
-        "POST"
-      ]
+      "access": "session · ...rule.roles",
+      "summary": ""
     },
     {
+      "method": "GET",
+      "path": "/api/videos/[id]/details",
+      "access": "public",
+      "summary": "A video's public metadata; the stream itself is only served by /stream after authorisation."
+    },
+    {
+      "method": "GET",
       "path": "/api/videos/[id]/stream",
-      "methods": [
-        "GET"
-      ]
+      "access": "public · session-aware",
+      "summary": "Authorises a viewer and returns a short-lived signed HLS URL (AGENTS.md §2.A)."
     },
     {
+      "method": "POST",
       "path": "/api/videos/create-upload-session",
-      "methods": [
-        "POST"
-      ]
+      "access": "public · session-aware",
+      "summary": ""
     },
     {
+      "method": "POST",
       "path": "/api/videos/unlock-video",
-      "methods": [
-        "POST"
-      ]
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Starts the purchase of a video unlock."
     },
     {
+      "method": "POST",
       "path": "/api/webhooks/bunny",
-      "methods": [
-        "POST"
-      ]
+      "access": "signed webhook",
+      "summary": ""
+    },
+    {
+      "method": "POST",
+      "path": "/api/webhooks/payments/[gateway]",
+      "access": "signed webhook",
+      "summary": "Gateway payment notifications."
     }
   ]
 }

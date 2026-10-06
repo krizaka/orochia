@@ -5,25 +5,38 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     name: Trigger DigitalOcean Deployment
     runs-on: ubuntu-latest
+    env:
+      DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      DIGITALOCEAN_APP_ID: ${{ secrets.DIGITALOCEAN_APP_ID }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Deployment configured?
+        id: configured
+        run: |
+          if [ -n "$DIGITALOCEAN_ACCESS_TOKEN" ] && [ -n "$DIGITALOCEAN_APP_ID" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::DIGITALOCEAN_ACCESS_TOKEN / DIGITALOCEAN_APP_ID are not set — deployment skipped."
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.configured.outputs.enabled == 'true'
 
       - name: Install doctl
+        if: steps.configured.outputs.enabled == 'true'
         uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: Deploy App Spec
+        if: steps.configured.outputs.enabled == 'true'
         run: |
-          if [ -n "${{ secrets.DIGITALOCEAN_APP_ID }}" ]; then
-            echo "Updating existing DigitalOcean app..."
-            doctl apps update ${{ secrets.DIGITALOCEAN_APP_ID }} --spec deploy/digitalocean/app-spec.yaml
-            doctl apps create-deployment ${{ secrets.DIGITALOCEAN_APP_ID }}
-          else
-            echo "DIGITALOCEAN_APP_ID secret is not set. Skipping automated deployment trigger."
-          fi
+          doctl apps update "$DIGITALOCEAN_APP_ID" --spec deploy/digitalocean/app-spec.yaml
+          doctl apps create-deployment "$DIGITALOCEAN_APP_ID" --wait

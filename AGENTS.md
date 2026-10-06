@@ -48,6 +48,24 @@
 - Supported payment rails include high-risk / adult-friendly processors: **CCBill**, **Segpay**, and non-custodial / decentralized **Crypto (USDT-TRC20, BTC, ETH)** alongside standard fallback processors.
 - All webhook handlers must implement constant-time signature verification (`verifyWebhookSignature`).
 
+### D2. Payments are confirmed by the gateway, never by the client
+- Unlock and tip requests record a `payment_intents` row and return the gateway's checkout URL. Only
+  `/api/webhooks/payments/[gateway]` — after verifying the signature over the raw body — settles an
+  intent (`settlePaymentIntent`), exactly once. Creator, sender and video come from the intent, never
+  from the webhook payload.
+- Gateway adapters have **no lenient mode**: a missing signature is a rejected webhook in every environment.
+- A gateway is offered only when all its credentials are configured; there are no placeholder keys.
+
+### D3. Configuration fails closed
+- Secrets are read through `apps/web/lib/env.ts`: mandatory in production (503 + logged name when missing),
+  development defaults otherwise. `OROCHIA_DEMO_MODE` is ignored in production.
+- No screen renders showcase data: pages read the database through `apps/web/lib/queries.ts`, and an
+  empty platform renders empty states.
+
+### D4. Compliance records are data
+- Content reports are persisted in `compliance_reports` before being acknowledged.
+- Creators open upload sessions only once verified (`users.is_verified`, 2257 records).
+
 ### E. Deterministic Design & CSS Invariants
 - `app/globals.css` must always contain the explicit `@config "../tailwind.config.js";` directive to guarantee monorepo Tailwind resolution across Next.js workers.
 - `tailwind.config.js` content paths must use resolved paths (`path.join(__dirname, ...)`).
@@ -102,7 +120,7 @@ products/orochia/
 
 ## 5. Definition of Done (DoD)
 
-1. `npm run build` exits with code 0 (all routes statically generated or properly dynamic).
+1. `npm run lint`, `npm run typecheck`, `npm test` and `npm run build` exit with code 0; `npm run docs:generate -- --check` is up to date.
 2. TypeScript compiles with 0 errors (`skipLibCheck: true`).
 3. Zero hardcoded credentials or API keys (all read from environment variables).
 4. No direct video streaming bypasses (all media verified through access grants and signed tokens).

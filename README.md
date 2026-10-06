@@ -16,7 +16,7 @@
 - **Admin Control Plane & 2257 Vault**: [`krizaka/orochia-admin`](https://github.com/krizaka/orochia-admin) (Port 3001)
 - **Design System & Tokens**: [`krizaka/orochia-design-system`](https://github.com/krizaka/orochia-design-system) (Port 3002)
 
-[Explore Architecture](docs/ARCHITECTURE.md) • [Media Pipeline](docs/MEDIA_PIPELINE.md) • [Market Analysis & Lore](docs/MARKET_ANALYSIS_AND_LORE.md) • [Deployment Guide](docs/DEPLOYMENT.md)
+[Architecture](docs/ARCHITECTURE.md) • [API](docs/API_CONTRACTS.md) • [Media Pipeline](docs/MEDIA_PIPELINE.md) • [Deployment](docs/DEPLOYMENT.md) • [Security](SECURITY.md)
 
 </div>
 
@@ -24,13 +24,13 @@
 
 ## 🌟 Key Architectural Highlights
 
-- ⚡ **Dual-Mode DevX Storage**: Zero-latency local filesystem uploads (`public/uploads`) during development; auto-switches to Bunny Edge Storage and Bunny Stream Tus protocol in staging and production.
-- 📺 **Bunny.net Native Feature Suite**: Video libraries, curated series collections, adaptive 4K HLS ladders (AV1, VP9, H.264), global 114 PoP cache telemetry, and emergency sub-250ms CDN cache invalidation.
-- 🛡️ **18 U.S.C. § 2257 Performer Compliance**: Encrypted primary producer government ID archives, federal custodian record locations, and certified audit log generation.
-- 💰 **4-Tier Platform Administrator Monetization**: 10% protocol rake, $49 federal onboarding audit fees, Sanctuary Spotlight homepage auctions ($25/day), and 1.5% instant crypto/fiat payout fees.
-- 🔒 **Token-Authenticated HLS Streams**: Signed HMAC-SHA256 playlist tokens prevent hotlinking, URL scraping, and unauthorized downloading of paywalled content.
-- 💳 **Adult-Compliant Payment Rails**: Out-of-the-box adapters for CCBill Dynamic Pricing, Segpay One-Time Billing, and NowPayments / BTCPay Crypto with atomic double-entry bookkeeping.
-- 🚀 **1-Click DigitalOcean Deploy**: Native `app-spec.yaml` configured for DigitalOcean App Platform with managed PostgreSQL and Redis clusters.
+- 📺 **Direct-to-CDN media**: uploads go straight to Bunny Stream over Tus; playback uses HMAC-signed HLS URLs that expire after 5 minutes. Video never passes through the app servers.
+- 🔐 **Server-side access control**: every play is authorised against the video's visibility — public, contacts only, or unlocked — before a URL is signed.
+- 💳 **Gateway-confirmed payments**: an unlock records a payment intent and sends the buyer to CCBill, Segpay, NowPayments (crypto) or Stripe; access is granted only when the gateway's signed webhook confirms it, exactly once.
+- 📒 **Double-entry ledger**: platform fee and creator credit always add up to the gross; balances are computed from the ledger; concurrent payout requests are serialised.
+- 🛡️ **18 U.S.C. § 2257 & safety**: 18+ certification at sign-up, creator verification before upload, persisted content reports (non-consensual content, suspected minors, DMCA).
+- 🚦 **Fail-closed configuration**: production refuses to run on missing secrets and has no demo mode; security headers (HSTS, frame denial, nosniff) on every response.
+- 🚀 **Deployable**: multi-stage Docker image with a bundled migrator, DigitalOcean App Platform spec with a PRE_DEPLOY migration job, CI with lint, typecheck, tests, build and migrations on PostgreSQL 16.
 
 ---
 
@@ -115,26 +115,20 @@ orochia
 
 ### 2. Boot Local Environment
 ```bash
-# Clone the repository
-git clone https://github.com/krizaka/orochia.git
-cd orochia
-
-# Start PostgreSQL 16 & Redis 7 containers
-docker compose -f deploy/docker/docker-compose.dev.yml up -d
-
-# Copy environment template
-cp .env.example .env
-
-# Install monorepo dependencies
+git clone https://github.com/krizaka/orochia.git && cd orochia
+docker compose -f deploy/docker/docker-compose.dev.yml up -d   # PostgreSQL 16 + Redis 7
+cp .env.example .env                                             # OROCHIA_DEMO_MODE=true locally
 npm install
-
-# Run database migrations and seed demo data
-npm run db:generate
-npm run db:migrate
-npm run db:seed
-
-# Launch Next.js development server
+npm run db:migrate && npm run db:seed
 npm run dev
+```
+
+With `OROCHIA_DEMO_MODE=true` (ignored in production) the login page offers the seeded creator and
+patron accounts, and unlocks settle immediately when no payment gateway is configured.
+
+### 3. Quality gates
+```bash
+npm run lint && npm run typecheck && npm test && npm run build
 ```
 
 Visit [http://localhost:3000](http://localhost:3000) to explore the platform.

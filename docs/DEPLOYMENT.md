@@ -1,77 +1,69 @@
-# 🚀 Orochia Deployment & Operations Guide
+# Orochia — Deployment & Operations
 
-Orochia is designed for zero-friction deployment on **DigitalOcean App Platform** or self-hosted virtual machines (Droplets) via Docker Compose.
+## Requirements
 
----
+| Variable | Required in production | Notes |
+| :--- | :---: | :--- |
+| `NODE_ENV=production` | ✓ | Enables strict configuration: no defaults, no demo mode. |
+| `NEXT_PUBLIC_APP_URL` | ✓ | Public origin, used for payment return URLs and IPN callbacks. |
+| `SESSION_SECRET` | ✓ | ≥ 32 random characters (`openssl rand -hex 32`). |
+| `DATABASE_URL` | ✓ | PostgreSQL 16. |
+| `REDIS_URL` | recommended | Rate limiting; when Redis is unreachable limits fail open (logged). |
+| `BUNNY_STREAM_API_KEY`, `BUNNY_STREAM_LIBRARY_ID`, `BUNNY_STREAM_HOSTNAME`, `BUNNY_STREAM_TOKEN_AUTH_KEY`, `BUNNY_WEBHOOK_SECRET` | ✓ | Video library, edge token auth and encode webhooks. |
+| `STORAGE_DRIVER=bunny`, `BUNNY_STORAGE_API_KEY`, `BUNNY_STORAGE_ZONE`, `BUNNY_PULL_ZONE_HOSTNAME` | ✓ | Avatars, thumbnails, 2257 documents (container disks are ephemeral). |
+| `METRICS_AUTH_TOKEN` | ✓ | Bearer token for `/api/metrics`. |
+| Gateway credentials | at least one | See `.env.example`. A gateway is offered only when **all** its variables are set. |
 
-## 1. DigitalOcean App Platform (Recommended)
+A missing required value makes the requests that need it answer **503** and logs the variable name — the
+platform never runs on a placeholder secret.
 
-### 1-Click App Spec Deployment
-1. Install and authenticate `doctl`:
-   ```bash
-   doctl auth init
-   ```
-2. Provision the cluster using our production app spec:
-   ```bash
-   doctl apps create --spec deploy/digitalocean/app-spec.yaml
-   ```
-3. Set your secret environment variables in the DigitalOcean console:
-   - `BUNNY_STREAM_API_KEY`
-   - `BUNNY_STREAM_TOKEN_AUTH_KEY`
-   - `BUNNY_WEBHOOK_SECRET`
-   - `SESSION_SECRET`
-   - `CCBILL_SALT` / `SEGPAY_SECRET_KEY` / `NOWPAYMENTS_API_KEY`
+## Gateway webhooks
 
----
+| Gateway | Endpoint | Signature header |
+| :--- | :--- | :--- |
+| CCBill | `/api/webhooks/payments/ccbill` | `X-CCBill-Signature` (HMAC-SHA256 of the raw body, `CCBILL_WEBHOOK_SECRET`) |
+| Segpay | `/api/webhooks/payments/segpay` | `X-Segpay-Signature` (HMAC-SHA256, `SEGPAY_SECRET_KEY`) |
+| NowPayments | `/api/webhooks/payments/crypto` | `x-nowpayments-sig` (HMAC-SHA512 of the key-sorted body, `NOWPAYMENTS_IPN_SECRET`) |
+| Stripe | `/api/webhooks/payments/stripe` | `Stripe-Signature` (v1, 300 s tolerance, `STRIPE_WEBHOOK_SECRET`) — events `checkout.session.*` |
+| Bunny Stream | `/api/webhooks/bunny` | `BunnyCDN-Signature` (HMAC-SHA256, `BUNNY_WEBHOOK_SECRET`) |
 
-## 2. Self-Hosted Docker Compose (Single Droplet)
+## DigitalOcean App Platform
 
-### Production Stack with Automatic SSL (Caddy)
 ```bash
-# 1. Clone repository
-git clone https://github.com/krizaka/orochia.git
-cd orochia
+doctl apps create --spec deploy/digitalocean/app-spec.yaml
+```
 
-# 2. Configure production environment
-cp .env.example .env
-nano .env # Set DOMAIN, secrets, and database credentials
+The spec builds `deploy/docker/Dockerfile` and runs a **PRE_DEPLOY job** (`node migrate.cjs`) that applies
+`packages/db/drizzle` before every release. Set the secrets listed above in the app's settings. The
+`Deploy to DigitalOcean` workflow redeploys on `main` once `DIGITALOCEAN_ACCESS_TOKEN` and
+`DIGITALOCEAN_APP_ID` repository secrets exist (it is skipped, not failed, until then).
 
-# 3. Launch stack
+## Self-hosted (Docker Compose + Caddy)
+
+```bash
+cp .env.example .env          # fill every production value
 docker compose -f deploy/docker/docker-compose.prod.yml up -d --build
-
-# 4. Run database migrations
-docker compose -f deploy/docker/docker-compose.prod.yml exec web npm run db:migrate
+docker compose -f deploy/docker/docker-compose.prod.yml exec web node migrate.cjs
 ```
 
----
-
-## 3. Local Development Quickstart
+## Local development
 
 ```bash
-# 1. Launch PostgreSQL and Redis containers
 docker compose -f deploy/docker/docker-compose.dev.yml up -d
-
-# 2. Install workspace dependencies
+cp .env.example .env          # OROCHIA_DEMO_MODE=true for the seeded demo accounts
 npm install
-
-# 3. Push schema to local database
-npm run db:generate
-npm run db:migrate
-
-# 4. Seed development creators and demo videos
-npm run db:seed
-
-# 5. Start development server
-npm run dev
+npm run db:migrate && npm run db:seed
+npm run dev                    # http://localhost:3000 — health: /api/health
 ```
 
-Navigate to `http://localhost:3000` to access the platform.
-Navigate to `http://localhost:3000/api/health` to verify database and Redis connectivity.
+## Quality gates
 
----
+```bash
+npm run lint        # ESLint (Next) + package typecheck
+npm run typecheck   # web app types
+npm test            # unit tests (auth, env, payments, media, passwords)
+npm run build       # production build
+npm run docs:generate -- --check
+```
 
-## 4. Payment Gateway Verification
-
-- **CCBill Sandbox**: Use client account `950000`, subaccount `0000`, test cards provided in CCBill Developer Portal.
-- **Segpay Staging**: Point postbacks to `https://your-domain.com/api/webhooks/segpay`.
-- **Crypto (NowPayments)**: Enable Instant Payment Notifications (IPN) pointing to your domain.
+CI runs the same gates plus the bundled migrator and the seed against PostgreSQL 16.

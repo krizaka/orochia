@@ -53,11 +53,11 @@ graph TD
 
     UserBrowser -->|4. Pull 4K HLS Segments with Token| BunnyEdge
 
-    UserBrowser -->|5. Tip / Unlock Video| NextApp
-    NextApp --> CCBill
-    NextApp --> Segpay
-    NextApp --> CryptoGW
-    CCBill -.->|Webhook Postback| NextApp
+    UserBrowser -->|5. Unlock: payment intent + checkout URL| NextApp
+    UserBrowser -->|6. Pays on the gateway's hosted page| CCBill
+    CCBill -.->|7. Signed webhook| NextApp
+    Segpay -.->|Signed webhook| NextApp
+    CryptoGW -.->|Signed IPN| NextApp
     NextApp --> LedgerService
     LedgerService --> Postgres
 ```
@@ -106,9 +106,41 @@ stateDiagram-v2
 
 ---
 
-## 4. Financial Ledger Invariants
+## 4. Payments — intents, checkout, signed settlement
+
+The client is never trusted to say it paid.
+
+1. `POST /api/videos/unlock-video` validates the video and amount, records a **payment intent**
+   (`payment_intents`: buyer, creator, video, amount, gateway) and returns the gateway's
+   **checkout URL** (CCBill FlexForms, Segpay hosted page, NowPayments invoice, Stripe Checkout).
+   The intent id travels with the checkout as the gateway's reference.
+2. The gateway calls `POST /api/webhooks/payments/{ccbill|segpay|crypto|stripe}`. The signature is
+   verified over the **raw body** in constant time (Stripe: timestamp tolerance 300 s). An unsigned
+   or forged call is refused (401) — there is no lenient mode in any environment.
+3. The webhook says only *whether* and *how much* was paid. Who pays, who is paid and for which video
+   come from the intent row, locked `FOR UPDATE` during settlement. An underpayment is not settled;
+   a replayed webhook finds the intent `SUCCEEDED` and changes nothing; a unique index on
+   `(gateway, gateway_transaction_ref)` for creator credits is the last line of defence.
+4. Settlement writes the ledger credit, the counters and the `video_access_grants` row in the same
+   transaction. The viewer's next `/stream` call is authorised.
+
+A gateway is offered only when all of its credentials are configured (`configuredGateways()`); there
+are no placeholder keys. In **demo mode** (`OROCHIA_DEMO_MODE=true`, never in production) with no
+gateway configured, the intent is settled immediately so the showcase works without merchant accounts.
+
+---
+
+## 5. Financial Ledger Invariants
 
 The tips engine operates on double-entry principles:
-1. **Gross Invariance**: For every tip of amount $G$, `PlatformFee = round(G * FeePct)` and `CreatorCredit = G - PlatformFee`.
-2. **Transaction Atomicity**: The tip debit, credit, profile stats update, video counter update, and `VideoAccessGrant` issuance are enclosed within a single PostgreSQL transaction (`db.transaction`).
-3. **Escrow Solvency**: Payout disbursements cannot exceed `sum(net_amount_cents) - sum(payout_requests.amount_cents)`. Concurrency locks prevent double-spend during simultaneous payout requests.
+1. **Gross Invariance**: For every payment of amount $G$, `PlatformFee = round(G * FeePct)` and `CreatorCredit = G - PlatformFee` (they always add up to $G$).
+2. **Transaction Atomicity**: the credit, the profile and video counters and the `VideoAccessGrant` are written in one PostgreSQL transaction, together with the intent's `SUCCEEDED` status.
+3. **Escrow Solvency**: available balance = `sum(CREATOR_CREDIT net)` − `sum(payout_requests not FAILED)`. Payout ledger rows journal the same payouts and are not subtracted twice. Concurrent payout requests of one creator are serialised by `pg_advisory_xact_lock`.
+
+---
+
+## 6. Compliance
+
+- Registration requires an explicit 18+ certification and acceptance of the terms.
+- A creator can open an upload session only once their 18 U.S.C. § 2257 records are verified (`users.is_verified`).
+- Content reports (non-consensual content, suspected minors, DMCA…) are persisted in `compliance_reports` before they are acknowledged; the ticket id returned is the row id.
