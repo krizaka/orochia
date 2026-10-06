@@ -1,0 +1,29 @@
+name: Deploy to DigitalOcean App Platform
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Trigger DigitalOcean Deployment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Deploy App Spec
+        run: |
+          if [ -n "${{ secrets.DIGITALOCEAN_APP_ID }}" ]; then
+            echo "Updating existing DigitalOcean app..."
+            doctl apps update ${{ secrets.DIGITALOCEAN_APP_ID }} --spec deploy/digitalocean/app-spec.yaml
+            doctl apps create-deployment ${{ secrets.DIGITALOCEAN_APP_ID }}
+          else
+            echo "DIGITALOCEAN_APP_ID secret is not set. Skipping automated deployment trigger."
+          fi

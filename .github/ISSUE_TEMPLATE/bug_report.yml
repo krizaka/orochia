@@ -1,0 +1,40 @@
+name: Bug Report
+description: Create a report to help us improve Orochia
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue in Orochia!
+  - type: input
+    id: version
+    attributes:
+      label: Orochia Version / Commit SHA
+      description: What version or commit hash are you running?
+      placeholder: v1.0.0 / commit abc1234
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description of the Bug
+      description: Clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Step-by-step instructions to reproduce the issue.
+      placeholder: |
+        1. Navigate to '/creator/upload'
+        2. Select video file
+        3. Observe error ...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Server / Browser Logs
+      description: Relevant logs or error tracebacks.
+      render: shell

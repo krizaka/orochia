@@ -1,0 +1,30 @@
+{
+  "name": "orochia-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Adult-Friendly Open-Source Video & Creator Community Platform",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/web",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "test": "npm run test --workspaces --if-present",
+    "db:generate": "npm run generate --workspace=packages/db",
+    "db:migrate": "npm run migrate --workspace=packages/db",
+    "db:seed": "npm run seed --workspace=packages/db"
+  },
+  "keywords": [
+    "video-streaming",
+    "creator-economy",
+    "bunny-stream",
+    "hls",
+    "nextjs",
+    "drizzle-orm",
+    "open-source"
+  ],
+  "author": "Krizaka Core Team",
+  "license": "Apache-2.0"
+}
