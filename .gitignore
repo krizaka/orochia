@@ -36,3 +36,5 @@ pnpm-debug.log*
 data/
 postgres_data/
 redis_data/
+apps/web/public/uploads/*
+!apps/web/public/uploads/.gitkeep

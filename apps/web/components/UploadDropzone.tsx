@@ -15,6 +15,9 @@ export function UploadDropzone() {
   const [progress, setProgress] = useState(0);
   const [uploadComplete, setUploadComplete] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [storageDriver, setStorageDriver] = useState<"local" | "bunny">("local");
+  const [selectedCollection, setSelectedCollection] = useState("col-tokyo-4k");
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
 
   // Mandatory Legal Attestation states
   const [certifyAdultConsent, setCertifyAdultConsent] = useState(false);
@@ -47,7 +50,40 @@ export function UploadDropzone() {
     setProgress(0);
 
     try {
-      // 1. Request direct Bunny Tus upload session from our API
+      if (storageDriver === "local") {
+        // Local DevX folder upload
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("category", "videos");
+        formData.append("title", title);
+
+        let curr = 15;
+        setProgress(curr);
+        const timer = setInterval(() => {
+          curr = Math.min(curr + 25, 90);
+          setProgress(curr);
+        }, 150);
+
+        const res = await fetch("/api/uploads", {
+          method: "POST",
+          body: formData,
+        });
+
+        clearInterval(timer);
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Local upload failed");
+        }
+
+        setProgress(100);
+        setUploadedUrl(data.data.url);
+        setIsUploading(false);
+        setUploadComplete(true);
+        return;
+      }
+
+      // Production / Staging: Request direct Bunny Tus upload session from our API
       const minTipAmountCents =
         visibility === "TIPPED_UNLOCKED" ? Math.round(parseFloat(minTipAmountDollars || "0") * 100) : 0;
 
@@ -199,6 +235,62 @@ export function UploadDropzone() {
                 </span>
               </div>
             )}
+          </div>
+
+          {/* Storage Driver & DevX Selector */}
+          <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
+            <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2 block">
+              Storage Engine (DevX Local vs Production Bunny)
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setStorageDriver("local")}
+                className={`flex items-start gap-3 rounded-xl p-3 border text-left transition-all ${
+                  storageDriver === "local"
+                    ? "border-violet-500 bg-violet-600/10 text-white"
+                    : "border-white/5 bg-zinc-900 text-zinc-400 hover:text-white"
+                }`}
+              >
+                <div className="p-2 rounded-lg bg-violet-600/20 text-violet-400 mt-0.5">📁</div>
+                <div>
+                  <p className="text-xs font-bold text-white">Local Dev Folder</p>
+                  <p className="text-[11px] text-zinc-400">Stores in public/uploads/videos with zero external latency</p>
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setStorageDriver("bunny")}
+                className={`flex items-start gap-3 rounded-xl p-3 border text-left transition-all ${
+                  storageDriver === "bunny"
+                    ? "border-violet-500 bg-violet-600/10 text-white"
+                    : "border-white/5 bg-zinc-900 text-zinc-400 hover:text-white"
+                }`}
+              >
+                <div className="p-2 rounded-lg bg-fuchsia-600/20 text-fuchsia-400 mt-0.5">🐰</div>
+                <div>
+                  <p className="text-xs font-bold text-white">Bunny.net Stream Edge</p>
+                  <p className="text-[11px] text-zinc-400">Direct TUS upload & automated 4K HLS adaptive transcoding</p>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          {/* Bunny Collection Selector */}
+          <div>
+            <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block">
+              Organize into Bunny Video Collection
+            </label>
+            <select
+              value={selectedCollection}
+              onChange={(e) => setSelectedCollection(e.target.value)}
+              className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-xs text-white focus:border-violet-500 focus:outline-none"
+            >
+              <option value="col-tokyo-4k">Tokyo Neon Nights [Bunny Collection col-tokyo-4k]</option>
+              <option value="col-vault-uncut">Velvet Private Vault [Bunny Collection col-vault-uncut]</option>
+              <option value="col-acoustic-noir">Midnight Noir Acoustic Sessions [Bunny Collection col-acoustic-noir]</option>
+              <option value="standalone">Standalone Stream (Independent)</option>
+            </select>
           </div>
 
           {/* Video Metadata Form */}

@@ -219,6 +219,30 @@ function DashboardContent() {
           <span>Tips Ledger</span>
         </button>
 
+        <button
+          onClick={() => setActiveTab("collections")}
+          className={`flex items-center gap-2 rounded-xl px-4 py-2.5 transition-all ${
+            activeTab === "collections"
+              ? "bg-violet-600 text-white shadow-md shadow-violet-600/25"
+              : "text-zinc-400 hover:text-white hover:bg-zinc-900"
+          }`}
+        >
+          <Sparkles className="h-3.5 w-3.5 text-fuchsia-400" />
+          <span>Bunny Collections</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("admin_treasury")}
+          className={`flex items-center gap-2 rounded-xl px-4 py-2.5 transition-all ${
+            activeTab === "admin_treasury"
+              ? "bg-violet-600 text-white shadow-md shadow-violet-600/25"
+              : "text-zinc-400 hover:text-white hover:bg-zinc-900"
+          }`}
+        >
+          <Shield className="h-3.5 w-3.5 text-emerald-400" />
+          <span>Admin Treasury</span>
+        </button>
+
         {isCreator && (
           <Link
             href="/creator/payouts"
@@ -517,6 +541,167 @@ function DashboardContent() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Bunny Collections */}
+      {activeTab === "collections" && (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-bold text-white font-display">Bunny.net Video Collections & Vaults</h2>
+              <p className="text-xs text-zinc-400">
+                Organize episodic series, VIP patron vaults, and private archives with Bunny Stream Library API
+              </p>
+            </div>
+            <Link
+              href="/creator/upload"
+              className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-violet-600/30 hover:bg-violet-500"
+            >
+              <Upload className="h-3.5 w-3.5" />
+              <span>Add Stream to Collection</span>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="rounded-3xl border border-white/10 bg-zinc-900/60 p-5">
+              <div className="flex items-center justify-between mb-3">
+                <span className="rounded-md border border-violet-500/30 bg-violet-500/10 px-2 py-0.5 text-[10px] font-bold text-violet-300">
+                  Bunny col-tokyo-4k
+                </span>
+                <span className="text-[10px] text-emerald-400 font-mono">Public Series</span>
+              </div>
+              <h3 className="text-base font-bold text-white">Tokyo Neon Nights</h3>
+              <p className="text-xs text-zinc-400 mt-1 mb-4">
+                Official 4K episodic documentary on Tokyo underground nightlife and art lounges.
+              </p>
+              <div className="flex items-center justify-between border-t border-white/5 pt-3 text-xs font-mono text-zinc-400">
+                <span>6 Episodes</span>
+                <span className="text-violet-400">Adaptive 4K HLS</span>
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-white/10 bg-zinc-900/60 p-5">
+              <div className="flex items-center justify-between mb-3">
+                <span className="rounded-md border border-fuchsia-500/30 bg-fuchsia-500/10 px-2 py-0.5 text-[10px] font-bold text-fuchsia-300">
+                  Bunny col-vault-uncut
+                </span>
+                <span className="text-[10px] text-amber-400 font-mono">Paywalled Vault</span>
+              </div>
+              <h3 className="text-base font-bold text-white">Velvet Private Vault</h3>
+              <p className="text-xs text-zinc-400 mt-1 mb-4">
+                Exclusive unreleased performance recordings and private patron streams with token HMAC.
+              </p>
+              <div className="flex items-center justify-between border-t border-white/5 pt-3 text-xs font-mono text-zinc-400">
+                <span>4 Private Streams</span>
+                <span className="text-emerald-400">$10 Unlock Bundle</span>
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-white/10 bg-zinc-900/60 p-5">
+              <div className="flex items-center justify-between mb-3">
+                <span className="rounded-md border border-blue-500/30 bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold text-blue-300">
+                  Bunny col-acoustic-noir
+                </span>
+                <span className="text-[10px] text-violet-400 font-mono">Audio & 4K</span>
+              </div>
+              <h3 className="text-base font-bold text-white">Midnight Noir Acoustic Sessions</h3>
+              <p className="text-xs text-zinc-400 mt-1 mb-4">
+                Late-night studio acoustics with intimate vocals and spatial audio.
+              </p>
+              <div className="flex items-center justify-between border-t border-white/5 pt-3 text-xs font-mono text-zinc-400">
+                <span>3 Streams</span>
+                <span className="text-violet-400">98 Mins Total</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Admin Treasury & Monetization */}
+      {activeTab === "admin_treasury" && (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-300 mb-2">
+                <Shield className="h-3 w-3" />
+                <span>Orochia Protocol Administration & Treasury</span>
+              </div>
+              <h2 className="text-xl font-bold text-white font-display">Platform Monetization & Revenue Ledger</h2>
+              <p className="text-xs text-zinc-400">
+                10% protocol rake, performer 2257 compliance desk fees, and sponsored creator spotlights
+              </p>
+            </div>
+            <a
+              href="http://localhost:3001"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-emerald-600/30 hover:scale-105 transition-all"
+            >
+              <span>Launch Orochia-Admin App</span>
+              <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
+              <span className="text-[11px] font-mono text-zinc-400">Platform Protocol Rake</span>
+              <p className="text-2xl font-black text-white font-display mt-1">10.0%</p>
+              <span className="text-[10px] text-zinc-500">Auto-deducted on tips</span>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
+              <span className="text-[11px] font-mono text-zinc-400">Protocol Fee Revenue</span>
+              <p className="text-2xl font-black text-emerald-400 font-mono mt-1">$4,328.00</p>
+              <span className="text-[10px] text-emerald-500">From $43.2K Gross GMV</span>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
+              <span className="text-[11px] font-mono text-zinc-400">2257 Performer Audits</span>
+              <p className="text-2xl font-black text-violet-400 font-mono mt-1">$1,470.00</p>
+              <span className="text-[10px] text-zinc-500">30 Verified Creators ($49)</span>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
+              <span className="text-[11px] font-mono text-zinc-400">Sanctuary Spotlight Ads</span>
+              <p className="text-2xl font-black text-fuchsia-400 font-mono mt-1">$850.00</p>
+              <span className="text-[10px] text-zinc-500">34 Active Boost Days</span>
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-zinc-900/40 p-6">
+            <h3 className="text-sm font-bold text-white mb-4">Platform Revenue Stream Specifications</h3>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between rounded-xl bg-zinc-900/80 p-3.5 border border-white/5 text-xs">
+                <div>
+                  <span className="font-bold text-white">Stream 1: Direct Content Unlock Rake (10%)</span>
+                  <p className="text-[11px] text-zinc-400">Automatic split at CCBill/Segpay/Crypto checkout. 90% direct to creator, 10% to protocol treasury.</p>
+                </div>
+                <span className="font-mono font-bold text-emerald-400">+$4,328.00</span>
+              </div>
+
+              <div className="flex items-center justify-between rounded-xl bg-zinc-900/80 p-3.5 border border-white/5 text-xs">
+                <div>
+                  <span className="font-bold text-white">Stream 2: 18 U.S.C. § 2257 Performer Custodian Audit Fee</span>
+                  <p className="text-[11px] text-zinc-400">Mandatory verification fee charged to creators for legal custodian record-keeping and KYC audit ($49 one-time).</p>
+                </div>
+                <span className="font-mono font-bold text-emerald-400">+$1,470.00</span>
+              </div>
+
+              <div className="flex items-center justify-between rounded-xl bg-zinc-900/80 p-3.5 border border-white/5 text-xs">
+                <div>
+                  <span className="font-bold text-white">Stream 3: Sanctuary Spotlight Promoted Slots</span>
+                  <p className="text-[11px] text-zinc-400">Daily auction for premium placement on homepage hero & trending top 3 streams.</p>
+                </div>
+                <span className="font-mono font-bold text-emerald-400">+$850.00</span>
+              </div>
+
+              <div className="flex items-center justify-between rounded-xl bg-zinc-900/80 p-3.5 border border-white/5 text-xs">
+                <div>
+                  <span className="font-bold text-white">Stream 4: Instant Crypto Payout Fast-Lane Fee (1.5%)</span>
+                  <p className="text-[11px] text-zinc-400">Convenience fee charged for instant on-chain USDT/BTC settlement instead of standard 7-day batch.</p>
+                </div>
+                <span className="font-mono font-bold text-emerald-400">+$395.00</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
