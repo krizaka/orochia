@@ -11,6 +11,7 @@ export * from "./contacts";
 export * from "./videos";
 export * from "./playlists";
 export * from "./ledger";
+export * from "./compliance";
 
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({

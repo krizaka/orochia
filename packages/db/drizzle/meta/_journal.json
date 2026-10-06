@@ -8,6 +8,13 @@
       "when": 1791316760038,
       "tag": "0000_minor_scarlet_spider",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791320910229,
+      "tag": "0001_payments_and_compliance",
+      "breakpoints": true
     }
   ]
 }

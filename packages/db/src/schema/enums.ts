@@ -46,3 +46,19 @@ export const paymentGatewayEnum = pgEnum("payment_gateway", [
   "CRYPTO",
   "STRIPE",
 ]);
+
+export const paymentIntentStatusEnum = pgEnum("payment_intent_status", [
+  "PENDING",
+  "SUCCEEDED",
+  "FAILED",
+]);
+
+export const reportReasonEnum = pgEnum("report_reason", [
+  "NON_CONSENSUAL",
+  "UNDERAGE",
+  "DMCA_COPYRIGHT",
+  "TERMS_VIOLATION",
+  "FRAUD_SCAM",
+]);
+
+export const reportStatusEnum = pgEnum("report_status", ["OPEN", "IN_REVIEW", "RESOLVED"]);
