@@ -108,7 +108,7 @@ const VIDEOS: SeedVideo[] = [
   {
     bunnyVideoId: "7f2b1c88-4d3e-4a6f-8b9c-0d1e2f3a4b5c", creator: "miasterling", title: "Midnight Noir — Acoustic Lounge Session",
     description: "Three songs, one microphone, no second take.", visibility: "PUBLIC", duration: 1980,
-    thumb: "photo-1571266028243-d220c6a8b0e8", views: 5210, tags: ["acoustic", "live", "lounge"],
+    thumb: "photo-1511671782779-c97d3d27a1d4", views: 5210, tags: ["acoustic", "live", "lounge"],
   },
   {
     bunnyVideoId: "8a3c2d99-5e4f-4b7a-9c0d-1e2f3a4b5c6d", creator: "miasterling", title: "Rehearsal Tapes — Contacts Only",
