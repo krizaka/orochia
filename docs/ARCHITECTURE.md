@@ -8,12 +8,12 @@ Orochia is an adult-friendly, high-performance open-source video streaming and c
 
 ```mermaid
 graph TD
-    subgraph Client Tier
+    subgraph CLIENT["Client tier"]
         UserBrowser[Viewer Browser / HLS Player]
         CreatorBrowser[Creator Studio / Tus Uploader]
     end
 
-    subgraph Orochia Core Engine [apps/web on DigitalOcean]
+    subgraph CORE["Orochia core · apps/web on DigitalOcean"]
         NextApp[Next.js App Router Core]
         AuthGuard[RBAC & Session Guard]
         AccessResolver[Granular Access Matrix]
@@ -22,18 +22,18 @@ graph TD
         WebhookReceiver[Bunny Webhook Ingestion]
     end
 
-    subgraph Data & Cache Tier
+    subgraph DATA["Data & cache tier"]
         Postgres[(Managed PostgreSQL 16)]
         RedisCache[(Managed Redis 7)]
     end
 
-    subgraph Media & Edge Tier
+    subgraph EDGE["Media & edge tier"]
         BunnyTus[Bunny.net Direct Tus Ingest]
         BunnyTranscoder[Bunny Encoding Pipeline]
         BunnyEdge[Bunny Global HLS Edge CDN]
     end
 
-    subgraph Payment Rails
+    subgraph RAILS["Payment rails"]
         CCBill[CCBill Dynamic Pricing]
         Segpay[Segpay Merchant Gateway]
         CryptoGW[Crypto Gateway / NowPayments]

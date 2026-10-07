@@ -7,10 +7,17 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (25)
+## Endpoints (32)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
+| `GET` | `/api/admin/creators` | session · ADMIN | Creator accounts with their verification state; `?verified=false` lists the review queue. |
+| `PATCH` | `/api/admin/creators/[id]` | session · ADMIN | Records the outcome of a creator's 18 U.S.C. § 2257 review. |
+| `GET` | `/api/admin/overview` | session · ADMIN | Operator overview: money, catalogue and the three queues that need a human. |
+| `GET` | `/api/admin/payouts` | session · ADMIN | Payout requests with their creator; `?status=` filters. |
+| `PATCH` | `/api/admin/payouts/[id]` | session · ADMIN | Advances a payout. |
+| `GET` | `/api/admin/reports` | session · ADMIN | Content reports, newest first; `?status=` filters. |
+| `PATCH` | `/api/admin/reports/[id]` | session · ADMIN | Moves a report through triage (open → in review → resolved). |
 | `POST` | `/api/auth/login` | public | Password login. |
 | `POST` | `/api/auth/logout` | public | — |
 | `GET` | `/api/auth/me` | public · session-aware | The signed-in account, or `user: null`. |

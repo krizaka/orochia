@@ -64,7 +64,7 @@ function summaryOf(src, method) {
     .map((l) => l.replace(/^\s*\*\s?/, "").trim())
     .filter(Boolean)
     .join(" ")
-    .split(/(?<=\.)\s/)[0];
+    .split(/(?<=[a-z0-9)`]\.)\s/)[0]; // first sentence; abbreviations such as "U.S.C." do not end one
 }
 const endpoints = walk(apiDir, (p) => /route\.(ts|js)$/.test(p))
   .map((file) => {

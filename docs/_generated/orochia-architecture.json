@@ -100,6 +100,48 @@
   ],
   "apiEndpoints": [
     {
+      "method": "GET",
+      "path": "/api/admin/creators",
+      "access": "session · ADMIN",
+      "summary": "Creator accounts with their verification state; `?verified=false` lists the review queue."
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/admin/creators/[id]",
+      "access": "session · ADMIN",
+      "summary": "Records the outcome of a creator's 18 U.S.C. § 2257 review."
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/overview",
+      "access": "session · ADMIN",
+      "summary": "Operator overview: money, catalogue and the three queues that need a human."
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/payouts",
+      "access": "session · ADMIN",
+      "summary": "Payout requests with their creator; `?status=` filters."
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/admin/payouts/[id]",
+      "access": "session · ADMIN",
+      "summary": "Advances a payout."
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/reports",
+      "access": "session · ADMIN",
+      "summary": "Content reports, newest first; `?status=` filters."
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/admin/reports/[id]",
+      "access": "session · ADMIN",
+      "summary": "Moves a report through triage (open → in review → resolved)."
+    },
+    {
       "method": "POST",
       "path": "/api/auth/login",
       "access": "public",
