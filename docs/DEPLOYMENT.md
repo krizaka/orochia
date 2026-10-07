@@ -13,7 +13,7 @@
 | `STORAGE_DRIVER=bunny`, `BUNNY_STORAGE_API_KEY`, `BUNNY_STORAGE_ZONE`, `BUNNY_PULL_ZONE_HOSTNAME` | ✓ | Avatars, thumbnails, 2257 documents (container disks are ephemeral). |
 | `METRICS_AUTH_TOKEN` | ✓ | Bearer token for `/api/metrics`. |
 | `DATABASE_CA_CERT` | managed DB | CA of a managed PostgreSQL (`${<db>.CA_CERT}` on App Platform): TLS verified against it. |
-| `MAILGUN_API_KEY`, `MAILGUN_DOMAIN` (+ `MAILGUN_API_URL`, `MAIL_FROM`) | — | Transactional e-mail (sending subdomain `mg.orochia.com`). Without them nothing is sent. |
+| `RESEND_API_KEY` or `MAILGUN_API_KEY` + `MAILGUN_DOMAIN` (+ `MAILGUN_API_URL`), `MAIL_FROM` | — | Transactional e-mail from `mg.orochia.com`: Resend when its key is set, Mailgun otherwise. Without either nothing is sent. |
 | `COMPLIANCE_ALERT_EMAIL` | — | Receives every content report (`[URGENT]` for underage / non-consensual). |
 | `SEARCH_INDEXING=off` | dev / preview | Every page noindex, robots.txt disallows all: only production is indexed (build time). |
 | `OROCHIA_OWNER_EMAIL`, `_USERNAME`, `_NAME`, `_PASSWORD` | recommended | The default user (owner, ADMIN), applied by the release job — see *Owner account*. |
@@ -107,11 +107,12 @@ The token is carried in the path (`/bcdn_token=…&token_path=/<guid>/…`) so r
 relative URL, are authorised too. New uploads are filed in the collection `BUNNY_STREAM_COLLECTION_ID`; who may
 watch is decided by the app, never by Bunny collections.
 
-### E-mail (Mailgun, mg.orochia.com)
+### E-mail (Resend, mg.orochia.com)
 
-Same integration as krizaka.com: in Mailgun, add the sending domain `mg.orochia.com`, copy its DNS records (TXT
-SPF, TXT DKIM, CNAME tracking, MX) into Porkbun on the `mg` subdomain, verify, then set `MAILGUN_API_KEY` (SECRET)
-and `COMPLIANCE_ALERT_EMAIL` in the app.
+The sending domain `mg.orochia.com` is declared in Resend; its records live at Porkbun under `mg`: DKIM
+`TXT resend._domainkey.mg`, and `CNAME send.mg` / `CNAME rsend.mg` (as Resend lists them). Once Resend shows the domain
+verified, set `RESEND_API_KEY` (SECRET) and `COMPLIANCE_ALERT_EMAIL` in the app. Mailgun (`MAILGUN_API_KEY` +
+`MAILGUN_DOMAIN`) remains supported when no Resend key is set.
 
 ## Self-hosted (Docker Compose + Caddy)
 

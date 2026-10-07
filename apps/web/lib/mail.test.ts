@@ -24,6 +24,17 @@ describe("mail", () => {
     expect((init.body as FormData).get("from")).toBe("Orochia <no-reply@mg.orochia.com>");
   });
 
+  it("uses Resend when RESEND_API_KEY is set", async () => {
+    const fetch = vi.fn().mockResolvedValue(new Response("{}", { status: 200 }));
+    vi.stubGlobal("fetch", fetch);
+    const env = { RESEND_API_KEY: "re_key", MAIL_FROM: "Orochia <no-reply@mg.orochia.com>" } as unknown as NodeJS.ProcessEnv;
+    expect(await sendMail({ to: "a@example.com", subject: "Hi", text: "Body", replyTo: "r@example.com" }, env)).toBe(true);
+    const [url, init] = fetch.mock.calls[0];
+    expect(url).toBe("https://api.resend.com/emails");
+    expect(init.headers.Authorization).toBe("Bearer re_key");
+    expect(JSON.parse(init.body)).toEqual({ from: "Orochia <no-reply@mg.orochia.com>", to: ["a@example.com"], subject: "Hi", text: "Body", reply_to: "r@example.com" });
+  });
+
   it("reports a refusal without throwing", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("Forbidden", { status: 401 })));
     vi.spyOn(console, "error").mockImplementation(() => {});

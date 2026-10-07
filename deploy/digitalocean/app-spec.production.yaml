@@ -94,6 +94,10 @@ services:
       - key: METRICS_AUTH_TOKEN
         scope: RUN_TIME
         type: SECRET
+      # E-mail from mg.orochia.com: Resend when set, Mailgun otherwise.
+      - key: RESEND_API_KEY
+        scope: RUN_TIME
+        type: SECRET
       - key: MAILGUN_API_KEY
         scope: RUN_TIME
         type: SECRET
