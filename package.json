@@ -44,7 +44,7 @@
   "author": "Krizaka Core Team",
   "license": "Apache-2.0",
   "devDependencies": {
-    "vitest": "^2.1.9"
+    "vitest": "^5.0.3"
   },
   "engines": {
     "node": ">=20"
