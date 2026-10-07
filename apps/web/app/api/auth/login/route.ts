@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
     if (!account || !verifyPassword(password, account.passwordHash)) {
       return jsonError(401, "Invalid credentials");
     }
+    if (account.suspendedAt) return jsonError(403, "This account is suspended. Contact the platform operator.");
 
     const response = NextResponse.json({ success: true });
     setSessionCookie(response, {

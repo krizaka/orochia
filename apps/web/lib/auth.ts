@@ -99,10 +99,24 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
   return token ? verifySessionToken(token) : null;
 }
 
-/** The authenticated user, or a 401/403 HttpError. */
+/**
+ * The authenticated user, or a 401/403 HttpError. Sessions are stateless tokens, so the account is
+ * re-read here: a suspension or a role change takes effect on the very next request, not when the
+ * cookie expires.
+ */
 export async function requireUserWithRole(roles: Role[]): Promise<SessionUser> {
   const user = await getCurrentUser();
   if (!user) throw new HttpError(401, "Authentication required");
-  if (!roles.includes(user.role)) throw new HttpError(403, "Insufficient role");
-  return user;
+  const { db, users } = await import("@orochia/db");
+  const { eq } = await import("drizzle-orm");
+  const [account] = await db
+    .select({ role: users.role, suspendedAt: users.suspendedAt })
+    .from(users)
+    .where(eq(users.id, user.id))
+    .limit(1);
+  if (!account) throw new HttpError(401, "Authentication required");
+  if (account.suspendedAt) throw new HttpError(403, "Account suspended");
+  // The role is the account's current one, not the one frozen in the cookie.
+  if (!roles.includes(account.role)) throw new HttpError(403, "Insufficient role");
+  return { ...user, role: account.role };
 }
