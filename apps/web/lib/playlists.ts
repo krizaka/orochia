@@ -98,13 +98,16 @@ export async function deletePlaylist(ownerId: string, playlistId: string) {
   await db.delete(playlists).where(eq(playlists.id, playlistId));
 }
 
-/** Appends a video (idempotent). Only videos anyone can see listed can be added. */
+/**
+ * Appends a video (idempotent): any ready video, or one of the owner's own still encoding (filed at
+ * upload; the collection shows it once it is READY).
+ */
 export async function addToPlaylist(ownerId: string, playlistId: string, videoId: string) {
   await owned(ownerId, playlistId);
   const [video] = await db
     .select({ id: videos.id })
     .from(videos)
-    .where(and(eq(videos.id, videoId), eq(videos.status, "READY"), isNull(videos.removedAt)))
+    .where(and(eq(videos.id, videoId), isNull(videos.removedAt), or(eq(videos.status, "READY"), eq(videos.creatorId, ownerId))))
     .limit(1);
   if (!video) throw new HttpError(404, "Video not found");
   await db.transaction(async (tx) => {

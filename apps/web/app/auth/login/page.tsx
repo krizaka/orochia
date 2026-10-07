@@ -21,7 +21,9 @@ export default function LoginPage() {
     setError(null);
     try {
       await login(email, password);
-      router.push("/dashboard");
+      // Back where the visitor was sent from (?next=/creator/upload) — same-site paths only.
+      const next = new URLSearchParams(window.location.search).get("next");
+      router.push(next && /^\/(?!\/)/.test(next) ? next : "/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign in failed");
     } finally {
