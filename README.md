@@ -1,24 +1,28 @@
+<!-- krizaka-header -->
 <div align="center">
 
-# 🥷 OROCHIA
-### Adult-Friendly Open-Source Video & Creator Community Platform
+<img src=".github/assets/orochia-logo.svg" alt="Orochia" width="132">
 
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Next.js](https://img.shields.io/badge/Next.js-14_App_Router-black?logo=next.js)](https://nextjs.org/)
-[![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-PostgreSQL-green)](https://orm.drizzle.team/)
-[![Bunny.net Stream](https://img.shields.io/badge/Bunny.net-Stream_Edge_4K-orange?logo=bunny)](https://bunny.net/)
-[![DigitalOcean](https://img.shields.io/badge/DigitalOcean-App_Platform-blue?logo=digitalocean)](https://www.digitalocean.com/products/app-platform)
+# Orochia
 
-**Orochia** is an enterprise-grade, privacy-first, adult-friendly video streaming and creator monetization platform engineered by **Krizaka**. Built to eliminate platform censorship and payment provider deplatforming risks through direct Bunny.net edge streaming, tokenized HMAC paywalls, and multi-rail adult payment adapters (CCBill, Segpay, Crypto).
+**Creators get paid. Every cent, exactly once.**
 
-### 🌐 The Orochia Ecosystem
-- **Consumer Web App**: [`krizaka/orochia`](https://github.com/krizaka/orochia) (Port 3000)
-- **Admin Control Plane & 2257 Vault**: [`krizaka/orochia-admin`](https://github.com/krizaka/orochia-admin) (Port 3001)
-- **Design System & Tokens**: [`krizaka/orochia-design-system`](https://github.com/krizaka/orochia-design-system) (Port 3002)
+The creator video platform: direct-to-CDN 4K streaming, server-side access control, gateway-confirmed payments settled exactly once on a double-entry ledger, and built-in 18+ compliance.
 
-[Architecture](docs/ARCHITECTURE.md) • [API](docs/API_CONTRACTS.md) • [Media Pipeline](docs/MEDIA_PIPELINE.md) • [Deployment](docs/DEPLOYMENT.md) • [Security](SECURITY.md)
+[![CI](https://github.com/krizaka/orochia/actions/workflows/ci.yml/badge.svg)](https://github.com/krizaka/orochia/actions/workflows/ci.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Orochia](https://img.shields.io/badge/part%20of-Orochia-d946ef)](https://www.krizaka.com/en/products/orochia#guarantees)
+[![Docs](https://img.shields.io/badge/docs-krizaka.com-6366f1)](https://www.krizaka.com/en/products/orochia/docs)
+
+[Documentation](https://www.krizaka.com/en/products/orochia/docs) · [Website](https://www.krizaka.com) · [Krizaka on GitHub](https://github.com/krizaka)
 
 </div>
+<!-- /krizaka-header -->
+
+<p align="center">
+  <a href="https://www.krizaka.com/en/products/orochia#tour"><img src="docs/assets/orochia-tour.gif" alt="Orochia — feed, playback and tipping, recorded on the latest build" width="760"></a>
+  <br><sub>Orochia — feed, playback and tipping, recorded on the latest build · <a href="https://www.krizaka.com/en/products/orochia#tour">more on krizaka.com</a></sub>
+</p>
 
 ---
 

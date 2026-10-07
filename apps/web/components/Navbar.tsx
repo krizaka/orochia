@@ -20,6 +20,7 @@ import {
   Menu,
   X
 } from "lucide-react";
+import { OrochiaLogo } from "@/components/OrochiaLogo";
 
 export function Navbar() {
   const { user, logout, switchProfile, demoMode } = useAuth();
@@ -43,9 +44,7 @@ export function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         {/* Brand */}
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-violet-600 via-fuchsia-600 to-pink-500 text-white shadow-lg shadow-violet-500/25">
-            <Flame className="h-5 w-5 fill-white" />
-          </div>
+          <OrochiaLogo size={40} />
           <span className="text-lg font-black tracking-wider text-white font-display">
             OROCHIA<span className="text-violet-400">.</span>
           </span>

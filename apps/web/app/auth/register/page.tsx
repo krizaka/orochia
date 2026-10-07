@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
-import { Flame, UserPlus, Lock, Mail, User, ShieldCheck } from "lucide-react";
+import { UserPlus, Lock, Mail, User, ShieldCheck } from "lucide-react";
+import { OrochiaLogo } from "@/components/OrochiaLogo";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -62,9 +63,7 @@ export default function RegisterPage() {
         <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-44 w-44 rounded-full bg-fuchsia-600/25 blur-3xl pointer-events-none" />
 
         <div className="text-center mb-6">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-violet-600 via-fuchsia-600 to-pink-500 shadow-lg shadow-violet-600/25">
-            <Flame className="h-6 w-6 text-white fill-white" />
-          </div>
+          <OrochiaLogo size={72} className="mx-auto mb-3" />
           <h1 className="text-2xl font-black text-white font-display">Join the Sanctuary</h1>
           <p className="mt-1 text-xs text-zinc-400">
             Create your sovereign creator or patron identity

@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ShieldAlert, CheckCircle, ExternalLink, Flame } from "lucide-react";
+import { ShieldAlert, CheckCircle, ExternalLink } from "lucide-react";
+import { OrochiaLogo } from "@/components/OrochiaLogo";
 
 export function AgeVerificationModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,9 +34,7 @@ export function AgeVerificationModal() {
         <div className="absolute -top-24 left-1/2 -translate-x-1/2 h-48 w-48 rounded-full bg-violet-600/30 blur-3xl pointer-events-none" />
 
         {/* Brand Icon */}
-        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-violet-600 via-fuchsia-600 to-pink-500 shadow-lg shadow-violet-600/30">
-          <Flame className="h-7 w-7 text-white fill-white" />
-        </div>
+        <OrochiaLogo size={88} className="mx-auto mb-3" />
 
         {/* Header */}
         <div className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-300 mb-3">
