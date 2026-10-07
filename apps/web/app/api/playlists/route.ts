@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 const Create = z.object({
   title: z.string().trim().min(1).max(120),
   description: z.string().trim().max(1000).nullish(),
-  isPrivate: z.boolean().optional(),
+  visibility: z.enum(["PUBLIC", "APPROVED_FOLLOWERS_ONLY", "CONTACTS_ONLY", "INVITED_ONLY", "PRIVATE"]).optional(),
 });
 
 /** Your playlists, most recently changed first. */

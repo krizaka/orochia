@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * End-to-end feature scenarios against a running Orochia on a freshly seeded database:
- * approved followers, contacts, playlists, search, creator edits, takedowns, suspensions and
+ * approved followers, contacts, collections and their permissions, views, likes, comments, shares, search, creator edits, takedowns, suspensions and
  * role changes — each checked through the HTTP API with real sessions.
  *
  *   npm run db:reset -- --yes && npm run dev      # in another terminal
@@ -68,8 +68,8 @@ check("follow mia → PENDING", f.json.follow === "PENDING");
 check("relationship visible on creator page", (await sam.call("/api/creators/miasterling")).json.relationship?.follow === "PENDING");
 check("unfollow", (await sam.call("/api/creators/miasterling/follow", "DELETE")).json.follow === null);
 
-// Playlists
-const pl = await alex.call("/api/playlists", "POST", { title: "Test list", isPrivate: true });
+// Collections and their permissions
+const pl = await alex.call("/api/playlists", "POST", { title: "Test list", visibility: "PRIVATE" });
 check("create playlist", pl.status === 201);
 check("add video", (await alex.call(`/api/playlists/${pl.json.playlist.id}/items`, "POST", { videoId: noir.id })).status === 201);
 check("add again is idempotent", (await alex.call(`/api/playlists/${pl.json.playlist.id}/items`, "POST", { videoId: noir.id })).status === 201);
@@ -77,10 +77,71 @@ const mine = (await alex.call(`/api/playlists/${pl.json.playlist.id}`)).json.pla
 check("owner reads private playlist with 1 item", mine?.items?.length === 1);
 check("others get 404 on a private playlist", (await sam.call(`/api/playlists/${pl.json.playlist.id}`)).status === 404);
 check("others cannot edit it", (await sam.call(`/api/playlists/${pl.json.playlist.id}`, "PATCH", { title: "x" })).status === 404);
-check("make public", (await alex.call(`/api/playlists/${pl.json.playlist.id}`, "PATCH", { isPrivate: false })).status === 200);
+check("unknown audience refused", (await alex.call(`/api/playlists/${pl.json.playlist.id}`, "PATCH", { visibility: "FRIENDS" })).status === 400);
+check("invited-only", (await alex.call(`/api/playlists/${pl.json.playlist.id}`, "PATCH", { visibility: "INVITED_ONLY" })).status === 200);
+check("not invited yet → 404", (await elena.call(`/api/playlists/${pl.json.playlist.id}`)).status === 404);
+check("others cannot invite", (await sam.call(`/api/playlists/${pl.json.playlist.id}/members`, "POST", { username: "elenavox" })).status === 404);
+check("invite unknown account → 404", (await alex.call(`/api/playlists/${pl.json.playlist.id}/members`, "POST", { username: "nobody_here" })).status === 404);
+check("invite elena", (await alex.call(`/api/playlists/${pl.json.playlist.id}/members`, "POST", { username: "@ElenaVox".replace("@", "") })).status === 201);
+check("invited elena opens it", (await elena.call(`/api/playlists/${pl.json.playlist.id}`)).status === 200);
+check("listed in elena's shared collections", (await elena.call("/api/playlists/shared")).json.playlists?.some((p) => p.id === pl.json.playlist.id));
+check("anonymous still 404", (await anon.call(`/api/playlists/${pl.json.playlist.id}`)).status === 404);
+const members = (await alex.call(`/api/playlists/${pl.json.playlist.id}/members`)).json.members;
+check("owner lists members", members?.length === 1 && members[0].username === "elenavox");
+check("withdraw elena", (await alex.call(`/api/playlists/${pl.json.playlist.id}/members?userId=${members[0].userId}`, "DELETE")).status === 200);
+check("withdrawn → 404", (await elena.call(`/api/playlists/${pl.json.playlist.id}`)).status === 404);
+check("contacts-only", (await alex.call(`/api/playlists/${pl.json.playlist.id}`, "PATCH", { visibility: "CONTACTS_ONLY" })).status === 200);
+check("contact (mia) opens it", (await mia.call(`/api/playlists/${pl.json.playlist.id}`)).status === 200);
+check("non-contact (sam) → 404", (await sam.call(`/api/playlists/${pl.json.playlist.id}`)).status === 404);
+check("contacts-only hidden from anonymous profile", !(await anon.call("/api/creators/alex_vance")).json.playlists?.some((p) => p.id === pl.json.playlist.id));
+check("make public", (await alex.call(`/api/playlists/${pl.json.playlist.id}`, "PATCH", { visibility: "PUBLIC" })).status === 200);
 check("now readable by others", (await anon.call(`/api/playlists/${pl.json.playlist.id}`)).status === 200);
 check("public playlists on profile", (await anon.call("/api/creators/elenavox")).json.playlists?.length === 1);
 check("delete playlist", (await alex.call(`/api/playlists/${pl.json.playlist.id}`, "DELETE")).status === 200);
+check("seeded invited collection: sam opens it", (await sam.call("/api/playlists/shared")).json.playlists?.some((p) => p.title === "For Sam"));
+const forSam = (await sam.call("/api/playlists/shared")).json.playlists.find((p) => p.title === "For Sam");
+check("…mia does not", (await mia.call(`/api/playlists/${forSam.id}`)).status === 404);
+check("a collection never opens a locked video", (await anon.call(`/api/videos/${diaries.id}/stream`)).json.allowed === false);
+
+// Views: once per viewer and day; the author's plays never count
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const viewsOf = async (v) => (await anon.call(`/api/videos/${v.id}/details`)).json.video.viewsCount;
+const before = await viewsOf(noir);
+await sam.call(`/api/videos/${noir.id}/stream`);
+await sam.call(`/api/videos/${noir.id}/stream`);
+await mia.call(`/api/videos/${noir.id}/stream`);
+await sleep(400);
+check("two plays by sam + author's play → +1 view", (await viewsOf(noir)) === before + 1, `${before} → ${await viewsOf(noir)}`);
+
+// Likes
+const like = await elena.call(`/api/videos/${noir.id}/like`, "POST");
+check("like", like.status === 200 && like.json.liked === true);
+check("like again is idempotent", (await elena.call(`/api/videos/${noir.id}/like`, "POST")).json.likesCount === like.json.likesCount);
+check("details report the like", (await elena.call(`/api/videos/${noir.id}/details`)).json.liked === true);
+check("unlike", (await elena.call(`/api/videos/${noir.id}/like`, "DELETE")).json.likesCount === like.json.likesCount - 1);
+check("cannot like a video you cannot watch", (await mia.call(`/api/videos/${diaries.id}/like`, "POST")).status === 403);
+
+// Comments
+const seeded = (await anon.call(`/api/videos/${noir.id}/comments`)).json.comments;
+check("public discussion readable, with a reply", seeded?.length === 2 && seeded.some((c) => c.parentId));
+check("comments of a locked video → 403", (await anon.call(`/api/videos/${diaries.id}/comments`)).status === 403);
+const c1 = await elena.call(`/api/videos/${noir.id}/comments`, "POST", { body: "Gorgeous session." });
+check("comment", c1.status === 201);
+check("empty comment refused", (await elena.call(`/api/videos/${noir.id}/comments`, "POST", { body: "   " })).status === 400);
+check("reply", (await alex.call(`/api/videos/${noir.id}/comments`, "POST", { body: "Agreed!", parentId: c1.json.comment.id })).status === 201);
+check("comment counter follows", (await anon.call(`/api/videos/${noir.id}/details`)).json.video.commentsCount === 4);
+check("a third party cannot remove it", (await sam.call(`/api/videos/${noir.id}/comments/${c1.json.comment.id}`, "DELETE")).status === 404);
+check("the video's creator can", (await mia.call(`/api/videos/${noir.id}/comments/${c1.json.comment.id}`, "DELETE")).status === 200);
+check("removed comment keeps its place without text", (await anon.call(`/api/videos/${noir.id}/comments`)).json.comments.find((c) => c.id === c1.json.comment.id)?.body === null);
+check("creator closes comments", (await mia.call(`/api/videos/${noir.id}`, "PATCH", { commentsEnabled: false })).status === 200);
+check("closed → new comment refused", (await alex.call(`/api/videos/${noir.id}/comments`, "POST", { body: "Late" })).status === 403);
+await mia.call(`/api/videos/${noir.id}`, "PATCH", { commentsEnabled: true });
+
+// Shares
+const sh = await (await fetch(`${B}/api/videos/${noir.id}/shares`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ channel: "WHATSAPP" }) })).json();
+check("anonymous share of a public video counted", sh.sharesCount === 1, JSON.stringify(sh));
+check("unknown channel refused", (await alex.call(`/api/videos/${noir.id}/shares`, "POST", { channel: "FAX" })).status === 400);
+check("sharing a video you cannot watch → 403", (await mia.call(`/api/videos/${diaries.id}/shares`, "POST", {})).status === 403);
 
 // Search
 check("search by title", (await anon.call("/api/feed?q=tokyo")).json.videos.length === 1);

@@ -15,13 +15,14 @@ const Patch = z
     visibility: z.enum(["PUBLIC", "CONTACTS_ONLY", "APPROVED_FOLLOWERS_ONLY", "TIPPED_UNLOCKED"]).optional(),
     minTipAmountCents: z.number().int().min(0).max(100_000).optional(),
     tags: z.array(z.string().trim().toLowerCase().min(1).max(40)).max(12).optional(),
+    commentsEnabled: z.boolean().optional(),
   })
   .refine((p) => p.visibility !== "TIPPED_UNLOCKED" || p.minTipAmountCents === undefined || p.minTipAmountCents >= 100, {
     message: "A paid unlock costs at least $1.00",
     path: ["minTipAmountCents"],
   });
 
-/** The creator edits their video: title, description, visibility, unlock price, tags. */
+/** The creator edits their video: title, description, visibility, unlock price, tags, comments open. */
 export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   try {

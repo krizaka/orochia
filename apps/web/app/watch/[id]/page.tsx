@@ -8,8 +8,9 @@ import { TipModal } from "@/components/TipModal";
 import { ReportModal } from "@/components/ReportModal";
 import { RelationshipActions } from "@/components/RelationshipActions";
 import { SaveToPlaylist } from "@/components/SaveToPlaylist";
-import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
-import { Sparkles, Eye, ShieldCheck, Share2, Flag, CheckCircle2 } from "lucide-react";
+import { VideoComments } from "@/components/VideoComments";
+import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
+import { Sparkles, Eye, ShieldCheck, Share2, Flag, CheckCircle2, Heart, MessageSquare } from "lucide-react";
 
 interface StreamAccess {
   allowed: boolean;
@@ -40,6 +41,10 @@ interface VideoDetails {
   visibility: string;
   minTipAmountCents: number;
   viewsCount: number;
+  likesCount: number;
+  commentsCount: number;
+  sharesCount: number;
+  commentsEnabled: boolean;
   createdAt: string;
   moreFromCreator: RelatedVideo[];
 }
@@ -58,6 +63,9 @@ export default function WatchPage() {
   const [isTipModalOpen, setIsTipModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [liked, setLiked] = useState(false);
+  const [likeBusy, setLikeBusy] = useState(false);
+  const { user } = useAuth();
 
   const fetchStreamAccess = useCallback(async () => {
     try {
@@ -79,8 +87,9 @@ export default function WatchPage() {
         setIsLoading(false);
         return;
       }
-      const data = (await res.json()) as { video?: VideoDetails };
+      const data = (await res.json()) as { video?: VideoDetails; liked?: boolean };
       setDetails(data.video ?? null);
+      setLiked(Boolean(data.liked));
       await fetchStreamAccess();
       if (!cancelled) setIsLoading(false);
     })().catch(() => setIsLoading(false));
@@ -100,6 +109,7 @@ export default function WatchPage() {
     };
   }, [paymentState, fetchStreamAccess]);
 
+  // A share is counted once the link was handed over; the link still enforces the video's access.
   const share = async () => {
     const url = window.location.href.split("?")[0];
     try {
@@ -109,9 +119,26 @@ export default function WatchPage() {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       }
+      void fetch(`/api/videos/${videoId}/shares`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ channel: "LINK" }),
+      });
     } catch {
       /* dismissed */
     }
+  };
+
+  const toggleLike = async () => {
+    if (likeBusy) return;
+    setLikeBusy(true);
+    const res = await fetch(`/api/videos/${videoId}/like`, { method: liked ? "DELETE" : "POST" });
+    if (res.ok) {
+      const data = (await res.json()) as { liked: boolean; likesCount: number };
+      setLiked(data.liked);
+      setDetails((d) => (d ? { ...d, likesCount: data.likesCount } : d));
+    }
+    setLikeBusy(false);
   };
 
   if (notFound) {
@@ -185,6 +212,25 @@ export default function WatchPage() {
                     <Sparkles className="h-4 w-4" />
                     <span>{isPaywalled ? "Unlock" : "Send Tip"}</span>
                   </button>
+                  {stream?.allowed &&
+                    (user ? (
+                      <button
+                        onClick={toggleLike}
+                        disabled={likeBusy}
+                        aria-pressed={liked}
+                        className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-60 ${
+                          liked ? "border-fuchsia-500/40 bg-fuchsia-500/10 text-fuchsia-300" : "border-white/10 bg-zinc-900 text-zinc-300 hover:bg-zinc-800"
+                        }`}
+                      >
+                        <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
+                        <span>{details.likesCount.toLocaleString("en-US")}</span>
+                      </button>
+                    ) : (
+                      <Link href="/auth/login" className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-300 hover:bg-zinc-800">
+                        <Heart className="h-4 w-4" />
+                        <span>{details.likesCount.toLocaleString("en-US")}</span>
+                      </Link>
+                    ))}
                   <SaveToPlaylist videoId={videoId} />
                   <button
                     onClick={share}
@@ -207,6 +253,16 @@ export default function WatchPage() {
                 <span className="flex items-center gap-1">
                   <Eye className="h-3.5 w-3.5 text-zinc-500" />
                   {details.viewsCount.toLocaleString("en-US")} views
+                </span>
+                <span>•</span>
+                <span className="flex items-center gap-1">
+                  <MessageSquare className="h-3.5 w-3.5 text-zinc-500" />
+                  {details.commentsCount.toLocaleString("en-US")}
+                </span>
+                <span>•</span>
+                <span className="flex items-center gap-1">
+                  <Share2 className="h-3.5 w-3.5 text-zinc-500" />
+                  {details.sharesCount.toLocaleString("en-US")}
                 </span>
                 <span>•</span>
                 <span>{formatDuration(details.durationSeconds)}</span>
@@ -244,6 +300,15 @@ export default function WatchPage() {
                 <p className="mt-4 text-sm text-zinc-300 leading-relaxed bg-zinc-900/30 rounded-2xl p-4 border border-white/5 whitespace-pre-line">
                   {details.description || details.creatorBio}
                 </p>
+              )}
+
+              {stream?.allowed && (
+                <VideoComments
+                  videoId={videoId}
+                  isCreator={user?.username === details.creatorUsername}
+                  commentsEnabled={details.commentsEnabled}
+                  onCountChange={(delta) => setDetails((d) => (d ? { ...d, commentsCount: Math.max(0, d.commentsCount + delta) } : d))}
+                />
               )}
             </div>
           )}

@@ -12,6 +12,9 @@
 | `BUNNY_STREAM_COLLECTION_ID` | — | Collection new uploads are filed in (UUID). |
 | `STORAGE_DRIVER=bunny`, `BUNNY_STORAGE_API_KEY`, `BUNNY_STORAGE_ZONE`, `BUNNY_PULL_ZONE_HOSTNAME` | ✓ | Avatars, thumbnails, 2257 documents (container disks are ephemeral). |
 | `METRICS_AUTH_TOKEN` | ✓ | Bearer token for `/api/metrics`. |
+| `DATABASE_CA_CERT` | managed DB | CA of a managed PostgreSQL (`${<db>.CA_CERT}` on App Platform): TLS verified against it. |
+| `MAILGUN_API_KEY`, `MAILGUN_DOMAIN` (+ `MAILGUN_API_URL`, `MAIL_FROM`) | — | Transactional e-mail (sending subdomain `mg.orochia.com`). Without them nothing is sent. |
+| `COMPLIANCE_ALERT_EMAIL` | — | Receives every content report (`[URGENT]` for underage / non-consensual). |
 | Gateway credentials | at least one | See `.env.example`. A gateway is offered only when **all** its variables are set. |
 
 A missing required value makes the requests that need it answer **503** and logs the variable name — the
@@ -50,6 +53,46 @@ database, the list of variables): `doctl apps update <APP_ID> --spec …` replac
 
 The spec has no Redis: rate limits are kept in memory per instance (`apps/web/lib/rate-limit.ts`), which holds for
 a single instance. A shared store comes back before scaling out.
+
+### Domain (orochia.com, DNS at Porkbun)
+
+The specs declare the domains (`orochia.com` + `www` for production, `dev.orochia.com` for dev); DNS stays at
+Porkbun. After `doctl apps create`, App Platform shows the target of each name (`<app>.ondigitalocean.app`):
+
+| Porkbun record | Name | Value |
+| :--- | :--- | :--- |
+| `ALIAS` | *(apex)* `orochia.com` | the production app's hostname |
+| `CNAME` | `www` | the production app's hostname |
+| `CNAME` | `dev` | the dev app's hostname |
+
+Remove Porkbun's URL forwarding and any parking `A`/`ALIAS` record on the same names first. The TLS certificate is
+issued by App Platform once the records resolve.
+
+### Owner account
+
+`npm run db:owner -- --email <email> --username <name> --name "<Full Name>"` creates (or reactivates) the
+operator account against `DATABASE_URL` — production included. It is idempotent, never deletes anything, and keeps
+an existing password unless `--reset-password` is given (the new one is printed once, or taken from
+`OROCHIA_OWNER_PASSWORD`).
+
+### Bunny Stream security
+
+| Setting (library → Security) | Value |
+| :--- | :--- |
+| CDN token authentication | **on** — `BUNNY_STREAM_TOKEN_AUTH_KEY` is its key; every playback URL is signed for 300 s |
+| Block direct url file access | on, with **Allowed domains** `orochia.com`, `*.orochia.com` (and `localhost` while developing) |
+| Embed view token authentication | off — the app plays HLS itself, not Bunny's embedded player |
+| Webhook | `https://<domain>/api/webhooks/bunny`, secret = `BUNNY_WEBHOOK_SECRET` |
+
+The token is carried in the path (`/bcdn_token=…&token_path=/<guid>/…`) so renditions and segments, requested by
+relative URL, are authorised too. New uploads are filed in the collection `BUNNY_STREAM_COLLECTION_ID`; who may
+watch is decided by the app, never by Bunny collections.
+
+### E-mail (Mailgun, mg.orochia.com)
+
+Same integration as krizaka.com: in Mailgun, add the sending domain `mg.orochia.com`, copy its DNS records (TXT
+SPF, TXT DKIM, CNAME tracking, MX) into Porkbun on the `mg` subdomain, verify, then set `MAILGUN_API_KEY` (SECRET)
+and `COMPLIANCE_ALERT_EMAIL` in the app.
 
 ## Self-hosted (Docker Compose + Caddy)
 

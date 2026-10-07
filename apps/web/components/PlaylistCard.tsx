@@ -1,18 +1,19 @@
 import React from "react";
 import Link from "next/link";
-import { ListVideo, Lock } from "lucide-react";
+import { ListVideo } from "lucide-react";
+import { CollectionAudienceBadge, type CollectionVisibility } from "./CollectionAudience";
 
 export interface PlaylistCardProps {
   id: string;
   title: string;
   description: string | null;
-  isPrivate: boolean;
+  visibility: CollectionVisibility;
   itemsCount: number;
   coverUrl: string | null;
 }
 
-/** A playlist tile: its first video as cover, title and size. */
-export function PlaylistCard({ id, title, description, isPrivate, itemsCount, coverUrl }: PlaylistCardProps) {
+/** A collection tile: its first video as cover, title, size and who opens it. */
+export function PlaylistCard({ id, title, description, visibility, itemsCount, coverUrl }: PlaylistCardProps) {
   return (
     <Link href={`/playlists/${id}`} className="group block overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/60 transition-all hover:border-violet-500/40">
       <div className="relative aspect-video bg-gradient-to-br from-violet-950 via-zinc-900 to-fuchsia-950">
@@ -22,9 +23,8 @@ export function PlaylistCard({ id, title, description, isPrivate, itemsCount, co
         </span>
       </div>
       <div className="p-4">
-        <p className="flex items-center gap-1.5 truncate text-sm font-bold text-white">
-          {isPrivate && <Lock className="h-3.5 w-3.5 shrink-0 text-zinc-500" />} {title}
-        </p>
+        <p className="truncate text-sm font-bold text-white">{title}</p>
+        {visibility !== "PUBLIC" && <CollectionAudienceBadge visibility={visibility} className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-500" />}
         {description && <p className="mt-1 line-clamp-2 text-xs text-zinc-400">{description}</p>}
       </div>
     </Link>

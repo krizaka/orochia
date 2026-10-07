@@ -21,6 +21,8 @@ export interface VideoSummary {
   minTipAmountCents: number;
   viewsCount: number;
   tipsCount: number;
+  likesCount: number;
+  commentsCount: number;
 }
 
 const videoSummaryColumns = {
@@ -36,6 +38,8 @@ const videoSummaryColumns = {
   minTipAmountCents: videos.minTipAmountCents,
   viewsCount: videos.viewsCount,
   tipsCount: videos.tipsCount,
+  likesCount: videos.likesCount,
+  commentsCount: videos.commentsCount,
 };
 
 /** A video anyone may see listed: encoded, not taken down, from an active account. */
@@ -166,6 +170,8 @@ export interface VideoDetails extends VideoSummary {
   creatorId: string;
   creatorBio: string | null;
   createdAt: Date;
+  sharesCount: number;
+  commentsEnabled: boolean;
   moreFromCreator: VideoSummary[];
 }
 
@@ -178,6 +184,8 @@ export async function videoDetails(videoId: string): Promise<VideoDetails | null
       creatorId: videos.creatorId,
       creatorBio: profiles.bio,
       createdAt: videos.createdAt,
+      sharesCount: videos.sharesCount,
+      commentsEnabled: videos.commentsEnabled,
     })
     .from(videos)
     .innerJoin(users, eq(users.id, videos.creatorId))

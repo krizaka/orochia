@@ -1,4 +1,4 @@
-import { db, videos, videoAccessGrants, contacts, follows } from "@orochia/db";
+import { db, videos, videoAccessGrants, contacts, follows, playlistMembers } from "@orochia/db";
 import { eq, and, or } from "drizzle-orm";
 
 export interface AccessEvaluation {
@@ -7,6 +7,54 @@ export interface AccessEvaluation {
   minTipAmountCents?: number;
   creatorId?: string;
   videoTitle?: string;
+}
+
+/** The creator accepted this viewer's follow. */
+export async function isApprovedFollower(viewerId: string, creatorId: string): Promise<boolean> {
+  const [row] = await db
+    .select({ id: follows.id })
+    .from(follows)
+    .where(and(eq(follows.followerId, viewerId), eq(follows.creatorId, creatorId), eq(follows.status, "APPROVED")))
+    .limit(1);
+  return Boolean(row);
+}
+
+/** An accepted contact, whichever side asked. */
+export async function areContacts(a: string, b: string): Promise<boolean> {
+  const [row] = await db
+    .select({ id: contacts.id })
+    .from(contacts)
+    .where(
+      and(
+        eq(contacts.status, "ACCEPTED"),
+        or(and(eq(contacts.requesterId, a), eq(contacts.addresseeId, b)), and(eq(contacts.requesterId, b), eq(contacts.addresseeId, a))),
+      ),
+    )
+    .limit(1);
+  return Boolean(row);
+}
+
+export type CollectionVisibility = "PUBLIC" | "APPROVED_FOLLOWERS_ONLY" | "CONTACTS_ONLY" | "INVITED_ONLY" | "PRIVATE";
+
+/**
+ * Whether a viewer may open a collection. Opening it lists its videos; playing each one is still
+ * decided by {@link evaluateVideoAccess} — a collection never grants playback.
+ */
+export async function canOpenCollection(
+  collection: { id: string; ownerId: string; visibility: CollectionVisibility },
+  viewerId: string | null | undefined,
+): Promise<boolean> {
+  if (viewerId && viewerId === collection.ownerId) return true;
+  if (collection.visibility === "PUBLIC") return true;
+  if (!viewerId || collection.visibility === "PRIVATE") return false;
+  if (collection.visibility === "APPROVED_FOLLOWERS_ONLY") return isApprovedFollower(viewerId, collection.ownerId);
+  if (collection.visibility === "CONTACTS_ONLY") return areContacts(viewerId, collection.ownerId);
+  const [member] = await db
+    .select({ id: playlistMembers.id })
+    .from(playlistMembers)
+    .where(and(eq(playlistMembers.playlistId, collection.id), eq(playlistMembers.userId, viewerId)))
+    .limit(1);
+  return Boolean(member);
 }
 
 /**
@@ -57,33 +105,14 @@ export async function evaluateVideoAccess(
 
   // 3. Approved-followers video check: the creator accepted this viewer's follow.
   if (video.visibility === "APPROVED_FOLLOWERS_ONLY") {
-    const [follow] = await db
-      .select({ id: follows.id })
-      .from(follows)
-      .where(and(eq(follows.followerId, viewerId), eq(follows.creatorId, video.creatorId), eq(follows.status, "APPROVED")))
-      .limit(1);
-    return follow
+    return (await isApprovedFollower(viewerId, video.creatorId))
       ? { allowed: true, creatorId: video.creatorId, videoTitle: video.title }
       : { allowed: false, reason: "FOLLOWERS_ONLY", creatorId: video.creatorId, videoTitle: video.title };
   }
 
   // 4. Contacts-Only video check
   if (video.visibility === "CONTACTS_ONLY") {
-    const [contact] = await db
-      .select()
-      .from(contacts)
-      .where(
-        and(
-          eq(contacts.status, "ACCEPTED"),
-          or(
-            and(eq(contacts.requesterId, viewerId), eq(contacts.addresseeId, video.creatorId)),
-            and(eq(contacts.requesterId, video.creatorId), eq(contacts.addresseeId, viewerId))
-          )
-        )
-      )
-      .limit(1);
-
-    if (contact) {
+    if (await areContacts(viewerId, video.creatorId)) {
       return { allowed: true, creatorId: video.creatorId, videoTitle: video.title };
     }
 

@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (52)
+## Endpoints (60)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -27,14 +27,12 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/auth/me` | public · session-aware | The signed-in account, or `user: null`. |
 | `POST` | `/api/auth/register` | public | Creates a member or creator account (never an administrator) and signs it in. |
 | `GET` | `/api/bunny/analytics` | session · ADMIN | Catalogue statistics for administrators, from the database. |
-| `GET` | `/api/bunny/collections` | public · session-aware | Public collections, plus the signed-in creator's own private ones. |
-| `POST` | `/api/bunny/collections` | session · CREATOR / ADMIN | Creates a collection owned by the signed-in creator. |
 | `POST` | `/api/contacts` | session · MEMBER / CREATOR / ADMIN | Sends a contact request (accepted at once when the other person already asked). |
 | `DELETE` | `/api/contacts/[id]` | session · MEMBER / CREATOR / ADMIN | Removes a contact or withdraws a request (either side). |
 | `PATCH` | `/api/contacts/[id]` | session · MEMBER / CREATOR / ADMIN | Accepts or rejects a request addressed to you, or blocks the other person. |
 | `GET` | `/api/creator/payouts` | session · CREATOR | The signed-in creator's balance, lifetime earnings and payout history — from the ledger. |
 | `POST` | `/api/creator/payouts` | session · CREATOR | Requests a payout; balances are checked and reserved atomically (requestPayout). |
-| `GET` | `/api/creators/[username]` | public · session-aware | A creator's public page: profile, videos, public playlists and, signed in, how you relate to them. |
+| `GET` | `/api/creators/[username]` | public · session-aware | A creator's public page: profile, videos, the collections you may open and, signed in, how you relate to them. |
 | `DELETE` | `/api/creators/[username]/follow` | session · MEMBER / CREATOR / ADMIN | Unfollows a creator. |
 | `POST` | `/api/creators/[username]/follow` | session · MEMBER / CREATOR / ADMIN | Follows a creator; the follow stays PENDING until the creator approves it. |
 | `GET` | `/api/feed` | public | The public feed and the explore search (`?q=`, `?tag=`, paginated); with the featured creator and popular tags. |
@@ -50,32 +48,47 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/playlists` | session · MEMBER / CREATOR / ADMIN | Your playlists, most recently changed first. |
 | `POST` | `/api/playlists` | session · MEMBER / CREATOR / ADMIN | Creates a playlist. |
 | `DELETE` | `/api/playlists/[id]` | session · MEMBER / CREATOR / ADMIN | Deletes a playlist (owner only). |
-| `GET` | `/api/playlists/[id]` | public · session-aware | A playlist and its videos (private playlists are visible to their owner only). |
-| `PATCH` | `/api/playlists/[id]` | session · MEMBER / CREATOR / ADMIN | Renames a playlist, edits its description or its privacy (owner only). |
+| `GET` | `/api/playlists/[id]` | public · session-aware | A collection and its videos, for a viewer its permission admits (others get a 404). |
+| `PATCH` | `/api/playlists/[id]` | session · MEMBER / CREATOR / ADMIN | Renames a collection, edits its description or who may open it (owner only). |
 | `DELETE` | `/api/playlists/[id]/items` | session · MEMBER / CREATOR / ADMIN | Removes a video from a playlist (owner only). |
 | `POST` | `/api/playlists/[id]/items` | session · MEMBER / CREATOR / ADMIN | Adds a video at the end of a playlist (owner only, idempotent). |
+| `DELETE` | `/api/playlists/[id]/members` | session · MEMBER / CREATOR / ADMIN | Withdraws an invitation (owner only). |
+| `GET` | `/api/playlists/[id]/members` | session · MEMBER / CREATOR / ADMIN | The accounts invited to your collection (owner only). |
+| `POST` | `/api/playlists/[id]/members` | session · MEMBER / CREATOR / ADMIN | Invites an account to your collection by username (owner only, idempotent). |
+| `GET` | `/api/playlists/shared` | session · MEMBER / CREATOR / ADMIN | Collections other accounts invited you to. |
 | `POST` | `/api/uploads` | session · role depends on the request | Stores an avatar (any account), a thumbnail or a 2257 document (creators); size and type checked per kind. |
 | `DELETE` | `/api/videos/[id]` | session · CREATOR | The creator deletes their video. |
-| `PATCH` | `/api/videos/[id]` | session · CREATOR | The creator edits their video: title, description, visibility, unlock price, tags. |
-| `GET` | `/api/videos/[id]/details` | public | A video's public metadata; the stream itself is only served by /stream after authorisation. |
+| `PATCH` | `/api/videos/[id]` | session · CREATOR | The creator edits their video: title, description, visibility, unlock price, tags, comments open. |
+| `GET` | `/api/videos/[id]/comments` | public · session-aware | The comments of a video you may watch, oldest first; removed ones keep their place without text. |
+| `POST` | `/api/videos/[id]/comments` | session · MEMBER / CREATOR / ADMIN | Comments on a video you may watch, or replies to one of its comments. |
+| `DELETE` | `/api/videos/[id]/comments/[commentId]` | session · MEMBER / CREATOR / ADMIN | Removes a comment: its author, the video's creator or an operator. |
+| `GET` | `/api/videos/[id]/details` | public · session-aware | A video's public metadata and figures (and whether you liked it); the stream is only served by /stream. |
+| `DELETE` | `/api/videos/[id]/like` | session · MEMBER / CREATOR / ADMIN | Removes your like (idempotent). |
+| `POST` | `/api/videos/[id]/like` | session · MEMBER / CREATOR / ADMIN | Likes a video you may watch (idempotent). |
+| `POST` | `/api/videos/[id]/shares` | public · session-aware | Counts a share of a video you may watch; the shared link still enforces the video's access. |
 | `GET` | `/api/videos/[id]/stream` | public · session-aware | Authorises a viewer and returns a short-lived signed HLS URL (AGENTS.md §2.A). |
 | `POST` | `/api/videos/create-upload-session` | public · session-aware | — |
 | `POST` | `/api/videos/unlock-video` | session · MEMBER / CREATOR / ADMIN | Starts the purchase of a video unlock. |
 | `POST` | `/api/webhooks/bunny` | signed webhook | — |
 | `POST` | `/api/webhooks/payments/[gateway]` | signed webhook | Gateway payment notifications. |
 
-## Database tables (12)
+## Database tables (17)
 
 | Table | Drizzle export | Defined in |
 | :--- | :--- | :--- |
 | `compliance_reports` | `complianceReports` | `packages/db/src/schema/compliance.ts` |
 | `contacts` | `contacts` | `packages/db/src/schema/contacts.ts` |
 | `follows` | `follows` | `packages/db/src/schema/contacts.ts` |
+| `video_views` | `videoViews` | `packages/db/src/schema/engagement.ts` |
+| `video_likes` | `videoLikes` | `packages/db/src/schema/engagement.ts` |
+| `video_comments` | `videoComments` | `packages/db/src/schema/engagement.ts` |
+| `video_shares` | `videoShares` | `packages/db/src/schema/engagement.ts` |
 | `tips_ledger` | `tipsLedger` | `packages/db/src/schema/ledger.ts` |
 | `payment_intents` | `paymentIntents` | `packages/db/src/schema/ledger.ts` |
 | `payout_requests` | `payoutRequests` | `packages/db/src/schema/ledger.ts` |
 | `playlists` | `playlists` | `packages/db/src/schema/playlists.ts` |
 | `playlist_items` | `playlistItems` | `packages/db/src/schema/playlists.ts` |
+| `playlist_members` | `playlistMembers` | `packages/db/src/schema/playlists.ts` |
 | `users` | `users` | `packages/db/src/schema/users.ts` |
 | `profiles` | `profiles` | `packages/db/src/schema/users.ts` |
 | `videos` | `videos` | `packages/db/src/schema/videos.ts` |

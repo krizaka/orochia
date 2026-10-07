@@ -63,5 +63,20 @@ export const reportReasonEnum = pgEnum("report_reason", [
 
 export const reportStatusEnum = pgEnum("report_status", ["OPEN", "IN_REVIEW", "RESOLVED"]);
 
+/**
+ * Who may open a collection (playlist). A collection never grants playback: each of its videos is
+ * still checked against its own visibility.
+ */
+export const collectionVisibilityEnum = pgEnum("collection_visibility", [
+  "PUBLIC",
+  "APPROVED_FOLLOWERS_ONLY",
+  "CONTACTS_ONLY",
+  "INVITED_ONLY",
+  "PRIVATE",
+]);
+
+/** Where a video was shared to (counted, never used to grant access). */
+export const shareChannelEnum = pgEnum("share_channel", ["LINK", "X", "WHATSAPP", "TELEGRAM", "EMAIL", "OTHER"]);
+
 /** A follow of a creator: approved by the creator before it opens APPROVED_FOLLOWERS_ONLY videos. */
 export const followStatusEnum = pgEnum("follow_status", ["PENDING", "APPROVED"]);

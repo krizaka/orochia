@@ -2,30 +2,125 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Globe, Lock, Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, UserPlus, X } from "lucide-react";
+import { COLLECTION_AUDIENCES, CollectionAudienceBadge, audienceOf, type CollectionVisibility } from "../CollectionAudience";
 
-interface Playlist {
+interface Collection {
   id: string;
   title: string;
   description: string | null;
-  isPrivate: boolean;
+  visibility: CollectionVisibility;
   itemsCount: number;
+  membersCount: number;
 }
 
-/** Your playlists: create, make public / private, delete. Videos are added from any watch page. */
-export function PlaylistsPanel() {
-  const [lists, setLists] = useState<Playlist[] | null>(null);
-  const [title, setTitle] = useState("");
+interface Member {
+  userId: string;
+  username: string;
+  displayName: string;
+}
+
+const field =
+  "rounded-2xl border border-white/10 bg-zinc-900/80 px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-none";
+
+/** The accounts invited to an INVITED_ONLY collection: invite by username, withdraw. */
+function Invitations({ collectionId, onChange }: { collectionId: string; onChange: () => void }) {
+  const [members, setMembers] = useState<Member[] | null>(null);
+  const [username, setUsername] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
-    const res = await fetch("/api/playlists", { cache: "no-store" });
-    if (res.ok) setLists(((await res.json()) as { playlists: Playlist[] }).playlists);
+    const res = await fetch(`/api/playlists/${collectionId}/members`, { cache: "no-store" });
+    if (res.ok) setMembers(((await res.json()) as { members: Member[] }).members);
+  }, [collectionId]);
+  useEffect(() => void load(), [load]);
+
+  const invite = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!username.trim()) return;
+    setBusy(true);
+    setError(null);
+    const res = await fetch(`/api/playlists/${collectionId}/members`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: username.trim().replace(/^@/, "") }),
+    });
+    setBusy(false);
+    if (!res.ok) return setError(res.status === 404 ? "No account with that username." : "Could not send the invitation.");
+    setUsername("");
+    await load();
+    onChange();
+  };
+
+  const withdraw = async (userId: string) => {
+    setBusy(true);
+    await fetch(`/api/playlists/${collectionId}/members?userId=${userId}`, { method: "DELETE" });
+    setBusy(false);
+    await load();
+    onChange();
+  };
+
+  return (
+    <div className="mt-3 rounded-2xl border border-white/5 bg-black/20 p-3">
+      <form onSubmit={invite} className="flex gap-2">
+        <input
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          maxLength={51}
+          placeholder="@username"
+          aria-label="Username to invite"
+          className={`${field} min-w-0 flex-1 py-2 text-xs`}
+        />
+        <button disabled={busy || !username.trim()} className="inline-flex items-center gap-1.5 rounded-xl bg-violet-600 px-3 text-xs font-bold text-white disabled:opacity-40">
+          <UserPlus className="h-3.5 w-3.5" /> Invite
+        </button>
+      </form>
+      {error && <p className="mt-2 text-[11px] text-rose-300">{error}</p>}
+      {members === null ? (
+        <p className="mt-2 text-[11px] text-zinc-500">Loading…</p>
+      ) : members.length === 0 ? (
+        <p className="mt-2 text-[11px] text-zinc-500">Nobody invited yet: only you open this collection.</p>
+      ) : (
+        <ul className="mt-2 flex flex-wrap gap-1.5">
+          {members.map((m) => (
+            <li key={m.userId} className="inline-flex items-center gap-1 rounded-full bg-white/5 py-1 pl-3 pr-1 text-[11px] text-zinc-200">
+              @{m.username}
+              <button disabled={busy} onClick={() => withdraw(m.userId)} className="rounded-full p-0.5 text-zinc-400 hover:text-rose-300" aria-label={`Withdraw @${m.username}`}>
+                <X className="h-3 w-3" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+/** Your collections — create, choose who opens each, invite accounts, delete — and those shared with you. */
+export function PlaylistsPanel() {
+  const [lists, setLists] = useState<Collection[] | null>(null);
+  const [shared, setShared] = useState<(Collection & { ownerUsername: string })[] | null>(null);
+  const [title, setTitle] = useState("");
+  const [visibility, setVisibility] = useState<CollectionVisibility>("PRIVATE");
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    const [mine, invited] = await Promise.all([
+      fetch("/api/playlists", { cache: "no-store" }),
+      fetch("/api/playlists/shared", { cache: "no-store" }),
+    ]);
+    if (mine.ok) setLists(((await mine.json()) as { playlists: Collection[] }).playlists);
+    if (invited.ok) setShared(((await invited.json()) as { playlists: (Collection & { ownerUsername: string })[] }).playlists);
   }, []);
   useEffect(() => void load(), [load]);
 
   const send = async (url: string, method: string, body?: object) => {
-    await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
+    setError(null);
+    const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
+    if (!res.ok) setError("The change could not be saved. Try again.");
     await load();
+    return res.ok;
   };
 
   return (
@@ -34,56 +129,89 @@ export function PlaylistsPanel() {
         onSubmit={(e) => {
           e.preventDefault();
           if (!title.trim()) return;
-          void send("/api/playlists", "POST", { title: title.trim(), isPrivate: true }).then(() => setTitle(""));
+          void send("/api/playlists", "POST", { title: title.trim(), visibility }).then((ok) => ok && setTitle(""));
         }}
-        className="flex gap-3"
+        className="flex flex-col gap-3 sm:flex-row"
       >
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          maxLength={120}
-          placeholder="New playlist title"
-          className="flex-1 rounded-2xl border border-white/10 bg-zinc-900/80 px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-none"
-        />
-        <button disabled={!title.trim()} className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 text-xs font-bold text-white disabled:opacity-40">
+        <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} placeholder="New collection title" className={`${field} flex-1`} />
+        <select value={visibility} onChange={(e) => setVisibility(e.target.value as CollectionVisibility)} aria-label="Who opens it" className={field}>
+          {COLLECTION_AUDIENCES.map((a) => (
+            <option key={a.value} value={a.value}>
+              {a.label}
+            </option>
+          ))}
+        </select>
+        <button disabled={!title.trim()} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-xs font-bold text-white disabled:opacity-40">
           <Plus className="h-4 w-4" /> Create
         </button>
       </form>
+      <p className="-mt-3 text-[11px] text-zinc-500">
+        {audienceOf(visibility).hint} Each video in a collection keeps its own access rule.
+      </p>
+      {error && <p className="text-xs text-rose-300">{error}</p>}
 
       {lists === null ? (
         <p className="text-xs text-zinc-500">Loading…</p>
       ) : lists.length === 0 ? (
         <div className="rounded-3xl border border-white/10 bg-zinc-900/40 p-12 text-center text-sm text-zinc-400">
-          No playlist yet. Create one, then use “Save” on any video.
+          No collection yet. Create one, then use “Save” on any video.
         </div>
       ) : (
         <ul className="glass-panel divide-y divide-white/5 rounded-3xl px-5">
           {lists.map((p) => (
-            <li key={p.id} className="flex items-center justify-between gap-3 py-3.5">
-              <Link href={`/playlists/${p.id}`} className="min-w-0">
-                <span className="block truncate text-sm font-semibold text-white hover:text-violet-300">{p.title}</span>
-                <span className="text-[11px] font-mono text-zinc-500">{p.itemsCount} videos</span>
-              </Link>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => send(`/api/playlists/${p.id}`, "PATCH", { isPrivate: !p.isPrivate })}
-                  className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-semibold text-zinc-300 hover:bg-white/5"
-                  title={p.isPrivate ? "Make public: shown on your profile" : "Make private"}
-                >
-                  {p.isPrivate ? <Lock className="h-3.5 w-3.5" /> : <Globe className="h-3.5 w-3.5 text-emerald-400" />}
-                  {p.isPrivate ? "Private" : "Public"}
-                </button>
-                <button
-                  onClick={() => window.confirm(`Delete “${p.title}”?`) && void send(`/api/playlists/${p.id}`, "DELETE")}
-                  className="rounded-lg p-2 text-zinc-400 hover:bg-rose-500/10 hover:text-rose-300"
-                  aria-label={`Delete ${p.title}`}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
+            <li key={p.id} className="py-3.5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <Link href={`/playlists/${p.id}`} className="min-w-0">
+                  <span className="block truncate text-sm font-semibold text-white hover:text-violet-300">{p.title}</span>
+                  <span className="text-[11px] font-mono text-zinc-500">
+                    {p.itemsCount} videos{p.visibility === "INVITED_ONLY" && ` · ${p.membersCount} invited`}
+                  </span>
+                </Link>
+                <div className="flex items-center gap-1">
+                  <select
+                    value={p.visibility}
+                    onChange={(e) => void send(`/api/playlists/${p.id}`, "PATCH", { visibility: e.target.value })}
+                    aria-label={`Who opens ${p.title}`}
+                    className="rounded-lg border border-white/10 bg-zinc-900 px-2 py-1.5 text-[11px] font-semibold text-zinc-200 focus:border-violet-500 focus:outline-none"
+                  >
+                    {COLLECTION_AUDIENCES.map((a) => (
+                      <option key={a.value} value={a.value}>
+                        {a.label}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={() => window.confirm(`Delete “${p.title}”?`) && void send(`/api/playlists/${p.id}`, "DELETE")}
+                    className="rounded-lg p-2 text-zinc-400 hover:bg-rose-500/10 hover:text-rose-300"
+                    aria-label={`Delete ${p.title}`}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               </div>
+              {p.visibility === "INVITED_ONLY" && <Invitations collectionId={p.id} onChange={load} />}
             </li>
           ))}
         </ul>
+      )}
+
+      {shared && shared.length > 0 && (
+        <section>
+          <h3 className="mb-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500">Shared with you</h3>
+          <ul className="glass-panel divide-y divide-white/5 rounded-3xl px-5">
+            {shared.map((p) => (
+              <li key={p.id} className="flex items-center justify-between gap-3 py-3.5">
+                <Link href={`/playlists/${p.id}`} className="min-w-0">
+                  <span className="block truncate text-sm font-semibold text-white hover:text-violet-300">{p.title}</span>
+                  <span className="text-[11px] font-mono text-zinc-500">
+                    @{p.ownerUsername} · {p.itemsCount} videos
+                  </span>
+                </Link>
+                <CollectionAudienceBadge visibility={p.visibility} className="text-[11px] text-zinc-400" />
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
     </div>
   );

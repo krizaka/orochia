@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 12 tables · 11 enums · 3 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 17 tables · 13 enums · 5 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -26,6 +26,8 @@ erDiagram
     users ||--o{ payout_requests : "creator_id"
     playlists ||--o{ playlist_items : "playlist_id"
     videos ||--o{ playlist_items : "video_id"
+    playlists ||--o{ playlist_members : "playlist_id"
+    users ||--o{ playlist_members : "user_id"
     users ||--o{ playlists : "creator_id"
     users ||--o{ profiles : "user_id"
     users ||--o{ tips_ledger : "sender_id"
@@ -33,6 +35,16 @@ erDiagram
     videos ||--o{ tips_ledger : "video_id"
     videos ||--o{ video_access_grants : "video_id"
     users ||--o{ video_access_grants : "user_id"
+    videos ||--o{ video_comments : "video_id"
+    users ||--o{ video_comments : "author_id"
+    video_comments ||--o{ video_comments : "parent_id"
+    users ||--o{ video_comments : "removed_by"
+    videos ||--o{ video_likes : "video_id"
+    users ||--o{ video_likes : "user_id"
+    videos ||--o{ video_shares : "video_id"
+    users ||--o{ video_shares : "user_id"
+    videos ||--o{ video_views : "video_id"
+    users ||--o{ video_views : "viewer_id"
     users ||--o{ videos : "creator_id"
 ```
 
@@ -132,6 +144,17 @@ erDiagram
 
 **Indexes:** `playlist_items_position_idx` (playlist_id, position) · `playlist_video_unique_idx` (unique, playlist_id, video_id)
 
+### `playlist_members`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `playlist_id` | uuid | no |  | → `playlists.id` (on delete cascade) |
+| `user_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `playlist_members_unique_idx` (unique, playlist_id, user_id) · `playlist_members_user_idx` (user_id)
+
 ### `playlists`
 
 | Column | Type | Null | Default | Notes |
@@ -140,7 +163,7 @@ erDiagram
 | `creator_id` | uuid | no |  | → `users.id` (on delete cascade) |
 | `title` | varchar(255) | no |  |  |
 | `description` | text | yes |  |  |
-| `is_private` | boolean | no | `false` |  |
+| `visibility` | collection_visibility | no | `"PRIVATE"` |  |
 | `created_at` | timestamp with time zone | no | `now()` |  |
 | `updated_at` | timestamp with time zone | no | `now()` |  |
 
@@ -214,6 +237,58 @@ erDiagram
 
 **Indexes:** `video_access_user_idx` (unique, video_id, user_id)
 
+### `video_comments`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `video_id` | uuid | no |  | → `videos.id` (on delete cascade) |
+| `author_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `parent_id` | uuid | yes |  | → `video_comments.id` (on delete cascade) |
+| `body` | text | no |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+| `edited_at` | timestamp with time zone | yes |  |  |
+| `removed_at` | timestamp with time zone | yes |  |  |
+| `removed_by` | uuid | yes |  | → `users.id` (on delete set null) |
+
+**Indexes:** `video_comments_video_created_idx` (video_id, created_at) · `video_comments_parent_idx` (parent_id)
+
+### `video_likes`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `video_id` | uuid | no |  | → `videos.id` (on delete cascade) |
+| `user_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `video_likes_once_idx` (unique, video_id, user_id) · `video_likes_user_idx` (user_id)
+
+### `video_shares`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `video_id` | uuid | no |  | → `videos.id` (on delete cascade) |
+| `user_id` | uuid | yes |  | → `users.id` (on delete set null) |
+| `channel` | share_channel | no | `"LINK"` |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `video_shares_video_idx` (video_id)
+
+### `video_views`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `video_id` | uuid | no |  | → `videos.id` (on delete cascade) |
+| `viewer_id` | uuid | yes |  | → `users.id` (on delete set null) |
+| `viewer_key` | varchar(80) | no |  |  |
+| `viewed_on` | date | no | `now()` |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `video_views_once_per_day_idx` (unique, video_id, viewer_key, viewed_on) · `video_views_video_day_idx` (video_id, viewed_on)
+
 ### `videos`
 
 | Column | Type | Null | Default | Notes |
@@ -231,6 +306,10 @@ erDiagram
 | `preview_animation_url` | text | yes |  |  |
 | `views_count` | integer | no | `0` |  |
 | `tips_count` | integer | no | `0` |  |
+| `likes_count` | integer | no | `0` |  |
+| `comments_count` | integer | no | `0` |  |
+| `shares_count` | integer | no | `0` |  |
+| `comments_enabled` | boolean | no | `true` |  |
 | `resolutions` | text[] | yes |  |  |
 | `tags` | text[] | yes |  |  |
 | `removed_at` | timestamp with time zone | yes |  |  |
@@ -244,6 +323,7 @@ erDiagram
 
 | Enum | Values |
 | :--- | :--- |
+| `collection_visibility` | `PUBLIC`, `APPROVED_FOLLOWERS_ONLY`, `CONTACTS_ONLY`, `INVITED_ONLY`, `PRIVATE` |
 | `contact_status` | `PENDING`, `ACCEPTED`, `REJECTED`, `BLOCKED` |
 | `follow_status` | `PENDING`, `APPROVED` |
 | `ledger_entry_type` | `TIP_RECEIVED`, `PLATFORM_FEE`, `CREATOR_CREDIT`, `PAYOUT_REQUESTED`, `PAYOUT_COMPLETED`, `REFUND` |
@@ -252,6 +332,7 @@ erDiagram
 | `payout_status` | `REQUESTED`, `UNDER_REVIEW`, `PROCESSING`, `SETTLED`, `FAILED` |
 | `report_reason` | `NON_CONSENSUAL`, `UNDERAGE`, `DMCA_COPYRIGHT`, `TERMS_VIOLATION`, `FRAUD_SCAM` |
 | `report_status` | `OPEN`, `IN_REVIEW`, `RESOLVED` |
+| `share_channel` | `LINK`, `X`, `WHATSAPP`, `TELEGRAM`, `EMAIL`, `OTHER` |
 | `user_role` | `ADMIN`, `CREATOR`, `MEMBER` |
 | `video_status` | `PENDING_UPLOAD`, `PROCESSING`, `READY`, `FAILED` |
 | `video_visibility` | `PUBLIC`, `CONTACTS_ONLY`, `APPROVED_FOLLOWERS_ONLY`, `TIPPED_UNLOCKED` |
@@ -261,3 +342,5 @@ erDiagram
 - `0000_minor_scarlet_spider.sql`
 - `0001_payments_and_compliance.sql`
 - `0002_social_graph_and_moderation.sql`
+- `0003_collections_permissions_and_engagement.sql`
+- `0004_drop_playlist_is_private.sql`

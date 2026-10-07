@@ -9,10 +9,10 @@ export const dynamic = "force-dynamic";
 const Patch = z.object({
   title: z.string().trim().min(1).max(120).optional(),
   description: z.string().trim().max(1000).nullish(),
-  isPrivate: z.boolean().optional(),
+  visibility: z.enum(["PUBLIC", "APPROVED_FOLLOWERS_ONLY", "CONTACTS_ONLY", "INVITED_ONLY", "PRIVATE"]).optional(),
 });
 
-/** A playlist and its videos (private playlists are visible to their owner only). */
+/** A collection and its videos, for a viewer its permission admits (others get a 404). */
 export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   try {
@@ -25,7 +25,7 @@ export async function GET(_req: NextRequest, props: { params: Promise<{ id: stri
   }
 }
 
-/** Renames a playlist, edits its description or its privacy (owner only). */
+/** Renames a collection, edits its description or who may open it (owner only). */
 export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   try {

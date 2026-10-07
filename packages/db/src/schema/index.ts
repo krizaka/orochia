@@ -2,7 +2,8 @@ import { relations } from "drizzle-orm";
 import { users, profiles } from "./users";
 import { contacts, follows } from "./contacts";
 import { videos, videoAccessGrants } from "./videos";
-import { playlists, playlistItems } from "./playlists";
+import { playlists, playlistItems, playlistMembers } from "./playlists";
+import { videoComments, videoLikes, videoShares, videoViews } from "./engagement";
 import { tipsLedger, payoutRequests } from "./ledger";
 
 export * from "./enums";
@@ -10,6 +11,7 @@ export * from "./users";
 export * from "./contacts";
 export * from "./videos";
 export * from "./playlists";
+export * from "./engagement";
 export * from "./ledger";
 export * from "./compliance";
 
@@ -42,6 +44,8 @@ export const videosRelations = relations(videos, ({ one, many }) => ({
   accessGrants: many(videoAccessGrants),
   playlistItems: many(playlistItems),
   tips: many(tipsLedger),
+  comments: many(videoComments),
+  likes: many(videoLikes),
 }));
 
 export const videoAccessGrantsRelations = relations(videoAccessGrants, ({ one }) => ({
@@ -61,6 +65,30 @@ export const playlistsRelations = relations(playlists, ({ one, many }) => ({
     references: [users.id],
   }),
   items: many(playlistItems),
+  members: many(playlistMembers),
+}));
+
+export const playlistMembersRelations = relations(playlistMembers, ({ one }) => ({
+  playlist: one(playlists, { fields: [playlistMembers.playlistId], references: [playlists.id] }),
+  user: one(users, { fields: [playlistMembers.userId], references: [users.id] }),
+}));
+
+export const videoCommentsRelations = relations(videoComments, ({ one }) => ({
+  video: one(videos, { fields: [videoComments.videoId], references: [videos.id] }),
+  author: one(users, { fields: [videoComments.authorId], references: [users.id] }),
+}));
+
+export const videoLikesRelations = relations(videoLikes, ({ one }) => ({
+  video: one(videos, { fields: [videoLikes.videoId], references: [videos.id] }),
+  user: one(users, { fields: [videoLikes.userId], references: [users.id] }),
+}));
+
+export const videoViewsRelations = relations(videoViews, ({ one }) => ({
+  video: one(videos, { fields: [videoViews.videoId], references: [videos.id] }),
+}));
+
+export const videoSharesRelations = relations(videoShares, ({ one }) => ({
+  video: one(videos, { fields: [videoShares.videoId], references: [videos.id] }),
 }));
 
 export const playlistItemsRelations = relations(playlistItems, ({ one }) => ({

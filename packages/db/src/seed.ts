@@ -9,6 +9,9 @@ import {
   tipsLedger,
   playlists,
   playlistItems,
+  playlistMembers,
+  videoComments,
+  videoLikes,
   payoutRequests,
   contacts,
   follows,
@@ -244,22 +247,51 @@ export async function runSeed(): Promise<void> {
   await db.insert(contacts).values({ requesterId: id.alex_vance, addresseeId: id.miasterling, status: "ACCEPTED" }).onConflictDoNothing();
   await db.insert(contacts).values({ requesterId: id.sam_rivers, addresseeId: id.miasterling, status: "PENDING" }).onConflictDoNothing();
 
-  // Playlists: a public collection on Elena's page, Alex's favourites.
-  const playlist = async (owner: string, title: string, description: string, isPrivate: boolean, items: string[]) => {
+  // Collections: a public one on Elena's page, Alex's favourites, one Alex shares with Sam only.
+  type Audience = "PUBLIC" | "APPROVED_FOLLOWERS_ONLY" | "CONTACTS_ONLY" | "INVITED_ONLY" | "PRIVATE";
+  const playlist = async (owner: string, title: string, description: string, visibility: Audience, items: string[], invited: string[] = []) => {
     let [row] = await db.select({ id: playlists.id }).from(playlists).where(and(eq(playlists.creatorId, id[owner]), eq(playlists.title, title))).limit(1);
-    if (!row) [row] = await db.insert(playlists).values({ creatorId: id[owner], title, description, isPrivate }).returning({ id: playlists.id });
+    if (!row) [row] = await db.insert(playlists).values({ creatorId: id[owner], title, description, visibility }).returning({ id: playlists.id });
     for (const [position, bunnyId] of items.entries()) {
       await db.insert(playlistItems).values({ playlistId: row.id, videoId: video[bunnyId], position }).onConflictDoNothing();
     }
+    for (const username of invited) {
+      await db.insert(playlistMembers).values({ playlistId: row.id, userId: id[username] }).onConflictDoNothing();
+    }
   };
-  await playlist("elenavox", "Tokyo Neon Nights", "The episodic 4K series, in order.", false, [
+  await playlist("elenavox", "Tokyo Neon Nights", "The episodic 4K series, in order.", "PUBLIC", [
     "9b3c4a12-8819-4820-a6fe-b715a3e144bb",
     "2d7f8c91-9921-4d30-b2aa-c819a5f255cc",
   ]);
-  await playlist("alex_vance", "Late-night favourites", "What I come back to after midnight.", false, [
+  await playlist("alex_vance", "Late-night favourites", "What I come back to after midnight.", "PUBLIC", [
     "7f2b1c88-4d3e-4a6f-8b9c-0d1e2f3a4b5c",
     "9b3c4a12-8819-4820-a6fe-b715a3e144bb",
   ]);
+  await playlist("alex_vance", "For Sam", "The sessions I told you about.", "INVITED_ONLY", ["7f2b1c88-4d3e-4a6f-8b9c-0d1e2f3a4b5c"], ["sam_rivers"]);
+
+  // A short discussion and a few likes on the public videos.
+  const noir = video["7f2b1c88-4d3e-4a6f-8b9c-0d1e2f3a4b5c"];
+  const [discussion] = await db.select({ id: videoComments.id }).from(videoComments).where(eq(videoComments.videoId, noir)).limit(1);
+  if (!discussion) {
+    const [first] = await db
+      .insert(videoComments)
+      .values({ videoId: noir, authorId: id.alex_vance, body: "The second song gets me every time." })
+      .returning({ id: videoComments.id });
+    await db.insert(videoComments).values({ videoId: noir, authorId: id.miasterling, parentId: first.id, body: "Recorded at 3 a.m., one take. Thank you!" });
+  }
+  for (const [username, bunnyId] of [
+    ["alex_vance", "7f2b1c88-4d3e-4a6f-8b9c-0d1e2f3a4b5c"],
+    ["sam_rivers", "7f2b1c88-4d3e-4a6f-8b9c-0d1e2f3a4b5c"],
+    ["alex_vance", "9b3c4a12-8819-4820-a6fe-b715a3e144bb"],
+  ]) {
+    await db.insert(videoLikes).values({ videoId: video[bunnyId], userId: id[username] }).onConflictDoNothing();
+  }
+  // Counters follow the rows, as the app keeps them.
+  await db.execute(sql`
+    update videos set
+      likes_count = (select count(*) from video_likes l where l.video_id = videos.id),
+      comments_count = (select count(*) from video_comments c where c.video_id = videos.id and c.removed_at is null),
+      shares_count = (select count(*) from video_shares s where s.video_id = videos.id)`);
 
   // One open report for the moderation queue.
   const [report] = await db.select({ id: complianceReports.id }).from(complianceReports).where(eq(complianceReports.reporterEmail, "rights@example.com")).limit(1);

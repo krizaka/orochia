@@ -71,16 +71,21 @@
       "id": "data",
       "name": "Data persistence",
       "path": "packages/db",
-      "tablesCount": 12,
+      "tablesCount": 17,
       "tables": [
         "compliance_reports",
         "contacts",
         "follows",
+        "video_views",
+        "video_likes",
+        "video_comments",
+        "video_shares",
         "tips_ledger",
         "payment_intents",
         "payout_requests",
         "playlists",
         "playlist_items",
+        "playlist_members",
         "users",
         "profiles",
         "videos",
@@ -196,18 +201,6 @@
       "summary": "Catalogue statistics for administrators, from the database."
     },
     {
-      "method": "GET",
-      "path": "/api/bunny/collections",
-      "access": "public · session-aware",
-      "summary": "Public collections, plus the signed-in creator's own private ones."
-    },
-    {
-      "method": "POST",
-      "path": "/api/bunny/collections",
-      "access": "session · CREATOR / ADMIN",
-      "summary": "Creates a collection owned by the signed-in creator."
-    },
-    {
       "method": "POST",
       "path": "/api/contacts",
       "access": "session · MEMBER / CREATOR / ADMIN",
@@ -241,7 +234,7 @@
       "method": "GET",
       "path": "/api/creators/[username]",
       "access": "public · session-aware",
-      "summary": "A creator's public page: profile, videos, public playlists and, signed in, how you relate to them."
+      "summary": "A creator's public page: profile, videos, the collections you may open and, signed in, how you relate to them."
     },
     {
       "method": "DELETE",
@@ -337,13 +330,13 @@
       "method": "GET",
       "path": "/api/playlists/[id]",
       "access": "public · session-aware",
-      "summary": "A playlist and its videos (private playlists are visible to their owner only)."
+      "summary": "A collection and its videos, for a viewer its permission admits (others get a 404)."
     },
     {
       "method": "PATCH",
       "path": "/api/playlists/[id]",
       "access": "session · MEMBER / CREATOR / ADMIN",
-      "summary": "Renames a playlist, edits its description or its privacy (owner only)."
+      "summary": "Renames a collection, edits its description or who may open it (owner only)."
     },
     {
       "method": "DELETE",
@@ -356,6 +349,30 @@
       "path": "/api/playlists/[id]/items",
       "access": "session · MEMBER / CREATOR / ADMIN",
       "summary": "Adds a video at the end of a playlist (owner only, idempotent)."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/playlists/[id]/members",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Withdraws an invitation (owner only)."
+    },
+    {
+      "method": "GET",
+      "path": "/api/playlists/[id]/members",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "The accounts invited to your collection (owner only)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/playlists/[id]/members",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Invites an account to your collection by username (owner only, idempotent)."
+    },
+    {
+      "method": "GET",
+      "path": "/api/playlists/shared",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Collections other accounts invited you to."
     },
     {
       "method": "POST",
@@ -373,13 +390,49 @@
       "method": "PATCH",
       "path": "/api/videos/[id]",
       "access": "session · CREATOR",
-      "summary": "The creator edits their video: title, description, visibility, unlock price, tags."
+      "summary": "The creator edits their video: title, description, visibility, unlock price, tags, comments open."
+    },
+    {
+      "method": "GET",
+      "path": "/api/videos/[id]/comments",
+      "access": "public · session-aware",
+      "summary": "The comments of a video you may watch, oldest first; removed ones keep their place without text."
+    },
+    {
+      "method": "POST",
+      "path": "/api/videos/[id]/comments",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Comments on a video you may watch, or replies to one of its comments."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/videos/[id]/comments/[commentId]",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Removes a comment: its author, the video's creator or an operator."
     },
     {
       "method": "GET",
       "path": "/api/videos/[id]/details",
-      "access": "public",
-      "summary": "A video's public metadata; the stream itself is only served by /stream after authorisation."
+      "access": "public · session-aware",
+      "summary": "A video's public metadata and figures (and whether you liked it); the stream is only served by /stream."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/videos/[id]/like",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Removes your like (idempotent)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/videos/[id]/like",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Likes a video you may watch (idempotent)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/videos/[id]/shares",
+      "access": "public · session-aware",
+      "summary": "Counts a share of a video you may watch; the shared link still enforces the video's access."
     },
     {
       "method": "GET",

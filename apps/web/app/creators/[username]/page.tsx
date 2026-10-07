@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { ShieldCheck, Users, Eye, Film } from "lucide-react";
 import { VideoCard } from "@/components/VideoCard";
 import { creatorByUsername, creatorVideos } from "@/lib/queries";
-import { publicPlaylists } from "@/lib/playlists";
+import { visiblePlaylists } from "@/lib/playlists";
+import { getCurrentUser } from "@/lib/auth";
 import { RelationshipActions } from "@/components/RelationshipActions";
 import { PlaylistCard } from "@/components/PlaylistCard";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
@@ -24,7 +25,8 @@ export default async function CreatorPage(props: { params: Promise<{ username: s
   const params = await props.params;
   const creator = await creatorByUsername(params.username.toLowerCase());
   if (!creator) notFound();
-  const [videos, playlists] = await Promise.all([creatorVideos(creator.id), publicPlaylists(creator.id)]);
+  const viewer = await getCurrentUser();
+  const [videos, playlists] = await Promise.all([creatorVideos(creator.id), visiblePlaylists(creator.id, viewer?.id ?? null)]);
 
   const stats = [
     { icon: Users, label: "Patrons", value: creator.patrons },

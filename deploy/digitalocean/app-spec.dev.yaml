@@ -5,6 +5,11 @@
 # Secret values live in the app (Settings → Environment Variables), entered once; pushes to the branch redeploy.
 name: orochia-dev
 region: tor
+# NEXT_PUBLIC_APP_URL = ${APP_URL}, the primary domain once it is active.
+domains:
+  # DNS stays at the registrar (Porkbun): add the CNAME App Platform shows for this name.
+  - domain: dev.orochia.com
+    type: PRIMARY
 services:
   - name: web
     github:
@@ -87,6 +92,18 @@ services:
       - key: METRICS_AUTH_TOKEN
         scope: RUN_TIME
         type: SECRET
+      - key: MAILGUN_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: MAILGUN_DOMAIN
+        scope: RUN_TIME
+        value: "mg.orochia.com"
+      - key: MAIL_FROM
+        scope: RUN_TIME
+        value: "Orochia <no-reply@mg.orochia.com>"
+      - key: COMPLIANCE_ALERT_EMAIL
+        scope: RUN_TIME
+        type: GENERAL
       - key: BUNNY_STORAGE_API_KEY
         scope: RUN_TIME
         type: SECRET

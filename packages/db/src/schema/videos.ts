@@ -7,6 +7,7 @@ import {
   integer,
   index,
   uniqueIndex,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { users } from "./users";
 import { videoVisibilityEnum, videoStatusEnum } from "./enums";
@@ -29,6 +30,12 @@ export const videos = pgTable(
     previewAnimationUrl: text("preview_animation_url"),
     viewsCount: integer("views_count").default(0).notNull(),
     tipsCount: integer("tips_count").default(0).notNull(),
+    /** Counters kept in step with video_views / video_likes / video_comments / video_shares. */
+    likesCount: integer("likes_count").default(0).notNull(),
+    commentsCount: integer("comments_count").default(0).notNull(),
+    sharesCount: integer("shares_count").default(0).notNull(),
+    /** The creator can close the discussion; existing comments stay readable. */
+    commentsEnabled: boolean("comments_enabled").default(true).notNull(),
     resolutions: text("resolutions").array(),
     tags: text("tags").array(),
     /** Taken down by an operator (DMCA, terms): hidden everywhere and never signed for playback. */

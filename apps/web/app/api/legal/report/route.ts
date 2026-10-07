@@ -5,6 +5,8 @@ import { eq } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { errorResponse, jsonError } from "@/lib/http";
+import { sendMail } from "@/lib/mail";
+import { appUrl } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
 
@@ -45,6 +47,30 @@ export async function POST(req: NextRequest) {
         reporterId: reporter?.id ?? null,
       })
       .returning({ id: complianceReports.id });
+
+    // Persisted first; the e-mails only notify (best-effort, never delay or fail the report).
+    const urgent = input.reason === "UNDERAGE" || input.reason === "NON_CONSENSUAL";
+    const alertTo = process.env.COMPLIANCE_ALERT_EMAIL;
+    if (alertTo) {
+      void sendMail({
+        to: alertTo,
+        replyTo: input.reporterEmail,
+        subject: `${urgent ? "[URGENT] " : ""}Content report ${input.reason} — ${input.videoTitle}`,
+        text: [
+          `Ticket: ${report.id}`,
+          `Reason: ${input.reason}${urgent ? " (triage first)" : ""}`,
+          `Video: ${input.videoTitle}${video ? ` — ${appUrl()}/watch/${video.id}` : " (not matched)"}`,
+          `Reporter: ${input.reporterEmail}${reporter ? ` (@${reporter.username})` : " (anonymous)"}`,
+          "",
+          input.details,
+        ].join("\n"),
+      });
+    }
+    void sendMail({
+      to: input.reporterEmail,
+      subject: `Orochia — report received (${report.id.slice(0, 8)})`,
+      text: `We received your report about "${input.videoTitle}".\n\nTicket: ${report.id}\nIt will be reviewed by our compliance team${urgent ? " with priority" : ""}.\n\n— Orochia`,
+    });
 
     return NextResponse.json(
       { success: true, ticketId: report.id, status: "OPEN", message: "Report received. It will be reviewed." },

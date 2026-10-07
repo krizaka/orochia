@@ -4,14 +4,15 @@ import { getCurrentUser } from "@/lib/auth";
 import { evaluateVideoAccess } from "@/lib/access";
 import { BunnyStreamClient } from "@orochia/media";
 import { db, videos } from "@orochia/db";
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
+import { recordView } from "@/lib/engagement";
 import { bunnyStreamConfig, STREAM_TOKEN_TTL_SECONDS } from "@/lib/env";
 import { errorResponse, jsonError } from "@/lib/http";
 
 export const dynamic = "force-dynamic";
 
 /** Authorises a viewer and returns a short-lived signed HLS URL (AGENTS.md §2.A). */
-export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   try {
     const id = z.string().uuid().safeParse(params.id);
@@ -34,10 +35,12 @@ export async function GET(_req: NextRequest, props: { params: Promise<{ id: stri
       STREAM_TOKEN_TTL_SECONDS,
     );
 
-    db.update(videos)
-      .set({ viewsCount: sql`${videos.viewsCount} + 1` })
-      .where(eq(videos.id, video.id))
-      .catch((err: unknown) => console.warn("Failed to increment views:", err));
+    // A view counts once per viewer and day (lib/engagement.ts); counting never blocks playback.
+    const network = {
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null,
+      userAgent: req.headers.get("user-agent"),
+    };
+    recordView(video, user?.id ?? null, network).catch((err: unknown) => console.warn("Failed to record view:", err));
 
     return NextResponse.json({
       allowed: true,
