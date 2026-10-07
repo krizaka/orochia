@@ -32,6 +32,10 @@ services:
     envs:
       - key: NODE_ENV
         value: production
+      # Only production is indexed: dev answers noindex everywhere and robots.txt disallows all.
+      - key: SEARCH_INDEXING
+        scope: RUN_AND_BUILD_TIME
+        value: "off"
       - key: DATABASE_URL
         scope: RUN_AND_BUILD_TIME
         value: ${orochia-db.DATABASE_URL}

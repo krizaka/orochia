@@ -235,5 +235,14 @@ for (const p of ["/", "/explore", "/explore?q=tokyo", "/explore?tag=acoustic", "
 const plid = (await anon.call("/api/creators/elenavox")).json.playlists[0].id;
 check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status === 200);
 
+// Search and AI discovery: public pages only
+const sitemapXml = await (await fetch(`${B}/sitemap.xml`)).text();
+check("sitemap lists public videos and creators", sitemapXml.includes(`/watch/${noir.id}`) && sitemapXml.includes("/creators/elenavox"));
+check("sitemap never lists an invited-only video", !sitemapXml.includes(roughCut.id));
+check("invited-only watch page is noindex", /<meta name="robots" content="noindex/.test(await (await fetch(`${B}/watch/${roughCut.id}`)).text()));
+check("public watch page carries a VideoObject", (await (await fetch(`${B}/watch/${noir.id}`)).text()).includes('"@type":"VideoObject"'));
+check("robots.txt keeps accounts out", (await (await fetch(`${B}/robots.txt`)).text()).includes("Disallow: /dashboard"));
+check("llms.txt served", (await fetch(`${B}/llms.txt`)).status === 200);
+
 console.log(failures ? `\n${failures} FAILED` : "\nALL PASSED");
 process.exit(failures ? 1 : 0);

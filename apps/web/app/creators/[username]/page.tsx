@@ -8,15 +8,23 @@ import { getCurrentUser } from "@/lib/auth";
 import { RelationshipActions } from "@/components/RelationshipActions";
 import { PlaylistCard } from "@/components/PlaylistCard";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
+import { JsonLd } from "@/components/JsonLd";
+import { profileSchema } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(props: { params: Promise<{ username: string }> }) {
   const params = await props.params;
   const creator = await creatorByUsername(params.username.toLowerCase()).catch(() => null);
+  if (!creator) return { title: "Creator" };
+  const description = (creator.bio ?? `${creator.displayName} — independent creator on Orochia, ${creator.videosCount} videos.`).slice(0, 300);
+  const images = creator.avatarUrl ? [{ url: creator.avatarUrl, alt: creator.displayName }] : undefined;
   return {
-    title: creator ? `${creator.displayName} (@${creator.username}) — Orochia` : "Creator — Orochia",
-    description: creator?.bio ?? "Independent creator on Orochia.",
+    title: `${creator.displayName} (@${creator.username})`,
+    description,
+    alternates: { canonical: `/creators/${creator.username}` },
+    openGraph: { type: "profile", url: `/creators/${creator.username}`, title: `${creator.displayName} on Orochia`, description, images },
+    twitter: { card: "summary", title: `${creator.displayName} on Orochia`, description },
   };
 }
 
@@ -36,6 +44,7 @@ export default async function CreatorPage(props: { params: Promise<{ username: s
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <JsonLd data={profileSchema(creator)} />
       <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r from-violet-950/60 via-zinc-950 to-fuchsia-950/50">
         {creator.bannerUrl && (
           <img src={creator.bannerUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-30" />

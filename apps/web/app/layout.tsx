@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { AgeVerificationModal } from "@/components/AgeVerificationModal";
 import { AuthProvider } from "@/lib/auth-context";
+import { JsonLd } from "@/components/JsonLd";
+import { INDEXABLE, NOINDEX, SITE_DESCRIPTION, SITE_NAME, SITE_URL, siteGraph } from "@/lib/seo";
 import "./globals.css";
 
 // Self-hosted at build time by next/font: no request to Google from the visitor's browser.
@@ -11,9 +13,29 @@ const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600", "700",
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-jakarta", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Orochia — Adult-Friendly Open-Source Video & Creator Platform",
-  description:
-    "High-performance open-source video streaming and creator community powered by Bunny.net Stream API and adult-compliant payment gateways.",
+  metadataBase: new URL(SITE_URL),
+  title: { default: "Orochia — Open-Source Video Platform for Independent Creators", template: "%s — Orochia" },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    "creator video platform",
+    "independent creators",
+    "open-source video platform",
+    "adult-friendly creator platform",
+    "HLS streaming",
+    "creator monetization",
+    "tips and paid unlocks",
+    "2257 compliance",
+    "Bunny Stream",
+  ],
+  authors: [{ name: "Krizaka", url: "https://krizaka.com" }],
+  creator: "Krizaka",
+  publisher: "Krizaka",
+  openGraph: { type: "website", siteName: SITE_NAME, url: "/", title: "Orochia — the platform independent creators own", description: SITE_DESCRIPTION, locale: "en_US" },
+  twitter: { card: "summary_large_image", title: "Orochia — the platform independent creators own", description: SITE_DESCRIPTION },
+  robots: !INDEXABLE ? NOINDEX : { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-video-preview": -1 } },
+  // Adult content labelled as such: SafeSearch and parental filters classify the site correctly.
+  other: { rating: "adult", RATING: "RTA-5042-1996-1400-1577-RTA" },
 };
 
 export default function RootLayout({
@@ -24,6 +46,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark ${outfit.variable} ${jakarta.variable}`}>
       <body className="min-h-screen bg-zinc-950 text-zinc-100 antialiased selection:bg-violet-600 selection:text-white">
+        <JsonLd data={siteGraph()} />
         <AuthProvider>
           <AgeVerificationModal />
           <Navbar />

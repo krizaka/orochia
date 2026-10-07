@@ -7,8 +7,31 @@ import { VideoCard } from "@/components/VideoCard";
 import { getCurrentUser } from "@/lib/auth";
 import { HttpError } from "@/lib/http";
 import { playlistWithItems } from "@/lib/playlists";
+import type { Metadata } from "next";
+import { db, playlists, users } from "@orochia/db";
+import { eq } from "drizzle-orm";
+import { NOINDEX } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
+
+/** Only public collections are indexed; the others answer with a neutral, noindex title. */
+export async function generateMetadata(props: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await props.params;
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return { title: "Collection", robots: NOINDEX };
+  const [row] = await db
+    .select({ title: playlists.title, description: playlists.description, visibility: playlists.visibility, owner: users.username })
+    .from(playlists)
+    .innerJoin(users, eq(users.id, playlists.creatorId))
+    .where(eq(playlists.id, id))
+    .limit(1)
+    .catch(() => []);
+  if (!row || row.visibility !== "PUBLIC") return { title: "Collection", robots: NOINDEX };
+  return {
+    title: `${row.title} — a collection by @${row.owner}`,
+    description: row.description ?? `A collection of videos curated by @${row.owner} on Orochia.`,
+    alternates: { canonical: `/playlists/${id}` },
+  };
+}
 
 /** A collection, for the viewers its permission admits (others get a 404). Each play is still access-checked. */
 export default async function PlaylistPage(props: { params: Promise<{ id: string }> }) {

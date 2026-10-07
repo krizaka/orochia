@@ -1,0 +1,42 @@
+# Orochia
+
+> Orochia is an open-source (Apache-2.0), adult-friendly video platform for independent creators,
+> made by Krizaka (Montréal). Creators publish 4K videos and decide exactly who watches each one;
+> viewers follow, comment, like, share, tip and unlock. Every playback link is signed for five
+> minutes, payments are confirmed by the payment gateway and settled exactly once into a
+> double-entry ledger, and creators are verified under 18 U.S.C. § 2257 before they upload.
+> Adults only (18+).
+
+## What creators can do
+
+- Choose who watches each video: everyone, approved followers, contacts, people who tipped to
+  unlock it (with a minimum the creator sets), or an invited audience — people invited one by one
+  or reusable audience lists ("Close friends") that stay private.
+- Organise videos into collections, each opened to everyone, followers, contacts, invited people
+  or lists, or kept private. A collection never opens a video its own rule keeps closed.
+- Earn tips and paid unlocks through adult-friendly gateways (CCBill, Segpay, crypto via
+  NOWPayments); balances are read from an immutable ledger; request payouts.
+- See views (counted once per viewer and day), likes, comments and shares; moderate or close
+  comments.
+
+## Key pages
+
+- Home and feed: https://orochia.com/
+- Explore (search creators, videos, tags): https://orochia.com/explore
+- Creator pages: https://orochia.com/creators/{username}
+- Legal: https://orochia.com/legal/terms · https://orochia.com/legal/privacy ·
+  https://orochia.com/legal/2257 · https://orochia.com/legal/dmca
+
+## For developers and operators
+
+- Source code: https://github.com/krizaka/orochia (web app and API, Next.js + PostgreSQL),
+  https://github.com/krizaka/orochia-admin (operator console),
+  https://github.com/krizaka/orochia-design-system
+- Documentation (architecture, API contracts, database, deployment):
+  https://krizaka.com/en/products/orochia/docs
+- Product overview: https://krizaka.com/en/products/orochia
+- Self-hostable: Docker Compose or DigitalOcean App Platform; Bunny Stream for video delivery.
+
+## Made by
+
+Krizaka — open-source software studio in Montréal, Québec: https://krizaka.com

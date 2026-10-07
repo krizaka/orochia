@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { FileCheck, ArrowLeft } from "lucide-react";
 
-export const metadata = {
+export const metadata = { alternates: { canonical: "/legal/2257" },
   title: "18 U.S.C. § 2257 Record-Keeping Notice — Orochia",
   description: "Mandatory compliance statement regarding record-keeping pursuant to 18 U.S.C. § 2257.",
 };

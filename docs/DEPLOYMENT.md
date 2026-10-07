@@ -15,6 +15,7 @@
 | `DATABASE_CA_CERT` | managed DB | CA of a managed PostgreSQL (`${<db>.CA_CERT}` on App Platform): TLS verified against it. |
 | `MAILGUN_API_KEY`, `MAILGUN_DOMAIN` (+ `MAILGUN_API_URL`, `MAIL_FROM`) | — | Transactional e-mail (sending subdomain `mg.orochia.com`). Without them nothing is sent. |
 | `COMPLIANCE_ALERT_EMAIL` | — | Receives every content report (`[URGENT]` for underage / non-consensual). |
+| `SEARCH_INDEXING=off` | dev / preview | Every page noindex, robots.txt disallows all: only production is indexed (build time). |
 | `OROCHIA_OWNER_EMAIL`, `_USERNAME`, `_NAME`, `_PASSWORD` | recommended | The default user (owner, ADMIN), applied by the release job — see *Owner account*. |
 | Gateway credentials | at least one | See `.env.example`. A gateway is offered only when **all** its variables are set. |
 

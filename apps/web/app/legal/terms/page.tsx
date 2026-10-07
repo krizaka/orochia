@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Shield, ArrowLeft, CheckCircle2 } from "lucide-react";
 
-export const metadata = {
+export const metadata = { alternates: { canonical: "/legal/terms" },
   title: "Terms of Service — Orochia",
   description: "Terms of Service, Performer Responsibilities, and Acceptable Use Policy for Orochia.",
 };

@@ -1,4 +1,4 @@
-import { db, users, profiles, videos, videoAccessGrants, tipsLedger, payoutRequests } from "@orochia/db";
+import { db, users, profiles, videos, videoAccessGrants, tipsLedger, payoutRequests, playlists } from "@orochia/db";
 import { and, desc, eq, ilike, isNull, ne, or, sql, type SQL } from "drizzle-orm";
 import { getCreatorAvailableBalanceCents } from "@orochia/payments";
 import type { SessionUser } from "./auth";
@@ -414,4 +414,33 @@ export async function catalogueStats() {
     videosByStatus: byStatus,
     totalViews: rows.reduce((sum, r) => sum + Number(r.views), 0),
   };
+}
+
+/**
+ * What the sitemap lists: listable videos (never invited-only), the creators who publish them, and
+ * public collections of active accounts — each with its last change.
+ */
+export async function sitemapEntries(limit = 20000) {
+  const [videoRows, creatorRows, collectionRows] = await Promise.all([
+    db
+      .select({ id: videos.id, updatedAt: videos.updatedAt })
+      .from(videos)
+      .innerJoin(users, eq(users.id, videos.creatorId))
+      .where(listable())
+      .orderBy(desc(videos.updatedAt))
+      .limit(limit),
+    db
+      .select({ username: users.username, updatedAt: sql<Date>`max(${videos.updatedAt})` })
+      .from(videos)
+      .innerJoin(users, eq(users.id, videos.creatorId))
+      .where(listable())
+      .groupBy(users.username),
+    db
+      .select({ id: playlists.id, updatedAt: playlists.updatedAt })
+      .from(playlists)
+      .innerJoin(users, eq(users.id, playlists.creatorId))
+      .where(and(eq(playlists.visibility, "PUBLIC"), isNull(users.suspendedAt)))
+      .limit(limit),
+  ]);
+  return { videos: videoRows, creators: creatorRows, collections: collectionRows };
 }

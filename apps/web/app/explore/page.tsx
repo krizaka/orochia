@@ -6,7 +6,11 @@ import { popularTags, searchVideos } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Explore — Orochia", description: "Search Orochia: creators, videos and tags." };
+export const metadata = {
+  title: "Explore creators and videos",
+  description: "Search Orochia: independent creators, their videos, collections and tags.",
+  alternates: { canonical: "/explore" },
+};
 
 const PAGE = 24;
 

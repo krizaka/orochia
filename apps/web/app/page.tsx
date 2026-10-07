@@ -6,6 +6,8 @@ import { listFeed, featuredCreator } from "@/lib/queries";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { Flame, Shield, Sparkles, Tv, Lock, ArrowRight, LayoutDashboard, User, CheckCircle2 } from "lucide-react";
 
+export const metadata = { alternates: { canonical: "/" } };
+
 export const dynamic = "force-dynamic";
 
 async function loadHome() {

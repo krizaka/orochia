@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { AlertCircle, ArrowLeft, Mail } from "lucide-react";
 
-export const metadata = {
+export const metadata = { alternates: { canonical: "/legal/dmca" },
   title: "DMCA Copyright Notice & Takedown Policy — Orochia",
   description: "Digital Millennium Copyright Act (17 U.S.C. § 512) notification procedures and agent contacts.",
 };

@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Flame, Shield, Award, Users, Key, Zap, Lock, ArrowLeft, ArrowRight } from "lucide-react";
 
-export const metadata = {
+export const metadata = { alternates: { canonical: "/codex" },
   title: "The Orochia Codex — Community Story & Sovereign Manifesto",
   description: "The founding lore and the 7 Tenets of the Sovereign Creator Community.",
 };

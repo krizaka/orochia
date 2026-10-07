@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Lock, ArrowLeft } from "lucide-react";
 
-export const metadata = {
+export const metadata = { alternates: { canonical: "/legal/privacy" },
   title: "Privacy Policy — Orochia",
   description: "Privacy-first standards, zero surveillance advertising, and cryptographic data protection.",
 };
