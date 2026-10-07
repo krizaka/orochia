@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (60)
+## Endpoints (64)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -40,6 +40,13 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/legal/report` | public · session-aware | Content reports. |
 | `GET` | `/api/me/dashboard` | session · ADMIN / CREATOR / MEMBER | — |
 | `PATCH` | `/api/me/followers/[id]` | session · CREATOR | A creator approves a follower (opening followers-only videos to them) or removes them. |
+| `GET` | `/api/me/lists` | session · MEMBER / CREATOR / ADMIN | Your reusable audience lists (private to you), with their size. |
+| `POST` | `/api/me/lists` | session · MEMBER / CREATOR / ADMIN | Creates an audience list (names are unique per account). |
+| `DELETE` | `/api/me/lists/[id]` | session · MEMBER / CREATOR / ADMIN | Deletes one of your lists; the videos and collections it opened close to its members. |
+| `PATCH` | `/api/me/lists/[id]` | session · MEMBER / CREATOR / ADMIN | Renames one of your lists. |
+| `DELETE` | `/api/me/lists/[id]/members` | session · MEMBER / CREATOR / ADMIN | Removes someone from one of your lists (`?userId=`): what the list opened closes to them. |
+| `GET` | `/api/me/lists/[id]/members` | session · MEMBER / CREATOR / ADMIN | The people in one of your lists. |
+| `POST` | `/api/me/lists/[id]/members` | session · MEMBER / CREATOR / ADMIN | Adds an account to one of your lists by username (idempotent; the list stays private). |
 | `GET` | `/api/me/network` | session · MEMBER / CREATOR / ADMIN | Your followers, the creators you follow, your contacts and pending requests. |
 | `PUT` | `/api/me/profile` | session · ADMIN / CREATOR / MEMBER | Updates the signed-in user's own profile. |
 | `GET` | `/api/metrics` | bearer token | Prometheus metrics, behind a bearer token (METRICS_AUTH_TOKEN). |
@@ -52,9 +59,6 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `PATCH` | `/api/playlists/[id]` | session · MEMBER / CREATOR / ADMIN | Renames a collection, edits its description or who may open it (owner only). |
 | `DELETE` | `/api/playlists/[id]/items` | session · MEMBER / CREATOR / ADMIN | Removes a video from a playlist (owner only). |
 | `POST` | `/api/playlists/[id]/items` | session · MEMBER / CREATOR / ADMIN | Adds a video at the end of a playlist (owner only, idempotent). |
-| `DELETE` | `/api/playlists/[id]/members` | session · MEMBER / CREATOR / ADMIN | Withdraws an invitation (owner only). |
-| `GET` | `/api/playlists/[id]/members` | session · MEMBER / CREATOR / ADMIN | The accounts invited to your collection (owner only). |
-| `POST` | `/api/playlists/[id]/members` | session · MEMBER / CREATOR / ADMIN | Invites an account to your collection by username (owner only, idempotent). |
 | `GET` | `/api/playlists/shared` | session · MEMBER / CREATOR / ADMIN | Collections other accounts invited you to. |
 | `POST` | `/api/uploads` | session · role depends on the request | Stores an avatar (any account), a thumbnail or a 2257 document (creators); size and type checked per kind. |
 | `DELETE` | `/api/videos/[id]` | session · CREATOR | The creator deletes their video. |
@@ -72,10 +76,15 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/webhooks/bunny` | signed webhook | — |
 | `POST` | `/api/webhooks/payments/[gateway]` | signed webhook | Gateway payment notifications. |
 
-## Database tables (17)
+## Database tables (22)
 
 | Table | Drizzle export | Defined in |
 | :--- | :--- | :--- |
+| `audience_lists` | `audienceLists` | `packages/db/src/schema/audiences.ts` |
+| `audience_list_members` | `audienceListMembers` | `packages/db/src/schema/audiences.ts` |
+| `video_viewers` | `videoViewers` | `packages/db/src/schema/audiences.ts` |
+| `video_audience_lists` | `videoAudienceLists` | `packages/db/src/schema/audiences.ts` |
+| `playlist_audience_lists` | `playlistAudienceLists` | `packages/db/src/schema/audiences.ts` |
 | `compliance_reports` | `complianceReports` | `packages/db/src/schema/compliance.ts` |
 | `contacts` | `contacts` | `packages/db/src/schema/contacts.ts` |
 | `follows` | `follows` | `packages/db/src/schema/contacts.ts` |

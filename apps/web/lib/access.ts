@@ -1,9 +1,10 @@
-import { db, videos, videoAccessGrants, contacts, follows, playlistMembers } from "@orochia/db";
+import { db, videos, videoAccessGrants, contacts, follows } from "@orochia/db";
+import { isInvited } from "./audiences";
 import { eq, and, or } from "drizzle-orm";
 
 export interface AccessEvaluation {
   allowed: boolean;
-  reason?: "PAYWALL_REQUIRED" | "CONTACTS_ONLY" | "FOLLOWERS_ONLY" | "AGE_VERIFICATION_REQUIRED" | "NOT_FOUND";
+  reason?: "PAYWALL_REQUIRED" | "CONTACTS_ONLY" | "FOLLOWERS_ONLY" | "INVITED_ONLY" | "AGE_VERIFICATION_REQUIRED" | "NOT_FOUND";
   minTipAmountCents?: number;
   creatorId?: string;
   videoTitle?: string;
@@ -49,12 +50,7 @@ export async function canOpenCollection(
   if (!viewerId || collection.visibility === "PRIVATE") return false;
   if (collection.visibility === "APPROVED_FOLLOWERS_ONLY") return isApprovedFollower(viewerId, collection.ownerId);
   if (collection.visibility === "CONTACTS_ONLY") return areContacts(viewerId, collection.ownerId);
-  const [member] = await db
-    .select({ id: playlistMembers.id })
-    .from(playlistMembers)
-    .where(and(eq(playlistMembers.playlistId, collection.id), eq(playlistMembers.userId, viewerId)))
-    .limit(1);
-  return Boolean(member);
+  return isInvited("collection", collection.id, viewerId);
 }
 
 /**
@@ -100,6 +96,9 @@ export async function evaluateVideoAccess(
     if (video.visibility === "APPROVED_FOLLOWERS_ONLY") {
       return { allowed: false, reason: "FOLLOWERS_ONLY", creatorId: video.creatorId, videoTitle: video.title };
     }
+    if (video.visibility === "INVITED_ONLY") {
+      return { allowed: false, reason: "INVITED_ONLY", creatorId: video.creatorId, videoTitle: video.title };
+    }
     return { allowed: false, reason: "CONTACTS_ONLY", creatorId: video.creatorId, videoTitle: video.title };
   }
 
@@ -124,7 +123,14 @@ export async function evaluateVideoAccess(
     };
   }
 
-  // 5. Paywalled / Tipped video check
+  // 5. Invited viewers: one by one, or through one of the creator's audience lists.
+  if (video.visibility === "INVITED_ONLY") {
+    return (await isInvited("video", video.id, viewerId))
+      ? { allowed: true, creatorId: video.creatorId, videoTitle: video.title }
+      : { allowed: false, reason: "INVITED_ONLY", creatorId: video.creatorId, videoTitle: video.title };
+  }
+
+  // 6. Paywalled / Tipped video check
   if (video.visibility === "TIPPED_UNLOCKED") {
     const [grant] = await db
       .select()

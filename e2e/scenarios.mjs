@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * End-to-end feature scenarios against a running Orochia on a freshly seeded database:
- * approved followers, contacts, collections and their permissions, views, likes, comments, shares, search, creator edits, takedowns, suspensions and
+ * approved followers, contacts, invited-only videos and audience lists, collections and their permissions, views, likes, comments, shares, search, creator edits, takedowns, suspensions and
  * role changes — each checked through the HTTP API with real sessions.
  *
  *   npm run db:reset -- --yes && npm run dev      # in another terminal
@@ -68,6 +68,42 @@ check("follow mia → PENDING", f.json.follow === "PENDING");
 check("relationship visible on creator page", (await sam.call("/api/creators/miasterling")).json.relationship?.follow === "PENDING");
 check("unfollow", (await sam.call("/api/creators/miasterling/follow", "DELETE")).json.follow === null);
 
+// Invited-only videos and reusable audience lists
+const elenaUploads = (await elena.call("/api/me/dashboard")).json.data.uploads;
+const roughCut = elenaUploads.find((v) => v.title.startsWith("Inner Circle"));
+check("invited-only video not listed in the feed", !(await anon.call("/api/feed?limit=60")).json.videos.some((v) => v.id === roughCut.id));
+check("…nor on the creator's page", !(await anon.call("/api/creators/elenavox")).json.videos.some((v) => v.id === roughCut.id));
+check("its details → 404 for a stranger", (await sam.call(`/api/videos/${roughCut.id}/details`)).status === 404);
+check("list member (alex) watches it", (await alex.call(`/api/videos/${roughCut.id}/stream`)).json.allowed === true);
+check("…and sees its details", (await alex.call(`/api/videos/${roughCut.id}/details`)).status === 200);
+check("stranger (sam) → INVITED_ONLY", (await sam.call(`/api/videos/${roughCut.id}/stream`)).json.reason === "INVITED_ONLY");
+check("author watches it", (await elena.call(`/api/videos/${roughCut.id}/stream`)).json.allowed === true);
+const lists = (await elena.call("/api/me/lists")).json.lists;
+const inner = lists.find((l) => l.name === "Inner circle");
+check("elena's lists, with size", inner?.membersCount === 1);
+check("lists are private", (await alex.call(`/api/me/lists/${inner.id}/members`)).status === 404);
+check("duplicate list name → 409", (await elena.call("/api/me/lists", "POST", { name: "Inner circle" })).status === 409);
+check("add sam to the list", (await elena.call(`/api/me/lists/${inner.id}/members`, "POST", { username: "sam_rivers" })).status === 201);
+check("sam now watches it (live membership)", (await sam.call(`/api/videos/${roughCut.id}/stream`)).json.allowed === true);
+const samId = (await elena.call(`/api/me/lists/${inner.id}/members`)).json.members.find((m) => m.username === "sam_rivers").userId;
+check("remove sam from the list", (await elena.call(`/api/me/lists/${inner.id}/members?userId=${samId}`, "DELETE")).status === 200);
+check("sam shut out again", (await sam.call(`/api/videos/${roughCut.id}/stream`)).json.reason === "INVITED_ONLY");
+check("invite mia directly", (await elena.call(`/api/videos/${roughCut.id}/audience`, "POST", { username: "miasterling" })).status === 201);
+check("mia watches it", (await mia.call(`/api/videos/${roughCut.id}/stream`)).json.allowed === true);
+const audience = (await elena.call(`/api/videos/${roughCut.id}/audience`)).json;
+check("audience: 1 person + 1 list", audience.members?.length === 1 && audience.lists?.length === 1);
+check("another creator cannot read it", (await mia.call(`/api/videos/${roughCut.id}/audience`)).status === 404);
+check("cannot attach someone else's list", (await mia.call(`/api/videos/${noir.id}/audience`, "POST", { listId: inner.id })).status === 404);
+check("detach the list", (await elena.call(`/api/videos/${roughCut.id}/audience?listId=${inner.id}`, "DELETE")).status === 200);
+check("alex shut out", (await alex.call(`/api/videos/${roughCut.id}/stream`)).json.reason === "INVITED_ONLY");
+check("…and cannot comment", (await alex.call(`/api/videos/${roughCut.id}/comments`, "POST", { body: "hi" })).status === 403);
+const temp = await elena.call("/api/me/lists", "POST", { name: "Temp" });
+await elena.call(`/api/me/lists/${temp.json.list.id}/members`, "POST", { username: "alex_vance" });
+await elena.call(`/api/videos/${roughCut.id}/audience`, "POST", { listId: temp.json.list.id });
+check("a new list opens it to alex", (await alex.call(`/api/videos/${roughCut.id}/stream`)).json.allowed === true);
+check("delete the list", (await elena.call(`/api/me/lists/${temp.json.list.id}`, "DELETE")).status === 200);
+check("deleting it closes what it opened", (await alex.call(`/api/videos/${roughCut.id}/stream`)).json.reason === "INVITED_ONLY");
+
 // Collections and their permissions
 const pl = await alex.call("/api/playlists", "POST", { title: "Test list", visibility: "PRIVATE" });
 check("create playlist", pl.status === 201);
@@ -90,6 +126,12 @@ const members = (await alex.call(`/api/playlists/${pl.json.playlist.id}/members`
 check("owner lists members", members?.length === 1 && members[0].username === "elenavox");
 check("withdraw elena", (await alex.call(`/api/playlists/${pl.json.playlist.id}/members?userId=${members[0].userId}`, "DELETE")).status === 200);
 check("withdrawn → 404", (await elena.call(`/api/playlists/${pl.json.playlist.id}`)).status === 404);
+const alexList = await alex.call("/api/me/lists", "POST", { name: "Night owls" });
+await alex.call(`/api/me/lists/${alexList.json.list.id}/members`, "POST", { username: "elenavox" });
+check("attach a list to the collection", (await alex.call(`/api/playlists/${pl.json.playlist.id}/members`, "POST", { listId: alexList.json.list.id })).status === 201);
+check("list member elena opens it", (await elena.call(`/api/playlists/${pl.json.playlist.id}`)).status === 200);
+check("…and finds it under shared", (await elena.call("/api/playlists/shared")).json.playlists?.some((p) => p.id === pl.json.playlist.id));
+await alex.call(`/api/playlists/${pl.json.playlist.id}/members?listId=${alexList.json.list.id}`, "DELETE");
 check("contacts-only", (await alex.call(`/api/playlists/${pl.json.playlist.id}`, "PATCH", { visibility: "CONTACTS_ONLY" })).status === 200);
 check("contact (mia) opens it", (await mia.call(`/api/playlists/${pl.json.playlist.id}`)).status === 200);
 check("non-contact (sam) → 404", (await sam.call(`/api/playlists/${pl.json.playlist.id}`)).status === 404);
@@ -155,7 +197,7 @@ check("other creator cannot edit", (await mia.call(`/api/videos/${neon.id}`, "PA
 check("paid unlock below $1 refused", (await elena.call(`/api/videos/${neon.id}`, "PATCH", { visibility: "TIPPED_UNLOCKED", minTipAmountCents: 50 })).status === 400);
 check("creator edits title and tags", (await elena.call(`/api/videos/${neon.id}`, "PATCH", { title: "Tokyo Neon Horizons — Ep. 01", tags: ["tokyo", "neon"] })).status === 200);
 const studio = (await elena.call("/api/me/dashboard")).json.data.uploads;
-check("studio lists all of elena's videos with tags", studio.length === 3 && studio.some((v) => v.tags.includes("neon")));
+check("studio lists all of elena's videos with tags", studio.length === 4 && studio.some((v) => v.tags.includes("neon")));
 
 // Admin moderation
 check("member cannot list admin videos", (await alex.call("/api/admin/videos")).status === 403);

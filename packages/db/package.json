@@ -8,7 +8,7 @@
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
     "seed": "tsx src/seed.ts",
-    "owner": "tsx src/owner.ts",
+    "owner": "tsx src/owner-cli.ts",
     "typecheck": "tsc --noEmit",
     "lint": "tsc --noEmit",
     "build:migrator": "esbuild src/migrate.ts --bundle --platform=node --target=node20 --external:pg-native --outfile=dist/migrate.cjs",

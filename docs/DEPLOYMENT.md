@@ -15,6 +15,7 @@
 | `DATABASE_CA_CERT` | managed DB | CA of a managed PostgreSQL (`${<db>.CA_CERT}` on App Platform): TLS verified against it. |
 | `MAILGUN_API_KEY`, `MAILGUN_DOMAIN` (+ `MAILGUN_API_URL`, `MAIL_FROM`) | — | Transactional e-mail (sending subdomain `mg.orochia.com`). Without them nothing is sent. |
 | `COMPLIANCE_ALERT_EMAIL` | — | Receives every content report (`[URGENT]` for underage / non-consensual). |
+| `OROCHIA_OWNER_EMAIL`, `_USERNAME`, `_NAME`, `_PASSWORD` | recommended | The default user (owner, ADMIN), applied by the release job — see *Owner account*. |
 | Gateway credentials | at least one | See `.env.example`. A gateway is offered only when **all** its variables are set. |
 
 A missing required value makes the requests that need it answer **503** and logs the variable name — the
@@ -70,10 +71,17 @@ issued by App Platform once the records resolve.
 
 ### Owner account
 
-`npm run db:owner -- --email <email> --username <name> --name "<Full Name>"` creates (or reactivates) the
-operator account against `DATABASE_URL` — production included. It is idempotent, never deletes anything, and keeps
-an existing password unless `--reset-password` is given (the new one is printed once, or taken from
-`OROCHIA_OWNER_PASSWORD`).
+The default user — the platform owner — comes from the environment of the release job:
+
+| Variable | |
+| :--- | :--- |
+| `OROCHIA_OWNER_EMAIL` | turns the feature on |
+| `OROCHIA_OWNER_USERNAME`, `OROCHIA_OWNER_NAME` | 3–30 `a-z0-9_`; display name |
+| `OROCHIA_OWNER_PASSWORD` (SECRET) | needed to create the account (10+ characters); an existing account keeps its password |
+
+On every release `migrate.cjs` applies the migrations, then creates or reactivates that account (ADMIN, age- and
+2257-verified, not suspended). Nothing is deleted. Locally the seed does the same from `.env`, and
+`npm run db:owner [-- --email … --username … --name "…"] [--reset-password]` applies it to any `DATABASE_URL`.
 
 ### Bunny Stream security
 

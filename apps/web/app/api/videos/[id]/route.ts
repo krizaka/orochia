@@ -12,7 +12,7 @@ const Patch = z
   .object({
     title: z.string().trim().min(3).max(255).optional(),
     description: z.string().trim().max(5000).nullish(),
-    visibility: z.enum(["PUBLIC", "CONTACTS_ONLY", "APPROVED_FOLLOWERS_ONLY", "TIPPED_UNLOCKED"]).optional(),
+    visibility: z.enum(["PUBLIC", "CONTACTS_ONLY", "APPROVED_FOLLOWERS_ONLY", "TIPPED_UNLOCKED", "INVITED_ONLY"]).optional(),
     minTipAmountCents: z.number().int().min(0).max(100_000).optional(),
     tags: z.array(z.string().trim().toLowerCase().min(1).max(40)).max(12).optional(),
     commentsEnabled: z.boolean().optional(),

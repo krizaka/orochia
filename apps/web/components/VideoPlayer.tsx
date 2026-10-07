@@ -22,6 +22,7 @@ interface VideoPlayerProps {
   minTipAmountCents?: number;
   isContactsOnly?: boolean;
   isFollowersOnly?: boolean;
+  isInvitedOnly?: boolean;
   /** Rendered in the contacts / followers gate: the action that opens the video (follow, contact). */
   gateAction?: React.ReactNode;
   onUnlockRequested?: () => void;
@@ -36,10 +37,11 @@ export function VideoPlayer({
   minTipAmountCents = 0,
   isContactsOnly = false,
   isFollowersOnly = false,
+  isInvitedOnly = false,
   gateAction,
   onUnlockRequested,
 }: VideoPlayerProps) {
-  const isGated = isContactsOnly || isFollowersOnly;
+  const isGated = isContactsOnly || isFollowersOnly || isInvitedOnly;
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -211,13 +213,17 @@ export function VideoPlayer({
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-800/80 border border-zinc-700/50 mb-4">
             <Users className="h-8 w-8 text-zinc-300" />
           </div>
-          <h3 className="text-xl font-bold text-white mb-1">{isFollowersOnly ? "Approved followers only" : "Contacts-Only Access"}</h3>
+          <h3 className="text-xl font-bold text-white mb-1">
+            {isInvitedOnly ? "Invited viewers only" : isFollowersOnly ? "Approved followers only" : "Contacts-Only Access"}
+          </h3>
           <p className="text-sm text-zinc-400 max-w-md mb-6">
-            {isFollowersOnly
-              ? "The creator opens this video to the followers they approved. Follow them — the video unlocks once they accept."
-              : "The creator made this video private to accepted mutual contacts only. Send a contact request to view."}
+            {isInvitedOnly
+              ? "The creator shares this video with the people they invited. Your invitation is no longer active."
+              : isFollowersOnly
+                ? "The creator opens this video to the followers they approved. Follow them — the video unlocks once they accept."
+                : "The creator made this video private to accepted mutual contacts only. Send a contact request to view."}
           </p>
-          {gateAction}
+          {!isInvitedOnly && gateAction}
         </div>
       )}
 

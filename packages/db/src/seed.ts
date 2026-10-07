@@ -10,6 +10,9 @@ import {
   playlists,
   playlistItems,
   playlistMembers,
+  audienceLists,
+  audienceListMembers,
+  videoAudienceLists,
   videoComments,
   videoLikes,
   payoutRequests,
@@ -18,6 +21,7 @@ import {
   complianceReports,
 } from "./schema";
 import { loadRootEnv } from "./load-env";
+import { ensureOwner, ownerFromEnv } from "./owner";
 
 // The client connects lazily, so loading .env here still precedes the first query.
 loadRootEnv(__dirname);
@@ -83,7 +87,7 @@ interface SeedVideo {
   creator: string;
   title: string;
   description: string;
-  visibility: "PUBLIC" | "CONTACTS_ONLY" | "APPROVED_FOLLOWERS_ONLY" | "TIPPED_UNLOCKED";
+  visibility: "PUBLIC" | "CONTACTS_ONLY" | "APPROVED_FOLLOWERS_ONLY" | "TIPPED_UNLOCKED" | "INVITED_ONLY";
   status?: "READY" | "PROCESSING";
   minTip?: number;
   duration: number;
@@ -122,6 +126,11 @@ const VIDEOS: SeedVideo[] = [
     bunnyVideoId: "9b4d3eaa-6f5a-4c8b-0d1e-2f3a4b5c6d7e", creator: "miasterling", title: "Afterhours (encoding)",
     description: "Uploaded, still encoding on Bunny Stream.", visibility: "PUBLIC", status: "PROCESSING", duration: 0,
     thumb: "photo-1470225620780-dba8ba36b745", views: 0, tags: ["live"],
+  },
+  {
+    bunnyVideoId: "c4e5f6a7-8b9c-4d0e-9f1a-2b3c4d5e6f70", creator: "elenavox", title: "Inner Circle — Rough Cut",
+    description: "The first assembly, for the people on my Inner circle list only.", visibility: "INVITED_ONLY", duration: 640,
+    thumb: "photo-1492684223066-81342ee5ff30", views: 0, tags: ["behind-the-scenes"],
   },
 ];
 
@@ -269,6 +278,12 @@ export async function runSeed(): Promise<void> {
   ]);
   await playlist("alex_vance", "For Sam", "The sessions I told you about.", "INVITED_ONLY", ["7f2b1c88-4d3e-4a6f-8b9c-0d1e2f3a4b5c"], ["sam_rivers"]);
 
+  // Elena's "Inner circle" list (Alex) opens her invited-only rough cut.
+  let [inner] = await db.select({ id: audienceLists.id }).from(audienceLists).where(and(eq(audienceLists.ownerId, id.elenavox), eq(audienceLists.name, "Inner circle"))).limit(1);
+  if (!inner) [inner] = await db.insert(audienceLists).values({ ownerId: id.elenavox, name: "Inner circle" }).returning({ id: audienceLists.id });
+  await db.insert(audienceListMembers).values({ listId: inner.id, userId: id.alex_vance }).onConflictDoNothing();
+  await db.insert(videoAudienceLists).values({ videoId: video["c4e5f6a7-8b9c-4d0e-9f1a-2b3c4d5e6f70"], listId: inner.id }).onConflictDoNothing();
+
   // A short discussion and a few likes on the public videos.
   const noir = video["7f2b1c88-4d3e-4a6f-8b9c-0d1e2f3a4b5c"];
   const [discussion] = await db.select({ id: videoComments.id }).from(videoComments).where(eq(videoComments.videoId, noir)).limit(1);
@@ -303,6 +318,13 @@ export async function runSeed(): Promise<void> {
       details: "The second song is a cover performed without a licence (example report from the development seed).",
       reporterEmail: "rights@example.com",
     });
+  }
+
+  // The owner account from OROCHIA_OWNER_* (as in production, where the release job applies it).
+  const owner = ownerFromEnv();
+  if (owner) {
+    const outcome = await ensureOwner(db, owner);
+    console.log(`✅ Owner account ${outcome.created ? "created" : "up to date"}: ${owner.email}`);
   }
 
   console.log("✅ Seed complete. Accounts (development only):");

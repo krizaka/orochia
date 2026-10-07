@@ -15,7 +15,7 @@ export type BunnyConfig = z.infer<typeof BunnyConfigSchema>;
 export const CreateUploadSessionSchema = z.object({
   title: z.string().min(3).max(255),
   description: z.string().optional(),
-  visibility: z.enum(["PUBLIC", "CONTACTS_ONLY", "APPROVED_FOLLOWERS_ONLY", "TIPPED_UNLOCKED"]),
+  visibility: z.enum(["PUBLIC", "CONTACTS_ONLY", "APPROVED_FOLLOWERS_ONLY", "TIPPED_UNLOCKED", "INVITED_ONLY"]),
   minTipAmountCents: z.number().int().nonnegative().default(0),
   tags: z.array(z.string()).default([]),
 });

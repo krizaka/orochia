@@ -7,6 +7,8 @@ export const videoVisibilityEnum = pgEnum("video_visibility", [
   "CONTACTS_ONLY",
   "APPROVED_FOLLOWERS_ONLY",
   "TIPPED_UNLOCKED",
+  /** The accounts the creator invited, directly or through one of their audience lists. */
+  "INVITED_ONLY",
 ]);
 
 export const videoStatusEnum = pgEnum("video_status", [

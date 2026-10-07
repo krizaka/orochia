@@ -6,7 +6,7 @@ export type CollectionVisibility = "PUBLIC" | "APPROVED_FOLLOWERS_ONLY" | "CONTA
 /** Who opens a collection, in the order the owner picks from. */
 export const COLLECTION_AUDIENCES: { value: CollectionVisibility; label: string; hint: string; icon: LucideIcon }[] = [
   { value: "PRIVATE", label: "Only me", hint: "Nobody else sees it.", icon: Lock },
-  { value: "INVITED_ONLY", label: "Invited", hint: "The accounts you invite by username.", icon: UserPlus },
+  { value: "INVITED_ONLY", label: "Invited", hint: "The people you invite and your lists.", icon: UserPlus },
   { value: "CONTACTS_ONLY", label: "Contacts", hint: "Your accepted contacts.", icon: Users },
   { value: "APPROVED_FOLLOWERS_ONLY", label: "Followers", hint: "The followers you approved.", icon: UserCheck },
   { value: "PUBLIC", label: "Everyone", hint: "Shown on your profile.", icon: Globe },

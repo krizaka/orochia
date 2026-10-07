@@ -8,12 +8,15 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 17 tables · 13 enums · 5 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 22 tables · 13 enums · 1 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
 ```mermaid
 erDiagram
+    audience_lists ||--o{ audience_list_members : "list_id"
+    users ||--o{ audience_list_members : "user_id"
+    users ||--o{ audience_lists : "owner_id"
     videos ||--o{ compliance_reports : "video_id"
     users ||--o{ compliance_reports : "reporter_id"
     users ||--o{ contacts : "requester_id"
@@ -24,6 +27,8 @@ erDiagram
     users ||--o{ payment_intents : "creator_id"
     videos ||--o{ payment_intents : "video_id"
     users ||--o{ payout_requests : "creator_id"
+    playlists ||--o{ playlist_audience_lists : "playlist_id"
+    audience_lists ||--o{ playlist_audience_lists : "list_id"
     playlists ||--o{ playlist_items : "playlist_id"
     videos ||--o{ playlist_items : "video_id"
     playlists ||--o{ playlist_members : "playlist_id"
@@ -35,6 +40,8 @@ erDiagram
     videos ||--o{ tips_ledger : "video_id"
     videos ||--o{ video_access_grants : "video_id"
     users ||--o{ video_access_grants : "user_id"
+    videos ||--o{ video_audience_lists : "video_id"
+    audience_lists ||--o{ video_audience_lists : "list_id"
     videos ||--o{ video_comments : "video_id"
     users ||--o{ video_comments : "author_id"
     video_comments ||--o{ video_comments : "parent_id"
@@ -43,12 +50,37 @@ erDiagram
     users ||--o{ video_likes : "user_id"
     videos ||--o{ video_shares : "video_id"
     users ||--o{ video_shares : "user_id"
+    videos ||--o{ video_viewers : "video_id"
+    users ||--o{ video_viewers : "user_id"
     videos ||--o{ video_views : "video_id"
     users ||--o{ video_views : "viewer_id"
     users ||--o{ videos : "creator_id"
 ```
 
 ## Tables
+
+### `audience_list_members`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `list_id` | uuid | no |  | → `audience_lists.id` (on delete cascade) |
+| `user_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `audience_list_members_unique_idx` (unique, list_id, user_id) · `audience_list_members_user_idx` (user_id)
+
+### `audience_lists`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `owner_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `name` | varchar(80) | no |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+| `updated_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `audience_lists_owner_name_idx` (unique, owner_id, name)
 
 ### `compliance_reports`
 
@@ -131,6 +163,17 @@ erDiagram
 | `updated_at` | timestamp with time zone | no | `now()` |  |
 
 **Indexes:** `payout_requests_creator_status_idx` (creator_id, status)
+
+### `playlist_audience_lists`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `playlist_id` | uuid | no |  | → `playlists.id` (on delete cascade) |
+| `list_id` | uuid | no |  | → `audience_lists.id` (on delete cascade) |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `playlist_audience_lists_unique_idx` (unique, playlist_id, list_id) · `playlist_audience_lists_list_idx` (list_id)
 
 ### `playlist_items`
 
@@ -237,6 +280,17 @@ erDiagram
 
 **Indexes:** `video_access_user_idx` (unique, video_id, user_id)
 
+### `video_audience_lists`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `video_id` | uuid | no |  | → `videos.id` (on delete cascade) |
+| `list_id` | uuid | no |  | → `audience_lists.id` (on delete cascade) |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `video_audience_lists_unique_idx` (unique, video_id, list_id) · `video_audience_lists_list_idx` (list_id)
+
 ### `video_comments`
 
 | Column | Type | Null | Default | Notes |
@@ -275,6 +329,17 @@ erDiagram
 | `created_at` | timestamp with time zone | no | `now()` |  |
 
 **Indexes:** `video_shares_video_idx` (video_id)
+
+### `video_viewers`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `video_id` | uuid | no |  | → `videos.id` (on delete cascade) |
+| `user_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `video_viewers_unique_idx` (unique, video_id, user_id) · `video_viewers_user_idx` (user_id)
 
 ### `video_views`
 
@@ -335,12 +400,8 @@ erDiagram
 | `share_channel` | `LINK`, `X`, `WHATSAPP`, `TELEGRAM`, `EMAIL`, `OTHER` |
 | `user_role` | `ADMIN`, `CREATOR`, `MEMBER` |
 | `video_status` | `PENDING_UPLOAD`, `PROCESSING`, `READY`, `FAILED` |
-| `video_visibility` | `PUBLIC`, `CONTACTS_ONLY`, `APPROVED_FOLLOWERS_ONLY`, `TIPPED_UNLOCKED` |
+| `video_visibility` | `PUBLIC`, `CONTACTS_ONLY`, `APPROVED_FOLLOWERS_ONLY`, `TIPPED_UNLOCKED`, `INVITED_ONLY` |
 
 ## Migrations
 
-- `0000_minor_scarlet_spider.sql`
-- `0001_payments_and_compliance.sql`
-- `0002_social_graph_and_moderation.sql`
-- `0003_collections_permissions_and_engagement.sql`
-- `0004_drop_playlist_is_private.sql`
+- `0000_initial_schema.sql`

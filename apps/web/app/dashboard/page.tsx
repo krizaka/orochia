@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 import { VideoManager, type StudioVideo } from "@/components/dashboard/VideoManager";
 import { NetworkPanel } from "@/components/dashboard/NetworkPanel";
 import { PlaylistsPanel } from "@/components/dashboard/PlaylistsPanel";
+import { ListsPanel } from "@/components/dashboard/ListsPanel";
 import {
   LayoutDashboard,
   Film,
@@ -19,6 +20,7 @@ import {
   Clapperboard,
   Users,
   ListVideo,
+  ListChecks,
 } from "lucide-react";
 
 interface LibraryEntry {
@@ -66,7 +68,7 @@ interface Treasury {
   payoutsSettledCents: number;
 }
 
-type Tab = "overview" | "library" | "ledger" | "uploads" | "network" | "playlists" | "treasury" | "settings";
+type Tab = "overview" | "library" | "ledger" | "uploads" | "network" | "playlists" | "lists" | "treasury" | "settings";
 
 const money = (cents: number) =>
   `$${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -257,7 +259,8 @@ function DashboardContent() {
           </Link>
         )}
         <TabButton tab="network" active={activeTab} onSelect={setActiveTab} icon={Users}>Network</TabButton>
-        <TabButton tab="playlists" active={activeTab} onSelect={setActiveTab} icon={ListVideo}>Playlists</TabButton>
+        <TabButton tab="playlists" active={activeTab} onSelect={setActiveTab} icon={ListVideo}>Collections</TabButton>
+        <TabButton tab="lists" active={activeTab} onSelect={setActiveTab} icon={ListChecks}>Lists</TabButton>
         {isAdmin && <TabButton tab="treasury" active={activeTab} onSelect={setActiveTab} icon={Shield}>Treasury</TabButton>}
         <TabButton tab="settings" active={activeTab} onSelect={setActiveTab} icon={Settings}>Settings</TabButton>
       </div>
@@ -320,6 +323,7 @@ function DashboardContent() {
       {activeTab === "network" && <NetworkPanel isCreator={isCreator} />}
 
       {activeTab === "playlists" && <PlaylistsPanel />}
+      {activeTab === "lists" && <ListsPanel />}
 
       {activeTab === "treasury" && isAdmin && (
         treasury ? (

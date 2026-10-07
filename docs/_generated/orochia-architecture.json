@@ -71,8 +71,13 @@
       "id": "data",
       "name": "Data persistence",
       "path": "packages/db",
-      "tablesCount": 17,
+      "tablesCount": 22,
       "tables": [
+        "audience_lists",
+        "audience_list_members",
+        "video_viewers",
+        "video_audience_lists",
+        "playlist_audience_lists",
         "compliance_reports",
         "contacts",
         "follows",
@@ -280,6 +285,48 @@
     },
     {
       "method": "GET",
+      "path": "/api/me/lists",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Your reusable audience lists (private to you), with their size."
+    },
+    {
+      "method": "POST",
+      "path": "/api/me/lists",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Creates an audience list (names are unique per account)."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/me/lists/[id]",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Deletes one of your lists; the videos and collections it opened close to its members."
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/me/lists/[id]",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Renames one of your lists."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/me/lists/[id]/members",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Removes someone from one of your lists (`?userId=`): what the list opened closes to them."
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/lists/[id]/members",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "The people in one of your lists."
+    },
+    {
+      "method": "POST",
+      "path": "/api/me/lists/[id]/members",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Adds an account to one of your lists by username (idempotent; the list stays private)."
+    },
+    {
+      "method": "GET",
       "path": "/api/me/network",
       "access": "session · MEMBER / CREATOR / ADMIN",
       "summary": "Your followers, the creators you follow, your contacts and pending requests."
@@ -349,24 +396,6 @@
       "path": "/api/playlists/[id]/items",
       "access": "session · MEMBER / CREATOR / ADMIN",
       "summary": "Adds a video at the end of a playlist (owner only, idempotent)."
-    },
-    {
-      "method": "DELETE",
-      "path": "/api/playlists/[id]/members",
-      "access": "session · MEMBER / CREATOR / ADMIN",
-      "summary": "Withdraws an invitation (owner only)."
-    },
-    {
-      "method": "GET",
-      "path": "/api/playlists/[id]/members",
-      "access": "session · MEMBER / CREATOR / ADMIN",
-      "summary": "The accounts invited to your collection (owner only)."
-    },
-    {
-      "method": "POST",
-      "path": "/api/playlists/[id]/members",
-      "access": "session · MEMBER / CREATOR / ADMIN",
-      "summary": "Invites an account to your collection by username (owner only, idempotent)."
     },
     {
       "method": "GET",

@@ -96,7 +96,15 @@ orochia/                           npm workspaces
   only then signs a Bunny token valid **300 seconds**.
 - Visibility rules: `PUBLIC` — anyone · `APPROVED_FOLLOWERS_ONLY` — a follow the creator **approved** (`follows`) ·
   `CONTACTS_ONLY` — an **accepted** contact in either direction (`contacts`) · `TIPPED_UNLOCKED` — an access grant
-  written by settlement (`video_access_grants`). The author always plays their own video.
+  written by settlement (`video_access_grants`), never below the creator's minimum · `INVITED_ONLY` — an account
+  invited directly (`video_viewers`) or a member of one of the creator's audience lists attached to the video
+  (`video_audience_lists` → `audience_list_members`, live membership). The author always plays their own video.
+- `INVITED_ONLY` videos are **never listed** (feed, search, tags, profile) and their details answer 404 to anyone not
+  invited; inside a collection they are shown only to those who may watch them.
+- Collections (`playlists.visibility`: PUBLIC · APPROVED_FOLLOWERS_ONLY · CONTACTS_ONLY · INVITED_ONLY · PRIVATE)
+  decide who **opens** the collection, never who plays a video in it (`canOpenCollection`, `lib/audiences.ts`).
+- Engagement counters on `videos` (views, likes, comments, shares) move in the same transaction as the row that
+  justifies them; a view counts once per viewer and day and never for the author (`lib/engagement.ts`).
 - A video taken down (`removed_at` set) does not exist — feed, search, profile, playlists, details and playback
   answer as if it were absent, **for its author too**. Suspended creators' videos are not listed.
 
@@ -139,11 +147,16 @@ orochia/                           npm workspaces
 - Change workflow: edit the schema → `npm run db:generate -- --name <what_changed>` → **read the SQL** →
   `npm run db:migrate` → commit schema + migration + regenerated docs together.
 - **Never edit or delete an applied migration**; fix forward with a new one. Migrations must be idempotent-safe
-  (drizzle `IF NOT EXISTS` / `duplicate_object` guards) — CI applies them twice.
+  (drizzle `IF NOT EXISTS` / `duplicate_object` guards) — CI applies them twice. Before the first release the
+  history was squashed into one baseline (`0000_initial_schema`, 2026-10-07); every change from then on is a new
+  migration.
 - Production applies migrations with the bundled migrator (`packages/db/dist/migrate.cjs`) as the DigitalOcean
   `PRE_DEPLOY` job: a release never starts on an older schema.
 - The seed is **development data**, idempotent (natural keys), coherent with the ledger rules, and refuses
   `NODE_ENV=production`. Seed accounts never exist in production.
+- The **default user** is the platform owner, configured by environment (`OROCHIA_OWNER_EMAIL`, `_USERNAME`,
+  `_NAME`, `_PASSWORD`) and applied by the release job after the migrations (and by the local seed): created or
+  reactivated as ADMIN, verified — never hard-coded, never deleted, its password kept once set (`packages/db/src/owner.ts`).
 - Queries: parameterised through Drizzle; raw SQL fragments qualify their columns (`playlists.id`) and escape
   `LIKE` wildcards in user input.
 

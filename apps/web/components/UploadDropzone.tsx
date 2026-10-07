@@ -9,7 +9,7 @@ export function UploadDropzone() {
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [visibility, setVisibility] = useState<"PUBLIC" | "CONTACTS_ONLY" | "APPROVED_FOLLOWERS_ONLY" | "TIPPED_UNLOCKED">("PUBLIC");
+  const [visibility, setVisibility] = useState<"PUBLIC" | "CONTACTS_ONLY" | "APPROVED_FOLLOWERS_ONLY" | "TIPPED_UNLOCKED" | "INVITED_ONLY">("PUBLIC");
   const [minTipAmountDollars, setMinTipAmountDollars] = useState("5.00");
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -336,7 +336,11 @@ export function UploadDropzone() {
                   <option value="TIPPED_UNLOCKED">Tipped Paywall (Tip to Unlock)</option>
                   <option value="CONTACTS_ONLY">Contacts Only (Private Mutuals)</option>
                   <option value="APPROVED_FOLLOWERS_ONLY">VIP Approved Followers</option>
+                  <option value="INVITED_ONLY">Invited Only (People & Lists)</option>
                 </select>
+                {visibility === "INVITED_ONLY" && (
+                  <p className="mt-1.5 text-[11px] text-zinc-500">Only you can watch it until you choose who: Studio → the video → Who can watch.</p>
+                )}
               </div>
 
               {visibility === "TIPPED_UNLOCKED" && (

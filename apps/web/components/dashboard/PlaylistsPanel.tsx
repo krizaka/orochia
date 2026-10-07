@@ -2,7 +2,8 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, Trash2, UserPlus, X } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
+import { AudienceEditor } from "../AudienceEditor";
 import { COLLECTION_AUDIENCES, CollectionAudienceBadge, audienceOf, type CollectionVisibility } from "../CollectionAudience";
 
 interface Collection {
@@ -12,90 +13,11 @@ interface Collection {
   visibility: CollectionVisibility;
   itemsCount: number;
   membersCount: number;
-}
-
-interface Member {
-  userId: string;
-  username: string;
-  displayName: string;
+  listsCount: number;
 }
 
 const field =
   "rounded-2xl border border-white/10 bg-zinc-900/80 px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-none";
-
-/** The accounts invited to an INVITED_ONLY collection: invite by username, withdraw. */
-function Invitations({ collectionId, onChange }: { collectionId: string; onChange: () => void }) {
-  const [members, setMembers] = useState<Member[] | null>(null);
-  const [username, setUsername] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-
-  const load = useCallback(async () => {
-    const res = await fetch(`/api/playlists/${collectionId}/members`, { cache: "no-store" });
-    if (res.ok) setMembers(((await res.json()) as { members: Member[] }).members);
-  }, [collectionId]);
-  useEffect(() => void load(), [load]);
-
-  const invite = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!username.trim()) return;
-    setBusy(true);
-    setError(null);
-    const res = await fetch(`/api/playlists/${collectionId}/members`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: username.trim().replace(/^@/, "") }),
-    });
-    setBusy(false);
-    if (!res.ok) return setError(res.status === 404 ? "No account with that username." : "Could not send the invitation.");
-    setUsername("");
-    await load();
-    onChange();
-  };
-
-  const withdraw = async (userId: string) => {
-    setBusy(true);
-    await fetch(`/api/playlists/${collectionId}/members?userId=${userId}`, { method: "DELETE" });
-    setBusy(false);
-    await load();
-    onChange();
-  };
-
-  return (
-    <div className="mt-3 rounded-2xl border border-white/5 bg-black/20 p-3">
-      <form onSubmit={invite} className="flex gap-2">
-        <input
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          maxLength={51}
-          placeholder="@username"
-          aria-label="Username to invite"
-          className={`${field} min-w-0 flex-1 py-2 text-xs`}
-        />
-        <button disabled={busy || !username.trim()} className="inline-flex items-center gap-1.5 rounded-xl bg-violet-600 px-3 text-xs font-bold text-white disabled:opacity-40">
-          <UserPlus className="h-3.5 w-3.5" /> Invite
-        </button>
-      </form>
-      {error && <p className="mt-2 text-[11px] text-rose-300">{error}</p>}
-      {members === null ? (
-        <p className="mt-2 text-[11px] text-zinc-500">Loading…</p>
-      ) : members.length === 0 ? (
-        <p className="mt-2 text-[11px] text-zinc-500">Nobody invited yet: only you open this collection.</p>
-      ) : (
-        <ul className="mt-2 flex flex-wrap gap-1.5">
-          {members.map((m) => (
-            <li key={m.userId} className="inline-flex items-center gap-1 rounded-full bg-white/5 py-1 pl-3 pr-1 text-[11px] text-zinc-200">
-              @{m.username}
-              <button disabled={busy} onClick={() => withdraw(m.userId)} className="rounded-full p-0.5 text-zinc-400 hover:text-rose-300" aria-label={`Withdraw @${m.username}`}>
-                <X className="h-3 w-3" />
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
 
 /** Your collections — create, choose who opens each, invite accounts, delete — and those shared with you. */
 export function PlaylistsPanel() {
@@ -164,7 +86,7 @@ export function PlaylistsPanel() {
                 <Link href={`/playlists/${p.id}`} className="min-w-0">
                   <span className="block truncate text-sm font-semibold text-white hover:text-violet-300">{p.title}</span>
                   <span className="text-[11px] font-mono text-zinc-500">
-                    {p.itemsCount} videos{p.visibility === "INVITED_ONLY" && ` · ${p.membersCount} invited`}
+                    {p.itemsCount} videos{p.visibility === "INVITED_ONLY" && ` · ${p.membersCount} invited · ${p.listsCount} lists`}
                   </span>
                 </Link>
                 <div className="flex items-center gap-1">
@@ -189,7 +111,11 @@ export function PlaylistsPanel() {
                   </button>
                 </div>
               </div>
-              {p.visibility === "INVITED_ONLY" && <Invitations collectionId={p.id} onChange={load} />}
+              {p.visibility === "INVITED_ONLY" && (
+                <div className="mt-3">
+                  <AudienceEditor endpoint={`/api/playlists/${p.id}/members`} onChange={load} />
+                </div>
+              )}
             </li>
           ))}
         </ul>

@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1791316760038,
-      "tag": "0000_minor_scarlet_spider",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1791320910229,
-      "tag": "0001_payments_and_compliance",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1791359845961,
-      "tag": "0002_social_graph_and_moderation",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1791406549918,
-      "tag": "0003_collections_permissions_and_engagement",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1791406571268,
-      "tag": "0004_drop_playlist_is_private",
+      "when": 1791411766854,
+      "tag": "0000_initial_schema",
       "breakpoints": true
     }
   ]

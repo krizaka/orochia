@@ -4,6 +4,7 @@ import { contacts, follows } from "./contacts";
 import { videos, videoAccessGrants } from "./videos";
 import { playlists, playlistItems, playlistMembers } from "./playlists";
 import { videoComments, videoLikes, videoShares, videoViews } from "./engagement";
+import { audienceLists, audienceListMembers } from "./audiences";
 import { tipsLedger, payoutRequests } from "./ledger";
 
 export * from "./enums";
@@ -12,6 +13,7 @@ export * from "./contacts";
 export * from "./videos";
 export * from "./playlists";
 export * from "./engagement";
+export * from "./audiences";
 export * from "./ledger";
 export * from "./compliance";
 
@@ -129,4 +131,14 @@ export const payoutRequestsRelations = relations(payoutRequests, ({ one }) => ({
 export const followsRelations = relations(follows, ({ one }) => ({
   follower: one(users, { fields: [follows.followerId], references: [users.id], relationName: "follower" }),
   creator: one(users, { fields: [follows.creatorId], references: [users.id], relationName: "followed" }),
+}));
+
+export const audienceListsRelations = relations(audienceLists, ({ one, many }) => ({
+  owner: one(users, { fields: [audienceLists.ownerId], references: [users.id] }),
+  members: many(audienceListMembers),
+}));
+
+export const audienceListMembersRelations = relations(audienceListMembers, ({ one }) => ({
+  list: one(audienceLists, { fields: [audienceListMembers.listId], references: [audienceLists.id] }),
+  user: one(users, { fields: [audienceListMembers.userId], references: [users.id] }),
 }));

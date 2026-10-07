@@ -1,9 +1,7 @@
-import { db, playlists, playlistItems, playlistMembers, videos, users, profiles } from "@orochia/db";
-import { and, asc, desc, eq, isNull, sql } from "drizzle-orm";
-import { canOpenCollection, type CollectionVisibility } from "./access";
+import { db, playlists, playlistItems, playlistMembers, playlistAudienceLists, audienceListMembers, videos, users, profiles } from "@orochia/db";
+import { and, asc, desc, eq, exists, isNull, or, sql } from "drizzle-orm";
+import { canOpenCollection, evaluateVideoAccess, type CollectionVisibility } from "./access";
 import { HttpError } from "./http";
-import { appUrl } from "./env";
-import { sendMail } from "./mail";
 import type { VideoSummary } from "./queries";
 
 /**
@@ -19,6 +17,7 @@ export interface PlaylistCard {
   visibility: CollectionVisibility;
   itemsCount: number;
   membersCount: number;
+  listsCount: number;
   coverUrl: string | null;
   updatedAt: Date;
 }
@@ -31,6 +30,7 @@ const card = {
   updatedAt: playlists.updatedAt,
   itemsCount: sql<number>`(select count(*)::int from ${playlistItems} pi join ${videos} v on v.id = pi.video_id where pi.playlist_id = playlists.id and v.removed_at is null)`,
   membersCount: sql<number>`(select count(*)::int from ${playlistMembers} pm where pm.playlist_id = playlists.id)`,
+  listsCount: sql<number>`(select count(*)::int from ${playlistAudienceLists} pl where pl.playlist_id = playlists.id)`,
   coverUrl: sql<string | null>`(select v.thumbnail_url from ${playlistItems} pi join ${videos} v on v.id = pi.video_id where pi.playlist_id = playlists.id and v.removed_at is null order by pi.position limit 1)`,
 };
 
@@ -45,14 +45,22 @@ export async function visiblePlaylists(ownerId: string, viewerId: string | null)
   return rows.filter((_, index) => allowed[index]);
 }
 
-/** Collections other accounts invited this viewer to. */
+/** Collections other accounts invited this viewer to, directly or through one of their lists. */
 export async function sharedWithMe(viewerId: string): Promise<(PlaylistCard & { ownerUsername: string })[]> {
+  const direct = db
+    .select({ id: playlistMembers.id })
+    .from(playlistMembers)
+    .where(and(eq(playlistMembers.playlistId, playlists.id), eq(playlistMembers.userId, viewerId)));
+  const throughList = db
+    .select({ id: playlistAudienceLists.id })
+    .from(playlistAudienceLists)
+    .innerJoin(audienceListMembers, eq(audienceListMembers.listId, playlistAudienceLists.listId))
+    .where(and(eq(playlistAudienceLists.playlistId, playlists.id), eq(audienceListMembers.userId, viewerId)));
   return db
     .select({ ...card, ownerUsername: users.username })
-    .from(playlistMembers)
-    .innerJoin(playlists, eq(playlists.id, playlistMembers.playlistId))
+    .from(playlists)
     .innerJoin(users, eq(users.id, playlists.creatorId))
-    .where(and(eq(playlistMembers.userId, viewerId), eq(playlists.visibility, "INVITED_ONLY"), isNull(users.suspendedAt)))
+    .where(and(eq(playlists.visibility, "INVITED_ONLY"), isNull(users.suspendedAt), or(exists(direct), exists(throughList))))
     .orderBy(desc(playlists.updatedAt));
 }
 
@@ -111,61 +119,6 @@ export async function removeFromPlaylist(ownerId: string, playlistId: string, vi
   await db.delete(playlistItems).where(and(eq(playlistItems.playlistId, playlistId), eq(playlistItems.videoId, videoId)));
 }
 
-export interface CollectionMember {
-  userId: string;
-  username: string;
-  displayName: string;
-  avatarUrl: string | null;
-  invitedAt: Date;
-}
-
-/** Accounts invited to a collection (owner only). */
-export async function listMembers(ownerId: string, playlistId: string): Promise<CollectionMember[]> {
-  await owned(ownerId, playlistId);
-  return db
-    .select({
-      userId: users.id,
-      username: users.username,
-      displayName: sql<string>`coalesce(${profiles.displayName}, ${users.username})`,
-      avatarUrl: profiles.avatarUrl,
-      invitedAt: playlistMembers.createdAt,
-    })
-    .from(playlistMembers)
-    .innerJoin(users, eq(users.id, playlistMembers.userId))
-    .leftJoin(profiles, eq(profiles.userId, users.id))
-    .where(eq(playlistMembers.playlistId, playlistId))
-    .orderBy(asc(users.username));
-}
-
-/**
- * Invites an account by username (idempotent) and notifies it by e-mail on the first invitation.
- * Inviting yourself or a suspended account is a 404.
- */
-export async function addMember(ownerId: string, playlistId: string, username: string) {
-  const collection = await owned(ownerId, playlistId);
-  const [member] = await db
-    .select({ id: users.id, email: users.email })
-    .from(users)
-    .where(and(eq(users.username, username), isNull(users.suspendedAt)))
-    .limit(1);
-  if (!member || member.id === ownerId) throw new HttpError(404, "Account not found");
-  const added = await db.insert(playlistMembers).values({ playlistId, userId: member.id }).onConflictDoNothing().returning({ id: playlistMembers.id });
-  if (added.length > 0) {
-    const [owner] = await db.select({ username: users.username }).from(users).where(eq(users.id, ownerId)).limit(1);
-    void sendMail({
-      to: member.email,
-      subject: `@${owner.username} shared a collection with you on Orochia`,
-      text: `@${owner.username} invited you to the collection "${collection.title}".\n\n${appUrl()}/playlists/${playlistId}\n\n— Orochia`,
-    });
-  }
-  return { userId: member.id };
-}
-
-export async function removeMember(ownerId: string, playlistId: string, userId: string) {
-  await owned(ownerId, playlistId);
-  await db.delete(playlistMembers).where(and(eq(playlistMembers.playlistId, playlistId), eq(playlistMembers.userId, userId)));
-}
-
 /** A collection with its videos, for a viewer its permission admits (others get a 404). */
 export async function playlistWithItems(playlistId: string, viewerId: string | null) {
   const [row] = await db
@@ -204,5 +157,9 @@ export async function playlistWithItems(playlistId: string, viewerId: string | n
     .innerJoin(videos, eq(videos.id, playlistItems.videoId))
     .where(and(eq(playlistItems.playlistId, playlistId), eq(videos.status, "READY"), isNull(videos.removedAt)))
     .orderBy(asc(playlistItems.position));
-  return { ...row, isOwner: row.ownerId === viewerId, items };
+  // Invited-only videos stay hidden from viewers they were not shared with.
+  const shown = await Promise.all(
+    items.map(async (v) => v.visibility !== "INVITED_ONLY" || (await evaluateVideoAccess(v.id, viewerId)).allowed),
+  );
+  return { ...row, isOwner: row.ownerId === viewerId, items: items.filter((_, i) => shown[i]) };
 }

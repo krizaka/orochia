@@ -158,6 +158,7 @@ export default function WatchPage() {
   const isPaywalled = stream ? !stream.allowed && stream.reason === "PAYWALL_REQUIRED" : false;
   const isContactsOnly = stream ? !stream.allowed && stream.reason === "CONTACTS_ONLY" : false;
   const isFollowersOnly = stream ? !stream.allowed && stream.reason === "FOLLOWERS_ONLY" : false;
+  const isInvitedOnly = stream ? !stream.allowed && stream.reason === "INVITED_ONLY" : false;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
@@ -189,6 +190,7 @@ export default function WatchPage() {
               minTipAmountCents={minTipAmountCents}
               isContactsOnly={isContactsOnly}
               isFollowersOnly={isFollowersOnly}
+              isInvitedOnly={isInvitedOnly}
               gateAction={
                 <RelationshipActions
                   username={details.creatorUsername}

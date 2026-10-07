@@ -2,14 +2,15 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { AlertTriangle, Loader2, Pencil, Trash2, X } from "lucide-react";
+import { AlertTriangle, Loader2, Pencil, Trash2, Users, X } from "lucide-react";
+import { AudienceEditor } from "../AudienceEditor";
 
 export interface StudioVideo {
   id: string;
   title: string;
   description: string | null;
   tags: string[];
-  visibility: "PUBLIC" | "CONTACTS_ONLY" | "APPROVED_FOLLOWERS_ONLY" | "TIPPED_UNLOCKED";
+  visibility: "PUBLIC" | "CONTACTS_ONLY" | "APPROVED_FOLLOWERS_ONLY" | "TIPPED_UNLOCKED" | "INVITED_ONLY";
   minTipAmountCents: number;
   status: "PENDING_UPLOAD" | "PROCESSING" | "READY" | "FAILED";
   removedAt: string | null;
@@ -24,6 +25,7 @@ const VISIBILITY: Record<StudioVideo["visibility"], string> = {
   CONTACTS_ONLY: "Contacts only",
   APPROVED_FOLLOWERS_ONLY: "Approved followers",
   TIPPED_UNLOCKED: "Paid unlock",
+  INVITED_ONLY: "Invited (people & lists)",
 };
 
 const duration = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
@@ -39,9 +41,14 @@ function StatusBadge({ v }: { v: StudioVideo }) {
   return <span className={`rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${cls}`}>{label}</span>;
 }
 
-/** The creator's videos: state, figures, and editing (title, description, visibility, price, tags) or deletion. */
+/** The creator's videos: state, figures, and editing (title, description, visibility, audience, price, tags) or deletion. */
 export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onChange: () => void }) {
   const [editing, setEditing] = useState<StudioVideo | null>(null);
+  const [visibility, setVisibility] = useState<StudioVideo["visibility"]>("PUBLIC");
+  const edit = (v: StudioVideo) => {
+    setEditing(v);
+    setVisibility(v.visibility);
+  };
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -125,7 +132,12 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
               <td className="py-2.5 text-right">
                 {!v.removedAt && (
                   <div className="inline-flex gap-1">
-                    <button onClick={() => setEditing(v)} className="rounded-lg p-2 text-zinc-400 hover:bg-white/5 hover:text-white" aria-label={`Edit ${v.title}`}>
+                    {v.visibility === "INVITED_ONLY" && (
+                      <button onClick={() => edit(v)} className="rounded-lg p-2 text-zinc-400 hover:bg-white/5 hover:text-white" aria-label={`Who can watch ${v.title}`}>
+                        <Users className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                    <button onClick={() => edit(v)} className="rounded-lg p-2 text-zinc-400 hover:bg-white/5 hover:text-white" aria-label={`Edit ${v.title}`}>
                       <Pencil className="h-3.5 w-3.5" />
                     </button>
                     <button onClick={() => remove(v)} className="rounded-lg p-2 text-zinc-400 hover:bg-rose-500/10 hover:text-rose-300" aria-label={`Delete ${v.title}`}>
@@ -141,7 +153,7 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
 
       {editing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" role="dialog" aria-modal="true">
-          <form onSubmit={save} className="w-full max-w-lg space-y-4 rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl">
+          <form onSubmit={save} className="max-h-[90vh] w-full max-w-lg space-y-4 overflow-y-auto rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-white">Edit video</h3>
               <button type="button" onClick={() => setEditing(null)} className="text-zinc-400 hover:text-white" aria-label="Close"><X className="h-4 w-4" /></button>
@@ -157,7 +169,7 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
             <div className="grid grid-cols-2 gap-3">
               <label className="block text-xs text-zinc-400">
                 Visibility
-                <select name="visibility" defaultValue={editing.visibility} className="mt-1 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2.5 text-sm text-white">
+                <select name="visibility" value={visibility} onChange={(e) => setVisibility(e.target.value as StudioVideo["visibility"])} className="mt-1 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2.5 text-sm text-white">
                   {Object.entries(VISIBILITY).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                 </select>
               </label>
@@ -166,6 +178,14 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
                 <input name="price" type="number" min={1} step={0.5} defaultValue={Math.max(editing.minTipAmountCents / 100, 5)} className="mt-1 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2.5 text-sm text-white" />
               </label>
             </div>
+            {visibility === "INVITED_ONLY" && (
+              <div className="text-xs text-zinc-400">
+                Who can watch
+                <div className="mt-1">
+                  <AudienceEditor endpoint={`/api/videos/${editing.id}/audience`} />
+                </div>
+              </div>
+            )}
             <label className="block text-xs text-zinc-400">
               Tags (comma-separated)
               <input name="tags" defaultValue={editing.tags.join(", ")} maxLength={500} className="mt-1 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none" />

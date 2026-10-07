@@ -1,78 +1,90 @@
 /**
- * Creates — or brings back to an active state — the platform owner's account: an operator (ADMIN),
- * age-verified, 2257-verified, not suspended. Safe on any database, production included: it never
- * deletes anything and keeps an existing password unless --reset-password is given.
+ * The platform owner's account — the default user, configured by environment:
  *
- *   npm run db:owner -- --email you@example.com --username you --name "Your Name" [--reset-password]
+ *   OROCHIA_OWNER_EMAIL, OROCHIA_OWNER_USERNAME, OROCHIA_OWNER_NAME   who it is
+ *   OROCHIA_OWNER_PASSWORD                                            its password at creation (10+ characters)
  *
- * The password is OROCHIA_OWNER_PASSWORD when set (10+ characters), otherwise generated and printed
- * once. Points at DATABASE_URL (with DATABASE_CA_CERT for a managed cluster).
+ * `ensureOwner` creates the account, or brings it back to an active state: operator (ADMIN),
+ * age-verified, 2257-verified, not suspended. It never deletes anything and keeps an existing
+ * password (unless asked to reset it), so it is safe on every start. The release job (migrate.cjs)
+ * runs it after the migrations whenever OROCHIA_OWNER_EMAIL is set.
  */
-import crypto from "node:crypto";
-import { parseArgs } from "node:util";
 import { eq, or } from "drizzle-orm";
-import { db } from "./client";
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { hashPassword } from "./crypto";
 import { profiles, users } from "./schema";
-import { loadRootEnv } from "./load-env";
 
-loadRootEnv(__dirname);
+export interface OwnerConfig {
+  email: string;
+  username: string;
+  name: string;
+  password?: string;
+}
 
-async function main(): Promise<void> {
-  const { values } = parseArgs({
-    options: {
-      email: { type: "string" },
-      username: { type: "string" },
-      name: { type: "string" },
-      "reset-password": { type: "boolean", default: false },
-    },
-  });
-  const email = values.email?.trim().toLowerCase();
-  const username = values.username?.trim().toLowerCase();
-  const displayName = values.name?.trim();
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("--email is required");
-  if (!username || !/^[a-z0-9_]{3,30}$/.test(username)) throw new Error("--username: 3–30 letters, digits, underscore");
-  if (!displayName) throw new Error("--name is required");
+/** The owner described by the environment, or null when OROCHIA_OWNER_EMAIL is not set. */
+export function ownerFromEnv(env: NodeJS.ProcessEnv = process.env): OwnerConfig | null {
+  const email = env.OROCHIA_OWNER_EMAIL?.trim();
+  if (!email) return null;
+  return {
+    email,
+    username: env.OROCHIA_OWNER_USERNAME?.trim() ?? "",
+    name: env.OROCHIA_OWNER_NAME?.trim() ?? "",
+    password: env.OROCHIA_OWNER_PASSWORD || undefined,
+  };
+}
 
-  const given = process.env.OROCHIA_OWNER_PASSWORD;
-  if (given !== undefined && given.length < 10) throw new Error("OROCHIA_OWNER_PASSWORD needs 10+ characters");
-  const password = given ?? crypto.randomBytes(18).toString("base64url");
+export function validateOwner(config: OwnerConfig): OwnerConfig {
+  const email = config.email.trim().toLowerCase();
+  const username = config.username.trim().toLowerCase();
+  const name = config.name.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("OROCHIA_OWNER_EMAIL is not an e-mail address");
+  if (!/^[a-z0-9_]{3,30}$/.test(username)) throw new Error("OROCHIA_OWNER_USERNAME: 3–30 letters, digits, underscore");
+  if (!name || name.length > 100) throw new Error("OROCHIA_OWNER_NAME is required (100 characters at most)");
+  if (config.password !== undefined && config.password.length < 10) throw new Error("OROCHIA_OWNER_PASSWORD needs 10+ characters");
+  return { email, username, name, password: config.password };
+}
 
+export type OwnerOutcome = { id: string; created: boolean; passwordSet: boolean };
+
+/**
+ * Creates or reactivates the owner. Creating needs a password; an existing account keeps its own
+ * unless `resetPassword` is set.
+ */
+export async function ensureOwner(
+  db: NodePgDatabase<Record<string, unknown>>,
+  input: OwnerConfig,
+  options: { resetPassword?: boolean } = {},
+): Promise<OwnerOutcome> {
+  const owner = validateOwner(input);
   const [existing] = await db
     .select({ id: users.id, email: users.email, username: users.username })
     .from(users)
-    .where(or(eq(users.email, email), eq(users.username, username)))
+    .where(or(eq(users.email, owner.email), eq(users.username, owner.username)))
     .limit(1);
-  if (existing && (existing.email !== email || existing.username !== username)) {
-    throw new Error(`Another account already uses this ${existing.email === email ? "email" : "username"} (${existing.username} / ${existing.email})`);
+  if (existing && (existing.email !== owner.email || existing.username !== owner.username)) {
+    const field = existing.email === owner.email ? "e-mail" : "username";
+    throw new Error(`Another account already uses this ${field} (@${existing.username} / ${existing.email})`);
   }
+  const setPassword = !existing || Boolean(options.resetPassword);
+  if (setPassword && !owner.password) throw new Error("OROCHIA_OWNER_PASSWORD is required to create the owner account");
 
   const active = { role: "ADMIN" as const, isVerified: true, isAgeVerified: true, suspendedAt: null, suspensionReason: null, updatedAt: new Date() };
-  const setPassword = !existing || values["reset-password"];
   const id = await db.transaction(async (tx) => {
     const [row] = existing
       ? await tx
           .update(users)
-          .set({ ...active, ...(setPassword ? { passwordHash: hashPassword(password) } : {}) })
+          .set({ ...active, ...(setPassword ? { passwordHash: hashPassword(owner.password!) } : {}) })
           .where(eq(users.id, existing.id))
           .returning({ id: users.id })
-      : await tx.insert(users).values({ email, username, passwordHash: hashPassword(password), ...active }).returning({ id: users.id });
+      : await tx
+          .insert(users)
+          .values({ email: owner.email, username: owner.username, passwordHash: hashPassword(owner.password!), ...active })
+          .returning({ id: users.id });
     await tx
       .insert(profiles)
-      .values({ userId: row.id, displayName })
-      .onConflictDoUpdate({ target: profiles.userId, set: { displayName, updatedAt: new Date() } });
+      .values({ userId: row.id, displayName: owner.name })
+      .onConflictDoUpdate({ target: profiles.userId, set: { displayName: owner.name, updatedAt: new Date() } });
     return row.id;
   });
-
-  console.log(`✓ Owner account ${existing ? "activated" : "created"}: ${displayName} <${email}> @${username} (ADMIN, verified) — ${id}`);
-  if (setPassword && given === undefined) console.log(`  Password (shown once, change it after signing in): ${password}`);
-  else if (!setPassword) console.log("  Password unchanged (pass --reset-password to set a new one).");
+  return { id, created: !existing, passwordSet: setPassword };
 }
-
-main()
-  .then(() => process.exit(0))
-  .catch((error: unknown) => {
-    console.error("✗", error instanceof Error ? error.message : error);
-    process.exit(1);
-  });
-

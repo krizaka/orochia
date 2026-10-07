@@ -12,7 +12,7 @@ export interface VideoCardProps {
   thumbnailUrl?: string | null;
   previewAnimationUrl?: string | null;
   durationSeconds: number;
-  visibility: "PUBLIC" | "CONTACTS_ONLY" | "APPROVED_FOLLOWERS_ONLY" | "TIPPED_UNLOCKED";
+  visibility: "PUBLIC" | "CONTACTS_ONLY" | "APPROVED_FOLLOWERS_ONLY" | "TIPPED_UNLOCKED" | "INVITED_ONLY";
   minTipAmountCents: number;
   viewsCount: number;
   tipsCount: number;

@@ -17,7 +17,7 @@ export interface VideoSummary {
   thumbnailUrl: string | null;
   previewAnimationUrl: string | null;
   durationSeconds: number;
-  visibility: "PUBLIC" | "CONTACTS_ONLY" | "APPROVED_FOLLOWERS_ONLY" | "TIPPED_UNLOCKED";
+  visibility: "PUBLIC" | "CONTACTS_ONLY" | "APPROVED_FOLLOWERS_ONLY" | "TIPPED_UNLOCKED" | "INVITED_ONLY";
   minTipAmountCents: number;
   viewsCount: number;
   tipsCount: number;
@@ -42,8 +42,12 @@ const videoSummaryColumns = {
   commentsCount: videos.commentsCount,
 };
 
-/** A video anyone may see listed: encoded, not taken down, from an active account. */
-const listable = () => and(eq(videos.status, "READY"), isNull(videos.removedAt), isNull(users.suspendedAt));
+/**
+ * A video anyone may see listed: encoded, not taken down, from an active account, and not
+ * invited-only — those are known only to the people they were shared with.
+ */
+const listable = () =>
+  and(eq(videos.status, "READY"), isNull(videos.removedAt), isNull(users.suspendedAt), ne(videos.visibility, "INVITED_ONLY"));
 
 /** Ready videos, newest first. Locked videos are listed — their stream is what is protected. */
 export async function listFeed(limit = 12): Promise<VideoSummary[]> {
@@ -84,7 +88,7 @@ export async function popularTags(limit = 16): Promise<{ tag: string; count: num
     from ${videos} v
     join ${users} u on u.id = v.creator_id
     cross join lateral unnest(v.tags) as t(tag)
-    where v.status = 'READY' and v.removed_at is null and u.suspended_at is null
+    where v.status = 'READY' and v.removed_at is null and u.suspended_at is null and v.visibility <> 'INVITED_ONLY'
     group by t.tag order by count(*) desc, t.tag limit ${limit}`);
   return rows.rows.map((r) => ({ tag: r.tag, count: Number(r.count) }));
 }

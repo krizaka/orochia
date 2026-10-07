@@ -33,7 +33,10 @@ export function errorResponse(error: unknown, context: string) {
   return jsonError(500, "Internal server error");
 }
 
-/** True for a PostgreSQL unique-constraint violation. */
+/** True for a PostgreSQL unique-constraint violation (drizzle wraps the driver error in `cause`). */
 export function isUniqueViolation(error: unknown): boolean {
-  return typeof error === "object" && error !== null && (error as { code?: string }).code === "23505";
+  for (let e = error, depth = 0; typeof e === "object" && e !== null && depth < 3; e = (e as { cause?: unknown }).cause, depth++) {
+    if ((e as { code?: string }).code === "23505") return true;
+  }
+  return false;
 }
