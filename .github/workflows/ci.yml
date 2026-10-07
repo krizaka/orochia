@@ -67,3 +67,44 @@ jobs:
         run: MIGRATIONS_DIR=packages/db/drizzle node packages/db/dist/migrate.cjs
       - name: Development seed loads
         run: npm run db:seed
+
+  e2e:
+    name: Feature scenarios (API, real sessions, PostgreSQL 16)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: orochia_user
+          POSTGRES_PASSWORD: orochia_secret
+          POSTGRES_DB: orochia_db
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+    env:
+      DATABASE_URL: postgresql://orochia_user:orochia_secret@localhost:5432/orochia_db
+      REDIS_URL: redis://localhost:6379
+      SESSION_SECRET: ci-only-session-secret-0123456789abcdef0123456789
+      OROCHIA_DEMO_MODE: "true"
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run db:migrate
+      - run: npm run db:seed
+      - name: Start the app (development server)
+        run: |
+          npm run dev > web.log 2>&1 &
+          for i in $(seq 1 90); do curl -sf http://localhost:3000/api/health && break; sleep 2; done
+      - name: Scenarios
+        run: npm run test:e2e
+      - if: failure()
+        run: tail -200 web.log

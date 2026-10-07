@@ -18,6 +18,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { buildDatabaseMarkdown } from "./database-doc.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SITE = path.resolve(ROOT, "../..");
@@ -47,7 +48,10 @@ const tables = walk(path.join(ROOT, "packages/db/src/schema"), (p) => p.endsWith
 const apiDir = path.join(ROOT, "apps/web/app/api");
 function accessOf(src) {
   const roles = src.match(/requireUserWithRole\(\[([^\]]*)\]\)/);
-  if (roles) return `session · ${roles[1].replace(/["\s]/g, "").split(",").join(" / ")}`;
+  if (roles) {
+    // A literal role list is shown as is; a computed one (e.g. per upload kind) is named as such.
+    return /^\s*"/.test(roles[1]) ? `session · ${roles[1].replace(/["\s]/g, "").split(",").join(" / ")}` : "session · role depends on the request";
+  }
   if (/verifyWebhookSignature|verifyBunnyWebhookSignature/.test(src)) return "signed webhook";
   if (/metricsToken\(\)/.test(src)) return "bearer token";
   if (/getCurrentUser\(\)/.test(src)) return "public · session-aware";
@@ -180,9 +184,13 @@ ${endpoints.map((e) => `| \`${e.method}\` | \`${e.path}\` | ${e.access} | ${e.su
 ${tables.map((t) => `| \`${t.table}\` | \`${t.export}\` | \`${t.file}\` |`).join("\n")}
 `;
 
+// ── Database reference (docs/DATABASE.md) — read from the Drizzle schema objects ─────────
+const databaseMarkdown = buildDatabaseMarkdown(ROOT);
+
 const outputs = {
   [path.join(ROOT, "docs/_generated/orochia-architecture.json")]: JSON.stringify(model, null, 2) + "\n",
   [path.join(ROOT, "docs/API_CONTRACTS.md")]: apiMarkdown,
+  [path.join(ROOT, "docs/DATABASE.md")]: databaseMarkdown,
 };
 
 if (CHECK) {

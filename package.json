@@ -2,22 +2,35 @@
   "name": "orochia-monorepo",
   "version": "1.0.0",
   "private": true,
-  "description": "Adult-Friendly Open-Source Video & Creator Community Platform",
+  "description": "Orochia \u2014 the creator video platform: web app, API and packages (db, media, payments).",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
+    "setup": "node scripts/setup.mjs",
     "dev": "npm run dev --workspace=apps/web",
     "build": "npm run build -w apps/web",
+    "start": "npm run start -w apps/web",
     "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run lint --workspaces --if-present && tsc --noEmit -p apps/web/tsconfig.json",
     "test": "vitest run",
-    "db:generate": "npm run generate --workspace=packages/db",
+    "test:e2e": "node e2e/scenarios.mjs",
+    "check": "npm run lint && npm run typecheck && npm test && npm run docs:generate -- --check",
+    "db:up": "docker compose -f deploy/docker/docker-compose.dev.yml up -d --wait",
+    "db:down": "docker compose -f deploy/docker/docker-compose.dev.yml down",
+    "db:generate": "npm run generate --workspace=packages/db --",
     "db:migrate": "npm run migrate --workspace=packages/db",
     "db:seed": "npm run seed --workspace=packages/db",
+    "db:check": "npm run check --workspace=packages/db",
+    "db:studio": "npm run studio --workspace=packages/db",
+    "db:status": "node scripts/db.mjs status",
+    "db:reset": "node scripts/db.mjs reset",
+    "db:psql": "node scripts/db.mjs psql",
+    "db:dump": "node scripts/db.mjs dump",
+    "db:restore": "node scripts/db.mjs restore",
     "docs:generate": "node scripts/generate-docs.mjs",
-    "typecheck": "npm run lint --workspaces --if-present && tsc --noEmit -p apps/web/tsconfig.json",
-    "start": "npm run start -w apps/web"
+    "workspace": "node scripts/workspace.mjs"
   },
   "keywords": [
     "video-streaming",
@@ -32,5 +45,8 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "vitest": "^2.1.9"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
