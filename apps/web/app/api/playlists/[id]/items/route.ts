@@ -9,7 +9,8 @@ export const dynamic = "force-dynamic";
 const Item = z.object({ videoId: z.string().uuid() });
 
 /** Adds a video at the end of a playlist (owner only, idempotent). */
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
     const id = z.string().uuid().safeParse(params.id);
@@ -23,7 +24,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 }
 
 /** Removes a video from a playlist (owner only). */
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
     const id = z.string().uuid().safeParse(params.id);

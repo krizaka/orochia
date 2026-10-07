@@ -11,7 +11,8 @@ import { errorResponse, jsonError } from "@/lib/http";
 export const dynamic = "force-dynamic";
 
 /** Authorises a viewer and returns a short-lived signed HLS URL (AGENTS.md §2.A). */
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const id = z.string().uuid().safeParse(params.id);
     if (!id.success) return jsonError(404, "Video not found");

@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { TipModal } from "@/components/TipModal";
 import { ReportModal } from "@/components/ReportModal";
@@ -46,8 +46,8 @@ interface VideoDetails {
 
 const formatDuration = (secs: number) => `${Math.floor(secs / 60)}:${String(Math.floor(secs % 60)).padStart(2, "0")}`;
 
-export default function WatchPage({ params }: { params: { id: string } }) {
-  const videoId = params.id;
+export default function WatchPage() {
+  const { id: videoId } = useParams<{ id: string }>();
   const searchParams = useSearchParams();
   const paymentState = searchParams.get("payment");
 

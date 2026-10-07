@@ -103,7 +103,7 @@ const model = {
       url: "https://github.com/krizaka/orochia",
       port: 3000,
       role: "Consumer platform, creator studio & 4K HLS player",
-      stack: ["Next.js 14 App Router", "Drizzle ORM", "PostgreSQL 16", "Redis 7", "Bunny.net Stream"],
+      stack: ["Next.js 16 App Router", "Drizzle ORM", "PostgreSQL 16", "Redis 7", "Bunny.net Stream"],
       description:
         "Direct-to-Bunny streaming with short-lived signed URLs, server-side access control, gateway-confirmed unlocks and an idempotent double-entry ledger.",
     },
@@ -113,7 +113,7 @@ const model = {
       url: "https://github.com/krizaka/orochia-admin",
       port: 3001,
       role: "Control plane: 2257 records, moderation & treasury",
-      stack: ["Next.js 14 App Router", "Tailwind CSS", "Lucide Icons"],
+      stack: ["Next.js 16 App Router", "Tailwind CSS", "Lucide Icons"],
       description: "Administrative console for performer records, content reports and platform revenue.",
     },
     {
@@ -122,7 +122,7 @@ const model = {
       url: "https://github.com/krizaka/orochia-design-system",
       port: 3002,
       role: "Design system & tokens (Obsidian Velvet Noir)",
-      stack: ["React 18", "Tailwind CSS", "TypeScript"],
+      stack: ["React 19", "Tailwind CSS", "TypeScript"],
       description: "Component library and tokens shared by the Orochia applications.",
     },
   ],

@@ -48,6 +48,7 @@ module.exports = {
           "sans-serif",
         ],
         display: [
+          "var(--font-outfit)",
           "Outfit",
           "-apple-system",
           "BlinkMacSystemFont",

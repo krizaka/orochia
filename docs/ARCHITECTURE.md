@@ -70,7 +70,7 @@ The repository is organized as an enterprise-grade TypeScript monorepo:
 
 | Path | Name | Responsibilities |
 | :--- | :--- | :--- |
-| `apps/web` | `@orochia/web` | Next.js 14 App Router, Server Actions, HLS player UI, creator studio, health & Prometheus metrics. |
+| `apps/web` | `@orochia/web` | Next.js 16 App Router, Server Actions, HLS player UI, creator studio, health & Prometheus metrics. |
 | `packages/db` | `@orochia/db` | PostgreSQL schema, Drizzle ORM relations, migrations, connection pool, and development seed factory. |
 | `packages/media` | `@orochia/media` | Bunny.net Stream SDK wrapper, direct Tus signing, HMAC-SHA256 playlist token generator, and webhook verification. |
 | `packages/payments` | `@orochia/payments` | Unified adapter interfaces for CCBill, Segpay, Crypto, and Stripe; atomic double-entry tips ledger. |

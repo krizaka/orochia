@@ -1,24 +1,26 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { ShieldAlert, CheckCircle, ExternalLink } from "lucide-react";
 import { OrochiaLogo } from "@/components/OrochiaLogo";
 
-export function AgeVerificationModal() {
-  const [isOpen, setIsOpen] = useState(false);
+const AGE_KEY = "orochia_age_verified";
+const listeners = new Set<() => void>();
+const subscribe = (fn: () => void) => {
+  listeners.add(fn);
+  return () => listeners.delete(fn);
+};
+// The gate stays closed on the server and until the browser says the visitor has not confirmed yet.
+const readVerified = () => localStorage.getItem(AGE_KEY) !== null;
 
-  useEffect(() => {
-    // Check if user has already confirmed age
-    const verified = localStorage.getItem("orochia_age_verified");
-    if (!verified) {
-      setIsOpen(true);
-    }
-  }, []);
+export function AgeVerificationModal() {
+  const verified = useSyncExternalStore(subscribe, readVerified, () => true);
+  const isOpen = !verified;
 
   const handleConfirmAge = () => {
-    localStorage.setItem("orochia_age_verified", "true");
-    setIsOpen(false);
+    localStorage.setItem(AGE_KEY, "true");
+    listeners.forEach((fn) => fn());
   };
 
   const handleDecline = () => {

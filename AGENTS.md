@@ -62,7 +62,7 @@
 
 ```
 orochia/                           npm workspaces
-├── apps/web/                      Next.js 14 App Router — pages + API route handlers (the only HTTP surface)
+├── apps/web/                      Next.js 16 App Router — pages + API route handlers (the only HTTP surface)
 │   ├── app/api/**/route.ts        one handler per endpoint: authenticate → validate (zod) → call lib → respond
 │   ├── lib/                       access.ts (who may play what) · social.ts · playlists.ts · queries.ts (read
 │   │                              models) · auth.ts · env.ts · http.ts · redis.ts · storage.ts

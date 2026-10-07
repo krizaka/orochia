@@ -10,7 +10,8 @@ import { playlistWithItems } from "@/lib/playlists";
 export const dynamic = "force-dynamic";
 
 /** A playlist: public ones for anyone, private ones for their owner. Each play is still access-checked. */
-export default async function PlaylistPage({ params }: { params: { id: string } }) {
+export default async function PlaylistPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   if (!/^[0-9a-f-]{36}$/i.test(params.id)) notFound();
   const viewer = await getCurrentUser();
   const playlist = await playlistWithItems(params.id, viewer?.id ?? null).catch((e) => {

@@ -13,7 +13,8 @@ const Action = z.discriminatedUnion("action", [
 ]);
 
 /** Takes a video down (DMCA, terms, a confirmed report) with a recorded reason, or restores it. */
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     await requireUserWithRole(["ADMIN"]);
     const id = z.string().uuid().safeParse(params.id);

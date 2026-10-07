@@ -24,7 +24,8 @@ const TERMINAL = new Set(["SETTLED", "FAILED"]);
  * Advances a payout. Settled and failed are terminal: a failed payout's amount returns to the
  * creator's available balance (balances exclude failed payouts).
  */
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     await requireUserWithRole(["ADMIN"]);
     const id = z.string().uuid().safeParse(params.id);

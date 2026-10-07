@@ -6,7 +6,8 @@ import { errorResponse, jsonError } from "@/lib/http";
 export const dynamic = "force-dynamic";
 
 /** A video's public metadata; the stream itself is only served by /stream after authorisation. */
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const id = z.string().uuid().safeParse(params.id);
     if (!id.success) return jsonError(404, "Video not found");

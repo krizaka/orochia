@@ -94,7 +94,7 @@ orochia
 │   ├── workflows/ (ci.yml, release.yml, deploy-do.yml)
 │   └── ISSUE_TEMPLATE/ (bug_report.yml, feature_request.yml)
 ├── apps/
-│   └── web/ (Next.js 14 App Router, HLS Video Player, Creator Studio, Payouts)
+│   └── web/ (Next.js 16 App Router, HLS Video Player, Creator Studio, Payouts)
 ├── packages/
 │   ├── db/ (Drizzle ORM schema, PostgreSQL migrations, Seed factory)
 │   ├── media/ (Bunny.net Stream SDK wrapper, Tus signing, HMAC token auth)

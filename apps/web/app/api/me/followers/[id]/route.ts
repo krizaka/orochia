@@ -9,7 +9,8 @@ export const dynamic = "force-dynamic";
 const Decision = z.object({ action: z.enum(["approve", "remove"]) });
 
 /** A creator approves a follower (opening followers-only videos to them) or removes them. */
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const user = await requireUserWithRole(["CREATOR"]);
     const id = z.string().uuid().safeParse(params.id);

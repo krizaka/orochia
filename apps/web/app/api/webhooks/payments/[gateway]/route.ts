@@ -17,7 +17,8 @@ export const dynamic = "force-dynamic";
  *   3. the intent is settled exactly once (row lock + ledger uniqueness).
  * A replayed webhook therefore answers 200 without crediting anyone twice.
  */
-export async function POST(req: NextRequest, { params }: { params: { gateway: string } }) {
+export async function POST(req: NextRequest, props: { params: Promise<{ gateway: string }> }) {
+  const params = await props.params;
   try {
     const gateway = GatewayTypeSchema.safeParse(params.gateway.toUpperCase());
     if (!gateway.success) return jsonError(404, "Unknown gateway");

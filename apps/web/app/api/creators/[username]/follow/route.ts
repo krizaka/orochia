@@ -7,7 +7,8 @@ import { follow, unfollow } from "@/lib/social";
 export const dynamic = "force-dynamic";
 
 /** Follows a creator; the follow stays PENDING until the creator approves it. */
-export async function POST(_req: NextRequest, { params }: { params: { username: string } }) {
+export async function POST(_req: NextRequest, props: { params: Promise<{ username: string }> }) {
+  const params = await props.params;
   try {
     const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
     const limit = await checkRateLimit(`follow:${user.id}`, 60, 60 * 60);
@@ -19,7 +20,8 @@ export async function POST(_req: NextRequest, { params }: { params: { username: 
 }
 
 /** Unfollows a creator. */
-export async function DELETE(_req: NextRequest, { params }: { params: { username: string } }) {
+export async function DELETE(_req: NextRequest, props: { params: Promise<{ username: string }> }) {
+  const params = await props.params;
   try {
     const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
     await unfollow(user.id, params.username);

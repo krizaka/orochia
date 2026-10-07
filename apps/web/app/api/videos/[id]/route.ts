@@ -22,7 +22,8 @@ const Patch = z
   });
 
 /** The creator edits their video: title, description, visibility, unlock price, tags. */
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const user = await requireUserWithRole(["CREATOR"]);
     const id = z.string().uuid().safeParse(params.id);
@@ -44,7 +45,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
  * The creator deletes their video. It is withdrawn everywhere (feed, playlists, playback) but the
  * row stays: ledger entries and access grants reference it and financial records are immutable.
  */
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const user = await requireUserWithRole(["CREATOR"]);
     const id = z.string().uuid().safeParse(params.id);

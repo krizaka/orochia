@@ -10,7 +10,7 @@
       "port": 3000,
       "role": "Consumer platform, creator studio & 4K HLS player",
       "stack": [
-        "Next.js 14 App Router",
+        "Next.js 16 App Router",
         "Drizzle ORM",
         "PostgreSQL 16",
         "Redis 7",
@@ -25,7 +25,7 @@
       "port": 3001,
       "role": "Control plane: 2257 records, moderation & treasury",
       "stack": [
-        "Next.js 14 App Router",
+        "Next.js 16 App Router",
         "Tailwind CSS",
         "Lucide Icons"
       ],
@@ -38,7 +38,7 @@
       "port": 3002,
       "role": "Design system & tokens (Obsidian Velvet Noir)",
       "stack": [
-        "React 18",
+        "React 19",
         "Tailwind CSS",
         "TypeScript"
       ],

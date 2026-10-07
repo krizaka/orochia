@@ -17,7 +17,8 @@ const Action = z.discriminatedUnion("action", [
  * Suspends an account (it can no longer sign in, and its open sessions are refused on their next
  * request), reinstates it, or changes its role. An administrator cannot act on their own account.
  */
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const admin = await requireUserWithRole(["ADMIN"]);
     const id = z.string().uuid().safeParse(params.id);

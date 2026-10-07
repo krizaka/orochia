@@ -13,7 +13,8 @@ const Update = z.object({ isVerified: z.boolean() });
  * Records the outcome of a creator's 18 U.S.C. § 2257 review. Only a verified creator can open an
  * upload session.
  */
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     await requireUserWithRole(["ADMIN"]);
     const id = z.string().uuid().safeParse(params.id);

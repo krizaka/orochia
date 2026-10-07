@@ -11,7 +11,8 @@ export const metadata = { title: "Explore — Orochia", description: "Search Oro
 const PAGE = 24;
 
 /** Explore: search titles, descriptions and creators, filter by tag, page through results. */
-export default async function ExplorePage({ searchParams }: { searchParams: { q?: string; tag?: string; page?: string } }) {
+export default async function ExplorePage(props: { searchParams: Promise<{ q?: string; tag?: string; page?: string }> }) {
+  const searchParams = await props.searchParams;
   const q = (searchParams.q ?? "").slice(0, 100);
   const tag = (searchParams.tag ?? "").slice(0, 40);
   const page = Math.max(1, Math.min(400, Number(searchParams.page) || 1));

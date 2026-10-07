@@ -95,7 +95,7 @@ export function clearSessionCookie(response: NextResponse): void {
 
 /** The authenticated user of the current request, if any. */
 export async function getCurrentUser(): Promise<SessionUser | null> {
-  const token = cookies().get(SESSION_COOKIE_NAME)?.value;
+  const token = (await cookies()).get(SESSION_COOKIE_NAME)?.value;
   return token ? verifySessionToken(token) : null;
 }
 

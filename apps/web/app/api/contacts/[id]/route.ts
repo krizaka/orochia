@@ -9,7 +9,8 @@ export const dynamic = "force-dynamic";
 const Decision = z.object({ action: z.enum(["accept", "reject", "block"]) });
 
 /** Accepts or rejects a request addressed to you, or blocks the other person. */
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
     const id = z.string().uuid().safeParse(params.id);
@@ -23,7 +24,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 }
 
 /** Removes a contact or withdraws a request (either side). */
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
     const id = z.string().uuid().safeParse(params.id);

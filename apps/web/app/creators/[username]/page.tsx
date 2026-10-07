@@ -10,7 +10,8 @@ import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({ params }: { params: { username: string } }) {
+export async function generateMetadata(props: { params: Promise<{ username: string }> }) {
+  const params = await props.params;
   const creator = await creatorByUsername(params.username.toLowerCase()).catch(() => null);
   return {
     title: creator ? `${creator.displayName} (@${creator.username}) — Orochia` : "Creator — Orochia",
@@ -19,7 +20,8 @@ export async function generateMetadata({ params }: { params: { username: string 
 }
 
 /** A creator's public page: identity, figures and published videos — all from the database. */
-export default async function CreatorPage({ params }: { params: { username: string } }) {
+export default async function CreatorPage(props: { params: Promise<{ username: string }> }) {
+  const params = await props.params;
   const creator = await creatorByUsername(params.username.toLowerCase());
   if (!creator) notFound();
   const [videos, playlists] = await Promise.all([creatorVideos(creator.id), publicPlaylists(creator.id)]);

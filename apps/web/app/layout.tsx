@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
+import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { AgeVerificationModal } from "@/components/AgeVerificationModal";
 import { AuthProvider } from "@/lib/auth-context";
 import "./globals.css";
+
+// Self-hosted at build time by next/font: no request to Google from the visitor's browser.
+const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-outfit", display: "swap" });
+const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-jakarta", display: "swap" });
 
 export const metadata: Metadata = {
   title: "Orochia — Adult-Friendly Open-Source Video & Creator Platform",
@@ -17,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className={`dark ${outfit.variable} ${jakarta.variable}`}>
       <body className="min-h-screen bg-zinc-950 text-zinc-100 antialiased selection:bg-violet-600 selection:text-white">
         <AuthProvider>
           <AgeVerificationModal />

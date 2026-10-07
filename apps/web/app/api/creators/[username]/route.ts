@@ -8,7 +8,8 @@ import { errorResponse, jsonError } from "@/lib/http";
 export const dynamic = "force-dynamic";
 
 /** A creator's public page: profile, videos, public playlists and, signed in, how you relate to them. */
-export async function GET(_req: NextRequest, { params }: { params: { username: string } }) {
+export async function GET(_req: NextRequest, props: { params: Promise<{ username: string }> }) {
+  const params = await props.params;
   try {
     const creator = await creatorByUsername(params.username.toLowerCase());
     if (!creator) return jsonError(404, "Creator not found");

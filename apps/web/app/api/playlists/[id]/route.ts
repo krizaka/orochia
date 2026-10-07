@@ -13,7 +13,8 @@ const Patch = z.object({
 });
 
 /** A playlist and its videos (private playlists are visible to their owner only). */
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const id = z.string().uuid().safeParse(params.id);
     if (!id.success) return jsonError(404, "Playlist not found");
@@ -25,7 +26,8 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 }
 
 /** Renames a playlist, edits its description or its privacy (owner only). */
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
     const id = z.string().uuid().safeParse(params.id);
@@ -38,7 +40,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 }
 
 /** Deletes a playlist (owner only). */
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
     const id = z.string().uuid().safeParse(params.id);

@@ -10,7 +10,8 @@ export const dynamic = "force-dynamic";
 const Update = z.object({ status: z.enum(["OPEN", "IN_REVIEW", "RESOLVED"]) });
 
 /** Moves a report through triage (open → in review → resolved). */
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     await requireUserWithRole(["ADMIN"]);
     const id = z.string().uuid().safeParse(params.id);
