@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
+import { connectionConfig } from "./connection";
 import * as schema from "./schema";
 
 const DEV_DATABASE_URL =
@@ -22,7 +23,7 @@ function connectionString(): string {
 export function getDb(): NodePgDatabase<typeof schema> {
   if (!dbInstance) {
     pool = new Pool({
-      connectionString: connectionString(),
+      ...connectionConfig(connectionString()),
       max: parseInt(process.env.DATABASE_MAX_CONNECTIONS || "20", 10),
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 5000,

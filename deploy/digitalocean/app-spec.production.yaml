@@ -4,7 +4,7 @@
 #   doctl apps update <APP_ID> --spec deploy/digitalocean/app-spec.production.yaml   # ⚠ can blank the SECRETs (no value here): check them afterwards
 # Secret values live in the app (Settings → Environment Variables), entered once; pushes to the branch redeploy.
 name: orochia
-region: nyc
+region: tor
 services:
   - name: web
     github:
@@ -30,6 +30,9 @@ services:
       - key: DATABASE_URL
         scope: RUN_AND_BUILD_TIME
         value: ${orochia-db.DATABASE_URL}
+      - key: DATABASE_CA_CERT
+        scope: RUN_TIME
+        value: ${orochia-db.CA_CERT}
       - key: BUNNY_STREAM_API_KEY
         scope: RUN_TIME
         type: SECRET
@@ -122,10 +125,13 @@ jobs:
       - key: DATABASE_URL
         scope: RUN_TIME
         value: ${orochia-db.DATABASE_URL}
+      - key: DATABASE_CA_CERT
+        scope: RUN_TIME
+        value: ${orochia-db.CA_CERT}
 
 databases:
   # Managed PostgreSQL 16 cluster, created beforehand (Databases → Create, same region):
-  #   doctl databases create orochia-pg --engine pg --version 16 --region nyc1 --size db-s-1vcpu-1gb
+  #   doctl databases create orochia-pg --engine pg --version 16 --region tor1 --size db-s-1vcpu-1gb
   # then create the database and user below in it.
   - name: orochia-db
     engine: PG
