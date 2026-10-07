@@ -56,7 +56,7 @@ export function Navbar() {
         {/* Navigation links */}
         <nav className="hidden md:flex items-center gap-6">
           <Link
-            href="/"
+            href="/explore"
             className="text-xs font-semibold uppercase tracking-wider text-zinc-300 hover:text-white transition-colors"
           >
             Explore
@@ -315,7 +315,7 @@ export function Navbar() {
 
           <div className="space-y-1">
             <Link
-              href="/"
+              href="/explore"
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-semibold text-zinc-300 hover:bg-white/5 hover:text-white"
             >

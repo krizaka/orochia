@@ -4,6 +4,9 @@ import React, { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { VideoManager, type StudioVideo } from "@/components/dashboard/VideoManager";
+import { NetworkPanel } from "@/components/dashboard/NetworkPanel";
+import { PlaylistsPanel } from "@/components/dashboard/PlaylistsPanel";
 import {
   LayoutDashboard,
   Film,
@@ -14,6 +17,8 @@ import {
   CheckCircle2,
   CreditCard,
   Clapperboard,
+  Users,
+  ListVideo,
 } from "lucide-react";
 
 interface LibraryEntry {
@@ -47,7 +52,7 @@ interface Upload {
 interface Dashboard {
   library: LibraryEntry[];
   ledger: LedgerLine[];
-  uploads: Upload[];
+  uploads: StudioVideo[];
   pendingPayoutCents: number;
 }
 
@@ -61,7 +66,7 @@ interface Treasury {
   payoutsSettledCents: number;
 }
 
-type Tab = "overview" | "library" | "ledger" | "uploads" | "treasury" | "settings";
+type Tab = "overview" | "library" | "ledger" | "uploads" | "network" | "playlists" | "treasury" | "settings";
 
 const money = (cents: number) =>
   `$${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -251,6 +256,8 @@ function DashboardContent() {
             <span>Payouts</span>
           </Link>
         )}
+        <TabButton tab="network" active={activeTab} onSelect={setActiveTab} icon={Users}>Network</TabButton>
+        <TabButton tab="playlists" active={activeTab} onSelect={setActiveTab} icon={ListVideo}>Playlists</TabButton>
         {isAdmin && <TabButton tab="treasury" active={activeTab} onSelect={setActiveTab} icon={Shield}>Treasury</TabButton>}
         <TabButton tab="settings" active={activeTab} onSelect={setActiveTab} icon={Settings}>Settings</TabButton>
       </div>
@@ -308,40 +315,11 @@ function DashboardContent() {
         </div>
       )}
 
-      {activeTab === "uploads" && isCreator && data && (
-        data.uploads.length === 0 ? (
-          <Empty>
-            No published videos yet. <Link href="/creator/upload" className="text-violet-400 underline">Upload your first one</Link>.
-          </Empty>
-        ) : (
-          <div className="glass-panel rounded-3xl p-6 overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="text-[10px] uppercase tracking-wider text-zinc-500">
-                <tr>
-                  <th className="py-2 pr-4">Title</th>
-                  <th className="py-2 pr-4">Visibility</th>
-                  <th className="py-2 pr-4">Duration</th>
-                  <th className="py-2 pr-4 text-right">Views</th>
-                  <th className="py-2 text-right">Tips</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5 text-zinc-300">
-                {data.uploads.map((video) => (
-                  <tr key={video.id}>
-                    <td className="py-2.5 pr-4">
-                      <Link href={`/watch/${video.id}`} className="hover:text-violet-400">{video.title}</Link>
-                    </td>
-                    <td className="py-2.5 pr-4 text-zinc-400">{video.visibility.replace(/_/g, " ").toLowerCase()}</td>
-                    <td className="py-2.5 pr-4 font-mono">{duration(video.durationSeconds)}</td>
-                    <td className="py-2.5 pr-4 text-right font-mono">{video.viewsCount.toLocaleString("en-US")}</td>
-                    <td className="py-2.5 text-right font-mono">{video.tipsCount}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )
-      )}
+      {activeTab === "uploads" && isCreator && data && <VideoManager videos={data.uploads} onChange={() => void load()} />}
+
+      {activeTab === "network" && <NetworkPanel isCreator={isCreator} />}
+
+      {activeTab === "playlists" && <PlaylistsPanel />}
 
       {activeTab === "treasury" && isAdmin && (
         treasury ? (

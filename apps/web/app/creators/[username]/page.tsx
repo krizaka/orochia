@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { ShieldCheck, Users, Eye, Film } from "lucide-react";
 import { VideoCard } from "@/components/VideoCard";
 import { creatorByUsername, creatorVideos } from "@/lib/queries";
+import { publicPlaylists } from "@/lib/playlists";
+import { RelationshipActions } from "@/components/RelationshipActions";
+import { PlaylistCard } from "@/components/PlaylistCard";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +22,7 @@ export async function generateMetadata({ params }: { params: { username: string 
 export default async function CreatorPage({ params }: { params: { username: string } }) {
   const creator = await creatorByUsername(params.username.toLowerCase());
   if (!creator) notFound();
-  const videos = await creatorVideos(creator.id);
+  const [videos, playlists] = await Promise.all([creatorVideos(creator.id), publicPlaylists(creator.id)]);
 
   const stats = [
     { icon: Users, label: "Patrons", value: creator.patrons },
@@ -52,9 +55,23 @@ export default async function CreatorPage({ params }: { params: { username: stri
                 </span>
               ))}
             </div>
+            <div className="mt-5 flex justify-center sm:justify-start">
+              <RelationshipActions username={creator.username} />
+            </div>
           </div>
         </div>
       </div>
+
+      {playlists.length > 0 && (
+        <>
+          <h2 className="mt-10 mb-6 text-xl font-bold text-white">Playlists</h2>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {playlists.map((p) => (
+              <PlaylistCard key={p.id} {...p} />
+            ))}
+          </div>
+        </>
+      )}
 
       <h2 className="mt-10 mb-6 text-xl font-bold text-white">Videos</h2>
       {videos.length === 0 ? (

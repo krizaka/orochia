@@ -1,5 +1,5 @@
 import { db, users, profiles, videos, videoAccessGrants, tipsLedger, payoutRequests } from "@orochia/db";
-import { and, desc, eq, ne, sql } from "drizzle-orm";
+import { and, desc, eq, ilike, isNull, ne, or, sql, type SQL } from "drizzle-orm";
 import { getCreatorAvailableBalanceCents } from "@orochia/payments";
 import type { SessionUser } from "./auth";
 
@@ -38,16 +38,51 @@ const videoSummaryColumns = {
   tipsCount: videos.tipsCount,
 };
 
+/** A video anyone may see listed: encoded, not taken down, from an active account. */
+const listable = () => and(eq(videos.status, "READY"), isNull(videos.removedAt), isNull(users.suspendedAt));
+
 /** Ready videos, newest first. Locked videos are listed — their stream is what is protected. */
 export async function listFeed(limit = 12): Promise<VideoSummary[]> {
+  return searchVideos({ limit });
+}
+
+export interface VideoSearch {
+  q?: string;
+  tag?: string;
+  limit?: number;
+  offset?: number;
+}
+
+/** The explore search: title, description, creator or tag; newest first. */
+export async function searchVideos({ q, tag, limit = 24, offset = 0 }: VideoSearch): Promise<VideoSummary[]> {
+  const filters: (SQL | undefined)[] = [listable()];
+  const term = q?.trim();
+  if (term) {
+    const like = `%${term.replace(/[%_\\]/g, (c) => `\\${c}`)}%`;
+    filters.push(or(ilike(videos.title, like), ilike(videos.description, like), ilike(users.username, like), ilike(profiles.displayName, like)));
+  }
+  if (tag?.trim()) filters.push(sql`${tag.trim().toLowerCase()} = any(${videos.tags})`);
   return db
     .select(videoSummaryColumns)
     .from(videos)
     .innerJoin(users, eq(users.id, videos.creatorId))
     .leftJoin(profiles, eq(profiles.userId, videos.creatorId))
-    .where(eq(videos.status, "READY"))
+    .where(and(...filters))
     .orderBy(desc(videos.createdAt))
-    .limit(limit);
+    .limit(Math.min(Math.max(limit, 1), 60))
+    .offset(Math.max(offset, 0));
+}
+
+/** The most used tags of listable videos, for the explore filters. */
+export async function popularTags(limit = 16): Promise<{ tag: string; count: number }[]> {
+  const rows = await db.execute<{ tag: string; count: string }>(sql`
+    select t.tag, count(*)::text as count
+    from ${videos} v
+    join ${users} u on u.id = v.creator_id
+    cross join lateral unnest(v.tags) as t(tag)
+    where v.status = 'READY' and v.removed_at is null and u.suspended_at is null
+    group by t.tag order by count(*) desc, t.tag limit ${limit}`);
+  return rows.rows.map((r) => ({ tag: r.tag, count: Number(r.count) }));
 }
 
 export interface CreatorCard {
@@ -74,7 +109,7 @@ async function creatorCardFor(userId: string): Promise<CreatorCard | null> {
     })
     .from(users)
     .leftJoin(profiles, eq(profiles.userId, users.id))
-    .where(and(eq(users.id, userId), eq(users.role, "CREATOR")))
+    .where(and(eq(users.id, userId), eq(users.role, "CREATOR"), isNull(users.suspendedAt)))
     .limit(1);
   if (!row) return null;
 
@@ -84,7 +119,7 @@ async function creatorCardFor(userId: string): Promise<CreatorCard | null> {
       videosCount: sql<string>`count(*)`,
     })
     .from(videos)
-    .where(and(eq(videos.creatorId, userId), eq(videos.status, "READY")));
+    .where(and(eq(videos.creatorId, userId), eq(videos.status, "READY"), isNull(videos.removedAt)));
   const [patrons] = await db
     .select({ count: sql<string>`count(distinct ${tipsLedger.senderId})` })
     .from(tipsLedger)
@@ -104,7 +139,7 @@ export async function featuredCreator(): Promise<CreatorCard | null> {
     .select({ userId: profiles.userId })
     .from(profiles)
     .innerJoin(users, eq(users.id, profiles.userId))
-    .where(eq(users.role, "CREATOR"))
+    .where(and(eq(users.role, "CREATOR"), isNull(users.suspendedAt)))
     .orderBy(desc(profiles.totalTipsEarnedCents))
     .limit(1);
   return top ? creatorCardFor(top.userId) : null;
@@ -121,7 +156,7 @@ export async function creatorVideos(creatorId: string, limit = 24): Promise<Vide
     .from(videos)
     .innerJoin(users, eq(users.id, videos.creatorId))
     .leftJoin(profiles, eq(profiles.userId, videos.creatorId))
-    .where(and(eq(videos.creatorId, creatorId), eq(videos.status, "READY")))
+    .where(and(eq(videos.creatorId, creatorId), listable()))
     .orderBy(desc(videos.createdAt))
     .limit(limit);
 }
@@ -147,7 +182,7 @@ export async function videoDetails(videoId: string): Promise<VideoDetails | null
     .from(videos)
     .innerJoin(users, eq(users.id, videos.creatorId))
     .leftJoin(profiles, eq(profiles.userId, videos.creatorId))
-    .where(eq(videos.id, videoId))
+    .where(and(eq(videos.id, videoId), isNull(videos.removedAt), isNull(users.suspendedAt)))
     .limit(1);
   if (!row) return null;
   const more = (await creatorVideos(row.creatorId, 5)).filter((v) => v.id !== videoId).slice(0, 4);
@@ -216,10 +251,41 @@ export interface LedgerLine {
   gateway: string;
 }
 
+/** The reason recorded when a creator deletes their own video (a withdrawal, not a takedown). */
+export const CREATOR_DELETED = "Deleted by its creator";
+
+export interface StudioVideo extends VideoSummary {
+  description: string | null;
+  tags: string[];
+  status: "PENDING_UPLOAD" | "PROCESSING" | "READY" | "FAILED";
+  removedAt: Date | null;
+  removalReason: string | null;
+}
+
+/** Every video of a creator, whatever its state (encoding, failed, taken down) — not the ones they deleted. */
+export async function studioVideos(creatorId: string, limit = 100): Promise<StudioVideo[]> {
+  const rows = await db
+    .select({
+      ...videoSummaryColumns,
+      description: videos.description,
+      tags: videos.tags,
+      status: videos.status,
+      removedAt: videos.removedAt,
+      removalReason: videos.removalReason,
+    })
+    .from(videos)
+    .innerJoin(users, eq(users.id, videos.creatorId))
+    .leftJoin(profiles, eq(profiles.userId, videos.creatorId))
+    .where(and(eq(videos.creatorId, creatorId), sql`(${videos.removalReason} is distinct from ${CREATOR_DELETED})`))
+    .orderBy(desc(videos.createdAt))
+    .limit(limit);
+  return rows.map((r) => ({ ...r, tags: r.tags ?? [] }));
+}
+
 export interface Dashboard {
   library: LibraryEntry[];
   ledger: LedgerLine[];
-  uploads: VideoSummary[];
+  uploads: StudioVideo[];
   pendingPayoutCents: number;
 }
 
@@ -270,7 +336,7 @@ export async function dashboardFor(user: SessionUser): Promise<Dashboard> {
           .orderBy(desc(tipsLedger.createdAt))
           .limit(50);
 
-  const uploads = user.role === "CREATOR" ? await creatorVideos(user.id, 50) : [];
+  const uploads = user.role === "CREATOR" ? await studioVideos(user.id) : [];
 
   const [pending] =
     user.role === "CREATOR"

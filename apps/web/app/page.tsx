@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { VideoCard } from "@/components/VideoCard";
+import { RelationshipActions } from "@/components/RelationshipActions";
 import { listFeed, featuredCreator } from "@/lib/queries";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { Flame, Shield, Sparkles, Tv, Lock, ArrowRight, LayoutDashboard, User, CheckCircle2 } from "lucide-react";
@@ -144,12 +145,7 @@ export default async function HomePage() {
               <User className="h-4 w-4" />
               <span>View Creator Profile</span>
             </Link>
-            <Link
-              href="/auth/register"
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-zinc-900/90 px-5 py-3 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all"
-            >
-              <span>Join as Patron</span>
-            </Link>
+            <RelationshipActions username={featured.username} show={["follow"]} />
           </div>
         </div>
       </div>

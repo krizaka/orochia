@@ -1,3 +1,9 @@
+import { fileURLToPath } from "node:url";
+import nextEnv from "@next/env";
+
+// One .env for the whole monorepo, at its root (apps/web/.env still wins when present).
+nextEnv.loadEnvConfig(fileURLToPath(new URL("../..", import.meta.url)));
+
 /** @type {import('next').NextConfig} */
 
 const securityHeaders = [

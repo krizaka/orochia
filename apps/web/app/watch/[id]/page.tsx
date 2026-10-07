@@ -6,6 +6,8 @@ import { useSearchParams } from "next/navigation";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { TipModal } from "@/components/TipModal";
 import { ReportModal } from "@/components/ReportModal";
+import { RelationshipActions } from "@/components/RelationshipActions";
+import { SaveToPlaylist } from "@/components/SaveToPlaylist";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { Sparkles, Eye, ShieldCheck, Share2, Flag, CheckCircle2 } from "lucide-react";
 
@@ -128,6 +130,7 @@ export default function WatchPage({ params }: { params: { id: string } }) {
   const minTipAmountCents = stream?.minTipAmountCents ?? details?.minTipAmountCents ?? 0;
   const isPaywalled = stream ? !stream.allowed && stream.reason === "PAYWALL_REQUIRED" : false;
   const isContactsOnly = stream ? !stream.allowed && stream.reason === "CONTACTS_ONLY" : false;
+  const isFollowersOnly = stream ? !stream.allowed && stream.reason === "FOLLOWERS_ONLY" : false;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
@@ -158,6 +161,14 @@ export default function WatchPage({ params }: { params: { id: string } }) {
               isPaywalled={isPaywalled}
               minTipAmountCents={minTipAmountCents}
               isContactsOnly={isContactsOnly}
+              isFollowersOnly={isFollowersOnly}
+              gateAction={
+                <RelationshipActions
+                  username={details.creatorUsername}
+                  show={isFollowersOnly ? ["follow"] : ["contact"]}
+                  onChange={() => void fetchStreamAccess()}
+                />
+              }
               onUnlockRequested={() => setIsTipModalOpen(true)}
             />
           )}
@@ -174,6 +185,7 @@ export default function WatchPage({ params }: { params: { id: string } }) {
                     <Sparkles className="h-4 w-4" />
                     <span>{isPaywalled ? "Unlock" : "Send Tip"}</span>
                   </button>
+                  <SaveToPlaylist videoId={videoId} />
                   <button
                     onClick={share}
                     className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 transition-colors"
@@ -217,12 +229,15 @@ export default function WatchPage({ params }: { params: { id: string } }) {
                     <span className="text-xs text-zinc-400">@{details.creatorUsername}</span>
                   </div>
                 </div>
-                <Link
-                  href={`/creators/${details.creatorUsername}`}
-                  className="rounded-xl border border-white/10 bg-zinc-800 hover:bg-zinc-700 px-4 py-2 text-xs font-semibold text-white transition-all"
-                >
-                  View profile
-                </Link>
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                  <RelationshipActions username={details.creatorUsername} show={["follow"]} size="sm" onChange={() => void fetchStreamAccess()} />
+                  <Link
+                    href={`/creators/${details.creatorUsername}`}
+                    className="rounded-xl border border-white/10 bg-zinc-800 hover:bg-zinc-700 px-4 py-2 text-xs font-semibold text-white transition-all"
+                  >
+                    View profile
+                  </Link>
+                </div>
               </div>
 
               {(details.description || details.creatorBio) && (

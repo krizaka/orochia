@@ -1,9 +1,9 @@
-import { db, videos, videoAccessGrants, contacts } from "@orochia/db";
+import { db, videos, videoAccessGrants, contacts, follows } from "@orochia/db";
 import { eq, and, or } from "drizzle-orm";
 
 export interface AccessEvaluation {
   allowed: boolean;
-  reason?: "PAYWALL_REQUIRED" | "CONTACTS_ONLY" | "AGE_VERIFICATION_REQUIRED" | "NOT_FOUND";
+  reason?: "PAYWALL_REQUIRED" | "CONTACTS_ONLY" | "FOLLOWERS_ONLY" | "AGE_VERIFICATION_REQUIRED" | "NOT_FOUND";
   minTipAmountCents?: number;
   creatorId?: string;
   videoTitle?: string;
@@ -23,7 +23,8 @@ export async function evaluateVideoAccess(
     .where(eq(videos.id, videoId))
     .limit(1);
 
-  if (!video) {
+  // A taken-down video does not exist for anyone, its author included.
+  if (!video || video.removedAt) {
     return { allowed: false, reason: "NOT_FOUND" };
   }
 
@@ -48,10 +49,25 @@ export async function evaluateVideoAccess(
         videoTitle: video.title,
       };
     }
+    if (video.visibility === "APPROVED_FOLLOWERS_ONLY") {
+      return { allowed: false, reason: "FOLLOWERS_ONLY", creatorId: video.creatorId, videoTitle: video.title };
+    }
     return { allowed: false, reason: "CONTACTS_ONLY", creatorId: video.creatorId, videoTitle: video.title };
   }
 
-  // 3. Contacts-Only video check
+  // 3. Approved-followers video check: the creator accepted this viewer's follow.
+  if (video.visibility === "APPROVED_FOLLOWERS_ONLY") {
+    const [follow] = await db
+      .select({ id: follows.id })
+      .from(follows)
+      .where(and(eq(follows.followerId, viewerId), eq(follows.creatorId, video.creatorId), eq(follows.status, "APPROVED")))
+      .limit(1);
+    return follow
+      ? { allowed: true, creatorId: video.creatorId, videoTitle: video.title }
+      : { allowed: false, reason: "FOLLOWERS_ONLY", creatorId: video.creatorId, videoTitle: video.title };
+  }
+
+  // 4. Contacts-Only video check
   if (video.visibility === "CONTACTS_ONLY") {
     const [contact] = await db
       .select()
@@ -79,7 +95,7 @@ export async function evaluateVideoAccess(
     };
   }
 
-  // 4. Paywalled / Tipped video check
+  // 5. Paywalled / Tipped video check
   if (video.visibility === "TIPPED_UNLOCKED") {
     const [grant] = await db
       .select()

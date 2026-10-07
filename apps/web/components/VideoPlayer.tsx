@@ -21,6 +21,9 @@ interface VideoPlayerProps {
   isPaywalled?: boolean;
   minTipAmountCents?: number;
   isContactsOnly?: boolean;
+  isFollowersOnly?: boolean;
+  /** Rendered in the contacts / followers gate: the action that opens the video (follow, contact). */
+  gateAction?: React.ReactNode;
   onUnlockRequested?: () => void;
 }
 
@@ -32,8 +35,11 @@ export function VideoPlayer({
   isPaywalled = false,
   minTipAmountCents = 0,
   isContactsOnly = false,
+  isFollowersOnly = false,
+  gateAction,
   onUnlockRequested,
 }: VideoPlayerProps) {
+  const isGated = isContactsOnly || isFollowersOnly;
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -48,7 +54,7 @@ export function VideoPlayer({
 
   // Initialize HLS Stream
   useEffect(() => {
-    if (!videoRef.current || !streamUrl || isPaywalled || isContactsOnly) return;
+    if (!videoRef.current || !streamUrl || isPaywalled || isGated) return;
 
     const video = videoRef.current;
     let hls: Hls | null = null;
@@ -96,7 +102,7 @@ export function VideoPlayer({
         hls.destroy();
       }
     };
-  }, [streamUrl, isPaywalled, isContactsOnly]);
+  }, [streamUrl, isPaywalled, isGated]);
 
   const togglePlay = () => {
     if (!videoRef.current) return;
@@ -199,28 +205,24 @@ export function VideoPlayer({
         </div>
       )}
 
-      {/* Contacts-Only Gate State */}
-      {!isPaywalled && isContactsOnly && (
+      {/* Contacts-only / followers-only gate */}
+      {!isPaywalled && isGated && (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md p-6 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-800/80 border border-zinc-700/50 mb-4">
             <Users className="h-8 w-8 text-zinc-300" />
           </div>
-          <h3 className="text-xl font-bold text-white mb-1">Contacts-Only Access</h3>
+          <h3 className="text-xl font-bold text-white mb-1">{isFollowersOnly ? "Approved followers only" : "Contacts-Only Access"}</h3>
           <p className="text-sm text-zinc-400 max-w-md mb-6">
-            The creator made this video private to accepted mutual contacts only.
-            Send a contact request to view.
+            {isFollowersOnly
+              ? "The creator opens this video to the followers they approved. Follow them — the video unlocks once they accept."
+              : "The creator made this video private to accepted mutual contacts only. Send a contact request to view."}
           </p>
-          <button
-            onClick={() => alert("Contact request sent to creator!")}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium text-sm border border-white/20 transition-all"
-          >
-            Request Contact Connection
-          </button>
+          {gateAction}
         </div>
       )}
 
       {/* Custom Video Controls */}
-      {!isPaywalled && !isContactsOnly && (
+      {!isPaywalled && !isGated && (
         <div
           className={`absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-4 transition-opacity duration-300 ${
             showControls ? "opacity-100" : "opacity-0"

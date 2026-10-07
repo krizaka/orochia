@@ -25,6 +25,7 @@ const EXTENSIONS: Record<string, string> = {
   "application/pdf": ".pdf",
 };
 
+/** Stores an avatar (any account), a thumbnail or a 2257 document (creators); size and type checked per kind. */
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
