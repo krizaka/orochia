@@ -3,14 +3,14 @@
  * One-command local setup: `npm run setup`.
  *   1. checks Node ≥ 20 and Docker
  *   2. creates .env from .env.example with a fresh SESSION_SECRET (an existing .env is kept)
- *   3. starts PostgreSQL 16 + Redis 7 (deploy/docker/docker-compose.dev.yml) and waits for them
+ *   3. starts PostgreSQL 16 (deploy/docker/docker-compose.dev.yml) and waits for it
  *   4. installs dependencies if needed, applies migrations, seeds the development data
  * Safe to run again at any time: every step is idempotent.
  */
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import { ROOT, COMPOSE, c, ok, run, step, warn, fail, waitForPostgres, waitForPort, isLocalDatabase, databaseUrl } from "./lib.mjs";
+import { ROOT, COMPOSE, c, ok, run, step, fail, waitForPostgres, isLocalDatabase, databaseUrl } from "./lib.mjs";
 
 step("Prerequisites");
 const major = Number(process.versions.node.split(".")[0]);
@@ -30,10 +30,9 @@ if (fs.existsSync(envFile)) {
 }
 if (!isLocalDatabase()) fail(`DATABASE_URL points at ${new URL(databaseUrl()).hostname}: setup only provisions a local database`);
 
-step("PostgreSQL 16 + Redis 7");
+step("PostgreSQL 16");
 run("docker", [...COMPOSE, "up", "-d", "--wait"], { allowFail: true }).status === 0 || run("docker", [...COMPOSE, "up", "-d"]);
 await waitForPostgres();
-await waitForPort(6379).then(() => ok("Redis is ready")).catch(() => warn("Redis is not reachable — rate limits fall back to memory"));
 ok("PostgreSQL is ready on localhost:5432");
 
 step("Dependencies");

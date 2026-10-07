@@ -10,7 +10,6 @@ services:
     environment:
       NODE_ENV: production
       DATABASE_URL: postgresql://orochia_user:${POSTGRES_PASSWORD}@postgres:5432/orochia_db?sslmode=disable
-      REDIS_URL: redis://redis:6379
       BUNNY_STREAM_API_KEY: ${BUNNY_STREAM_API_KEY}
       BUNNY_STREAM_LIBRARY_ID: ${BUNNY_STREAM_LIBRARY_ID}
       BUNNY_STREAM_HOSTNAME: ${BUNNY_STREAM_HOSTNAME}
@@ -19,8 +18,6 @@ services:
       SESSION_SECRET: ${SESSION_SECRET}
     depends_on:
       postgres:
-        condition: service_healthy
-      redis:
         condition: service_healthy
     networks:
       - orochia-internal
@@ -59,20 +56,6 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:7-alpine
-    container_name: orochia-redis-prod
-    restart: always
-    volumes:
-      - redis_prod_data:/data
-    networks:
-      - orochia-internal
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
 networks:
   orochia-internal:
     driver: bridge
@@ -81,4 +64,3 @@ volumes:
   caddy_data:
   caddy_config:
   postgres_prod_data:
-  redis_prod_data:

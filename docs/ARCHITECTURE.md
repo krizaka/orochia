@@ -22,9 +22,8 @@ graph TD
         WebhookReceiver[Bunny Webhook Ingestion]
     end
 
-    subgraph DATA["Data & cache tier"]
+    subgraph DATA["Data tier"]
         Postgres[(Managed PostgreSQL 16)]
-        RedisCache[(Managed Redis 7)]
     end
 
     subgraph EDGE["Media & edge tier"]

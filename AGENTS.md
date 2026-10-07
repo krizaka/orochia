@@ -21,7 +21,7 @@
 - **Allowed on GitHub**: Actions that lint, type-check, test (unit + end-to-end on PostgreSQL), build, check the
   generated docs; the DigitalOcean App Platform deploy workflow; publishing `@krizaka/orochia-design-system` to
   GitHub Packages on a `v*` tag.
-- **Local**: PostgreSQL 16 + Redis 7 in Docker (`deploy/docker/docker-compose.dev.yml`); the apps run with Node.
+- **Local**: PostgreSQL 16 in Docker (`deploy/docker/docker-compose.dev.yml`); the apps run with Node.
 - Production is **fail-closed** (§3.F): it never runs on a placeholder secret, a demo mode or showcase data.
 
 ---
@@ -41,12 +41,12 @@
 | `npm run dev` / `build` / `start` | Web app on :3000 |
 | `npm run check` | lint + type-check + unit tests + docs freshness — run before every push |
 | `npm run test:e2e` | Feature scenarios over HTTP against a running app on a freshly reset database |
-| `npm run db:up` / `db:down` | Start / stop PostgreSQL + Redis |
+| `npm run db:up` / `db:down` | Start / stop PostgreSQL |
 | `npm run db:generate` | SQL migration from a schema change (review it before committing) |
 | `npm run db:migrate` | Apply pending migrations |
 | `npm run db:seed` | Development data (idempotent, refuses `NODE_ENV=production`) |
 | `npm run db:status` | Applied vs. pending migrations, row counts |
-| `npm run db:reset -- --yes` | Drop the **local** schema, migrate, seed, flush local Redis (refuses a non-local URL) |
+| `npm run db:reset -- --yes` | Drop the **local** schema, migrate, seed (refuses a non-local URL) |
 | `npm run db:studio` / `db:psql` | Drizzle Studio / psql in the dev container |
 | `npm run db:dump` / `db:restore -- <file>` | Local backups in `backups/` (git-ignored) |
 | `npm run db:check` | drizzle-kit consistency check of the migration history |
@@ -65,7 +65,7 @@ orochia/                           npm workspaces
 ├── apps/web/                      Next.js 16 App Router — pages + API route handlers (the only HTTP surface)
 │   ├── app/api/**/route.ts        one handler per endpoint: authenticate → validate (zod) → call lib → respond
 │   ├── lib/                       access.ts (who may play what) · social.ts · playlists.ts · queries.ts (read
-│   │                              models) · auth.ts · env.ts · http.ts · redis.ts · storage.ts
+│   │                              models) · auth.ts · env.ts · http.ts · rate-limit.ts · storage.ts
 │   └── components/                UI (player, modals, dashboard panels, relationship actions…)
 ├── packages/db/                   Drizzle schema (source of truth), migrations, migrator, seed
 ├── packages/media/                Bunny Stream client, Tus signing, signed playback tokens, webhook verifier
@@ -155,7 +155,7 @@ orochia/                           npm workspaces
   routes) → path ids validated as UUIDs (invalid → **404**, never 500) → body/query parsed with **zod** →
   domain call → `NextResponse.json({ success: true, … })`. Errors go through `errorResponse` (no internals leaked).
 - Ownership is enforced in the **query** (`where id = … and creator_id = me`), so another user's id is a 404.
-- Mutations that can be abused are rate-limited (`checkRateLimit`, Redis with in-memory fallback).
+- Mutations that can be abused are rate-limited (`checkRateLimit`, in memory per instance — no Redis for now).
 - The **first sentence of the JSDoc** above each handler is the endpoint's summary in `docs/API_CONTRACTS.md`;
   the access column is read from the handler's `requireUserWithRole` call. Keep both truthful.
 
@@ -179,7 +179,7 @@ orochia/                           npm workspaces
   PostgreSQL — followers, contacts, playlists, search, creator edits, takedowns, suspensions, role changes.
   A new feature adds its scenarios there.
 - **CI** (`.github/workflows/ci.yml`): verify (lint, types, unit, docs check, production build) · database
-  (bundled migrator twice, seed) · e2e (Postgres + Redis services, dev server, scenarios).
+  (bundled migrator twice, seed) · e2e (Postgres service, dev server, scenarios).
 
 ---
 

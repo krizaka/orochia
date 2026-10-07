@@ -1,4 +1,9 @@
-name: orochia
+# Orochia — DEV environment (DigitalOcean App Platform).
+# Used to CREATE the app or change its structure only:
+#   doctl apps create --spec deploy/digitalocean/app-spec.dev.yaml
+#   doctl apps update <APP_ID> --spec deploy/digitalocean/app-spec.dev.yaml   # ⚠ can blank the SECRETs (no value here): check them afterwards
+# Secret values live in the app (Settings → Environment Variables), entered once; pushes to the branch redeploy.
+name: orochia-dev
 region: nyc
 services:
   - name: web
@@ -10,7 +15,7 @@ services:
     source_dir: /
     http_port: 3000
     instance_count: 1
-    instance_size_slug: professional-xs
+    instance_size_slug: basic-xs
     health_check:
       http_path: /api/health
       initial_delay_seconds: 15
@@ -25,9 +30,6 @@ services:
       - key: DATABASE_URL
         scope: RUN_AND_BUILD_TIME
         value: ${orochia-db.DATABASE_URL}
-      # REDIS_URL (optional): App Platform only attaches Redis/Valkey as a managed cluster. Without it,
-      # rate limits fail open and the feed cache is skipped. Add a managed Valkey cluster, then
-      # `- key: REDIS_URL / value: ${<cluster>.REDIS_URL}`, to turn them on.
       - key: BUNNY_STREAM_API_KEY
         scope: RUN_TIME
         type: SECRET
@@ -122,8 +124,7 @@ jobs:
         value: ${orochia-db.DATABASE_URL}
 
 databases:
-  # Dev database (App Platform-managed). For production, create a managed PostgreSQL 16 cluster and
-  # set `production: true`, `cluster_name`, `db_name`, `db_user` here.
+  # App Platform dev database (PostgreSQL only, not for production data).
   - name: orochia-db
     engine: PG
     version: "16"

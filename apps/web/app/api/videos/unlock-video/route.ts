@@ -11,7 +11,7 @@ import {
   settlePaymentIntent,
 } from "@orochia/payments";
 import { requireUserWithRole } from "@/lib/auth";
-import { checkRateLimit } from "@/lib/redis";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { appUrl, isDemoMode } from "@/lib/env";
 import { errorResponse, jsonError } from "@/lib/http";
 

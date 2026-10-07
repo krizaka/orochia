@@ -2,7 +2,7 @@
 /**
  * Database lifecycle for development — `npm run db:<command>`:
  *   status   migrations applied vs. files, row counts of the main tables
- *   reset    drops the local schema, re-applies every migration, re-seeds and flushes the local Redis (asks for confirmation;
+ *   reset    drops the local schema, re-applies every migration, re-seeds (asks for confirmation;
  *            `--yes` skips it). Refuses any non-local DATABASE_URL and NODE_ENV=production.
  *   psql     opens psql in the dev container
  *   dump     writes a SQL dump of the local database to ./backups/
@@ -57,8 +57,6 @@ switch (command) {
     run("npm", ["run", "db:migrate", "--silent"]);
     step("Seed");
     run("npm", ["run", "db:seed", "--silent"]);
-    // Rate-limit counters and caches describe the old data: clear the local Redis too.
-    if (run("docker", ["exec", "orochia-redis-dev", "redis-cli", "FLUSHDB"], { allowFail: true, quiet: true }).status === 0) ok("Local Redis flushed");
     ok("Local database rebuilt from the migrations and the seed");
     break;
   }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { checkRateLimit } from "@/lib/redis";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { BunnyStreamClient, CreateUploadSessionSchema } from "@orochia/media";
 import { db, videos, users } from "@orochia/db";
 import { eq } from "drizzle-orm";

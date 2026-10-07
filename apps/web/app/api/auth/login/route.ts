@@ -3,7 +3,7 @@ import { z } from "zod";
 import { db, users, verifyPassword } from "@orochia/db";
 import { eq, or } from "drizzle-orm";
 import { setSessionCookie } from "@/lib/auth";
-import { checkRateLimit } from "@/lib/redis";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { errorResponse, jsonError } from "@/lib/http";
 
 export const dynamic = "force-dynamic";

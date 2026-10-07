@@ -103,7 +103,7 @@ const model = {
       url: "https://github.com/krizaka/orochia",
       port: 3000,
       role: "Consumer platform, creator studio & 4K HLS player",
-      stack: ["Next.js 16 App Router", "Drizzle ORM", "PostgreSQL 16", "Redis 7", "Bunny.net Stream"],
+      stack: ["Next.js 16 App Router", "Drizzle ORM", "PostgreSQL 16", "Bunny.net Stream"],
       description:
         "Direct-to-Bunny streaming with short-lived signed URLs, server-side access control, gateway-confirmed unlocks and an idempotent double-entry ledger.",
     },

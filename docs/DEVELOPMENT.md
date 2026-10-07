@@ -12,7 +12,7 @@ The rules behind these commands live in [AGENTS.md](../AGENTS.md); this page is 
 ```bash
 git clone https://github.com/krizaka/orochia.git && cd orochia
 npm install
-npm run setup        # .env + PostgreSQL 16 + Redis 7 + migrations + seed
+npm run setup        # .env + PostgreSQL 16 + migrations + seed
 npm run dev          # http://localhost:3000
 ```
 
@@ -40,8 +40,8 @@ Clone the admin console and the design system next to this repository with `npm 
 
 ## The database
 
-PostgreSQL runs in the `orochia-postgres-dev` container, Redis in `orochia-redis-dev`
-(`deploy/docker/docker-compose.dev.yml`, data in named Docker volumes).
+PostgreSQL runs in the `orochia-postgres-dev` container
+(`deploy/docker/docker-compose.dev.yml`, data in a named Docker volume).
 
 | I want to… | Command |
 | :--- | :--- |
@@ -89,7 +89,7 @@ playback answers that streaming is not configured. In production every secret is
 | Symptom | Fix |
 | :--- | :--- |
 | `port 5432 is already allocated` | Another PostgreSQL is running: stop it, or change the published port in the dev compose file and `DATABASE_URL` |
-| `Too many attempts` at sign-in | Login attempts are rate-limited per account; `npm run db:reset -- --yes` also flushes local Redis |
+| `Too many attempts` at sign-in | Login attempts are rate-limited per account, in memory: restart `npm run dev` |
 | Pages show empty states | The database is empty — `npm run db:seed` |
 | `relation … does not exist` | Pending migrations — `npm run db:status`, then `npm run db:migrate` |
 | Docs check fails in CI | `npm run docs:generate` and commit the regenerated files |

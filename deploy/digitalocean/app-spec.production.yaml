@@ -1,0 +1,136 @@
+# Orochia — PRODUCTION environment (DigitalOcean App Platform).
+# Used to CREATE the app or change its structure only:
+#   doctl apps create --spec deploy/digitalocean/app-spec.production.yaml
+#   doctl apps update <APP_ID> --spec deploy/digitalocean/app-spec.production.yaml   # ⚠ can blank the SECRETs (no value here): check them afterwards
+# Secret values live in the app (Settings → Environment Variables), entered once; pushes to the branch redeploy.
+name: orochia
+region: nyc
+services:
+  - name: web
+    github:
+      repo: krizaka/orochia
+      branch: production
+      deploy_on_push: true
+    dockerfile_path: deploy/docker/Dockerfile
+    source_dir: /
+    http_port: 3000
+    instance_count: 1
+    instance_size_slug: professional-xs
+    health_check:
+      http_path: /api/health
+      initial_delay_seconds: 15
+      period_seconds: 10
+      timeout_seconds: 5
+      failure_threshold: 3
+    routes:
+      - path: /
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${orochia-db.DATABASE_URL}
+      - key: BUNNY_STREAM_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: BUNNY_STREAM_LIBRARY_ID
+        scope: RUN_TIME
+        type: GENERAL
+      - key: BUNNY_STREAM_HOSTNAME
+        scope: RUN_TIME
+        type: GENERAL
+      - key: BUNNY_STREAM_TOKEN_AUTH_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: BUNNY_WEBHOOK_SECRET
+        scope: RUN_TIME
+        type: SECRET
+      - key: SESSION_SECRET
+        scope: RUN_TIME
+        type: SECRET
+      - key: PLATFORM_FEE_PERCENTAGE
+        scope: RUN_TIME
+        value: "10"
+      - key: NEXT_PUBLIC_APP_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${APP_URL}
+      - key: STORAGE_DRIVER
+        scope: RUN_TIME
+        value: "bunny"
+      - key: BUNNY_STORAGE_ZONE
+        scope: RUN_TIME
+        type: GENERAL
+      - key: BUNNY_PULL_ZONE_HOSTNAME
+        scope: RUN_TIME
+        type: GENERAL
+      - key: CCBILL_CLIENT_ACCOUNT
+        scope: RUN_TIME
+        type: GENERAL
+      - key: CCBILL_CLIENT_SUBACCOUNT
+        scope: RUN_TIME
+        type: GENERAL
+      - key: CCBILL_FORM_NAME
+        scope: RUN_TIME
+        type: GENERAL
+      - key: SEGPAY_MERCHANT_ID
+        scope: RUN_TIME
+        type: GENERAL
+      - key: SEGPAY_PACKAGE_ID
+        scope: RUN_TIME
+        type: GENERAL
+      - key: METRICS_AUTH_TOKEN
+        scope: RUN_TIME
+        type: SECRET
+      - key: BUNNY_STORAGE_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: CCBILL_SALT
+        scope: RUN_TIME
+        type: SECRET
+      - key: CCBILL_WEBHOOK_SECRET
+        scope: RUN_TIME
+        type: SECRET
+      - key: SEGPAY_SECRET_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: NOWPAYMENTS_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: NOWPAYMENTS_IPN_SECRET
+        scope: RUN_TIME
+        type: SECRET
+      - key: STRIPE_SECRET_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: STRIPE_WEBHOOK_SECRET
+        scope: RUN_TIME
+        type: SECRET
+    # A payment gateway is offered only when all of its variables are set (packages/payments factory).
+
+jobs:
+  # Applies packages/db/drizzle before every release (bundled migrator, same image).
+  - name: migrate
+    kind: PRE_DEPLOY
+    github:
+      repo: krizaka/orochia
+      branch: production
+    dockerfile_path: deploy/docker/Dockerfile
+    source_dir: /
+    run_command: node migrate.cjs
+    instance_size_slug: basic-xxs
+    envs:
+      - key: DATABASE_URL
+        scope: RUN_TIME
+        value: ${orochia-db.DATABASE_URL}
+
+databases:
+  # Managed PostgreSQL 16 cluster, created beforehand (Databases → Create, same region):
+  #   doctl databases create orochia-pg --engine pg --version 16 --region nyc1 --size db-s-1vcpu-1gb
+  # then create the database and user below in it.
+  - name: orochia-db
+    engine: PG
+    version: "16"
+    production: true
+    cluster_name: orochia-pg
+    db_name: orochia_db
+    db_user: orochia_user

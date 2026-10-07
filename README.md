@@ -56,7 +56,6 @@ flowchart LR
 
     subgraph Storage [Databases]
         PostgreSQL[(PostgreSQL 16)]
-        Redis[(Redis 7 Cache)]
     end
 
     subgraph CDN [Bunny.net Stream CDN]
@@ -91,7 +90,7 @@ flowchart LR
 ```text
 orochia
 ├── .github/
-│   ├── workflows/ (ci.yml, release.yml, deploy-do.yml)
+│   ├── workflows/ (ci.yml, release.yml)
 │   └── ISSUE_TEMPLATE/ (bug_report.yml, feature_request.yml)
 ├── apps/
 │   └── web/ (Next.js 16 App Router, HLS Video Player, Creator Studio, Payouts)
@@ -102,7 +101,7 @@ orochia
 │   └── config/ (Shared ESLint, TypeScript, and Tailwind configurations)
 ├── deploy/
 │   ├── docker/ (Multi-stage Dockerfile, docker-compose.dev.yml, docker-compose.prod.yml)
-│   └── digitalocean/ (app-spec.yaml for DigitalOcean App Platform)
+│   └── digitalocean/ (app-spec.dev.yaml · app-spec.production.yaml — one App Platform app per environment)
 ├── docs/
 │   ├── ARCHITECTURE.md
 │   ├── MEDIA_PIPELINE.md
@@ -118,7 +117,7 @@ orochia
 ```bash
 git clone https://github.com/krizaka/orochia.git && cd orochia
 npm install
-npm run setup     # .env · PostgreSQL 16 + Redis 7 (Docker) · migrations · seed
+npm run setup     # .env · PostgreSQL 16 (Docker) · migrations · seed
 npm run dev       # http://localhost:3000
 ```
 
@@ -134,13 +133,13 @@ changes, tests — is in the [Development guide](docs/DEVELOPMENT.md). Rules: [A
 
 ## ☁️ 1-Click Deploy to DigitalOcean
 
-Deploy directly to DigitalOcean App Platform with a PostgreSQL 16 database (add a managed Valkey/Redis cluster for rate limiting):
+Deploy to DigitalOcean App Platform with a PostgreSQL 16 database — one app per environment (see [Deployment](docs/DEPLOYMENT.md)):
 
 [![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/krizaka/orochia/tree/main)
 
 Alternatively, deploy using `doctl`:
 ```bash
-doctl apps create --spec deploy/digitalocean/app-spec.yaml
+doctl apps create --spec deploy/digitalocean/app-spec.dev.yaml
 ```
 
 ---

@@ -81,13 +81,8 @@ jobs:
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
-      redis:
-        image: redis:7-alpine
-        ports:
-          - 6379:6379
     env:
       DATABASE_URL: postgresql://orochia_user:orochia_secret@localhost:5432/orochia_db
-      REDIS_URL: redis://localhost:6379
       SESSION_SECRET: ci-only-session-secret-0123456789abcdef0123456789
       OROCHIA_DEMO_MODE: "true"
       NEXT_PUBLIC_APP_URL: http://localhost:3000

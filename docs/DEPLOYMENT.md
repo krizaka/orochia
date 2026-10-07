@@ -8,7 +8,6 @@
 | `NEXT_PUBLIC_APP_URL` | ✓ | Public origin, used for payment return URLs and IPN callbacks. |
 | `SESSION_SECRET` | ✓ | ≥ 32 random characters (`openssl rand -hex 32`). |
 | `DATABASE_URL` | ✓ | PostgreSQL 16. |
-| `REDIS_URL` | recommended | Rate limiting and feed cache; unset in production → no client, limits fail open. App Platform needs a managed Valkey/Redis cluster for it (dev databases are PostgreSQL only). |
 | `BUNNY_STREAM_API_KEY`, `BUNNY_STREAM_LIBRARY_ID`, `BUNNY_STREAM_HOSTNAME`, `BUNNY_STREAM_TOKEN_AUTH_KEY`, `BUNNY_WEBHOOK_SECRET` | ✓ | Video library, edge token auth and encode webhooks. |
 | `STORAGE_DRIVER=bunny`, `BUNNY_STORAGE_API_KEY`, `BUNNY_STORAGE_ZONE`, `BUNNY_PULL_ZONE_HOSTNAME` | ✓ | Avatars, thumbnails, 2257 documents (container disks are ephemeral). |
 | `METRICS_AUTH_TOKEN` | ✓ | Bearer token for `/api/metrics`. |
@@ -29,14 +28,27 @@ platform never runs on a placeholder secret.
 
 ## DigitalOcean App Platform
 
+One app per environment, one spec per app. Both build `deploy/docker/Dockerfile` and run a **PRE_DEPLOY job**
+(`node migrate.cjs`) that applies `packages/db/drizzle` before every release.
+
+| Environment | Spec | App | Branch | Database |
+| :--- | :--- | :--- | :--- | :--- |
+| dev | `deploy/digitalocean/app-spec.dev.yaml` | `orochia-dev` | `main` | App Platform dev database (PostgreSQL 16) |
+| production | `deploy/digitalocean/app-spec.production.yaml` | `orochia` | `production` | managed PostgreSQL 16 cluster `orochia-pg`, created first |
+
 ```bash
-doctl apps create --spec deploy/digitalocean/app-spec.yaml
+brew install doctl && doctl auth init                                    # once, with a DO API token
+doctl apps create --spec deploy/digitalocean/app-spec.dev.yaml           # once per environment
 ```
 
-The spec builds `deploy/docker/Dockerfile` and runs a **PRE_DEPLOY job** (`node migrate.cjs`) that applies
-`packages/db/drizzle` before every release. Set the secrets listed above in the app's settings. The
-`Deploy to DigitalOcean` workflow redeploys on `main` once `DIGITALOCEAN_ACCESS_TOKEN` and
-`DIGITALOCEAN_APP_ID` repository secrets exist (it is skipped, not failed, until then).
+Then enter the `SECRET` values in the app (Settings → Environment Variables) **once** and redeploy. They are
+stored, encrypted, in the app — not in the spec, not in git — and every push to the app's branch redeploys with
+them (`deploy_on_push`). A spec file is only for creating the app or changing its structure (services, job,
+database, the list of variables): `doctl apps update <APP_ID> --spec …` replaces the whole spec, and the
+`SECRET` entries have no value in the file — check them in the app afterwards.
+
+The spec has no Redis: rate limits are kept in memory per instance (`apps/web/lib/rate-limit.ts`), which holds for
+a single instance. A shared store comes back before scaling out.
 
 ## Self-hosted (Docker Compose + Caddy)
 

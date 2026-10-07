@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db, users, profiles, hashPassword } from "@orochia/db";
 import { setSessionCookie } from "@/lib/auth";
-import { checkRateLimit } from "@/lib/redis";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { errorResponse, isUniqueViolation, jsonError } from "@/lib/http";
 
 export const dynamic = "force-dynamic";

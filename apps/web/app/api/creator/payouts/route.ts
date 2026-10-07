@@ -4,7 +4,7 @@ import { db, payoutRequests, tipsLedger } from "@orochia/db";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { getCreatorAvailableBalanceCents, platformFeePercent, requestPayout } from "@orochia/payments";
 import { requireUserWithRole } from "@/lib/auth";
-import { checkRateLimit } from "@/lib/redis";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { errorResponse, jsonError } from "@/lib/http";
 
 export const dynamic = "force-dynamic";

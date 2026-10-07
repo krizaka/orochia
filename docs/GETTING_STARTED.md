@@ -14,14 +14,14 @@ packages — `db` (Drizzle schema, migrations, seed), `media` (Bunny Stream, Tus
 | Tool | Version |
 | :--- | :--- |
 | Node.js | 20 or later |
-| Docker + Docker Compose | for PostgreSQL 16 and Redis 7 |
+| Docker + Docker Compose | for PostgreSQL 16 |
 
 ## 2. Run it
 
 ```bash
 git clone https://github.com/krizaka/orochia.git && cd orochia
 npm install
-npm run setup     # .env (generated SESSION_SECRET) · PostgreSQL 16 + Redis 7 · migrations · seed
+npm run setup     # .env (generated SESSION_SECRET) · PostgreSQL 16 · migrations · seed
 npm run dev       # http://localhost:3000
 ```
 
