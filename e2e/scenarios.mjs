@@ -235,6 +235,41 @@ for (const p of ["/", "/explore", "/explore?q=tokyo", "/explore?tag=acoustic", "
 const plid = (await anon.call("/api/creators/elenavox")).json.playlists[0].id;
 check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status === 200);
 
+// Bunny Stream webhook (signature v1, keyed with the library's read-only API key)
+{
+  const { createHmac } = await import("node:crypto");
+  const { readFileSync } = await import("node:fs");
+  const fromFile = (name) => readFileSync(new URL("../.env", import.meta.url), "utf8").match(new RegExp(`^${name}=(.*)$`, "m"))?.[1]?.trim();
+  const key = process.env.BUNNY_WEBHOOK_SECRET || fromFile("BUNNY_WEBHOOK_SECRET");
+  const library = Number(process.env.BUNNY_STREAM_LIBRARY_ID || fromFile("BUNNY_STREAM_LIBRARY_ID") || 1);
+  const guid = "9b4d3eaa-6f5a-4c8b-0d1e-2f3a4b5c6d7e"; // "Afterhours", seeded PROCESSING
+  const send = (status, { lib = library, signWith = key, version = "v1" } = {}) => {
+    const body = JSON.stringify({ VideoLibraryId: lib, VideoGuid: guid, Status: status });
+    return fetch(`${B}/api/webhooks/bunny`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-BunnyStream-Signature-Version": version,
+        "X-BunnyStream-Signature-Algorithm": "hmac-sha256",
+        "X-BunnyStream-Signature": createHmac("sha256", signWith).update(body).digest("hex"),
+      },
+      body,
+    });
+  };
+  if (!key) {
+    check("bunny webhook scenarios need BUNNY_WEBHOOK_SECRET", false);
+  } else {
+    const listed = async () => (await anon.call("/api/feed?limit=60")).json.videos.some((v) => v.title.startsWith("Afterhours"));
+    check("webhook signed with another key → 401", (await send(3, { signWith: "not-the-key" })).status === 401);
+    check("webhook with another signature version → 401", (await send(3, { version: "v2" })).status === 401);
+    check("another library's event is ignored", (await (await send(3, { lib: library + 1 })).json()).ignored === "library" && !(await listed()));
+    check("'one resolution finished' (4) does not publish", (await (await send(4)).json()).status === "PROCESSING" && !(await listed()));
+    check("captions generated (9) change nothing", (await (await send(9)).json()).ignored === "status");
+    check("'finished' (3) makes the video READY and listed", (await (await send(3)).json()).status === "READY" && (await listed()));
+    check("a late 'encoding' (2) never un-publishes it", (await (await send(2)).json()).status === "READY" && (await listed()));
+  }
+}
+
 // Search and AI discovery: public pages only
 const sitemapXml = await (await fetch(`${B}/sitemap.xml`)).text();
 check("sitemap lists public videos and creators", sitemapXml.includes(`/watch/${noir.id}`) && sitemapXml.includes("/creators/elenavox"));

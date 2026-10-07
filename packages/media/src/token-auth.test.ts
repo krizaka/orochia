@@ -32,25 +32,37 @@ describe("Bunny stream token", () => {
   });
 });
 
-describe("Bunny webhook signature", () => {
-  const body = JSON.stringify({ VideoGuid: "abc", Status: 4 });
-  const sign = (secret: string) => crypto.createHmac("sha256", secret).update(body).digest("hex");
+describe("Bunny webhook signature (v1)", () => {
+  const key = "ae031f66-read-only-key";
+  const body = JSON.stringify({ VideoLibraryId: 773325, VideoGuid: "657bb740-a71b-4529-a012-528021c31a92", Status: 3 });
+  const sign = (secret: string, raw = body) => crypto.createHmac("sha256", secret).update(raw).digest("hex");
+  const headers = (signature: string, version = "v1", algorithm = "hmac-sha256") =>
+    new Headers({ "X-BunnyStream-Signature": signature, "X-BunnyStream-Signature-Version": version, "X-BunnyStream-Signature-Algorithm": algorithm });
 
-  it("accepts the HMAC of the raw body and refuses anything else", () => {
-    expect(verifyBunnyWebhookSignature({ rawBody: body, signatureHeader: sign("s3cret"), webhookSecret: "s3cret" })).toBe(true);
-    expect(verifyBunnyWebhookSignature({ rawBody: body, signatureHeader: sign("other"), webhookSecret: "s3cret" })).toBe(false);
-    expect(verifyBunnyWebhookSignature({ rawBody: body, signatureHeader: null, webhookSecret: "s3cret" })).toBe(false);
-    expect(verifyBunnyWebhookSignature({ rawBody: body + " ", signatureHeader: sign("s3cret"), webhookSecret: "s3cret" })).toBe(false);
+  it("accepts the HMAC-SHA256 of the raw body keyed with the read-only API key", () => {
+    expect(verifyBunnyWebhookSignature({ rawBody: body, headers: headers(sign(key)), signingKey: key })).toBe(true);
   });
 
-  it("never accepts an unsigned call in production", () => {
-    vi.stubEnv("NODE_ENV", "production");
-    expect(verifyBunnyWebhookSignature({ rawBody: body, signatureHeader: "", webhookSecret: "" })).toBe(false);
+  it("refuses another key, a changed body, another version or algorithm, a malformed signature", () => {
+    expect(verifyBunnyWebhookSignature({ rawBody: body, headers: headers(sign("other")), signingKey: key })).toBe(false);
+    expect(verifyBunnyWebhookSignature({ rawBody: body + " ", headers: headers(sign(key)), signingKey: key })).toBe(false);
+    expect(verifyBunnyWebhookSignature({ rawBody: body, headers: headers(sign(key), "v2"), signingKey: key })).toBe(false);
+    expect(verifyBunnyWebhookSignature({ rawBody: body, headers: headers(sign(key), "v1", "sha1"), signingKey: key })).toBe(false);
+    expect(verifyBunnyWebhookSignature({ rawBody: body, headers: headers(sign(key).toUpperCase()), signingKey: key })).toBe(false);
+    expect(verifyBunnyWebhookSignature({ rawBody: body, headers: new Headers(), signingKey: key })).toBe(false);
   });
 
-  it("maps encoding states", () => {
-    expect(mapBunnyStatusToOrochia(4)).toBe("READY");
-    expect(mapBunnyStatusToOrochia(3)).toBe("PROCESSING");
+  it("refuses everything when no key is configured", () => {
+    expect(verifyBunnyWebhookSignature({ rawBody: body, headers: headers(sign("")), signingKey: "" })).toBe(false);
+  });
+
+  it("maps the documented status codes: only 'finished' is READY", () => {
+    expect(mapBunnyStatusToOrochia(3)).toBe("READY");
+    expect(mapBunnyStatusToOrochia(4)).toBe("PROCESSING");
+    for (const code of [0, 1, 2, 6, 7]) expect(mapBunnyStatusToOrochia(code)).toBe("PROCESSING");
     expect(mapBunnyStatusToOrochia(5)).toBe("FAILED");
+    expect(mapBunnyStatusToOrochia(8)).toBe("FAILED");
+    expect(mapBunnyStatusToOrochia(9)).toBeNull();
+    expect(mapBunnyStatusToOrochia(10)).toBeNull();
   });
 });

@@ -38,6 +38,8 @@ postgres_data/
 redis_data/
 apps/web/public/uploads/*
 !apps/web/public/uploads/.gitkeep
+# 2257 documents uploaded locally (private, never served)
+apps/web/.private-uploads/
 packages/db/dist/
 
 # Local database dumps (npm run db:dump)

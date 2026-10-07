@@ -123,6 +123,12 @@
     },
     {
       "method": "GET",
+      "path": "/api/admin/documents",
+      "access": "session · ADMIN",
+      "summary": "A creator's 2257 document (`?ref=private/documents/<uuid>.<ext>`), for operators only; never cached."
+    },
+    {
+      "method": "GET",
       "path": "/api/admin/overview",
       "access": "session · ADMIN",
       "summary": "Operator overview: money, catalogue and the three queues that need a human."
@@ -485,7 +491,7 @@
       "method": "POST",
       "path": "/api/webhooks/bunny",
       "access": "signed webhook",
-      "summary": ""
+      "summary": "Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (BUNNY_WEBHOOK_SECRET)."
     },
     {
       "method": "POST",

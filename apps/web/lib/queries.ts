@@ -2,6 +2,7 @@ import { db, users, profiles, videos, videoAccessGrants, tipsLedger, payoutReque
 import { and, desc, eq, ilike, isNull, ne, or, sql, type SQL } from "drizzle-orm";
 import { getCreatorAvailableBalanceCents } from "@orochia/payments";
 import type { SessionUser } from "./auth";
+import { withSignedMedia } from "./media-urls";
 
 /**
  * Read models of the web app. Every screen reads the database through these functions — there is
@@ -78,7 +79,8 @@ export async function searchVideos({ q, tag, limit = 24, offset = 0 }: VideoSear
     .where(and(...filters))
     .orderBy(desc(videos.createdAt))
     .limit(Math.min(Math.max(limit, 1), 60))
-    .offset(Math.max(offset, 0));
+    .offset(Math.max(offset, 0))
+    .then((rows) => rows.map(withSignedMedia));
 }
 
 /** The most used tags of listable videos, for the explore filters. */
@@ -166,7 +168,8 @@ export async function creatorVideos(creatorId: string, limit = 24): Promise<Vide
     .leftJoin(profiles, eq(profiles.userId, videos.creatorId))
     .where(and(eq(videos.creatorId, creatorId), listable()))
     .orderBy(desc(videos.createdAt))
-    .limit(limit);
+    .limit(limit)
+    .then((rows) => rows.map(withSignedMedia));
 }
 
 export interface VideoDetails extends VideoSummary {
@@ -198,7 +201,7 @@ export async function videoDetails(videoId: string): Promise<VideoDetails | null
     .limit(1);
   if (!row) return null;
   const more = (await creatorVideos(row.creatorId, 5)).filter((v) => v.id !== videoId).slice(0, 4);
-  return { ...row, moreFromCreator: more };
+  return { ...withSignedMedia(row), moreFromCreator: more };
 }
 
 export interface AccountProfile {
@@ -291,7 +294,7 @@ export async function studioVideos(creatorId: string, limit = 100): Promise<Stud
     .where(and(eq(videos.creatorId, creatorId), sql`(${videos.removalReason} is distinct from ${CREATOR_DELETED})`))
     .orderBy(desc(videos.createdAt))
     .limit(limit);
-  return rows.map((r) => ({ ...r, tags: r.tags ?? [] }));
+  return rows.map((r) => withSignedMedia({ ...r, tags: r.tags ?? [] }));
 }
 
 export interface Dashboard {
@@ -364,7 +367,7 @@ export async function dashboardFor(user: SessionUser): Promise<Dashboard> {
           )
       : [{ total: "0" }];
 
-  return { library, ledger, uploads, pendingPayoutCents: Number(pending?.total ?? 0) };
+  return { library: library.map(withSignedMedia), ledger, uploads, pendingPayoutCents: Number(pending?.total ?? 0) };
 }
 
 export interface Treasury {

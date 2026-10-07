@@ -3,45 +3,25 @@ import { BunnyWebhookPayload, BunnyWebhookPayloadSchema } from "./types";
 
 export interface WebhookVerificationOptions {
   rawBody: string;
-  signatureHeader?: string | null;
-  webhookSecret: string;
+  /** The request headers (any casing): X-BunnyStream-Signature, -Signature-Version, -Signature-Algorithm. */
+  headers: { get(name: string): string | null };
+  /** The library's Read-Only API key: Bunny signs every webhook with it. */
+  signingKey: string;
 }
 
 /**
- * Validates the authenticity of webhook calls dispatched by Bunny.net Stream.
+ * Verifies a Bunny Stream webhook (signature v1): lowercase hex HMAC-SHA256 of the raw body, keyed
+ * with the library's Read-Only API key, compared in constant time. Anything else — no key
+ * configured, another version or algorithm, a malformed signature — is refused.
  */
-export function verifyBunnyWebhookSignature({
-  rawBody,
-  signatureHeader,
-  webhookSecret,
-}: WebhookVerificationOptions): boolean {
-  if (!webhookSecret) {
-    // If no secret configured in staging, log warning but do not blindly accept in production
-    return process.env.NODE_ENV !== "production";
-  }
-
-  if (!signatureHeader) {
-    return false;
-  }
-
-  try {
-    const computedHash = crypto
-      .createHmac("sha256", webhookSecret)
-      .update(rawBody)
-      .digest("hex");
-
-    const signatureBuffer = Buffer.from(signatureHeader, "hex");
-    const computedBuffer = Buffer.from(computedHash, "hex");
-
-    if (signatureBuffer.length !== computedBuffer.length) {
-      return false;
-    }
-
-    return crypto.timingSafeEqual(signatureBuffer, computedBuffer);
-  } catch (error) {
-    console.error("Webhook signature verification error:", error);
-    return false;
-  }
+export function verifyBunnyWebhookSignature({ rawBody, headers, signingKey }: WebhookVerificationOptions): boolean {
+  if (!signingKey) return false;
+  if (headers.get("x-bunnystream-signature-version") !== "v1") return false;
+  if (headers.get("x-bunnystream-signature-algorithm")?.toLowerCase() !== "hmac-sha256") return false;
+  const signature = headers.get("x-bunnystream-signature") ?? "";
+  if (!/^[0-9a-f]{64}$/.test(signature)) return false;
+  const expected = crypto.createHmac("sha256", Buffer.from(signingKey, "utf8")).update(rawBody, "utf8").digest();
+  return crypto.timingSafeEqual(Buffer.from(signature, "hex"), expected);
 }
 
 /**
@@ -56,20 +36,25 @@ export function parseBunnyWebhookPayload(rawPayload: unknown): BunnyWebhookPaylo
 }
 
 /**
- * Translates Bunny status code to Orochia video status enum.
+ * What a webhook status means for Orochia's video, or null when it changes nothing (captions,
+ * generated titles). Only "finished" (3) makes a video READY: "one resolution finished" (4) keeps it
+ * PROCESSING until every rendition is there.
  */
-export function mapBunnyStatusToOrochia(statusCode: number): "PENDING_UPLOAD" | "PROCESSING" | "READY" | "FAILED" {
+export function mapBunnyStatusToOrochia(statusCode: number): "PROCESSING" | "READY" | "FAILED" | null {
   switch (statusCode) {
     case 0:
     case 1:
-      return "PENDING_UPLOAD";
     case 2:
-    case 3:
-      return "PROCESSING";
     case 4:
+    case 6:
+    case 7:
+      return "PROCESSING";
+    case 3:
       return "READY";
     case 5:
-    default:
+    case 8:
       return "FAILED";
+    default:
+      return null;
   }
 }

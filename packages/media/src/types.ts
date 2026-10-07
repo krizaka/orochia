@@ -39,6 +39,8 @@ export interface BunnyVideoResponse {
   encodeProgress: number;
   storageSize: number;
   hasMP4Fallback: boolean;
+  /** File name of the chosen thumbnail inside the video folder (e.g. "thumbnail.jpg"). */
+  thumbnailFileName?: string;
 }
 
 export interface TusDirectUploadSession {
@@ -55,16 +57,16 @@ export interface TusDirectUploadSession {
   };
 }
 
+/**
+ * A Bunny Stream webhook (https://bunny.net/docs/stream/webhooks): the library, the video and a
+ * status code — nothing else. Details (length, resolutions) are read from the API when needed.
+ * Status: 0 queued · 1 processing · 2 encoding · 3 finished · 4 one resolution finished · 5 failed ·
+ * 6/7/8 pre-signed upload started/finished/failed · 9 captions generated · 10 title/description generated.
+ */
 export const BunnyWebhookPayloadSchema = z.object({
   VideoLibraryId: z.number(),
   VideoGuid: z.string().uuid(),
-  Title: z.string().optional(),
-  Status: z.number(), // 3 = Processing/Transcoding, 4 = Ready/Finished, 5 = Failed
-  StatusCode: z.number().optional(),
-  Resolutions: z.array(z.string()).optional(),
-  Duration: z.number().optional(),
-  ThumbnailUrl: z.string().optional(),
-  PreviewAnimationUrl: z.string().optional(),
+  Status: z.number().int(),
 });
 
 export type BunnyWebhookPayload = z.infer<typeof BunnyWebhookPayloadSchema>;

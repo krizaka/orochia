@@ -2,6 +2,7 @@ import { db, playlists, playlistItems, playlistMembers, playlistAudienceLists, a
 import { and, asc, desc, eq, exists, isNull, or, sql } from "drizzle-orm";
 import { canOpenCollection, evaluateVideoAccess, type CollectionVisibility } from "./access";
 import { HttpError } from "./http";
+import { withSignedMedia } from "./media-urls";
 import type { VideoSummary } from "./queries";
 
 /**
@@ -35,14 +36,15 @@ const card = {
 };
 
 export async function myPlaylists(ownerId: string): Promise<PlaylistCard[]> {
-  return db.select(card).from(playlists).where(eq(playlists.creatorId, ownerId)).orderBy(desc(playlists.updatedAt));
+  const rows = await db.select(card).from(playlists).where(eq(playlists.creatorId, ownerId)).orderBy(desc(playlists.updatedAt));
+  return rows.map(withSignedMedia);
 }
 
 /** The owner's collections this viewer may open (all of them for the owner). */
 export async function visiblePlaylists(ownerId: string, viewerId: string | null): Promise<PlaylistCard[]> {
   const rows = await db.select(card).from(playlists).where(eq(playlists.creatorId, ownerId)).orderBy(desc(playlists.updatedAt));
   const allowed = await Promise.all(rows.map((row) => canOpenCollection({ id: row.id, ownerId, visibility: row.visibility }, viewerId)));
-  return rows.filter((_, index) => allowed[index]);
+  return rows.filter((_, index) => allowed[index]).map(withSignedMedia);
 }
 
 /** Collections other accounts invited this viewer to, directly or through one of their lists. */
@@ -61,7 +63,8 @@ export async function sharedWithMe(viewerId: string): Promise<(PlaylistCard & { 
     .from(playlists)
     .innerJoin(users, eq(users.id, playlists.creatorId))
     .where(and(eq(playlists.visibility, "INVITED_ONLY"), isNull(users.suspendedAt), or(exists(direct), exists(throughList))))
-    .orderBy(desc(playlists.updatedAt));
+    .orderBy(desc(playlists.updatedAt))
+    .then((rows) => rows.map(withSignedMedia));
 }
 
 export async function createPlaylist(
@@ -161,5 +164,5 @@ export async function playlistWithItems(playlistId: string, viewerId: string | n
   const shown = await Promise.all(
     items.map(async (v) => v.visibility !== "INVITED_ONLY" || (await evaluateVideoAccess(v.id, viewerId)).allowed),
   );
-  return { ...row, isOwner: row.ownerId === viewerId, items: items.filter((_, i) => shown[i]) };
+  return withSignedMedia({ ...row, isOwner: row.ownerId === viewerId, items: items.filter((_, i) => shown[i]).map(withSignedMedia) });
 }

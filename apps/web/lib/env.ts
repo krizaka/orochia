@@ -69,6 +69,7 @@ export function bunnyStreamConfig(): BunnyStreamConfig {
   };
 }
 
+/** The Stream library's Read-Only API key: Bunny signs every webhook with it (signature v1). */
 export function bunnyWebhookSecret(): string {
   return read("BUNNY_WEBHOOK_SECRET", "");
 }

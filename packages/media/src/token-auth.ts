@@ -47,3 +47,33 @@ export function generateBunnyStreamToken({
     directM3u8Url,
   };
 }
+
+/**
+ * Signs ONE file of the library (a thumbnail, a preview animation) — never a directory, so the
+ * token cannot open the video's renditions. `expires` is aligned on `windowSeconds` so the URL stays
+ * the same for the whole window and browsers and CDNs can cache it. Hash: SHA-256 of
+ * key + path + expiry, URL-safe base64, sent as ?token=…&expires=….
+ */
+export function signBunnyFileUrl({
+  hostname,
+  path,
+  tokenAuthKey,
+  windowSeconds = 6 * 3600,
+  now = Date.now(),
+}: {
+  hostname: string;
+  path: string;
+  tokenAuthKey: string;
+  windowSeconds?: number;
+  now?: number;
+}): string {
+  const expires = (Math.floor(now / 1000 / windowSeconds) + 2) * windowSeconds;
+  const token = crypto
+    .createHash("sha256")
+    .update(`${tokenAuthKey}${path}${expires}`)
+    .digest("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+  return `https://${hostname}${path}?token=${token}&expires=${expires}`;
+}
