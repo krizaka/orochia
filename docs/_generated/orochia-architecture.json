@@ -72,10 +72,11 @@
       "id": "data",
       "name": "Data persistence",
       "path": "packages/db",
-      "tablesCount": 11,
+      "tablesCount": 12,
       "tables": [
         "compliance_reports",
         "contacts",
+        "follows",
         "tips_ledger",
         "payment_intents",
         "payout_requests",
@@ -142,6 +143,30 @@
       "summary": "Moves a report through triage (open → in review → resolved)."
     },
     {
+      "method": "GET",
+      "path": "/api/admin/users",
+      "access": "session · ADMIN",
+      "summary": "Every account (filter by `?role=`, `?suspended=`, `?q=`): role, verification and suspension state."
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/admin/users/[id]",
+      "access": "session · ADMIN",
+      "summary": "Suspends an account (it can no longer sign in, and its open sessions are refused on their next request), reinstates it, or changes its role."
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/videos",
+      "access": "session · ADMIN",
+      "summary": "The catalogue for moderation: every video with its creator, state and open reports; `?state=removed` lists takedowns."
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/admin/videos/[id]",
+      "access": "session · ADMIN",
+      "summary": "Takes a video down (DMCA, terms, a confirmed report) with a recorded reason, or restores it."
+    },
+    {
       "method": "POST",
       "path": "/api/auth/login",
       "access": "public",
@@ -184,6 +209,24 @@
       "summary": "Creates a collection owned by the signed-in creator."
     },
     {
+      "method": "POST",
+      "path": "/api/contacts",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Sends a contact request (accepted at once when the other person already asked)."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/contacts/[id]",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Removes a contact or withdraws a request (either side)."
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/contacts/[id]",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Accepts or rejects a request addressed to you, or blocks the other person."
+    },
+    {
       "method": "GET",
       "path": "/api/creator/payouts",
       "access": "session · CREATOR",
@@ -198,14 +241,26 @@
     {
       "method": "GET",
       "path": "/api/creators/[username]",
-      "access": "public",
-      "summary": ""
+      "access": "public · session-aware",
+      "summary": "A creator's public page: profile, videos, public playlists and, signed in, how you relate to them."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/creators/[username]/follow",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Unfollows a creator."
+    },
+    {
+      "method": "POST",
+      "path": "/api/creators/[username]/follow",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Follows a creator; the follow stays PENDING until the creator approves it."
     },
     {
       "method": "GET",
       "path": "/api/feed",
       "access": "public",
-      "summary": ""
+      "summary": "The public feed and the explore search (`?q=`, `?tag=`, paginated); with the featured creator and popular tags."
     },
     {
       "method": "GET",
@@ -224,6 +279,18 @@
       "path": "/api/me/dashboard",
       "access": "session · ADMIN / CREATOR / MEMBER",
       "summary": ""
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/me/followers/[id]",
+      "access": "session · CREATOR",
+      "summary": "A creator approves a follower (opening followers-only videos to them) or removes them."
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/network",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Your followers, the creators you follow, your contacts and pending requests."
     },
     {
       "method": "PUT",
@@ -250,10 +317,64 @@
       "summary": "Platform revenue, computed from the ledger only (administrators)."
     },
     {
+      "method": "GET",
+      "path": "/api/playlists",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Your playlists, most recently changed first."
+    },
+    {
+      "method": "POST",
+      "path": "/api/playlists",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Creates a playlist."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/playlists/[id]",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Deletes a playlist (owner only)."
+    },
+    {
+      "method": "GET",
+      "path": "/api/playlists/[id]",
+      "access": "public · session-aware",
+      "summary": "A playlist and its videos (private playlists are visible to their owner only)."
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/playlists/[id]",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Renames a playlist, edits its description or its privacy (owner only)."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/playlists/[id]/items",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Removes a video from a playlist (owner only)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/playlists/[id]/items",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Adds a video at the end of a playlist (owner only, idempotent)."
+    },
+    {
       "method": "POST",
       "path": "/api/uploads",
-      "access": "session · ...rule.roles",
-      "summary": ""
+      "access": "session · role depends on the request",
+      "summary": "Stores an avatar (any account), a thumbnail or a 2257 document (creators); size and type checked per kind."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/videos/[id]",
+      "access": "session · CREATOR",
+      "summary": "The creator deletes their video."
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/videos/[id]",
+      "access": "session · CREATOR",
+      "summary": "The creator edits their video: title, description, visibility, unlock price, tags."
     },
     {
       "method": "GET",

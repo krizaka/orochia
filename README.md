@@ -29,8 +29,10 @@ The creator video platform: direct-to-CDN 4K streaming, server-side access contr
 ## 🌟 Key Architectural Highlights
 
 - 📺 **Direct-to-CDN media**: uploads go straight to Bunny Stream over Tus; playback uses HMAC-signed HLS URLs that expire after 5 minutes. Video never passes through the app servers.
-- 🔐 **Server-side access control**: every play is authorised against the video's visibility — public, contacts only, or unlocked — before a URL is signed.
+- 🔐 **Server-side access control**: every play is authorised against the video's visibility — public, approved followers, contacts only, or paid unlock — before a URL is signed.
 - 💳 **Gateway-confirmed payments**: an unlock records a payment intent and sends the buyer to CCBill, Segpay, NowPayments (crypto) or Stripe; access is granted only when the gateway's signed webhook confirms it, exactly once.
+- 🤝 **Social graph**: creators approve their followers (followers-only videos), people become mutual contacts (contacts-only videos); explore search by title, creator or tag; public and private playlists.
+- 🧹 **Moderation**: operators take videos down with a recorded reason (and restore them), suspend accounts with immediate effect, change roles — from the admin console.
 - 📒 **Double-entry ledger**: platform fee and creator credit always add up to the gross; balances are computed from the ledger; concurrent payout requests are serialised.
 - 🛡️ **18 U.S.C. § 2257 & safety**: 18+ certification at sign-up, creator verification before upload, persisted content reports (non-consensual content, suspected minors, DMCA).
 - 🚦 **Fail-closed configuration**: production refuses to run on missing secrets and has no demo mode; security headers (HSTS, frame denial, nosniff) on every response.
@@ -111,32 +113,22 @@ orochia
 
 ---
 
-## 🚀 Quickstart & Local Development
+## 🚀 Quickstart
 
-### 1. Prerequisites
-- Node.js 20+
-- Docker & Docker Compose
-
-### 2. Boot Local Environment
 ```bash
 git clone https://github.com/krizaka/orochia.git && cd orochia
-docker compose -f deploy/docker/docker-compose.dev.yml up -d   # PostgreSQL 16 + Redis 7
-cp .env.example .env                                             # OROCHIA_DEMO_MODE=true locally
 npm install
-npm run db:migrate && npm run db:seed
-npm run dev
+npm run setup     # .env · PostgreSQL 16 + Redis 7 (Docker) · migrations · seed
+npm run dev       # http://localhost:3000
 ```
 
-With `OROCHIA_DEMO_MODE=true` (ignored in production) the login page offers the seeded creator and
-patron accounts, and unlocks settle immediately when no payment gateway is configured.
+Everything else — accounts of the seed, database commands (`db:status`, `db:reset`, `db:studio`, backups), schema
+changes, tests — is in the [Development guide](docs/DEVELOPMENT.md). Rules: [AGENTS.md](AGENTS.md).
 
-### 3. Quality gates
-```bash
-npm run lint && npm run typecheck && npm test && npm run build
-```
-
-Visit [http://localhost:3000](http://localhost:3000) to explore the platform.
-Health check endpoint: [http://localhost:3000/api/health](http://localhost:3000/api/health).
+| Reference | Generated from |
+| :--- | :--- |
+| [API](docs/API_CONTRACTS.md) — every endpoint and its access rule | the route handlers |
+| [Database](docs/DATABASE.md) — tables, indexes, foreign keys, enums | the Drizzle schema |
 
 ---
 
@@ -153,16 +145,16 @@ doctl apps create --spec deploy/digitalocean/app-spec.yaml
 
 ---
 
-## 📜 Roadmap & Milestones
+## 📜 Roadmap
 
-Track development progress on the [orochia Stream Core Engine Project Board](https://github.com/orgs/krizaka/projects/1):
-
-- **M1: Foundation & Data Architecture** — PostgreSQL schema, Drizzle ORM, RBAC guards.
-- **M2: Media Pipeline & Bunny.net Integration** — Direct Tus signing, webhook processor, HLS player.
-- **M3: Social Graph & Access Control** — Contacts engine, granular video visibility matrix.
-- **M4: Paywall & Tips System** — CCBill/Segpay/Crypto adapters, double-entry escrow ledger.
-- **M5: Playlists & Community Feeds** — Curated creator playlists, algorithmic recommendations.
-- **M6: Open Source DX & DigitalOcean CI/CD** — Docker multi-stage builds, App Platform spec, docs.
+| Milestone | Status |
+| :--- | :--- |
+| M1 · Foundation & data — PostgreSQL schema, Drizzle, RBAC | ✅ shipped |
+| M2 · Media pipeline — direct Tus uploads, signed webhooks, HLS player | ✅ shipped |
+| M3 · Social graph & access control — approved followers, contacts, visibility matrix | ✅ shipped |
+| M4 · Paywall & tips — gateway-confirmed intents, double-entry ledger, payouts | ✅ shipped |
+| M5 · Community — playlists, explore search & tags | ✅ shipped · recommendations next |
+| M6 · Developer experience & delivery — one-command setup, DB tooling, e2e, DigitalOcean | ✅ shipped |
 
 ---
 

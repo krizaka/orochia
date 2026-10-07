@@ -20,15 +20,13 @@ packages — `db` (Drizzle schema, migrations, seed), `media` (Bunny Stream, Tus
 
 ```bash
 git clone https://github.com/krizaka/orochia.git && cd orochia
-docker compose -f deploy/docker/docker-compose.dev.yml up -d   # PostgreSQL 16 + Redis 7
-cp .env.example .env                                             # set SESSION_SECRET (openssl rand -hex 32)
 npm install
-npm run db:migrate && npm run db:seed
-npm run dev                                                      # http://localhost:3000
+npm run setup     # .env (generated SESSION_SECRET) · PostgreSQL 16 + Redis 7 · migrations · seed
+npm run dev       # http://localhost:3000
 ```
 
-`OROCHIA_DEMO_MODE=true` (the `.env.example` default, ignored in production) lets the login page
-offer the seeded accounts and settles unlocks immediately when no payment gateway is configured.
+`npm run setup` is idempotent. `OROCHIA_DEMO_MODE=true` (the `.env.example` default, ignored in production) lets
+the login page offer the seeded accounts and settles unlocks immediately when no payment gateway is configured.
 
 ## 3. Seeded accounts
 
@@ -37,9 +35,12 @@ offer the seeded accounts and settles unlocks immediately when no payment gatewa
 | Administrator | `admin@orochia.org` | `admin1234` |
 | Creator (verified) | `elena@orochia.org` | `elena1234` |
 | Creator (verified) | `mia@orochia.org` | `mia1234` |
+| Creator (2257 pending) | `nova@orochia.org` | `nova1234` |
 | Member | `alex@sanctuary.io` | `alex1234` |
+| Member | `sam@sanctuary.io` | `sam1234` |
 
-These exist only in the development seed — production starts empty.
+These exist only in the development seed — production starts empty. The Development guide describes what each
+account demonstrates and the database commands (`db:status`, `db:reset`, `db:studio`, backups).
 
 ## 4. The admin console
 
@@ -56,12 +57,15 @@ OROCHIA_API_URL=http://localhost:3000 npm run dev -- -p 3001     # sign in with 
 Every change must pass, locally and in CI:
 
 ```bash
-npm run lint && npm run typecheck && npm test && npm run build
-npm run docs:generate -- --check                                  # the API reference matches the code
+npm run check          # lint · type-check · unit tests · generated docs up to date
+npm run build
+npm run test:e2e       # feature scenarios, on a freshly reset database with the app running
 ```
 
 ## Where next
 
+- **Development guide** — everyday commands, schema changes, seed, reset and backups.
+- **Database reference** — every table, index and foreign key, generated from the schema.
 - **Architecture** — how access, payments, the ledger and compliance fit together.
 - **Media Pipeline** — direct-to-Bunny uploads and signed playback.
 - **API Reference** — every endpoint and the rule that guards it, generated from the code.
