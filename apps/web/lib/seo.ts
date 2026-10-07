@@ -18,6 +18,7 @@ export const SITE_DESCRIPTION =
  * robots.txt shuts the door, so only production is indexed — never a duplicate.
  */
 export const INDEXABLE = process.env.SEARCH_INDEXING !== "off";
+// (the Dockerfile passes SEARCH_INDEXING and NEXT_PUBLIC_APP_URL as build args; robots.txt reads them on request.)
 export const KRIZAKA_URL = "https://krizaka.com";
 export const SOURCE_URL = "https://github.com/krizaka/orochia";
 

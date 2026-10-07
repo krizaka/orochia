@@ -23,6 +23,12 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+# Build-time values (App Platform passes RUN_AND_BUILD_TIME variables as build args): the public
+# origin inlined in the client bundle and in prerendered pages, and whether search engines may index.
+ARG NEXT_PUBLIC_APP_URL
+ARG SEARCH_INDEXING
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+ENV SEARCH_INDEXING=$SEARCH_INDEXING
 
 # Generate build output for Next.js standalone
 RUN npm run build --workspace=@orochia/web
