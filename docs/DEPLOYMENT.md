@@ -9,6 +9,7 @@
 | `SESSION_SECRET` | ✓ | ≥ 32 random characters (`openssl rand -hex 32`). |
 | `DATABASE_URL` | ✓ | PostgreSQL 16. |
 | `BUNNY_STREAM_API_KEY`, `BUNNY_STREAM_LIBRARY_ID`, `BUNNY_STREAM_HOSTNAME`, `BUNNY_STREAM_TOKEN_AUTH_KEY`, `BUNNY_WEBHOOK_SECRET` | ✓ | Video library, edge token auth and encode webhooks. |
+| `BUNNY_STREAM_COLLECTION_ID` | — | Collection new uploads are filed in (UUID). |
 | `STORAGE_DRIVER=bunny`, `BUNNY_STORAGE_API_KEY`, `BUNNY_STORAGE_ZONE`, `BUNNY_PULL_ZONE_HOSTNAME` | ✓ | Avatars, thumbnails, 2257 documents (container disks are ephemeral). |
 | `METRICS_AUTH_TOKEN` | ✓ | Bearer token for `/api/metrics`. |
 | Gateway credentials | at least one | See `.env.example`. A gateway is offered only when **all** its variables are set. |

@@ -14,6 +14,15 @@ describe("runtime configuration", () => {
     expect(() => metricsToken()).toThrow(ConfigurationError);
   });
 
+  it("files uploads in the configured Bunny collection", () => {
+    vi.stubEnv("BUNNY_STREAM_COLLECTION_ID", "4380a7c3-565d-4002-89dc-65ceffd11540");
+    expect(bunnyStreamConfig().collectionId).toBe("4380a7c3-565d-4002-89dc-65ceffd11540");
+    vi.stubEnv("BUNNY_STREAM_COLLECTION_ID", "orochia-dev");
+    expect(() => bunnyStreamConfig()).toThrow(ConfigurationError);
+    vi.stubEnv("BUNNY_STREAM_COLLECTION_ID", "");
+    expect(bunnyStreamConfig().collectionId).toBeUndefined();
+  });
+
   it("refuses a short session secret", () => {
     vi.stubEnv("SESSION_SECRET", "short");
     expect(() => sessionSecret()).toThrow(ConfigurationError);

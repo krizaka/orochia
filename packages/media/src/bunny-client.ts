@@ -12,6 +12,7 @@ export class BunnyStreamClient {
   private libraryId: number;
   private hostname: string;
   private tokenAuthKey: string;
+  private collectionId?: string;
   private baseUrl: string;
 
   constructor(config: BunnyConfig) {
@@ -19,13 +20,14 @@ export class BunnyStreamClient {
     this.libraryId = config.libraryId;
     this.hostname = config.hostname;
     this.tokenAuthKey = config.tokenAuthKey;
+    this.collectionId = config.collectionId;
     this.baseUrl = "https://video.bunnycdn.com";
   }
 
   /**
    * Allocates a new video slot in Bunny.net Stream library.
    */
-  async createVideo(title: string, collectionId?: string): Promise<BunnyVideoResponse> {
+  async createVideo(title: string, collectionId = this.collectionId): Promise<BunnyVideoResponse> {
     const response = await fetch(`${this.baseUrl}/library/${this.libraryId}/videos`, {
       method: "POST",
       headers: {

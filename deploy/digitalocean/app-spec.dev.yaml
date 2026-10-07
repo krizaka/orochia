@@ -42,6 +42,9 @@ services:
       - key: BUNNY_STREAM_HOSTNAME
         scope: RUN_TIME
         type: GENERAL
+      - key: BUNNY_STREAM_COLLECTION_ID
+        scope: RUN_TIME
+        type: GENERAL
       - key: BUNNY_STREAM_TOKEN_AUTH_KEY
         scope: RUN_TIME
         type: SECRET

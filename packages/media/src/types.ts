@@ -6,6 +6,8 @@ export const BunnyConfigSchema = z.object({
   hostname: z.string().min(1, "Bunny Hostname is required"),
   tokenAuthKey: z.string().min(1, "Token Auth key is required"),
   webhookSecret: z.string().optional(),
+  /** Bunny collection every new video is filed in (optional). */
+  collectionId: z.string().uuid().optional(),
 });
 
 export type BunnyConfig = z.infer<typeof BunnyConfigSchema>;

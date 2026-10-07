@@ -45,18 +45,27 @@ export interface BunnyStreamConfig {
   libraryId: number;
   hostname: string;
   tokenAuthKey: string;
+  collectionId?: string;
 }
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export function bunnyStreamConfig(): BunnyStreamConfig {
   const libraryId = Number(read("BUNNY_STREAM_LIBRARY_ID", "1"));
   if (!Number.isInteger(libraryId) || libraryId <= 0) {
     throw new ConfigurationError("BUNNY_STREAM_LIBRARY_ID", "must be a positive integer");
   }
+  // Optional: the Bunny collection new uploads are filed in.
+  const collectionId = process.env.BUNNY_STREAM_COLLECTION_ID?.trim() || undefined;
+  if (collectionId && !UUID.test(collectionId)) {
+    throw new ConfigurationError("BUNNY_STREAM_COLLECTION_ID", "must be a collection UUID");
+  }
   return {
     apiKey: read("BUNNY_STREAM_API_KEY", "development-bunny-api-key"),
     libraryId,
     hostname: read("BUNNY_STREAM_HOSTNAME", "vz-development.b-cdn.net"),
     tokenAuthKey: read("BUNNY_STREAM_TOKEN_AUTH_KEY", "development-token-auth-key"),
+    collectionId,
   };
 }
 
