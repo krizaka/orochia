@@ -8,7 +8,7 @@
 | `NEXT_PUBLIC_APP_URL` | ✓ | Public origin, used for payment return URLs and IPN callbacks. |
 | `SESSION_SECRET` | ✓ | ≥ 32 random characters (`openssl rand -hex 32`). |
 | `DATABASE_URL` | ✓ | PostgreSQL 16. |
-| `REDIS_URL` | recommended | Rate limiting; when Redis is unreachable limits fail open (logged). |
+| `REDIS_URL` | recommended | Rate limiting and feed cache; unset in production → no client, limits fail open. App Platform needs a managed Valkey/Redis cluster for it (dev databases are PostgreSQL only). |
 | `BUNNY_STREAM_API_KEY`, `BUNNY_STREAM_LIBRARY_ID`, `BUNNY_STREAM_HOSTNAME`, `BUNNY_STREAM_TOKEN_AUTH_KEY`, `BUNNY_WEBHOOK_SECRET` | ✓ | Video library, edge token auth and encode webhooks. |
 | `STORAGE_DRIVER=bunny`, `BUNNY_STORAGE_API_KEY`, `BUNNY_STORAGE_ZONE`, `BUNNY_PULL_ZONE_HOSTNAME` | ✓ | Avatars, thumbnails, 2257 documents (container disks are ephemeral). |
 | `METRICS_AUTH_TOKEN` | ✓ | Bearer token for `/api/metrics`. |

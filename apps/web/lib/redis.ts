@@ -5,6 +5,8 @@ let redisClient: Redis | null = null;
 export function getRedis(): Redis | null {
   if (redisClient) return redisClient;
 
+  // Redis is optional in production: without REDIS_URL there is no client (limits fail open, no cache).
+  if (!process.env.REDIS_URL && process.env.NODE_ENV === "production") return null;
   const url = process.env.REDIS_URL || "redis://localhost:6379";
   try {
     redisClient = new Redis(url, {

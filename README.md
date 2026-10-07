@@ -134,7 +134,7 @@ changes, tests — is in the [Development guide](docs/DEVELOPMENT.md). Rules: [A
 
 ## ☁️ 1-Click Deploy to DigitalOcean
 
-Deploy directly to DigitalOcean App Platform with managed PostgreSQL and Redis clusters:
+Deploy directly to DigitalOcean App Platform with a PostgreSQL 16 database (add a managed Valkey/Redis cluster for rate limiting):
 
 [![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/krizaka/orochia/tree/main)
 
