@@ -1,4 +1,7 @@
 import { defineConfig } from "drizzle-kit";
+import { loadRootEnv } from "./src/load-env";
+
+loadRootEnv(__dirname);
 
 export default defineConfig({
   schema: "./src/schema/index.ts",

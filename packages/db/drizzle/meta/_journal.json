@@ -15,6 +15,13 @@
       "when": 1791320910229,
       "tag": "0001_payments_and_compliance",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791359845961,
+      "tag": "0002_social_graph_and_moderation",
+      "breakpoints": true
     }
   ]
 }

@@ -62,3 +62,6 @@ export const reportReasonEnum = pgEnum("report_reason", [
 ]);
 
 export const reportStatusEnum = pgEnum("report_status", ["OPEN", "IN_REVIEW", "RESOLVED"]);
+
+/** A follow of a creator: approved by the creator before it opens APPROVED_FOLLOWERS_ONLY videos. */
+export const followStatusEnum = pgEnum("follow_status", ["PENDING", "APPROVED"]);

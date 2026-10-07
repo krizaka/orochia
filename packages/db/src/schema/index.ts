@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { users, profiles } from "./users";
-import { contacts } from "./contacts";
+import { contacts, follows } from "./contacts";
 import { videos, videoAccessGrants } from "./videos";
 import { playlists, playlistItems } from "./playlists";
 import { tipsLedger, payoutRequests } from "./ledger";
@@ -96,4 +96,9 @@ export const payoutRequestsRelations = relations(payoutRequests, ({ one }) => ({
     fields: [payoutRequests.creatorId],
     references: [users.id],
   }),
+}));
+
+export const followsRelations = relations(follows, ({ one }) => ({
+  follower: one(users, { fields: [follows.followerId], references: [users.id], relationName: "follower" }),
+  creator: one(users, { fields: [follows.creatorId], references: [users.id], relationName: "followed" }),
 }));

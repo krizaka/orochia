@@ -31,6 +31,9 @@ export const videos = pgTable(
     tipsCount: integer("tips_count").default(0).notNull(),
     resolutions: text("resolutions").array(),
     tags: text("tags").array(),
+    /** Taken down by an operator (DMCA, terms): hidden everywhere and never signed for playback. */
+    removedAt: timestamp("removed_at", { withTimezone: true }),
+    removalReason: text("removal_reason"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
