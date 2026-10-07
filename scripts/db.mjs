@@ -32,7 +32,7 @@ switch (command) {
   case "status": {
     guardLocal("read the database");
     const files = fs.readdirSync(path.join(ROOT, "packages/db/drizzle")).filter((f) => f.endsWith(".sql")).sort();
-    const applied = Number(sqlOut("select count(*) from drizzle.__drizzle_migrations") || 0);
+    const applied = Number(sqlOut("select count(*) from public.__drizzle_migrations") || 0);
     step("Migrations");
     files.forEach((f, i) => console.log(`  ${i < applied ? c.green("✓") : c.yellow("·")} ${f}`));
     if (applied < files.length) console.log(c.yellow(`  ${files.length - applied} pending — run npm run db:migrate`));
