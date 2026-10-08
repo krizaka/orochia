@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 26 tables · 14 enums · 6 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 27 tables · 15 enums · 7 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -17,6 +17,7 @@ erDiagram
     audience_lists ||--o{ audience_list_members : "list_id"
     users ||--o{ audience_list_members : "user_id"
     users ||--o{ audience_lists : "owner_id"
+    users ||--o{ auth_identities : "user_id"
     users ||--o{ auth_tokens : "user_id"
     videos ||--o{ compliance_reports : "video_id"
     users ||--o{ compliance_reports : "reporter_id"
@@ -88,6 +89,20 @@ erDiagram
 | `updated_at` | timestamp with time zone | no | `now()` |  |
 
 **Indexes:** `audience_lists_owner_name_idx` (unique, owner_id, name)
+
+### `auth_identities`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `user_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `provider` | auth_provider | no |  |  |
+| `provider_user_id` | varchar(191) | no |  |  |
+| `email` | varchar(255) | yes |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+| `last_used_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `auth_identities_provider_user_idx` (unique, provider, provider_user_id) · `auth_identities_user_idx` (user_id)
 
 ### `auth_tokens`
 
@@ -458,6 +473,7 @@ erDiagram
 
 | Enum | Values |
 | :--- | :--- |
+| `auth_provider` | `GOOGLE`, `FACEBOOK` |
 | `auth_token_purpose` | `VERIFY_EMAIL`, `RESET_PASSWORD` |
 | `collection_visibility` | `PUBLIC`, `APPROVED_FOLLOWERS_ONLY`, `CONTACTS_ONLY`, `INVITED_ONLY`, `PRIVATE` |
 | `contact_status` | `PENDING`, `ACCEPTED`, `REJECTED`, `BLOCKED` |
@@ -481,3 +497,4 @@ erDiagram
 - `0003_stories_access_and_bunny.sql`
 - `0004_story_views_keyed.sql`
 - `0005_credits_gateway.sql`
+- `0006_sign_in_providers.sql`

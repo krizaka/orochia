@@ -132,7 +132,8 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                 <Upload className="h-3.5 w-3.5 text-violet-400" />
                 <span>{t("nav.upload")}</span>
               </Link>
-              <div className="flex items-center gap-1 rounded-full border border-white/10 light:border-black/10 bg-zinc-900/70 light:bg-slate-100 p-0.5 sm:p-1 shadow-sm">
+              {/* Desktop only: on a phone, signing in lives in the bottom tab bar (one entry per action). */}
+              <div className="hidden items-center gap-1 rounded-full border border-white/10 light:border-black/10 bg-zinc-900/70 light:bg-slate-100 p-0.5 sm:p-1 shadow-sm md:flex">
                 <Link
                   href="/auth/login"
                   className="rounded-full px-2.5 sm:px-4 py-1 sm:py-1.5 text-xs font-semibold text-zinc-200 light:text-slate-800 hover:text-white light:hover:text-slate-950 transition-colors"

@@ -82,6 +82,9 @@ export const collectionVisibilityEnum = pgEnum("collection_visibility", [
 /** Where a video was shared to (counted, never used to grant access). */
 export const shareChannelEnum = pgEnum("share_channel", ["LINK", "X", "WHATSAPP", "TELEGRAM", "EMAIL", "OTHER"]);
 
+/** Sign-in providers an account can be linked to. */
+export const authProviderEnum = pgEnum("auth_provider", ["GOOGLE", "FACEBOOK"]);
+
 /** What a one-time account token is for. */
 export const authTokenPurposeEnum = pgEnum("auth_token_purpose", ["VERIFY_EMAIL", "RESET_PASSWORD"]);
 

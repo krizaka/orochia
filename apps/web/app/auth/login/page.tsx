@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { t } from "@/lib/i18n";
+import { SocialSignIn } from "@/components/SocialSignIn";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { LogIn, Lock, Mail, ArrowRight, Sparkles } from "lucide-react";
@@ -14,6 +16,14 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Back from a provider that could not sign the visitor in (?error=cancelled|state|provider|suspended).
+  useEffect(() => {
+    const reason = new URLSearchParams(window.location.search).get("error");
+    if (reason && ["cancelled", "state", "provider", "suspended"].includes(reason)) {
+      setError(t(`auth.social.errors.${reason as "cancelled" | "state" | "provider" | "suspended"}`));
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,6 +87,7 @@ export default function LoginPage() {
         </div>
         )}
 
+        <div className="relative mb-4"><SocialSignIn /></div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block light:text-slate-500">

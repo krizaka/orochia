@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (79)
+## Endpoints (84)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -27,6 +27,11 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/auth/login` | public | Password login. |
 | `POST` | `/api/auth/logout` | public | — |
 | `GET` | `/api/auth/me` | public | The signed-in account (with whether its e-mail is verified), or `user: null`. |
+| `GET` | `/api/auth/oauth/[provider]/callback` | public | The provider's redirect: checks the state, exchanges the code, then signs in (linked account or same verified address) or sends a new person to complete their account. |
+| `GET` | `/api/auth/oauth/[provider]/start` | public | Sends the browser to the provider's consent page (state + PKCE kept in a signed 10-minute cookie). |
+| `POST` | `/api/auth/oauth/complete` | public | Creates the account of a new Google / Facebook sign-in after the person certifies 18+ and accepts the terms. |
+| `GET` | `/api/auth/oauth/pending` | public | The provider sign-in waiting to become an account: what the completion form can prefill. |
+| `GET` | `/api/auth/providers` | public | The sign-in providers this deployment offers (only those whose keys are configured). |
 | `POST` | `/api/auth/register` | public | Creates an account (a member — creators are opened later, never an administrator), signs it in and e-mails the link that verifies its address — until then the account can do nothing else. |
 | `POST` | `/api/auth/resend-verification` | public | E-mails a new verification link to the signed-in account (the previous link stops working). |
 | `POST` | `/api/auth/reset-password` | public | Sets a new password with the link's one-time token (1 h). |
@@ -91,7 +96,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/webhooks/bunny` | signed webhook | Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (BUNNY_WEBHOOK_SECRET). |
 | `POST` | `/api/webhooks/payments/[gateway]` | signed webhook | Gateway payment notifications. |
 
-## Database tables (26)
+## Database tables (27)
 
 | Table | Drizzle export | Defined in |
 | :--- | :--- | :--- |
@@ -100,6 +105,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `video_viewers` | `videoViewers` | `packages/db/src/schema/audiences.ts` |
 | `video_audience_lists` | `videoAudienceLists` | `packages/db/src/schema/audiences.ts` |
 | `playlist_audience_lists` | `playlistAudienceLists` | `packages/db/src/schema/audiences.ts` |
+| `auth_identities` | `authIdentities` | `packages/db/src/schema/auth-identities.ts` |
 | `auth_tokens` | `authTokens` | `packages/db/src/schema/auth-tokens.ts` |
 | `compliance_reports` | `complianceReports` | `packages/db/src/schema/compliance.ts` |
 | `contacts` | `contacts` | `packages/db/src/schema/contacts.ts` |

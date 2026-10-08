@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { SocialSignIn } from "@/components/SocialSignIn";
 import { useRouter } from "next/navigation";
 import { Lock, Mail, User, UserPlus } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
@@ -63,6 +64,7 @@ export default function RegisterPage() {
           </div>
         )}
 
+        <div className="relative mb-4"><SocialSignIn /></div>
         <form onSubmit={handleSubmit} className="relative space-y-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className={label}>

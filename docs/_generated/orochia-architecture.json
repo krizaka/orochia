@@ -71,13 +71,14 @@
       "id": "data",
       "name": "Data persistence",
       "path": "packages/db",
-      "tablesCount": 26,
+      "tablesCount": 27,
       "tables": [
         "audience_lists",
         "audience_list_members",
         "video_viewers",
         "video_audience_lists",
         "playlist_audience_lists",
+        "auth_identities",
         "auth_tokens",
         "compliance_reports",
         "contacts",
@@ -208,6 +209,36 @@
       "path": "/api/auth/me",
       "access": "public",
       "summary": "The signed-in account (with whether its e-mail is verified), or `user: null`."
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/oauth/[provider]/callback",
+      "access": "public",
+      "summary": "The provider's redirect: checks the state, exchanges the code, then signs in (linked account or same verified address) or sends a new person to complete their account."
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/oauth/[provider]/start",
+      "access": "public",
+      "summary": "Sends the browser to the provider's consent page (state + PKCE kept in a signed 10-minute cookie)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/oauth/complete",
+      "access": "public",
+      "summary": "Creates the account of a new Google / Facebook sign-in after the person certifies 18+ and accepts the terms."
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/oauth/pending",
+      "access": "public",
+      "summary": "The provider sign-in waiting to become an account: what the completion form can prefill."
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/providers",
+      "access": "public",
+      "summary": "The sign-in providers this deployment offers (only those whose keys are configured)."
     },
     {
       "method": "POST",

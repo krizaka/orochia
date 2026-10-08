@@ -43,6 +43,13 @@
       "when": 1791426537384,
       "tag": "0005_credits_gateway",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791428521175,
+      "tag": "0006_sign_in_providers",
+      "breakpoints": true
     }
   ]
 }

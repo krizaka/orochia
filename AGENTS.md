@@ -142,6 +142,10 @@ orochia/                           npm workspaces
 ### F. Fail-closed configuration and sessions
 - Secrets are read through `apps/web/lib/env.ts`: mandatory in production (503 + logged name when missing),
   development defaults otherwise. `OROCHIA_DEMO_MODE` is ignored in production.
+- **Sign in with Google / Facebook** (`lib/oauth.ts`): OAuth 2 code + PKCE, state in a signed 10-minute cookie, a
+  provider offered only when its keys are set. The provider's user id is the key (`auth_identities`); an address the
+  provider verified links to the existing account. A new person completes the account (username, 18+ certification,
+  terms) before it exists — the certifications never come from a provider.
 - **One kind of account at registration** (MEMBER). A member opens a creator space later
   (`/api/me/become-creator`): it becomes CREATOR pending the 2257 review and keeps tipping and unlocking.
 - An account whose e-mail is not verified can only sign in and ask for the link again: `requireUserWithRole` refuses

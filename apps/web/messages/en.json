@@ -79,6 +79,31 @@
       "pendingBody": "Uploads open once your 18 U.S.C. § 2257 records have been reviewed by our compliance team.",
       "pendingCta": "What the review checks",
       "failed": "Your creator space could not be opened. Try again."
+    },
+    "social": {
+      "google": "Continue with Google",
+      "facebook": "Continue with Facebook",
+      "or": "or",
+      "errors": {
+        "cancelled": "Sign-in was cancelled.",
+        "state": "That sign-in link expired. Try again.",
+        "provider": "The provider could not confirm your sign-in. Try again.",
+        "suspended": "This account is suspended. Contact the platform operator."
+      }
+    },
+    "complete": {
+      "title": "Complete your account",
+      "subtitle": "You signed in with {provider}. Choose how people see you, then confirm you are 18 or older.",
+      "email": "Email",
+      "emailHint": "{provider} did not share an address — we will send you a link to confirm it.",
+      "submit": "Create my account",
+      "submitting": "Creating your account…",
+      "expired": "This sign-in expired.",
+      "restart": "Back to sign in",
+      "providers": {
+        "google": "Google",
+        "facebook": "Facebook"
+      }
     }
   },
   "nav": {

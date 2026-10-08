@@ -318,6 +318,20 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("…and still unlocks like a member", (await me.call("/api/videos/unlock-video", "POST", { videoId: feed[0].id, amountCents: 100, gateway: "CREDITS" })).status !== 403);
 }
 
+// Sign in with Google / Facebook: offered only when configured; a forged callback goes nowhere
+{
+  const providers = (await anon.call("/api/auth/providers")).json.providers ?? [];
+  for (const p of ["google", "facebook"].filter((x) => !providers.includes(x))) {
+    check(`${p} not configured → its sign-in answers 404`, (await fetch(`${B}/api/auth/oauth/${p}/start`, { redirect: "manual" })).status === 404);
+  }
+  const forged = await fetch(`${B}/api/auth/oauth/google/callback?code=x&state=y`, { redirect: "manual" });
+  check("a callback without its state cookie is refused", forged.status >= 300 && forged.status < 400 && (forged.headers.get("location") ?? "").includes("/auth/login?error="));
+  check("unknown provider callback is refused", ((await fetch(`${B}/api/auth/oauth/myspace/callback`, { redirect: "manual" })).headers.get("location") ?? "").includes("error="));
+  check("nothing to complete without a provider sign-in", (await anon.call("/api/auth/oauth/pending")).status === 404);
+  const complete = await fetch(`${B}/api/auth/oauth/complete`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: "x_y_z", displayName: "X", isAgeVerified: true, acceptTerms: true }) });
+  check("…and no account created from nothing", complete.status === 410);
+}
+
 // Stories: audience on the server, one view per viewer, likes, removal
 {
   const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64");

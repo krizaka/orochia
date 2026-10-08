@@ -97,6 +97,19 @@ services:
       - key: METRICS_AUTH_TOKEN
         scope: RUN_TIME
         type: SECRET
+      # Sign in with Google / Facebook (offered only when both values of a provider are set).
+      - key: GOOGLE_CLIENT_ID
+        scope: RUN_TIME
+        type: GENERAL
+      - key: GOOGLE_CLIENT_SECRET
+        scope: RUN_TIME
+        type: SECRET
+      - key: FACEBOOK_APP_ID
+        scope: RUN_TIME
+        type: GENERAL
+      - key: FACEBOOK_APP_SECRET
+        scope: RUN_TIME
+        type: SECRET
       # E-mail from mg.orochia.com: Resend when set, Mailgun otherwise.
       - key: RESEND_API_KEY
         scope: RUN_TIME

@@ -15,6 +15,7 @@
 | `DATABASE_CA_CERT` | managed DB | CA of a managed PostgreSQL (`${<db>.CA_CERT}` on App Platform): TLS verified against it. |
 | `RESEND_API_KEY` or `MAILGUN_API_KEY` + `MAILGUN_DOMAIN` (+ `MAILGUN_API_URL`), `MAIL_FROM` | — | Transactional e-mail from `mg.orochia.com`: Resend when its key is set, Mailgun otherwise. Without either nothing is sent. |
 | `COMPLIANCE_ALERT_EMAIL` | — | Receives every content report (`[URGENT]` for underage / non-consensual). |
+| `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET`, `FACEBOOK_APP_ID` + `FACEBOOK_APP_SECRET` | — | Sign in with Google / Facebook — see *Sign-in providers*. A provider without both values is not offered. |
 | `SEARCH_INDEXING=off` | dev / preview | Every page noindex, robots.txt disallows all: only production is indexed (build time). |
 | `OROCHIA_OWNER_EMAIL`, `_USERNAME`, `_NAME`, `_PASSWORD` | recommended | The default user (owner, ADMIN), applied by the release job — see *Owner account*. |
 | Gateway credentials | at least one | See `.env.example`. A gateway is offered only when **all** its variables are set. |
@@ -69,6 +70,21 @@ Porkbun. After `doctl apps create`, App Platform shows the target of each name (
 
 Remove Porkbun's URL forwarding and any parking `A`/`ALIAS` record on the same names first. The TLS certificate is
 issued by App Platform once the records resolve.
+
+### Sign-in providers (Google, Facebook)
+
+OAuth 2 authorization code with PKCE, no SDK (`apps/web/lib/oauth.ts`). Register one redirect URI per environment:
+`https://<domain>/api/auth/oauth/google/callback` and `…/facebook/callback`.
+
+- **Google** — Google Cloud Console → APIs & Services → Credentials → *Create OAuth client ID* (Web application);
+  authorised redirect URI as above; consent screen with the `openid`, `email`, `profile` scopes. Copy the client id
+  and secret into `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`.
+- **Facebook** — developers.facebook.com → *Create app* (Consumer) → add *Facebook Login* → *Valid OAuth Redirect
+  URIs* as above; permissions `email`, `public_profile`. App ID and secret go into `FACEBOOK_APP_ID` / `FACEBOOK_APP_SECRET`.
+  Note: Meta's platform policies restrict adult services; check that your use is allowed before going live.
+
+A provider sign-in lands in the account linked to it, or in the account whose address the provider verified (linked
+then). A new person completes their account — username, 18+ certification, terms — before it is created.
 
 ### Owner account
 

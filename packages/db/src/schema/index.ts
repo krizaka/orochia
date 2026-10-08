@@ -16,6 +16,7 @@ export * from "./playlists";
 export * from "./engagement";
 export * from "./audiences";
 export * from "./auth-tokens";
+export * from "./auth-identities";
 export * from "./ledger";
 export * from "./compliance";
 export * from "./stories";
