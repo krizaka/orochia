@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { UPLOAD_LIMITS } from "@orochia/media/limits";
 import { requireUserWithRole } from "@/lib/auth";
 import { STORY_AUDIENCES, openVideoStoryUpload } from "@/lib/stories";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -11,6 +12,8 @@ const VideoStory = z.object({
   caption: z.string().trim().max(280).nullish(),
   audience: z.enum(STORY_AUDIENCES).default("PUBLIC"),
   audienceListId: z.string().uuid().nullish(),
+  /** Size of the clip about to be sent, refused above the story limit. */
+  sizeBytes: z.number().int().positive().max(UPLOAD_LIMITS.story.maxBytes),
 });
 
 /**
@@ -22,7 +25,8 @@ export async function POST(req: NextRequest) {
     const user = await requireUserWithRole(["CREATOR", "ADMIN"]);
     const limit = await checkRateLimit(`story:${user.id}`, 30, 60 * 60);
     if (!limit.success) return jsonError(429, "Too many stories. Try again later.");
-    const result = await openVideoStoryUpload(user.id, VideoStory.parse(await req.json()));
+    const { sizeBytes: _size, ...story } = VideoStory.parse(await req.json());
+    const result = await openVideoStoryUpload(user.id, story);
     return NextResponse.json({ success: true, ...result }, { status: 201 });
   } catch (error) {
     return errorResponse(error, "stories/upload-session");

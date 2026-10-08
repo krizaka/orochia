@@ -20,6 +20,7 @@ export * from "./auth-identities";
 export * from "./ledger";
 export * from "./compliance";
 export * from "./stories";
+export * from "./drafts";
 
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({

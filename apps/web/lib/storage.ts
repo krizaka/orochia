@@ -21,14 +21,15 @@ export interface UploadResult {
  *
  * Names are random UUIDs, never derived from the client. 2257 documents are private: stored under
  * `private/` (outside public/ locally), they get no public URL and are read only by operators
- * through /api/admin/documents. The storage pull zone must not serve `/private/*` (edge rule).
+ * through /api/admin/documents; the music of editor drafts (`private/audio/`) is read only by its owner.
+ * The storage pull zone must not serve `/private/*` (edge rule).
  */
-const PRIVATE: ReadonlySet<string> = new Set(["documents"]);
+const PRIVATE: ReadonlySet<string> = new Set(["documents", "audio"]);
 const LOCAL_PRIVATE_DIR = path.join(process.cwd(), ".private-uploads");
 export async function uploadMediaFile(
   fileBuffer: Buffer,
   originalFilename: string,
-  category: "avatars" | "thumbnails" | "stories" | "videos" | "documents" = "videos"
+  category: "avatars" | "thumbnails" | "stories" | "videos" | "documents" | "audio" = "videos"
 ): Promise<UploadResult> {
   const driver = process.env.STORAGE_DRIVER === "bunny" ? "bunny" : "local";
   // Container filesystems are ephemeral: production stores media on Bunny Edge Storage only.
@@ -98,9 +99,11 @@ export function publicUrlForRef(ref: string): string {
   return `/uploads/${ref}`;
 }
 
+const PRIVATE_REF = /^private\/(documents|audio)\/([0-9a-f-]{36}\.(?:pdf|jpg|png|mp3|m4a|aac|wav|ogg))$/;
+
 /** A private file by reference (`private/documents/<uuid>.<ext>`), or null when it does not exist. */
 export async function readPrivateFile(ref: string): Promise<{ body: Buffer; mimeType: string } | null> {
-  const match = /^private\/(documents)\/([0-9a-f-]{36}\.(?:pdf|jpg|png))$/.exec(ref);
+  const match = PRIVATE_REF.exec(ref);
   if (!match) return null;
   const [, category, name] = match;
   const mimeType = getMimeType(path.extname(name));
@@ -116,6 +119,20 @@ export async function readPrivateFile(ref: string): Promise<{ body: Buffer; mime
   return fs.existsSync(file) ? { body: await fs.promises.readFile(file), mimeType } : null;
 }
 
+/** Removes a private file (a draft's music); a missing file is not an error. */
+export async function deletePrivateFile(ref: string): Promise<void> {
+  const match = PRIVATE_REF.exec(ref);
+  if (!match) return;
+  if (process.env.STORAGE_DRIVER === "bunny" && process.env.BUNNY_STORAGE_API_KEY) {
+    const storageZone = process.env.BUNNY_STORAGE_ZONE || "orochia-media";
+    const regionHost = process.env.BUNNY_STORAGE_ENDPOINT || "storage.bunnycdn.com";
+    const res = await fetch(`https://${regionHost}/${storageZone}/${ref}`, { method: "DELETE", headers: { AccessKey: process.env.BUNNY_STORAGE_API_KEY } });
+    if (!res.ok && res.status !== 404) throw new Error(`Bunny storage delete failed: ${res.status}`);
+    return;
+  }
+  await fs.promises.rm(path.join(LOCAL_PRIVATE_DIR, match[1], match[2]), { force: true });
+}
+
 function getMimeType(ext: string): string {
   const map: Record<string, string> = {
     ".mp4": "video/mp4",
@@ -125,6 +142,11 @@ function getMimeType(ext: string): string {
     ".png": "image/png",
     ".webp": "image/webp",
     ".pdf": "application/pdf",
+    ".mp3": "audio/mpeg",
+    ".m4a": "audio/mp4",
+    ".aac": "audio/aac",
+    ".wav": "audio/wav",
+    ".ogg": "audio/ogg",
   };
   return map[ext.toLowerCase()] || "application/octet-stream";
 }

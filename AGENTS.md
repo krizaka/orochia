@@ -117,6 +117,13 @@ orochia/                           npm workspaces
 - Video bytes never cross the web servers: Tus uploads go straight to Bunny; Bunny's signed webhook
   (`/api/webhooks/bunny`) moves a video to `READY`/`FAILED`.
 - Only **verified** creators (`users.is_verified`, 18 U.S.C. § 2257 records approved by an operator) open upload sessions.
+- **Upload limits** live only in `packages/media/src/limits.ts` (video 4 GB / 3 h, story 250 MB / 60 s, draft original
+  400 MB): the browser checks them before sending, the session refuses a larger declared size, and the webhook deletes
+  at Bunny a video or story longer than allowed.
+- **Editor drafts** (`lib/video-drafts.ts`): the original clip goes to Bunny over Tus (drafts collection), the edit
+  settings (validated by `parseStoredEdit`) and the form in `video_drafts`, the music under `private/audio/`. Owner-only,
+  removed with their files when published, deleted or expired (`DRAFT_RETENTION_DAYS`). Editing is non-destructive:
+  the original is kept and reopened with its settings; the in-browser render (ffmpeg.wasm) is what gets uploaded.
 
 ### C. Payments are confirmed by the gateway, never by the client
 - Unlocks and tips record a `payment_intents` row and return the gateway's checkout URL. Only

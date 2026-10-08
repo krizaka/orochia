@@ -5,8 +5,35 @@ import Link from "next/link";
 import * as tus from "tus-js-client";
 import { UploadCloud, CheckCircle, Film, DollarSign, ShieldAlert, Sparkles, Scissors } from "lucide-react";
 import { VideoEditor } from "./VideoEditor";
-import { EDITOR_MAX_BYTES } from "@/lib/video-edit";
+import { DraftsShelf } from "./DraftsShelf";
+import { UPLOAD_LIMITS } from "@orochia/media/limits";
+import { EDITOR_MAX_BYTES, type VideoEdit } from "@/lib/video-edit";
+import { deleteDraft } from "@/lib/drafts";
 import { t } from "@/lib/i18n";
+
+const LIMIT = UPLOAD_LIMITS.video;
+const size = (bytes: number) => (bytes >= 1024 ** 3 ? `${(bytes / 1024 ** 3).toFixed(1).replace(/\.0$/, "")} GB` : `${Math.round(bytes / 1024 ** 2)} MB`);
+const hours = (seconds: number) => {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.round((seconds % 3600) / 60);
+  return h === 0 ? `${m} min` : m === 0 ? `${h} h` : `${h} h ${String(m).padStart(2, "0")}`;
+};
+
+/** The length of a local video, read by the browser (null when it cannot tell). */
+function localDuration(file: File): Promise<number | null> {
+  return new Promise((resolve) => {
+    const probe = document.createElement("video");
+    const url = URL.createObjectURL(file);
+    const done = (value: number | null) => {
+      URL.revokeObjectURL(url);
+      resolve(value);
+    };
+    probe.preload = "metadata";
+    probe.onloadedmetadata = () => done(Number.isFinite(probe.duration) ? probe.duration : null);
+    probe.onerror = () => done(null);
+    probe.src = url;
+  });
+}
 
 interface Collection {
   id: string;
@@ -32,6 +59,11 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
   const [selectedCollection, setSelectedCollection] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [editing, setEditing] = useState(false);
+  // Non-destructive editing: `source` is the original, reopened with `lastEdit`; `file` is what gets uploaded.
+  const [source, setSource] = useState<File | null>(null);
+  const [lastEdit, setLastEdit] = useState<VideoEdit | undefined>();
+  const [draftId, setDraftId] = useState<string | undefined>();
+  const [draftsSeen, setDraftsSeen] = useState(0);
 
   useEffect(() => {
     fetch("/api/playlists", { cache: "no-store" })
@@ -47,17 +79,30 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const pick = (selected: File | undefined) => {
+  const pick = async (selected: File | undefined) => {
     if (!selected) return;
     if (!selected.type.startsWith("video/")) {
       setErrorMessage("Choose a video file (MP4, MOV, MKV…).");
       return;
     }
+    // The server refuses the same limits; checking here spares a long upload for nothing.
+    if (selected.size > LIMIT.maxBytes) {
+      setErrorMessage(t("upload.tooLarge", { size: size(selected.size), max: size(LIMIT.maxBytes) }));
+      return;
+    }
+    const seconds = await localDuration(selected);
+    if (seconds !== null && seconds > LIMIT.maxSeconds) {
+      setErrorMessage(t("upload.tooLong", { duration: hours(seconds), max: hours(LIMIT.maxSeconds) }));
+      return;
+    }
     setErrorMessage(null);
+    setLastEdit(undefined);
+    setDraftId(undefined);
+    setSource(selected);
     setFile(selected);
     if (!title) setTitle(selected.name.replace(/\.[^/.]+$/, ""));
   };
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => pick(e.target.files?.[0]);
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => void pick(e.target.files?.[0]);
 
   const handleStartUpload = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,6 +130,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
           description,
           visibility,
           minTipAmountCents,
+          sizeBytes: file.size,
           tags: tags
             .split(",")
             .map((t) => t.trim().toLowerCase())
@@ -133,6 +179,8 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
         },
         onSuccess: () => {
           setIsUploading(false);
+          // Published: the draft it came from has served its purpose.
+          if (draftId) void deleteDraft(draftId).catch(() => undefined);
           setUploadComplete(true);
         },
       });
@@ -156,8 +204,34 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
     certify2257Records &&
     certifyCopyrightOwnership;
 
-  if (editing && file) {
-    return <VideoEditor file={file} onClose={() => setEditing(false)} onApply={(edited) => { setFile(edited); setEditing(false); }} />;
+  if (editing && source) {
+    return (
+      <VideoEditor
+        file={source}
+        initialEdit={lastEdit}
+        draftId={draftId}
+        details={{ title, description, tags, visibility, minTipAmountDollars, collectionId: selectedCollection || null }}
+        onClose={(savedDraftId) => {
+          setEditing(false);
+          if (savedDraftId) {
+            // Kept as a draft: the form starts over, the draft waits in "Your drafts".
+            setFile(null);
+            setSource(null);
+            setLastEdit(undefined);
+            setDraftId(undefined);
+            setTitle("");
+            setDescription("");
+            setTags("");
+            setDraftsSeen((n) => n + 1);
+          }
+        }}
+        onApply={(edited, edit) => {
+          setFile(edited);
+          setLastEdit(edit);
+          setEditing(false);
+        }}
+      />
+    );
   }
 
   return (
@@ -187,6 +261,9 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
           <button
             onClick={() => {
               setFile(null);
+              setSource(null);
+              setLastEdit(undefined);
+              setDraftId(undefined);
               setUploadComplete(false);
               setTitle("");
               setDescription("");
@@ -209,6 +286,27 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
             </div>
           )}
 
+          {!file && (
+            <DraftsShelf
+              kind="video"
+              refresh={draftsSeen}
+              onOpen={(draft) => {
+                const d = draft.details;
+                setSource(draft.file);
+                setFile(draft.file);
+                setDraftId(draft.id);
+                setLastEdit(draft.edit);
+                setTitle(typeof d.title === "string" && d.title ? d.title : draft.file.name.replace(/\.[^/.]+$/, ""));
+                if (typeof d.description === "string") setDescription(d.description);
+                if (typeof d.tags === "string") setTags(d.tags);
+                if (typeof d.visibility === "string" && ["PUBLIC", "CONTACTS_ONLY", "APPROVED_FOLLOWERS_ONLY", "TIPPED_UNLOCKED", "INVITED_ONLY"].includes(d.visibility)) setVisibility(d.visibility as typeof visibility);
+                if (typeof d.minTipAmountDollars === "string") setMinTipAmountDollars(d.minTipAmountDollars);
+                if (typeof d.collectionId === "string") setSelectedCollection(d.collectionId);
+                setEditing(true);
+              }}
+            />
+          )}
+
           {/* Drag & Drop Area */}
           <div
             role="button"
@@ -223,7 +321,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
             onDrop={(e) => {
               e.preventDefault();
               setIsDragging(false);
-              pick(e.dataTransfer.files?.[0]);
+              void pick(e.dataTransfer.files?.[0]);
             }}
             className={`border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all ${
               file || isDragging
@@ -264,7 +362,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                   Click to select video or drag & drop here
                 </span>
                 <span className="block text-xs text-zinc-500 mt-1 light:text-slate-500">
-                  MP4, MOV, MKV up to 50 GB. Resumable direct upload.
+                  {t("upload.limits", { size: size(LIMIT.maxBytes), duration: hours(LIMIT.maxSeconds) })}
                 </span>
               </div>
             )}

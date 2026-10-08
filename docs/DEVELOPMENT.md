@@ -80,9 +80,27 @@ npm run test:e2e                 # needs the app running (npm run dev); OROCHIA_
 
 ## Environment
 
-One `.env` at the repository root (created by `npm run setup` from `.env.example`). Leave the payment and Bunny
-variables empty locally: with `OROCHIA_DEMO_MODE=true` unlocks settle immediately when no gateway is configured, and
-playback answers that streaming is not configured. In production every secret is mandatory (see Deployment).
+One `.env` at the repository root (created by `npm run setup` from `.env.example`). Everything starts without any
+external account: the feed, profiles, followers, contacts, collections, comments, image stories and the seeded videos'
+pages work on the local database, files are stored on disk (`STORAGE_DRIVER=local`), e-mail is logged instead of
+sent, and with `OROCHIA_DEMO_MODE=true` unlocks settle immediately when no gateway is configured. In production every
+secret is mandatory (see [Deployment](DEPLOYMENT.md)).
+
+### Video features locally (Bunny Stream)
+
+Uploading and playing videos, video stories and editor drafts need a Bunny Stream library — video never passes through
+the app. A free trial library is enough:
+
+1. Create a Stream library; in **API**, copy the library id, the API key and the **Read-Only** key; note the CDN hostname
+   (`vz-….b-cdn.net`).
+2. In **Security**, turn on CDN token authentication (copy its key) and add `localhost` to the allowed domains.
+3. In **Encoding**, keep **Keep original files** on (drafts reopen from the original).
+4. Fill `BUNNY_STREAM_API_KEY`, `BUNNY_STREAM_LIBRARY_ID`, `BUNNY_STREAM_HOSTNAME`, `BUNNY_STREAM_TOKEN_AUTH_KEY` and
+   `BUNNY_WEBHOOK_SECRET` (the Read-Only key), then restart `npm run dev`.
+
+Bunny cannot call `localhost`, so locally a video stays "processing" until its webhook arrives: expose the app with a
+tunnel (`cloudflared tunnel --url http://localhost:3000`, `ngrok http 3000`) and set the library's webhook to
+`<tunnel>/api/webhooks/bunny`. The in-browser editor (ffmpeg.wasm) needs nothing: its engine is fetched once from a CDN.
 
 ## Troubleshooting
 
@@ -93,3 +111,6 @@ playback answers that streaming is not configured. In production every secret is
 | Pages show empty states | The database is empty — `npm run db:seed` |
 | `relation … does not exist` | Pending migrations — `npm run db:status`, then `npm run db:migrate` |
 | Docs check fails in CI | `npm run docs:generate` and commit the regenerated files |
+| A page reloads again and again | A stale build cache (often after `npm run build`): stop the server, `rm -rf apps/web/.next`, `npm run dev` |
+| Thumbnails or draft clips answer 403 | Bunny's allowed domains do not include `localhost` (library → Security) |
+| Uploaded videos stay "processing" | Bunny's webhook cannot reach `localhost` — use a tunnel (see *Video features locally*) |

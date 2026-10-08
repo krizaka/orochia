@@ -39,8 +39,11 @@
       "publishedImage": "Your story is live for 24 hours.",
       "publishedVideo": "Uploaded. Your story appears as soon as it is processed, for 24 hours.",
       "unsupported": "Choose an image (JPG, PNG, WEBP) or a video.",
-      "tooLarge": "This file is too large.",
-      "failed": "The story could not be shared."
+      "tooLarge": "This file is too large for a story (photos up to 10 MB, videos up to 250 MB after editing).",
+      "failed": "The story could not be shared.",
+      "tooLargeToEdit": "This video is too large to prepare as a story (over 400 MB). Trim it on your device first.",
+      "editFirst": "Stories are vertical and up to 60 seconds: adjust your clip before publishing.",
+      "adjust": "Adjust"
     }
   },
   "auth": {
@@ -198,28 +201,96 @@
   "editor": {
     "title": "Edit video",
     "edit": "Edit",
-    "trim": "Trim",
     "start": "Start",
     "end": "End",
-    "length": "{seconds} s",
-    "filters": "Filter",
     "filterNames": {
       "none": "Original",
       "vivid": "Vivid",
       "warm": "Warm",
       "cool": "Cool",
+      "golden": "Golden",
+      "cinematic": "Cinematic",
+      "faded": "Faded",
+      "dramatic": "Dramatic",
+      "dreamy": "Dreamy",
+      "neon": "Neon",
+      "sepia": "Sepia",
       "mono": "Mono",
       "noir": "Noir",
       "vintage": "Vintage"
     },
-    "mute": "Mute sound",
-    "vertical": "Vertical (9:16)",
     "apply": "Apply",
     "loading": "Loading the editor (once)…",
     "exporting": "Processing… {progress}%",
-    "tooLarge": "This file is too large to edit in the browser — it will be uploaded as it is.",
+    "tooLarge": "This file is too large to edit in the browser (over 400 MB).",
     "failed": "The video could not be edited. You can still upload the original.",
     "maxLength": "Stories last up to {seconds} seconds.",
-    "previewNote": "Preview is approximate; the exported video matches the filter exactly."
+    "previewNote": "The preview is close; the exported video matches exactly.",
+    "tools": {
+      "trim": "Trim",
+      "filters": "Filters",
+      "adjust": "Adjust",
+      "format": "Format",
+      "sound": "Sound"
+    },
+    "formats": {
+      "original": "Original",
+      "vertical": "Story 9:16",
+      "square": "Square 1:1"
+    },
+    "reposition": "Drag the frame to choose what stays in",
+    "storyVertical": "Stories are always vertical (9:16).",
+    "play": "Play",
+    "pause": "Pause",
+    "cancel": "Cancel",
+    "selection": "{start} – {end} · {length} s",
+    "speed": "Speed",
+    "adjust": {
+      "brightness": "Brightness",
+      "contrast": "Contrast",
+      "saturation": "Colour",
+      "reset": "Reset"
+    },
+    "sound": {
+      "volume": "Original sound",
+      "muted": "Muted",
+      "fadeIn": "Fade in",
+      "fadeOut": "Fade out",
+      "denoise": "Reduce background noise",
+      "music": "Music",
+      "addMusic": "Add music from your device",
+      "replaceMusic": "Replace",
+      "removeMusic": "Remove music",
+      "musicVolume": "Music volume",
+      "musicHint": "Plays from the start of your clip and loops if it is shorter. Use only music you have the rights to."
+    },
+    "saveDraft": "Save draft",
+    "draftSaved": "Draft saved on this device.",
+    "draftFailed": "The draft could not be saved. Check your connection and try again.",
+    "discard": {
+      "title": "Leave the editor?",
+      "body": "Your changes will be lost unless you save a draft.",
+      "discard": "Discard changes",
+      "keep": "Keep editing"
+    },
+    "savingDraft": "Saving your draft… {progress}%",
+    "drafts": {
+      "title": "Your drafts",
+      "edited": "Saved {date}",
+      "expires": "Kept until {date}",
+      "resume": "Continue editing",
+      "opening": "Opening… {progress}%",
+      "delete": "Delete draft",
+      "deleteConfirm": "Tap again to delete",
+      "processing": "Still saving…",
+      "failed": "This draft could not be opened.",
+      "untitled": "Untitled"
+    },
+    "titleStory": "Edit story"
+  },
+  "upload": {
+    "limits": "MP4, MOV, MKV — up to {size} and {duration}. Resumable direct upload.",
+    "tooLarge": "This file is {size}: videos can be up to {max}.",
+    "tooLong": "This video lasts {duration}: videos can be up to {max}."
   }
 }

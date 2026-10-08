@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { BunnyStreamClient, mapBunnyStatusToOrochia, parseBunnyWebhookPayload, verifyBunnyWebhookSignature } from "@orochia/media";
+import { BunnyStreamClient, exceedsLength, mapBunnyStatusToOrochia, parseBunnyWebhookPayload, verifyBunnyWebhookSignature } from "@orochia/media";
 import { db, videos } from "@orochia/db";
 import { eq } from "drizzle-orm";
 import { bunnyStreamConfig, bunnyWebhookSecret } from "@/lib/env";
 import { errorResponse, jsonError } from "@/lib/http";
 import { applyStoryEncoding } from "@/lib/stories";
+import { applyDraftEncoding } from "@/lib/video-drafts";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,7 @@ export async function POST(req: NextRequest) {
 
     const [video] = await db.select().from(videos).where(eq(videos.bunnyVideoId, payload.VideoGuid)).limit(1);
     if (!video) {
-      // Not a video: maybe a story video (stories collection). READY starts its 24 hours.
+      // Not a video: maybe a story video (stories collection; READY starts its 24 hours) or a draft's original.
       let durationSeconds: number | undefined;
       if (target === "READY") {
         durationSeconds = await new BunnyStreamClient(config)
@@ -40,8 +41,14 @@ export async function POST(req: NextRequest) {
           .then((d) => d.length)
           .catch(() => undefined);
       }
-      const storyId = await applyStoryEncoding(payload.VideoGuid, target, { durationSeconds });
+      // Longer than a story may be (the browser checks, but a client can lie): refused and deleted.
+      const tooLong = durationSeconds !== undefined && exceedsLength("story", durationSeconds);
+      const storyId = await applyStoryEncoding(payload.VideoGuid, tooLong ? "FAILED" : target, { durationSeconds });
+      if (storyId && tooLong) await new BunnyStreamClient(config).deleteVideo(payload.VideoGuid).catch(() => undefined);
       if (storyId) return NextResponse.json({ success: true, storyId, status: target });
+      // Or the original clip of an editor draft.
+      const draftId = await applyDraftEncoding(payload.VideoGuid, target, durationSeconds);
+      if (draftId) return NextResponse.json({ success: true, draftId, status: target });
       console.warn(`bunny webhook: unknown video ${payload.VideoGuid}`);
       return NextResponse.json({ success: true, ignored: "video" });
     }
@@ -56,6 +63,12 @@ export async function POST(req: NextRequest) {
       try {
         const details = await new BunnyStreamClient(config).getVideo(payload.VideoGuid);
         update.durationSeconds = Math.round(details.length || 0);
+        if (exceedsLength("video", details.length || 0)) {
+          // Above the upload limit (a client bypassed the browser check): refused and deleted at Bunny.
+          await new BunnyStreamClient(config).deleteVideo(payload.VideoGuid).catch(() => undefined);
+          await db.update(videos).set({ status: "FAILED", updatedAt: new Date() }).where(eq(videos.id, video.id));
+          return NextResponse.json({ success: true, videoId: video.id, status: "FAILED", reason: "too long" });
+        }
         update.resolutions = details.availableResolutions ? details.availableResolutions.split(",").filter(Boolean) : video.resolutions;
         if (details.thumbnailFileName) update.thumbnailUrl = `${base}/${details.thumbnailFileName}`;
       } catch (error) {

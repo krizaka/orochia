@@ -311,11 +311,27 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   const me = await session(email, "second-password-2");
   check("new password accepted", me.status === 200);
   check("a new account is a member", (await me.call("/api/auth/me")).json.user?.role === "MEMBER");
-  check("a member cannot publish stories", (await me.call("/api/stories/upload-session", "POST", {})).status === 403);
+  check("a member cannot publish stories", (await me.call("/api/stories/upload-session", "POST", { sizeBytes: 1000 })).status === 403);
+  check("a member has no editor drafts", (await me.call("/api/me/drafts")).status === 403);
   const become = await me.call("/api/me/become-creator", "POST");
   check("become a creator → pending 2257 review", become.json.role === "CREATOR" && become.json.verificationPending === true);
-  check("…still cannot publish until verified", (await me.call("/api/stories/upload-session", "POST", {})).json.error?.includes("pending"));
+  check("…still cannot publish until verified", (await me.call("/api/stories/upload-session", "POST", { sizeBytes: 1000 })).json.error?.includes("pending"));
+  check("…nor keep editor drafts", (await me.call("/api/me/drafts", "POST", { kind: "STORY", fileName: "a.mp4", contentType: "video/mp4", sizeBytes: 1000, edit: {} })).status === 403);
   check("…and still unlocks like a member", (await me.call("/api/videos/unlock-video", "POST", { videoId: feed[0].id, amountCents: 100, gateway: "CREDITS" })).status !== 403);
+}
+
+// Upload limits and editor drafts (no Bunny call: every request below is refused before it)
+{
+  const edit = { startSeconds: 0, endSeconds: 10, speed: 1, filter: "none", brightness: 0, contrast: 0, saturation: 0, format: "vertical", focusX: 0.5, focusY: 0.5, volume: 1, fadeIn: false, fadeOut: false, denoise: false, musicVolume: 0.6 };
+  const draft = (over) => elena.call("/api/me/drafts", "POST", { kind: "VIDEO", fileName: "clip.mp4", contentType: "video/mp4", sizeBytes: 1000, edit, ...over });
+  check("a video above 4 GB is refused before any upload", (await elena.call("/api/videos/create-upload-session", "POST", { title: "Too big", visibility: "PUBLIC", sizeBytes: 5 * 1024 ** 3 })).status === 400);
+  check("a story clip above 250 MB is refused", (await elena.call("/api/stories/upload-session", "POST", { sizeBytes: 300 * 1024 ** 2 })).status === 400);
+  check("a draft above 400 MB is refused", (await draft({ sizeBytes: 500 * 1024 ** 2 })).status === 400);
+  check("a draft with impossible settings is refused", (await draft({ edit: { ...edit, speed: 7 } })).status === 400);
+  check("a draft must be a video", (await draft({ contentType: "text/html" })).status === 400);
+  check("creator lists own drafts", Array.isArray((await elena.call("/api/me/drafts?kind=VIDEO")).json.drafts));
+  check("someone else's draft is 404", (await elena.call("/api/me/drafts/00000000-0000-4000-8000-000000000000")).status === 404);
+  check("an invalid draft id is 404", (await elena.call("/api/me/drafts/not-a-uuid", "DELETE")).status === 404);
 }
 
 // Sign in with Google / Facebook: offered only when configured; a forged callback goes nowhere

@@ -71,7 +71,7 @@
       "id": "data",
       "name": "Data persistence",
       "path": "packages/db",
-      "tablesCount": 27,
+      "tablesCount": 28,
       "tables": [
         "audience_lists",
         "audience_list_members",
@@ -83,6 +83,7 @@
         "compliance_reports",
         "contacts",
         "follows",
+        "video_drafts",
         "video_views",
         "video_likes",
         "video_comments",
@@ -347,6 +348,60 @@
       "path": "/api/me/dashboard",
       "access": "session · ADMIN / CREATOR / MEMBER",
       "summary": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/drafts",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "Your editor drafts (newest first), with a short-lived link to each original clip; expired ones are removed."
+    },
+    {
+      "method": "POST",
+      "path": "/api/me/drafts",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "Keeps an edit as a draft: records its settings and returns a Tus session to send the original clip straight to Bunny."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/me/drafts/[id]",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "Deletes one of your drafts with its clip and music."
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/drafts/[id]",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "One of your drafts, with a short-lived link to its original clip."
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/me/drafts/[id]",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "Saves new edit settings or form values on a draft (the clip is not sent again); it is kept longer."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/me/drafts/[id]/music",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "Removes the music track of a draft."
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/drafts/[id]/music",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "The music track of one of your drafts (private: served to you only)."
+    },
+    {
+      "method": "PUT",
+      "path": "/api/me/drafts/[id]/music",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "Keeps (or replaces) the music track of a draft — MP3, M4A, AAC, WAV or OGG up to 25 MB."
+    },
+    {
+      "method": "POST",
+      "path": "/api/me/drafts/[id]/uploaded",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "Tells that a draft's original clip is fully sent, so it can be opened again before Bunny finishes processing."
     },
     {
       "method": "PATCH",

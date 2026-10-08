@@ -47,6 +47,7 @@ export interface BunnyStreamConfig {
   tokenAuthKey: string;
   collectionId?: string;
   storiesCollectionId?: string;
+  draftsCollectionId?: string;
 }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -65,6 +66,10 @@ export function bunnyStreamConfig(): BunnyStreamConfig {
   if (storiesCollectionId && !UUID.test(storiesCollectionId)) {
     throw new ConfigurationError("BUNNY_STREAM_STORIES_COLLECTION_ID", "must be a collection UUID");
   }
+  const draftsCollectionId = process.env.BUNNY_STREAM_DRAFTS_COLLECTION_ID?.trim() || undefined;
+  if (draftsCollectionId && !UUID.test(draftsCollectionId)) {
+    throw new ConfigurationError("BUNNY_STREAM_DRAFTS_COLLECTION_ID", "must be a collection UUID");
+  }
   return {
     apiKey: read("BUNNY_STREAM_API_KEY", "development-bunny-api-key"),
     libraryId,
@@ -72,7 +77,22 @@ export function bunnyStreamConfig(): BunnyStreamConfig {
     tokenAuthKey: read("BUNNY_STREAM_TOKEN_AUTH_KEY", "development-token-auth-key"),
     collectionId,
     storiesCollectionId,
+    draftsCollectionId,
   };
+}
+
+/** A whole number from the environment within bounds, or its default (these are tuning, not secrets). */
+function setting(name: string, fallback: number, min: number, max: number): number {
+  const raw = process.env[name]?.trim();
+  if (!raw) return fallback;
+  const value = Number(raw);
+  if (!Number.isInteger(value) || value < min || value > max) throw new ConfigurationError(name, `must be a whole number from ${min} to ${max}`);
+  return value;
+}
+
+/** Editor drafts: how long one is kept (DRAFT_RETENTION_DAYS, 30) and how many an account may keep (DRAFTS_MAX_PER_USER, 20). */
+export function draftsConfig() {
+  return { retentionDays: setting("DRAFT_RETENTION_DAYS", 30, 1, 365), maxPerUser: setting("DRAFTS_MAX_PER_USER", 20, 1, 200) };
 }
 
 /** The Stream library's Read-Only API key: Bunny signs every webhook with it (signature v1). */

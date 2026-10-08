@@ -57,6 +57,9 @@ services:
       - key: BUNNY_STREAM_STORIES_COLLECTION_ID
         scope: RUN_TIME
         type: GENERAL
+      - key: BUNNY_STREAM_DRAFTS_COLLECTION_ID
+        scope: RUN_TIME
+        type: GENERAL
       - key: BUNNY_STREAM_TOKEN_AUTH_KEY
         scope: RUN_TIME
         type: SECRET

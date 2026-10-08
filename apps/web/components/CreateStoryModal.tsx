@@ -4,13 +4,16 @@ import React, { useEffect, useRef, useState } from "react";
 import * as tus from "tus-js-client";
 import { CheckCircle2, Image as ImageIcon, Loader2, Scissors, Sparkles, UploadCloud, X } from "lucide-react";
 import { VideoEditor } from "@/components/VideoEditor";
+import { DraftsShelf } from "@/components/DraftsShelf";
+import { UPLOAD_LIMITS } from "@orochia/media/limits";
+import { EDITOR_MAX_BYTES, type VideoEdit } from "@/lib/video-edit";
+import { deleteDraft } from "@/lib/drafts";
 import { t } from "@/lib/i18n";
 
 type Audience = "PUBLIC" | "APPROVED_FOLLOWERS_ONLY" | "CONTACTS_ONLY" | "INVITED_ONLY";
 const AUDIENCES: Audience[] = ["PUBLIC", "APPROVED_FOLLOWERS_ONLY", "CONTACTS_ONLY", "INVITED_ONLY"];
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const IMAGE_MAX = 10 * 1024 * 1024;
-const VIDEO_MAX = 500 * 1024 * 1024;
 
 interface List {
   id: string;
@@ -34,6 +37,13 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
   const [doneMessage, setDoneMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
+  // Story videos always go through the editor (vertical 9:16, 60 seconds at most) before publishing.
+  // Editing is non-destructive: `source` is the original clip, reopened with `lastEdit`; `file` is the render.
+  const [source, setSource] = useState<File | null>(null);
+  const [lastEdit, setLastEdit] = useState<VideoEdit | undefined>();
+  const [draftId, setDraftId] = useState<string | undefined>();
+  const [edited, setEdited] = useState(false);
+  const [draftsSeen, setDraftsSeen] = useState(0);
   const input = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -51,6 +61,10 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
   const reset = () => {
     setFile(null);
     setPreview(null);
+    setSource(null);
+    setLastEdit(undefined);
+    setDraftId(undefined);
+    setEdited(false);
     setCaption("");
     setAudience("PUBLIC");
     setListId("");
@@ -68,10 +82,16 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
     const isImage = IMAGE_TYPES.includes(chosen.type);
     const isVideo = chosen.type.startsWith("video/");
     if (!isImage && !isVideo) return setError(t("stories.create.unsupported"));
-    if (chosen.size > (isImage ? IMAGE_MAX : VIDEO_MAX)) return setError(t("stories.create.tooLarge"));
+    if (isImage && chosen.size > IMAGE_MAX) return setError(t("stories.create.tooLarge"));
+    if (isVideo && chosen.size > EDITOR_MAX_BYTES) return setError(t("stories.create.tooLargeToEdit"));
     setError(null);
     setFile(chosen);
+    setEdited(false);
+    setLastEdit(undefined);
+    setDraftId(undefined);
+    setSource(isVideo ? chosen : null);
     setPreview(URL.createObjectURL(chosen));
+    if (isVideo) setEditing(true);
   };
 
   const publish = async (e: React.FormEvent) => {
@@ -101,7 +121,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
         return;
       }
 
-      const res = await fetch("/api/stories/upload-session", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(common) });
+      const res = await fetch("/api/stories/upload-session", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...common, sizeBytes: file.size }) });
       const data = (await res.json()) as {
         error?: string;
         session?: { tusEndpoint: string; headers: { AuthorizationSignature: string; AuthorizationExpire: number; VideoId: string; LibraryId: string } };
@@ -124,6 +144,8 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
           onSuccess: () => resolve(),
         }).start();
       });
+      // Published: the draft it came from has served its purpose.
+      if (draftId) await deleteDraft(draftId).catch(() => undefined);
       setDoneMessage(t("stories.create.publishedVideo"));
       setState("done");
       onSuccess?.();
@@ -135,17 +157,33 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
 
   const isImage = file ? IMAGE_TYPES.includes(file.type) : false;
 
-  if (editing && file && !isImage) {
+  if (editing && source) {
     return (
       <VideoEditor
-        file={file}
-        maxSeconds={60}
-        defaultVertical
-        onClose={() => setEditing(false)}
-        onApply={(edited) => {
-          setFile(edited);
-          setPreview(URL.createObjectURL(edited));
+        file={source}
+        kind="story"
+        initialEdit={lastEdit}
+        draftId={draftId}
+        details={{ caption, audience, audienceListId: listId || null }}
+        onClose={(savedDraftId) => {
           setEditing(false);
+          if (savedDraftId) {
+            // Kept as a draft: back to the start, where the drafts are listed.
+            reset();
+            setDraftsSeen((n) => n + 1);
+          } else if (!edited) {
+            setFile(null);
+            setPreview(null);
+            setSource(null);
+          }
+        }}
+        onApply={(result, edit) => {
+          setEditing(false);
+          setLastEdit(edit);
+          if (result.size > UPLOAD_LIMITS.story.maxBytes) return setError(t("stories.create.tooLarge"));
+          setFile(result);
+          setEdited(true);
+          setPreview(URL.createObjectURL(result));
         }}
       />
     );
@@ -182,11 +220,13 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
             <input ref={input} type="file" accept="image/jpeg,image/png,image/webp,video/*" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
             {file && preview ? (
               <div className="relative overflow-hidden rounded-2xl border border-white/10 light:border-black/10 bg-black">
-                {isImage ? <img src={preview} alt="" className="mx-auto max-h-72 object-contain" /> : <video src={preview} className="mx-auto max-h-72" muted playsInline controls />}
+                <div className="mx-auto aspect-[9/16] max-h-80">
+                  {isImage ? <img src={preview} alt="" className="h-full w-full object-cover" /> : <video src={preview} className="h-full w-full object-cover" muted playsInline controls />}
+                </div>
                 <div className="absolute right-2 top-2 flex gap-1.5">
                   {!isImage && (
                     <button type="button" onClick={() => setEditing(true)} className="flex items-center gap-1 rounded-lg bg-violet-600 px-2.5 py-1 text-xs font-semibold text-white">
-                      <Scissors className="h-3 w-3" /> {t("editor.edit")}
+                      <Scissors className="h-3 w-3" /> {t("stories.create.adjust")}
                     </button>
                   )}
                   <button type="button" onClick={() => input.current?.click()} className="rounded-lg bg-black/70 px-2.5 py-1 text-xs font-semibold text-white">
@@ -195,6 +235,23 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
                 </div>
               </div>
             ) : (
+              <>
+              <DraftsShelf
+                kind="story"
+                refresh={draftsSeen}
+                onOpen={(draft) => {
+                  setSource(draft.file);
+                  setFile(draft.file);
+                  setPreview(URL.createObjectURL(draft.file));
+                  setLastEdit(draft.edit);
+                  setDraftId(draft.id);
+                  setEdited(false);
+                  if (typeof draft.details.caption === "string") setCaption(draft.details.caption);
+                  if (typeof draft.details.audience === "string" && (AUDIENCES as string[]).includes(draft.details.audience)) setAudience(draft.details.audience as Audience);
+                  if (typeof draft.details.audienceListId === "string") setListId(draft.details.audienceListId);
+                  setEditing(true);
+                }}
+              />
               <button
                 type="button"
                 onClick={() => input.current?.click()}
@@ -204,7 +261,9 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
                 <span className="text-sm font-semibold">{t("stories.create.choose")}</span>
                 <span className="text-xs text-zinc-500">{t("stories.create.chooseHint")}</span>
               </button>
+              </>
             )}
+            {file && !isImage && !edited && <p className="text-xs text-amber-300 light:text-amber-700">{t("stories.create.editFirst")}</p>}
 
             <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500">
               {t("stories.create.caption")} <span className="normal-case tracking-normal text-zinc-500">— {t("common.optional")}</span>
@@ -258,7 +317,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
             {error && <p role="alert" className="text-xs text-rose-400">{error}</p>}
 
             <button
-              disabled={!file || state === "uploading" || (audience === "INVITED_ONLY" && !listId)}
+              disabled={!file || (!isImage && !edited) || state === "uploading" || (audience === "INVITED_ONLY" && !listId)}
               className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 py-3.5 text-sm font-bold text-white disabled:opacity-40"
             >
               {state === "uploading" ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}

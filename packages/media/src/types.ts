@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { UPLOAD_LIMITS } from "./limits";
 
 export const BunnyConfigSchema = z.object({
   apiKey: z.string().min(1, "Bunny Stream API key is required"),
@@ -20,6 +21,8 @@ export const CreateUploadSessionSchema = z.object({
   visibility: z.enum(["PUBLIC", "CONTACTS_ONLY", "APPROVED_FOLLOWERS_ONLY", "TIPPED_UNLOCKED", "INVITED_ONLY"]),
   minTipAmountCents: z.number().int().nonnegative().default(0),
   tags: z.array(z.string()).default([]),
+  /** Size of the file about to be sent, refused above the video limit. */
+  sizeBytes: z.number().int().positive().max(UPLOAD_LIMITS.video.maxBytes),
 });
 
 export type CreateUploadSessionInput = z.infer<typeof CreateUploadSessionSchema>;

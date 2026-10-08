@@ -50,6 +50,13 @@
       "when": 1791428521175,
       "tag": "0006_sign_in_providers",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791430099808,
+      "tag": "0007_editor_drafts",
+      "breakpoints": true
     }
   ]
 }
