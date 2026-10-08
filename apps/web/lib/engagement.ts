@@ -5,6 +5,8 @@ import { evaluateVideoAccess } from "./access";
 import { sessionSecret } from "./env";
 import { HttpError } from "./http";
 import type { SessionUser } from "./auth";
+import { after } from "next/server";
+import { notifyComment } from "./notifications";
 
 /**
  * Views, likes, comments and shares. Each counter on `videos` moves in the same transaction as the
@@ -140,15 +142,18 @@ export async function addComment(user: SessionUser, videoId: string, input: { bo
   const [video] = await db.select({ commentsEnabled: videos.commentsEnabled }).from(videos).where(eq(videos.id, videoId)).limit(1);
   if (!video.commentsEnabled) throw new HttpError(403, "Comments are closed on this video");
   let parentId: string | null = null;
+  let parentAuthorId: string | null = null;
   if (input.parentId) {
     const [parent] = await db
-      .select({ id: videoComments.id, parentId: videoComments.parentId })
+      .select({ id: videoComments.id, parentId: videoComments.parentId, authorId: videoComments.authorId })
       .from(videoComments)
       .where(and(eq(videoComments.id, input.parentId), eq(videoComments.videoId, videoId)))
       .limit(1);
     if (!parent) throw new HttpError(404, "Comment not found");
     parentId = parent.parentId ?? parent.id;
+    parentAuthorId = parent.authorId;
   }
+  after(() => notifyComment({ videoId, authorId: user.id, parentAuthorId }));
   return db.transaction(async (tx) => {
     const [row] = await tx
       .insert(videoComments)

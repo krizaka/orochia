@@ -4,6 +4,7 @@ import React, { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { t } from "@/lib/i18n";
 import { VideoManager, type StudioVideo } from "@/components/dashboard/VideoManager";
 import { NetworkPanel } from "@/components/dashboard/NetworkPanel";
 import { PlaylistsPanel } from "@/components/dashboard/PlaylistsPanel";
@@ -88,7 +89,7 @@ function TabButton({ tab, active, onSelect, icon: Icon, children }: {
   return (
     <button
       onClick={() => onSelect(tab)}
-      className={`flex items-center gap-2 rounded-xl px-4 py-2.5 transition-all ${
+      className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 transition-all ${
         active === tab ? "bg-violet-600 text-white shadow-md shadow-violet-600/25" : "text-zinc-400 hover:text-white hover:bg-zinc-900 light:text-slate-500 light:hover:text-slate-950"
       }`}
     >
@@ -142,10 +143,6 @@ function DashboardContent() {
   const [treasury, setTreasury] = useState<Treasury | null>(null);
   const [loadError, setLoadError] = useState(false);
 
-  const [displayName, setDisplayName] = useState("");
-  const [bio, setBio] = useState("");
-  const [payoutAddress, setPayoutAddress] = useState("");
-  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   const load = useCallback(async () => {
     try {
@@ -159,9 +156,6 @@ function DashboardContent() {
 
   useEffect(() => {
     if (!user) return;
-    setDisplayName(user.displayName);
-    setBio(user.bio ?? "");
-    setPayoutAddress(user.payoutAddressCrypto ?? "");
     void load();
     if (user.role === "ADMIN") {
       fetch("/api/platform/treasury", { cache: "no-store" })
@@ -170,18 +164,6 @@ function DashboardContent() {
         .catch(() => setTreasury(null));
     }
   }, [user, load]);
-
-  const saveSettings = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaveState("saving");
-    const res = await fetch("/api/me/profile", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ displayName, bio, payoutAddressCrypto: payoutAddress }),
-    });
-    setSaveState(res.ok ? "saved" : "error");
-    if (res.ok) await refresh();
-  };
 
   if (!user) {
     return (
@@ -210,11 +192,13 @@ function DashboardContent() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-3xl font-black text-white font-display light:text-slate-900">{user.displayName}</h1>
-                <span className="rounded-md border border-violet-500/30 bg-violet-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-violet-300">
-                  {isAdmin ? "Administrator" : isCreator ? "Creator" : "Patron"}
-                </span>
+                {isCreator && (
+                  <span className="rounded-md border border-violet-500/30 bg-violet-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-violet-300 light:text-violet-700">
+                    {t("profile.creator")}
+                  </span>
+                )}
               </div>
-              <p className="text-xs text-zinc-400 font-mono mt-0.5 light:text-slate-500">@{user.username} • {user.email}</p>
+              <Link href={`/creators/${user.username}`} className="mt-0.5 inline-block font-mono text-xs text-zinc-400 hover:text-violet-300 light:text-slate-500">@{user.username}</Link>
               {user.isAgeVerified && (
                 <div className="mt-2 flex items-center gap-2 text-xs text-emerald-400">
                   <CheckCircle2 className="h-3.5 w-3.5" />
@@ -256,7 +240,7 @@ function DashboardContent() {
           </TabButton>
         )}
         {isCreator && (
-          <Link href="/creator/payouts" className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all light:text-slate-500 light:hover:text-slate-950">
+          <Link href="/creator/payouts" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all light:text-slate-500 light:hover:text-slate-950">
             <CreditCard className="h-3.5 w-3.5 text-emerald-400" />
             <span>Payouts</span>
           </Link>

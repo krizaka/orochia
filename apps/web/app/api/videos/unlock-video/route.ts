@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { z } from "zod";
 import { db, videos } from "@orochia/db";
 import { eq } from "drizzle-orm";
@@ -16,6 +16,7 @@ import { requireUserWithRole } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { appUrl, isDemoMode } from "@/lib/env";
 import { errorResponse, jsonError } from "@/lib/http";
+import { notifySettlement } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
 
@@ -68,6 +69,7 @@ export async function POST(req: NextRequest) {
         amountCents,
         status: "SUCCESS",
       });
+      if (outcome.kind === "SETTLED") after(() => notifySettlement(intent.id, Boolean(outcome.tip.grantId)));
       return NextResponse.json({ success: true, settled: outcome.kind === "SETTLED" });
     }
 
@@ -79,6 +81,7 @@ export async function POST(req: NextRequest) {
         amountCents,
         status: "SUCCESS",
       });
+      if (outcome.kind === "SETTLED") after(() => notifySettlement(intent.id, Boolean(outcome.tip.grantId)));
       return NextResponse.json({ success: true, settled: outcome.kind === "SETTLED", demo: true });
     }
     if (!configured.includes(gateway)) return jsonError(400, "This payment method is not available");

@@ -1,6 +1,8 @@
 import { db, users, profiles, contacts, follows } from "@orochia/db";
 import { and, desc, eq, isNull, or, sql } from "drizzle-orm";
 import { HttpError } from "./http";
+import { after } from "next/server";
+import { notifyContactRequest, notifyFollow } from "./notifications";
 
 /**
  * The social graph: follows (a creator approves who follows them — APPROVED_FOLLOWERS_ONLY videos)
@@ -61,8 +63,10 @@ export async function follow(viewerId: string, creatorUsername: string): Promise
   const creator = await activeAccount(creatorUsername);
   if (creator.role !== "CREATOR") throw new HttpError(400, "Only creators can be followed");
   if (creator.id === viewerId) throw new HttpError(400, "You cannot follow yourself");
-  await db.insert(follows).values({ followerId: viewerId, creatorId: creator.id }).onConflictDoNothing();
-  return (await relationship(viewerId, creator.id)).follow;
+  const created = await db.insert(follows).values({ followerId: viewerId, creatorId: creator.id }).onConflictDoNothing().returning({ status: follows.status });
+  const state = (await relationship(viewerId, creator.id)).follow;
+  if (created.length > 0) after(() => notifyFollow(creator.id, viewerId, state === "PENDING"));
+  return state;
 }
 
 export async function unfollow(viewerId: string, creatorUsername: string): Promise<void> {
@@ -96,6 +100,7 @@ export async function requestContact(viewerId: string, username: string): Promis
   if (existing && existing.status !== "REJECTED") return existing;
   if (existing) await db.delete(contacts).where(eq(contacts.id, existing.id));
   const [row] = await db.insert(contacts).values({ requesterId: viewerId, addresseeId: other.id }).returning();
+  after(() => notifyContactRequest(other.id, viewerId));
   return { id: row.id, status: row.status, direction: "outgoing" };
 }
 

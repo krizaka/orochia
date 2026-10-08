@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Lock, Mail, User, UserPlus } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { OrochiaLogo } from "@/components/OrochiaLogo";
+import { BirthDateField, isAdultBirthDate } from "@/components/BirthDateField";
 import { Rich } from "@/components/Rich";
 import { t } from "@/lib/i18n";
 
@@ -25,6 +26,7 @@ export default function RegisterPage() {
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [isAgeVerified, setIsAgeVerified] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -33,12 +35,13 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (!isAdultBirthDate(dateOfBirth)) return setError(t("auth.register.errors.birthDate"));
     if (!isAgeVerified) return setError(t("auth.register.errors.age"));
     if (password.length < 10) return setError(t("auth.register.errors.password"));
     if (!acceptTerms) return setError(t("auth.register.errors.terms"));
     setIsLoading(true);
     try {
-      await register({ username, displayName: displayName || username, email, password, isAgeVerified, acceptTerms });
+      await register({ username, displayName: displayName || username, email, password, dateOfBirth, isAgeVerified, acceptTerms });
       router.push("/");
     } catch (err) {
       setError(err instanceof Error ? err.message : t("auth.register.errors.failed"));
@@ -125,6 +128,8 @@ export default function RegisterPage() {
               />
             </div>
           </label>
+
+          <BirthDateField value={dateOfBirth} onChange={setDateOfBirth} labelClass={label} fieldClass={field} />
 
           <div className="space-y-2.5 border-t border-white/5 light:border-black/5 pt-3">
             <label className="flex cursor-pointer items-start gap-2.5 text-xs text-zinc-400 light:text-slate-600">

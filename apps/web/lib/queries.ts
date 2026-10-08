@@ -3,6 +3,7 @@ import { and, desc, eq, gt, ilike, isNull, ne, or, sql, type SQL } from "drizzle
 import { getCreatorAvailableBalanceCents } from "@orochia/payments";
 import type { SessionUser } from "./auth";
 import { withSignedMedia } from "./media-urls";
+import { socialLinksView } from "./profile";
 
 /**
  * Read models of the web app. Every screen reads the database through these functions — there is
@@ -108,6 +109,10 @@ export interface CreatorCard {
   minTipAmountCents: number;
   totalTipsEarnedCents: number;
   isVerified: boolean;
+  /** A creator space (CREATOR, or the owner): videos, tips and the 2257 badge apply. */
+  isCreator: boolean;
+  websiteUrl: string | null;
+  links: ReturnType<typeof socialLinksView>;
 }
 
 async function creatorCardFor(userId: string): Promise<CreatorCard | null> {
@@ -120,12 +125,16 @@ async function creatorCardFor(userId: string): Promise<CreatorCard | null> {
       bio: profiles.bio,
       avatarUrl: profiles.avatarUrl,
       bannerUrl: profiles.bannerUrl,
+      role: users.role,
+      websiteUrl: profiles.websiteUrl,
+      socialLinks: profiles.socialLinks,
       minTipAmountCents: profiles.minTipAmountCents,
       totalTipsEarnedCents: profiles.totalTipsEarnedCents,
     })
     .from(users)
     .leftJoin(profiles, eq(profiles.userId, users.id))
-    .where(and(eq(users.id, userId), eq(users.role, "CREATOR"), isNull(users.suspendedAt)))
+    // Every account has a public page (members too: comments link to it); suspended ones do not.
+    .where(and(eq(users.id, userId), isNull(users.suspendedAt)))
     .limit(1);
   if (!row) return null;
 
@@ -141,8 +150,11 @@ async function creatorCardFor(userId: string): Promise<CreatorCard | null> {
     .from(tipsLedger)
     .where(and(eq(tipsLedger.creatorId, userId), eq(tipsLedger.entryType, "CREATOR_CREDIT")));
 
+  const { role, socialLinks, ...rest } = row;
   return {
-    ...row,
+    ...rest,
+    isCreator: role === "CREATOR" || role === "ADMIN",
+    links: socialLinksView(socialLinks),
     totalViews: Number(stats?.totalViews ?? 0),
     videosCount: Number(stats?.videosCount ?? 0),
     patrons: Number(patrons?.count ?? 0),
@@ -222,7 +234,6 @@ export interface AccountProfile {
   bannerUrl: string | null;
   bio: string | null;
   websiteUrl: string | null;
-  twitterHandle: string | null;
   directMessagePrivacy: "EVERYONE" | "CONTACTS_ONLY";
   payoutAddressCrypto: string | null;
   balanceCents: number;
@@ -246,7 +257,6 @@ export async function accountProfile(user: SessionUser): Promise<AccountProfile 
       bannerUrl: profiles.bannerUrl,
       bio: profiles.bio,
       websiteUrl: profiles.websiteUrl,
-      twitterHandle: profiles.twitterHandle,
       directMessagePrivacy: sql<"EVERYONE" | "CONTACTS_ONLY">`coalesce(${profiles.directMessagePrivacy}, 'EVERYONE')`,
       payoutAddressCrypto: profiles.payoutAddressCrypto,
     })

@@ -2,6 +2,8 @@ import { EventEmitter } from "events";
 import { db, conversations, directMessages, blockedUsers, users, profiles, contacts } from "@orochia/db";
 import { and, desc, eq, gt, or, sql, isNull } from "drizzle-orm";
 import { HttpError } from "./http";
+import { after } from "next/server";
+import { notifyMessage } from "./notifications";
 
 /** Global in-process event bus for realtime server-sent events */
 const messageBus = new EventEmitter();
@@ -208,6 +210,8 @@ export async function sendMessage(senderId: string, recipientId: string, text: s
     type: "message_sent",
     message: result,
   });
+  // E-mail at most once per conversation and hour (lib/notifications.ts).
+  after(() => notifyMessage(recipientId, senderId, conversationId));
 
   return result;
 }

@@ -25,6 +25,8 @@ export interface RegisterInput {
   email: string;
   displayName: string;
   password: string;
+  /** YYYY-MM-DD, 18+ (checked by the server). */
+  dateOfBirth: string;
   isAgeVerified: boolean;
   acceptTerms: boolean;
 }

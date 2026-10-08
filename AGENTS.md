@@ -142,6 +142,9 @@ orochia/                           npm workspaces
 - Concurrent payout requests of a creator are serialised (advisory lock) and cannot exceed the available balance.
 
 ### E. Compliance records are data
+- **Date of birth** at registration (and at the Google / Facebook completion): checked **18+ by the server**
+  (`checkDateOfBirth`, `lib/profile.ts`) — a box ticked by a minor is not enough. Private, never shown; recorded once
+  (`/api/me/birth-date` only fills a missing one).
 - 18+ certification at registration; 2257 verification before upload; content reports persisted in
   `compliance_reports` **before** they are acknowledged, suspected minors and non-consensual content triaged first.
 - Operator actions carry their reason: takedowns (`removal_reason`), suspensions (`suspension_reason`).
@@ -159,6 +162,13 @@ orochia/                           npm workspaces
   it everything else, `getCurrentUser` treats it as a visitor, and the UI shows only the verification page.
 - Sessions are stateless signed cookies, but **authorisation is not**: `requireUserWithRole` re-reads the account,
   so a suspension or a role change applies on the next request. Suspended accounts cannot sign in.
+- **Profiles never carry a client-chosen URL**: pictures are a preset id or an uploaded file's reference, resolved by
+  the server (`profileImageUrl`); links are stored as handles of known networks and turned into URLs by the server
+  (`socialLinksView`), the website must be http(s). Every active account has a public page; e-mail and date of birth
+  are never on it.
+- **Activity e-mails** (`lib/notifications.ts`) are on by default, each one can be turned off
+  (`profiles.notifications_off`), go only to verified active addresses, are sent after the action is recorded
+  (`after()`), never throw, and are capped in bursts (messages: once per conversation and hour).
 - No screen renders showcase data: pages read the database through `lib/queries.ts`; an empty platform renders
   empty states.
 

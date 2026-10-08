@@ -7,6 +7,7 @@ import { Loader2, UserPlus } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { Rich } from "@/components/Rich";
 import { t } from "@/lib/i18n";
+import { BirthDateField, isAdultBirthDate } from "@/components/BirthDateField";
 
 interface Pending {
   provider: "google" | "facebook";
@@ -30,6 +31,7 @@ export default function CompleteSignUpPage() {
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [isAgeVerified, setIsAgeVerified] = useState(false);
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,6 +50,7 @@ export default function CompleteSignUpPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isAdultBirthDate(dateOfBirth)) return setError(t("auth.register.errors.birthDate"));
     if (!isAgeVerified) return setError(t("auth.register.errors.age"));
     if (!acceptTerms) return setError(t("auth.register.errors.terms"));
     setBusy(true);
@@ -55,7 +58,7 @@ export default function CompleteSignUpPage() {
     const res = await fetch("/api/auth/oauth/complete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, displayName, email: email || null, isAgeVerified, acceptTerms }),
+      body: JSON.stringify({ username, displayName, email: email || null, dateOfBirth, isAgeVerified, acceptTerms }),
     });
     const data = (await res.json().catch(() => ({}))) as { error?: string; next?: string; details?: { fieldErrors?: Record<string, string[]> } };
     setBusy(false);
@@ -101,6 +104,7 @@ export default function CompleteSignUpPage() {
         ) : (
           <p className="text-xs text-zinc-400 light:text-slate-500">{pending.email}</p>
         )}
+        <BirthDateField value={dateOfBirth} onChange={setDateOfBirth} labelClass={label} fieldClass={field} />
         <label className="flex cursor-pointer items-start gap-2.5 text-xs text-zinc-400 light:text-slate-600">
           <input type="checkbox" checked={isAgeVerified} onChange={(e) => setIsAgeVerified(e.target.checked)} className="mt-0.5 h-4 w-4 accent-violet-600" />
           <span><Rich text={t("auth.register.ageCertify")} /></span>

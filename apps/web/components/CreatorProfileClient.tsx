@@ -42,10 +42,10 @@ export function CreatorProfileClient({
     <div className="space-y-10">
       {/* Media & Content Tabs */}
       <div>
-        <div className="flex items-center gap-2 border-b border-white/10 dark:border-white/10 light:border-black/5 pb-3">
+        <div className="-mx-4 flex items-center gap-2 overflow-x-auto border-b border-white/10 px-4 pb-3 light:border-black/5 sm:mx-0 sm:px-0">
           <button
             onClick={() => setActiveTab("all")}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+            className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-xs font-bold transition-all ${
               activeTab === "all"
                 ? "bg-violet-600 text-white shadow-md shadow-violet-600/30"
                 : "text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white"
@@ -57,7 +57,7 @@ export function CreatorProfileClient({
 
           <button
             onClick={() => setActiveTab("ppv")}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+            className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-xs font-bold transition-all ${
               activeTab === "ppv"
                 ? "bg-violet-600 text-white shadow-md shadow-violet-600/30"
                 : "text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white"
@@ -70,7 +70,7 @@ export function CreatorProfileClient({
           {playlists.length > 0 && (
             <button
               onClick={() => setActiveTab("playlists")}
-              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+              className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-xs font-bold transition-all ${
                 activeTab === "playlists"
                   ? "bg-violet-600 text-white shadow-md shadow-violet-600/30"
                   : "text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white"
@@ -83,7 +83,7 @@ export function CreatorProfileClient({
 
           <button
             onClick={() => setActiveTab("about")}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+            className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-xs font-bold transition-all ${
               activeTab === "about"
                 ? "bg-violet-600 text-white shadow-md shadow-violet-600/30"
                 : "text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white"

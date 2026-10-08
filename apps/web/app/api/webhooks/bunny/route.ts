@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { BunnyStreamClient, exceedsLength, mapBunnyStatusToOrochia, parseBunnyWebhookPayload, verifyBunnyWebhookSignature } from "@orochia/media";
 import { db, videos } from "@orochia/db";
 import { eq } from "drizzle-orm";
@@ -6,6 +6,7 @@ import { bunnyStreamConfig, bunnyWebhookSecret } from "@/lib/env";
 import { errorResponse, jsonError } from "@/lib/http";
 import { applyStoryEncoding } from "@/lib/stories";
 import { applyDraftEncoding } from "@/lib/video-drafts";
+import { notifyVideoReady } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
 
@@ -77,6 +78,8 @@ export async function POST(req: NextRequest) {
       }
     }
     await db.update(videos).set(update).where(eq(videos.id, video.id));
+    // Online for the first time: the creator (and their followers) hear about it.
+    if (target === "READY" && video.status !== "READY") after(() => notifyVideoReady(video.id));
     return NextResponse.json({ success: true, videoId: video.id, status: target });
   } catch (error) {
     return errorResponse(error, "webhooks/bunny");

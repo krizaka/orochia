@@ -64,6 +64,20 @@
       "when": 1791433785942,
       "tag": "0008_user_management_messaging_and_ratings",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791464898663,
+      "tag": "0009_profile_links_birthdate_notifications",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791464899286,
+      "tag": "0010_drop_twitter_handle",
+      "breakpoints": true
     }
   ]
 }

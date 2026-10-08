@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import {
   GatewayConfigurationError,
   GatewayTypeSchema,
@@ -7,6 +7,7 @@ import {
   settlePaymentIntent,
 } from "@orochia/payments";
 import { errorResponse, jsonError } from "@/lib/http";
+import { notifySettlement } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +39,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ gateway:
 
     const event = adapter.parseWebhookEvent(payload);
     const outcome = await settlePaymentIntent(gateway.data, event);
+    if (outcome.kind === "SETTLED") after(() => notifySettlement(event.intentId, Boolean(outcome.tip.grantId)));
     if (outcome.kind === "UNDERPAID" || outcome.kind === "GATEWAY_MISMATCH") {
       console.error(`[webhooks/payments] ${gateway.data} intent ${event.intentId}: ${outcome.kind}`);
     }

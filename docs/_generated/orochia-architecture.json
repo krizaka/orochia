@@ -233,7 +233,7 @@
       "method": "POST",
       "path": "/api/auth/oauth/complete",
       "access": "public",
-      "summary": "Creates the account of a new Google / Facebook sign-in after the person certifies 18+ and accepts the terms."
+      "summary": "Creates the account of a new Google / Facebook sign-in after the person gives a date of birth (18+), certifies it and accepts the terms."
     },
     {
       "method": "GET",
@@ -378,6 +378,12 @@
       "path": "/api/me/become-creator",
       "access": "session · MEMBER / CREATOR / ADMIN",
       "summary": "Opens a creator space for a member: the account becomes CREATOR, pending its 18 U.S.C. § 2257 review (uploads open once an operator verifies it)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/me/birth-date",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "Records your date of birth (18+) when the account has none yet; once set it cannot be changed here."
     },
     {
       "method": "GET",
@@ -527,13 +533,13 @@
       "method": "GET",
       "path": "/api/me/profile",
       "access": "session · ADMIN / CREATOR / MEMBER",
-      "summary": "Reads the signed-in user's own profile and settings."
+      "summary": "Reads the signed-in user's own profile and settings (private fields included: e-mail, date of birth)."
     },
     {
       "method": "PUT",
       "path": "/api/me/profile",
       "access": "session · ADMIN / CREATOR / MEMBER",
-      "summary": "Updates the signed-in user's own profile and preferences."
+      "summary": "Updates the signed-in user's own profile and preferences (only the fields sent)."
     },
     {
       "method": "GET",
@@ -671,7 +677,7 @@
       "method": "POST",
       "path": "/api/uploads",
       "access": "session · role depends on the request",
-      "summary": "Stores an avatar (any account), a thumbnail, a story image or a 2257 document (creators); size and type checked per kind."
+      "summary": "Stores an avatar or a profile banner (any account), a thumbnail, a story image or a 2257 document (creators); size and type checked per kind."
     },
     {
       "method": "DELETE",

@@ -7,6 +7,7 @@ import { acceptInvitation } from "@/lib/invitations";
 import { isDemoMode } from "@/lib/env";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { errorResponse, isUniqueViolation, jsonError } from "@/lib/http";
+import { checkDateOfBirth } from "@/lib/profile";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,8 @@ const RegisterSchema = z.object({
   displayName: z.string().trim().min(1).max(80),
   password: z.string().min(10, "At least 10 characters").max(256),
   inviteCode: z.string().trim().optional(),
+  /** YYYY-MM-DD; refused under 18 (lib/profile.ts). */
+  dateOfBirth: z.string().trim(),
   isAgeVerified: z.literal(true, {
     errorMap: () => ({ message: "18+ age certification is required (18 U.S.C. § 2257)" }),
   }),
@@ -37,6 +40,7 @@ export async function POST(req: NextRequest) {
     if (!limit.success) return jsonError(429, "Too many registrations. Try again later.");
 
     const input = RegisterSchema.parse(await req.json());
+    const dateOfBirth = checkDateOfBirth(input.dateOfBirth);
 
     const account = await db.transaction(async (tx) => {
       const [user] = await tx
@@ -50,6 +54,7 @@ export async function POST(req: NextRequest) {
           role: "MEMBER",
           isVerified: true,
           isAgeVerified: true,
+          dateOfBirth,
         })
         .returning();
       await tx.insert(profiles).values({ userId: user.id, displayName: input.displayName });

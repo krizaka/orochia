@@ -29,7 +29,7 @@ const LOCAL_PRIVATE_DIR = path.join(process.cwd(), ".private-uploads");
 export async function uploadMediaFile(
   fileBuffer: Buffer,
   originalFilename: string,
-  category: "avatars" | "thumbnails" | "stories" | "videos" | "documents" | "audio" = "videos"
+  category: "avatars" | "banners" | "thumbnails" | "stories" | "videos" | "documents" | "audio" = "videos"
 ): Promise<UploadResult> {
   const driver = process.env.STORAGE_DRIVER === "bunny" ? "bunny" : "local";
   // Container filesystems are ephemeral: production stores media on Bunny Edge Storage only.

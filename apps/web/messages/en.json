@@ -70,8 +70,11 @@
         "age": "You must be at least 18 to join.",
         "password": "Choose a password of at least 10 characters.",
         "terms": "Accept the Terms of Service to continue.",
-        "failed": "Registration failed."
-      }
+        "failed": "Registration failed.",
+        "birthDate": "You must be at least 18 to join Orochia."
+      },
+      "birthDate": "Date of birth",
+      "birthDateHint": "Private — never shown on your profile. Orochia is for adults only."
     },
     "becomeCreator": {
       "title": "Publish on Orochia",
@@ -293,5 +296,156 @@
     "limits": "MP4, MOV, MKV — up to {size} and {duration}. Resumable direct upload.",
     "tooLarge": "This file is {size}: videos can be up to {max}.",
     "tooLong": "This video lasts {duration}: videos can be up to {max}."
+  },
+  "profile": {
+    "creator": "Creator",
+    "member": "Member",
+    "verified": "Verified creator (18 U.S.C. § 2257 records)",
+    "stats": {
+      "patrons": "Patrons",
+      "views": "Views",
+      "videos": "Videos"
+    },
+    "networks": {
+      "instagram": "Instagram",
+      "x": "X",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "youtube": "YouTube",
+      "telegram": "Telegram",
+      "website": "Website"
+    },
+    "visit": "{network} — @{handle}"
+  },
+  "settings": {
+    "title": "Settings",
+    "saved": "Saved",
+    "save": "Save",
+    "saving": "Saving…",
+    "failed": "Could not save. Try again.",
+    "sections": {
+      "profile": "Profile",
+      "links": "Links",
+      "privacy": "Privacy",
+      "notifications": "Notifications",
+      "payouts": "Payouts",
+      "accounts": "Sign-in methods",
+      "blocked": "Blocked accounts"
+    },
+    "pictures": {
+      "avatar": "Profile photo",
+      "banner": "Cover image",
+      "upload": "Upload a photo",
+      "choose": "Choose a design",
+      "remove": "Remove",
+      "uploading": "Uploading…",
+      "uploadFailed": "The picture could not be uploaded (JPG, PNG or WEBP, up to {size}).",
+      "presetsTitle": "Pick a design",
+      "close": "Close"
+    },
+    "identity": {
+      "displayName": "Display name",
+      "displayNameHint": "Shown everywhere. Several people can have the same name.",
+      "username": "Username",
+      "usernameHint": "Your unique address: orochia.com/creators/{username}. Nobody else can have it.",
+      "bio": "About you",
+      "bioPlaceholder": "A few words for your visitors",
+      "email": "E-mail",
+      "emailHint": "Private — only you see it. It is used to sign in and for the notifications you keep.",
+      "birthDate": "Date of birth",
+      "birthDateHint": "Private — never shown. Orochia is for adults: it confirms you are 18 or older.",
+      "birthDateMissing": "Not provided yet",
+      "birthDateAdd": "Add your date of birth",
+      "viewProfile": "View my public profile"
+    },
+    "links": {
+      "intro": "Shown on your public profile. Type your handle or paste a link.",
+      "website": "Website",
+      "websitePlaceholder": "https://your-site.com",
+      "handlePlaceholder": "handle"
+    },
+    "privacy": {
+      "messages": "Who can send you messages",
+      "everyone": "Everyone",
+      "everyoneHint": "Any member with a verified account.",
+      "contacts": "Contacts only",
+      "contactsHint": "Only people you have accepted as contacts."
+    },
+    "notifications": {
+      "intro": "E-mails about what happens on your account. Everything is on by default; turn off what you do not want.",
+      "all": "All notifications",
+      "allHint": "Turn every e-mail below on or off at once.",
+      "events": {
+        "newFollower": "Someone follows you or asks to",
+        "contactRequest": "Someone asks to become your contact",
+        "newComment": "A comment on one of your videos",
+        "commentReply": "A reply to your comment",
+        "newMessage": "A new private message",
+        "tipReceived": "You receive a tip",
+        "videoUnlocked": "Someone unlocks one of your videos",
+        "videoReady": "Your upload is processed and online",
+        "creatorPublished": "A creator you follow publishes a video"
+      },
+      "creatorOnly": "For creators"
+    },
+    "payouts": {
+      "address": "Crypto payout address",
+      "addressPlaceholder": "USDT (TRC-20) or BTC address",
+      "hint": "Where your earnings are sent when you request a payout.",
+      "request": "Request a payout"
+    },
+    "accounts": {
+      "intro": "Ways you can sign in to this account.",
+      "none": "Only e-mail and password.",
+      "unlink": "Unlink",
+      "linkedOn": "Linked {date}"
+    },
+    "blocked": {
+      "intro": "Blocked accounts cannot message you, follow you or ask to be your contact.",
+      "none": "You have not blocked anyone.",
+      "unblock": "Unblock"
+    }
+  },
+  "notify": {
+    "greeting": "Hi @{username},",
+    "footer": "You receive this because it is turned on in your notification settings: {settings}",
+    "newFollower": {
+      "subject": "{name} {action}",
+      "body": "{name} {action}.",
+      "follows": "now follows you",
+      "asks": "asks to follow you"
+    },
+    "contactRequest": {
+      "subject": "{name} wants to be your contact",
+      "body": "{name} asked to become your contact. Accept or decline from your network."
+    },
+    "newComment": {
+      "subject": "New comment on “{title}”",
+      "body": "{name} commented on your video “{title}”."
+    },
+    "commentReply": {
+      "subject": "{name} replied to you",
+      "body": "{name} replied to your comment on “{title}”."
+    },
+    "newMessage": {
+      "subject": "New message from {name}",
+      "body": "{name} sent you a private message."
+    },
+    "tipReceived": {
+      "subject": "You received a {amount} tip",
+      "body": "{name} sent you a {amount} tip. It is in your balance."
+    },
+    "videoUnlocked": {
+      "subject": "{name} unlocked “{title}”",
+      "body": "{name} unlocked your video “{title}” for {amount}. It is in your balance."
+    },
+    "videoReady": {
+      "subject": "“{title}” is online",
+      "body": "Your video “{title}” is processed and can be watched now."
+    },
+    "creatorPublished": {
+      "subject": "New from {name}: “{title}”",
+      "body": "{name} just published “{title}”."
+    }
   }
 }

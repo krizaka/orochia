@@ -1,5 +1,3 @@
-import { publicUrlForRef } from "./storage";
-
 export interface PresetAsset {
   id: string;
   name: string;
@@ -26,17 +24,7 @@ export const DEFAULT_BANNERS: PresetAsset[] = [
   { id: "banner-06", name: "Prism Spectrum", url: "/defaults/banners/banner-06.svg" },
 ];
 
-/** Returns presets resolved with CDN URL if running with Bunny Storage in production. */
+/** The presets, served by the app itself (public/defaults): they ship with every release, in every environment. */
 export function getPresetAssets(): { avatars: PresetAsset[]; banners: PresetAsset[] } {
-  const isBunny = process.env.STORAGE_DRIVER === "bunny" && Boolean(process.env.BUNNY_STORAGE_API_KEY);
-  return {
-    avatars: DEFAULT_AVATARS.map((a) => ({
-      ...a,
-      url: isBunny ? publicUrlForRef(`defaults/avatars/${a.id}.svg`) : a.url,
-    })),
-    banners: DEFAULT_BANNERS.map((b) => ({
-      ...b,
-      url: isBunny ? publicUrlForRef(`defaults/banners/${b.id}.svg`) : b.url,
-    })),
-  };
+  return { avatars: DEFAULT_AVATARS, banners: DEFAULT_BANNERS };
 }

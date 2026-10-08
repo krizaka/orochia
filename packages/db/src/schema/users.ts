@@ -1,4 +1,5 @@
-import { pgTable, text, timestamp, boolean, uuid, varchar, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, uuid, varchar, integer, date, jsonb } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { userRoleEnum } from "./enums";
 
 export const users = pgTable("users", {
@@ -9,6 +10,8 @@ export const users = pgTable("users", {
   role: userRoleEnum("role").default("MEMBER").notNull(),
   isVerified: boolean("is_verified").default(false).notNull(),
   isAgeVerified: boolean("is_age_verified").default(false).notNull(), // Mandatory 18+ verification flag
+  /** Declared at sign-up and checked 18+ by the server (lib/profile.ts). Private: never shown to others. */
+  dateOfBirth: date("date_of_birth"),
   /** Set when the owner of the address followed the verification link; until then the account can only sign in and ask for the link again. */
   emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
   /** Set by an administrator: a suspended account can neither sign in nor publish. */
@@ -29,7 +32,10 @@ export const profiles = pgTable("profiles", {
   avatarUrl: text("avatar_url"),
   bannerUrl: text("banner_url"),
   websiteUrl: text("website_url"),
-  twitterHandle: varchar("twitter_handle", { length: 100 }),
+  /** Handles on other networks (instagram, x, facebook, tiktok, youtube, telegram); URLs are built by the server. */
+  socialLinks: jsonb("social_links").$type<Record<string, string>>().default(sql`'{}'::jsonb`).notNull(),
+  /** E-mail notifications turned off, by event (absent = on: everything is on by default). */
+  notificationsOff: jsonb("notifications_off").$type<string[]>().default(sql`'[]'::jsonb`).notNull(),
   directMessagePrivacy: varchar("direct_message_privacy", { length: 20 }).default("EVERYONE").notNull(),
   minTipAmountCents: integer("min_tip_amount_cents").default(500).notNull(), // default $5.00
   payoutAddressCrypto: text("payout_address_crypto"),

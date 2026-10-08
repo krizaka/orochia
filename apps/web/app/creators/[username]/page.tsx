@@ -9,6 +9,8 @@ import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { JsonLd } from "@/components/JsonLd";
 import { profileSchema } from "@/lib/seo";
 import { CreatorProfileClient } from "@/components/CreatorProfileClient";
+import { SocialIcon } from "@/components/SocialIcon";
+import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -38,11 +40,14 @@ export default async function CreatorPage(props: { params: Promise<{ username: s
     visiblePlaylists(creator.id, viewer?.id ?? null),
   ]);
 
-  const stats = [
-    { icon: Users, label: "Patrons", value: creator.patrons },
-    { icon: Eye, label: "Views", value: creator.totalViews },
-    { icon: Film, label: "Videos", value: creator.videosCount },
-  ];
+  const stats = creator.isCreator
+    ? [
+        { icon: Users, label: t("profile.stats.patrons"), value: creator.patrons },
+        { icon: Eye, label: t("profile.stats.views"), value: creator.totalViews },
+        { icon: Film, label: t("profile.stats.videos"), value: creator.videosCount },
+      ]
+    : [];
+  const links = [...creator.links, ...(creator.websiteUrl ? [{ network: "website" as const, handle: new URL(creator.websiteUrl).hostname.replace(/^www\./, ""), url: creator.websiteUrl }] : [])];
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
@@ -75,17 +80,36 @@ export default async function CreatorPage(props: { params: Promise<{ username: s
               <h1 className="text-2xl sm:text-4xl font-black text-white dark:text-white light:text-slate-900 font-display">
                 {creator.displayName}
               </h1>
-              <ShieldCheck className="h-6 w-6 text-violet-400" aria-label="18 U.S.C. § 2257 verified creator" />
+              {creator.isCreator && creator.isVerified && <ShieldCheck className="h-6 w-6 text-violet-400" aria-label={t("profile.verified")} />}
             </div>
 
             <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 font-mono mt-1">
-              @{creator.username} · Creator
+              @{creator.username} · {creator.isCreator ? t("profile.creator") : t("profile.member")}
             </p>
 
             {creator.bio && (
               <p className="mt-3 max-w-2xl text-xs sm:text-sm text-zinc-300 dark:text-zinc-300 light:text-slate-600 leading-relaxed">
                 {creator.bio}
               </p>
+            )}
+
+            {links.length > 0 && (
+              <ul className="mt-3 flex flex-wrap justify-center gap-2 sm:justify-start">
+                {links.map((l) => (
+                  <li key={l.network}>
+                    <a
+                      href={l.url}
+                      target="_blank"
+                      rel="noopener noreferrer nofollow ugc"
+                      title={t("profile.visit", { network: t(`profile.networks.${l.network}`), handle: l.handle })}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-zinc-200 transition-colors hover:border-violet-500/60 hover:text-white light:border-black/10 light:bg-black/5 light:text-slate-700 light:hover:text-slate-950"
+                    >
+                      <SocialIcon network={l.network} className="h-3.5 w-3.5" />
+                      {l.network === "website" ? l.handle : `@${l.handle}`}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             )}
 
             {/* Figures ticker */}

@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 34 tables · 15 enums · 9 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 34 tables · 15 enums · 11 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -341,7 +341,8 @@ erDiagram
 | `avatar_url` | text | yes |  |  |
 | `banner_url` | text | yes |  |  |
 | `website_url` | text | yes |  |  |
-| `twitter_handle` | varchar(100) | yes |  |  |
+| `social_links` | jsonb | no | `'{}'::jsonb` |  |
+| `notifications_off` | jsonb | no | `'[]'::jsonb` |  |
 | `direct_message_privacy` | varchar(20) | no | `"EVERYONE"` |  |
 | `min_tip_amount_cents` | integer | no | `500` |  |
 | `payout_address_crypto` | text | yes |  |  |
@@ -445,6 +446,7 @@ erDiagram
 | `role` | user_role | no | `"MEMBER"` |  |
 | `is_verified` | boolean | no | `false` |  |
 | `is_age_verified` | boolean | no | `false` |  |
+| `date_of_birth` | date | yes |  |  |
 | `email_verified_at` | timestamp with time zone | yes |  |  |
 | `suspended_at` | timestamp with time zone | yes |  |  |
 | `suspension_reason` | text | yes |  |  |
@@ -625,3 +627,5 @@ erDiagram
 - `0006_sign_in_providers.sql`
 - `0007_editor_drafts.sql`
 - `0008_user_management_messaging_and_ratings.sql`
+- `0009_profile_links_birthdate_notifications.sql`
+- `0010_drop_twitter_handle.sql`

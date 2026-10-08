@@ -119,7 +119,7 @@ export function videoSchema(v: VideoSchemaInput) {
 }
 
 /** A creator's public page. */
-export function profileSchema(c: { username: string; displayName: string; bio: string | null; avatarUrl: string | null; videosCount: number }) {
+export function profileSchema(c: { username: string; displayName: string; bio: string | null; avatarUrl: string | null; videosCount: number; links?: { url: string }[]; websiteUrl?: string | null }) {
   const url = absolute(`/creators/${c.username}`);
   return {
     "@context": "https://schema.org",
@@ -133,6 +133,7 @@ export function profileSchema(c: { username: string; displayName: string; bio: s
       description: c.bio ?? undefined,
       image: c.avatarUrl ?? undefined,
       url,
+      sameAs: [...(c.links ?? []).map((l) => l.url), ...(c.websiteUrl ? [c.websiteUrl] : [])],
       interactionStatistic: { "@type": "InteractionCounter", interactionType: { "@type": "WriteAction" }, userInteractionCount: c.videosCount },
     },
   };

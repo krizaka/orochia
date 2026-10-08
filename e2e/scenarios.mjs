@@ -285,7 +285,7 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
     let json = {}; try { json = await res.json(); } catch {}
     return { status: res.status, json };
   };
-  const reg = await call("/api/auth/register", "POST", { username: `new_${stamp}`, email, displayName: "New Member", password: "first-password-1", isAgeVerified: true, acceptTerms: true });
+  const reg = await call("/api/auth/register", "POST", { username: `new_${stamp}`, email, displayName: "New Member", password: "first-password-1", dateOfBirth: "1990-01-01", isAgeVerified: true, acceptTerms: true });
   check("register → verification required", reg.status === 201 && reg.json.verificationRequired === true);
   const firstLink = reg.json.devVerificationUrl ?? "";
   check("verification link on this origin", firstLink.startsWith(`${B}/auth/verify?token=`), firstLink);
@@ -320,6 +320,29 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("…and still unlocks like a member", (await me.call("/api/videos/unlock-video", "POST", { videoId: feed[0].id, amountCents: 100, gateway: "CREDITS" })).status !== 403);
 }
 
+// Profile: links, pictures, date of birth, notifications, public pages
+{
+  const tooYoung = new Date(Date.now() - 17 * 365.25 * 86400000).toISOString().slice(0, 10);
+  const minor = await fetch(`${B}/api/auth/register`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: `minor_${Date.now()}`, email: `minor${Date.now()}@example.com`, displayName: "Minor", password: "a-long-password-1", dateOfBirth: tooYoung, isAgeVerified: true, acceptTerms: true }) });
+  check("under 18 cannot register, whatever is ticked", minor.status === 403);
+  const noBirth = await fetch(`${B}/api/auth/register`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: `nob_${Date.now()}`, email: `nob${Date.now()}@example.com`, displayName: "N", password: "a-long-password-1", isAgeVerified: true, acceptTerms: true }) });
+  check("a date of birth is required", noBirth.status === 400);
+
+  const put = (who, body) => who.call("/api/me/profile", "PUT", body);
+  check("links saved as handles", (await put(alex, { socialLinks: { instagram: "https://instagram.com/alex.dev/", x: "@alexdev" }, websiteUrl: "alex.dev" })).status === 200);
+  const mine = (await alex.call("/api/me/profile")).json.profile;
+  check("…and built into URLs by the server", mine.links.some((l) => l.url === "https://instagram.com/alex.dev") && mine.websiteUrl === "https://alex.dev/");
+  check("a link to another site is refused", (await put(alex, { socialLinks: { instagram: "https://evil.example/x" } })).status === 400);
+  check("a javascript: website is refused", (await put(alex, { websiteUrl: "javascript:alert(1)" })).status === 400);
+  check("a picture URL chosen by the client is refused", (await put(alex, { avatar: "https://tracker.example/p.gif" })).status === 400);
+  check("a preset picture is accepted", (await put(alex, { avatar: "avatar-02" })).status === 200 && (await alex.call("/api/me/profile")).json.profile.avatarUrl === "/defaults/avatars/avatar-02.svg");
+  check("notification choices are kept", (await put(alex, { notificationsOff: ["newMessage", "bogus"] })).status === 200 && JSON.stringify((await alex.call("/api/me/profile")).json.profile.notificationsOff) === '["newMessage"]');
+  check("a recorded date of birth cannot be rewritten", (await alex.call("/api/me/birth-date", "POST", { dateOfBirth: "1980-01-01" })).status === 409);
+  check("a member has a public page", (await fetch(`${B}/creators/alex_vance`)).status === 200);
+  check("the operator account has a public page", (await fetch(`${B}/creators/orochia_admin`)).status === 200);
+  check("the e-mail never appears on a public page", !(await (await fetch(`${B}/creators/alex_vance`)).text()).includes("alex@sanctuary.io"));
+}
+
 // Upload limits and editor drafts (no Bunny call: every request below is refused before it)
 {
   const edit = { startSeconds: 0, endSeconds: 10, speed: 1, filter: "none", brightness: 0, contrast: 0, saturation: 0, format: "vertical", focusX: 0.5, focusY: 0.5, volume: 1, fadeIn: false, fadeOut: false, denoise: false, musicVolume: 0.6 };
@@ -344,7 +367,7 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("a callback without its state cookie is refused", forged.status >= 300 && forged.status < 400 && (forged.headers.get("location") ?? "").includes("/auth/login?error="));
   check("unknown provider callback is refused", ((await fetch(`${B}/api/auth/oauth/myspace/callback`, { redirect: "manual" })).headers.get("location") ?? "").includes("error="));
   check("nothing to complete without a provider sign-in", (await anon.call("/api/auth/oauth/pending")).status === 404);
-  const complete = await fetch(`${B}/api/auth/oauth/complete`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: "x_y_z", displayName: "X", isAgeVerified: true, acceptTerms: true }) });
+  const complete = await fetch(`${B}/api/auth/oauth/complete`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: "x_y_z", displayName: "X", dateOfBirth: "1990-01-01", isAgeVerified: true, acceptTerms: true }) });
   check("…and no account created from nothing", complete.status === 410);
 }
 

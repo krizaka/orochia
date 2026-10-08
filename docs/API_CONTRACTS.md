@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (108)
+## Endpoints (109)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -29,7 +29,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/auth/me` | public | The signed-in account (with whether its e-mail is verified), or `user: null`. |
 | `GET` | `/api/auth/oauth/[provider]/callback` | public | The provider's redirect: checks the state, exchanges the code, then signs in (linked account or same verified address) or sends a new person to complete their account. |
 | `GET` | `/api/auth/oauth/[provider]/start` | public | Sends the browser to the provider's consent page (state + PKCE kept in a signed 10-minute cookie). |
-| `POST` | `/api/auth/oauth/complete` | public | Creates the account of a new Google / Facebook sign-in after the person certifies 18+ and accepts the terms. |
+| `POST` | `/api/auth/oauth/complete` | public | Creates the account of a new Google / Facebook sign-in after the person gives a date of birth (18+), certifies it and accepts the terms. |
 | `GET` | `/api/auth/oauth/pending` | public | The provider sign-in waiting to become an account: what the completion form can prefill. |
 | `GET` | `/api/auth/providers` | public | The sign-in providers this deployment offers (only those whose keys are configured). |
 | `POST` | `/api/auth/register` | public | Creates an account (a member — creators are opened later, never an administrator), signs it in and e-mails the link that verifies its address — until then the account can do nothing else. |
@@ -54,6 +54,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/health` | public | — |
 | `POST` | `/api/legal/report` | public · session-aware | Content reports. |
 | `POST` | `/api/me/become-creator` | session · MEMBER / CREATOR / ADMIN | Opens a creator space for a member: the account becomes CREATOR, pending its 18 U.S.C. § 2257 review (uploads open once an operator verifies it). |
+| `POST` | `/api/me/birth-date` | session · ADMIN / CREATOR / MEMBER | Records your date of birth (18+) when the account has none yet; once set it cannot be changed here. |
 | `GET` | `/api/me/blocks` | session · ADMIN / CREATOR / MEMBER | Lists the accounts blocked by the signed-in user. |
 | `GET` | `/api/me/dashboard` | session · ADMIN / CREATOR / MEMBER | — |
 | `GET` | `/api/me/drafts` | session · CREATOR / ADMIN | Your editor drafts (newest first), with a short-lived link to each original clip; expired ones are removed. |
@@ -78,8 +79,8 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/me/lists/[id]/members` | session · MEMBER / CREATOR / ADMIN | The people in one of your lists. |
 | `POST` | `/api/me/lists/[id]/members` | session · MEMBER / CREATOR / ADMIN | Adds an account to one of your lists by username (idempotent; the list stays private). |
 | `GET` | `/api/me/network` | session · MEMBER / CREATOR / ADMIN | Your followers, the creators you follow, your contacts and pending requests. |
-| `GET` | `/api/me/profile` | session · ADMIN / CREATOR / MEMBER | Reads the signed-in user's own profile and settings. |
-| `PUT` | `/api/me/profile` | session · ADMIN / CREATOR / MEMBER | Updates the signed-in user's own profile and preferences. |
+| `GET` | `/api/me/profile` | session · ADMIN / CREATOR / MEMBER | Reads the signed-in user's own profile and settings (private fields included: e-mail, date of birth). |
+| `PUT` | `/api/me/profile` | session · ADMIN / CREATOR / MEMBER | Updates the signed-in user's own profile and preferences (only the fields sent). |
 | `GET` | `/api/me/stories` | session · CREATOR / ADMIN | Your stories of the last 30 days — live, encoding or expired — with their figures. |
 | `GET` | `/api/metrics` | bearer token | Prometheus metrics, behind a bearer token (METRICS_AUTH_TOKEN). |
 | `GET` | `/api/payments/gateways` | public | The gateways a buyer can pay through on this deployment. |
@@ -102,7 +103,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/stories/[id]/like` | session · MEMBER / CREATOR / ADMIN | Likes a story you may see (idempotent). |
 | `POST` | `/api/stories/[id]/view` | public · session-aware | Counts a view of a story you may see — once per viewer, never the creator's own. |
 | `POST` | `/api/stories/upload-session` | session · CREATOR / ADMIN | Starts a video story: records it and returns a Tus session straight to Bunny (stories collection). |
-| `POST` | `/api/uploads` | session · role depends on the request | Stores an avatar (any account), a thumbnail, a story image or a 2257 document (creators); size and type checked per kind. |
+| `POST` | `/api/uploads` | session · role depends on the request | Stores an avatar or a profile banner (any account), a thumbnail, a story image or a 2257 document (creators); size and type checked per kind. |
 | `DELETE` | `/api/users/[username]/block` | session · ADMIN / CREATOR / MEMBER | Unblocks a previously blocked user. |
 | `POST` | `/api/users/[username]/block` | session · ADMIN / CREATOR / MEMBER | Blocks or unblocks a user: toggles block state on POST. |
 | `DELETE` | `/api/videos/[id]` | session · CREATOR | The creator deletes their video. |

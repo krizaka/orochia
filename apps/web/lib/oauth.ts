@@ -8,7 +8,7 @@ import type { SessionUser } from "./auth";
 /**
  * Sign in with Google or Facebook — OAuth 2 authorization code with PKCE, plain fetch, no SDK. A provider is
  * offered only when its keys are set (GOOGLE_CLIENT_ID/SECRET, FACEBOOK_APP_ID/SECRET). The provider's user id
- * is the key of an identity; a new person completes their account (username, 18+ certification, terms) before
+ * is the key of an identity; a new person completes their account (username, date of birth, 18+ certification, terms) before
  * it is created, because those certifications are personal and cannot come from a provider.
  */
 
@@ -208,6 +208,8 @@ export interface Completion {
   displayName: string;
   /** Only when the provider gave no address (some Facebook accounts): it is then verified by e-mail. */
   email?: string | null;
+  /** Checked 18+ by the caller (checkDateOfBirth). */
+  dateOfBirth: string;
 }
 
 /** Creates the account of a new provider sign-in (a member), linked to the provider. */
@@ -226,6 +228,7 @@ export async function completeSignUp(profile: ProviderProfile, input: Completion
         role: "MEMBER",
         isVerified: true,
         isAgeVerified: true,
+        dateOfBirth: input.dateOfBirth,
         emailVerifiedAt: verified ? new Date() : null,
       })
       .returning();

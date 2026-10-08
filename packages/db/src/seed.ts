@@ -212,7 +212,7 @@ export async function runSeed(): Promise<void> {
   for (const p of PEOPLE) {
     await db
       .insert(users)
-      .values({ email: p.email, username: p.username, passwordHash: hashPassword(p.password), role: p.role, isVerified: p.isVerified, isAgeVerified: true, emailVerifiedAt: new Date() })
+      .values({ email: p.email, username: p.username, passwordHash: hashPassword(p.password), role: p.role, isVerified: p.isVerified, isAgeVerified: true, dateOfBirth: "1995-06-15", emailVerifiedAt: new Date() })
       .onConflictDoNothing();
     const [row] = await db.select({ id: users.id }).from(users).where(eq(users.email, p.email)).limit(1);
     id[p.username] = row.id;
