@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import type { CreatorStorySummary } from "@/lib/queries";
+import { CreateStoryModal } from "@/components/CreateStoryModal";
 
 export function CreatorStoriesBar({
   stories = [],
@@ -18,11 +19,12 @@ export function CreatorStoriesBar({
   const [storyProgress, setStoryProgress] = useState(0);
   const [liked, setLiked] = useState(false);
   const [tippedSuccess, setTippedSuccess] = useState(false);
+  const [isCreateStoryOpen, setIsCreateStoryOpen] = useState(false);
 
   // Playable stories that have actual media from Bunny/DB
   const playableStories = stories.filter((s) => s.hasStory && s.storyMedia !== null);
 
-  // Auto-progress story timer
+  // Auto-progress story timer & track view
   useEffect(() => {
     if (activeStoryIndex === null) {
       setStoryProgress(0);
@@ -31,6 +33,13 @@ export function CreatorStoriesBar({
 
     setLiked(false);
     setTippedSuccess(false);
+
+    // Record view in backend
+    const story = playableStories[activeStoryIndex];
+    if (story?.storyMedia?.id && !story.storyMedia.id.startsWith("video-")) {
+      fetch(`/api/stories/${story.storyMedia.id}/view`, { method: "POST" }).catch(() => {});
+    }
+
     const duration = 7000; // 7 seconds per story
     const intervalTime = 50;
     const increment = (intervalTime / duration) * 100;
@@ -52,26 +61,47 @@ export function CreatorStoriesBar({
     }, intervalTime);
 
     return () => clearInterval(timer);
-  }, [activeStoryIndex, playableStories.length]);
+  }, [activeStoryIndex, playableStories]);
 
   const activeStory = activeStoryIndex !== null ? playableStories[activeStoryIndex] : null;
 
+  const handleToggleLike = async () => {
+    if (!activeStory?.storyMedia) return;
+    const newLiked = !liked;
+    setLiked(newLiked);
+
+    if (activeStory.storyMedia.id && !activeStory.storyMedia.id.startsWith("video-")) {
+      try {
+        await fetch(`/api/stories/${activeStory.storyMedia.id}/like`, { method: "POST" });
+      } catch {
+        // Rollback
+        setLiked(!newLiked);
+      }
+    }
+  };
+
   return (
     <>
+      {/* Create Story Modal for Verified Creators */}
+      <CreateStoryModal
+        isOpen={isCreateStoryOpen}
+        onClose={() => setIsCreateStoryOpen(false)}
+      />
+
       {/* Stories Horizontal Carousel Bar */}
       <div className="relative mb-8 overflow-hidden rounded-2xl border border-white/10 dark:border-white/10 light:border-black/5 bg-zinc-950/60 dark:bg-zinc-950/60 light:bg-white p-3.5 sm:p-4 backdrop-blur-xl">
         <div className="flex items-center gap-4 sm:gap-5 overflow-x-auto scrollbar-none py-1 px-1">
           {/* Creator Upload / Add Story Button */}
           {user?.role === "CREATOR" ? (
-            <Link
-              href="/creator/upload"
+            <button
+              onClick={() => setIsCreateStoryOpen(true)}
               className="flex flex-col items-center gap-1.5 shrink-0 group cursor-pointer"
             >
               <div className="relative flex h-16 w-16 sm:h-18 sm:w-18 items-center justify-center rounded-2xl border-2 border-dashed border-violet-500/60 bg-violet-600/10 transition-transform group-hover:scale-105">
                 <Plus className="h-6 w-6 text-violet-400 group-hover:rotate-90 transition-transform duration-300" />
               </div>
               <span className="text-[11px] font-semibold text-zinc-300 dark:text-zinc-300 light:text-slate-700">Add Story</span>
-            </Link>
+            </button>
           ) : (
             <div className="hidden sm:flex flex-col items-center gap-1.5 shrink-0">
               <div className="flex h-16 w-16 sm:h-18 sm:w-18 items-center justify-center rounded-2xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900/60 dark:bg-zinc-900/60 light:bg-slate-100 text-violet-400">
@@ -134,13 +164,26 @@ export function CreatorStoriesBar({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-xl p-2 sm:p-6 animate-in fade-in duration-200">
           <div className="relative w-full max-w-sm sm:max-w-md h-[88vh] max-h-[750px] overflow-hidden rounded-3xl border border-white/15 bg-zinc-950 shadow-2xl flex flex-col justify-between">
             {/* Background Story Media */}
-            <div className="absolute inset-0 z-0">
-              <img
-                src={activeStory.storyMedia.url}
-                alt=""
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/90" />
+            <div className="absolute inset-0 z-0 bg-black flex items-center justify-center">
+              {activeStory.storyMedia.type === "video" ? (
+                <video
+                  src={activeStory.storyMedia.url}
+                  autoPlay
+                  playsInline
+                  controls={false}
+                  muted
+                  loop
+                  poster={activeStory.storyMedia.thumbnailUrl || undefined}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <img
+                  src={activeStory.storyMedia.url}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/90 pointer-events-none" />
             </div>
 
             {/* Top Bar: Progress Indicator + Creator Info */}
@@ -183,9 +226,15 @@ export function CreatorStoriesBar({
                       </span>
                       {activeStory.isVerified && <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />}
                     </div>
-                    <span className="text-[10px] text-zinc-300 font-mono">
-                      {activeStory.storyMedia.timestamp}
-                    </span>
+                    <div className="flex items-center gap-2 text-[10px] text-zinc-300 font-mono">
+                      <span>{activeStory.storyMedia.timestamp}</span>
+                      {activeStory.storyMedia.viewsCount > 0 && (
+                        <>
+                          <span>•</span>
+                          <span>{activeStory.storyMedia.viewsCount} views</span>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </Link>
 
@@ -249,14 +298,17 @@ export function CreatorStoriesBar({
 
                 {/* Like Button */}
                 <button
-                  onClick={() => setLiked(!liked)}
-                  className={`h-11 w-11 flex items-center justify-center rounded-2xl border transition-all ${
+                  onClick={handleToggleLike}
+                  className={`h-11 px-3.5 flex items-center gap-1.5 rounded-2xl border transition-all ${
                     liked
-                      ? "border-rose-500 bg-rose-500/20 text-rose-400 scale-110"
+                      ? "border-rose-500 bg-rose-500/20 text-rose-400 scale-105"
                       : "border-white/20 bg-black/50 text-white hover:bg-black/70"
                   }`}
                 >
-                  <Heart className={`h-5 w-5 ${liked ? "fill-rose-500" : ""}`} />
+                  <Heart className={`h-4 w-4 ${liked ? "fill-rose-500" : ""}`} />
+                  <span className="text-xs font-mono font-semibold">
+                    {(activeStory.storyMedia.likesCount ?? 0) + (liked ? 1 : 0)}
+                  </span>
                 </button>
 
                 {/* Profile Link or Video Watch Link */}

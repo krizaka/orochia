@@ -6,6 +6,7 @@ import { playlists, playlistItems, playlistMembers } from "./playlists";
 import { videoComments, videoLikes, videoShares, videoViews } from "./engagement";
 import { audienceLists, audienceListMembers } from "./audiences";
 import { tipsLedger, payoutRequests } from "./ledger";
+import { stories, storyViews, storyLikes } from "./stories";
 
 export * from "./enums";
 export * from "./users";
@@ -17,6 +18,7 @@ export * from "./audiences";
 export * from "./auth-tokens";
 export * from "./ledger";
 export * from "./compliance";
+export * from "./stories";
 
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -25,6 +27,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
     references: [profiles.userId],
   }),
   videos: many(videos),
+  stories: many(stories),
   playlists: many(playlists),
   sentTips: many(tipsLedger, { relationName: "sender" }),
   receivedTips: many(tipsLedger, { relationName: "creator" }),
@@ -142,4 +145,35 @@ export const audienceListsRelations = relations(audienceLists, ({ one, many }) =
 export const audienceListMembersRelations = relations(audienceListMembers, ({ one }) => ({
   list: one(audienceLists, { fields: [audienceListMembers.listId], references: [audienceLists.id] }),
   user: one(users, { fields: [audienceListMembers.userId], references: [users.id] }),
+}));
+
+export const storiesRelations = relations(stories, ({ one, many }) => ({
+  creator: one(users, {
+    fields: [stories.creatorId],
+    references: [users.id],
+  }),
+  views: many(storyViews),
+  likes: many(storyLikes),
+}));
+
+export const storyViewsRelations = relations(storyViews, ({ one }) => ({
+  story: one(stories, {
+    fields: [storyViews.storyId],
+    references: [stories.id],
+  }),
+  viewer: one(users, {
+    fields: [storyViews.viewerId],
+    references: [users.id],
+  }),
+}));
+
+export const storyLikesRelations = relations(storyLikes, ({ one }) => ({
+  story: one(stories, {
+    fields: [storyLikes.storyId],
+    references: [stories.id],
+  }),
+  user: one(users, {
+    fields: [storyLikes.userId],
+    references: [users.id],
+  }),
 }));

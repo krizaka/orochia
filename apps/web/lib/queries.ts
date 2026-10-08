@@ -1,8 +1,8 @@
-import { db, users, profiles, videos, videoAccessGrants, tipsLedger, payoutRequests, playlists } from "@orochia/db";
-import { and, desc, eq, ilike, isNull, ne, or, sql, type SQL } from "drizzle-orm";
+import { db, users, profiles, videos, videoAccessGrants, tipsLedger, payoutRequests, playlists, stories } from "@orochia/db";
+import { and, desc, eq, gt, ilike, isNull, ne, or, sql, type SQL } from "drizzle-orm";
 import { getCreatorAvailableBalanceCents } from "@orochia/payments";
 import type { SessionUser } from "./auth";
-import { withSignedMedia } from "./media-urls";
+import { withSignedMedia, signStoryMedia } from "./media-urls";
 
 /**
  * Read models of the web app. Every screen reads the database through these functions — there is
@@ -110,6 +110,19 @@ export interface CreatorCard {
   isVerified: boolean;
 }
 
+export interface StoryMediaItem {
+  id: string;
+  type: "video" | "image";
+  url: string;
+  thumbnailUrl: string | null;
+  caption: string;
+  timestamp: string;
+  bunnyVideoId?: string | null;
+  videoId?: string;
+  viewsCount: number;
+  likesCount: number;
+}
+
 export interface CreatorStorySummary {
   id: string;
   userId: string;
@@ -118,13 +131,8 @@ export interface CreatorStorySummary {
   avatarUrl: string | null;
   isVerified: boolean;
   hasStory: boolean;
-  storyMedia: {
-    type: "video" | "image";
-    url: string;
-    caption: string;
-    timestamp: string;
-    videoId?: string;
-  } | null;
+  stories: StoryMediaItem[];
+  storyMedia: StoryMediaItem | null;
 }
 
 async function creatorCardFor(userId: string): Promise<CreatorCard | null> {
@@ -186,6 +194,54 @@ export async function listCreatorStories(limit = 12): Promise<CreatorStorySummar
 
   return Promise.all(
     creators.map(async (c) => {
+      // 1. Query active ephemeral stories from stories table (expiresAt > now)
+      const activeDbStories = await db
+        .select()
+        .from(stories)
+        .where(
+          and(
+            eq(stories.creatorId, c.id),
+            gt(stories.expiresAt, new Date()),
+            isNull(stories.removedAt)
+          )
+        )
+        .orderBy(desc(stories.createdAt));
+
+      if (activeDbStories.length > 0) {
+        const items: StoryMediaItem[] = activeDbStories.map((s) => {
+          const signed = signStoryMedia({
+            mediaType: s.mediaType,
+            mediaUrl: s.mediaUrl,
+            thumbnailUrl: s.thumbnailUrl,
+            bunnyVideoId: s.bunnyVideoId,
+          });
+          return {
+            id: s.id,
+            type: (s.mediaType.toLowerCase() === "video" ? "video" : "image") as "video" | "image",
+            url: signed.mediaUrl,
+            thumbnailUrl: signed.thumbnailUrl,
+            caption: s.caption || "",
+            timestamp: new Date(s.createdAt).toLocaleDateString(),
+            bunnyVideoId: s.bunnyVideoId,
+            viewsCount: s.viewsCount,
+            likesCount: s.likesCount,
+          };
+        });
+
+        return {
+          id: `story-${c.id}`,
+          userId: c.id,
+          username: c.username,
+          displayName: c.displayName,
+          avatarUrl: c.avatarUrl,
+          isVerified: c.isVerified,
+          hasStory: true,
+          stories: items,
+          storyMedia: items[0],
+        };
+      }
+
+      // 2. Fallback to latest video thumbnail for verified creators without active 24h story
       const [latest] = await db
         .select({
           id: videos.id,
@@ -201,6 +257,17 @@ export async function listCreatorStories(limit = 12): Promise<CreatorStorySummar
 
       if (latest && latest.thumbnailUrl) {
         const signed = withSignedMedia(latest);
+        const item: StoryMediaItem = {
+          id: `video-${latest.id}`,
+          type: "image",
+          url: signed.thumbnailUrl!,
+          thumbnailUrl: signed.thumbnailUrl,
+          caption: signed.title,
+          timestamp: new Date(signed.createdAt).toLocaleDateString(),
+          videoId: signed.id,
+          viewsCount: 0,
+          likesCount: 0,
+        };
         return {
           id: `story-${c.id}`,
           userId: c.id,
@@ -209,13 +276,8 @@ export async function listCreatorStories(limit = 12): Promise<CreatorStorySummar
           avatarUrl: c.avatarUrl,
           isVerified: c.isVerified,
           hasStory: true,
-          storyMedia: {
-            type: "image",
-            url: signed.thumbnailUrl!,
-            caption: signed.title,
-            timestamp: new Date(signed.createdAt).toLocaleDateString(),
-            videoId: signed.id,
-          },
+          stories: [item],
+          storyMedia: item,
         };
       }
 
@@ -227,6 +289,7 @@ export async function listCreatorStories(limit = 12): Promise<CreatorStorySummar
         avatarUrl: c.avatarUrl,
         isVerified: c.isVerified,
         hasStory: false,
+        stories: [],
         storyMedia: null,
       };
     })

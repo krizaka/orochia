@@ -19,6 +19,7 @@ import {
   contacts,
   follows,
   complianceReports,
+  stories,
 } from "./schema";
 import { loadRootEnv } from "./load-env";
 import { ensureOwner, ownerFromEnv } from "./owner";
@@ -318,6 +319,40 @@ export async function runSeed(): Promise<void> {
       details: "The second song is a cover performed without a licence (example report from the development seed).",
       reporterEmail: "rights@example.com",
     });
+  }
+
+  // Active ephemeral stories (24h validity) with real Bunny Stream video GUIDs
+  const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const [existingStories] = await db.select({ count: sql<string>`count(*)` }).from(stories);
+  if (Number(existingStories?.count ?? 0) === 0) {
+    await db.insert(stories).values([
+      {
+        creatorId: id.elenavox,
+        mediaType: "VIDEO",
+        bunnyVideoId: "9b3c4a12-8819-4820-a6fe-b715a3e144bb",
+        mediaUrl: "https://vz-af7d6892-5c8.b-cdn.net/9b3c4a12-8819-4820-a6fe-b715a3e144bb/playlist.m3u8",
+        thumbnailUrl: "https://vz-af7d6892-5c8.b-cdn.net/9b3c4a12-8819-4820-a6fe-b715a3e144bb/thumbnail.jpg",
+        caption: "🔴 Live from nocturnal production suite. Special 4K teaser dropping tonight! ⚡",
+        visibility: "PUBLIC",
+        viewsCount: 142,
+        likesCount: 28,
+        tipsCount: 3,
+        expiresAt: tomorrow,
+      },
+      {
+        creatorId: id.miasterling,
+        mediaType: "VIDEO",
+        bunnyVideoId: "7f2b1c88-4d3e-4a6f-8b9c-0d1e2f3a4b5c",
+        mediaUrl: "https://vz-af7d6892-5c8.b-cdn.net/7f2b1c88-4d3e-4a6f-8b9c-0d1e2f3a4b5c/playlist.m3u8",
+        thumbnailUrl: "https://vz-af7d6892-5c8.b-cdn.net/7f2b1c88-4d3e-4a6f-8b9c-0d1e2f3a4b5c/thumbnail.jpg",
+        caption: "Late-night studio acoustics and unreleased vocal stems for VIP patrons 🎶✨",
+        visibility: "PUBLIC",
+        viewsCount: 89,
+        likesCount: 19,
+        tipsCount: 1,
+        expiresAt: tomorrow,
+      },
+    ]);
   }
 
   // The owner account from OROCHIA_OWNER_* (as in production, where the release job applies it).

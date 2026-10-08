@@ -1,4 +1,4 @@
-import { signBunnyFileUrl } from "@orochia/media";
+import { signBunnyFileUrl, generateBunnyStreamToken } from "@orochia/media";
 import { bunnyStreamConfig } from "./env";
 
 /**
@@ -34,4 +34,44 @@ export function withSignedMedia<T extends WithMedia>(row: T): T {
   if ("previewAnimationUrl" in out) out.previewAnimationUrl = signMediaUrl(out.previewAnimationUrl ?? null);
   if ("coverUrl" in out) out.coverUrl = signMediaUrl(out.coverUrl ?? null);
   return out;
+}
+
+/** Signs a story's video stream (HLS) or image media using Bunny Edge Token Authentication. */
+export function signStoryMedia(story: {
+  mediaType: string;
+  mediaUrl: string;
+  thumbnailUrl?: string | null;
+  bunnyVideoId?: string | null;
+}) {
+  let playUrl = story.mediaUrl;
+  let thumbUrl = story.thumbnailUrl ? signMediaUrl(story.thumbnailUrl) : null;
+
+  if (story.bunnyVideoId) {
+    try {
+      const config = bunnyStreamConfig();
+      const signedStream = generateBunnyStreamToken({
+        hostname: config.hostname,
+        videoGuid: story.bunnyVideoId,
+        tokenAuthKey: config.tokenAuthKey,
+      });
+      playUrl = signedStream.directM3u8Url;
+      if (!thumbUrl) {
+        thumbUrl = signBunnyFileUrl({
+          hostname: config.hostname,
+          path: `/${story.bunnyVideoId}/thumbnail.jpg`,
+          tokenAuthKey: config.tokenAuthKey,
+        });
+      }
+    } catch {
+      // Keep original
+    }
+  } else if (story.mediaType === "IMAGE") {
+    playUrl = signMediaUrl(story.mediaUrl) || story.mediaUrl;
+    thumbUrl = thumbUrl || playUrl;
+  }
+
+  return {
+    mediaUrl: playUrl,
+    thumbnailUrl: thumbUrl,
+  };
 }
