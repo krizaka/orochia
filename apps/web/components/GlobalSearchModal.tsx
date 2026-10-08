@@ -112,8 +112,6 @@ export function GlobalSearchModal({
     router.push(url);
   };
 
-  const trendingTags = ["4k", "exclusive", "noir", "rave", "acoustic", "live", "cinema"];
-
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/80 backdrop-blur-md p-4 pt-16 sm:pt-24 animate-in fade-in duration-200">
       <div
@@ -167,22 +165,23 @@ export function GlobalSearchModal({
 
         {/* Results Body */}
         <div className="max-h-[60vh] overflow-y-auto p-4 space-y-6">
-          {/* Trending Suggestions if empty query */}
-          {!query && (
+          {/* Trending Suggestions from DB if empty query */}
+          {!query && tags.length > 0 && (
             <div>
               <div className="flex items-center gap-2 text-xs font-semibold text-zinc-400 dark:text-zinc-400 light:text-slate-500 uppercase tracking-wider mb-2.5">
                 <Sparkles className="h-3.5 w-3.5 text-violet-400" />
-                <span>Trending Tags</span>
+                <span>Popular Tags</span>
               </div>
               <div className="flex flex-wrap gap-2">
-                {trendingTags.map((tag) => (
+                {tags.map((t) => (
                   <button
-                    key={tag}
-                    onClick={() => setQuery(tag)}
-                    className="inline-flex items-center gap-1 rounded-full border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900/60 dark:bg-zinc-900/60 light:bg-slate-100 px-3 py-1 text-xs text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:border-violet-500 hover:text-violet-400 transition-colors"
+                    key={t.tag}
+                    onClick={() => setQuery(t.tag)}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900/60 dark:bg-zinc-900/60 light:bg-slate-100 px-3 py-1 text-xs text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:border-violet-500 hover:text-violet-400 transition-colors"
                   >
                     <Hash className="h-3 w-3 text-violet-400" />
-                    <span>{tag}</span>
+                    <span>{t.tag}</span>
+                    <span className="text-[10px] text-zinc-500 font-mono">({t.count})</span>
                   </button>
                 ))}
               </div>
@@ -243,11 +242,17 @@ export function GlobalSearchModal({
                     className="flex items-center gap-3 rounded-2xl border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/40 dark:bg-zinc-900/40 light:bg-slate-50 p-2.5 hover:border-violet-500/50 hover:bg-zinc-900/80 cursor-pointer transition-all group"
                   >
                     <div className="relative aspect-video h-14 shrink-0 overflow-hidden rounded-xl bg-zinc-800">
-                      <img
-                        src={v.thumbnailUrl || "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=400&q=80"}
-                        alt={v.title}
-                        className="h-full w-full object-cover"
-                      />
+                      {v.thumbnailUrl ? (
+                        <img
+                          src={v.thumbnailUrl}
+                          alt={v.title}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-900/40 to-zinc-900 text-violet-400">
+                          <Tv className="h-5 w-5" />
+                        </div>
+                      )}
                       <span className="absolute bottom-1 right-1 rounded bg-black/80 px-1 py-0.2 font-mono text-[9px] text-white">
                         {formatDuration(v.durationSeconds)}
                       </span>

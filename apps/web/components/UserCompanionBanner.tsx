@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Sparkles, ShieldCheck, Zap, Lock, X, ArrowRight, BookOpen, UserPlus } from "lucide-react";
+import { Sparkles, ShieldCheck, Zap, Lock, X, ArrowRight, Compass, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 
@@ -82,11 +82,11 @@ export function UserCompanionBanner() {
             </Link>
           )}
           <Link
-            href="/codex"
+            href="/explore"
             className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900/80 dark:bg-zinc-900/80 light:bg-slate-100 px-5 py-3 text-xs font-semibold text-zinc-200 dark:text-zinc-200 light:text-slate-800 hover:border-violet-500 transition-all"
           >
-            <BookOpen className="h-4 w-4 text-violet-400" />
-            <span>Read The Codex</span>
+            <Compass className="h-4 w-4 text-violet-400" />
+            <span>Explore All Streams</span>
           </Link>
         </div>
       </div>

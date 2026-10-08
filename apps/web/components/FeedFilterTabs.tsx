@@ -148,11 +148,17 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
 
               {/* Large Media Preview */}
               <Link href={`/watch/${video.id}`} className="relative block aspect-video w-full overflow-hidden bg-zinc-900 group">
-                <img
-                  src={video.thumbnailUrl || "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80"}
-                  alt={video.title}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+                {video.thumbnailUrl ? (
+                  <img
+                    src={video.thumbnailUrl}
+                    alt={video.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-950/40 via-zinc-950 to-fuchsia-950/40 text-violet-400">
+                    <span className="text-sm font-bold text-violet-300">4K Sovereign Stream</span>
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
                   <div>
                     <h3 className="text-lg sm:text-xl font-bold text-white drop-shadow-md">

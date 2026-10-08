@@ -85,8 +85,8 @@ export default function RootLayout({
 
                   {/* Navigation & Legal Links */}
                   <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-600">
-                    <Link href="/codex" className="hover:text-violet-400 transition-colors">
-                      The Codex (Lore)
+                    <Link href="/explore" className="hover:text-violet-400 transition-colors">
+                      Explore
                     </Link>
                     <Link href="/legal/terms" className="hover:text-white dark:hover:text-white light:hover:text-black transition-colors">
                       Terms of Service

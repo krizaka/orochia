@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { RelationshipActions } from "@/components/RelationshipActions";
-import { listFeed, featuredCreator } from "@/lib/queries";
+import { listFeed, featuredCreator, listCreatorStories } from "@/lib/queries";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { CreatorStoriesBar } from "@/components/CreatorStoriesBar";
 import { UserCompanionBanner } from "@/components/UserCompanionBanner";
@@ -14,22 +14,26 @@ export const dynamic = "force-dynamic";
 
 async function loadHome() {
   try {
-    const [videos, featured] = await Promise.all([listFeed(24), featuredCreator()]);
-    return { videos, featured };
+    const [videos, featured, stories] = await Promise.all([
+      listFeed(24),
+      featuredCreator(),
+      listCreatorStories(12),
+    ]);
+    return { videos, featured, stories };
   } catch (error) {
     console.error("[home] feed unavailable:", error);
-    return { videos: [], featured: null };
+    return { videos: [], featured: null, stories: [] };
   }
 }
 
 export default async function HomePage() {
-  const { videos: featuredVideos, featured } = await loadHome();
+  const { videos: featuredVideos, featured, stories } = await loadHome();
   const showcase = featuredVideos[0];
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:py-8 sm:px-6">
       {/* 1. Creator Ephemeral Stories / Live Pulse Bar */}
-      <CreatorStoriesBar />
+      <CreatorStoriesBar stories={stories} />
 
       {/* 2. Sovereign Companion Onboarding Banner */}
       <UserCompanionBanner />

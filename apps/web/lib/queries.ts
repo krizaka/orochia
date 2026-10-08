@@ -105,6 +105,26 @@ export interface CreatorCard {
   totalViews: number;
   patrons: number;
   videosCount: number;
+  minTipAmountCents: number;
+  totalTipsEarnedCents: number;
+  isVerified: boolean;
+}
+
+export interface CreatorStorySummary {
+  id: string;
+  userId: string;
+  username: string;
+  displayName: string;
+  avatarUrl: string | null;
+  isVerified: boolean;
+  hasStory: boolean;
+  storyMedia: {
+    type: "video" | "image";
+    url: string;
+    caption: string;
+    timestamp: string;
+    videoId?: string;
+  } | null;
 }
 
 async function creatorCardFor(userId: string): Promise<CreatorCard | null> {
@@ -112,10 +132,13 @@ async function creatorCardFor(userId: string): Promise<CreatorCard | null> {
     .select({
       id: users.id,
       username: users.username,
+      isVerified: users.isVerified,
       displayName: sql<string>`coalesce(${profiles.displayName}, ${users.username})`,
       bio: profiles.bio,
       avatarUrl: profiles.avatarUrl,
       bannerUrl: profiles.bannerUrl,
+      minTipAmountCents: profiles.minTipAmountCents,
+      totalTipsEarnedCents: profiles.totalTipsEarnedCents,
     })
     .from(users)
     .leftJoin(profiles, eq(profiles.userId, users.id))
@@ -140,7 +163,74 @@ async function creatorCardFor(userId: string): Promise<CreatorCard | null> {
     totalViews: Number(stats?.totalViews ?? 0),
     videosCount: Number(stats?.videosCount ?? 0),
     patrons: Number(patrons?.count ?? 0),
+    minTipAmountCents: Number(row.minTipAmountCents ?? 500),
+    totalTipsEarnedCents: Number(row.totalTipsEarnedCents ?? 0),
   };
+}
+
+/** Active verified creators from DB with their latest video thumbnail for the stories bar */
+export async function listCreatorStories(limit = 12): Promise<CreatorStorySummary[]> {
+  const creators = await db
+    .select({
+      id: users.id,
+      username: users.username,
+      displayName: sql<string>`coalesce(${profiles.displayName}, ${users.username})`,
+      avatarUrl: profiles.avatarUrl,
+      bio: profiles.bio,
+      isVerified: users.isVerified,
+    })
+    .from(users)
+    .innerJoin(profiles, eq(profiles.userId, users.id))
+    .where(and(eq(users.role, "CREATOR"), isNull(users.suspendedAt)))
+    .limit(limit);
+
+  return Promise.all(
+    creators.map(async (c) => {
+      const [latest] = await db
+        .select({
+          id: videos.id,
+          title: videos.title,
+          description: videos.description,
+          thumbnailUrl: videos.thumbnailUrl,
+          createdAt: videos.createdAt,
+        })
+        .from(videos)
+        .where(and(eq(videos.creatorId, c.id), listable()))
+        .orderBy(desc(videos.createdAt))
+        .limit(1);
+
+      if (latest && latest.thumbnailUrl) {
+        const signed = withSignedMedia(latest);
+        return {
+          id: `story-${c.id}`,
+          userId: c.id,
+          username: c.username,
+          displayName: c.displayName,
+          avatarUrl: c.avatarUrl,
+          isVerified: c.isVerified,
+          hasStory: true,
+          storyMedia: {
+            type: "image",
+            url: signed.thumbnailUrl!,
+            caption: signed.title,
+            timestamp: new Date(signed.createdAt).toLocaleDateString(),
+            videoId: signed.id,
+          },
+        };
+      }
+
+      return {
+        id: `story-${c.id}`,
+        userId: c.id,
+        username: c.username,
+        displayName: c.displayName,
+        avatarUrl: c.avatarUrl,
+        isVerified: c.isVerified,
+        hasStory: false,
+        storyMedia: null,
+      };
+    })
+  );
 }
 
 /** The creator with the most net earnings, for the home spotlight; null on an empty platform. */

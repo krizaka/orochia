@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Flame, Search, Plus, BookOpen, User, LayoutDashboard } from "lucide-react";
+import { Flame, Search, Plus, Compass, User, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
 export function MobileBottomNav({
@@ -15,7 +15,6 @@ export function MobileBottomNav({
   const { user } = useAuth();
 
   const isHome = pathname === "/";
-  const isCodex = pathname === "/codex";
   const isDashboard = pathname.startsWith("/dashboard") || pathname.startsWith("/profile");
 
   return (
@@ -58,17 +57,17 @@ export function MobileBottomNav({
           <span className="text-[9px] font-bold text-violet-400 mt-1 uppercase tracking-wider">Studio</span>
         </Link>
 
-        {/* The Codex */}
+        {/* Explore Streams */}
         <Link
-          href="/codex"
+          href="/explore"
           className={`flex flex-col items-center justify-center gap-1 w-14 transition-colors ${
-            isCodex
+            pathname.startsWith("/explore")
               ? "text-violet-400 font-bold"
               : "text-zinc-400 dark:text-zinc-400 light:text-slate-500 hover:text-white dark:hover:text-white light:hover:text-black"
           }`}
         >
-          <BookOpen className={`h-5 w-5 ${isCodex ? "text-violet-400" : ""}`} />
-          <span className="text-[10px] tracking-tight">Codex</span>
+          <Compass className={`h-5 w-5 ${pathname.startsWith("/explore") ? "text-violet-400" : ""}`} />
+          <span className="text-[10px] tracking-tight">Explore</span>
         </Link>
 
         {/* User Account / Mon Espace */}

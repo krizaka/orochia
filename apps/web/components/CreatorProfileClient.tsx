@@ -17,6 +17,9 @@ interface CreatorProfileClientProps {
     totalViews: number;
     patrons: number;
     videosCount: number;
+    minTipAmountCents?: number;
+    totalTipsEarnedCents?: number;
+    isVerified?: boolean;
   };
   videos: VideoCardProps[];
   playlists: PlaylistCardProps[];
@@ -32,11 +35,21 @@ export function CreatorProfileClient({
   const [isTipModalOpen, setIsTipModalOpen] = useState(false);
   const [subscribedToast, setSubscribedToast] = useState<string | null>(null);
 
+  const minTipCents = creator.minTipAmountCents || 500;
+  const totalEarnedCents = creator.totalTipsEarnedCents || 0;
+  const tier1Price = Math.max(5, Math.round(minTipCents / 100));
+  const tier2Price = Math.round(tier1Price * 2.5);
+  const tier3Price = Math.round(tier1Price * 6);
+
+  // Dynamic goal computed directly from DB total tips earned
+  const goalCents = Math.max(10000, Math.ceil((totalEarnedCents + 5000) / 10000) * 10000);
+  const progressPercent = Math.min(100, Math.round((totalEarnedCents / goalCents) * 100));
+
   const tiers = [
     {
       id: 1,
       name: "Supporter Club",
-      price: "$10",
+      price: `$${tier1Price}`,
       period: "/month",
       badge: "Patron",
       color: "border-violet-500/30 bg-violet-950/20",
@@ -49,7 +62,7 @@ export function CreatorProfileClient({
     {
       id: 2,
       name: "VIP All-Access",
-      price: "$25",
+      price: `$${tier2Price}`,
       period: "/month",
       badge: "Popular",
       color: "border-fuchsia-500/50 bg-gradient-to-b from-fuchsia-950/30 to-zinc-950/80 shadow-lg shadow-fuchsia-950/30",
@@ -63,7 +76,7 @@ export function CreatorProfileClient({
     {
       id: 3,
       name: "Sovereign Tier",
-      price: "$75",
+      price: `$${tier3Price}`,
       period: "/month",
       badge: "Elite",
       color: "border-amber-500/40 bg-gradient-to-b from-amber-950/20 to-zinc-950/80",
@@ -94,11 +107,11 @@ export function CreatorProfileClient({
             <div className="flex items-center gap-2">
               <Flame className="h-4 w-4 text-fuchsia-400" />
               <h4 className="text-sm font-bold text-white dark:text-white light:text-slate-900">
-                Current Goal: 4K Nocturnal Cinema Rig Upgrade
+                Creator Production Goal
               </h4>
             </div>
             <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500">
-              Help fund the new ultra-low-light sensor for upcoming exclusive cinematic streams.
+              Community milestone for upcoming 4K master streams and exclusive cinematic productions.
             </p>
           </div>
           <button
@@ -113,13 +126,13 @@ export function CreatorProfileClient({
         {/* Progress Bar Track */}
         <div className="mt-4">
           <div className="flex items-center justify-between text-xs font-mono text-zinc-400 dark:text-zinc-400 light:text-slate-500 mb-1.5">
-            <span className="text-emerald-400 font-bold">$2,450.00 raised</span>
-            <span>$3,000.00 goal (81%)</span>
+            <span className="text-emerald-400 font-bold">${(totalEarnedCents / 100).toFixed(2)} raised</span>
+            <span>${(goalCents / 100).toFixed(2)} goal ({progressPercent}%)</span>
           </div>
           <div className="h-2.5 w-full overflow-hidden rounded-full bg-zinc-800 dark:bg-zinc-800 light:bg-slate-200">
             <div
               className="h-full rounded-full bg-gradient-to-r from-violet-600 via-fuchsia-500 to-pink-500 transition-all duration-1000"
-              style={{ width: "81%" }}
+              style={{ width: `${progressPercent}%` }}
             />
           </div>
         </div>
@@ -306,7 +319,7 @@ export function CreatorProfileClient({
           onClose={() => setIsTipModalOpen(false)}
           videoId={videos[0].id}
           creatorName={creator.displayName}
-          minTipAmountCents={1000}
+          minTipAmountCents={minTipCents}
           onUnlockedSuccess={() => {
             setIsTipModalOpen(false);
           }}

@@ -79,15 +79,17 @@ export function VideoCard({
       >
         {/* Thumbnail & Video Preview Container */}
         <Link href={`/watch/${id}`} className="relative block aspect-video w-full overflow-hidden bg-zinc-900">
-          <img
-            src={
-              isHovered && previewAnimationUrl
-                ? previewAnimationUrl
-                : thumbnailUrl || "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=600&q=80"
-            }
-            alt={title}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+          {(isHovered && previewAnimationUrl) || thumbnailUrl ? (
+            <img
+              src={isHovered && previewAnimationUrl ? previewAnimationUrl : thumbnailUrl!}
+              alt={title}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-950/40 via-zinc-950 to-fuchsia-950/40 text-violet-400">
+              <Play className="h-10 w-10 text-violet-400/60" />
+            </div>
+          )}
 
           {/* Hover Play Overlay */}
           <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 transition-opacity duration-300 group-hover:opacity-100">

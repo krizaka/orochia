@@ -78,12 +78,6 @@ export function Navbar() {
             >
               Explore
             </Link>
-            <Link
-              href="/codex"
-              className="text-xs font-semibold uppercase tracking-wider text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-violet-400 transition-colors"
-            >
-              The Codex
-            </Link>
             {user && (
               <Link
                 href="/dashboard"
@@ -343,14 +337,6 @@ export function Navbar() {
               >
                 <Compass className="h-4 w-4 text-violet-400" />
                 <span>Explore Streams</span>
-              </Link>
-              <Link
-                href="/codex"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-semibold text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:bg-white/5"
-              >
-                <Sparkles className="h-4 w-4 text-fuchsia-400" />
-                <span>The Codex (Lore & Rules)</span>
               </Link>
               {user && (
                 <>
