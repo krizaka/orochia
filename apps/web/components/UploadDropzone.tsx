@@ -361,7 +361,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 <div className="flex items-center justify-between font-semibold text-white mb-2">
                   <span className="flex items-center gap-1.5 text-violet-300">
                     <Sparkles className="h-3.5 w-3.5" />
-                    <span>Sovereign Creator Revenue Split</span>
+                    <span>Your revenue split</span>
                   </span>
                   <span className="text-emerald-400 font-mono">{100 - platformFeePercent}% Payout Rate</span>
                 </div>

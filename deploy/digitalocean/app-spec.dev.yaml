@@ -54,6 +54,9 @@ services:
       - key: BUNNY_STREAM_COLLECTION_ID
         scope: RUN_TIME
         type: GENERAL
+      - key: BUNNY_STREAM_STORIES_COLLECTION_ID
+        scope: RUN_TIME
+        type: GENERAL
       - key: BUNNY_STREAM_TOKEN_AUTH_KEY
         scope: RUN_TIME
         type: SECRET
@@ -63,6 +66,10 @@ services:
       - key: SESSION_SECRET
         scope: RUN_TIME
         type: SECRET
+      # Credits settle in-house; until the wallet exists every credits payment is approved (dev only).
+      - key: PAYMENTS_CREDITS_MODE
+        scope: RUN_TIME
+        value: always-approve
       - key: PLATFORM_FEE_PERCENTAGE
         scope: RUN_TIME
         value: "10"

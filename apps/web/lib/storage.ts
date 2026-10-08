@@ -28,7 +28,7 @@ const LOCAL_PRIVATE_DIR = path.join(process.cwd(), ".private-uploads");
 export async function uploadMediaFile(
   fileBuffer: Buffer,
   originalFilename: string,
-  category: "avatars" | "thumbnails" | "videos" | "documents" = "videos"
+  category: "avatars" | "thumbnails" | "stories" | "videos" | "documents" = "videos"
 ): Promise<UploadResult> {
   const driver = process.env.STORAGE_DRIVER === "bunny" ? "bunny" : "local";
   // Container filesystems are ephemeral: production stores media on Bunny Edge Storage only.
@@ -87,6 +87,15 @@ export async function uploadMediaFile(
     sizeBytes: fileBuffer.length,
     mimeType: getMimeType(ext),
   };
+}
+
+/** The public URL of a stored (non-private) file, from its reference — never from a client-supplied URL. */
+export function publicUrlForRef(ref: string): string {
+  if (process.env.STORAGE_DRIVER === "bunny" && process.env.BUNNY_STORAGE_API_KEY) {
+    const storageZone = process.env.BUNNY_STORAGE_ZONE || "orochia-media";
+    return `https://${process.env.BUNNY_PULL_ZONE_HOSTNAME || `${storageZone}.b-cdn.net`}/${ref}`;
+  }
+  return `/uploads/${ref}`;
 }
 
 /** A private file by reference (`private/documents/<uuid>.<ext>`), or null when it does not exist. */

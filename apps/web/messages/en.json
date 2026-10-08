@@ -1,0 +1,172 @@
+{
+  "common": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "loading": "Loading…",
+    "optional": "optional",
+    "tryAgain": "Try again"
+  },
+  "stories": {
+    "add": "Add story",
+    "yours": "Your story",
+    "emptyCreator": "No live story yet — share one, it stays up for 24 hours.",
+    "previous": "Previous story",
+    "next": "Next story",
+    "remove": "Remove this story",
+    "removeConfirm": "Remove this story? It disappears for everyone.",
+    "views": "{count} views",
+    "seeProfile": "View profile",
+    "create": {
+      "title": "New story",
+      "subtitle": "A photo or a short video, visible for 24 hours.",
+      "choose": "Choose a photo or a video",
+      "chooseHint": "JPG, PNG, WEBP up to 10 MB · MP4, MOV up to 60 s",
+      "change": "Change",
+      "caption": "Caption",
+      "captionPlaceholder": "Say something about it…",
+      "audience": "Who can see it",
+      "audiences": {
+        "PUBLIC": "Everyone",
+        "APPROVED_FOLLOWERS_ONLY": "Approved followers",
+        "CONTACTS_ONLY": "Contacts",
+        "INVITED_ONLY": "One of my lists"
+      },
+      "list": "List",
+      "noList": "Create a list first (Dashboard → Lists).",
+      "publish": "Share story",
+      "uploading": "Uploading… {progress}%",
+      "publishedImage": "Your story is live for 24 hours.",
+      "publishedVideo": "Uploaded. Your story appears as soon as it is processed, for 24 hours.",
+      "unsupported": "Choose an image (JPG, PNG, WEBP) or a video.",
+      "tooLarge": "This file is too large.",
+      "failed": "The story could not be shared."
+    }
+  },
+  "auth": {
+    "register": {
+      "title": "Create your account",
+      "subtitle": "Watch, follow and support creators. Publishing comes later, from your dashboard.",
+      "username": "Username",
+      "usernamePlaceholder": "yourname",
+      "displayName": "Display name",
+      "displayNamePlaceholder": "How people see you",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "password": "Password",
+      "passwordHint": "At least 10 characters",
+      "ageCertify": "I am at least <b>18 years old</b>.",
+      "acceptTerms": "I accept the {terms} and the {notice}.",
+      "terms": "Terms of Service",
+      "notice": "18 U.S.C. § 2257 notice",
+      "submit": "Create account",
+      "submitting": "Creating your account…",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "errors": {
+        "age": "You must be at least 18 to join.",
+        "password": "Choose a password of at least 10 characters.",
+        "terms": "Accept the Terms of Service to continue.",
+        "failed": "Registration failed."
+      }
+    },
+    "becomeCreator": {
+      "title": "Publish on Orochia",
+      "body": "Creators upload videos and stories, set who watches them and get paid. Your account keeps everything it does today — you can still tip and unlock.",
+      "cta": "Become a creator",
+      "working": "Opening your creator space…",
+      "pendingTitle": "Verification pending",
+      "pendingBody": "Uploads open once your 18 U.S.C. § 2257 records have been reviewed by our compliance team.",
+      "pendingCta": "What the review checks",
+      "failed": "Your creator space could not be opened. Try again."
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "explore": "Explore",
+    "create": "Create",
+    "upload": "Upload",
+    "account": "Account",
+    "signIn": "Sign in",
+    "join": "Join",
+    "search": "Search",
+    "searchPlaceholder": "Search creators, videos, tags…",
+    "dashboard": "Dashboard",
+    "profile": "Public profile",
+    "earnings": "Earnings",
+    "settings": "Settings",
+    "signOut": "Sign out",
+    "balance": "Balance",
+    "roles": {
+      "CREATOR": "Creator",
+      "MEMBER": "Member",
+      "ADMIN": "Operator"
+    }
+  },
+  "footer": {
+    "tagline": "The video platform independent creators own.",
+    "explore": "Explore",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "compliance": "2257",
+    "dmca": "DMCA",
+    "madeBy": "Krizaka",
+    "copyright": "© {year} Orochia · Apache-2.0",
+    "adults": "All performers depicted are 18 years of age or older."
+  },
+  "home": {
+    "eyebrow": "18+ · Independent creators",
+    "title": "The creators you love.",
+    "titleAccent": "Closer than ever.",
+    "body": "Watch their videos and 24-hour stories, follow them and support them directly. Creators decide who sees what — and keep {share}% of every tip.",
+    "ctaJoin": "Create your free account",
+    "ctaExplore": "Explore creators",
+    "stats": "{videos} videos · {creators} creators",
+    "trust": {
+      "free": "Free to join",
+      "private": "Private by design",
+      "share": "Creators keep {share}%"
+    },
+    "why": {
+      "title": "Why people stay",
+      "stories": {
+        "title": "Stories every day",
+        "body": "Short videos and photos from the creators you follow, live for 24 hours."
+      },
+      "access": {
+        "title": "Access that feels personal",
+        "body": "Followers, contacts, close-friends lists: creators choose exactly who sees each video."
+      },
+      "support": {
+        "title": "Support that reaches them",
+        "body": "Tips and unlocks go to the creator — {share}% of every payment, confirmed by the payment provider."
+      }
+    },
+    "creators": {
+      "eyebrow": "For creators",
+      "title": "Your fans. Your rules. Your income.",
+      "body": "Publish videos and stories in 4K, decide who watches each one, set your prices, and get paid — on an open-source platform you can trust.",
+      "cta": "Start creating",
+      "points": {
+        "upload": "Direct upload to a global video network",
+        "audience": "Followers, contacts and private lists",
+        "paid": "Tips and paid unlocks, {share}% for you"
+      }
+    },
+    "trending": "Trending now",
+    "featured": "Featured creator",
+    "viewProfile": "View profile",
+    "figures": {
+      "followers": "{count} supporters",
+      "views": "{count} views",
+      "videos": "{count} videos"
+    }
+  },
+  "payments": {
+    "method": "Pay with",
+    "credits": {
+      "title": "Orochia credits",
+      "hint": "Paid from your Orochia balance — instant"
+    }
+  }
+}

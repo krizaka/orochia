@@ -20,7 +20,7 @@ async function session(identifier, password) {
     let json = {}; try { json = await res.json(); } catch {}
     return { status: res.status, json };
   };
-  return { status: r.status, call };
+  return { status: r.status, call, cookie };
 }
 const anon = { call: async (path) => { const r = await fetch(B + path); return { status: r.status, json: await r.json().catch(() => ({})) }; } };
 
@@ -285,7 +285,7 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
     let json = {}; try { json = await res.json(); } catch {}
     return { status: res.status, json };
   };
-  const reg = await call("/api/auth/register", "POST", { username: `new_${stamp}`, email, displayName: "New Member", password: "first-password-1", role: "MEMBER", isAgeVerified: true, acceptTerms: true });
+  const reg = await call("/api/auth/register", "POST", { username: `new_${stamp}`, email, displayName: "New Member", password: "first-password-1", isAgeVerified: true, acceptTerms: true });
   check("register → verification required", reg.status === 201 && reg.json.verificationRequired === true);
   const firstLink = reg.json.devVerificationUrl ?? "";
   check("verification link on this origin", firstLink.startsWith(`${B}/auth/verify?token=`), firstLink);
@@ -308,7 +308,62 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("reset the password", (await call("/api/auth/reset-password", "POST", { token: tokenOf(forgot.json.devResetUrl), password: "second-password-2" })).status === 200);
   check("reset link works once", (await call("/api/auth/reset-password", "POST", { token: tokenOf(forgot.json.devResetUrl), password: "third-password-3" })).status === 400);
   check("old password refused", (await session(email, "first-password-1")).status === 401);
-  check("new password accepted", (await session(email, "second-password-2")).status === 200);
+  const me = await session(email, "second-password-2");
+  check("new password accepted", me.status === 200);
+  check("a new account is a member", (await me.call("/api/auth/me")).json.user?.role === "MEMBER");
+  check("a member cannot publish stories", (await me.call("/api/stories/upload-session", "POST", {})).status === 403);
+  const become = await me.call("/api/me/become-creator", "POST");
+  check("become a creator → pending 2257 review", become.json.role === "CREATOR" && become.json.verificationPending === true);
+  check("…still cannot publish until verified", (await me.call("/api/stories/upload-session", "POST", {})).json.error?.includes("pending"));
+  check("…and still unlocks like a member", (await me.call("/api/videos/unlock-video", "POST", { videoId: feed[0].id, amountCents: 100, gateway: "CREDITS" })).status !== 403);
+}
+
+// Stories: audience on the server, one view per viewer, likes, removal
+{
+  const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64");
+  const upload = async (who) => {
+    const form = new FormData();
+    form.append("category", "stories");
+    form.append("file", new Blob([png], { type: "image/png" }), "story.png");
+    const r = await fetch(`${B}/api/uploads`, { method: "POST", headers: { Cookie: who.cookie }, body: form });
+    return (await r.json()).data;
+  };
+  const stored = await upload(elena);
+  check("story image stored", /^stories\/[0-9a-f-]{36}\.png$/.test(stored?.ref ?? ""), JSON.stringify(stored));
+  check("a client-chosen media URL is not accepted", (await elena.call("/api/stories", "POST", { imageRef: "stories/../../etc.png" })).status === 400);
+  const contactsOnly = await elena.call("/api/stories", "POST", { imageRef: stored.ref, caption: "For my contacts", audience: "CONTACTS_ONLY" });
+  check("creator posts a contacts-only story", contactsOnly.status === 201);
+  const storyId = contactsOnly.json.story.id;
+  const ringOf = async (who, username) => (await who.call("/api/stories")).json.rings?.find((r) => r.username === username);
+  check("a contact (alex) sees it", (await ringOf(alex, "elenavox"))?.stories.some((s) => s.id === storyId));
+  check("a stranger (mia) does not", !(await ringOf(mia, "elenavox"))?.stories.some((s) => s.id === storyId));
+  check("anonymous does not", !(await anon.call("/api/stories")).json.rings?.some((r) => r.stories.some((s) => s.id === storyId)));
+  check("a stranger cannot count a view", (await mia.call(`/api/stories/${storyId}/view`, "POST")).status === 404);
+  await alex.call(`/api/stories/${storyId}/view`, "POST");
+  await alex.call(`/api/stories/${storyId}/view`, "POST");
+  check("a view counts once", (await ringOf(elena, "elenavox")).stories.find((s) => s.id === storyId).viewsCount === 1);
+  check("seen by the viewer", (await ringOf(alex, "elenavox")).stories.find((s) => s.id === storyId).seen === true);
+  check("like", (await alex.call(`/api/stories/${storyId}/like`, "POST")).json.likesCount === 1);
+  check("own ring comes first", (await elena.call("/api/stories")).json.rings[0]?.isOwn === true);
+  check("another creator cannot remove it", (await mia.call(`/api/stories/${storyId}`, "DELETE")).status === 404);
+  check("its creator removes it", (await elena.call(`/api/stories/${storyId}`, "DELETE")).status === 200);
+  check("removed → gone from the rail", !(await ringOf(alex, "elenavox"))?.stories.some((s) => s.id === storyId));
+}
+
+// Orochia credits: the in-house method settles at once through intent → ledger → access grant
+{
+  const paid = feed.find((v) => v.visibility === "TIPPED_UNLOCKED");
+  const gateways = (await mia.call("/api/payments/gateways")).json.gateways;
+  if (!gateways?.includes("CREDITS")) {
+    check("credits offered when PAYMENTS_CREDITS_MODE=always-approve", false, JSON.stringify(gateways));
+  } else {
+    check("mia cannot watch the paid video yet", (await mia.call(`/api/videos/${paid.id}/stream`)).json.reason === "PAYWALL_REQUIRED");
+    check("below the minimum is refused", (await mia.call("/api/videos/unlock-video", "POST", { videoId: paid.id, amountCents: 100, gateway: "CREDITS" })).status === 400);
+    const unlock = await mia.call("/api/videos/unlock-video", "POST", { videoId: paid.id, amountCents: paid.minTipAmountCents, gateway: "CREDITS" });
+    check("unlock with credits settles at once", unlock.json.settled === true, JSON.stringify(unlock.json));
+    check("…and opens the video", (await mia.call(`/api/videos/${paid.id}/stream`)).json.allowed === true);
+    check("nobody can post a credits webhook", (await fetch(`${B}/api/webhooks/payments/credits`, { method: "POST", body: "{}" })).status === 404);
+  }
 }
 
 // Search and AI discovery: public pages only

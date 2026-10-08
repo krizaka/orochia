@@ -25,7 +25,6 @@ export interface RegisterInput {
   email: string;
   displayName: string;
   password: string;
-  role: "CREATOR" | "MEMBER";
   isAgeVerified: boolean;
   acceptTerms: boolean;
 }

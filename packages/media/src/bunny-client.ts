@@ -96,9 +96,11 @@ export class BunnyStreamClient {
    */
   async createTusUploadSession(
     title: string,
-    validitySeconds = 7200
+    validitySeconds = 7200,
+    /** Bunny collection to file the video in (defaults to the configured one). */
+    collectionId: string | undefined = this.collectionId
   ): Promise<TusDirectUploadSession> {
-    const video = await this.createVideo(title);
+    const video = await this.createVideo(title, collectionId);
     const expiresAt = Math.floor(Date.now() / 1000) + validitySeconds;
 
     // Bunny Tus Authorization Signature algorithm:

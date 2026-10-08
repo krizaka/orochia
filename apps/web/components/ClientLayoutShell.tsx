@@ -13,11 +13,12 @@ export function ClientLayoutShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <AgeVerificationModal />
-      <Navbar />
-      <main className="min-h-[calc(100vh-4rem)]">
+      <Navbar onOpenSearch={() => setSearchModalOpen(true)} />
+      {/* Room for the bottom tab bar on phones. */}
+      <main className="min-h-[calc(100vh-4rem)] pb-20 md:pb-0">
         <EmailVerificationGate>{children}</EmailVerificationGate>
       </main>
-      <MobileBottomNav onOpenSearch={() => setSearchModalOpen(true)} />
+      <MobileBottomNav />
       <GlobalSearchModal
         isOpen={searchModalOpen}
         onClose={() => setSearchModalOpen(false)}

@@ -71,7 +71,7 @@
       "id": "data",
       "name": "Data persistence",
       "path": "packages/db",
-      "tablesCount": 23,
+      "tablesCount": 26,
       "tables": [
         "audience_lists",
         "audience_list_members",
@@ -92,6 +92,9 @@
         "playlists",
         "playlist_items",
         "playlist_members",
+        "stories",
+        "story_views",
+        "story_likes",
         "users",
         "profiles",
         "videos",
@@ -210,7 +213,7 @@
       "method": "POST",
       "path": "/api/auth/register",
       "access": "public",
-      "summary": "Creates a member or creator account (never an administrator), signs it in and e-mails the link that verifies its address — until then the account can do nothing else."
+      "summary": "Creates an account (a member — creators are opened later, never an administrator), signs it in and e-mails the link that verifies its address — until then the account can do nothing else."
     },
     {
       "method": "POST",
@@ -303,6 +306,12 @@
       "summary": "Content reports."
     },
     {
+      "method": "POST",
+      "path": "/api/me/become-creator",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Opens a creator space for a member: the account becomes CREATOR, pending its 18 U.S.C. § 2257 review (uploads open once an operator verifies it)."
+    },
+    {
       "method": "GET",
       "path": "/api/me/dashboard",
       "access": "session · ADMIN / CREATOR / MEMBER",
@@ -367,6 +376,12 @@
       "path": "/api/me/profile",
       "access": "session · ADMIN / CREATOR / MEMBER",
       "summary": "Updates the signed-in user's own profile."
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/stories",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "Your stories of the last 30 days — live, encoding or expired — with their figures."
     },
     {
       "method": "GET",
@@ -441,10 +456,52 @@
       "summary": ""
     },
     {
+      "method": "GET",
+      "path": "/api/stories",
+      "access": "public · session-aware",
+      "summary": "The stories rail: one ring per creator with live stories you may see (yours first, then unseen), signed for you."
+    },
+    {
+      "method": "POST",
+      "path": "/api/stories",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "Publishes an image story (24 h) from an image stored by /api/uploads (category \"stories\"); verified creators only."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/stories/[id]",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "Withdraws a story: its creator or an operator."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/stories/[id]/like",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Removes your like (idempotent)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/stories/[id]/like",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Likes a story you may see (idempotent)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/stories/[id]/view",
+      "access": "public · session-aware",
+      "summary": "Counts a view of a story you may see — once per viewer, never the creator's own."
+    },
+    {
+      "method": "POST",
+      "path": "/api/stories/upload-session",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "Starts a video story: records it and returns a Tus session straight to Bunny (stories collection)."
+    },
+    {
       "method": "POST",
       "path": "/api/uploads",
       "access": "session · role depends on the request",
-      "summary": "Stores an avatar (any account), a thumbnail or a 2257 document (creators); size and type checked per kind."
+      "summary": "Stores an avatar (any account), a thumbnail, a story image or a 2257 document (creators); size and type checked per kind."
     },
     {
       "method": "DELETE",

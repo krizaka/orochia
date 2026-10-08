@@ -8,6 +8,8 @@ export const BunnyConfigSchema = z.object({
   webhookSecret: z.string().optional(),
   /** Bunny collection every new video is filed in (optional). */
   collectionId: z.string().uuid().optional(),
+  /** Bunny collection story videos are filed in (optional; the main collection otherwise). */
+  storiesCollectionId: z.string().uuid().optional(),
 });
 
 export type BunnyConfig = z.infer<typeof BunnyConfigSchema>;

@@ -79,7 +79,7 @@ export default async function CreatorPage(props: { params: Promise<{ username: s
             </div>
 
             <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 font-mono mt-1">
-              @{creator.username} · Sovereign Creator
+              @{creator.username} · Creator
             </p>
 
             {creator.bio && (

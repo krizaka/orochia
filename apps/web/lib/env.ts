@@ -46,6 +46,7 @@ export interface BunnyStreamConfig {
   hostname: string;
   tokenAuthKey: string;
   collectionId?: string;
+  storiesCollectionId?: string;
 }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -55,10 +56,14 @@ export function bunnyStreamConfig(): BunnyStreamConfig {
   if (!Number.isInteger(libraryId) || libraryId <= 0) {
     throw new ConfigurationError("BUNNY_STREAM_LIBRARY_ID", "must be a positive integer");
   }
-  // Optional: the Bunny collection new uploads are filed in.
+  // Optional: the Bunny collections new uploads (and story videos) are filed in.
   const collectionId = process.env.BUNNY_STREAM_COLLECTION_ID?.trim() || undefined;
   if (collectionId && !UUID.test(collectionId)) {
     throw new ConfigurationError("BUNNY_STREAM_COLLECTION_ID", "must be a collection UUID");
+  }
+  const storiesCollectionId = process.env.BUNNY_STREAM_STORIES_COLLECTION_ID?.trim() || undefined;
+  if (storiesCollectionId && !UUID.test(storiesCollectionId)) {
+    throw new ConfigurationError("BUNNY_STREAM_STORIES_COLLECTION_ID", "must be a collection UUID");
   }
   return {
     apiKey: read("BUNNY_STREAM_API_KEY", "development-bunny-api-key"),
@@ -66,6 +71,7 @@ export function bunnyStreamConfig(): BunnyStreamConfig {
     hostname: read("BUNNY_STREAM_HOSTNAME", "vz-development.b-cdn.net"),
     tokenAuthKey: read("BUNNY_STREAM_TOKEN_AUTH_KEY", "development-token-auth-key"),
     collectionId,
+    storiesCollectionId,
   };
 }
 

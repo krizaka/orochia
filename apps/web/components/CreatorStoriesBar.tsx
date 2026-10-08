@@ -1,325 +1,285 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Plus, X, Sparkles, Heart, ChevronLeft, ChevronRight, CheckCircle2, Tv } from "lucide-react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useAuth } from "@/lib/auth-context";
-
-import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
-import type { CreatorStorySummary } from "@/lib/queries";
+import Hls from "hls.js";
+import { ChevronLeft, ChevronRight, Heart, Plus, Trash2, X } from "lucide-react";
+import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
 import { CreateStoryModal } from "@/components/CreateStoryModal";
+import { t } from "@/lib/i18n";
 
-export function CreatorStoriesBar({
-  stories = [],
-}: {
-  stories?: CreatorStorySummary[];
-}) {
-  const { user } = useAuth();
-  const [activeStoryIndex, setActiveStoryIndex] = useState<number | null>(null);
-  const [storyProgress, setStoryProgress] = useState(0);
-  const [liked, setLiked] = useState(false);
-  const [tippedSuccess, setTippedSuccess] = useState(false);
-  const [isCreateStoryOpen, setIsCreateStoryOpen] = useState(false);
+interface StoryItem {
+  id: string;
+  type: "image" | "video";
+  url: string;
+  thumbnailUrl: string | null;
+  caption: string;
+  durationSeconds: number;
+  createdAt: string;
+  viewsCount: number;
+  likesCount: number;
+  seen: boolean;
+  liked: boolean;
+}
 
-  // Playable stories that have actual media from Bunny/DB
-  const playableStories = stories.filter((s) => s.hasStory && s.storyMedia !== null);
+interface StoryRing {
+  creatorId: string;
+  username: string;
+  displayName: string;
+  avatarUrl: string | null;
+  isOwn: boolean;
+  allSeen: boolean;
+  stories: StoryItem[];
+}
 
-  // Auto-progress story timer & track view
+const IMAGE_SECONDS = 6;
+
+function timeAgo(iso: string) {
+  const minutes = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+  return minutes < 60 ? `${minutes}m` : `${Math.round(minutes / 60)}h`;
+}
+
+/** An HLS story video (signed playlist); reports its end so the viewer moves on. */
+function StoryVideo({ src, poster, onEnded, onProgress }: { src: string; poster: string | null; onEnded: () => void; onProgress: (p: number) => void }) {
+  const ref = useRef<HTMLVideoElement>(null);
   useEffect(() => {
-    if (activeStoryIndex === null) {
-      setStoryProgress(0);
-      return;
+    const video = ref.current;
+    if (!video) return;
+    let hls: Hls | null = null;
+    if (video.canPlayType("application/vnd.apple.mpegurl")) video.src = src;
+    else if (Hls.isSupported()) {
+      hls = new Hls();
+      hls.loadSource(src);
+      hls.attachMedia(video);
     }
+    void video.play().catch(() => undefined);
+    return () => hls?.destroy();
+  }, [src]);
+  return (
+    <video
+      ref={ref}
+      poster={poster ?? undefined}
+      playsInline
+      autoPlay
+      muted
+      onEnded={onEnded}
+      onTimeUpdate={(e) => {
+        const v = e.currentTarget;
+        if (v.duration) onProgress((v.currentTime / v.duration) * 100);
+      }}
+      className="h-full w-full object-contain"
+    />
+  );
+}
 
-    setLiked(false);
-    setTippedSuccess(false);
+/**
+ * The stories rail (Instagram-style): one ring per creator with live stories you may see — yours
+ * first, then unseen, then seen — and a full-screen viewer that walks through them. Everything comes
+ * from /api/stories, already filtered and signed for you; a view counts once.
+ */
+export function CreatorStoriesBar() {
+  const { user } = useAuth();
+  const [rings, setRings] = useState<StoryRing[] | null>(null);
+  const [open, setOpen] = useState<{ ring: number; story: number } | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-    // Record view in backend
-    const story = playableStories[activeStoryIndex];
-    if (story?.storyMedia?.id && !story.storyMedia.id.startsWith("video-")) {
-      fetch(`/api/stories/${story.storyMedia.id}/view`, { method: "POST" }).catch(() => {});
-    }
+  const load = useCallback(async () => {
+    const res = await fetch("/api/stories", { cache: "no-store" }).catch(() => null);
+    setRings(res?.ok ? ((await res.json()) as { rings: StoryRing[] }).rings : []);
+  }, []);
+  useEffect(() => void load(), [load, user?.id]);
 
-    const duration = 7000; // 7 seconds per story
-    const intervalTime = 50;
-    const increment = (intervalTime / duration) * 100;
+  const ring = open ? rings?.[open.ring] : null;
+  const story = open && ring ? ring.stories[open.story] : null;
 
-    const timer = setInterval(() => {
-      setStoryProgress((prev) => {
-        if (prev >= 100) {
-          // Advance to next story or close
-          if (activeStoryIndex < playableStories.length - 1) {
-            setActiveStoryIndex(activeStoryIndex + 1);
-            return 0;
-          } else {
-            setActiveStoryIndex(null);
-            return 0;
-          }
-        }
-        return prev + increment;
-      });
-    }, intervalTime);
+  const close = useCallback(() => {
+    setOpen(null);
+    void load();
+  }, [load]);
 
-    return () => clearInterval(timer);
-  }, [activeStoryIndex, playableStories]);
+  const next = useCallback(() => {
+    if (!open || !rings) return;
+    const current = rings[open.ring];
+    if (open.story < current.stories.length - 1) setOpen({ ring: open.ring, story: open.story + 1 });
+    else if (open.ring < rings.length - 1) setOpen({ ring: open.ring + 1, story: 0 });
+    else close();
+  }, [open, rings, close]);
 
-  const activeStory = activeStoryIndex !== null ? playableStories[activeStoryIndex] : null;
-
-  const handleToggleLike = async () => {
-    if (!activeStory?.storyMedia) return;
-    const newLiked = !liked;
-    setLiked(newLiked);
-
-    if (activeStory.storyMedia.id && !activeStory.storyMedia.id.startsWith("video-")) {
-      try {
-        await fetch(`/api/stories/${activeStory.storyMedia.id}/like`, { method: "POST" });
-      } catch {
-        // Rollback
-        setLiked(!newLiked);
-      }
-    }
+  const previous = () => {
+    if (!open || !rings) return;
+    if (open.story > 0) setOpen({ ring: open.ring, story: open.story - 1 });
+    else if (open.ring > 0) setOpen({ ring: open.ring - 1, story: rings[open.ring - 1].stories.length - 1 });
   };
+
+  // A story is marked seen (and counted once) when it is shown; images advance on a timer.
+  useEffect(() => {
+    if (!story) return;
+    setProgress(0);
+    if (!story.seen) void fetch(`/api/stories/${story.id}/view`, { method: "POST" }).catch(() => undefined);
+    if (story.type !== "image") return;
+    const started = Date.now();
+    const timer = setInterval(() => {
+      const p = ((Date.now() - started) / (IMAGE_SECONDS * 1000)) * 100;
+      if (p >= 100) {
+        clearInterval(timer);
+        next();
+      } else setProgress(p);
+    }, 50);
+    return () => clearInterval(timer);
+  }, [story, next]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft") previous();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  const toggleLike = async () => {
+    if (!story || !user || !open) return;
+    const res = await fetch(`/api/stories/${story.id}/like`, { method: story.liked ? "DELETE" : "POST" });
+    if (!res.ok) return;
+    const data = (await res.json()) as { liked: boolean; likesCount: number };
+    setRings((rs) =>
+      rs?.map((r, ri) =>
+        ri !== open.ring ? r : { ...r, stories: r.stories.map((s, si) => (si === open.story ? { ...s, liked: data.liked, likesCount: data.likesCount } : s)) },
+      ) ?? rs,
+    );
+  };
+
+  const remove = async () => {
+    if (!story || !window.confirm(t("stories.removeConfirm"))) return;
+    await fetch(`/api/stories/${story.id}`, { method: "DELETE" });
+    close();
+  };
+
+  const isCreator = user?.role === "CREATOR" || user?.role === "ADMIN";
+  if (rings !== null && rings.length === 0 && !isCreator) return null;
 
   return (
     <>
-      {/* Create Story Modal for Verified Creators */}
-      <CreateStoryModal
-        isOpen={isCreateStoryOpen}
-        onClose={() => setIsCreateStoryOpen(false)}
-      />
+      <CreateStoryModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} onSuccess={load} />
 
-      {/* Stories Horizontal Carousel Bar */}
-      <div className="relative mb-8 overflow-hidden rounded-2xl border border-white/10 dark:border-white/10 light:border-black/5 bg-zinc-950/60 dark:bg-zinc-950/60 light:bg-white p-3 sm:p-4 backdrop-blur-xl max-w-full">
+      <div className="relative mb-8 overflow-hidden rounded-2xl border border-white/10 light:border-black/5 bg-zinc-950/60 light:bg-white p-3 sm:p-4 backdrop-blur-xl max-w-full">
         <div className="flex items-center gap-3.5 sm:gap-5 overflow-x-auto scrollbar-none py-1 px-1 overscroll-x-contain touch-pan-x">
-          {/* Creator Upload / Add Story Button */}
-          {user?.role === "CREATOR" ? (
-            <button
-              onClick={() => setIsCreateStoryOpen(true)}
-              className="flex flex-col items-center gap-1.5 shrink-0 group cursor-pointer"
-            >
+          {isCreator && (
+            <button onClick={() => setIsCreateOpen(true)} className="flex flex-col items-center gap-1.5 shrink-0 group">
               <div className="relative flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border-2 border-dashed border-violet-500/60 bg-violet-600/10 transition-transform group-hover:scale-105">
-                <Plus className="h-5 w-5 sm:h-6 sm:w-6 text-violet-400 group-hover:rotate-90 transition-transform duration-300" />
+                <Plus className="h-5 w-5 sm:h-6 sm:w-6 text-violet-400 transition-transform duration-300 group-hover:rotate-90" />
               </div>
-              <span className="text-[11px] font-semibold text-zinc-300 dark:text-zinc-300 light:text-slate-700">Add Story</span>
+              <span className="text-[11px] font-semibold text-zinc-300 light:text-slate-700">{t("stories.add")}</span>
             </button>
-          ) : (
-            <div className="hidden sm:flex flex-col items-center gap-1.5 shrink-0">
-              <div className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900/60 dark:bg-zinc-900/60 light:bg-slate-100 text-violet-400">
-                <Sparkles className="h-5 w-5 sm:h-6 sm:w-6" />
-              </div>
-              <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-400 light:text-slate-500">Live Fleets</span>
-            </div>
           )}
 
-          {/* Stories List from DB */}
-          {stories.map((story) => {
-            const playableIdx = playableStories.findIndex((s) => s.id === story.id);
-            return (
-              <button
-                key={story.id}
-                onClick={() => {
-                  if (playableIdx !== -1) {
-                    setActiveStoryIndex(playableIdx);
-                  }
-                }}
-                className="flex flex-col items-center gap-1.5 shrink-0 group focus:outline-none"
-              >
-                {/* Avatar with Animated Pulse Border */}
-                <div className="relative p-0.5 rounded-2xl transition-transform group-hover:scale-105 active:scale-95 shrink-0">
-                  <div
-                    className={`absolute inset-0 rounded-2xl ${
-                      story.hasStory
-                        ? "bg-gradient-to-tr from-violet-600 via-fuchsia-500 to-pink-500 shadow-sm shadow-violet-500/20"
-                        : "bg-zinc-700 dark:bg-zinc-700 light:bg-slate-300"
-                    }`}
-                  />
-                  <div className="relative h-14 w-14 sm:h-16 sm:w-16 overflow-hidden rounded-[14px] bg-zinc-950 dark:bg-zinc-950 light:bg-white p-0.5 shrink-0">
-                    <img
-                      src={story.avatarUrl || AVATAR_PLACEHOLDER}
-                      alt={story.displayName}
-                      className="h-full w-full object-cover rounded-[12px]"
-                    />
-                  </div>
+          {rings === null &&
+            Array.from({ length: 5 }, (_, i) => <div key={i} className="h-14 w-14 sm:h-16 sm:w-16 shrink-0 animate-pulse rounded-2xl bg-white/5 light:bg-slate-100" />)}
 
-                  {/* Story Badge */}
-                  {story.hasStory && (
-                    <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-violet-600 px-1.5 py-0.2 text-[9px] font-black uppercase tracking-wider text-white ring-2 ring-zinc-950 dark:ring-zinc-950 light:ring-white shadow-md">
-                      NEW
-                    </span>
-                  )}
+          {rings?.map((r, index) => (
+            <button key={r.creatorId} onClick={() => setOpen({ ring: index, story: Math.max(0, r.stories.findIndex((s) => !s.seen)) })} className="flex flex-col items-center gap-1.5 shrink-0 group focus:outline-none">
+              <div className="relative p-0.5 rounded-2xl transition-transform group-hover:scale-105 active:scale-95">
+                <div
+                  className={`absolute inset-0 rounded-2xl ${
+                    r.allSeen ? "bg-zinc-700 light:bg-slate-300" : "bg-gradient-to-tr from-violet-600 via-fuchsia-500 to-pink-500 shadow-sm shadow-violet-500/20"
+                  }`}
+                />
+                <div className="relative h-14 w-14 sm:h-16 sm:w-16 overflow-hidden rounded-[14px] bg-zinc-950 light:bg-white p-0.5">
+                  <img src={r.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-full w-full rounded-[12px] object-cover" />
                 </div>
+              </div>
+              <span className="max-w-[72px] truncate text-[11px] font-medium text-zinc-200 light:text-slate-800 group-hover:text-violet-400">
+                {r.isOwn ? t("stories.yours") : r.displayName}
+              </span>
+            </button>
+          ))}
 
-                {/* Creator Name */}
-                <span className="max-w-[72px] truncate text-[11px] font-medium text-zinc-200 dark:text-zinc-200 light:text-slate-800 group-hover:text-violet-400 transition-colors">
-                  {story.displayName}
-                </span>
-              </button>
-            );
-          })}
+          {rings?.length === 0 && isCreator && <p className="px-2 text-xs text-zinc-500">{t("stories.emptyCreator")}</p>}
         </div>
       </div>
 
-      {/* Interactive Story Viewer Modal */}
-      {activeStory && activeStory.storyMedia && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-xl p-2 sm:p-6 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-sm sm:max-w-md h-[88vh] max-h-[750px] overflow-hidden rounded-3xl border border-white/15 bg-zinc-950 shadow-2xl flex flex-col justify-between">
-            {/* Background Story Media */}
-            <div className="absolute inset-0 z-0 bg-black flex items-center justify-center">
-              {activeStory.storyMedia.type === "video" ? (
-                <video
-                  src={activeStory.storyMedia.url}
-                  autoPlay
-                  playsInline
-                  controls={false}
-                  muted
-                  loop
-                  poster={activeStory.storyMedia.thumbnailUrl || undefined}
-                  className="h-full w-full object-cover"
-                />
+      {ring && story && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-0 sm:p-6 backdrop-blur-xl" role="dialog" aria-modal="true" aria-label={ring.displayName}>
+          <div className="relative flex h-full w-full flex-col justify-between overflow-hidden bg-black sm:h-[88vh] sm:max-h-[780px] sm:max-w-md sm:rounded-3xl sm:border sm:border-white/15">
+            <div className="absolute inset-0 flex items-center justify-center bg-black">
+              {story.type === "video" ? (
+                <StoryVideo key={story.id} src={story.url} poster={story.thumbnailUrl} onEnded={next} onProgress={setProgress} />
               ) : (
-                <img
-                  src={activeStory.storyMedia.url}
-                  alt=""
-                  className="h-full w-full object-cover"
-                />
+                <img src={story.url} alt="" className="h-full w-full object-contain" />
               )}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/90 pointer-events-none" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-black/80" />
             </div>
 
-            {/* Top Bar: Progress Indicator + Creator Info */}
-            <div className="relative z-10 p-4">
-              {/* Story Timer Bar */}
-              <div className="flex gap-1.5 mb-3">
-                {playableStories.map((_, i) => (
-                  <div key={i} className="h-1 flex-1 overflow-hidden rounded-full bg-white/30">
-                    <div
-                      className="h-full bg-white transition-all duration-75 ease-linear"
-                      style={{
-                        width:
-                          i < (activeStoryIndex ?? 0)
-                            ? "100%"
-                            : i === activeStoryIndex
-                            ? `${storyProgress}%`
-                            : "0%",
-                      }}
-                    />
+            {/* Tap zones: left goes back, right goes on (as in every stories viewer). */}
+            <button onClick={previous} className="absolute inset-y-0 left-0 z-10 w-1/3" aria-label={t("stories.previous")} />
+            <button onClick={next} className="absolute inset-y-0 right-0 z-10 w-1/3" aria-label={t("stories.next")} />
+
+            <div className="relative z-20 p-4 pt-[max(1rem,env(safe-area-inset-top))]">
+              <div className="mb-3 flex gap-1.5">
+                {ring.stories.map((s, i) => (
+                  <div key={s.id} className="h-1 flex-1 overflow-hidden rounded-full bg-white/30">
+                    <div className="h-full bg-white" style={{ width: i < open!.story ? "100%" : i === open!.story ? `${progress}%` : "0%" }} />
                   </div>
                 ))}
               </div>
-
-              {/* Creator Info */}
               <div className="flex items-center justify-between">
-                <Link
-                  href={`/creators/${activeStory.username}`}
-                  onClick={() => setActiveStoryIndex(null)}
-                  className="flex items-center gap-2.5 group"
-                >
-                  <img
-                    src={activeStory.avatarUrl || AVATAR_PLACEHOLDER}
-                    alt={activeStory.displayName}
-                    className="h-9 w-9 rounded-xl border border-white/20 object-cover"
-                  />
+                <Link href={`/creators/${ring.username}`} onClick={close} className="flex items-center gap-2.5">
+                  <img src={ring.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-9 w-9 rounded-xl border border-white/20 object-cover" />
                   <div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-bold text-white group-hover:text-violet-400 transition-colors">
-                        {activeStory.displayName}
-                      </span>
-                      {activeStory.isVerified && <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />}
-                    </div>
-                    <div className="flex items-center gap-2 text-[10px] text-zinc-300 font-mono">
-                      <span>{activeStory.storyMedia.timestamp}</span>
-                      {activeStory.storyMedia.viewsCount > 0 && (
-                        <>
-                          <span>•</span>
-                          <span>{activeStory.storyMedia.viewsCount} views</span>
-                        </>
-                      )}
-                    </div>
+                    <span className="block text-xs font-bold text-white">{ring.displayName}</span>
+                    <span className="font-mono text-[10px] text-zinc-300">
+                      {timeAgo(story.createdAt)}
+                      {ring.isOwn && ` · ${t("stories.views", { count: story.viewsCount })}`}
+                    </span>
                   </div>
                 </Link>
-
-                <button
-                  onClick={() => setActiveStoryIndex(null)}
-                  className="h-8 w-8 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/80 transition-colors"
-                >
-                  <X className="h-4 w-4" />
-                </button>
+                <div className="flex items-center gap-1.5">
+                  {ring.isOwn && (
+                    <button onClick={remove} className="flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white hover:bg-rose-600/60" aria-label={t("stories.remove")}>
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
+                  <button onClick={close} className="flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/80" aria-label={t("common.close")}>
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Middle Nav Taps */}
-            <div className="relative z-10 flex-1 flex items-center justify-between px-2">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (activeStoryIndex !== null && activeStoryIndex > 0) setActiveStoryIndex(activeStoryIndex - 1);
-                }}
-                disabled={activeStoryIndex === 0 || activeStoryIndex === null}
-                className="h-10 w-10 flex items-center justify-center rounded-full bg-black/40 text-white disabled:opacity-0 hover:bg-black/70 transition-all"
-              >
+            <div className="relative z-20 hidden items-center justify-between px-2 sm:flex">
+              <button onClick={previous} className="flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white hover:bg-black/70" aria-label={t("stories.previous")}>
                 <ChevronLeft className="h-5 w-5" />
               </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (activeStoryIndex !== null && activeStoryIndex < playableStories.length - 1) {
-                    setActiveStoryIndex(activeStoryIndex + 1);
-                  } else {
-                    setActiveStoryIndex(null);
-                  }
-                }}
-                className="h-10 w-10 flex items-center justify-center rounded-full bg-black/40 text-white hover:bg-black/70 transition-all"
-              >
+              <button onClick={next} className="flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white hover:bg-black/70" aria-label={t("stories.next")}>
                 <ChevronRight className="h-5 w-5" />
               </button>
             </div>
 
-            {/* Bottom Caption, Tip Button & Interactive Actions */}
-            <div className="relative z-10 p-5 space-y-3">
-              <p className="text-xs sm:text-sm text-white/95 drop-shadow leading-relaxed">
-                {activeStory.storyMedia.caption}
-              </p>
-
-              {tippedSuccess && (
-                <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/80 p-2 text-center text-xs font-semibold text-emerald-300 animate-in zoom-in-95">
-                  🎉 You sent a tip to {activeStory.displayName}! Thank you for supporting sovereign art!
-                </div>
-              )}
-
-              <div className="flex items-center gap-2 pt-1">
-                {/* Instant Tip Action Button */}
-                <button
-                  onClick={() => setTippedSuccess(true)}
-                  className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 py-3 text-xs font-bold text-white shadow-lg shadow-violet-600/30 hover:scale-[1.02] active:scale-95 transition-all"
-                >
-                  <Sparkles className="h-4 w-4" />
-                  <span>Send Instant Tip</span>
-                </button>
-
-                {/* Like Button */}
-                <button
-                  onClick={handleToggleLike}
-                  className={`h-11 px-3.5 flex items-center gap-1.5 rounded-2xl border transition-all ${
-                    liked
-                      ? "border-rose-500 bg-rose-500/20 text-rose-400 scale-105"
-                      : "border-white/20 bg-black/50 text-white hover:bg-black/70"
-                  }`}
-                >
-                  <Heart className={`h-4 w-4 ${liked ? "fill-rose-500" : ""}`} />
-                  <span className="text-xs font-mono font-semibold">
-                    {(activeStory.storyMedia.likesCount ?? 0) + (liked ? 1 : 0)}
-                  </span>
-                </button>
-
-                {/* Profile Link or Video Watch Link */}
-                <Link
-                  href={activeStory.storyMedia.videoId ? `/watch/${activeStory.storyMedia.videoId}` : `/creators/${activeStory.username}`}
-                  onClick={() => setActiveStoryIndex(null)}
-                  className="h-11 w-11 flex items-center justify-center rounded-2xl border border-white/20 bg-black/50 text-white hover:bg-black/70 transition-colors"
-                  title="Watch full stream"
-                >
-                  <Tv className="h-4 w-4" />
-                </Link>
+            <div className="relative z-20 space-y-3 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+              {story.caption && <p className="text-sm leading-relaxed text-white/95 drop-shadow">{story.caption}</p>}
+              <div className="flex items-center gap-2">
+                {!ring.isOwn && (
+                  <Link
+                    href={`/creators/${ring.username}`}
+                    onClick={close}
+                    className="flex flex-1 items-center justify-center rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 py-3 text-xs font-bold text-white"
+                  >
+                    {t("stories.seeProfile")}
+                  </Link>
+                )}
+                {user && !ring.isOwn && (
+                  <button
+                    onClick={toggleLike}
+                    aria-pressed={story.liked}
+                    className={`flex h-11 items-center gap-1.5 rounded-2xl border px-3.5 ${story.liked ? "border-rose-500 bg-rose-500/20 text-rose-300" : "border-white/20 bg-black/50 text-white"}`}
+                  >
+                    <Heart className={`h-4 w-4 ${story.liked ? "fill-rose-500" : ""}`} />
+                    <span className="font-mono text-xs">{story.likesCount}</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>

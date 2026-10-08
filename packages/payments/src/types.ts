@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const GatewayTypeSchema = z.enum(["CCBILL", "SEGPAY", "CRYPTO", "STRIPE"]);
+export const GatewayTypeSchema = z.enum(["CCBILL", "SEGPAY", "CRYPTO", "STRIPE", "CREDITS"]);
 export type GatewayType = z.infer<typeof GatewayTypeSchema>;
 
 /** A gateway is not configured for this deployment (missing credentials). */

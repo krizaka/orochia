@@ -1,39 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
-import { db, stories, storyViews } from "@orochia/db";
-import { and, eq, sql } from "drizzle-orm";
-import { errorResponse } from "@/lib/http";
-import crypto from "crypto";
+import { recordStoryView } from "@/lib/stories";
+import { errorResponse, jsonError } from "@/lib/http";
 
 export const dynamic = "force-dynamic";
 
-export async function POST(
-  req: NextRequest,
-  props: { params: Promise<{ id: string }> }
-) {
+/** Counts a view of a story you may see — once per viewer, never the creator's own. */
+export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   try {
-    const user = await getCurrentUser();
-    const params = await props.params;
-    const storyId = params.id;
-
-    // Optional IP hash for deduplication
-    const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "127.0.0.1";
-    const ipHash = crypto.createHash("sha256").update(ip).digest("hex").slice(0, 32);
-
-    // Record view in storyViews
-    await db.insert(storyViews).values({
-      storyId,
-      viewerId: user?.id ?? null,
-      ipHash,
+    const id = z.string().uuid().safeParse((await props.params).id);
+    if (!id.success) return jsonError(404, "Story not found");
+    const viewer = await getCurrentUser();
+    const counted = await recordStoryView(id.data, viewer?.id ?? null, {
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null,
+      userAgent: req.headers.get("user-agent"),
     });
-
-    // Increment story views count
-    await db
-      .update(stories)
-      .set({ viewsCount: sql`${stories.viewsCount} + 1` })
-      .where(eq(stories.id, storyId));
-
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, counted });
   } catch (error) {
     return errorResponse(error, "stories/view");
   }

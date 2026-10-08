@@ -105,6 +105,11 @@ orochia/                           npm workspaces
   decide who **opens** the collection, never who plays a video in it (`canOpenCollection`, `lib/audiences.ts`).
 - Engagement counters on `videos` (views, likes, comments, shares) move in the same transaction as the row that
   justifies them; a view counts once per viewer and day and never for the author (`lib/engagement.ts`).
+- **Stories** (`lib/stories.ts`) live 24 hours from the moment they are playable. Video stories are Bunny videos filed
+  in the stories collection (`BUNNY_STREAM_STORIES_COLLECTION_ID`), uploaded over Tus and moved to READY by the
+  webhook; image stories use a stored image whose URL the server derives from its reference — a client never
+  chooses a story's media. Audience: PUBLIC · APPROVED_FOLLOWERS_ONLY · CONTACTS_ONLY · INVITED_ONLY (one of the
+  creator's lists); only allowed viewers receive a story, signed for them. A view counts once per viewer.
 - A video taken down (`removed_at` set) does not exist — feed, search, profile, playlists, details and playback
   answer as if it were absent, **for its author too**. Suspended creators' videos are not listed.
 
@@ -118,6 +123,9 @@ orochia/                           npm workspaces
   `/api/webhooks/payments/[gateway]` — signature verified in constant time over the raw body — settles an intent,
   **exactly once** (`settlePaymentIntent`). Creator, buyer, video and amount come from the intent, never from the webhook.
 - Adapters have no lenient mode; a gateway is offered only when all its credentials are configured.
+- **Orochia credits** (`CREDITS`) settle in-house through the same intent → settlement → ledger path, with no
+  checkout and no webhook. The wallet (top up, then spend) is not built yet: `chargeCredits` approves every payment,
+  and only when `PAYMENTS_CREDITS_MODE=always-approve` (dev/test). Unset, credits are not offered at all.
 
 ### D. The ledger is immutable
 - `tips_ledger` is double-entry and append-only. Balances are **computed** from it (`getCreatorAvailableBalanceCents`),
@@ -134,6 +142,10 @@ orochia/                           npm workspaces
 ### F. Fail-closed configuration and sessions
 - Secrets are read through `apps/web/lib/env.ts`: mandatory in production (503 + logged name when missing),
   development defaults otherwise. `OROCHIA_DEMO_MODE` is ignored in production.
+- **One kind of account at registration** (MEMBER). A member opens a creator space later
+  (`/api/me/become-creator`): it becomes CREATOR pending the 2257 review and keeps tipping and unlocking.
+- An account whose e-mail is not verified can only sign in and ask for the link again: `requireUserWithRole` refuses
+  it everything else, `getCurrentUser` treats it as a visitor, and the UI shows only the verification page.
 - Sessions are stateless signed cookies, but **authorisation is not**: `requireUserWithRole` re-reads the account,
   so a suspension or a role change applies on the next request. Suspended accounts cannot sign in.
 - No screen renders showcase data: pages read the database through `lib/queries.ts`; an empty platform renders
@@ -182,6 +194,13 @@ orochia/                           npm workspaces
   `OrochiaLogo` (serpent + flame), never a placeholder icon; it stops under `prefers-reduced-motion`.
 - `app/globals.css` keeps `@config "../tailwind.config.js";`; Tailwind content paths are resolved with `path.join`.
 - Every list has an empty state; every action shows its pending and error states; no `alert()`.
+- **Every user-facing string lives in `apps/web/messages/en.json`** and is read with `t("key", { vars })`
+  (`lib/i18n.ts`, keys typed from the file, `<Rich>` for `<b>` and inline links). English is the only locale for now;
+  another language adds `messages/<locale>.json` with the same shape. Plain product words ("Dashboard", "Sign in"),
+  never jargon or mixed languages.
+- Both themes are first-class: every surface and text colour has its `light:` counterpart.
+- Navigation: desktop — the top bar; phones — the top bar keeps brand, search and theme, and the bottom tab bar
+  (Home · Explore · Create · Account / Sign in) holds everything else, so each action exists once.
 
 ---
 

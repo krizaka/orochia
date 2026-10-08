@@ -321,37 +321,14 @@ export async function runSeed(): Promise<void> {
     });
   }
 
-  // Active ephemeral stories (24h validity) with real Bunny Stream video GUIDs
-  const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  const [existingStories] = await db.select({ count: sql<string>`count(*)` }).from(stories);
-  if (Number(existingStories?.count ?? 0) === 0) {
+  // Live stories (24 h): image stories, so they render locally without Bunny. Counters start at zero, as the rows say.
+  const [liveStories] = await db.select({ count: sql<string>`count(*)` }).from(stories).where(sql`expires_at > now()`);
+  if (Number(liveStories?.count ?? 0) === 0) {
+    const inHours = (h: number) => new Date(Date.now() + h * 3600 * 1000);
     await db.insert(stories).values([
-      {
-        creatorId: id.elenavox,
-        mediaType: "VIDEO",
-        bunnyVideoId: "9b3c4a12-8819-4820-a6fe-b715a3e144bb",
-        mediaUrl: "https://vz-af7d6892-5c8.b-cdn.net/9b3c4a12-8819-4820-a6fe-b715a3e144bb/playlist.m3u8",
-        thumbnailUrl: "https://vz-af7d6892-5c8.b-cdn.net/9b3c4a12-8819-4820-a6fe-b715a3e144bb/thumbnail.jpg",
-        caption: "🔴 Live from nocturnal production suite. Special 4K teaser dropping tonight! ⚡",
-        visibility: "PUBLIC",
-        viewsCount: 142,
-        likesCount: 28,
-        tipsCount: 3,
-        expiresAt: tomorrow,
-      },
-      {
-        creatorId: id.miasterling,
-        mediaType: "VIDEO",
-        bunnyVideoId: "7f2b1c88-4d3e-4a6f-8b9c-0d1e2f3a4b5c",
-        mediaUrl: "https://vz-af7d6892-5c8.b-cdn.net/7f2b1c88-4d3e-4a6f-8b9c-0d1e2f3a4b5c/playlist.m3u8",
-        thumbnailUrl: "https://vz-af7d6892-5c8.b-cdn.net/7f2b1c88-4d3e-4a6f-8b9c-0d1e2f3a4b5c/thumbnail.jpg",
-        caption: "Late-night studio acoustics and unreleased vocal stems for VIP patrons 🎶✨",
-        visibility: "PUBLIC",
-        viewsCount: 89,
-        likesCount: 19,
-        tipsCount: 1,
-        expiresAt: tomorrow,
-      },
+      { creatorId: id.elenavox, mediaType: "IMAGE", mediaUrl: img("photo-1542051841857-5f90071e7989", 1080), thumbnailUrl: img("photo-1542051841857-5f90071e7989", 400), caption: "Shinjuku tonight — episode 02 drops this weekend.", visibility: "PUBLIC", expiresAt: inHours(20) },
+      { creatorId: id.elenavox, mediaType: "IMAGE", mediaUrl: img("photo-1492684223066-81342ee5ff30", 1080), thumbnailUrl: img("photo-1492684223066-81342ee5ff30", 400), caption: "Rough cut, for the followers I approved.", visibility: "APPROVED_FOLLOWERS_ONLY", expiresAt: inHours(22) },
+      { creatorId: id.miasterling, mediaType: "IMAGE", mediaUrl: img("photo-1511379938547-c1f69419868d", 1080), thumbnailUrl: img("photo-1511379938547-c1f69419868d", 400), caption: "New strings, same old guitar.", visibility: "PUBLIC", expiresAt: inHours(12) },
     ]);
   }
 

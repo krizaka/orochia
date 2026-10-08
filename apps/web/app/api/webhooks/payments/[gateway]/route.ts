@@ -21,7 +21,8 @@ export async function POST(req: NextRequest, props: { params: Promise<{ gateway:
   const params = await props.params;
   try {
     const gateway = GatewayTypeSchema.safeParse(params.gateway.toUpperCase());
-    if (!gateway.success) return jsonError(404, "Unknown gateway");
+    // Credits settle in-house: nothing outside may post an event for them.
+    if (!gateway.success || gateway.data === "CREDITS") return jsonError(404, "Unknown gateway");
 
     const adapter = getPaymentGateway(gateway.data);
     const rawBody = await req.text();

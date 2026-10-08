@@ -4,6 +4,7 @@ import { db, videos } from "@orochia/db";
 import { eq } from "drizzle-orm";
 import { bunnyStreamConfig, bunnyWebhookSecret } from "@/lib/env";
 import { errorResponse, jsonError } from "@/lib/http";
+import { applyStoryEncoding } from "@/lib/stories";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,16 @@ export async function POST(req: NextRequest) {
 
     const [video] = await db.select().from(videos).where(eq(videos.bunnyVideoId, payload.VideoGuid)).limit(1);
     if (!video) {
+      // Not a video: maybe a story video (stories collection). READY starts its 24 hours.
+      let durationSeconds: number | undefined;
+      if (target === "READY") {
+        durationSeconds = await new BunnyStreamClient(config)
+          .getVideo(payload.VideoGuid)
+          .then((d) => d.length)
+          .catch(() => undefined);
+      }
+      const storyId = await applyStoryEncoding(payload.VideoGuid, target, { durationSeconds });
+      if (storyId) return NextResponse.json({ success: true, storyId, status: target });
       console.warn(`bunny webhook: unknown video ${payload.VideoGuid}`);
       return NextResponse.json({ success: true, ignored: "video" });
     }

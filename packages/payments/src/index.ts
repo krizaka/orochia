@@ -7,3 +7,4 @@ export * from "./adapters/stripe";
 export * from "./adapters/factory";
 export * from "./ledger";
 export * from "./intents";
+export * from "./credits";

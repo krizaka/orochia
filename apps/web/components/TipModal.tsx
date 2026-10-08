@@ -1,5 +1,6 @@
 "use client";
 
+import { t } from "@/lib/i18n";
 import React, { useEffect, useState } from "react";
 import { X, Sparkles, CreditCard, ShieldCheck, Bitcoin, CheckCircle2 } from "lucide-react";
 
@@ -23,7 +24,7 @@ export function TipModal({
   const [selectedAmount, setSelectedAmount] = useState<number>(
     Math.max(1000, minTipAmountCents)
   );
-  const [selectedGateway, setSelectedGateway] = useState<"CCBILL" | "SEGPAY" | "CRYPTO" | "STRIPE">("CCBILL");
+  const [selectedGateway, setSelectedGateway] = useState<"CCBILL" | "SEGPAY" | "CRYPTO" | "STRIPE" | "CREDITS">("CCBILL");
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [gateways, setGateways] = useState<string[] | null>(null);
@@ -149,9 +150,29 @@ export function TipModal({
         {/* Gateway Selection */}
         <div className="mb-6">
           <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 light:text-slate-500 mb-2 block">
-            Select Adult-Friendly Gateway
+            {t("payments.method")}
           </label>
           <div className="space-y-2">
+            {offers("CREDITS") && (
+              <label
+                onClick={() => setSelectedGateway("CREDITS")}
+                className={`flex items-center justify-between p-3 rounded-2xl border cursor-pointer transition-all ${
+                  selectedGateway === "CREDITS"
+                    ? "border-fuchsia-500 bg-fuchsia-500/10 text-white light:text-fuchsia-900"
+                    : "border-white/10 light:border-black/10 bg-zinc-900/80 light:bg-slate-100 text-zinc-300 light:text-slate-700 hover:border-white/20"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Sparkles className="h-5 w-5 text-fuchsia-400" />
+                  <div>
+                    <div className="text-sm font-semibold">{t("payments.credits.title")}</div>
+                    <div className="text-xs text-zinc-400 light:text-slate-500">{t("payments.credits.hint")}</div>
+                  </div>
+                </div>
+                {selectedGateway === "CREDITS" && <CheckCircle2 className="h-5 w-5 text-fuchsia-400" />}
+              </label>
+            )}
+
             {offers("CCBILL") && (
               <label
                 onClick={() => setSelectedGateway("CCBILL")}

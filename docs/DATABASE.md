@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 23 tables · 14 enums · 2 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 26 tables · 14 enums · 6 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -36,6 +36,12 @@ erDiagram
     users ||--o{ playlist_members : "user_id"
     users ||--o{ playlists : "creator_id"
     users ||--o{ profiles : "user_id"
+    users ||--o{ stories : "creator_id"
+    audience_lists ||--o{ stories : "audience_list_id"
+    stories ||--o{ story_likes : "story_id"
+    users ||--o{ story_likes : "user_id"
+    stories ||--o{ story_views : "story_id"
+    users ||--o{ story_views : "viewer_id"
     users ||--o{ tips_ledger : "sender_id"
     users ||--o{ tips_ledger : "creator_id"
     videos ||--o{ tips_ledger : "video_id"
@@ -246,6 +252,54 @@ erDiagram
 | `total_tips_earned_cents` | integer | no | `0` |  |
 | `updated_at` | timestamp with time zone | no | `now()` |  |
 
+### `stories`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `creator_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `media_type` | varchar(20) | no | `"IMAGE"` |  |
+| `bunny_video_id` | varchar(120) | yes |  |  |
+| `media_url` | text | yes |  |  |
+| `thumbnail_url` | text | yes |  |  |
+| `caption` | varchar(280) | yes |  |  |
+| `visibility` | video_visibility | no | `"PUBLIC"` |  |
+| `audience_list_id` | uuid | yes |  | → `audience_lists.id` (on delete set null) |
+| `status` | video_status | no | `"READY"` |  |
+| `duration_seconds` | integer | no | `0` |  |
+| `views_count` | integer | no | `0` |  |
+| `likes_count` | integer | no | `0` |  |
+| `tips_count` | integer | no | `0` |  |
+| `expires_at` | timestamp with time zone | no |  |  |
+| `removed_at` | timestamp with time zone | yes |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+| `updated_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `stories_creator_idx` (creator_id) · `stories_expires_at_idx` (expires_at) · `stories_created_at_idx` (created_at) · `stories_bunny_video_idx` (unique, bunny_video_id, partial)
+
+### `story_likes`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `story_id` | uuid | no |  | → `stories.id` (on delete cascade) |
+| `user_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `story_likes_unique_idx` (unique, story_id, user_id)
+
+### `story_views`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `story_id` | uuid | no |  | → `stories.id` (on delete cascade) |
+| `viewer_id` | uuid | yes |  | → `users.id` (on delete cascade) |
+| `viewer_key` | varchar(80) | no |  |  |
+| `viewed_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `story_views_story_viewer_idx` (story_id, viewer_id) · `story_views_once_idx` (unique, story_id, viewer_key)
+
 ### `tips_ledger`
 
 | Column | Type | Null | Default | Notes |
@@ -409,7 +463,7 @@ erDiagram
 | `contact_status` | `PENDING`, `ACCEPTED`, `REJECTED`, `BLOCKED` |
 | `follow_status` | `PENDING`, `APPROVED` |
 | `ledger_entry_type` | `TIP_RECEIVED`, `PLATFORM_FEE`, `CREATOR_CREDIT`, `PAYOUT_REQUESTED`, `PAYOUT_COMPLETED`, `REFUND` |
-| `payment_gateway` | `CCBILL`, `SEGPAY`, `CRYPTO`, `STRIPE` |
+| `payment_gateway` | `CCBILL`, `SEGPAY`, `CRYPTO`, `STRIPE`, `CREDITS` |
 | `payment_intent_status` | `PENDING`, `SUCCEEDED`, `FAILED` |
 | `payout_status` | `REQUESTED`, `UNDER_REVIEW`, `PROCESSING`, `SETTLED`, `FAILED` |
 | `report_reason` | `NON_CONSENSUAL`, `UNDERAGE`, `DMCA_COPYRIGHT`, `TERMS_VIOLATION`, `FRAUD_SCAM` |
@@ -423,3 +477,7 @@ erDiagram
 
 - `0000_initial_schema.sql`
 - `0001_email_verification_and_password_reset.sql`
+- `0002_abnormal_metal_master.sql`
+- `0003_stories_access_and_bunny.sql`
+- `0004_story_views_keyed.sql`
+- `0005_credits_gateway.sql`

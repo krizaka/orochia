@@ -15,6 +15,7 @@ export const dynamic = "force-dynamic";
 const RULES = {
   avatars: { roles: ["MEMBER", "CREATOR", "ADMIN"], maxBytes: 5 * 1024 * 1024, types: ["image/jpeg", "image/png", "image/webp"] },
   thumbnails: { roles: ["CREATOR", "ADMIN"], maxBytes: 10 * 1024 * 1024, types: ["image/jpeg", "image/png", "image/webp"] },
+  stories: { roles: ["CREATOR", "ADMIN"], maxBytes: 10 * 1024 * 1024, types: ["image/jpeg", "image/png", "image/webp"] },
   documents: { roles: ["CREATOR", "ADMIN"], maxBytes: 20 * 1024 * 1024, types: ["application/pdf", "image/jpeg", "image/png"] },
 } as const;
 
@@ -25,11 +26,11 @@ const EXTENSIONS: Record<string, string> = {
   "application/pdf": ".pdf",
 };
 
-/** Stores an avatar (any account), a thumbnail or a 2257 document (creators); size and type checked per kind. */
+/** Stores an avatar (any account), a thumbnail, a story image or a 2257 document (creators); size and type checked per kind. */
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const category = z.enum(["avatars", "thumbnails", "documents"]).safeParse(formData.get("category"));
+    const category = z.enum(["avatars", "thumbnails", "stories", "documents"]).safeParse(formData.get("category"));
     if (!category.success) return jsonError(400, "Unsupported upload category");
     const rule = RULES[category.data];
 

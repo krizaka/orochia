@@ -22,6 +22,27 @@
       "when": 1791419202085,
       "tag": "0002_abnormal_metal_master",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791425915345,
+      "tag": "0003_stories_access_and_bunny",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791425927804,
+      "tag": "0004_story_views_keyed",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791426537384,
+      "tag": "0005_credits_gateway",
+      "breakpoints": true
     }
   ]
 }

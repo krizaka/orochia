@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (70)
+## Endpoints (79)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -27,7 +27,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/auth/login` | public | Password login. |
 | `POST` | `/api/auth/logout` | public | — |
 | `GET` | `/api/auth/me` | public | The signed-in account (with whether its e-mail is verified), or `user: null`. |
-| `POST` | `/api/auth/register` | public | Creates a member or creator account (never an administrator), signs it in and e-mails the link that verifies its address — until then the account can do nothing else. |
+| `POST` | `/api/auth/register` | public | Creates an account (a member — creators are opened later, never an administrator), signs it in and e-mails the link that verifies its address — until then the account can do nothing else. |
 | `POST` | `/api/auth/resend-verification` | public | E-mails a new verification link to the signed-in account (the previous link stops working). |
 | `POST` | `/api/auth/reset-password` | public | Sets a new password with the link's one-time token (1 h). |
 | `POST` | `/api/auth/verify-email` | public | Verifies an e-mail address with the link's one-time token (48 h); refreshes the session of that account. |
@@ -43,6 +43,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/feed` | public | The public feed and the explore search (`?q=`, `?tag=`, paginated); with the featured creator and popular tags. |
 | `GET` | `/api/health` | public | — |
 | `POST` | `/api/legal/report` | public · session-aware | Content reports. |
+| `POST` | `/api/me/become-creator` | session · MEMBER / CREATOR / ADMIN | Opens a creator space for a member: the account becomes CREATOR, pending its 18 U.S.C. § 2257 review (uploads open once an operator verifies it). |
 | `GET` | `/api/me/dashboard` | session · ADMIN / CREATOR / MEMBER | — |
 | `PATCH` | `/api/me/followers/[id]` | session · CREATOR | A creator approves a follower (opening followers-only videos to them) or removes them. |
 | `GET` | `/api/me/lists` | session · MEMBER / CREATOR / ADMIN | Your reusable audience lists (private to you), with their size. |
@@ -54,6 +55,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/me/lists/[id]/members` | session · MEMBER / CREATOR / ADMIN | Adds an account to one of your lists by username (idempotent; the list stays private). |
 | `GET` | `/api/me/network` | session · MEMBER / CREATOR / ADMIN | Your followers, the creators you follow, your contacts and pending requests. |
 | `PUT` | `/api/me/profile` | session · ADMIN / CREATOR / MEMBER | Updates the signed-in user's own profile. |
+| `GET` | `/api/me/stories` | session · CREATOR / ADMIN | Your stories of the last 30 days — live, encoding or expired — with their figures. |
 | `GET` | `/api/metrics` | bearer token | Prometheus metrics, behind a bearer token (METRICS_AUTH_TOKEN). |
 | `GET` | `/api/payments/gateways` | public | The gateways a buyer can pay through on this deployment. |
 | `GET` | `/api/platform/treasury` | session · ADMIN | Platform revenue, computed from the ledger only (administrators). |
@@ -66,7 +68,14 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/playlists/[id]/items` | session · MEMBER / CREATOR / ADMIN | Adds a video at the end of a playlist (owner only, idempotent). |
 | `GET` | `/api/playlists/shared` | session · MEMBER / CREATOR / ADMIN | Collections other accounts invited you to. |
 | `GET` | `/api/search` | public | — |
-| `POST` | `/api/uploads` | session · role depends on the request | Stores an avatar (any account), a thumbnail or a 2257 document (creators); size and type checked per kind. |
+| `GET` | `/api/stories` | public · session-aware | The stories rail: one ring per creator with live stories you may see (yours first, then unseen), signed for you. |
+| `POST` | `/api/stories` | session · CREATOR / ADMIN | Publishes an image story (24 h) from an image stored by /api/uploads (category "stories"); verified creators only. |
+| `DELETE` | `/api/stories/[id]` | session · CREATOR / ADMIN | Withdraws a story: its creator or an operator. |
+| `DELETE` | `/api/stories/[id]/like` | session · MEMBER / CREATOR / ADMIN | Removes your like (idempotent). |
+| `POST` | `/api/stories/[id]/like` | session · MEMBER / CREATOR / ADMIN | Likes a story you may see (idempotent). |
+| `POST` | `/api/stories/[id]/view` | public · session-aware | Counts a view of a story you may see — once per viewer, never the creator's own. |
+| `POST` | `/api/stories/upload-session` | session · CREATOR / ADMIN | Starts a video story: records it and returns a Tus session straight to Bunny (stories collection). |
+| `POST` | `/api/uploads` | session · role depends on the request | Stores an avatar (any account), a thumbnail, a story image or a 2257 document (creators); size and type checked per kind. |
 | `DELETE` | `/api/videos/[id]` | session · CREATOR | The creator deletes their video. |
 | `PATCH` | `/api/videos/[id]` | session · CREATOR | The creator edits their video: title, description, visibility, unlock price, tags, comments open. |
 | `GET` | `/api/videos/[id]/comments` | public · session-aware | The comments of a video you may watch, oldest first; removed ones keep their place without text. |
@@ -82,7 +91,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/webhooks/bunny` | signed webhook | Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (BUNNY_WEBHOOK_SECRET). |
 | `POST` | `/api/webhooks/payments/[gateway]` | signed webhook | Gateway payment notifications. |
 
-## Database tables (23)
+## Database tables (26)
 
 | Table | Drizzle export | Defined in |
 | :--- | :--- | :--- |
@@ -105,6 +114,9 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `playlists` | `playlists` | `packages/db/src/schema/playlists.ts` |
 | `playlist_items` | `playlistItems` | `packages/db/src/schema/playlists.ts` |
 | `playlist_members` | `playlistMembers` | `packages/db/src/schema/playlists.ts` |
+| `stories` | `stories` | `packages/db/src/schema/stories.ts` |
+| `story_views` | `storyViews` | `packages/db/src/schema/stories.ts` |
+| `story_likes` | `storyLikes` | `packages/db/src/schema/stories.ts` |
 | `users` | `users` | `packages/db/src/schema/users.ts` |
 | `profiles` | `profiles` | `packages/db/src/schema/users.ts` |
 | `videos` | `videos` | `packages/db/src/schema/videos.ts` |

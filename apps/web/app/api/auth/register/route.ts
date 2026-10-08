@@ -18,7 +18,6 @@ const RegisterSchema = z.object({
   email: z.string().trim().toLowerCase().email().max(255),
   displayName: z.string().trim().min(1).max(80),
   password: z.string().min(10, "At least 10 characters").max(256),
-  role: z.enum(["CREATOR", "MEMBER"]),
   isAgeVerified: z.literal(true, {
     errorMap: () => ({ message: "18+ age certification is required (18 U.S.C. § 2257)" }),
   }),
@@ -26,7 +25,7 @@ const RegisterSchema = z.object({
 });
 
 /**
- * Creates a member or creator account (never an administrator), signs it in and e-mails the link that
+ * Creates an account (a member — creators are opened later, never an administrator), signs it in and e-mails the link that
  * verifies its address — until then the account can do nothing else.
  */
 export async function POST(req: NextRequest) {
@@ -44,9 +43,10 @@ export async function POST(req: NextRequest) {
           username: input.username,
           email: input.email,
           passwordHash: hashPassword(input.password),
-          role: input.role,
-          // Creators publish only after the 2257 custodian review flips this flag.
-          isVerified: input.role === "MEMBER",
+          // One kind of account: members watch, follow, tip and unlock; publishing is opened later
+          // ("become a creator", /api/me/become-creator) behind the 2257 review.
+          role: "MEMBER",
+          isVerified: true,
           isAgeVerified: true,
         })
         .returning();

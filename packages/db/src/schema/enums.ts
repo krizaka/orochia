@@ -47,6 +47,8 @@ export const paymentGatewayEnum = pgEnum("payment_gateway", [
   "SEGPAY",
   "CRYPTO",
   "STRIPE",
+  /** Orochia credits: spent from the buyer's balance, settled in-house (no checkout, no webhook). */
+  "CREDITS",
 ]);
 
 export const paymentIntentStatusEnum = pgEnum("payment_intent_status", [

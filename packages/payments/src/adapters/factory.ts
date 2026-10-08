@@ -54,14 +54,17 @@ export function getPaymentGateway(gateway: GatewayType, env: Env = process.env):
       const c = required(env, gateway, ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"]);
       return new StripeAdapter({ secretKey: c.STRIPE_SECRET_KEY, webhookSecret: c.STRIPE_WEBHOOK_SECRET });
     }
+    case "CREDITS":
+      // Credits have no checkout page and no webhook: they settle in-house (credits.ts).
+      throw new GatewayConfigurationError(gateway, ["no external checkout"]);
     default:
       throw new GatewayConfigurationError(String(gateway), ["unsupported gateway"]);
   }
 }
 
-/** The gateways this deployment can actually charge through, in display order. */
+/** The gateways this deployment can actually charge through, in display order (credits first when enabled). */
 export function configuredGateways(env: Env = process.env): GatewayType[] {
-  return (["CCBILL", "SEGPAY", "CRYPTO", "STRIPE"] as GatewayType[]).filter((g) => {
+  const external = (["CCBILL", "SEGPAY", "CRYPTO", "STRIPE"] as GatewayType[]).filter((g) => {
     try {
       getPaymentGateway(g, env);
       return true;
@@ -69,4 +72,5 @@ export function configuredGateways(env: Env = process.env): GatewayType[] {
       return false;
     }
   });
+  return env.PAYMENTS_CREDITS_MODE === "always-approve" ? ["CREDITS", ...external] : external;
 }

@@ -5,7 +5,9 @@ import { eq } from "drizzle-orm";
 import {
   GatewayTypeSchema,
   attachGatewaySession,
+  chargeCredits,
   configuredGateways,
+  creditsEnabled,
   createPaymentIntent,
   getPaymentGateway,
   settlePaymentIntent,
@@ -28,6 +30,8 @@ const UnlockVideoRequestSchema = z.object({
  * a payment intent and returns the gateway's checkout URL; the access grant is created only when
  * the gateway's signed webhook confirms the payment (/api/webhooks/payments/[gateway]).
  *
+ * Orochia credits (CREDITS) settle in-house at once through the same intent → settlement → ledger
+ * path — offered only when PAYMENTS_CREDITS_MODE is set (see packages/payments/src/credits.ts).
  * Demo mode (never in production, no gateway configured) settles the intent at once, so the
  * showcase works without merchant accounts.
  */
@@ -53,6 +57,19 @@ export async function POST(req: NextRequest) {
       videoId: video.id,
       amountCents,
     });
+
+    if (gateway === "CREDITS") {
+      if (!creditsEnabled()) return jsonError(400, "This payment method is not available");
+      const charge = await chargeCredits({ intentId: intent.id, buyerId: user.id, amountCents });
+      if (!charge.approved) return jsonError(402, "Not enough credits");
+      const outcome = await settlePaymentIntent("CREDITS", {
+        intentId: intent.id,
+        gatewayTransactionRef: charge.reference,
+        amountCents,
+        status: "SUCCESS",
+      });
+      return NextResponse.json({ success: true, settled: outcome.kind === "SETTLED" });
+    }
 
     const configured = configuredGateways();
     if (configured.length === 0 && isDemoMode()) {
