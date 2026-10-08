@@ -24,6 +24,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SITE = path.resolve(ROOT, "../..");
 const CHECK = process.argv.includes("--check");
 
+// Text for Markdown that is also compiled as MDX on krizaka.com: angle brackets and braces would be read as JSX.
+const mdText = (s) => s.replace(/[<>{}]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "{": "&#123;", "}": "&#125;" })[c]);
 const read = (p) => (fs.existsSync(p) ? fs.readFileSync(p, "utf8") : "");
 const walk = (dir, pred) =>
   !fs.existsSync(dir)
@@ -175,7 +177,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
-${endpoints.map((e) => `| \`${e.method}\` | \`${e.path}\` | ${e.access} | ${e.summary || "—"} |`).join("\n")}
+${endpoints.map((e) => `| \`${e.method}\` | \`${e.path}\` | ${e.access} | ${mdText(e.summary) || "—"} |`).join("\n")}
 
 ## Database tables (${tables.length})
 

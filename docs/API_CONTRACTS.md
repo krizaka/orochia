@@ -15,7 +15,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `DELETE` | `/api/admin/auctions/[id]` | session · ADMIN | Cancels an auction that is open or awaiting its decision, with a recorded reason; the leading bid is released. |
 | `GET` | `/api/admin/creators` | session · ADMIN | Creator accounts with their verification state; `?verified=false` lists the review queue. |
 | `PATCH` | `/api/admin/creators/[id]` | session · ADMIN | Records the outcome of a creator's 18 U.S.C. § 2257 review. |
-| `GET` | `/api/admin/documents` | session · ADMIN | A creator's 2257 document (`?ref=private/documents/<uuid>.<ext>`), for operators only; never cached. |
+| `GET` | `/api/admin/documents` | session · ADMIN | A creator's 2257 document (`?ref=private/documents/&lt;uuid&gt;.&lt;ext&gt;`), for operators only; never cached. |
 | `GET` | `/api/admin/overview` | session · ADMIN | Operator overview: money, catalogue and the three queues that need a human. |
 | `GET` | `/api/admin/payouts` | session · ADMIN | Payout requests with their creator; `?status=` filters. |
 | `PATCH` | `/api/admin/payouts/[id]` | session · ADMIN | Advances a payout. |
@@ -24,7 +24,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/admin/platform/backups` | session · ADMIN | Backs the whole database up now (gzipped JSON of every table, in private storage). |
 | `DELETE` | `/api/admin/platform/backups/[name]` | session · ADMIN | Deletes a backup from private storage. |
 | `GET` | `/api/admin/platform/backups/[name]` | session · ADMIN | Downloads a backup file (`?download=1`), or describes it: tables, rows, migrations. |
-| `POST` | `/api/admin/platform/reset` | session · ADMIN | Factory reset: backs the database up first (unless asked not to), wipes it and rebuilds it from the migrations — development deployments only (OROCHIA_ALLOW_DATABASE_RESET, never the indexed production), after the operator typed “reset <database>”. The operator and the owner are kept. |
+| `POST` | `/api/admin/platform/reset` | session · ADMIN | Factory reset: backs the database up first (unless asked not to), wipes it and rebuilds it from the migrations — development deployments only (OROCHIA_ALLOW_DATABASE_RESET, never the indexed production), after the operator typed “reset &lt;database&gt;”. The operator and the owner are kept. |
 | `GET` | `/api/admin/reports` | session · ADMIN | Content reports, newest first; `?status=` filters. |
 | `PATCH` | `/api/admin/reports/[id]` | session · ADMIN | Moves a report through triage (open → in review → resolved). |
 | `GET` | `/api/admin/users` | session · ADMIN | Every account (filter by `?role=`, `?suspended=`, `?q=`): role, verification and suspension state. |
