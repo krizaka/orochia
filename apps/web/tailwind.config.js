@@ -69,7 +69,10 @@ module.exports = {
   },
   plugins: [
     function ({ addVariant }) {
-      addVariant("light", ["html.light &", ".light &", ":root:not(.dark) &"]);
+      // `light:` applies in the light theme — except inside a `.theme-dark` island (media editors, players), which
+      // stays dark in both themes. :where() keeps the specificity unchanged.
+      const outsideDarkIsland = ":where(:not(.theme-dark, .theme-dark *))";
+      addVariant("light", [`html.light &${outsideDarkIsland}`, `.light &${outsideDarkIsland}`, `:root:not(.dark) &${outsideDarkIsland}`]);
     },
   ],
 };

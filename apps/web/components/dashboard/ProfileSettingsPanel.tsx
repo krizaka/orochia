@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Bell, Check, ExternalLink, Link2, Loader2, Lock, User, UserX, Wallet, KeyRound } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { Switch } from "@/components/ui";
 import { SocialIcon } from "@/components/SocialIcon";
 import { latestAdultBirthDate } from "@/components/BirthDateField";
 import { t, type MessageKey } from "@/lib/i18n";
@@ -104,21 +105,6 @@ function useSaver() {
   return { state, error, run };
 }
 
-function MiniSwitch({ checked, onChange, label: aria, disabled = false }: { checked: boolean; onChange: (v: boolean) => void; label: string; disabled?: boolean }) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      aria-label={aria}
-      disabled={disabled}
-      onClick={() => onChange(!checked)}
-      className={`relative h-6 w-11 shrink-0 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 disabled:opacity-30 ${checked ? "bg-violet-600" : "bg-zinc-700 light:bg-slate-300"}`}
-    >
-      <span className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${checked ? "translate-x-5" : ""}`} />
-    </button>
-  );
-}
 
 /**
  * Account settings, in sections that each save on their own: profile (pictures, name, bio, private details),
@@ -356,10 +342,10 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
               >
                 <span className="text-sm text-zinc-200 light:text-slate-800">{row.label}</span>
                 <span className="flex justify-center">
-                  <MiniSwitch checked={inOn} label={`${row.label} — ${t("settings.notifications.inApp")}`} onChange={(on) => setChannel("inApp", all ? (on ? [] : [...EVENTS]) : toggle(inAppOff, row.id, on))} />
+                  <Switch checked={inOn} label={`${row.label} — ${t("settings.notifications.inApp")}`} onChange={(on) => setChannel("inApp", all ? (on ? [] : [...EVENTS]) : toggle(inAppOff, row.id, on))} />
                 </span>
                 <span className="flex justify-center">
-                  <MiniSwitch checked={mailOn} disabled={frequency === "NONE"} label={`${row.label} — ${t("settings.notifications.byEmail")}`} onChange={(on) => setChannel("email", all ? (on ? [] : [...EVENTS]) : toggle(emailsOff, row.id, on))} />
+                  <Switch checked={mailOn} disabled={frequency === "NONE"} label={`${row.label} — ${t("settings.notifications.byEmail")}`} onChange={(on) => setChannel("email", all ? (on ? [] : [...EVENTS]) : toggle(emailsOff, row.id, on))} />
                 </span>
               </div>
             );

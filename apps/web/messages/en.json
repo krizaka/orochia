@@ -243,7 +243,7 @@
       "vertical": "Story 9:16",
       "square": "Square 1:1"
     },
-    "reposition": "Drag the frame to choose what stays in",
+    "reposition": "Drag to reframe",
     "storyVertical": "Stories are always vertical (9:16).",
     "play": "Play",
     "pause": "Pause",
@@ -267,7 +267,9 @@
       "replaceMusic": "Replace",
       "removeMusic": "Remove music",
       "musicVolume": "Music volume",
-      "musicHint": "Plays from the start of your clip and loops if it is shorter. Use only music you have the rights to."
+      "musicHint": "Plays from the start of your clip and loops if it is shorter. Use only music you have the rights to.",
+      "mute": "Mute",
+      "unmute": "Turn the sound back on"
     },
     "saveDraft": "Save draft",
     "draftSaved": "Draft saved on this device.",
@@ -291,7 +293,35 @@
       "failed": "This draft could not be opened.",
       "untitled": "Untitled"
     },
-    "titleStory": "Edit story"
+    "titleStory": "Edit story",
+    "done": "Done",
+    "next": "Next",
+    "reset": "Reset",
+    "preview": "Preview",
+    "toolsLabel": "Editing tools",
+    "kept": "{length} s kept",
+    "panels": {
+      "trim": {
+        "title": "Trim",
+        "hint": "Drag the white handles to keep the best part. Grab the timeline to preview any moment."
+      },
+      "filters": {
+        "title": "Filters",
+        "hint": "Tap a look. Fine-tune it in Adjust — the exported video matches the preview."
+      },
+      "adjust": {
+        "title": "Adjust",
+        "hint": "Light, contrast and colour. Double-click a slider to reset it."
+      },
+      "format": {
+        "title": "Format",
+        "hint": "Choose the shape, then drag the picture to choose what stays in."
+      },
+      "sound": {
+        "title": "Sound",
+        "hint": "Original sound, smooth fades, less background noise, and music under it."
+      }
+    }
   },
   "upload": {
     "limits": "MP4, MOV, MKV — up to {size} and {duration}. Resumable direct upload.",

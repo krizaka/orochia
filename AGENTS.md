@@ -236,6 +236,15 @@ orochia/                           npm workspaces
   skeletons while loading; menus and dialogs close on Escape and outside click and carry ARIA roles; text and tap
   targets work at 360 px. Prefer the shared building blocks (`ProfileHero`, `PictureQuickEdit`, `NotificationBell`,
   `SocialIcon`) over new one-offs.
+- **UI kit** (`components/ui`): `Button` / `buttonClass` (primary · secondary · ghost · danger, sm · md · lg, loading),
+  `IconButton` (accessible name required), `Chip`, `Segmented`, `Switch`, `Slider`, `cx`. New screens use them; a
+  screen touched for another reason moves its hand-rolled buttons to them.
+- **Dark islands**: a container with `theme-dark` stays dark in both themes (the `light:` variant does not apply
+  inside) — media editors and players.
+- **The video editor** (`components/editor/`): `VideoEditor` (shell and layout) · `Stage` (picture, reframe,
+  progress) · `Timeline` · `panels` (one per tool, each with title, hint and reset) · `useEditState` (settings and
+  clamped trim) · `media` (`usePreviewPlayer` is the only code that drives the media elements). Rendering is
+  `lib/video-edit.ts`.
 - Navigation: desktop — the top bar; phones — the top bar keeps brand, search and theme, and the bottom tab bar
   (Home · Explore · Create · Account / Sign in) holds everything else, so each action exists once.
 
