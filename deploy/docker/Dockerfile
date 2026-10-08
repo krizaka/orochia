@@ -19,7 +19,9 @@ RUN npm ci
 # 2. Builder stage
 FROM base AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+# Everything npm ci installed — the root node_modules and any workspace-level node_modules (a dependency npm
+# could not hoist, e.g. apps/web/node_modules).
+COPY --from=deps /app ./
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
