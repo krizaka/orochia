@@ -685,5 +685,90 @@
   },
   "feed": {
     "emptyFilter": "Nothing here yet in this category — try another tab."
+  },
+  "publish": {
+    "title": "Publish a video",
+    "subtitle": "Straight to a global video network — your file never passes through our servers.",
+    "steps": {
+      "video": "Your video",
+      "details": "Details",
+      "audience": "Who can watch",
+      "rating": "Content",
+      "declarations": "Declarations"
+    },
+    "drop": {
+      "title": "Drop your video here",
+      "or": "or",
+      "browse": "choose a file",
+      "dragging": "Release to add it",
+      "replace": "Replace",
+      "edit": "Edit video",
+      "edited": "Edited"
+    },
+    "unsupported": "Choose a video file (MP4, MOV, MKV…).",
+    "fields": {
+      "title": "Title",
+      "titlePlaceholder": "Give it a name people will click",
+      "description": "Description",
+      "descriptionPlaceholder": "What is it about? Credits, highlights…",
+      "tags": "Tags",
+      "tagsPlaceholder": "Type a tag and press Enter",
+      "tagsHint": "Up to 12 — they help people find it.",
+      "collection": "Add to a collection",
+      "noCollection": "No collection",
+      "price": "Price to unlock",
+      "priceHint": "Fans pay at least this to watch."
+    },
+    "audiences": {
+      "PUBLIC": {
+        "title": "Everyone",
+        "hint": "Free for anyone, listed everywhere."
+      },
+      "APPROVED_FOLLOWERS_ONLY": {
+        "title": "Followers",
+        "hint": "Only the followers you approved."
+      },
+      "CONTACTS_ONLY": {
+        "title": "Contacts",
+        "hint": "Only your accepted contacts."
+      },
+      "TIPPED_UNLOCKED": {
+        "title": "Paid unlock",
+        "hint": "Fans pay to watch it."
+      },
+      "INVITED_ONLY": {
+        "title": "Invited",
+        "hint": "People and lists you choose, after publishing."
+      }
+    },
+    "split": {
+      "fan": "Fan pays",
+      "fee": "Platform ({fee}%)",
+      "you": "You receive"
+    },
+    "rating": {
+      "label": "Content rating",
+      "blur": "Blur the preview",
+      "blurHint": "Viewers tap to reveal the thumbnail and the first seconds."
+    },
+    "declarations": {
+      "intro": "Required by law before any adult content is published.",
+      "age": "Everyone shown is 18 or older and gave explicit, written consent.",
+      "records": "I keep the identity and age records required by 18 U.S.C. § 2257.",
+      "rights": "I own or have licensed everything in this video (picture, music, performances).",
+      "all": "I confirm all three"
+    },
+    "submit": "Publish",
+    "uploading": "Uploading… {progress}%",
+    "missing": "Add {what} to publish",
+    "preview": "Preview",
+    "previewHint": "How your video will appear in the feed.",
+    "untitled": "Your title here",
+    "done": {
+      "title": "Your video is on its way",
+      "body": "It is uploading and then processing in up to 4K. We will notify you the moment it is online — you can keep browsing meanwhile.",
+      "watch": "Open the video",
+      "another": "Publish another"
+    }
   }
 }

@@ -92,6 +92,13 @@
       "when": 1791468136443,
       "tag": "0012_wallet_and_payout_accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1791469469212,
+      "tag": "0013_content_ratings_reference",
+      "breakpoints": true
     }
   ]
 }

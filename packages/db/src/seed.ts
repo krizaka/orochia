@@ -146,62 +146,13 @@ const CREDITS = [
 export async function runSeed(): Promise<void> {
   console.log("🌱 Seeding Orochia (idempotent)…");
 
+  // Content ratings are reference data installed by migration 0013 in every environment (seed and migration agree).
   const RATINGS = [
-    {
-      id: "FOR_KIDS",
-      label: "Kids Safe (Tous publics)",
-      description: "Contenu adapté aux enfants et à la famille, sans langage inapproprié ni violence.",
-      isAdult: false,
-      requiresBlur: false,
-      defaultTags: ["family", "kids", "animation"],
-      minAge: 0,
-      displayOrder: 1,
-      iconName: "baby",
-    },
-    {
-      id: "GENERAL",
-      label: "General (Grand public)",
-      description: "Contenu tous publics convenant à la majorité des spectateurs.",
-      isAdult: false,
-      requiresBlur: false,
-      defaultTags: ["general"],
-      minAge: 0,
-      displayOrder: 2,
-      iconName: "users",
-    },
-    {
-      id: "TEEN",
-      label: "Teens (13+)",
-      description: "Convient aux adolescents dès 13 ans. Peut contenir des thèmes plus matures.",
-      isAdult: false,
-      requiresBlur: false,
-      defaultTags: ["teen", "13+"],
-      minAge: 13,
-      displayOrder: 3,
-      iconName: "user-check",
-    },
-    {
-      id: "MATURE",
-      label: "Mature (18+)",
-      description: "Réservé aux adultes de 18 ans et plus. Thèmes sensibles ou intenses.",
-      isAdult: true,
-      requiresBlur: false,
-      defaultTags: ["mature", "18+"],
-      minAge: 18,
-      displayOrder: 4,
-      iconName: "shield-alert",
-    },
-    {
-      id: "ADULT",
-      label: "Adult Explicit (18+ Adulte)",
-      description: "Contenu explicite réservé aux adultes certifiés 18+. Aperçu flouté par défaut.",
-      isAdult: true,
-      requiresBlur: true,
-      defaultTags: ["adult", "18+", "nsfw"],
-      minAge: 18,
-      displayOrder: 5,
-      iconName: "alert-triangle",
-    },
+    { id: "FOR_KIDS", label: "Kids safe", description: "Suitable for children and families: no strong language, no violence.", isAdult: false, requiresBlur: false, defaultTags: ["family", "kids"], minAge: 0, displayOrder: 1, iconName: "baby" },
+    { id: "GENERAL", label: "General audience", description: "Suitable for most viewers.", isAdult: false, requiresBlur: false, defaultTags: ["general"], minAge: 0, displayOrder: 2, iconName: "users" },
+    { id: "TEEN", label: "Teens (13+)", description: "Suitable from 13. May touch on more mature themes.", isAdult: false, requiresBlur: false, defaultTags: ["teen"], minAge: 13, displayOrder: 3, iconName: "user-check" },
+    { id: "MATURE", label: "Mature (18+)", description: "Adults only. Sensitive or intense themes.", isAdult: true, requiresBlur: false, defaultTags: ["mature", "18+"], minAge: 18, displayOrder: 4, iconName: "shield-alert" },
+    { id: "ADULT", label: "Adult explicit (18+)", description: "Explicit content for verified adults. The preview is blurred by default.", isAdult: true, requiresBlur: true, defaultTags: ["adult", "18+"], minAge: 18, displayOrder: 5, iconName: "alert-triangle" },
   ];
   for (const r of RATINGS) {
     await db.insert(contentRatings).values(r).onConflictDoNothing();

@@ -272,7 +272,8 @@ html.dark .text-gradient-neon {
 
 /* Page entrance (app/template.tsx re-mounts on every navigation). */
 .kz-page {
-  animation: kz-page-in 0.5s var(--kz-ease) both;
+  /* backwards, not both: a filled transform animation would anchor every position:fixed descendant to the page. */
+  animation: kz-page-in 0.5s var(--kz-ease) backwards;
 }
 @keyframes kz-page-in {
   from { opacity: 0; transform: translateY(10px); }

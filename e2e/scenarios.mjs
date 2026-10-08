@@ -472,6 +472,8 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
 
 // Reference Data & Presets
 {
+  const reference = (await anon.call("/api/reference/content-ratings")).json.ratings ?? [];
+  check("content ratings exist in every environment (migration 0013), in English", reference.length === 5 && reference.some((r) => r.id === "GENERAL" && r.label === "General audience"));
   const ratings = (await anon.call("/api/reference/content-ratings")).json.ratings;
   check("content ratings served", Array.isArray(ratings) && ratings.some((r) => r.id === "GENERAL"));
   const presets = (await anon.call("/api/reference/presets")).json;

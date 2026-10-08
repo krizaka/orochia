@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 38 tables · 16 enums · 13 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 38 tables · 16 enums · 14 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -698,3 +698,4 @@ erDiagram
 - `0010_drop_twitter_handle.sql`
 - `0011_notifications_center.sql`
 - `0012_wallet_and_payout_accounts.sql`
+- `0013_content_ratings_reference.sql`
