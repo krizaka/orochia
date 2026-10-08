@@ -13,6 +13,14 @@ export interface Mail {
   replyTo?: string;
 }
 
+/**
+ * Whether messages really leave: always in production; elsewhere only with MAIL_DELIVERY=on — local runs and
+ * test suites write the message to the log instead, so seed and test addresses never receive real e-mail.
+ */
+export function mailDeliveryEnabled(env: NodeJS.ProcessEnv = process.env): boolean {
+  return env.NODE_ENV === "production" || env.MAIL_DELIVERY === "on";
+}
+
 export function mailConfigured(env: NodeJS.ProcessEnv = process.env): boolean {
   return Boolean(env.RESEND_API_KEY || (env.MAILGUN_API_KEY && env.MAILGUN_DOMAIN));
 }
@@ -34,6 +42,10 @@ async function sendWithResend(mail: Mail, recipients: string[], env: NodeJS.Proc
 /** Sends one message; resolves to whether Mailgun accepted it. Never throws. */
 export async function sendMail(mail: Mail, env: NodeJS.ProcessEnv = process.env): Promise<boolean> {
   const recipients = (Array.isArray(mail.to) ? mail.to : mail.to.split(",")).map((s) => s.trim()).filter(Boolean);
+  if (!mailDeliveryEnabled(env)) {
+    console.info(`mail (not delivered outside production — MAIL_DELIVERY=on to send) to ${recipients.join(", ")}: ${mail.subject}\n${mail.text}`);
+    return false;
+  }
   if (!mailConfigured(env) || recipients.length === 0) {
     if (!mailConfigured(env)) console.warn(`mail: not configured, "${mail.subject}" not sent`);
     return false;
