@@ -11,6 +11,8 @@ import { SaveToPlaylist } from "@/components/SaveToPlaylist";
 import { VideoComments } from "@/components/VideoComments";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
 import { Sparkles, Eye, ShieldCheck, Share2, Flag, CheckCircle2, Heart, MessageSquare } from "lucide-react";
+import { buttonClass, cx } from "@/components/ui";
+import { t } from "@/lib/i18n";
 
 interface StreamAccess {
   allowed: boolean;
@@ -144,10 +146,10 @@ export default function WatchClient() {
   if (notFound) {
     return (
       <div className="mx-auto max-w-lg px-4 py-24 text-center">
-        <h1 className="text-2xl font-bold text-white dark:text-white light:text-slate-900 font-display">Video not found</h1>
-        <p className="mt-2 text-sm text-zinc-400 dark:text-zinc-400 light:text-slate-600">It may have been removed by its creator.</p>
-        <Link href="/" className="mt-6 inline-block rounded-xl bg-violet-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg">
-          Back to the feed
+        <h1 className="font-display text-2xl font-bold text-white light:text-slate-900">{t("watch.notFound")}</h1>
+        <p className="mt-2 text-sm text-zinc-400 light:text-slate-600">{t("watch.notFoundBody")}</p>
+        <Link href="/" className={buttonClass({ variant: "primary", className: "mt-6" })}>
+          {t("watch.backToFeed")}
         </Link>
       </div>
     );
@@ -165,12 +167,12 @@ export default function WatchClient() {
       {paymentState === "success" && !stream?.allowed && (
         <div className="mb-6 flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-950/30 px-4 py-3 text-xs text-emerald-300">
           <CheckCircle2 className="h-4 w-4" />
-          Payment received — the video unlocks as soon as the payment provider confirms it.
+          {t("watch.paymentReceived")}
         </div>
       )}
       {paymentState === "cancelled" && (
         <div className="mb-6 rounded-2xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900/60 dark:bg-zinc-900/60 light:bg-slate-100 px-4 py-3 text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-600">
-          Payment cancelled. Nothing was charged.
+          {t("watch.paymentCancelled")}
         </div>
       )}
 
@@ -178,7 +180,7 @@ export default function WatchClient() {
         <div className="lg:col-span-2">
           {isLoading || !details ? (
             <div className="aspect-video w-full rounded-2xl bg-zinc-900 dark:bg-zinc-900 light:bg-slate-200 animate-pulse flex items-center justify-center border border-white/5">
-              <span className="text-xs text-zinc-500 font-mono light:text-slate-500">Verifying access…</span>
+              <span className="font-mono text-xs text-zinc-500 light:text-slate-500">{t("watch.verifying")}</span>
             </div>
           ) : (
             <VideoPlayer
@@ -207,12 +209,9 @@ export default function WatchClient() {
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <h1 className="text-xl sm:text-2xl font-bold text-white dark:text-white light:text-slate-900">{title}</h1>
                 <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setIsTipModalOpen(true)}
-                    className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-violet-600/20 hover:from-violet-500 hover:to-fuchsia-500 transition-all hover:scale-105 active:scale-95"
-                  >
+                  <button onClick={() => setIsTipModalOpen(true)} className={buttonClass({ variant: "primary", size: "sm", round: false })}>
                     <Sparkles className="h-4 w-4" />
-                    <span>{isPaywalled ? "Unlock" : "Send Tip"}</span>
+                    <span>{isPaywalled ? t("watch.unlock") : t("watch.tip")}</span>
                   </button>
                   {stream?.allowed &&
                     (user ? (
@@ -220,33 +219,26 @@ export default function WatchClient() {
                         onClick={toggleLike}
                         disabled={likeBusy}
                         aria-pressed={liked}
-                        className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-60 ${
-                          liked ? "border-fuchsia-500/40 bg-fuchsia-500/10 text-fuchsia-400" : "border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900 dark:bg-zinc-900 light:bg-slate-100 text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:bg-zinc-800"
-                        }`}
+                        aria-label={liked ? t("watch.unlike") : t("watch.like")}
+                        className={cx(buttonClass({ size: "sm", round: false }), liked && "!border-fuchsia-500/40 !bg-fuchsia-500/10 !text-fuchsia-400")}
                       >
                         <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
                         <span>{details.likesCount.toLocaleString("en-US")}</span>
                       </button>
                     ) : (
-                      <Link href="/auth/login" className="flex items-center gap-1.5 rounded-xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900 dark:bg-zinc-900 light:bg-slate-100 px-3 py-2 text-xs font-semibold text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:bg-zinc-800">
+                      <Link href={`/auth/login?next=/watch/${videoId}`} aria-label={t("watch.like")} className={buttonClass({ size: "sm", round: false })}>
                         <Heart className="h-4 w-4" />
                         <span>{details.likesCount.toLocaleString("en-US")}</span>
                       </Link>
                     ))}
                   <SaveToPlaylist videoId={videoId} />
-                  <button
-                    onClick={share}
-                    className="flex items-center gap-1.5 rounded-xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900 dark:bg-zinc-900 light:bg-slate-100 px-3 py-2 text-xs font-semibold text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:bg-zinc-800 transition-colors"
-                  >
+                  <button onClick={share} className={buttonClass({ size: "sm", round: false })}>
                     <Share2 className="h-4 w-4" />
-                    <span>{copied ? "Link copied" : "Share"}</span>
+                    <span>{copied ? t("watch.copied") : t("watch.share")}</span>
                   </button>
-                  <button
-                    onClick={() => setIsReportModalOpen(true)}
-                    className="flex items-center gap-1.5 rounded-xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900 dark:bg-zinc-900 light:bg-slate-100 px-3 py-2 text-xs font-semibold text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
-                  >
+                  <button onClick={() => setIsReportModalOpen(true)} className={cx(buttonClass({ size: "sm", round: false }), "hover:!border-rose-500/40 hover:!bg-rose-500/10 hover:!text-rose-400")}>
                     <Flag className="h-3.5 w-3.5" />
-                    <span>Report</span>
+                    <span>{t("watch.report")}</span>
                   </button>
                 </div>
               </div>
@@ -254,17 +246,17 @@ export default function WatchClient() {
               <div className="mt-3 flex items-center gap-4 text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 font-mono">
                 <span className="flex items-center gap-1">
                   <Eye className="h-3.5 w-3.5 text-zinc-500 light:text-slate-500" />
-                  {details.viewsCount.toLocaleString("en-US")} views
+                  {t("watch.views", { count: details.viewsCount.toLocaleString("en-US") })}
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1">
-                  <MessageSquare className="h-3.5 w-3.5 text-zinc-500 light:text-slate-500" />
-                  {details.commentsCount.toLocaleString("en-US")}
+                  <MessageSquare className="h-3.5 w-3.5 text-zinc-500 light:text-slate-500" aria-hidden />
+                  <span aria-label={t("watch.comments", { count: details.commentsCount })}>{details.commentsCount.toLocaleString("en-US")}</span>
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1">
-                  <Share2 className="h-3.5 w-3.5 text-zinc-500 light:text-slate-500" />
-                  {details.sharesCount.toLocaleString("en-US")}
+                  <Share2 className="h-3.5 w-3.5 text-zinc-500 light:text-slate-500" aria-hidden />
+                  <span aria-label={t("watch.shares", { count: details.sharesCount })}>{details.sharesCount.toLocaleString("en-US")}</span>
                 </span>
                 <span>•</span>
                 <span>{formatDuration(details.durationSeconds)}</span>
@@ -282,18 +274,15 @@ export default function WatchClient() {
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-bold text-white dark:text-white light:text-slate-900">{details.creatorName}</span>
-                      <ShieldCheck className="h-4 w-4 text-violet-400" aria-label="2257 verified creator" />
+                      <ShieldCheck className="h-4 w-4 text-violet-400" aria-label={t("watch.verified")} />
                     </div>
                     <span className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500">@{details.creatorUsername}</span>
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center justify-end gap-2">
                   <RelationshipActions username={details.creatorUsername} show={["follow"]} size="sm" onChange={() => void fetchStreamAccess()} />
-                  <Link
-                    href={`/@${details.creatorUsername}`}
-                    className="rounded-xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-800 dark:bg-zinc-800 light:bg-slate-100 hover:bg-zinc-700 px-4 py-2 text-xs font-semibold text-white dark:text-white light:text-slate-800 transition-all"
-                  >
-                    View profile
+                  <Link href={`/@${details.creatorUsername}`} className={buttonClass({ size: "sm", round: false })}>
+                    {t("watch.viewProfile")}
                   </Link>
                 </div>
               </div>
@@ -318,26 +307,26 @@ export default function WatchClient() {
 
         <div className="space-y-6">
           <div className="rounded-2xl border border-white/10 dark:border-white/10 light:border-black/5 bg-zinc-900/50 dark:bg-zinc-900/50 light:bg-white p-5 shadow-sm">
-            <h3 className="text-sm font-bold text-white dark:text-white light:text-slate-900 mb-3">How this stream is protected</h3>
+            <h3 className="text-sm font-bold text-white dark:text-white light:text-slate-900 mb-3">{t("watch.protection.title")}</h3>
             <ul className="space-y-2.5 text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-600">
               <li className="flex items-start gap-2">
                 <div className="h-1.5 w-1.5 rounded-full bg-violet-400 mt-1.5 shrink-0" />
-                <span>Playback links are signed and expire after five minutes — they cannot be shared or hotlinked.</span>
+                <span>{t("watch.protection.signed")}</span>
               </li>
               <li className="flex items-start gap-2">
                 <div className="h-1.5 w-1.5 rounded-full bg-fuchsia-400 mt-1.5 shrink-0" />
-                <span>Access is checked on the server for every play: contacts, unlocks and creator ownership.</span>
+                <span>{t("watch.protection.checked")}</span>
               </li>
               <li className="flex items-start gap-2">
                 <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0" />
-                <span>Unlocks are granted only after the payment provider confirms the payment.</span>
+                <span>{t("watch.protection.confirmed")}</span>
               </li>
             </ul>
           </div>
 
           {details && details.moreFromCreator.length > 0 && (
             <div className="rounded-2xl border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/30 dark:bg-zinc-900/30 light:bg-white p-5 shadow-sm">
-              <h3 className="text-sm font-bold text-white dark:text-white light:text-slate-900 mb-3">More from {details.creatorName}</h3>
+              <h3 className="text-sm font-bold text-white dark:text-white light:text-slate-900 mb-3">{t("watch.more", { name: details.creatorName })}</h3>
               <div className="space-y-3">
                 {details.moreFromCreator.map((video) => (
                   <Link key={video.id} href={`/watch/${video.id}`} className="flex gap-3 items-center group">
@@ -349,7 +338,7 @@ export default function WatchClient() {
                     <div>
                       <h4 className="text-xs font-semibold text-white dark:text-white light:text-slate-900 group-hover:text-violet-400 line-clamp-1">{video.title}</h4>
                       <span className="block text-[10px] text-zinc-500 font-mono light:text-slate-500">
-                        {formatDuration(video.durationSeconds)} • {video.visibility === "PUBLIC" ? "Free" : "Members"}
+                        {formatDuration(video.durationSeconds)} • {video.visibility === "PUBLIC" ? t("watch.free") : t("watch.members")}
                       </span>
                     </div>
                   </Link>

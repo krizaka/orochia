@@ -3,12 +3,14 @@ import Link from "next/link";
 import { Search, Hash, Compass } from "lucide-react";
 import { VideoCard } from "@/components/VideoCard";
 import { popularTags, searchVideos } from "@/lib/queries";
+import { buttonClass } from "@/components/ui";
+import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Explore creators and videos",
-  description: "Search Orochia: independent creators, their videos, collections and tags.",
+  title: t("explore.metaTitle"),
+  description: t("explore.metaDescription"),
   alternates: { canonical: "/explore" },
 };
 
@@ -34,10 +36,10 @@ export default async function ExplorePage(props: { searchParams: Promise<{ q?: s
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div className="mb-8">
         <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-violet-300 dark:text-violet-300 light:text-violet-700">
-          <Compass className="h-3.5 w-3.5" /> Explore
+          <Compass className="h-3.5 w-3.5" /> {t("explore.eyebrow")}
         </p>
         <h1 className="mt-2 text-2xl sm:text-3xl font-black text-white dark:text-white light:text-slate-900 font-display">
-          Find your next obsession.
+          {t("explore.title")}
         </h1>
       </div>
 
@@ -48,14 +50,13 @@ export default async function ExplorePage(props: { searchParams: Promise<{ q?: s
             name="q"
             defaultValue={q}
             maxLength={100}
-            placeholder="Search videos and creators"
+            placeholder={t("explore.placeholder")}
+            aria-label={t("explore.placeholder")}
             className="w-full rounded-2xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900/80 dark:bg-zinc-900/80 light:bg-slate-100 py-3 pl-11 pr-4 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 dark:placeholder:text-zinc-500 light:placeholder:text-slate-400 focus:border-violet-500 focus:outline-none"
           />
         </div>
         {tag && <input type="hidden" name="tag" value={tag} />}
-        <button className="rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-6 text-xs font-bold text-white shadow-lg shadow-violet-600/20 hover:scale-105 active:scale-95 transition-all">
-          Search
-        </button>
+        <button className={buttonClass({ variant: "primary", size: "lg", round: false, className: "rounded-2xl px-6" })}>{t("explore.search")}</button>
       </form>
 
       {tags.length > 0 && (
@@ -68,33 +69,36 @@ export default async function ExplorePage(props: { searchParams: Promise<{ q?: s
                 : "border-white/10 dark:border-white/10 light:border-black/10 text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-black"
             }`}
           >
-            All
+            {t("explore.all")}
           </Link>
-          {tags.map((t) => (
+          {tags.map((entry) => (
             <Link
-              key={t.tag}
-              href={href({ tag: t.tag, page: undefined })}
+              key={entry.tag}
+              href={href({ tag: entry.tag, page: undefined })}
               className={`inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs transition-colors ${
-                tag === t.tag
+                tag === entry.tag
                   ? "border-violet-500 bg-violet-600/20 text-white dark:text-white light:text-violet-900 font-bold"
                   : "border-white/10 dark:border-white/10 light:border-black/10 text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-black"
               }`}
             >
-              <Hash className="h-3 w-3" /> {t.tag}{" "}
-              <span className="font-mono text-[10px] text-zinc-500 light:text-slate-500">{t.count}</span>
+              <Hash className="h-3 w-3" /> {entry.tag}{" "}
+              <span className="font-mono text-[10px] text-zinc-500 light:text-slate-500">{entry.count}</span>
             </Link>
           ))}
         </div>
       )}
 
       {videos.length === 0 ? (
-        <div className="mt-10 rounded-3xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900/40 dark:bg-zinc-900/40 light:bg-slate-50 p-12 text-center text-sm text-zinc-400 dark:text-zinc-400 light:text-slate-500">
-          Nothing matches {q ? <>“{q}”</> : "this filter"} yet.
+        <div className="mt-10 rounded-3xl border border-white/10 bg-zinc-900/40 p-12 text-center light:border-black/5 light:bg-white">
+          <p className="text-sm font-semibold text-white light:text-slate-900">{q ? t("explore.noMatchQuery", { q }) : t("explore.noMatchFilter")}</p>
+          <p className="mt-1 text-xs text-zinc-400 light:text-slate-500">{t("explore.noMatchHint")}</p>
         </div>
       ) : (
         <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {videos.slice(0, PAGE).map((video) => (
-            <VideoCard key={video.id} {...video} />
+          {videos.slice(0, PAGE).map((video, i) => (
+            <div key={video.id} data-reveal style={{ ["--kz-delay" as string]: `${(i % 4) * 70}ms` }}>
+              <VideoCard {...video} />
+            </div>
           ))}
         </div>
       )}
@@ -104,17 +108,17 @@ export default async function ExplorePage(props: { searchParams: Promise<{ q?: s
           {page > 1 && (
             <Link
               href={href({ page: page - 1 })}
-              className="rounded-xl border border-white/10 dark:border-white/10 light:border-black/10 px-4 py-2 text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:bg-zinc-800"
+              className={buttonClass({ size: "md", round: false })}
             >
-              Previous
+              {t("explore.previous")}
             </Link>
           )}
           {hasMore && (
             <Link
               href={href({ page: page + 1 })}
-              className="rounded-xl border border-white/10 dark:border-white/10 light:border-black/10 px-4 py-2 text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:bg-zinc-800"
+              className={buttonClass({ size: "md", round: false })}
             >
-              Next
+              {t("explore.next")}
             </Link>
           )}
         </div>

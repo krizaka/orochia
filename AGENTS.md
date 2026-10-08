@@ -236,6 +236,7 @@ orochia/                           npm workspaces
   their filters, detail views (`/notifications`, `/watch/<id>`). Tabs are `<Link>`s or `router.replace` — never
   `useState` alone. A view that cannot be reached by URL is a bug.
 - **A profile's address is `/@username`** (members and creators alike); `/creators/<username>` redirects to it.
+  Only pages move: the API stays `/api/creators/<username>/…` (a unit test refuses any `/api/@` call).
   The username is unique (`users.username`) and checked live at sign-up with a free one offered
   (`lib/usernames.ts`); display names repeat freely. Never build a profile URL from a display name.
 - **Quick actions live where the thing is shown.** Edit a photo on the photo (hover, always visible on touch), a
@@ -246,7 +247,8 @@ orochia/                           npm workspaces
   targets work at 360 px. Prefer the shared building blocks (`ProfileHero`, `PictureQuickEdit`, `NotificationBell`,
   `SocialIcon`) over new one-offs.
 - **UI kit** (`components/ui`): `Button` / `buttonClass` (primary · secondary · ghost · danger, sm · md · lg, loading),
-  `IconButton` (accessible name required), `Chip`, `Segmented`, `Switch`, `Slider`, `cx`. New screens use them; a
+  `IconButton` (accessible name required), `Chip`, `Segmented`, `Switch`, `Slider`, `Sheet`, `cx`. `buttonClass` and `cx`
+  are plain modules (no `"use client"`): server components style links with them; the components are client. New screens use them; a
   screen touched for another reason moves its hand-rolled buttons to them.
 - **Krizaka motion signature** (shared with krizaka.com; `app/globals.css` → "Krizaka motion signature",
   `components/motion`): one easing `--kz-ease`; every page enters (`app/template.tsx`); sections and cards rise into

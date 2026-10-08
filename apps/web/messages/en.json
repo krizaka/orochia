@@ -249,7 +249,35 @@
     "credits": {
       "title": "Orochia credits",
       "hint": "Paid from your Orochia balance — instant"
-    }
+    },
+    "gateways": {
+      "CCBILL": {
+        "title": "Card",
+        "hint": "Visa, Mastercard — CCBill secure checkout"
+      },
+      "SEGPAY": {
+        "title": "Card",
+        "hint": "Segpay secure checkout"
+      },
+      "CRYPTO": {
+        "title": "Crypto",
+        "hint": "USDT, BTC, ETH, Solana"
+      },
+      "STRIPE": {
+        "title": "Card or wallet",
+        "hint": "Stripe secure checkout"
+      }
+    },
+    "title": "Support {name}",
+    "subtitle": "Unlock this video and support the creator directly.",
+    "amount": "Amount",
+    "minimum": "Minimum {amount}",
+    "pay": "Pay {amount}",
+    "processing": "Opening payment…",
+    "unavailable": "Payments are not available on this server yet.",
+    "discreet": "Discreet billing. Your card details never reach Orochia.",
+    "failed": "The payment could not start. Try again or choose another method.",
+    "startFailed": "Could not start the payment for {name}."
   },
   "editor": {
     "title": "Edit video",
@@ -684,7 +712,21 @@
     }
   },
   "feed": {
-    "emptyFilter": "Nothing here yet in this category — try another tab."
+    "emptyFilter": "Nothing here yet in this category — try another tab.",
+    "tabs": {
+      "foryou": "For you",
+      "trending": "Trending",
+      "vip": "Paid",
+      "free": "Free",
+      "contacts": "Contacts"
+    },
+    "grid": "Grid view",
+    "cinematic": "Large view",
+    "views": "{count} views",
+    "minutes": "{count} min",
+    "watch": "Watch",
+    "noThumbnail": "Orochia",
+    "hd": "4K"
   },
   "publish": {
     "title": "Publish a video",
@@ -770,5 +812,167 @@
       "watch": "Open the video",
       "another": "Publish another"
     }
+  },
+  "explore": {
+    "metaTitle": "Explore creators and videos",
+    "metaDescription": "Search Orochia: independent creators, their videos, collections and tags.",
+    "eyebrow": "Explore",
+    "title": "Find your next obsession.",
+    "placeholder": "Search videos and creators",
+    "search": "Search",
+    "all": "All",
+    "noMatchQuery": "Nothing matches “{q}” yet.",
+    "noMatchFilter": "Nothing matches this filter yet.",
+    "noMatchHint": "Try another word or tag — new videos arrive every day.",
+    "previous": "Previous",
+    "next": "Next",
+    "results": "Results"
+  },
+  "watch": {
+    "metaTitle": "Video",
+    "metaDescription": "{title} — a video by {creator} on Orochia.",
+    "notFound": "Video not found",
+    "notFoundBody": "It may have been removed by its creator.",
+    "backToFeed": "Back to the feed",
+    "paymentReceived": "Payment received — the video unlocks as soon as the payment provider confirms it.",
+    "paymentCancelled": "Payment cancelled. Nothing was charged.",
+    "verifying": "Checking your access…",
+    "unlock": "Unlock",
+    "tip": "Send a tip",
+    "like": "Like",
+    "unlike": "Remove like",
+    "share": "Share",
+    "copied": "Link copied",
+    "report": "Report",
+    "views": "{count} views",
+    "comments": "{count} comments",
+    "shares": "{count} shares",
+    "verified": "Verified creator (18 U.S.C. § 2257 records)",
+    "viewProfile": "View profile",
+    "protection": {
+      "title": "How this video is protected",
+      "signed": "Playback links are signed and expire after five minutes — they cannot be shared or hotlinked.",
+      "checked": "Access is checked on the server for every play: followers, contacts, unlocks and the creator's own videos.",
+      "confirmed": "Unlocks are granted only after the payment provider confirms the payment."
+    },
+    "more": "More from {name}",
+    "free": "Free",
+    "members": "Members"
+  },
+  "player": {
+    "sensitiveTitle": "Sensitive content",
+    "sensitiveBody": "The creator marked this video as sensitive. Viewer discretion is advised.",
+    "reveal": "Show the video",
+    "paidTitle": "Unlock this video",
+    "paidBody": "Support the creator to watch it — the unlock is yours to keep, in up to 4K.",
+    "paidCta": "Unlock for {price}",
+    "invitedTitle": "Invited viewers only",
+    "invitedBody": "The creator shares this video with the people they invite. Your invitation is not active.",
+    "followersTitle": "Approved followers only",
+    "followersBody": "The creator opens this video to the followers they approve. Follow them — it unlocks once they accept.",
+    "contactsTitle": "Contacts only",
+    "contactsBody": "The creator keeps this video for their accepted contacts. Send a contact request to watch it.",
+    "play": "Play",
+    "pause": "Pause",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "volume": "Volume",
+    "seek": "Seek",
+    "fullscreen": "Full screen"
+  },
+  "comments": {
+    "title": "Comments",
+    "add": "Add a comment",
+    "replyTo": "Reply to {name}",
+    "post": "Post",
+    "posting": "Posting…",
+    "reply": "Reply",
+    "remove": "Remove",
+    "removeConfirm": "Tap again to remove",
+    "removed": "Comment removed.",
+    "close": "Close comments",
+    "open": "Open comments",
+    "closed": "Comments are closed on this video.",
+    "signIn": "Sign in",
+    "signInToComment": "{signIn} to comment.",
+    "loading": "Loading…",
+    "empty": "No comment yet — be the first.",
+    "slowDown": "Slow down a little before commenting again.",
+    "postFailed": "Your comment could not be posted.",
+    "removeFailed": "The comment could not be removed.",
+    "settingFailed": "The setting could not be saved."
+  },
+  "relationship": {
+    "signInToFollow": "Sign in to follow",
+    "follow": "Follow",
+    "following": "Following",
+    "requested": "Follow requested",
+    "unfollow": "Unfollow",
+    "addContact": "Add contact",
+    "contact": "Contact",
+    "accept": "Accept contact request",
+    "requestSent": "Request sent",
+    "withdraw": "Withdraw the request",
+    "message": "Message",
+    "failed": "Something went wrong. Try again."
+  },
+  "card": {
+    "unlockFor": "Unlock · {price}",
+    "contacts": "Contacts only",
+    "free": "Free",
+    "like": "Like",
+    "unlike": "Unlike",
+    "save": "Save to a collection",
+    "saved": "Saved",
+    "tip": "Tip",
+    "sensitive": "Sensitive content",
+    "reveal": "Tap to reveal"
+  },
+  "collections": {
+    "save": "Save",
+    "saveTo": "Save to collection",
+    "loading": "Loading…",
+    "none": "No collection yet — create one below.",
+    "newPlaceholder": "New collection",
+    "create": "Create collection",
+    "failed": "Could not save. Try again."
+  },
+  "report": {
+    "title": "Report this video",
+    "subtitle": "Reports are reviewed by people, the most serious first.",
+    "about": "About: “{title}”",
+    "reason": "What is wrong?",
+    "reasons": {
+      "UNDERAGE": {
+        "title": "Someone may be under 18",
+        "hint": "Removed at once while we review."
+      },
+      "NON_CONSENSUAL": {
+        "title": "Shared without consent",
+        "hint": "Someone shown did not agree to this video."
+      },
+      "DMCA_COPYRIGHT": {
+        "title": "Copyright",
+        "hint": "It uses your work without permission (DMCA)."
+      },
+      "TERMS_VIOLATION": {
+        "title": "Breaks the rules",
+        "hint": "Prohibited content or behaviour."
+      },
+      "FRAUD_SCAM": {
+        "title": "Scam or deception",
+        "hint": "Misleading, fraudulent or fake."
+      }
+    },
+    "details": "Details",
+    "detailsPlaceholder": "Timestamps, links, anything that helps us act quickly…",
+    "email": "Your e-mail",
+    "emailHint": "Only to follow up on this report.",
+    "submit": "Send report",
+    "cancel": "Cancel",
+    "sent": "Report sent",
+    "sentBody": "Thank you. Our team reviews every report; suspected minors and non-consensual content come first.",
+    "close": "Close",
+    "failed": "The report could not be sent. Try again."
   }
 }

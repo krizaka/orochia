@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Lock, Users, Sparkles, Eye, Play, Heart, Bookmark, CheckCircle2 } from "lucide-react";
+import { t } from "@/lib/i18n";
 import { TipModal } from "@/components/TipModal";
 
 export interface VideoCardProps {
@@ -104,7 +105,7 @@ export function VideoCard({
           {isBlurred && !revealed && (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-md p-4 text-center z-10">
               <span className="text-[10px] font-bold uppercase tracking-wider text-fuchsia-300 mb-1">
-                Sensitive Content
+                {t("card.sensitive")}
               </span>
               <button
                 type="button"
@@ -115,7 +116,7 @@ export function VideoCard({
                 }}
                 className="px-3 py-1 rounded-full bg-white/20 hover:bg-white/30 text-[11px] font-semibold text-white transition-colors"
               >
-                Click to reveal
+                {t("card.reveal")}
               </button>
             </div>
           )}
@@ -148,29 +149,31 @@ export function VideoCard({
             {isPaywalled && (
               <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-3 py-1 text-[11px] font-bold text-white shadow-lg backdrop-blur-md">
                 <Lock className="h-3 w-3" />
-                <span>Tip ${(minTipAmountCents / 100).toFixed(2)} to Unlock</span>
+                <span>{t("card.unlockFor", { price: `$${(minTipAmountCents / 100).toFixed(2)}` })}</span>
               </div>
             )}
 
             {isContacts && (
               <div className="flex items-center gap-1.5 rounded-full bg-zinc-900/90 px-3 py-1 text-[11px] font-semibold text-zinc-300 backdrop-blur-md">
                 <Users className="h-3 w-3" />
-                <span>Contacts Only</span>
+                <span>{t("card.contacts")}</span>
               </div>
             )}
 
             {!isPaywalled && !isContacts && (
               <div className="flex items-center gap-1 rounded-full bg-emerald-950/80 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-300 backdrop-blur-md">
-                <span>Free Access</span>
+                <span>{t("card.free")}</span>
               </div>
             )}
           </div>
 
           {/* Floating Quick Action Buttons on Hover */}
-          <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 transition-opacity duration-200 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-within:opacity-100">
             <button
               onClick={handleLike}
-              title={isLiked ? "Unlike" : "Like"}
+              title={isLiked ? t("card.unlike") : t("card.like")}
+              aria-label={isLiked ? t("card.unlike") : t("card.like")}
+              aria-pressed={isLiked}
               className={`flex h-8 w-8 items-center justify-center rounded-xl backdrop-blur-md transition-all active:scale-90 ${
                 isLiked
                   ? "bg-rose-600 text-white shadow-md shadow-rose-600/40"
@@ -181,7 +184,9 @@ export function VideoCard({
             </button>
             <button
               onClick={handleSave}
-              title={isSaved ? "Saved" : "Save to playlist"}
+              title={isSaved ? t("card.saved") : t("card.save")}
+              aria-label={isSaved ? t("card.saved") : t("card.save")}
+              aria-pressed={isSaved}
               className={`flex h-8 w-8 items-center justify-center rounded-xl backdrop-blur-md transition-all active:scale-90 ${
                 isSaved
                   ? "bg-violet-600 text-white shadow-md shadow-violet-600/40"
@@ -248,7 +253,7 @@ export function VideoCard({
               className="inline-flex items-center gap-1 rounded-lg border border-violet-500/30 bg-violet-500/10 hover:bg-violet-600 hover:text-white px-2 py-0.5 text-[10px] font-semibold text-violet-300 transition-all hover:scale-105 active:scale-95"
             >
               <Sparkles className="h-2.5 w-2.5" />
-              <span>Tip</span>
+              <span>{t("card.tip")}</span>
             </button>
           </div>
         </div>

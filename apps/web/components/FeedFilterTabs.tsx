@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Clapperboard, Flame, Sparkles, Lock, Gift, Users, LayoutGrid, Rows3 } from "lucide-react";
 import { buttonClass } from "@/components/ui";
 import { t } from "@/lib/i18n";
@@ -12,7 +13,19 @@ interface FeedFilterTabsProps {
 }
 
 export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
-  const [activeTab, setActiveTab] = useState<"foryou" | "trending" | "vip" | "free" | "contacts">("foryou");
+  // The open tab lives in the address (?feed=…), so a shared link opens the same feed.
+  type FeedTab = "foryou" | "trending" | "vip" | "free" | "contacts";
+  const router = useRouter();
+  const pathname = usePathname();
+  const params = useSearchParams();
+  const asked = params.get("feed");
+  const activeTab: FeedTab = asked === "trending" || asked === "vip" || asked === "free" || asked === "contacts" ? asked : "foryou";
+  const setActiveTab = (tab: FeedTab) => {
+    const next = new URLSearchParams(params.toString());
+    if (tab === "foryou") next.delete("feed");
+    else next.set("feed", tab);
+    router.replace(`${pathname}${next.size ? `?${next}` : ""}`, { scroll: false });
+  };
   const [viewMode, setViewMode] = useState<"grid" | "cinematic">("grid");
 
   const filteredVideos = useMemo(() => {
@@ -32,11 +45,11 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
   }, [activeTab, initialVideos]);
 
   const tabs = [
-    { id: "foryou", label: "For You", icon: Flame },
-    { id: "trending", label: "Trending 4K", icon: Sparkles },
-    { id: "vip", label: "VIP & PPV", icon: Lock },
-    { id: "free", label: "Free Previews", icon: Gift },
-    { id: "contacts", label: "Contacts Only", icon: Users },
+    { id: "foryou", label: t("feed.tabs.foryou"), icon: Flame },
+    { id: "trending", label: t("feed.tabs.trending"), icon: Sparkles },
+    { id: "vip", label: t("feed.tabs.vip"), icon: Lock },
+    { id: "free", label: t("feed.tabs.free"), icon: Gift },
+    { id: "contacts", label: t("feed.tabs.contacts"), icon: Users },
   ] as const;
 
   return (
@@ -68,8 +81,8 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
         <div className="flex items-center gap-1 rounded-2xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900/60 dark:bg-zinc-900/60 light:bg-slate-100 p-1 self-end sm:self-auto shrink-0">
           <button
             onClick={() => setViewMode("grid")}
-            aria-label="Grid view"
-            title="Grid view"
+            aria-label={t("feed.grid")}
+            title={t("feed.grid")}
             className={`flex h-8 w-8 items-center justify-center rounded-xl transition-all ${
               viewMode === "grid"
                 ? "bg-violet-600 text-white shadow-sm"
@@ -80,8 +93,8 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
           </button>
           <button
             onClick={() => setViewMode("cinematic")}
-            aria-label="Cinematic view"
-            title="Cinematic stream view"
+            aria-label={t("feed.cinematic")}
+            title={t("feed.cinematic")}
             className={`flex h-8 w-8 items-center justify-center rounded-xl transition-all ${
               viewMode === "cinematic"
                 ? "bg-violet-600 text-white shadow-sm"
@@ -156,7 +169,7 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
 
                 <div className="flex items-center gap-2">
                   <span className="rounded-full bg-violet-600/20 border border-violet-500/30 px-2.5 py-0.5 text-[10px] font-bold text-violet-300">
-                    4K HLS
+                    {t("feed.hd")}
                   </span>
                 </div>
               </div>
@@ -171,7 +184,7 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-950/40 via-zinc-950 to-fuchsia-950/40 text-violet-400 light:from-violet-100 light:via-slate-50 light:to-fuchsia-100">
-                    <span className="text-sm font-bold text-violet-300">4K Sovereign Stream</span>
+                    <span className="font-display text-sm font-bold text-violet-300">{t("feed.noThumbnail")}</span>
                   </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
@@ -180,9 +193,9 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
                       {video.title}
                     </h3>
                     <div className="mt-2 flex items-center gap-3 text-xs text-zinc-300 font-mono">
-                      <span>{video.viewsCount.toLocaleString()} views</span>
+                      <span>{t("feed.views", { count: video.viewsCount.toLocaleString("en-US") })}</span>
                       <span>•</span>
-                      <span>{Math.floor(video.durationSeconds / 60)} min stream</span>
+                      <span>{t("feed.minutes", { count: Math.max(1, Math.round(video.durationSeconds / 60)) })}</span>
                     </div>
                   </div>
                 </div>
@@ -194,7 +207,7 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
                   href={`/watch/${video.id}`}
                   className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-violet-600/30 hover:scale-105 transition-all"
                 >
-                  <span>Watch Stream</span>
+                  <span>{t("feed.watch")}</span>
                 </Link>
 
                 {video.visibility === "TIPPED_UNLOCKED" && (

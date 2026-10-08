@@ -1,7 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
-import { Flag, X, AlertTriangle, CheckCircle2 } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { CheckCircle2, Flag } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
+import { Button, Sheet, cx } from "@/components/ui";
+import { t } from "@/lib/i18n";
 
 export interface ReportModalProps {
   videoId: string;
@@ -10,165 +13,112 @@ export interface ReportModalProps {
   onClose: () => void;
 }
 
+/** In triage order: the most serious first (suspected minors, non-consensual content). */
+const REASONS = ["UNDERAGE", "NON_CONSENSUAL", "DMCA_COPYRIGHT", "TERMS_VIOLATION", "FRAUD_SCAM"] as const;
+type Reason = (typeof REASONS)[number];
+
+const field =
+  "w-full rounded-xl border border-white/10 bg-zinc-900 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none light:border-black/10 light:bg-slate-50 light:text-slate-900 light:placeholder:text-slate-400";
+
+/** Report a video: a reason, details and a contact address; persisted before it is acknowledged (compliance_reports). */
 export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModalProps) {
-  const [reason, setReason] = useState<string>("NON_CONSENSUAL");
-  const [details, setDetails] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const { user } = useAuth();
+  const [reason, setReason] = useState<Reason | null>(null);
+  const [details, setDetails] = useState("");
+  const [email, setEmail] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    if (user?.email) setEmail((e) => e || user.email);
+  }, [user]);
 
-  if (!isOpen) return null;
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const close = () => {
+    setSent(false);
+    setReason(null);
+    setDetails("");
     setError(null);
+    onClose();
+  };
 
-    try {
-      const res = await fetch("/api/legal/report", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          videoId,
-          videoTitle,
-          reason,
-          details,
-          reporterEmail: email,
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to submit report. Please try again.");
-      }
-
-      setSubmitted(true);
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred.");
-    } finally {
-      setIsSubmitting(false);
-    }
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reason) return;
+    setBusy(true);
+    setError(null);
+    const res = await fetch("/api/legal/report", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ videoId, videoTitle, reason, details, reporterEmail: email }),
+    }).catch(() => null);
+    setBusy(false);
+    if (!res?.ok) return setError(t("report.failed"));
+    setSent(true);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-fade-in">
-      <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 p-6 sm:p-8 shadow-2xl light:bg-white light:border-black/10">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-5 right-5 rounded-full p-2 text-zinc-400 hover:bg-zinc-900 hover:text-white transition-colors light:text-slate-500 light:hover:text-slate-950"
-        >
-          <X className="h-5 w-5" />
-        </button>
+    <Sheet open={isOpen} onClose={close} title={sent ? t("report.sent") : t("report.title")}>
+      {sent ? (
+        <div className="py-6 text-center">
+          <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-400" />
+          <p className="mx-auto mt-3 max-w-sm text-sm text-zinc-300 light:text-slate-700">{t("report.sentBody")}</p>
+          <Button className="mt-6" onClick={close}>
+            {t("report.close")}
+          </Button>
+        </div>
+      ) : (
+        <form onSubmit={submit} className="space-y-4">
+          <p className="flex items-start gap-2 pt-1 text-xs text-zinc-400 light:text-slate-500">
+            <Flag className="mt-0.5 h-3.5 w-3.5 shrink-0 text-rose-400" />
+            <span>
+              {t("report.subtitle")} <span className="italic text-zinc-300 light:text-slate-700">{t("report.about", { title: videoTitle })}</span>
+            </span>
+          </p>
 
-        {submitted ? (
-          <div className="py-8 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400">
-              <CheckCircle2 className="h-8 w-8" />
-            </div>
-            <h3 className="text-xl font-bold text-white font-display light:text-slate-900">Report Submitted</h3>
-            <p className="mt-2 text-sm text-zinc-400 max-w-sm mx-auto light:text-slate-500">
-              Our 24/7 compliance and legal safety team has received your ticket. Content flagged for safety or non-consent is triaged immediately.
-            </p>
-            <button
-              onClick={() => {
-                setSubmitted(false);
-                onClose();
-              }}
-              className="mt-6 rounded-xl bg-zinc-800 hover:bg-zinc-700 px-6 py-2.5 text-xs font-semibold text-white transition-colors light:bg-slate-100 light:hover:bg-slate-200 light:text-slate-900"
-            >
-              Close
-            </button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/20 text-rose-400">
-                <Flag className="h-5 w-5" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-white font-display light:text-slate-900">Report Content</h3>
-                <p className="text-xs text-zinc-400 light:text-slate-500">Strict legal & safety enforcement</p>
-              </div>
-            </div>
-
-            <p className="text-xs text-zinc-400 mb-4 light:text-slate-500">
-              Flagging: <span className="text-white font-medium italic light:text-slate-900">&quot;{videoTitle}&quot;</span>
-            </p>
-
-            {error && (
-              <div className="mb-4 flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
-                <AlertTriangle className="h-4 w-4 shrink-0 text-rose-400" />
-                <span>{error}</span>
-              </div>
-            )}
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1.5 uppercase tracking-wider light:text-slate-700">
-                  Reason for Violation
-                </label>
-                <select
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3.5 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
+          <fieldset>
+            <legend className="mb-2 text-xs font-semibold text-zinc-300 light:text-slate-700">{t("report.reason")}</legend>
+            <div className="space-y-2" role="radiogroup">
+              {REASONS.map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  role="radio"
+                  aria-checked={reason === r}
+                  onClick={() => setReason(r)}
+                  className={cx(
+                    "w-full rounded-2xl border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400",
+                    reason === r ? "border-rose-500/60 bg-rose-500/10" : "border-white/10 hover:border-white/25 light:border-black/10 light:hover:border-black/25",
+                  )}
                 >
-                  <option value="NON_CONSENSUAL">Non-consensual media / Lack of performer release</option>
-                  <option value="UNDERAGE">Suspected underage performer (Immediate Removal)</option>
-                  <option value="DMCA_COPYRIGHT">Copyright infringement / DMCA Notice</option>
-                  <option value="TERMS_VIOLATION">Terms of Service / Prohibited Acts</option>
-                  <option value="FRAUD_SCAM">Fraudulent or deceptive content</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1.5 uppercase tracking-wider light:text-slate-700">
-                  Detailed Explanation
-                </label>
-                <textarea
-                  value={details}
-                  onChange={(e) => setDetails(e.target.value)}
-                  rows={3}
-                  required
-                  placeholder="Provide timestamps, proof of identity, or details regarding the claim..."
-                  className="w-full rounded-xl border border-white/10 bg-zinc-900 p-3 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1.5 uppercase tracking-wider light:text-slate-700">
-                  Your Contact Email
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  placeholder="contact@rights-holder.com"
-                  className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3.5 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900"
-                />
-              </div>
+                  <span className="block text-sm font-semibold text-white light:text-slate-900">{t(`report.reasons.${r}.title`)}</span>
+                  <span className="block text-xs text-zinc-400 light:text-slate-500">{t(`report.reasons.${r}.hint`)}</span>
+                </button>
+              ))}
             </div>
+          </fieldset>
 
-            <div className="mt-6 flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={onClose}
-                className="rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-xs font-semibold text-zinc-400 hover:text-white light:bg-slate-50 light:border-black/10 light:text-slate-500 light:hover:text-slate-950"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="rounded-xl bg-rose-600 hover:bg-rose-500 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-rose-600/25 transition-all disabled:opacity-50"
-              >
-                {isSubmitting ? "Submitting..." : "Submit Report"}
-              </button>
-            </div>
-          </form>
-        )}
-      </div>
-    </div>
+          <label className="block">
+            <span className="mb-1.5 block text-xs font-semibold text-zinc-300 light:text-slate-700">{t("report.details")}</span>
+            <textarea value={details} onChange={(e) => setDetails(e.target.value)} rows={3} required placeholder={t("report.detailsPlaceholder")} className={`${field} resize-y`} />
+          </label>
+          <label className="block">
+            <span className="mb-1.5 block text-xs font-semibold text-zinc-300 light:text-slate-700">{t("report.email")}</span>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className={field} />
+            <span className="mt-1 block text-[11px] text-zinc-500">{t("report.emailHint")}</span>
+          </label>
+
+          {error && <p role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-300 light:text-rose-700">{error}</p>}
+
+          <div className="flex justify-end gap-2 pt-1">
+            <Button variant="ghost" onClick={close}>
+              {t("report.cancel")}
+            </Button>
+            <Button type="submit" variant="danger" loading={busy} disabled={!reason}>
+              {t("report.submit")}
+            </Button>
+          </div>
+        </form>
+      )}
+    </Sheet>
   );
 }

@@ -12,6 +12,7 @@ import {
   Users,
   Sparkles,
 } from "lucide-react";
+import { t } from "@/lib/i18n";
 
 interface VideoPlayerProps {
   videoId: string;
@@ -210,16 +211,16 @@ export function VideoPlayer({
           <div className="h-14 w-14 rounded-2xl bg-rose-600/20 border border-rose-500/30 flex items-center justify-center text-rose-400 mb-3">
             <span className="font-mono font-black text-xl">18+</span>
           </div>
-          <h3 className="text-lg font-bold text-white mb-1">Sensitive Content Warning</h3>
+          <h3 className="text-lg font-bold text-white mb-1">{t("player.sensitiveTitle")}</h3>
           <p className="text-xs text-zinc-400 max-w-sm mb-5">
-            This media is marked with sensitive adult themes. Viewer discretion is advised.
+            {t("player.sensitiveBody")}
           </p>
           <button
             type="button"
             onClick={() => setRevealed(true)}
             className="px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-xs transition-colors shadow-lg shadow-violet-600/25"
           >
-            I Understand, Show Video
+            {t("player.reveal")}
           </button>
         </div>
       )}
@@ -230,17 +231,16 @@ export function VideoPlayer({
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600/30 to-fuchsia-600/30 border border-violet-500/30 mb-4 shadow-lg shadow-violet-500/20">
             <Lock className="h-8 w-8 text-violet-400" />
           </div>
-          <h3 className="text-xl font-bold text-white mb-1">Exclusive Tipped Content</h3>
+          <h3 className="text-xl font-bold text-white mb-1">{t("player.paidTitle")}</h3>
           <p className="text-sm text-zinc-400 max-w-md mb-6">
-            This video is protected by creator paywall gates. Tip the creator to instantly
-            unlock permanent 4K streaming access.
+            {t("player.paidBody")}
           </p>
           <button
             onClick={onUnlockRequested}
             className="flex items-center gap-2.5 px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white font-semibold text-sm shadow-lg shadow-fuchsia-600/30 transition-all hover:scale-105 active:scale-95"
           >
             <Sparkles className="h-4 w-4" />
-            <span>Tip ${(minTipAmountCents / 100).toFixed(2)} to Unlock</span>
+            <span>{t("player.paidCta", { price: `$${(minTipAmountCents / 100).toFixed(2)}` })}</span>
           </button>
         </div>
       )}
@@ -252,14 +252,10 @@ export function VideoPlayer({
             <Users className="h-8 w-8 text-zinc-300" />
           </div>
           <h3 className="text-xl font-bold text-white mb-1">
-            {isInvitedOnly ? "Invited viewers only" : isFollowersOnly ? "Approved followers only" : "Contacts-Only Access"}
+            {t(isInvitedOnly ? "player.invitedTitle" : isFollowersOnly ? "player.followersTitle" : "player.contactsTitle")}
           </h3>
           <p className="text-sm text-zinc-400 max-w-md mb-6">
-            {isInvitedOnly
-              ? "The creator shares this video with the people they invited. Your invitation is no longer active."
-              : isFollowersOnly
-                ? "The creator opens this video to the followers they approved. Follow them — the video unlocks once they accept."
-                : "The creator made this video private to accepted mutual contacts only. Send a contact request to view."}
+            {t(isInvitedOnly ? "player.invitedBody" : isFollowersOnly ? "player.followersBody" : "player.contactsBody")}
           </p>
           {!isInvitedOnly && gateAction}
         </div>
@@ -281,6 +277,7 @@ export function VideoPlayer({
               step={0.1}
               value={currentTime}
               onChange={handleSeek}
+              aria-label={t("player.seek")}
               className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-violet-500 hover:h-1.5 transition-all"
             />
           </div>
@@ -291,7 +288,7 @@ export function VideoPlayer({
               <button
                 onClick={togglePlay}
                 className="hover:text-violet-400 transition-colors p-1"
-                aria-label={isPlaying ? "Pause" : "Play"}
+                aria-label={isPlaying ? t("player.pause") : t("player.play")}
               >
                 {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
               </button>
@@ -300,6 +297,7 @@ export function VideoPlayer({
               <div className="flex items-center gap-2 group/vol">
                 <button
                   onClick={toggleMute}
+                  aria-label={isMuted || volume === 0 ? t("player.unmute") : t("player.mute")}
                   className="hover:text-violet-400 transition-colors p-1"
                 >
                   {isMuted || volume === 0 ? (
@@ -315,6 +313,7 @@ export function VideoPlayer({
                   step={0.05}
                   value={isMuted ? 0 : volume}
                   onChange={handleVolumeChange}
+                  aria-label={t("player.volume")}
                   className="w-16 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-violet-500 opacity-80 group-hover/vol:opacity-100"
                 />
               </div>
@@ -330,7 +329,7 @@ export function VideoPlayer({
               <button
                 onClick={toggleFullscreen}
                 className="hover:text-violet-400 transition-colors p-1"
-                aria-label="Toggle Fullscreen"
+                aria-label={t("player.fullscreen")}
               >
                 <Maximize className="h-5 w-5" />
               </button>

@@ -125,7 +125,7 @@ export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
         render={(p) => (
           <Row key={p.id} p={p}>
             <span className={`text-[10px] font-bold uppercase ${p.status === "APPROVED" ? "text-emerald-400" : "text-amber-400"}`}>{p.status === "APPROVED" ? "approved" : "pending"}</span>
-            <button className={iconBtn} aria-label="Unfollow" onClick={() => act(`/api/@${p.username}/follow`, "DELETE")}><UserMinus className="h-4 w-4" /></button>
+            <button className={iconBtn} aria-label="Unfollow" onClick={() => act(`/api/creators/${p.username}/follow`, "DELETE")}><UserMinus className="h-4 w-4" /></button>
           </Row>
         )}
       />

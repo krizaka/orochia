@@ -3,6 +3,7 @@ import { videoDetails } from "@/lib/queries";
 import { JsonLd } from "@/components/JsonLd";
 import { NOINDEX, absolute, videoSchema } from "@/lib/seo";
 import WatchClient from "./WatchClient";
+import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -18,8 +19,8 @@ async function listedVideo(id: string) {
 export async function generateMetadata(props: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await props.params;
   const video = await listedVideo(id);
-  if (!video) return { title: "Video", robots: NOINDEX };
-  const description = (video.description || `${video.title} — a video by ${video.creatorName} on Orochia.`).slice(0, 300);
+  if (!video) return { title: t("watch.metaTitle"), robots: NOINDEX };
+  const description = (video.description || t("watch.metaDescription", { title: video.title, creator: video.creatorName })).slice(0, 300);
   const images = video.thumbnailUrl ? [{ url: video.thumbnailUrl, width: 1280, height: 720, alt: video.title }] : undefined;
   return {
     title: `${video.title} · ${video.creatorName}`,

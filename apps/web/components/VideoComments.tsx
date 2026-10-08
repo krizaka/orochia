@@ -4,6 +4,8 @@ import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { MessageSquare, Reply, Trash2 } from "lucide-react";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
+import { Rich } from "@/components/Rich";
+import { t } from "@/lib/i18n";
 
 interface Comment {
   id: string;
@@ -44,7 +46,7 @@ function Composer({ onSubmit, placeholder, autoFocus }: { onSubmit: (body: strin
         className="min-w-0 flex-1 resize-y rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900"
       />
       <button disabled={busy || !body.trim()} className="self-end rounded-xl bg-violet-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-40">
-        {busy ? "Posting…" : "Post"}
+        {busy ? t("comments.posting") : t("comments.post")}
       </button>
     </form>
   );
@@ -85,7 +87,7 @@ export function VideoComments({
       body: JSON.stringify({ body, parentId }),
     });
     if (!res.ok) {
-      setError(res.status === 429 ? "Slow down a little before commenting again." : "Your comment could not be posted.");
+      setError(res.status === 429 ? t("comments.slowDown") : t("comments.postFailed"));
       return false;
     }
     setReplyTo(null);
@@ -94,10 +96,13 @@ export function VideoComments({
     return true;
   };
 
+  // Two taps to remove (no browser dialog): the first arms the button, the second removes.
+  const [confirming, setConfirming] = useState<string | null>(null);
   const remove = async (id: string) => {
-    if (!window.confirm("Remove this comment?")) return;
+    if (confirming !== id) return setConfirming(id);
+    setConfirming(null);
     const res = await fetch(`/api/videos/${videoId}/comments/${id}`, { method: "DELETE" });
-    if (!res.ok) return setError("The comment could not be removed.");
+    if (!res.ok) return setError(t("comments.removeFailed"));
     onCountChange(-1);
     await load();
   };
@@ -109,7 +114,7 @@ export function VideoComments({
       body: JSON.stringify({ commentsEnabled: !enabled }),
     });
     if (res.ok) setEnabled(!enabled);
-    else setError("The setting could not be saved.");
+    else setError(t("comments.settingFailed"));
   };
 
   const threads = (comments ?? []).filter((c) => !c.parentId);
@@ -128,24 +133,24 @@ export function VideoComments({
           </span>
         </p>
         <p className={`mt-1 whitespace-pre-line break-words text-sm ${c.removed ? "italic text-zinc-500 light:text-slate-500" : "text-zinc-300 light:text-slate-700"}`}>
-          {c.removed ? "Comment removed." : c.body}
+          {c.removed ? t("comments.removed") : c.body}
         </p>
         <div className="mt-1 flex gap-3 text-[11px] text-zinc-500 light:text-slate-500">
           {user && enabled && !isReply && !c.removed && (
             <button onClick={() => setReplyTo(replyTo === c.id ? null : c.id)} className="inline-flex items-center gap-1 hover:text-violet-300">
-              <Reply className="h-3 w-3" /> Reply
+              <Reply className="h-3 w-3" /> {t("comments.reply")}
             </button>
           )}
           {c.canRemove && (
-            <button onClick={() => remove(c.id)} className="inline-flex items-center gap-1 hover:text-rose-300">
-              <Trash2 className="h-3 w-3" /> Remove
+            <button onClick={() => remove(c.id)} onBlur={() => setConfirming(null)} className={`inline-flex items-center gap-1 hover:text-rose-300 ${confirming === c.id ? "font-semibold text-rose-400" : ""}`}>
+              <Trash2 className="h-3 w-3" /> {confirming === c.id ? t("comments.removeConfirm") : t("comments.remove")}
             </button>
           )}
         </div>
         {!isReply && replies(c.id).map((r) => item(r, true))}
         {replyTo === c.id && (
           <div className="mt-3">
-            <Composer onSubmit={(body) => post(body, c.id)} placeholder={`Reply to ${c.authorName}`} autoFocus />
+            <Composer onSubmit={(body) => post(body, c.id)} placeholder={t("comments.replyTo", { name: c.authorName })} autoFocus />
           </div>
         )}
       </div>
@@ -156,36 +161,42 @@ export function VideoComments({
     <section className="mt-8" aria-labelledby="comments-title">
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 id="comments-title" className="flex items-center gap-2 text-sm font-bold text-white light:text-slate-900">
-          <MessageSquare className="h-4 w-4 text-violet-400" /> Comments
+          <MessageSquare className="h-4 w-4 text-violet-400" /> {t("comments.title")}
         </h2>
         {isCreator && (
           <button onClick={toggle} className="rounded-lg border border-white/10 px-3 py-1.5 text-[11px] font-semibold text-zinc-300 hover:bg-white/5 light:border-black/10 light:text-slate-700">
-            {enabled ? "Close comments" : "Open comments"}
+            {enabled ? t("comments.close") : t("comments.open")}
           </button>
         )}
       </div>
 
       {enabled ? (
         user ? (
-          <Composer onSubmit={(body) => post(body, null)} placeholder="Add a comment" />
+          <Composer onSubmit={(body) => post(body, null)} placeholder={t("comments.add")} />
         ) : (
           <p className="text-xs text-zinc-400 light:text-slate-500">
-            <Link href="/auth/login" className="text-violet-300 hover:underline">
-              Sign in
-            </Link>{" "}
-            to comment.
+            <Rich
+              text={t("comments.signInToComment")}
+              slots={{
+                signIn: (
+                  <Link href={`/auth/login?next=/watch/${videoId}`} className="text-violet-300 hover:underline light:text-violet-700">
+                    {t("comments.signIn")}
+                  </Link>
+                ),
+              }}
+            />
           </p>
         )
       ) : (
-        <p className="text-xs text-zinc-500 light:text-slate-500">Comments are closed on this video.</p>
+        <p className="text-xs text-zinc-500 light:text-slate-500">{t("comments.closed")}</p>
       )}
       {error && <p className="mt-2 text-xs text-rose-300">{error}</p>}
 
       <div className="mt-6 space-y-5">
         {comments === null ? (
-          <p className="text-xs text-zinc-500 light:text-slate-500">Loading…</p>
+          <p className="text-xs text-zinc-500 light:text-slate-500">{t("comments.loading")}</p>
         ) : threads.length === 0 ? (
-          <p className="text-xs text-zinc-500 light:text-slate-500">No comment yet.</p>
+          <p className="text-xs text-zinc-500 light:text-slate-500">{t("comments.empty")}</p>
         ) : (
           threads.map((c) => item(c))
         )}
