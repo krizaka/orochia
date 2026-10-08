@@ -251,7 +251,14 @@ export async function listCreatorStories(limit = 12): Promise<CreatorStorySummar
           createdAt: videos.createdAt,
         })
         .from(videos)
-        .where(and(eq(videos.creatorId, c.id), listable()))
+        .where(
+          and(
+            eq(videos.creatorId, c.id),
+            eq(videos.status, "READY"),
+            isNull(videos.removedAt),
+            ne(videos.visibility, "INVITED_ONLY")
+          )
+        )
         .orderBy(desc(videos.createdAt))
         .limit(1);
 

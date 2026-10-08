@@ -67,5 +67,9 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addVariant }) {
+      addVariant("light", ["html.light &", ".light &", ":root:not(.dark) &"]);
+    },
+  ],
 };
