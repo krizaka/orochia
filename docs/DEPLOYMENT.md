@@ -10,6 +10,8 @@
 | `DATABASE_URL` | ✓ | PostgreSQL 16. |
 | `BUNNY_STREAM_API_KEY`, `BUNNY_STREAM_LIBRARY_ID`, `BUNNY_STREAM_HOSTNAME`, `BUNNY_STREAM_TOKEN_AUTH_KEY`, `BUNNY_WEBHOOK_SECRET` | ✓ | Video library, edge token auth and encode webhooks. |
 | `BUNNY_STREAM_COLLECTION_ID`, `BUNNY_STREAM_STORIES_COLLECTION_ID`, `BUNNY_STREAM_DRAFTS_COLLECTION_ID` | — | Collections (UUIDs) new videos, story videos and the originals of editor drafts are filed in. Unset: the first falls back to none, the others to the first. |
+| `PAYOUT_ENCRYPTION_KEY` | ✓ | Encrypts payout account details at rest (≥ 32 characters, `openssl rand -hex 32`). Keep it: changing it makes saved payout accounts unreadable. |
+| `PAYMENTS_CREDITS_MODE=test` | dev / test | Adds a free "test top-up" to the wallet. Ignored on the public deployment (the one without `SEARCH_INDEXING=off`); credits are otherwise bought through a gateway. |
 | `DRAFT_RETENTION_DAYS` (30), `DRAFTS_MAX_PER_USER` (20) | — | How long an editor draft is kept, and how many an account may keep. |
 | `STORAGE_DRIVER=bunny`, `BUNNY_STORAGE_API_KEY`, `BUNNY_STORAGE_ZONE`, `BUNNY_PULL_ZONE_HOSTNAME` | ✓ | Avatars, thumbnails, 2257 documents (container disks are ephemeral). |
 | `METRICS_AUTH_TOKEN` | ✓ | Bearer token for `/api/metrics`. |

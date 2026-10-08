@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 35 tables · 15 enums · 12 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 38 tables · 16 enums · 13 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -27,6 +27,7 @@ erDiagram
     users ||--o{ contacts : "addressee_id"
     users ||--o{ conversations : "participant1_id"
     users ||--o{ conversations : "participant2_id"
+    users ||--o{ credit_topups : "user_id"
     conversations ||--o{ direct_messages : "conversation_id"
     users ||--o{ direct_messages : "sender_id"
     users ||--o{ direct_messages : "recipient_id"
@@ -37,6 +38,7 @@ erDiagram
     users ||--o{ payment_intents : "sender_id"
     users ||--o{ payment_intents : "creator_id"
     videos ||--o{ payment_intents : "video_id"
+    users ||--o{ payout_accounts : "user_id"
     users ||--o{ payout_requests : "creator_id"
     playlists ||--o{ playlist_audience_lists : "playlist_id"
     audience_lists ||--o{ playlist_audience_lists : "list_id"
@@ -76,6 +78,7 @@ erDiagram
     users ||--o{ video_views : "viewer_id"
     users ||--o{ videos : "creator_id"
     content_ratings ||--o{ videos : "content_rating_id"
+    users ||--o{ wallet_ledger : "user_id"
 ```
 
 ## Tables
@@ -201,6 +204,22 @@ erDiagram
 
 **Indexes:** `conversations_participant1_idx` (participant1_id) · `conversations_participant2_idx` (participant2_id) · `conversations_last_message_at_idx` (last_message_at)
 
+### `credit_topups`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `user_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `credits_cents` | integer | no |  |  |
+| `price_cents` | integer | no |  |  |
+| `gateway` | payment_gateway | no |  |  |
+| `status` | payment_intent_status | no | `"PENDING"` |  |
+| `gateway_transaction_ref` | varchar(255) | yes |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+| `settled_at` | timestamp with time zone | yes |  |  |
+
+**Indexes:** `credit_topups_user_idx` (user_id, created_at)
+
 ### `direct_messages`
 
 | Column | Type | Null | Default | Notes |
@@ -279,6 +298,19 @@ erDiagram
 | `processed_at` | timestamp with time zone | yes |  |  |
 
 **Indexes:** `payment_outbox_status_attempt_idx` (status, next_attempt_at) · `payment_outbox_created_at_idx` (created_at)
+
+### `payout_accounts`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `user_id` | uuid | no |  | primary key · → `users.id` (on delete cascade) |
+| `method` | varchar(30) | no |  |  |
+| `holder_name` | varchar(120) | no |  |  |
+| `country` | varchar(2) | no |  |  |
+| `details_encrypted` | text | no |  |  |
+| `display_hint` | varchar(80) | no |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+| `updated_at` | timestamp with time zone | no | `now()` |  |
 
 ### `payout_requests`
 
@@ -616,6 +648,20 @@ erDiagram
 
 **Indexes:** `videos_creator_idx` (creator_id) · `videos_visibility_idx` (visibility) · `videos_status_idx` (status) · `videos_created_at_idx` (created_at)
 
+### `wallet_ledger`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `user_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `entry_type` | wallet_entry_type | no |  |  |
+| `amount_cents` | integer | no |  |  |
+| `reference` | varchar(120) | no |  |  |
+| `note` | text | yes |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `wallet_ledger_user_idx` (user_id, created_at) · `wallet_ledger_reference_idx` (unique, reference)
+
 ## Enums
 
 | Enum | Values |
@@ -635,6 +681,7 @@ erDiagram
 | `user_role` | `ADMIN`, `CREATOR`, `MEMBER` |
 | `video_status` | `PENDING_UPLOAD`, `PROCESSING`, `READY`, `FAILED` |
 | `video_visibility` | `PUBLIC`, `CONTACTS_ONLY`, `APPROVED_FOLLOWERS_ONLY`, `TIPPED_UNLOCKED`, `INVITED_ONLY` |
+| `wallet_entry_type` | `TOPUP`, `SPEND`, `REFUND`, `ADJUSTMENT` |
 
 ## Migrations
 
@@ -650,3 +697,4 @@ erDiagram
 - `0009_profile_links_birthdate_notifications.sql`
 - `0010_drop_twitter_handle.sql`
 - `0011_notifications_center.sql`
+- `0012_wallet_and_payout_accounts.sql`

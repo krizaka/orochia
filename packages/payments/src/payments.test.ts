@@ -156,3 +156,13 @@ describe("gateway factory", () => {
     expect(configuredGateways({ STRIPE_SECRET_KEY: "sk", STRIPE_WEBHOOK_SECRET: "wh" })).toEqual(["STRIPE"]);
   });
 });
+
+describe("test top-ups", () => {
+  it("are available locally and on the non-indexed dev deployment, never on public production", async () => {
+    const { testTopupsEnabled } = await import("./credits");
+    expect(testTopupsEnabled({ PAYMENTS_CREDITS_MODE: "test" })).toBe(true);
+    expect(testTopupsEnabled({ PAYMENTS_CREDITS_MODE: "test", NODE_ENV: "production", SEARCH_INDEXING: "off" })).toBe(true);
+    expect(testTopupsEnabled({ PAYMENTS_CREDITS_MODE: "test", NODE_ENV: "production" })).toBe(false);
+    expect(testTopupsEnabled({})).toBe(false);
+  });
+});

@@ -430,20 +430,44 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("removed → gone from the rail", !(await ringOf(alex, "elenavox"))?.stories.some((s) => s.id === storyId));
 }
 
-// Orochia credits: the in-house method settles at once through intent → ledger → access grant
+// Orochia credits: a wallet — top up (test top-up here), spend on unlocks; not enough credits → 402 with the balance
 {
   const paid = feed.find((v) => v.visibility === "TIPPED_UNLOCKED");
-  const gateways = (await mia.call("/api/payments/gateways")).json.gateways;
-  if (!gateways?.includes("CREDITS")) {
-    check("credits offered when PAYMENTS_CREDITS_MODE=always-approve", false, JSON.stringify(gateways));
-  } else {
-    check("mia cannot watch the paid video yet", (await mia.call(`/api/videos/${paid.id}/stream`)).json.reason === "PAYWALL_REQUIRED");
-    check("below the minimum is refused", (await mia.call("/api/videos/unlock-video", "POST", { videoId: paid.id, amountCents: 100, gateway: "CREDITS" })).status === 400);
-    const unlock = await mia.call("/api/videos/unlock-video", "POST", { videoId: paid.id, amountCents: paid.minTipAmountCents, gateway: "CREDITS" });
-    check("unlock with credits settles at once", unlock.json.settled === true, JSON.stringify(unlock.json));
-    check("…and opens the video", (await mia.call(`/api/videos/${paid.id}/stream`)).json.allowed === true);
-    check("nobody can post a credits webhook", (await fetch(`${B}/api/webhooks/payments/credits`, { method: "POST", body: "{}" })).status === 404);
+  check("credits are always a way to pay", ((await mia.call("/api/payments/gateways")).json.gateways ?? [])[0] === "CREDITS");
+  const empty = (await mia.call("/api/me/wallet")).json;
+  check("a wallet starts with its balance and the packs", typeof empty.balanceCents === "number" && empty.packs.length === 4);
+  check("mia cannot watch the paid video yet", (await mia.call(`/api/videos/${paid.id}/stream`)).json.reason === "PAYWALL_REQUIRED");
+  check("below the minimum is refused", (await mia.call("/api/videos/unlock-video", "POST", { videoId: paid.id, amountCents: 100, gateway: "CREDITS" })).status === 400);
+  if (empty.balanceCents < paid.minTipAmountCents) {
+    const short = await mia.call("/api/videos/unlock-video", "POST", { videoId: paid.id, amountCents: paid.minTipAmountCents, gateway: "CREDITS" });
+    check("not enough credits → 402 with the balance", short.status === 402 && short.json.balanceCents === empty.balanceCents);
   }
+  check("an unknown pack is refused", (await mia.call("/api/me/wallet/topups", "POST", { packId: "free", gateway: "TEST" })).status === 400);
+  check("a test top-up adds the credits (test environments only)", (await mia.call("/api/me/wallet/topups", "POST", { packId: "plus", gateway: "TEST" })).json.settled === true);
+  const topped = (await mia.call("/api/me/wallet")).json;
+  check("…with the pack's bonus", topped.balanceCents === empty.balanceCents + 2600 && topped.history[0].type === "TOPUP");
+  const unlock = await mia.call("/api/videos/unlock-video", "POST", { videoId: paid.id, amountCents: paid.minTipAmountCents, gateway: "CREDITS" });
+  check("unlock with credits settles at once", unlock.json.settled === true, JSON.stringify(unlock.json));
+  check("…spends exactly the price", (await mia.call("/api/me/wallet")).json.balanceCents === topped.balanceCents - paid.minTipAmountCents);
+  check("…and opens the video", (await mia.call(`/api/videos/${paid.id}/stream`)).json.allowed === true);
+  check("nobody can post a credits webhook", (await fetch(`${B}/api/webhooks/payments/credits`, { method: "POST", body: "{}" })).status === 404);
+}
+
+// Earnings, exports, payout account
+{
+  const e = (await elena.call("/api/creator/earnings?period=all")).json;
+  check("earnings: totals from the ledger", e.summary.netCents > 0 && e.summary.payments > 0 && e.summary.totalViews > 0);
+  check("earnings: every video with what it brings in", e.videos.length > 0 && e.videos[0].netCents >= e.videos[e.videos.length - 1].netCents);
+  check("earnings: 12 months of trend", e.monthly.length === 12);
+  check("a member has no earnings page data", (await alex.call("/api/creator/earnings")).status === 403);
+  const csv = await fetch(`${B}/api/creator/earnings/export?kind=transactions&period=all`, { headers: { Cookie: elena.cookie } });
+  const body = await csv.text();
+  check("transactions export as CSV", csv.status === 200 && (csv.headers.get("content-type") ?? "").startsWith("text/csv") && body.includes("date_utc,type,video"));
+  check("a bad IBAN is refused", (await elena.call("/api/me/payout-account", "PUT", { method: "BANK_IBAN", holderName: "Elena Vox", country: "FR", details: { iban: "FR7630006000011234567890188" } })).status === 400);
+  const saved = await elena.call("/api/me/payout-account", "PUT", { method: "BANK_IBAN", holderName: "Elena Vox", country: "FR", details: { iban: "FR76 3000 6000 0112 3456 7890 189" } });
+  check("a valid IBAN is saved and shown masked", saved.status === 200 && saved.json.account.hint === "IBAN FR •••• 0189" && !JSON.stringify(saved.json).includes("30006000011234567890189"));
+  check("a US routing number is checked", (await elena.call("/api/me/payout-account", "PUT", { method: "BANK_US", holderName: "Elena Vox", country: "US", details: { routingNumber: "123456789", accountNumber: "000123456789" } })).status === 400);
+  check("below the payout minimum is refused", (await elena.call("/api/creator/payouts", "POST", { amountCents: 500 })).status === 400);
 }
 
 // Reference Data & Presets

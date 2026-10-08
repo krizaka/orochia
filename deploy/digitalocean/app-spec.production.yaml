@@ -61,6 +61,9 @@ services:
       - key: BUNNY_STREAM_TOKEN_AUTH_KEY
         scope: RUN_TIME
         type: SECRET
+      - key: PAYOUT_ENCRYPTION_KEY
+        scope: RUN_TIME
+        type: SECRET
       - key: BUNNY_WEBHOOK_SECRET
         scope: RUN_TIME
         type: SECRET

@@ -87,7 +87,7 @@ jobs:
       # Shared by the app and the scenarios that sign Bunny webhooks (test values, not a real library).
       BUNNY_WEBHOOK_SECRET: ci-only-bunny-read-only-key
       BUNNY_STREAM_LIBRARY_ID: "1"
-      PAYMENTS_CREDITS_MODE: always-approve
+      PAYMENTS_CREDITS_MODE: test
       OROCHIA_DEMO_MODE: "true"
       NEXT_PUBLIC_APP_URL: http://localhost:3000
     steps:

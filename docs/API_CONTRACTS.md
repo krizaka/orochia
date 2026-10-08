@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (112)
+## Endpoints (118)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -46,8 +46,10 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/conversations/[id]/messages` | session · ADMIN / CREATOR / MEMBER | Lists messages in a conversation and marks unread messages as read. |
 | `POST` | `/api/conversations/[id]/messages` | session · ADMIN / CREATOR / MEMBER | Sends a direct message in a conversation. |
 | `GET` | `/api/conversations/stream` | public | Realtime Server-Sent Events (SSE) stream for instant direct messages and notifications. |
-| `GET` | `/api/creator/payouts` | session · CREATOR | The signed-in creator's balance, lifetime earnings and payout history — from the ledger. |
-| `POST` | `/api/creator/payouts` | session · CREATOR | Requests a payout; balances are checked and reserved atomically (requestPayout). |
+| `GET` | `/api/creator/earnings` | session · CREATOR / ADMIN | Your earnings for a period (?period=30d|90d|12m|all): totals, views, each video's revenue, the trend, payments and payouts. |
+| `GET` | `/api/creator/earnings/export` | session · CREATOR / ADMIN | Downloads your earnings as CSV (?kind=transactions|videos&period=…), for your accounting. |
+| `GET` | `/api/creator/payouts` | session · CREATOR / ADMIN | The signed-in creator's balance, lifetime earnings and payout history — from the ledger. |
+| `POST` | `/api/creator/payouts` | session · CREATOR / ADMIN | Requests a payout to your saved payout account (an encrypted snapshot is kept); balance checked and reserved atomically. |
 | `GET` | `/api/creators/[username]` | public · session-aware | A creator's public page: profile, videos, the collections you may open and, signed in, how you relate to them. |
 | `DELETE` | `/api/creators/[username]/follow` | session · MEMBER / CREATOR / ADMIN | Unfollows a creator. |
 | `POST` | `/api/creators/[username]/follow` | session · MEMBER / CREATOR / ADMIN | Follows a creator; the follow stays PENDING until the creator approves it. |
@@ -82,11 +84,15 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/me/network` | session · MEMBER / CREATOR / ADMIN | Your followers, the creators you follow, your contacts and pending requests. |
 | `GET` | `/api/me/notifications` | session · MEMBER / CREATOR / ADMIN | Your notifications, newest first, 25 at a time (`before` = an ISO date to page back), with the unread count. |
 | `POST` | `/api/me/notifications` | session · MEMBER / CREATOR / ADMIN | Marks notifications read: the ones listed, or all of them. |
+| `GET` | `/api/me/payout-account` | session · CREATOR / ADMIN | Where your earnings are sent — shown masked (e.g. |
+| `PUT` | `/api/me/payout-account` | session · CREATOR / ADMIN | Saves (or replaces) where your earnings are sent; the details are checked and encrypted at rest. |
 | `GET` | `/api/me/profile` | session · ADMIN / CREATOR / MEMBER | Reads the signed-in user's own profile and settings (private fields included: e-mail, date of birth). |
 | `PUT` | `/api/me/profile` | session · ADMIN / CREATOR / MEMBER | Updates the signed-in user's own profile and preferences (only the fields sent). |
 | `GET` | `/api/me/stories` | session · CREATOR / ADMIN | Your stories of the last 30 days — live, encoding or expired — with their figures. |
+| `GET` | `/api/me/wallet` | session · MEMBER / CREATOR / ADMIN | Your Orochia credits: balance, the packs you can buy, how you can pay for them, and your history. |
+| `POST` | `/api/me/wallet/topups` | session · MEMBER / CREATOR / ADMIN | Buys credits: returns the gateway's hosted checkout (card, Apple Pay, Google Pay — card details never reach Orochia); the gateway's signed webhook adds the credits. |
 | `GET` | `/api/metrics` | bearer token | Prometheus metrics, behind a bearer token (METRICS_AUTH_TOKEN). |
-| `GET` | `/api/payments/gateways` | public | The gateways a buyer can pay through on this deployment. |
+| `GET` | `/api/payments/gateways` | public | The ways a buyer can pay on this deployment: credits (the wallet), then the external gateways. |
 | `GET` | `/api/platform/treasury` | session · ADMIN | Platform revenue, computed from the ledger only (administrators). |
 | `GET` | `/api/playlists` | session · MEMBER / CREATOR / ADMIN | Your playlists, most recently changed first. |
 | `POST` | `/api/playlists` | session · MEMBER / CREATOR / ADMIN | Creates a playlist. |
@@ -124,7 +130,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/webhooks/bunny` | signed webhook | Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (BUNNY_WEBHOOK_SECRET). |
 | `POST` | `/api/webhooks/payments/[gateway]` | signed webhook | Gateway payment notifications. |
 
-## Database tables (35)
+## Database tables (38)
 
 | Table | Drizzle export | Defined in |
 | :--- | :--- | :--- |
@@ -163,3 +169,6 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `profiles` | `profiles` | `packages/db/src/schema/users.ts` |
 | `videos` | `videos` | `packages/db/src/schema/videos.ts` |
 | `video_access_grants` | `videoAccessGrants` | `packages/db/src/schema/videos.ts` |
+| `credit_topups` | `creditTopups` | `packages/db/src/schema/wallet.ts` |
+| `wallet_ledger` | `walletLedger` | `packages/db/src/schema/wallet.ts` |
+| `payout_accounts` | `payoutAccounts` | `packages/db/src/schema/wallet.ts` |

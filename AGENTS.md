@@ -130,9 +130,18 @@ orochia/                           npm workspaces
   `/api/webhooks/payments/[gateway]` — signature verified in constant time over the raw body — settles an intent,
   **exactly once** (`settlePaymentIntent`). Creator, buyer, video and amount come from the intent, never from the webhook.
 - Adapters have no lenient mode; a gateway is offered only when all its credentials are configured.
-- **Orochia credits** (`CREDITS`) settle in-house through the same intent → settlement → ledger path, with no
-  checkout and no webhook. The wallet (top up, then spend) is not built yet: `chargeCredits` approves every payment,
-  and only when `PAYMENTS_CREDITS_MODE=always-approve` (dev/test). Unset, credits are not offered at all.
+- **Orochia credits** (`CREDITS`, the wallet — `packages/payments/src/credits.ts`): 1 credit = 1 US cent. Bought in
+  packs through a gateway's **hosted checkout** (card, Apple Pay, Google Pay: card details never reach Orochia), added
+  by its signed webhook exactly once (`settleTopup`, `credit_topups`). The balance is the sum of the append-only
+  `wallet_ledger`; spending is serialised per account (advisory lock), idempotent per intent, and refunded when the
+  settlement does not complete. Not enough credits → 402 with the balance. Test top-ups (no charge) only with
+  `PAYMENTS_CREDITS_MODE=test`, never on the indexed public deployment.
+- **Payouts** go to the creator's saved payout account (`payout_accounts`: IBAN, US/Canadian bank, PayPal, USDT,
+  BTC), validated like a bank would (IBAN mod-97, ABA checksum) and **encrypted at rest** (AES-256-GCM,
+  `PAYOUT_ENCRYPTION_KEY`); only a masked hint is ever shown to the creator; a payout request keeps an encrypted
+  snapshot that the admin API decrypts for the operator. Minimum $20.
+- **Earnings** (`lib/earnings.ts`, `/earnings`) are read from the ledger only: period totals, views, per-video revenue,
+  monthly trend, payments, payouts; CSV exports neutralise spreadsheet formulas.
 
 ### D. The ledger is immutable
 - `tips_ledger` is double-entry and append-only. Balances are **computed** from it (`getCreatorAvailableBalanceCents`),

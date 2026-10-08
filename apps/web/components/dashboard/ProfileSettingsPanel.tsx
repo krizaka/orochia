@@ -121,14 +121,12 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
   const [birthDate, setBirthDate] = useState("");
   const [links, setLinks] = useState<Record<string, string>>({});
   const [website, setWebsite] = useState("");
-  const [payoutAddress, setPayoutAddress] = useState("");
   const [emailsOff, setEmailsOff] = useState<string[]>([]);
   const [inAppOff, setInAppOff] = useState<string[]>([]);
   const [frequency, setFrequency] = useState<Profile["emailFrequency"]>("INSTANT");
   const identity = useSaver();
   const birth = useSaver();
   const linkSaver = useSaver();
-  const payout = useSaver();
   const prefs = useSaver();
 
   // The open section follows the address (#settings-…), and an address with a section opens there.
@@ -156,7 +154,6 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
       setBio(prof.bio ?? "");
       setLinks(prof.socialLinks ?? {});
       setWebsite(prof.websiteUrl ?? "");
-      setPayoutAddress(prof.payoutAddressCrypto ?? "");
       setEmailsOff(prof.emailsOff ?? []);
       setInAppOff(prof.inAppOff ?? []);
       setFrequency(prof.emailFrequency ?? "INSTANT");
@@ -382,17 +379,10 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
 
       {isCreator && (
         <Section id="payouts" icon={<Wallet className="h-4 w-4" />} title={t("settings.sections.payouts")}>
-          <label className="block">
-            <span className={label}>{t("settings.payouts.address")}</span>
-            <input value={payoutAddress} onChange={(e) => setPayoutAddress(e.target.value)} maxLength={200} placeholder={t("settings.payouts.addressPlaceholder")} className={`${field} font-mono`} />
-            <span className={hint}>{t("settings.payouts.hint")}</span>
-          </label>
-          <div className="flex flex-wrap items-end gap-3">
-            <SaveRow state={payout.state} error={payout.error} onSave={() => void payout.run(() => put({ payoutAddressCrypto: payoutAddress }))} />
-            <Link href="/creator/payouts" className={`${ghost} mt-5`}>
-              <Wallet className="h-3.5 w-3.5" /> {t("settings.payouts.request")}
-            </Link>
-          </div>
+          <p className="-mt-2 mb-4 text-xs text-zinc-400 light:text-slate-500">{t("settings.payouts.hint")}</p>
+          <Link href="/earnings#payouts" className={ghost}>
+            <Wallet className="h-3.5 w-3.5" /> {t("settings.payouts.request")}
+          </Link>
         </Section>
       )}
 

@@ -4,6 +4,16 @@ import { db, payoutRequests, users } from "@orochia/db";
 import { desc, eq } from "drizzle-orm";
 import { requireUserWithRole } from "@/lib/auth";
 import { errorResponse } from "@/lib/http";
+import { openDetails } from "@/lib/payout-account";
+
+function readableDestination(value: string): string {
+  try {
+    const details = openDetails(value);
+    return typeof details === "string" ? details : Object.entries(details).map(([k, v]) => `${k}: ${v}`).join(" · ");
+  } catch {
+    return "(cannot be decrypted with this PAYOUT_ENCRYPTION_KEY)";
+  }
+}
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +41,8 @@ export async function GET(req: NextRequest) {
       .where(status.success ? eq(payoutRequests.status, status.data) : undefined)
       .orderBy(desc(payoutRequests.createdAt))
       .limit(200);
-    return NextResponse.json({ success: true, payouts: rows });
+    // Operators send the money: the encrypted snapshot of the account is shown in clear, to them only.
+    return NextResponse.json({ success: true, payouts: rows.map((r) => ({ ...r, payoutDestination: readableDestination(r.payoutDestination) })) });
   } catch (error) {
     return errorResponse(error, "admin/payouts");
   }

@@ -5,6 +5,7 @@ import {
   InvalidPaymentEventError,
   getPaymentGateway,
   settlePaymentIntent,
+  settleTopup,
 } from "@orochia/payments";
 import { errorResponse, jsonError } from "@/lib/http";
 import { notifySettlement } from "@/lib/notifications";
@@ -39,6 +40,12 @@ export async function POST(req: NextRequest, props: { params: Promise<{ gateway:
 
     const event = adapter.parseWebhookEvent(payload);
     const outcome = await settlePaymentIntent(gateway.data, event);
+    // Not a tip or an unlock: maybe a credit top-up (wallet), settled the same way, exactly once.
+    if (outcome.kind === "UNKNOWN_INTENT") {
+      const topup = await settleTopup(gateway.data, event);
+      if (topup.kind === "UNDERPAID" || topup.kind === "GATEWAY_MISMATCH") console.error(`[webhooks/payments] ${gateway.data} top-up ${event.intentId}: ${topup.kind}`);
+      return NextResponse.json({ received: true, outcome: topup.kind });
+    }
     if (outcome.kind === "SETTLED") after(() => notifySettlement(event.intentId, Boolean(outcome.tip.grantId)));
     if (outcome.kind === "UNDERPAID" || outcome.kind === "GATEWAY_MISMATCH") {
       console.error(`[webhooks/payments] ${gateway.data} intent ${event.intentId}: ${outcome.kind}`);

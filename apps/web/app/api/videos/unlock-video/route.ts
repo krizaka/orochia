@@ -7,7 +7,7 @@ import {
   attachGatewaySession,
   chargeCredits,
   configuredGateways,
-  creditsEnabled,
+  refundCredits,
   createPaymentIntent,
   getPaymentGateway,
   settlePaymentIntent,
@@ -32,7 +32,7 @@ const UnlockVideoRequestSchema = z.object({
  * the gateway's signed webhook confirms the payment (/api/webhooks/payments/[gateway]).
  *
  * Orochia credits (CREDITS) settle in-house at once through the same intent → settlement → ledger
- * path — offered only when PAYMENTS_CREDITS_MODE is set (see packages/payments/src/credits.ts).
+ * path when the wallet covers the amount (402 with the balance otherwise; packages/payments/src/credits.ts).
  * Demo mode (never in production, no gateway configured) settles the intent at once, so the
  * showcase works without merchant accounts.
  */
@@ -60,15 +60,16 @@ export async function POST(req: NextRequest) {
     });
 
     if (gateway === "CREDITS") {
-      if (!creditsEnabled()) return jsonError(400, "This payment method is not available");
       const charge = await chargeCredits({ intentId: intent.id, buyerId: user.id, amountCents });
-      if (!charge.approved) return jsonError(402, "Not enough credits");
+      if (!charge.approved) return jsonError(402, "Not enough credits", { balanceCents: charge.balanceCents ?? 0, topUpUrl: "/wallet" });
       const outcome = await settlePaymentIntent("CREDITS", {
         intentId: intent.id,
         gatewayTransactionRef: charge.reference,
         amountCents,
         status: "SUCCESS",
       });
+      // Credits are only kept for a settled payment.
+      if (outcome.kind !== "SETTLED" && outcome.kind !== "ALREADY_SETTLED") await refundCredits({ intentId: intent.id, buyerId: user.id, amountCents });
       if (outcome.kind === "SETTLED") after(() => notifySettlement(intent.id, Boolean(outcome.tip.grantId)));
       return NextResponse.json({ success: true, settled: outcome.kind === "SETTLED" });
     }

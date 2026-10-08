@@ -4,3 +4,4 @@ export { Button, IconButton, buttonClass } from "./Button";
 export { Chip, Segmented } from "./Chip";
 export { Switch } from "./Switch";
 export { Slider } from "./Slider";
+export { Sheet } from "./Sheet";

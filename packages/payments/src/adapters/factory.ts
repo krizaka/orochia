@@ -62,9 +62,9 @@ export function getPaymentGateway(gateway: GatewayType, env: Env = process.env):
   }
 }
 
-/** The gateways this deployment can actually charge through, in display order (credits first when enabled). */
+/** The external gateways (hosted checkout + signed webhook) this deployment can charge through, in display order. */
 export function configuredGateways(env: Env = process.env): GatewayType[] {
-  const external = (["CCBILL", "SEGPAY", "CRYPTO", "STRIPE"] as GatewayType[]).filter((g) => {
+  return (["CCBILL", "SEGPAY", "CRYPTO", "STRIPE"] as GatewayType[]).filter((g) => {
     try {
       getPaymentGateway(g, env);
       return true;
@@ -72,5 +72,9 @@ export function configuredGateways(env: Env = process.env): GatewayType[] {
       return false;
     }
   });
-  return env.PAYMENTS_CREDITS_MODE === "always-approve" ? ["CREDITS", ...external] : external;
+}
+
+/** Every way a buyer can pay a tip or an unlock: Orochia credits (the wallet) first, then the external gateways. */
+export function paymentMethods(env: Env = process.env): GatewayType[] {
+  return ["CREDITS", ...configuredGateways(env)];
 }

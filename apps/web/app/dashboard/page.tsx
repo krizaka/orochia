@@ -233,7 +233,7 @@ function DashboardContent() {
           </TabButton>
         )}
         {isCreator && (
-          <Link href="/creator/payouts" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-white/5 transition-all light:text-slate-500 light:hover:bg-black/5 light:hover:text-slate-950">
+          <Link href="/earnings" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-white/5 transition-all light:text-slate-500 light:hover:bg-black/5 light:hover:text-slate-950">
             <CreditCard className="h-3.5 w-3.5 text-emerald-400" />
             <span>Payouts</span>
           </Link>

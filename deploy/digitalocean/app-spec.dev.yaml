@@ -63,6 +63,9 @@ services:
       - key: BUNNY_STREAM_TOKEN_AUTH_KEY
         scope: RUN_TIME
         type: SECRET
+      - key: PAYOUT_ENCRYPTION_KEY
+        scope: RUN_TIME
+        type: SECRET
       - key: BUNNY_WEBHOOK_SECRET
         scope: RUN_TIME
         type: SECRET
@@ -72,7 +75,7 @@ services:
       # Credits settle in-house; until the wallet exists every credits payment is approved (dev only).
       - key: PAYMENTS_CREDITS_MODE
         scope: RUN_TIME
-        value: always-approve
+        value: test
       - key: PLATFORM_FEE_PERCENTAGE
         scope: RUN_TIME
         value: "10"

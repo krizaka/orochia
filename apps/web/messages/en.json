@@ -135,7 +135,8 @@
     "signOut": "Sign out",
     "balance": "Balance",
     "saved": "Saved",
-    "viewProfile": "View profile"
+    "viewProfile": "View profile",
+    "wallet": "Wallet"
   },
   "footer": {
     "tagline": "The video platform independent creators own.",
@@ -438,10 +439,8 @@
       "frequencyHint": "Account e-mails (security, password) are always sent."
     },
     "payouts": {
-      "address": "Crypto payout address",
-      "addressPlaceholder": "USDT (TRC-20) or BTC address",
-      "hint": "Where your earnings are sent when you request a payout.",
-      "request": "Request a payout"
+      "hint": "Your payout method, earnings, exports and withdrawals are on the Earnings page.",
+      "request": "Open Earnings & payouts"
     },
     "accounts": {
       "intro": "Ways you can sign in to this account.",
@@ -505,5 +504,136 @@
     "settings": "Notification settings",
     "unread": "{count} unread",
     "loadMore": "Show older"
+  },
+  "wallet": {
+    "title": "Wallet",
+    "subtitle": "Orochia credits pay for tips and unlocks in one tap. 1 credit = $0.01.",
+    "balance": "Your credits",
+    "balanceValue": "{amount} in credits",
+    "add": "Add credits",
+    "choosePack": "Choose an amount",
+    "bonus": "+{amount} bonus",
+    "popular": "Most chosen",
+    "payWith": "Pay with",
+    "pay": "Pay {price}",
+    "processing": "Opening secure checkout…",
+    "gateways": {
+      "CCBILL": "Card, Apple Pay, Google Pay",
+      "SEGPAY": "Card",
+      "CRYPTO": "Crypto (USDT, BTC…)",
+      "STRIPE": "Card, Apple Pay, Google Pay",
+      "TEST": "Test top-up — no charge"
+    },
+    "secure": "Secure checkout by our payment partner. Your card details never reach Orochia.",
+    "noGateway": "Buying credits will open once a payment partner is connected.",
+    "success": "Payment received — your credits are on their way. They appear here within a minute.",
+    "testSuccess": "Credits added (test top-up, nothing was charged).",
+    "cancelled": "Checkout cancelled. Nothing was charged.",
+    "history": "History",
+    "empty": "No movements yet. Add credits to tip and unlock in one tap.",
+    "types": {
+      "TOPUP": "Credits added",
+      "SPEND": "Payment",
+      "REFUND": "Refund",
+      "ADJUSTMENT": "Adjustment"
+    },
+    "failed": "The payment could not start. Try again or choose another method.",
+    "short": "Not enough credits (you have {balance})."
+  },
+  "earnings": {
+    "title": "Earnings",
+    "subtitle": "What your videos bring in, from the ledger — every cent, exactly once.",
+    "periods": {
+      "30d": "30 days",
+      "90d": "90 days",
+      "12m": "12 months",
+      "all": "All time"
+    },
+    "net": "Net earnings",
+    "netHint": "After the {fee}% platform fee · {payments} payments",
+    "available": "Available to withdraw",
+    "pending": "{amount} on its way",
+    "views": "Total views",
+    "viewsHint": "{count} in this period",
+    "supporters": "Supporters",
+    "supportersHint": "Gross {amount}",
+    "withdraw": "Withdraw",
+    "trend": "Last 12 months",
+    "trendLabel": "Net earnings by month",
+    "videos": "Your videos",
+    "top": "Earning the most",
+    "low": "Earning the least",
+    "sortBy": "Sort by",
+    "sort": {
+      "net": "Earnings",
+      "views": "Views"
+    },
+    "videoMeta": "{views} views · {payments} payments",
+    "noVideos": "Publish a video to see what it earns here.",
+    "transactions": "Payments received",
+    "noTransactions": "No payment in this period yet.",
+    "export": "Export",
+    "exportTransactions": "Payments (CSV)",
+    "exportVideos": "Videos (CSV)",
+    "kinds": {
+      "tip": "Tip",
+      "unlock": "Unlock"
+    },
+    "payouts": "Payouts",
+    "payoutAccount": "Where we send your money",
+    "noAccount": "Add a bank account, PayPal or a crypto address to withdraw.",
+    "addAccount": "Add payout method",
+    "changeAccount": "Change",
+    "paidOut": "Paid out so far: {amount}",
+    "history": "Payout history",
+    "noPayouts": "No payout yet.",
+    "statuses": {
+      "REQUESTED": "Requested",
+      "UNDER_REVIEW": "In review",
+      "PROCESSING": "Sending",
+      "SETTLED": "Paid",
+      "FAILED": "Failed"
+    },
+    "request": {
+      "title": "Withdraw your earnings",
+      "amount": "Amount",
+      "max": "Everything ({amount})",
+      "min": "Minimum $20.00",
+      "to": "Sent to {hint}",
+      "submit": "Request {amount}",
+      "done": "Requested. You will be notified when it is sent.",
+      "tooLow": "You need at least $20.00 available to withdraw."
+    },
+    "account": {
+      "title": "Payout method",
+      "method": "Method",
+      "holder": "Account holder",
+      "holderHint": "The name on the account.",
+      "country": "Country",
+      "methods": {
+        "BANK_IBAN": "Bank (IBAN)",
+        "BANK_US": "US bank (ACH)",
+        "BANK_CA": "Canadian bank",
+        "PAYPAL": "PayPal",
+        "CRYPTO_USDT_TRC20": "USDT (TRC-20)",
+        "CRYPTO_BTC": "Bitcoin"
+      },
+      "fields": {
+        "iban": "IBAN",
+        "bic": "BIC / SWIFT (optional)",
+        "routingNumber": "Routing number",
+        "accountNumber": "Account number",
+        "accountType": "Account type",
+        "transitNumber": "Transit number",
+        "institutionNumber": "Institution number",
+        "email": "PayPal e-mail",
+        "address": "Wallet address"
+      },
+      "checking": "Checking",
+      "savings": "Savings",
+      "secure": "Encrypted and stored securely. Only the last digits are ever shown.",
+      "save": "Save payout method",
+      "saved": "Payout method saved."
+    }
   }
 }

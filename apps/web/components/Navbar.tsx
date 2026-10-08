@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, ChevronRight, LayoutDashboard, LogOut, MessageSquare, Search, Settings, Upload, Wallet } from "lucide-react";
+import { ChevronDown, ChevronRight, Coins, LayoutDashboard, LogOut, MessageSquare, Search, Settings, Upload, Wallet } from "lucide-react";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
 import { OrochiaLogo } from "@/components/OrochiaLogo";
 import { ThemeToggle } from "@/components/ThemeProvider";
@@ -135,7 +135,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                     {isCreator && (
                       <Link
                         role="menuitem"
-                        href="/creator/payouts"
+                        href="/earnings"
                         className="mx-1 mb-1 mt-0.5 flex items-center justify-between rounded-xl bg-gradient-to-r from-emerald-500/10 to-transparent px-3 py-2.5 ring-1 ring-emerald-500/20 transition-colors hover:from-emerald-500/20"
                       >
                         <span className="flex items-center gap-2 text-xs font-semibold text-zinc-200 light:text-slate-700">
@@ -147,6 +147,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                     <div className="my-1 h-px bg-white/5 light:bg-black/5" />
                     {menuItem("/dashboard", <LayoutDashboard className="h-4 w-4" />, t("nav.dashboard"))}
                     {menuItem("/messages", <MessageSquare className="h-4 w-4" />, t("nav.messages"))}
+                    {menuItem("/wallet", <Coins className="h-4 w-4" />, t("nav.wallet"))}
                     {menuItem("/dashboard?tab=settings", <Settings className="h-4 w-4" />, t("nav.settings"))}
                     <div className="my-1 h-px bg-white/5 light:bg-black/5" />
                     <button

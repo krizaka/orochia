@@ -36,6 +36,17 @@ export function sessionSecret(): string {
   return secret;
 }
 
+/** Key that encrypts payout account details at rest (AES-256-GCM). Mandatory in production; derived locally. */
+export function payoutEncryptionKey(): string {
+  const key = process.env.PAYOUT_ENCRYPTION_KEY?.trim();
+  if (key) {
+    if (key.length < 32) throw new ConfigurationError("PAYOUT_ENCRYPTION_KEY", "must be at least 32 characters");
+    return key;
+  }
+  if (isProduction()) throw new ConfigurationError("PAYOUT_ENCRYPTION_KEY");
+  return `development-payouts:${sessionSecret()}`;
+}
+
 export function appUrl(): string {
   return read("NEXT_PUBLIC_APP_URL", "http://localhost:3000").replace(/\/$/, "");
 }

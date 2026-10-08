@@ -71,7 +71,7 @@
       "id": "data",
       "name": "Data persistence",
       "path": "packages/db",
-      "tablesCount": 35,
+      "tablesCount": 38,
       "tables": [
         "audience_lists",
         "audience_list_members",
@@ -107,7 +107,10 @@
         "users",
         "profiles",
         "videos",
-        "video_access_grants"
+        "video_access_grants",
+        "credit_topups",
+        "wallet_ledger",
+        "payout_accounts"
       ]
     },
     {
@@ -334,15 +337,27 @@
     },
     {
       "method": "GET",
+      "path": "/api/creator/earnings",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "Your earnings for a period (?period=30d|90d|12m|all): totals, views, each video's revenue, the trend, payments and payouts."
+    },
+    {
+      "method": "GET",
+      "path": "/api/creator/earnings/export",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "Downloads your earnings as CSV (?kind=transactions|videos&period=…), for your accounting."
+    },
+    {
+      "method": "GET",
       "path": "/api/creator/payouts",
-      "access": "session · CREATOR",
+      "access": "session · CREATOR / ADMIN",
       "summary": "The signed-in creator's balance, lifetime earnings and payout history — from the ledger."
     },
     {
       "method": "POST",
       "path": "/api/creator/payouts",
-      "access": "session · CREATOR",
-      "summary": "Requests a payout; balances are checked and reserved atomically (requestPayout)."
+      "access": "session · CREATOR / ADMIN",
+      "summary": "Requests a payout to your saved payout account (an encrypted snapshot is kept); balance checked and reserved atomically."
     },
     {
       "method": "GET",
@@ -550,6 +565,18 @@
     },
     {
       "method": "GET",
+      "path": "/api/me/payout-account",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "Where your earnings are sent — shown masked (e.g."
+    },
+    {
+      "method": "PUT",
+      "path": "/api/me/payout-account",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "Saves (or replaces) where your earnings are sent; the details are checked and encrypted at rest."
+    },
+    {
+      "method": "GET",
       "path": "/api/me/profile",
       "access": "session · ADMIN / CREATOR / MEMBER",
       "summary": "Reads the signed-in user's own profile and settings (private fields included: e-mail, date of birth)."
@@ -568,6 +595,18 @@
     },
     {
       "method": "GET",
+      "path": "/api/me/wallet",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Your Orochia credits: balance, the packs you can buy, how you can pay for them, and your history."
+    },
+    {
+      "method": "POST",
+      "path": "/api/me/wallet/topups",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Buys credits: returns the gateway's hosted checkout (card, Apple Pay, Google Pay — card details never reach Orochia); the gateway's signed webhook adds the credits."
+    },
+    {
+      "method": "GET",
       "path": "/api/metrics",
       "access": "bearer token",
       "summary": "Prometheus metrics, behind a bearer token (METRICS_AUTH_TOKEN)."
@@ -576,7 +615,7 @@
       "method": "GET",
       "path": "/api/payments/gateways",
       "access": "public",
-      "summary": "The gateways a buyer can pay through on this deployment."
+      "summary": "The ways a buyer can pay on this deployment: credits (the wallet), then the external gateways."
     },
     {
       "method": "GET",

@@ -90,3 +90,6 @@ export const authTokenPurposeEnum = pgEnum("auth_token_purpose", ["VERIFY_EMAIL"
 
 /** A follow of a creator: approved by the creator before it opens APPROVED_FOLLOWERS_ONLY videos. */
 export const followStatusEnum = pgEnum("follow_status", ["PENDING", "APPROVED"]);
+
+/** Movements of an account's Orochia credits (wallet_ledger). */
+export const walletEntryTypeEnum = pgEnum("wallet_entry_type", ["TOPUP", "SPEND", "REFUND", "ADJUSTMENT"]);

@@ -85,6 +85,13 @@
       "when": 1791466137560,
       "tag": "0011_notifications_center",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1791468136443,
+      "tag": "0012_wallet_and_payout_accounts",
+      "breakpoints": true
     }
   ]
 }

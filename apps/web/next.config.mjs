@@ -32,7 +32,11 @@ const nextConfig = {
     return [{ source: "/@:username", destination: "/creators/:username" }];
   },
   async redirects() {
-    return [{ source: "/creators/:username", destination: "/@:username", permanent: true }];
+    return [
+      { source: "/creators/:username", destination: "/@:username", permanent: true },
+      // Earnings and payouts live on one page.
+      { source: "/creator/payouts", destination: "/earnings#payouts", permanent: true },
+    ];
   },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];

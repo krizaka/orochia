@@ -1,8 +1,9 @@
 "use client";
 
-import { t } from "@/lib/i18n";
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { X, Sparkles, CreditCard, ShieldCheck, Bitcoin, CheckCircle2 } from "lucide-react";
+import { t } from "@/lib/i18n";
 
 interface TipModalProps {
   isOpen: boolean;
@@ -27,6 +28,8 @@ export function TipModal({
   const [selectedGateway, setSelectedGateway] = useState<"CCBILL" | "SEGPAY" | "CRYPTO" | "STRIPE" | "CREDITS">("CCBILL");
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  // Credits did not cover the amount: offer to add some (the wallet) with the current balance.
+  const [creditsShort, setCreditsShort] = useState<number | null>(null);
   const [gateways, setGateways] = useState<string[] | null>(null);
   const [demoMode, setDemoMode] = useState(false);
 
@@ -61,6 +64,7 @@ export function TipModal({
   const handleProcessTip = async () => {
     setIsProcessing(true);
     setErrorMsg(null);
+    setCreditsShort(null);
 
     try {
       // The server records a payment intent and answers with the gateway's checkout page; access
@@ -71,7 +75,11 @@ export function TipModal({
         body: JSON.stringify({ videoId, amountCents: selectedAmount, gateway: selectedGateway }),
       });
 
-      const data = (await res.json()) as { error?: string; checkoutUrl?: string; settled?: boolean };
+      const data = (await res.json()) as { error?: string; checkoutUrl?: string; settled?: boolean; balanceCents?: number };
+      if (res.status === 402) {
+        setCreditsShort(data.balanceCents ?? 0);
+        return;
+      }
       if (!res.ok) {
         throw new Error(data.error || `Could not start the payment for ${creatorName}`);
       }
@@ -255,6 +263,14 @@ export function TipModal({
           </div>
         </div>
 
+        {creditsShort !== null && (
+          <div role="alert" className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-100 light:text-amber-800">
+            <span>{t("wallet.short", { balance: `$${(creditsShort / 100).toFixed(2)}` })}</span>
+            <Link href="/wallet" className="shrink-0 rounded-full bg-amber-400 px-3 py-1.5 font-bold text-zinc-950">
+              {t("wallet.add")}
+            </Link>
+          </div>
+        )}
         {/* Action Button */}
         {unavailable && (
           <p className="mb-3 text-xs text-amber-300">Payments are not available on this server yet.</p>
