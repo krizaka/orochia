@@ -260,7 +260,10 @@ orochia/                           npm workspaces
 - **Krizaka motion signature** (shared with krizaka.com; `app/globals.css` → "Krizaka motion signature",
   `components/motion`): one easing `--kz-ease`; every page enters (`app/template.tsx`); sections and cards rise into
   view with `data-reveal` (stagger with `--kz-delay`; `MotionObserver` in the layout drives it); headline words roll
-  (`RotatingWord`); primary actions carry `kz-sheen`; cards `kz-spotlight` / `kz-lift`; bands `kz-marquee`. Motion
+  (`RotatingWord`); primary actions carry `kz-sheen`; cards `kz-spotlight` / `kz-lift`; bands `kz-marquee`. What opens
+  over the page enters the same way: backdrops `kz-overlay`, dialogs `kz-dialog` (built into `Sheet`), menus and
+  popovers `kz-pop`, a view swapped in place `kz-fade`. Every `transition-*` utility uses `--kz-ease` by default
+  (Tailwind config): no `ease-*` / `duration-*` per component unless it means something. Motion
   explains (a product showcase, a count-up), it never blocks reading, and **everything stops under
   `prefers-reduced-motion`**. No animation library: CSS and a few lines of React.
 - **Dark islands**: a container with `theme-dark` stays dark in both themes (the `light:` variant does not apply

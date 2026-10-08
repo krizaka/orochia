@@ -50,7 +50,7 @@ export function NotificationBell() {
       </button>
 
       {open && (
-        <div role="dialog" aria-label={t("notifications.title")} className="absolute right-0 mt-2 w-[380px] overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/95 shadow-2xl shadow-black/50 backdrop-blur-2xl light:border-black/10 light:bg-white/95">
+        <div role="dialog" aria-label={t("notifications.title")} className="kz-pop absolute right-0 mt-2 w-[380px] overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/95 shadow-2xl shadow-black/50 backdrop-blur-2xl light:border-black/10 light:bg-white/95">
           <div className="flex items-center justify-between border-b border-white/5 px-4 py-3 light:border-black/5">
             <h2 className="text-sm font-bold text-white light:text-slate-900">{t("notifications.title")}</h2>
             <div className="flex items-center gap-1">

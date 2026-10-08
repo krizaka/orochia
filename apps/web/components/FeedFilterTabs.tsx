@@ -129,7 +129,7 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
         )
       ) : viewMode === "grid" ? (
         /* Grid Layout */
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 animate-in fade-in duration-300">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 kz-fade">
           {filteredVideos.map((video, i) => (
             <div key={video.id} data-reveal style={{ ["--kz-delay" as string]: `${(i % 4) * 70}ms` }}>
               <VideoCard {...video} />
@@ -138,7 +138,7 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
         </div>
       ) : (
         /* Cinematic Immersive Stream Feed */
-        <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in duration-300">
+        <div className="max-w-3xl mx-auto space-y-8 kz-fade">
           {filteredVideos.map((video) => (
             <div
               key={video.id}

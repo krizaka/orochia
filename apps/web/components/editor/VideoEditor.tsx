@@ -202,7 +202,7 @@ export function VideoEditor({
   );
 
   return (
-    <div className="theme-dark fixed inset-0 z-[60] flex items-stretch justify-center bg-black/80 backdrop-blur-xl sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-labelledby="editor-title">
+    <div className="theme-dark fixed inset-0 z-[60] flex items-stretch justify-center bg-black/80 backdrop-blur-xl kz-overlay sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-labelledby="editor-title">
       <div
         className={cx(
           "relative flex h-[100dvh] w-full flex-col overflow-hidden bg-zinc-950 text-white sm:h-[min(94vh,920px)] sm:rounded-[2rem] sm:border sm:border-white/10 sm:shadow-2xl sm:shadow-black/60",
@@ -275,7 +275,7 @@ export function VideoEditor({
 
         {/* Leaving with changes: keep them as a draft, drop them, or stay */}
         {leaving && (
-          <div className="absolute inset-0 z-20 flex items-end justify-center bg-black/70 p-4 backdrop-blur-sm sm:items-center" role="alertdialog" aria-modal="true" aria-labelledby="leave-title" aria-describedby="leave-body">
+          <div className="absolute inset-0 z-20 flex items-end justify-center bg-black/70 p-4 backdrop-blur-sm kz-overlay sm:items-center" role="alertdialog" aria-modal="true" aria-labelledby="leave-title" aria-describedby="leave-body">
             <div className="w-full max-w-sm rounded-3xl border border-white/10 bg-zinc-900 p-6 shadow-2xl">
               <h3 id="leave-title" className="text-base font-bold">{t("editor.discard.title")}</h3>
               <p id="leave-body" className="mt-1.5 text-sm text-zinc-400">{t("editor.discard.body")}</p>

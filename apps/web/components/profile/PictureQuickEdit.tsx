@@ -97,7 +97,7 @@ export function PictureQuickEdit({
       </button>
 
       {open && (
-        <div role="menu" className={`absolute mt-2 w-56 rounded-2xl border border-white/10 bg-zinc-900/95 p-1.5 shadow-2xl backdrop-blur-xl light:border-black/10 light:bg-white/95 ${isAvatar ? "left-0" : "right-0"}`}>
+        <div role="menu" className={`kz-pop absolute mt-2 w-56 rounded-2xl border border-white/10 bg-zinc-900/95 p-1.5 shadow-2xl backdrop-blur-xl light:border-black/10 light:bg-white/95 ${isAvatar ? "left-0" : "right-0"}`}>
           <button role="menuitem" type="button" className={item} onClick={() => { setOpen(false); input.current?.click(); }}>
             <ImagePlus className="h-4 w-4 text-violet-400" /> {t("settings.pictures.upload")}
           </button>
@@ -115,7 +115,7 @@ export function PictureQuickEdit({
       {error && <p role="alert" className="absolute mt-2 w-64 rounded-lg bg-rose-600 px-3 py-2 text-xs text-white shadow-lg">{error}</p>}
 
       {choosing && (
-        <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label={t("settings.pictures.presetsTitle")} onClick={() => setChoosing(false)}>
+        <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/70 backdrop-blur-sm kz-overlay sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label={t("settings.pictures.presetsTitle")} onClick={() => setChoosing(false)}>
           <div className="w-full max-w-lg rounded-t-3xl border border-white/10 bg-zinc-950 p-5 shadow-2xl light:border-black/10 light:bg-white sm:rounded-3xl" onClick={(e) => e.stopPropagation()}>
             <h4 className="mb-4 text-sm font-bold text-white light:text-slate-900">{t("settings.pictures.presetsTitle")}</h4>
             <div className={`grid max-h-[60vh] gap-3 overflow-y-auto p-1 ${isAvatar ? "grid-cols-4" : "grid-cols-2"}`}>

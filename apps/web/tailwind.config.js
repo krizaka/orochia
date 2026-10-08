@@ -55,6 +55,9 @@ module.exports = {
           "sans-serif",
         ],
       },
+      // The Krizaka easing for every `transition-*` utility (no `ease-*` class needed), and a calm default duration.
+      transitionTimingFunction: { DEFAULT: "var(--kz-ease)", kz: "var(--kz-ease)" },
+      transitionDuration: { DEFAULT: "200ms" },
       animation: {
         "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         "glow-fade": "glowFade 3s ease-in-out infinite alternate",

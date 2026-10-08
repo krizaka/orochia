@@ -209,8 +209,8 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 p-0 backdrop-blur-md sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="story-title">
-      <div className="max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border border-white/10 light:border-black/10 bg-zinc-950 light:bg-white p-6 text-white light:text-slate-900 shadow-2xl sm:rounded-3xl">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 p-0 backdrop-blur-md kz-overlay sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="story-title">
+      <div className="kz-dialog max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border border-white/10 light:border-black/10 bg-zinc-950 light:bg-white p-6 text-white light:text-slate-900 shadow-2xl sm:rounded-3xl">
         <div className="flex items-start justify-between gap-3 border-b border-white/10 light:border-black/5 pb-4">
           <div className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-600/20 text-violet-400">

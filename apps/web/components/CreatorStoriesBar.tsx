@@ -206,7 +206,7 @@ export function CreatorStoriesBar() {
       </div>
 
       {ring && story && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-0 sm:p-6 backdrop-blur-xl" role="dialog" aria-modal="true" aria-label={ring.displayName}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-0 sm:p-6 backdrop-blur-xl kz-overlay" role="dialog" aria-modal="true" aria-label={ring.displayName}>
           <div className="relative flex h-full w-full flex-col justify-between overflow-hidden bg-black sm:h-[88vh] sm:max-h-[780px] sm:max-w-md sm:rounded-3xl sm:border sm:border-white/15">
             <div className="absolute inset-0 flex items-center justify-center bg-black">
               {story.type === "video" ? (

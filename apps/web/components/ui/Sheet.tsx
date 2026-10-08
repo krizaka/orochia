@@ -33,14 +33,14 @@ export function Sheet({ open, onClose, title, children, footer, size = "md" }: {
   }, [open]);
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center sm:p-6" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+    <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/70 backdrop-blur-sm kz-overlay sm:items-center sm:p-6" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div
         ref={panel}
         role="dialog"
         aria-modal="true"
         aria-label={title}
         className={cx(
-          "flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-[1.75rem] border border-white/10 bg-zinc-950 shadow-2xl light:border-black/10 light:bg-white sm:rounded-[1.75rem]",
+          "kz-dialog flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-[1.75rem] border border-white/10 bg-zinc-950 shadow-2xl light:border-black/10 light:bg-white sm:rounded-[1.75rem]",
           size === "lg" ? "sm:max-w-2xl" : "sm:max-w-md",
         )}
       >

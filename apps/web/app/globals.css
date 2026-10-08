@@ -265,7 +265,8 @@ html.dark .text-gradient-neon {
 /* ── Krizaka motion signature ─────────────────────────────────────────────────────────────────
    The same grammar as krizaka.com: one easing (--kz-ease), entrances that rise and un-blur, words that roll,
    a sheen across primary actions, a soft spotlight that follows the pointer on cards. Driven by
-   components/motion (MotionObserver, RotatingWord, app/template.tsx). Everything stops under reduced motion. */
+   components/motion (MotionObserver, RotatingWord, app/template.tsx). Every Tailwind transition uses --kz-ease by
+   default (tailwind.config.js). Everything stops under reduced motion. */
 :root {
   --kz-ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -377,8 +378,29 @@ html.dark .text-gradient-neon {
   to { transform: translateX(-50%); }
 }
 
+/* Entrances of what opens over the page — one vocabulary for every overlay, dialog, menu and swapped view.
+   Opacity and transform only, `backwards` fill: nothing stays transformed once in place. */
+.kz-overlay { animation: kz-fade-in 0.22s var(--kz-ease) backwards; }   /* the dimmed backdrop */
+.kz-dialog { animation: kz-dialog-in 0.42s var(--kz-ease) backwards; }  /* a dialog: rises from the bottom on phones */
+.kz-pop { animation: kz-pop-in 0.22s var(--kz-ease) backwards; transform-origin: top right; } /* menus, popovers */
+.kz-fade { animation: kz-fade-in 0.35s var(--kz-ease) backwards; }      /* a view swapped in place (tabs, filters) */
+@keyframes kz-fade-in {
+  from { opacity: 0; }
+}
+@keyframes kz-dialog-in {
+  from { opacity: 0; transform: translateY(32px); }
+}
+@media (min-width: 640px) {
+  @keyframes kz-dialog-in {
+    from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  }
+}
+@keyframes kz-pop-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.96); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .kz-page, .kz-word, .kz-gradient-text, .kz-marquee { animation: none !important; }
+  .kz-page, .kz-word, .kz-gradient-text, .kz-marquee, .kz-overlay, .kz-dialog, .kz-pop, .kz-fade { animation: none !important; }
   [data-reveal] { opacity: 1; transform: none; filter: none; transition: none; }
   .kz-sheen::after { display: none; }
   .kz-lift, .kz-lift:hover { transform: none; transition: none; }

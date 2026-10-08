@@ -116,7 +116,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                   <ChevronDown className="h-3.5 w-3.5 text-zinc-400" />
                 </button>
                 {menuOpen && (
-                  <div role="menu" className="absolute right-0 mt-2 w-72 overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/95 p-1.5 shadow-2xl shadow-black/50 backdrop-blur-2xl light:border-black/10 light:bg-white/95 light:shadow-violet-900/10">
+                  <div role="menu" className="kz-pop absolute right-0 mt-2 w-72 overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/95 p-1.5 shadow-2xl shadow-black/50 backdrop-blur-2xl light:border-black/10 light:bg-white/95 light:shadow-violet-900/10">
                     {/* Who you are — the whole card opens your public profile */}
                     <Link
                       role="menuitem"

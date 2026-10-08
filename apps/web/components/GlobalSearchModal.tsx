@@ -114,7 +114,7 @@ export function GlobalSearchModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/80 backdrop-blur-md p-4 pt-16 sm:pt-24 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/80 backdrop-blur-md p-4 pt-16 sm:pt-24 kz-overlay">
       <div
         className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-950 dark:bg-zinc-950 light:bg-white shadow-2xl shadow-violet-950/40 text-white dark:text-white light:text-slate-900"
         onClick={(e) => e.stopPropagation()}
