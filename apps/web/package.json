@@ -13,6 +13,8 @@
   "dependencies": {
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/util": "^0.12.2",
+    "@krizaka/orochia-design-system": "^2.1.0",
+    "@krizaka/ui": "^1.0.0",
     "@orochia/db": "*",
     "@orochia/media": "*",
     "@orochia/payments": "*",

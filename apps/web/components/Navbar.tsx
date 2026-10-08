@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, ChevronRight, Coins, LayoutDashboard, LogOut, MessageSquare, Search, Settings, Upload, Wallet } from "lucide-react";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
-import { OrochiaLogo } from "@/components/OrochiaLogo";
+import { OrochiaLogo } from "@/components/ui";
 import { ThemeToggle } from "@/components/ThemeProvider";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { t } from "@/lib/i18n";

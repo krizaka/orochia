@@ -3,7 +3,7 @@
 import React, { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { ShieldAlert, CheckCircle, ExternalLink } from "lucide-react";
-import { OrochiaLogo } from "@/components/OrochiaLogo";
+import { OrochiaLogo } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { Rich } from "@/components/Rich";
 

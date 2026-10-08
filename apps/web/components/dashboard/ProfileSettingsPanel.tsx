@@ -4,8 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Bell, Check, ExternalLink, Link2, Loader2, Lock, User, UserX, Wallet, KeyRound } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { Switch } from "@/components/ui";
-import { SocialIcon } from "@/components/SocialIcon";
+import { SocialIcon, Switch } from "@/components/ui";
 import { latestAdultBirthDate } from "@/components/BirthDateField";
 import { t, type MessageKey } from "@/lib/i18n";
 

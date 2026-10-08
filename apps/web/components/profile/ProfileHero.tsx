@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { BadgeCheck } from "lucide-react";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
-import { SocialIcon } from "@/components/SocialIcon";
+import { SocialIcon } from "@/components/ui";
 import { PictureQuickEdit } from "./PictureQuickEdit";
 import { t, type MessageKey } from "@/lib/i18n";
 

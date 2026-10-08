@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Lock, Users, Sparkles, Eye, Play, Heart, Bookmark, CheckCircle2 } from "lucide-react";
 import { t } from "@/lib/i18n";
@@ -51,6 +51,12 @@ export function VideoCard({
   const [revealed, setRevealed] = useState(!isBlurred);
   // A video still encoding has no picture yet: show the placeholder rather than a broken image.
   const [broken, setBroken] = useState(false);
+  const picture = useRef<HTMLImageElement>(null);
+  // The image may fail before hydration, when React is not listening yet.
+  useEffect(() => {
+    const img = picture.current;
+    if (img?.complete && img.naturalWidth === 0) setBroken(true);
+  }, []);
 
   const formatDuration = (secs: number) => {
     const m = Math.floor(secs / 60);
@@ -92,6 +98,7 @@ export function VideoCard({
           {((isHovered && previewAnimationUrl) || thumbnailUrl) && !broken ? (
             <img
               src={isHovered && previewAnimationUrl ? previewAnimationUrl : thumbnailUrl!}
+              ref={picture}
               alt=""
               onError={() => setBroken(true)}
               className={`h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 ${

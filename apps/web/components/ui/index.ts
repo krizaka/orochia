@@ -1,9 +1,8 @@
-/** Orochia's UI kit: every screen builds on these — consistent states, both themes, accessible by default. */
-export { cx } from "./cx";
-export { Button, IconButton } from "./Button";
-export { buttonClass, type ButtonSize, type ButtonVariant } from "./button-class";
-export { Chip, Segmented } from "./Chip";
-export { Switch } from "./Switch";
-export { Slider } from "./Slider";
+/**
+ * The app's door to the Orochia kit, published as @krizaka/orochia-design-system (krizaka/orochia-design-system).
+ * Components come from the package as they are; the few that carry words get them here, in the app's language.
+ * A plain module: server components take buttonClass and cx from it too (the package's `classes` entry).
+ */
+export { buttonClass, cx, type ButtonSize, type ButtonVariant } from "@krizaka/orochia-design-system/classes";
+export { Button, IconButton, ConfirmIconButton, Chip, Segmented, Switch, Slider, SocialIcon, OrochiaLogo, MotionObserver, RotatingWord } from "@krizaka/orochia-design-system";
 export { Sheet } from "./Sheet";
-export { ConfirmIconButton } from "./ConfirmButton";

@@ -6,7 +6,7 @@ import { SocialSignIn } from "@/components/SocialSignIn";
 import { useRouter } from "next/navigation";
 import { Lock, Mail, UserPlus } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { OrochiaLogo } from "@/components/OrochiaLogo";
+import { OrochiaLogo } from "@/components/ui";
 import { BirthDateField, isAdultBirthDate } from "@/components/BirthDateField";
 import { UsernameField } from "@/components/UsernameField";
 import { Rich } from "@/components/Rich";

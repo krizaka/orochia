@@ -11,7 +11,7 @@ import { RelationshipActions } from "@/components/RelationshipActions";
 import { HeroWall } from "@/components/home/HeroWall";
 import { ProductShowcase } from "@/components/home/ProductShowcase";
 import { CreatorsPreview } from "@/components/home/CreatorsPreview";
-import { RotatingWord } from "@/components/motion/RotatingWord";
+import { RotatingWord } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 export const metadata = { alternates: { canonical: "/" } };

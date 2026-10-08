@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import { ClientLayoutShell } from "@/components/ClientLayoutShell";
-import { MotionObserver } from "@/components/motion/MotionObserver";
+import { MotionObserver } from "@/components/ui";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AuthProvider } from "@/lib/auth-context";
 import { ThemeProvider } from "@/components/ThemeProvider";

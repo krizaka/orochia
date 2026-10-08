@@ -84,8 +84,10 @@ orochia/                           npm workspaces
   `lib/playlists.ts` or a package** — never inline in a route or a component.
 - `orochia-admin` has **no database**: it is a server-side BFF over `/api/admin/*`, authorised by an ADMIN session
   kept in an httpOnly cookie. Any new operator capability is an admin endpoint here first.
-- `orochia-design-system` depends on no app. The apps' copies of shared components (e.g. `OrochiaLogo`) must stay
-  identical to the design system's; new shared UI is built there first.
+- **Shared UI comes from npm, never from a copy.** `@krizaka/orochia-design-system` (repo `orochia-design-system`) is
+  the Orochia kit; `@krizaka/ui` (repo `krizaka-ui`) is the Krizaka brand layer under it — the marks and the motion
+  signature, shared with krizaka.com and Orazaka. The apps depend on caret ranges; new shared UI is built in the
+  package first, released, then adopted.
 
 ---
 
@@ -223,9 +225,10 @@ orochia/                           npm workspaces
 - Server Components by default; `"use client"` for state, effects and browser APIs.
 - Aesthetic: **Obsidian Velvet Noir** — dark-first (`#09090b`), velvet violet → fuchsia → pink accents, glass
   panels, Outfit (display) + Plus Jakarta Sans (body), WCAG AA contrast. The brand mark is the animated
-  `OrochiaLogo` (serpent + flame), never a placeholder icon; it stops under `prefers-reduced-motion`.
-- **Tailwind CSS v4, configured in CSS** (`app/globals.css`: `@theme`, `@custom-variant dark` / `light`, `@source` for
-  the workspace packages) — there is no `tailwind.config.js`.
+  `OrochiaLogo` (serpent + flame, from `@krizaka/ui`), never a placeholder icon; it stops under `prefers-reduced-motion`.
+- **Tailwind CSS v4, configured in CSS**: `app/globals.css` imports `tailwindcss` and the kit's `theme.css` (the
+  `dark` / `light` variants, tokens, motion signature, the package as a source), then adds the app's own `@theme`
+  and `@source` for the workspace packages — there is no `tailwind.config.js`.
 - Every list has an empty state; every action shows its pending and error states; no `alert()`.
 - **Every user-facing string lives in `apps/web/messages/en.json`** and is read with `t("key", { vars })`
   (`lib/i18n.ts`, keys typed from the file, `<Rich>` for `<b>` and `{slot}` links; `messages("branch")` for long
@@ -253,13 +256,14 @@ orochia/                           npm workspaces
   skeletons while loading; menus and dialogs close on Escape and outside click and carry ARIA roles; text and tap
   targets work at 360 px. Prefer the shared building blocks (`ProfileHero`, `PictureQuickEdit`, `NotificationBell`,
   `SocialIcon`) over new one-offs.
-- **UI kit** (`components/ui`): `Button` / `buttonClass` (primary · secondary · ghost · danger, sm · md · lg, loading),
-  `IconButton` (accessible name required), `ConfirmIconButton` (two-tap destructive action), `Chip`, `Segmented`,
-  `Switch`, `Slider`, `Sheet` (every dialog: phones get a bottom sheet), `cx`. `buttonClass` and `cx`
-  are plain modules (no `"use client"`): server components style links with them; the components are client. New screens use them; a
-  screen touched for another reason moves its hand-rolled buttons to them.
-- **Krizaka motion signature** (shared with krizaka.com; `app/globals.css` → "Krizaka motion signature",
-  `components/motion`): one easing `--kz-ease`; every page enters (`app/template.tsx`); sections and cards rise into
+- **UI kit** — `@krizaka/orochia-design-system`, imported through `components/ui` (the app's door: it re-exports the
+  kit and gives `Sheet` its translated close label): `Button` / `buttonClass` (primary · secondary · ghost · danger,
+  sm · md · lg, loading), `IconButton` (accessible name required), `ConfirmIconButton` (two-tap destructive action),
+  `Chip`, `Segmented`, `Switch`, `Slider`, `Sheet` (every dialog: phones get a bottom sheet), `SocialIcon`, `cx`,
+  and from `@krizaka/ui` `OrochiaLogo`, `MotionObserver`, `RotatingWord`. `buttonClass` and `cx` come from the
+  package's plain `classes` entry, so server components can call them. New screens use the kit; a screen touched for
+  another reason moves its hand-rolled buttons to it. A missing component is added to the package, not to the app.
+- **Krizaka motion signature** (`@krizaka/ui/motion.css`, loaded by the kit's `theme.css`; shared with krizaka.com): one easing `--kz-ease`; every page enters (`app/template.tsx`); sections and cards rise into
   view with `data-reveal` (stagger with `--kz-delay`; `MotionObserver` in the layout drives it); headline words roll
   (`RotatingWord`); primary actions carry `kz-sheen`; cards `kz-spotlight` / `kz-lift`; bands `kz-marquee`. What opens
   over the page enters the same way: backdrops `kz-overlay`, dialogs `kz-dialog` (built into `Sheet`), menus and

@@ -7,7 +7,7 @@ import { SocialSignIn } from "@/components/SocialSignIn";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { LogIn, Lock, Mail, ArrowRight, Sparkles } from "lucide-react";
-import { OrochiaLogo } from "@/components/OrochiaLogo";
+import { OrochiaLogo } from "@/components/ui";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -57,8 +57,8 @@ export default function LoginPage() {
 
         {/* Demo accounts — only in demo mode (never in production) */}
         {demoMode && (
-        <div className="mb-6 rounded-2xl border border-violet-500/20 bg-violet-950/20 p-3.5">
-          <p className="text-[11px] font-semibold text-violet-300 mb-2 flex items-center gap-1.5">
+        <div className="mb-6 rounded-2xl border border-violet-500/20 bg-violet-950/20 p-3.5 light:border-violet-200 light:bg-violet-50">
+          <p className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold text-violet-300 light:text-violet-700">
             <Sparkles className="h-3.5 w-3.5 text-fuchsia-400" />
             <span>{t("auth.login.demo")}</span>
           </p>
@@ -69,7 +69,7 @@ export default function LoginPage() {
                 await switchProfile("creator");
                 router.push("/dashboard");
               }}
-              className="rounded-xl border border-violet-500/30 bg-violet-600/20 py-2 px-3 text-xs font-bold text-white hover:bg-violet-600/40 transition-colors"
+              className="rounded-xl border border-violet-500/30 bg-violet-600/20 py-2 px-3 text-xs font-bold text-white hover:bg-violet-600/40 transition-colors light:border-violet-300 light:bg-white light:text-violet-800 hover:light:bg-violet-100"
             >
               {t("auth.login.demoCreator")}
             </button>
@@ -79,7 +79,7 @@ export default function LoginPage() {
                 await switchProfile("patron");
                 router.push("/dashboard");
               }}
-              className="rounded-xl border border-fuchsia-500/30 bg-fuchsia-600/20 py-2 px-3 text-xs font-bold text-white hover:bg-fuchsia-600/40 transition-colors"
+              className="rounded-xl border border-fuchsia-500/30 bg-fuchsia-600/20 py-2 px-3 text-xs font-bold text-white hover:bg-fuchsia-600/40 transition-colors light:border-fuchsia-300 light:bg-white light:text-fuchsia-800 hover:light:bg-fuchsia-100"
             >
               {t("auth.login.demoMember")}
             </button>
@@ -112,7 +112,7 @@ export default function LoginPage() {
               <label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500">
                 {t("auth.login.password")}
               </label>
-              <Link href="/auth/forgot-password" className="text-xs text-violet-300 hover:underline">
+              <Link href="/auth/forgot-password" className="text-xs text-violet-300 hover:underline light:text-violet-700">
                 {t("auth.login.forgot")}
               </Link>
             </div>
@@ -149,7 +149,7 @@ export default function LoginPage() {
 
         <p className="mt-6 text-center text-xs text-zinc-400 light:text-slate-500">
           {t("auth.login.new")}{" "}
-          <Link href="/auth/register" className="font-semibold text-violet-400 hover:underline">
+          <Link href="/auth/register" className="font-semibold text-violet-400 hover:underline light:text-violet-700">
             {t("auth.login.register")}
           </Link>
         </p>
