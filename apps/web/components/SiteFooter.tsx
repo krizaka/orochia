@@ -4,7 +4,7 @@ import { t } from "@/lib/i18n";
 
 /** A quiet footer: brand line, the few links people look for, and the 18+ statement. */
 export function SiteFooter() {
-  const link = "transition-colors hover:text-white light:hover:text-slate-950";
+  const link = "transition-colors hover:text-white hover:light:text-slate-950";
   return (
     <footer className="mb-16 border-t border-white/5 light:border-black/5 py-10 text-xs text-zinc-500 light:text-slate-500 md:mb-0">
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 px-4 sm:px-6 md:flex-row">

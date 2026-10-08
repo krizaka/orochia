@@ -58,13 +58,13 @@ interface ContentRating {
 }
 
 const field =
-  "w-full rounded-xl border border-white/10 bg-zinc-900/80 px-4 py-3 text-sm text-white placeholder:text-zinc-600 transition-colors focus:border-violet-500 focus:outline-none light:border-black/10 light:bg-slate-50 light:text-slate-900 light:placeholder:text-slate-400";
+  "w-full rounded-xl border border-white/10 bg-zinc-900/80 px-4 py-3 text-sm text-white placeholder:text-zinc-600 transition-colors focus:border-violet-500 focus:outline-hidden light:border-black/10 light:bg-slate-50 light:text-slate-900 light:placeholder:text-slate-400";
 const label = "mb-1.5 block text-xs font-semibold text-zinc-300 light:text-slate-700";
 
 /** A numbered step of the form; its number turns into a check once the step is complete. */
 function Step({ n, title, done, children }: { n: number; title: string; done: boolean; children: React.ReactNode }) {
   return (
-    <section className="rounded-[1.5rem] border border-white/10 bg-zinc-950/60 p-5 sm:p-6 light:border-black/5 light:bg-white light:shadow-sm" aria-label={title}>
+    <section className="rounded-3xl border border-white/10 bg-zinc-950/60 p-5 sm:p-6 light:border-black/5 light:bg-white light:shadow-xs" aria-label={title}>
       <h2 className="mb-4 flex items-center gap-3 text-sm font-bold text-white light:text-slate-900">
         <span
           className={cx(
@@ -251,8 +251,8 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
   // Sent: what happens next, and the two next steps.
   if (uploadedVideoId && !errorMessage) {
     return (
-      <div className="mx-auto max-w-xl rounded-[2rem] border border-white/10 bg-zinc-950/60 p-8 text-center light:border-black/5 light:bg-white sm:p-12">
-        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-pink-600 shadow-lg shadow-fuchsia-600/30">
+      <div className="mx-auto max-w-xl rounded-4xl border border-white/10 bg-zinc-950/60 p-8 text-center light:border-black/5 light:bg-white sm:p-12">
+        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-violet-600 to-pink-600 shadow-lg shadow-fuchsia-600/30">
           {finished ? <CheckCircle2 className="h-8 w-8 text-white" /> : <Upload className="h-7 w-7 animate-bounce text-white" />}
         </div>
         <h2 className="font-display text-2xl font-black text-white light:text-slate-900">{t("publish.done.title")}</h2>
@@ -263,7 +263,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
               <span>{t("publish.uploading", { progress: upload?.progress ?? 0 })}</span>
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-white/10 light:bg-black/10">
-              <div className="h-full rounded-full bg-gradient-to-r from-violet-500 to-pink-500 transition-all duration-300" style={{ width: `${upload?.progress ?? 0}%` }} />
+              <div className="h-full rounded-full bg-linear-to-r from-violet-500 to-pink-500 transition-all duration-300" style={{ width: `${upload?.progress ?? 0}%` }} />
             </div>
           </div>
         )}
@@ -352,11 +352,11 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                   void pick(e.dataTransfer.files?.[0]);
                 }}
                 className={cx(
-                  "group flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-12 text-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400",
-                  isDragging ? "scale-[1.01] border-violet-400 bg-violet-500/10" : "border-white/15 hover:border-violet-500/60 hover:bg-violet-500/[0.04] light:border-black/15",
+                  "group flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-12 text-center transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400",
+                  isDragging ? "scale-[1.01] border-violet-400 bg-violet-500/10" : "border-white/15 hover:border-violet-500/60 hover:bg-violet-500/4 light:border-black/15",
                 )}
               >
-                <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-pink-600 text-white shadow-lg shadow-fuchsia-600/25 transition-transform group-hover:-translate-y-1">
+                <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-violet-600 to-pink-600 text-white shadow-lg shadow-fuchsia-600/25 transition-transform group-hover:-translate-y-1">
                   <UploadCloud className="h-7 w-7" />
                 </span>
                 <p className="text-sm font-semibold text-white light:text-slate-900">{isDragging ? t("publish.drop.dragging") : t("publish.drop.title")}</p>
@@ -406,7 +406,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                       onBlur={() => tagDraft && addTag(tagDraft)}
                       placeholder={tags.length ? "" : t("publish.fields.tagsPlaceholder")}
                       aria-label={t("publish.fields.tags")}
-                      className="min-w-[8rem] flex-1 bg-transparent py-1 text-sm outline-none placeholder:text-zinc-600 light:placeholder:text-slate-400"
+                      className="min-w-32 flex-1 bg-transparent py-1 text-sm outline-hidden placeholder:text-zinc-600 light:placeholder:text-slate-400"
                     />
                   )}
                 </div>
@@ -428,8 +428,8 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                     aria-checked={active}
                     onClick={() => setVisibility(a)}
                     className={cx(
-                      "flex items-start gap-3 rounded-2xl border p-3.5 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400",
-                      active ? "border-violet-500 bg-violet-500/10" : "border-white/10 hover:border-white/25 light:border-black/10 light:hover:border-black/25",
+                      "flex items-start gap-3 rounded-2xl border p-3.5 text-left transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400",
+                      active ? "border-violet-500 bg-violet-500/10" : "border-white/10 hover:border-white/25 light:border-black/10 hover:light:border-black/25",
                     )}
                   >
                     <span className={cx("flex h-9 w-9 shrink-0 items-center justify-center rounded-xl", active ? "bg-violet-600 text-white" : "bg-white/5 text-zinc-400 light:bg-black/5 light:text-slate-500")}>
@@ -445,12 +445,12 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
             </div>
 
             {visibility === "TIPPED_UNLOCKED" && (
-              <div className="mt-4 rounded-2xl border border-violet-500/25 bg-violet-500/[0.06] p-4">
+              <div className="mt-4 rounded-2xl border border-violet-500/25 bg-violet-500/6 p-4">
                 <label className="block">
                   <span className={label}>{t("publish.fields.price")}</span>
                   <span className="flex items-center rounded-xl border border-white/10 bg-zinc-900/80 px-3 focus-within:border-violet-500 light:border-black/10 light:bg-white">
                     <span className="font-semibold text-zinc-500">$</span>
-                    <input type="number" step="0.50" min="1" value={minTipAmountDollars} onChange={(e) => setMinTipAmountDollars(e.target.value)} className="w-full bg-transparent px-2 py-3 text-sm font-semibold text-white outline-none light:text-slate-900" />
+                    <input type="number" step="0.50" min="1" value={minTipAmountDollars} onChange={(e) => setMinTipAmountDollars(e.target.value)} className="w-full bg-transparent px-2 py-3 text-sm font-semibold text-white outline-hidden light:text-slate-900" />
                   </span>
                   <span className="mt-1 block text-[11px] text-zinc-500">{t("publish.fields.priceHint")}</span>
                 </label>
@@ -460,7 +460,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                     { k: t("publish.split.fee", { fee: platformFeePercent }), v: usd(feeCents) },
                     { k: t("publish.split.you"), v: usd(priceCents - feeCents), strong: true },
                   ].map((c) => (
-                    <div key={c.k} className={cx("rounded-xl p-2.5", c.strong ? "bg-emerald-500/15 ring-1 ring-emerald-500/30" : "bg-white/5 light:bg-black/[0.03]")}>
+                    <div key={c.k} className={cx("rounded-xl p-2.5", c.strong ? "bg-emerald-500/15 ring-1 ring-emerald-500/30" : "bg-white/5 light:bg-black/3")}>
                       <span className="block text-zinc-400 light:text-slate-500">{c.k}</span>
                       <span className={cx("font-mono text-sm font-bold", c.strong ? "text-emerald-300 light:text-emerald-700" : "text-white light:text-slate-900")}>{c.v}</span>
                     </div>
@@ -521,7 +521,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
             </p>
             <div className="space-y-2">
               {(["age", "records", "rights"] as const).map((k) => (
-                <label key={k} className={cx("flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors", certify[k] ? "border-emerald-500/40 bg-emerald-500/[0.06]" : "border-white/10 hover:border-white/25 light:border-black/10")}>
+                <label key={k} className={cx("flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors", certify[k] ? "border-emerald-500/40 bg-emerald-500/6" : "border-white/10 hover:border-white/25 light:border-black/10")}>
                   <input type="checkbox" checked={certify[k]} onChange={(e) => setCertify({ ...certify, [k]: e.target.checked })} className="mt-0.5 h-4 w-4 accent-violet-600" />
                   <span className="text-sm leading-relaxed text-zinc-200 light:text-slate-700">
                     {t(`publish.declarations.${k}`)}
@@ -539,7 +539,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
 
         {/* Live preview + publish (sticky on wide screens; the button is pinned to the bottom on phones) */}
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-[1.5rem] border border-white/10 bg-zinc-950/60 p-4 light:border-black/5 light:bg-white">
+          <div className="rounded-3xl border border-white/10 bg-zinc-950/60 p-4 light:border-black/5 light:bg-white">
             <p className="text-xs font-semibold text-zinc-400 light:text-slate-500">{t("publish.preview")}</p>
             <p className="mb-3 text-[11px] text-zinc-500">{t("publish.previewHint")}</p>
             <div className="overflow-hidden rounded-2xl border border-white/10 light:border-black/5">
@@ -552,11 +552,11 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                   </span>
                 )}
                 {visibility === "TIPPED_UNLOCKED" && (
-                  <span className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-gradient-to-r from-violet-600 to-pink-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                  <span className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-linear-to-r from-violet-600 to-pink-600 px-2 py-0.5 text-[10px] font-bold text-white">
                     <Lock className="h-3 w-3" /> {usd(priceCents)}
                   </span>
                 )}
-                {duration !== null && <span className="absolute bottom-2 right-2 rounded bg-black/70 px-1.5 py-0.5 font-mono text-[10px] text-white">{clockOf(duration)}</span>}
+                {duration !== null && <span className="absolute bottom-2 right-2 rounded-sm bg-black/70 px-1.5 py-0.5 font-mono text-[10px] text-white">{clockOf(duration)}</span>}
               </div>
               <div className="p-3">
                 <p className="line-clamp-2 text-sm font-semibold text-white light:text-slate-900">{title.trim() || t("publish.untitled")}</p>

@@ -19,7 +19,7 @@ interface Collection {
 }
 
 const field =
-  "rounded-2xl border border-white/10 bg-zinc-900/80 px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900";
+  "rounded-2xl border border-white/10 bg-zinc-900/80 px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-hidden light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900";
 
 /** Your collections — create, choose who opens each, invite accounts, delete — and those shared with you. */
 export function PlaylistsPanel() {
@@ -65,7 +65,7 @@ export function PlaylistsPanel() {
             </option>
           ))}
         </select>
-        <button disabled={!title.trim()} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-xs font-bold text-white disabled:opacity-40">
+        <button disabled={!title.trim()} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-xs font-bold text-white disabled:opacity-40">
           <Plus className="h-4 w-4" /> {t("common.create")}
         </button>
       </form>
@@ -97,7 +97,7 @@ export function PlaylistsPanel() {
                     value={p.visibility}
                     onChange={(e) => void send(`/api/playlists/${p.id}`, "PATCH", { visibility: e.target.value })}
                     aria-label={t("playlistsPanel.whoOpensNamed", { title: p.title })}
-                    className="rounded-lg border border-white/10 bg-zinc-900 px-2 py-1.5 text-[11px] font-semibold text-zinc-200 focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-700"
+                    className="rounded-lg border border-white/10 bg-zinc-900 px-2 py-1.5 text-[11px] font-semibold text-zinc-200 focus:border-violet-500 focus:outline-hidden light:bg-slate-50 light:border-black/10 light:text-slate-700"
                   >
                     {COLLECTION_AUDIENCES.map((a) => (
                       <option key={a.value} value={a.value}>

@@ -30,7 +30,7 @@ export function BirthDateField({ value, onChange, labelClass, fieldClass }: { va
           max={latestAdultBirthDate()}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={`${fieldClass} pl-10 pr-4 normal-case tracking-normal [color-scheme:dark] light:[color-scheme:light]`}
+          className={`${fieldClass} pl-10 pr-4 normal-case tracking-normal scheme-dark light:scheme-light`}
         />
       </div>
       <span className="mt-1 block text-[11px] font-normal normal-case tracking-normal text-zinc-500">{t("auth.register.birthDateHint")}</span>

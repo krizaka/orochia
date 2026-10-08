@@ -21,7 +21,7 @@ interface Pending {
 
 const label = "block text-xs font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500";
 const field =
-  "mt-1.5 w-full rounded-xl border border-white/10 light:border-black/10 bg-zinc-900 light:bg-slate-50 px-3.5 py-2.5 text-sm normal-case tracking-normal text-white light:text-slate-900 focus:border-violet-500 focus:outline-none";
+  "mt-1.5 w-full rounded-xl border border-white/10 light:border-black/10 bg-zinc-900 light:bg-slate-50 px-3.5 py-2.5 text-sm normal-case tracking-normal text-white light:text-slate-900 focus:border-violet-500 focus:outline-hidden";
 
 /** After a first Google / Facebook sign-in: username, display name, 18+ certification and terms, then the account. */
 export default function CompleteSignUpPage() {
@@ -119,7 +119,7 @@ export default function CompleteSignUpPage() {
             />
           </span>
         </label>
-        <button disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 py-3.5 text-sm font-bold text-white disabled:opacity-60">
+        <button disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 py-3.5 text-sm font-bold text-white disabled:opacity-60">
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
           {busy ? t("auth.complete.submitting") : t("auth.complete.submit")}
         </button>

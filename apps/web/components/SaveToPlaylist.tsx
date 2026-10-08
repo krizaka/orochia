@@ -108,7 +108,7 @@ export function SaveToPlaylist({ videoId }: { videoId: string }) {
               maxLength={120}
               placeholder={t("collections.newPlaceholder")}
               aria-label={t("collections.newPlaceholder")}
-              className="min-w-0 flex-1 rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-xs text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900"
+              className="min-w-0 flex-1 rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-xs text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-hidden light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900"
             />
             <button disabled={busy || !title.trim()} className="rounded-xl bg-violet-600 px-3 text-white disabled:opacity-40" aria-label={t("collections.create")}>
               <Plus className="h-4 w-4" />

@@ -74,7 +74,7 @@ export function Timeline({
       >
         <div className="pointer-events-none absolute inset-0 flex overflow-hidden rounded-xl">
           {Array.from({ length: FILMSTRIP_FRAMES }, (_, i) =>
-            frames[i] ? <img key={i} src={frames[i]} alt="" className="h-full min-w-0 flex-1 object-cover" /> : <div key={i} className="flex-1 animate-pulse border-r border-black/30 bg-white/[0.06]" />,
+            frames[i] ? <img key={i} src={frames[i]} alt="" className="h-full min-w-0 flex-1 object-cover" /> : <div key={i} className="flex-1 animate-pulse border-r border-black/30 bg-white/6" />,
           )}
         </div>
         {/* Outside the kept part is dimmed */}
@@ -97,14 +97,14 @@ export function Timeline({
             aria-valuetext={clock(which === "start" ? start : end)}
             onPointerDown={(e) => begin(which, e)}
             onKeyDown={(e) => nudge(which, e)}
-            className={`absolute inset-y-0 z-10 flex w-6 cursor-ew-resize items-center justify-center bg-white text-zinc-900 shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
+            className={`absolute inset-y-0 z-10 flex w-6 cursor-ew-resize items-center justify-center bg-white text-zinc-900 shadow-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400 ${
               which === "start" ? "rounded-l-xl" : "-translate-x-full rounded-r-xl"
             }`}
             style={{ left: `${pct(which === "start" ? start : end)}%` }}
           >
             <span className="flex gap-[3px]">
-              <span className="h-5 w-[2px] rounded bg-zinc-400" />
-              <span className="h-5 w-[2px] rounded bg-zinc-400" />
+              <span className="h-5 w-[2px] rounded-sm bg-zinc-400" />
+              <span className="h-5 w-[2px] rounded-sm bg-zinc-400" />
             </span>
           </div>
         ))}

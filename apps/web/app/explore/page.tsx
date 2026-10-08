@@ -52,7 +52,7 @@ export default async function ExplorePage(props: { searchParams: Promise<{ q?: s
             maxLength={100}
             placeholder={t("explore.placeholder")}
             aria-label={t("explore.placeholder")}
-            className="w-full rounded-2xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900/80 dark:bg-zinc-900/80 light:bg-slate-100 py-3 pl-11 pr-4 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 dark:placeholder:text-zinc-500 light:placeholder:text-slate-400 focus:border-violet-500 focus:outline-none"
+            className="w-full rounded-2xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900/80 dark:bg-zinc-900/80 light:bg-slate-100 py-3 pl-11 pr-4 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 dark:placeholder:text-zinc-500 light:placeholder:text-slate-400 focus:border-violet-500 focus:outline-hidden"
           />
         </div>
         {tag && <input type="hidden" name="tag" value={tag} />}
@@ -66,7 +66,7 @@ export default async function ExplorePage(props: { searchParams: Promise<{ q?: s
             className={`rounded-full border px-3 py-1.5 text-xs transition-colors ${
               !tag
                 ? "border-violet-500 bg-violet-600/20 text-white dark:text-white light:text-violet-900"
-                : "border-white/10 dark:border-white/10 light:border-black/10 text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-black"
+                : "border-white/10 dark:border-white/10 light:border-black/10 text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white hover:light:text-black"
             }`}
           >
             {t("explore.all")}
@@ -78,7 +78,7 @@ export default async function ExplorePage(props: { searchParams: Promise<{ q?: s
               className={`inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs transition-colors ${
                 tag === entry.tag
                   ? "border-violet-500 bg-violet-600/20 text-white dark:text-white light:text-violet-900 font-bold"
-                  : "border-white/10 dark:border-white/10 light:border-black/10 text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-black"
+                  : "border-white/10 dark:border-white/10 light:border-black/10 text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white hover:light:text-black"
               }`}
             >
               <Hash className="h-3 w-3" /> {entry.tag}{" "}

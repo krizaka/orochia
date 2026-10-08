@@ -49,7 +49,7 @@ function Section({ title, empty, people, render }: { title: string; empty: strin
   );
 }
 
-const iconBtn = "rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white light:text-slate-500 light:hover:text-slate-950";
+const iconBtn = "rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white light:text-slate-500 hover:light:text-slate-950";
 
 /** Followers to approve (creators), contact requests to answer, and everyone you follow or know. */
 export function NetworkPanel({ isCreator }: { isCreator: boolean }) {

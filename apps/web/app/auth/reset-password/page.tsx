@@ -28,7 +28,7 @@ export default function ResetPasswordPage() {
     setState("done");
   };
 
-  const field = "w-full rounded-xl border border-white/10 bg-zinc-900 py-2.5 pl-10 pr-4 text-sm text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900";
+  const field = "w-full rounded-xl border border-white/10 bg-zinc-900 py-2.5 pl-10 pr-4 text-sm text-white focus:border-violet-500 focus:outline-hidden light:bg-slate-50 light:border-black/10 light:text-slate-900";
 
   return (
     <div className="mx-auto max-w-md px-4 py-16">

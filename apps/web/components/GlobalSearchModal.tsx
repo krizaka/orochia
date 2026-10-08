@@ -129,21 +129,21 @@ export function GlobalSearchModal({
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t("search.placeholder")}
             aria-label={t("search.placeholder")}
-            className="flex-1 bg-transparent text-sm sm:text-base outline-none placeholder:text-zinc-500 dark:placeholder:text-zinc-500 light:placeholder:text-slate-400"
+            className="flex-1 bg-transparent text-sm sm:text-base outline-hidden placeholder:text-zinc-500 dark:placeholder:text-zinc-500 light:placeholder:text-slate-400"
           />
           {loading && <Loader2 className="h-4 w-4 animate-spin text-violet-400 shrink-0" />}
           {query && (
             <button
               onClick={() => setQuery("")}
               aria-label={t("search.clear")}
-              className="text-zinc-400 hover:text-white p-1 rounded-lg light:hover:text-slate-900"
+              className="text-zinc-400 hover:text-white p-1 rounded-lg hover:light:text-slate-900"
             >
               <X className="h-4 w-4" />
             </button>
           )}
           <button
             onClick={onClose}
-            className="rounded-xl border border-white/10 dark:border-white/10 light:border-black/10 px-2 py-1 text-[11px] font-mono text-zinc-400 hover:text-white dark:hover:text-white light:hover:text-black transition-colors"
+            className="rounded-xl border border-white/10 dark:border-white/10 light:border-black/10 px-2 py-1 text-[11px] font-mono text-zinc-400 hover:text-white dark:hover:text-white hover:light:text-black transition-colors"
           >
             {t("search.esc")}
           </button>
@@ -157,8 +157,8 @@ export function GlobalSearchModal({
               onClick={() => setActiveTab(tab)}
               className={`rounded-lg px-3 py-1 font-semibold capitalize transition-all ${
                 activeTab === tab
-                  ? "bg-violet-600 text-white shadow-sm"
-                  : "text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-black"
+                  ? "bg-violet-600 text-white shadow-xs"
+                  : "text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white hover:light:text-black"
               }`}
             >
               {t(`search.tabs.${tab}`)}
@@ -204,7 +204,7 @@ export function GlobalSearchModal({
                     type="button"
                     key={c.id}
                     onClick={() => handleSelect(`/@${c.username}`)}
-                    className="flex w-full items-center gap-3 text-left rounded-2xl border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/40 dark:bg-zinc-900/40 light:bg-slate-50 p-2.5 hover:border-violet-500/50 hover:bg-white/5 light:hover:bg-black/[0.03] cursor-pointer transition-all group"
+                    className="flex w-full items-center gap-3 text-left rounded-2xl border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/40 dark:bg-zinc-900/40 light:bg-slate-50 p-2.5 hover:border-violet-500/50 hover:bg-white/5 hover:light:bg-black/3 cursor-pointer transition-all group"
                   >
                     <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl border border-violet-500/40 bg-zinc-800">
                       <img
@@ -244,7 +244,7 @@ export function GlobalSearchModal({
                     type="button"
                     key={v.id}
                     onClick={() => handleSelect(`/watch/${v.id}`)}
-                    className="flex w-full items-center gap-3 text-left rounded-2xl border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/40 dark:bg-zinc-900/40 light:bg-slate-50 p-2.5 hover:border-violet-500/50 hover:bg-white/5 light:hover:bg-black/[0.03] cursor-pointer transition-all group"
+                    className="flex w-full items-center gap-3 text-left rounded-2xl border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/40 dark:bg-zinc-900/40 light:bg-slate-50 p-2.5 hover:border-violet-500/50 hover:bg-white/5 hover:light:bg-black/3 cursor-pointer transition-all group"
                   >
                     <div className="relative aspect-video h-14 shrink-0 overflow-hidden rounded-xl bg-zinc-800">
                       {v.thumbnailUrl ? (
@@ -254,11 +254,11 @@ export function GlobalSearchModal({
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-900/40 to-zinc-900 text-violet-400">
+                        <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-violet-900/40 to-zinc-900 text-violet-400">
                           <Tv className="h-5 w-5" />
                         </div>
                       )}
-                      <span className="absolute bottom-1 right-1 rounded bg-black/80 px-1 py-0.2 font-mono text-[9px] text-white">
+                      <span className="absolute bottom-1 right-1 rounded-sm bg-black/80 px-1 py-0.2 font-mono text-[9px] text-white">
                         {formatDuration(v.durationSeconds)}
                       </span>
                     </div>
@@ -314,8 +314,8 @@ export function GlobalSearchModal({
         {/* Footer shortcuts */}
         <div className="flex items-center justify-between border-t border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/60 dark:bg-zinc-900/60 light:bg-slate-50 px-4 py-2.5 text-[11px] text-zinc-500">
           <div className="flex items-center gap-3">
-            <span><kbd className="rounded border border-white/10 px-1 py-0.5">↑↓</kbd> {t("search.navigate")}</span>
-            <span><kbd className="rounded border border-white/10 px-1 py-0.5">↵</kbd> {t("search.select")}</span>
+            <span><kbd className="rounded-sm border border-white/10 px-1 py-0.5">↑↓</kbd> {t("search.navigate")}</span>
+            <span><kbd className="rounded-sm border border-white/10 px-1 py-0.5">↵</kbd> {t("search.select")}</span>
           </div>
           <Link
             href={`/explore?q=${encodeURIComponent(query)}`}

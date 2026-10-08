@@ -50,7 +50,7 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
   };
 
   return (
-    <section aria-labelledby={`drafts-${kind}`} className="rounded-2xl border border-violet-500/25 bg-violet-600/[0.06] p-3">
+    <section aria-labelledby={`drafts-${kind}`} className="rounded-2xl border border-violet-500/25 bg-violet-600/6 p-3">
       <h3 id={`drafts-${kind}`} className="mb-2 px-1 text-xs font-bold uppercase tracking-wider text-violet-300 light:text-violet-700">
         {t("editor.drafts.title")} · {drafts.length}
       </h3>
@@ -64,7 +64,7 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
                 type="button"
                 onClick={() => void open(d)}
                 disabled={Boolean(opening)}
-                className="group relative block aspect-[9/16] max-h-48 w-full overflow-hidden rounded-xl bg-zinc-900 text-left light:bg-slate-200"
+                className="group relative block aspect-9/16 max-h-48 w-full overflow-hidden rounded-xl bg-zinc-900 text-left light:bg-slate-200"
                 aria-label={`${t("editor.drafts.resume")}: ${title}`}
               >
                 {d.thumbnailUrl ? (
@@ -74,7 +74,7 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
                     <Clapperboard className="h-7 w-7" />
                   </span>
                 )}
-                <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent p-2 pt-6 text-[11px] font-semibold text-white">
+                <span className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/85 to-transparent p-2 pt-6 text-[11px] font-semibold text-white">
                   {busy ? (
                     <span className="flex items-center gap-1.5">
                       <Loader2 className="h-3 w-3 animate-spin" /> {t("editor.drafts.opening", { progress: opening.progress })}

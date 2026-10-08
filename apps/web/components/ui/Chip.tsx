@@ -11,10 +11,10 @@ export function Chip({ active, className, children, ...rest }: React.ButtonHTMLA
       aria-pressed={active}
       {...rest}
       className={cx(
-        "inline-flex h-9 items-center justify-center gap-1.5 rounded-full border px-3.5 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 disabled:opacity-40",
+        "inline-flex h-9 items-center justify-center gap-1.5 rounded-full border px-3.5 text-xs font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400 disabled:opacity-40",
         active
           ? "border-violet-500 bg-violet-600/20 text-violet-100 light:text-violet-800"
-          : "border-white/10 text-zinc-300 hover:border-white/25 hover:text-white light:border-black/10 light:text-slate-600 light:hover:border-black/25 light:hover:text-slate-950",
+          : "border-white/10 text-zinc-300 hover:border-white/25 hover:text-white light:border-black/10 light:text-slate-600 hover:light:border-black/25 hover:light:text-slate-950",
         className,
       )}
     >
@@ -36,8 +36,8 @@ export function Segmented<T extends string>({ value, options, onChange, label }:
           disabled={o.disabled}
           onClick={() => onChange(o.value)}
           className={cx(
-            "flex min-h-9 items-center justify-center gap-2 rounded-xl px-2 py-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 disabled:opacity-30",
-            value === o.value ? "bg-violet-600 text-white shadow" : "text-zinc-400 hover:bg-white/5 hover:text-white light:text-slate-600 light:hover:bg-black/5 light:hover:text-slate-950",
+            "flex min-h-9 items-center justify-center gap-2 rounded-xl px-2 py-2 text-xs font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400 disabled:opacity-30",
+            value === o.value ? "bg-violet-600 text-white shadow-sm" : "text-zinc-400 hover:bg-white/5 hover:text-white light:text-slate-600 hover:light:bg-black/5 hover:light:text-slate-950",
           )}
         >
           {o.label}

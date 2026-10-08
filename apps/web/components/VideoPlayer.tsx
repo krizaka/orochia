@@ -228,7 +228,7 @@ export function VideoPlayer({
       {/* Paywall Overlay State */}
       {isPaywalled && (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md p-6 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600/30 to-fuchsia-600/30 border border-violet-500/30 mb-4 shadow-lg shadow-violet-500/20">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-violet-600/30 to-fuchsia-600/30 border border-violet-500/30 mb-4 shadow-lg shadow-violet-500/20">
             <Lock className="h-8 w-8 text-violet-400" />
           </div>
           <h3 className="text-xl font-bold text-white mb-1">{t("player.paidTitle")}</h3>
@@ -237,7 +237,7 @@ export function VideoPlayer({
           </p>
           <button
             onClick={onUnlockRequested}
-            className="flex items-center gap-2.5 px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white font-semibold text-sm shadow-lg shadow-fuchsia-600/30 transition-all hover:scale-105 active:scale-95"
+            className="flex items-center gap-2.5 px-6 py-3 rounded-xl bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white font-semibold text-sm shadow-lg shadow-fuchsia-600/30 transition-all hover:scale-105 active:scale-95"
           >
             <Sparkles className="h-4 w-4" />
             <span>{t("player.paidCta", { price: `$${(minTipAmountCents / 100).toFixed(2)}` })}</span>
@@ -264,7 +264,7 @@ export function VideoPlayer({
       {/* Custom Video Controls */}
       {!isPaywalled && !isGated && (
         <div
-          className={`absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-4 transition-opacity duration-300 ${
+          className={`absolute bottom-0 left-0 right-0 z-20 bg-linear-to-t from-black/90 via-black/40 to-transparent p-4 transition-opacity duration-300 ${
             showControls ? "opacity-100" : "opacity-0"
           }`}
         >

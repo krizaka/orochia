@@ -69,7 +69,7 @@ export function CreatorProfileClient({
               className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-xs font-bold transition-all ${
                 activeTab === id
                   ? "bg-violet-600 text-white shadow-md shadow-violet-600/30"
-                  : "text-zinc-400 hover:bg-white/5 hover:text-white light:text-slate-600 light:hover:bg-black/5 light:hover:text-slate-950"
+                  : "text-zinc-400 hover:bg-white/5 hover:text-white light:text-slate-600 hover:light:bg-black/5 hover:light:text-slate-950"
               }`}
             >
               <Icon className="h-3.5 w-3.5" />

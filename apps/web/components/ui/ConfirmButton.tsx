@@ -41,10 +41,10 @@ export function ConfirmIconButton({
         onConfirm();
       }}
       className={cx(
-        "inline-flex h-8 min-w-8 shrink-0 items-center justify-center gap-1 rounded-lg px-2 text-[11px] font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 disabled:opacity-40",
+        "inline-flex h-8 min-w-8 shrink-0 items-center justify-center gap-1 rounded-lg px-2 text-[11px] font-bold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-rose-400 disabled:opacity-40",
         armed
           ? "bg-rose-600 text-white hover:bg-rose-500"
-          : "text-zinc-400 hover:bg-rose-500/10 hover:text-rose-300 light:text-slate-500 light:hover:text-rose-600",
+          : "text-zinc-400 hover:bg-rose-500/10 hover:text-rose-300 light:text-slate-500 hover:light:text-rose-600",
         className,
       )}
     >

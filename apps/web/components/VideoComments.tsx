@@ -43,7 +43,7 @@ function Composer({ onSubmit, placeholder, autoFocus }: { onSubmit: (body: strin
         autoFocus={autoFocus}
         placeholder={placeholder}
         aria-label={placeholder}
-        className="min-w-0 flex-1 resize-y rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900"
+        className="min-w-0 flex-1 resize-y rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-hidden light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900"
       />
       <button disabled={busy || !body.trim()} className="self-end rounded-xl bg-violet-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-40">
         {busy ? t("comments.posting") : t("comments.post")}
@@ -132,7 +132,7 @@ export function VideoComments({
             {new Date(c.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
           </span>
         </p>
-        <p className={`mt-1 whitespace-pre-line break-words text-sm ${c.removed ? "italic text-zinc-500 light:text-slate-500" : "text-zinc-300 light:text-slate-700"}`}>
+        <p className={`mt-1 whitespace-pre-line wrap-break-word text-sm ${c.removed ? "italic text-zinc-500 light:text-slate-500" : "text-zinc-300 light:text-slate-700"}`}>
           {c.removed ? t("comments.removed") : c.body}
         </p>
         <div className="mt-1 flex gap-3 text-[11px] text-zinc-500 light:text-slate-500">

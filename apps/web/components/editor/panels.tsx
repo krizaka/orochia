@@ -20,7 +20,7 @@ export function PanelHeader({ tool, changed, onReset }: { tool: Tool; changed: b
         <p className="mt-0.5 text-xs leading-relaxed text-zinc-400">{t(`editor.panels.${tool}.hint`)}</p>
       </div>
       {changed && (
-        <button type="button" onClick={onReset} className="flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold text-zinc-300 hover:bg-white/[0.08] hover:text-white">
+        <button type="button" onClick={onReset} className="flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold text-zinc-300 hover:bg-white/8 hover:text-white">
           <RotateCcw className="h-3 w-3" /> {t("editor.reset")}
         </button>
       )}
@@ -48,7 +48,7 @@ export function TrimPanel(props: {
         <span className="mb-2 block text-xs font-semibold text-zinc-300">{t("editor.speed")}</span>
         <div className="flex flex-wrap gap-2">
           {SPEEDS.map((s) => (
-            <Chip key={s} active={edit.speed === s} onClick={() => set("speed", s)} className="min-w-[3.5rem]">
+            <Chip key={s} active={edit.speed === s} onClick={() => set("speed", s)} className="min-w-14">
               {s}×
             </Chip>
           ))}
@@ -61,11 +61,11 @@ export function TrimPanel(props: {
 export function FiltersPanel({ edit, set, frames }: { edit: VideoEdit; set: Setter; frames: string[] }) {
   const frame = frames[Math.min(frames.length - 1, Math.floor(FILMSTRIP_FRAMES / 2))];
   return (
-    <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0">
+    <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-2 scrollbar-none lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0">
       {(Object.keys(VIDEO_FILTERS) as VideoFilter[]).map((name) => {
         const active = edit.filter === name;
         return (
-          <button key={name} type="button" onClick={() => set("filter", name)} aria-pressed={active} className="group flex w-[4.5rem] shrink-0 snap-start flex-col items-center gap-1.5 lg:w-auto">
+          <button key={name} type="button" onClick={() => set("filter", name)} aria-pressed={active} className="group flex w-18 shrink-0 snap-start flex-col items-center gap-1.5 lg:w-auto">
             <span className={`relative block aspect-square w-full overflow-hidden rounded-2xl ring-2 ring-offset-2 ring-offset-zinc-950 transition-all ${active ? "ring-white" : "ring-transparent group-hover:ring-white/30"}`}>
               {frame ? (
                 <img src={frame} alt="" className="h-full w-full object-cover" style={{ filter: previewFilter({ filter: name, brightness: 0, contrast: 0, saturation: 0 }) }} />
@@ -111,7 +111,7 @@ const FORMAT_SHAPE: Record<VideoFormat, string> = { original: "h-5 w-8", vertica
 export function FormatPanel({ edit, onFormat, locked }: { edit: VideoEdit; onFormat: (f: VideoFormat) => void; locked: boolean }) {
   if (locked) {
     return (
-      <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+      <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/3 p-4">
         <span className={`block rounded-[4px] border-2 border-white ${FORMAT_SHAPE.vertical}`} />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-white">{t("editor.formats.vertical")}</p>
@@ -159,13 +159,13 @@ export function SoundPanel({ edit, set }: { edit: VideoEdit; set: Setter }) {
           </Chip>
         ))}
       </div>
-      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+      <div className="rounded-2xl border border-white/10 bg-white/3 p-4">
         <p className="mb-3 flex items-center gap-2 text-xs font-semibold text-zinc-300">
           <Music2 className="h-4 w-4 text-fuchsia-400" /> {t("editor.sound.music")}
         </p>
         {edit.music ? (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 rounded-xl bg-white/[0.05] px-3 py-2">
+            <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2">
               <Music2 className="h-4 w-4 shrink-0 text-zinc-400" />
               <span className="min-w-0 flex-1 truncate text-sm font-medium text-white">{edit.music.name}</span>
               <IconButton label={t("editor.sound.removeMusic")} onClick={() => set("music", null)} className="h-8 w-8 hover:text-rose-300">

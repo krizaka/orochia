@@ -1,7 +1,75 @@
-@config "../tailwind.config.js";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* Tailwind v4, configured here (no tailwind.config.js). Sources are detected automatically; the workspace
+   packages are added explicitly because they live outside this app. */
+@source "../../../packages";
+
+/* `dark:` follows the class set by ThemeProvider. `light:` applies in the light theme — except inside a
+   `.theme-dark` island (media editors, players), which stays dark in both themes; :where() keeps specificity. */
+@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant light {
+  html.light &:where(:not(.theme-dark, .theme-dark *)) {
+    @slot;
+  }
+  .light &:where(:not(.theme-dark, .theme-dark *)) {
+    @slot;
+  }
+  :root:not(.dark) &:where(:not(.theme-dark, .theme-dark *)) {
+    @slot;
+  }
+}
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --font-sans: -apple-system, BlinkMacSystemFont, Inter, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-outfit), Outfit, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* The Krizaka easing for every `transition-*` utility (no `ease-*` class needed), and a calm default duration. */
+  --default-transition-duration: 200ms;
+  --default-transition-timing-function: var(--kz-ease);
+  --ease-kz: var(--kz-ease);
+
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-glow-fade: glow-fade 3s ease-in-out infinite alternate;
+  @keyframes glow-fade {
+    0% { opacity: 0.3; transform: scale(0.98); }
+    100% { opacity: 0.7; transform: scale(1.02); }
+  }
+}
+
+/* v3 drew borders in the theme's border colour by default; v4 uses currentColor. Keep the v3 look. */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-gray-400);
+  }
+}
 
 :root {
   /* Default: Dark Obsidian Velvet Noir */
@@ -266,7 +334,7 @@ html.dark .text-gradient-neon {
    The same grammar as krizaka.com: one easing (--kz-ease), entrances that rise and un-blur, words that roll,
    a sheen across primary actions, a soft spotlight that follows the pointer on cards. Driven by
    components/motion (MotionObserver, RotatingWord, app/template.tsx). Every Tailwind transition uses --kz-ease by
-   default (tailwind.config.js). Everything stops under reduced motion. */
+   default (the @theme block above). Everything stops under reduced motion. */
 :root {
   --kz-ease: cubic-bezier(0.16, 1, 0.3, 1);
 }

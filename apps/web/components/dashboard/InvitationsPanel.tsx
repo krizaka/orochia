@@ -84,7 +84,7 @@ export function InvitationsPanel() {
       {/* Create Invitation Card */}
       <div className="glass-panel rounded-3xl p-6 sm:p-8">
         <div className="flex items-center gap-3 mb-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-violet-600 to-fuchsia-600 text-white shadow-md">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-linear-to-tr from-violet-600 to-fuchsia-600 text-white shadow-md">
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
@@ -105,13 +105,13 @@ export function InvitationsPanel() {
               value={emailInput}
               onChange={(e) => setEmailInput(e.target.value)}
               placeholder={t("invites.emailPlaceholder")}
-              className="w-full rounded-2xl border border-white/10 bg-zinc-900/60 pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
+              className="w-full rounded-2xl border border-white/10 bg-zinc-900/60 pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-violet-500 focus:outline-hidden light:bg-slate-50 light:border-black/10 light:text-slate-900"
             />
           </div>
           <button
             type="submit"
             disabled={creating}
-            className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-violet-600/20 hover:opacity-90 transition-all disabled:opacity-50"
+            className="flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 to-fuchsia-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-violet-600/20 hover:opacity-90 transition-all disabled:opacity-50"
           >
             {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
             <span>{t("invites.create")}</span>

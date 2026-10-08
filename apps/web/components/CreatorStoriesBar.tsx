@@ -184,11 +184,11 @@ export function CreatorStoriesBar() {
             Array.from({ length: 5 }, (_, i) => <div key={i} className="h-14 w-14 sm:h-16 sm:w-16 shrink-0 animate-pulse rounded-2xl bg-white/5 light:bg-slate-100" />)}
 
           {rings?.map((r, index) => (
-            <button key={r.creatorId} onClick={() => setOpen({ ring: index, story: Math.max(0, r.stories.findIndex((s) => !s.seen)) })} className="flex flex-col items-center gap-1.5 shrink-0 group focus:outline-none">
+            <button key={r.creatorId} onClick={() => setOpen({ ring: index, story: Math.max(0, r.stories.findIndex((s) => !s.seen)) })} className="flex flex-col items-center gap-1.5 shrink-0 group focus:outline-hidden">
               <div className="relative p-0.5 rounded-2xl transition-transform group-hover:scale-105 active:scale-95">
                 <div
                   className={`absolute inset-0 rounded-2xl ${
-                    r.allSeen ? "bg-zinc-700 light:bg-slate-300" : "bg-gradient-to-tr from-violet-600 via-fuchsia-500 to-pink-500 shadow-sm shadow-violet-500/20"
+                    r.allSeen ? "bg-zinc-700 light:bg-slate-300" : "bg-linear-to-tr from-violet-600 via-fuchsia-500 to-pink-500 shadow-xs shadow-violet-500/20"
                   }`}
                 />
                 <div className="relative h-14 w-14 sm:h-16 sm:w-16 overflow-hidden rounded-[14px] bg-zinc-950 light:bg-white p-0.5">
@@ -214,7 +214,7 @@ export function CreatorStoriesBar() {
               ) : (
                 <img src={story.url} alt="" className="h-full w-full object-contain" />
               )}
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-black/80" />
+              <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-black/70 via-transparent to-black/80" />
             </div>
 
             {/* Tap zones: left goes back, right goes on (as in every stories viewer). */}
@@ -269,13 +269,13 @@ export function CreatorStoriesBar() {
             </div>
 
             <div className="relative z-20 space-y-3 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-              {story.caption && <p className="text-sm leading-relaxed text-white/95 drop-shadow">{story.caption}</p>}
+              {story.caption && <p className="text-sm leading-relaxed text-white/95 drop-shadow-sm">{story.caption}</p>}
               <div className="flex items-center gap-2">
                 {!ring.isOwn && (
                   <Link
                     href={`/@${ring.username}`}
                     onClick={close}
-                    className="flex flex-1 items-center justify-center rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 py-3 text-xs font-bold text-white"
+                    className="flex flex-1 items-center justify-center rounded-2xl bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 py-3 text-xs font-bold text-white"
                   >
                     {t("stories.seeProfile")}
                   </Link>

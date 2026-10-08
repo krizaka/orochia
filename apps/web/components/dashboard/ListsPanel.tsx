@@ -18,7 +18,7 @@ interface Member {
 }
 
 const field =
-  "rounded-2xl border border-white/10 bg-zinc-900/80 px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900";
+  "rounded-2xl border border-white/10 bg-zinc-900/80 px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-hidden light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900";
 
 function Members({ list, onChange }: { list: List; onChange: () => void }) {
   const [members, setMembers] = useState<Member[] | null>(null);
@@ -130,7 +130,7 @@ export function ListsPanel() {
     <div className="space-y-6">
       <form onSubmit={create} className="flex flex-col gap-3 sm:flex-row">
         <input value={name} onChange={(e) => setName(e.target.value)} maxLength={80} placeholder={t("lists.namePlaceholder")} className={`${field} flex-1`} />
-        <button disabled={!name.trim()} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-xs font-bold text-white disabled:opacity-40">
+        <button disabled={!name.trim()} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-xs font-bold text-white disabled:opacity-40">
           <Plus className="h-4 w-4" /> {t("common.create")}
         </button>
       </form>

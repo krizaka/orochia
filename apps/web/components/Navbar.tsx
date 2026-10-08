@@ -38,7 +38,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
     <Link
       href={href}
       className={`text-xs font-semibold uppercase tracking-wider transition-colors ${
-        pathname.startsWith(href) ? "text-violet-400 light:text-violet-700" : "text-zinc-300 light:text-slate-700 hover:text-white light:hover:text-slate-950"
+        pathname.startsWith(href) ? "text-violet-400 light:text-violet-700" : "text-zinc-300 light:text-slate-700 hover:text-white hover:light:text-slate-950"
       }`}
     >
       {label}
@@ -51,7 +51,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
       className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
         (href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href.split("?")[0]) && href !== "/dashboard?tab=settings")
           ? "bg-violet-600/15 text-white light:text-violet-800"
-          : "text-zinc-300 hover:bg-white/5 hover:text-white light:text-slate-700 light:hover:bg-black/[0.04] light:hover:text-slate-950"
+          : "text-zinc-300 hover:bg-white/5 hover:text-white light:text-slate-700 hover:light:bg-black/4 hover:light:text-slate-950"
       }`}
     >
       <span className="text-zinc-400 light:text-slate-500">{icon}</span>
@@ -75,7 +75,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
         >
           <Search className="h-3.5 w-3.5" />
           <span className="flex-1 truncate text-left">{t("nav.searchPlaceholder")}</span>
-          <kbd className="hidden rounded border border-white/10 light:border-black/10 px-1.5 font-mono text-[10px] lg:inline">⌘K</kbd>
+          <kbd className="hidden rounded-sm border border-white/10 light:border-black/10 px-1.5 font-mono text-[10px] lg:inline">⌘K</kbd>
         </button>
 
         <nav className="hidden items-center gap-6 md:flex">
@@ -86,7 +86,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
         <div className="flex items-center gap-2">
           <button
             onClick={onOpenSearch}
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-zinc-300 light:text-slate-700 hover:bg-white/5 light:hover:bg-black/5 md:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-xl text-zinc-300 light:text-slate-700 hover:bg-white/5 hover:light:bg-black/5 md:hidden"
             aria-label={t("nav.search")}
           >
             <Search className="h-5 w-5" />
@@ -99,7 +99,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
               {isCreator && (
                 <Link
                   href="/creator/upload"
-                  className="hidden items-center gap-1.5 rounded-full bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 px-4 py-2 text-xs font-bold text-white shadow-sm shadow-violet-500/25 md:flex"
+                  className="hidden items-center gap-1.5 rounded-full bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 px-4 py-2 text-xs font-bold text-white shadow-xs shadow-violet-500/25 md:flex"
                 >
                   <Upload className="h-3.5 w-3.5" /> {t("nav.upload")}
                 </Link>
@@ -112,7 +112,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                   className="flex items-center gap-2 rounded-full border border-white/10 light:border-black/10 bg-zinc-900/90 light:bg-slate-100 py-1 pl-1 pr-3 hover:border-violet-500/40"
                 >
                   <img src={user.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-8 w-8 rounded-full object-cover" />
-                  <span className="max-w-[9rem] truncate text-xs font-bold text-white light:text-slate-900">{user.displayName}</span>
+                  <span className="max-w-36 truncate text-xs font-bold text-white light:text-slate-900">{user.displayName}</span>
                   <ChevronDown className="h-3.5 w-3.5 text-zinc-400" />
                 </button>
                 {menuOpen && (
@@ -121,12 +121,12 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                     <Link
                       role="menuitem"
                       href={`/@${user.username}`}
-                      className="group flex items-center gap-3 rounded-xl p-2.5 transition-colors hover:bg-white/5 light:hover:bg-black/[0.04]"
+                      className="group flex items-center gap-3 rounded-xl p-2.5 transition-colors hover:bg-white/5 hover:light:bg-black/4"
                     >
                       <img src={user.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-11 w-11 rounded-2xl object-cover ring-2 ring-violet-500/30" />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-bold text-white light:text-slate-900">{user.displayName}</span>
-                        <span className="block truncate text-[11px] text-zinc-400 group-hover:text-violet-300 light:text-slate-500 light:group-hover:text-violet-700">
+                        <span className="block truncate text-[11px] text-zinc-400 group-hover:text-violet-300 light:text-slate-500 group-hover:light:text-violet-700">
                           @{user.username} · {t("nav.viewProfile")}
                         </span>
                       </span>
@@ -136,7 +136,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                       <Link
                         role="menuitem"
                         href="/earnings"
-                        className="mx-1 mb-1 mt-0.5 flex items-center justify-between rounded-xl bg-gradient-to-r from-emerald-500/10 to-transparent px-3 py-2.5 ring-1 ring-emerald-500/20 transition-colors hover:from-emerald-500/20"
+                        className="mx-1 mb-1 mt-0.5 flex items-center justify-between rounded-xl bg-linear-to-r from-emerald-500/10 to-transparent px-3 py-2.5 ring-1 ring-emerald-500/20 transition-colors hover:from-emerald-500/20"
                       >
                         <span className="flex items-center gap-2 text-xs font-semibold text-zinc-200 light:text-slate-700">
                           <Wallet className="h-4 w-4 text-emerald-400" /> {t("nav.earnings")}
@@ -153,7 +153,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                     <button
                       role="menuitem"
                       onClick={() => void logout()}
-                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-zinc-400 transition-colors hover:bg-rose-500/10 hover:text-rose-300 light:text-slate-500 light:hover:text-rose-600"
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-zinc-400 transition-colors hover:bg-rose-500/10 hover:text-rose-300 light:text-slate-500 hover:light:text-rose-600"
                     >
                       <LogOut className="h-4 w-4" /> {t("nav.signOut")}
                     </button>
@@ -172,16 +172,16 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                 <span>{t("nav.upload")}</span>
               </Link>
               {/* Desktop only: on a phone, signing in lives in the bottom tab bar (one entry per action). */}
-              <div className="hidden items-center gap-1 rounded-full border border-white/10 light:border-black/10 bg-zinc-900/70 light:bg-slate-100 p-0.5 sm:p-1 shadow-sm md:flex">
+              <div className="hidden items-center gap-1 rounded-full border border-white/10 light:border-black/10 bg-zinc-900/70 light:bg-slate-100 p-0.5 sm:p-1 shadow-xs md:flex">
                 <Link
                   href="/auth/login"
-                  className="rounded-full px-2.5 sm:px-4 py-1 sm:py-1.5 text-xs font-semibold text-zinc-200 light:text-slate-800 hover:text-white light:hover:text-slate-950 transition-colors"
+                  className="rounded-full px-2.5 sm:px-4 py-1 sm:py-1.5 text-xs font-semibold text-zinc-200 light:text-slate-800 hover:text-white hover:light:text-slate-950 transition-colors"
                 >
                   {t("nav.signIn")}
                 </Link>
                 <Link
                   href="/auth/register"
-                  className="rounded-full bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 px-3 sm:px-4 py-1 sm:py-1.5 text-xs font-bold text-white shadow-sm shadow-violet-500/25 transition-transform active:scale-95"
+                  className="rounded-full bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 px-3 sm:px-4 py-1 sm:py-1.5 text-xs font-bold text-white shadow-xs shadow-violet-500/25 transition-transform active:scale-95"
                 >
                   {t("nav.join")}
                 </Link>

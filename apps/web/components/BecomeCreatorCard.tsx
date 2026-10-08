@@ -30,7 +30,7 @@ export function BecomeCreatorCard() {
       <button
         onClick={become}
         disabled={state === "working"}
-        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-6 py-3 text-sm font-bold text-white disabled:opacity-60"
+        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-violet-600 to-fuchsia-600 px-6 py-3 text-sm font-bold text-white disabled:opacity-60"
       >
         {state === "working" && <Loader2 className="h-4 w-4 animate-spin" />}
         {state === "working" ? t("auth.becomeCreator.working") : t("auth.becomeCreator.cta")}

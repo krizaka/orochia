@@ -48,7 +48,7 @@ export function UsernameField({ value, onChange, labelClass, fieldClass }: { val
           {checking ? <Loader2 className="h-4 w-4 animate-spin text-zinc-500" /> : status?.available ? <Check className="h-4 w-4 text-emerald-400" /> : null}
         </span>
       </div>
-      <span className="mt-1 block min-h-[1rem] text-[11px] font-normal normal-case tracking-normal">
+      <span className="mt-1 block min-h-4 text-[11px] font-normal normal-case tracking-normal">
         {status && !status.available && status.suggestion ? (
           <span className="text-amber-300 light:text-amber-700">
             {status.reason === "format"

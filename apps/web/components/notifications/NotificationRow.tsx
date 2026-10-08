@@ -25,7 +25,7 @@ export function NotificationRow({ n, onOpen, compact = false }: { n: Notificatio
     <Link
       href={n.path}
       onClick={onOpen}
-      className={`group flex items-start gap-3 rounded-xl transition-colors hover:bg-white/5 light:hover:bg-black/[0.04] ${compact ? "p-2.5" : "p-3.5"} ${n.readAt ? "" : "bg-violet-500/[0.07]"}`}
+      className={`group flex items-start gap-3 rounded-xl transition-colors hover:bg-white/5 hover:light:bg-black/4 ${compact ? "p-2.5" : "p-3.5"} ${n.readAt ? "" : "bg-violet-500/[0.07]"}`}
     >
       <span className="relative shrink-0">
         {n.actorAvatar !== undefined && n.actorAvatar !== null ? (

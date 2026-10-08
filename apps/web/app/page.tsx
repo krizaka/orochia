@@ -40,9 +40,9 @@ export default async function HomePage() {
   return (
     <div className="mx-auto w-full max-w-7xl overflow-x-hidden px-3 py-4 sm:px-6 sm:py-8">
       {!viewer && (
-        <section className="relative mb-10 overflow-hidden rounded-[2rem] border border-white/10 light:border-black/5 bg-zinc-950 light:bg-gradient-to-br light:from-violet-50 light:via-white light:to-pink-50 isolate">
+        <section className="relative mb-10 overflow-hidden rounded-4xl border border-white/10 light:border-black/5 bg-zinc-950 light:bg-linear-to-br light:from-violet-50 light:via-white light:to-pink-50 isolate">
           <HeroWall images={wall} />
-          <div className="absolute inset-0 -z-0 bg-gradient-to-r from-zinc-950 via-zinc-950/85 to-transparent light:from-white light:via-white/85" />
+          <div className="absolute inset-0 z-0 bg-linear-to-r from-zinc-950 via-zinc-950/85 to-transparent light:from-white light:via-white/85" />
           <div className="relative z-10 grid items-center gap-10 px-6 py-12 sm:px-12 sm:py-16 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-6 lg:py-20">
           <div className="max-w-xl">
             <p className="hero-fade inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-3.5 py-1 text-xs font-semibold text-violet-300 light:text-violet-700">
@@ -56,7 +56,7 @@ export default async function HomePage() {
               <span className="block">
                 <RotatingWord
                   words={[t("home.rotating.a"), t("home.rotating.b"), t("home.rotating.c"), t("home.rotating.d")]}
-                  className="kz-gradient-text bg-gradient-to-r from-violet-400 via-fuchsia-400 to-pink-400 bg-clip-text pr-1 text-transparent light:from-violet-600 light:via-fuchsia-600 light:to-pink-600"
+                  className="kz-gradient-text bg-linear-to-r from-violet-400 via-fuchsia-400 to-pink-400 bg-clip-text pr-1 text-transparent light:from-violet-600 light:via-fuchsia-600 light:to-pink-600"
                 />
               </span>
             </h1>
@@ -64,13 +64,13 @@ export default async function HomePage() {
             <div className="hero-fade mt-8 flex flex-col gap-3 sm:flex-row [animation-delay:240ms]">
               <Link
                 href="/auth/register"
-                className="kz-sheen inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-fuchsia-600/30 transition-transform hover:scale-[1.02] active:scale-95"
+                className="kz-sheen inline-flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-fuchsia-600/30 transition-transform hover:scale-[1.02] active:scale-95"
               >
                 <UserPlus className="h-4 w-4" /> {t("home.ctaJoin")}
               </Link>
               <Link
                 href="/explore"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 light:border-black/10 bg-white/5 light:bg-white px-6 py-3.5 text-sm font-semibold text-white light:text-slate-800 backdrop-blur hover:bg-white/10"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 light:border-black/10 bg-white/5 light:bg-white px-6 py-3.5 text-sm font-semibold text-white light:text-slate-800 backdrop-blur-sm hover:bg-white/10"
               >
                 {t("home.ctaExplore")} <ArrowRight className="h-4 w-4" />
               </Link>
@@ -96,12 +96,12 @@ export default async function HomePage() {
       )}
 
       {!viewer && (
-        <div aria-hidden className="relative -mt-4 mb-10 overflow-hidden py-2 [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
+        <div aria-hidden className="relative -mt-4 mb-10 overflow-hidden py-2 mask-[linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
           <div className="kz-marquee gap-3" style={{ ["--kz-marquee-duration" as string]: "45s" }}>
             {[0, 1].map((copy) => (
               <div key={copy} className="flex gap-3 pr-3">
                 {(["a", "b", "c", "d", "e", "f", "g", "h"] as const).map((k) => (
-                  <span key={k} className="flex items-center gap-2 whitespace-nowrap rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm font-semibold text-zinc-300 light:border-black/5 light:bg-white light:text-slate-600">
+                  <span key={k} className="flex items-center gap-2 whitespace-nowrap rounded-full border border-white/10 bg-white/3 px-4 py-2 text-sm font-semibold text-zinc-300 light:border-black/5 light:bg-white light:text-slate-600">
                     <Sparkles className="h-3.5 w-3.5 text-fuchsia-400" /> {t(`home.marquee.${k}`, { share })}
                   </span>
                 ))}
@@ -153,7 +153,7 @@ export default async function HomePage() {
             </p>
           </div>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-            <Link href={`/@${featured.username}`} className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-xs font-bold text-white">
+            <Link href={`/@${featured.username}`} className="inline-flex items-center justify-center rounded-2xl bg-linear-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-xs font-bold text-white">
               {t("home.viewProfile")}
             </Link>
             <RelationshipActions username={featured.username} show={["follow"]} />
@@ -162,7 +162,7 @@ export default async function HomePage() {
       )}
 
       {!viewer && (
-        <section data-reveal className="relative mb-6 grid items-center gap-10 overflow-hidden rounded-[2rem] border border-violet-500/20 bg-gradient-to-br from-violet-950/60 via-zinc-950 to-fuchsia-950/50 p-8 light:from-violet-100 light:via-white light:to-pink-100 sm:p-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
+        <section data-reveal className="relative mb-6 grid items-center gap-10 overflow-hidden rounded-4xl border border-violet-500/20 bg-linear-to-br from-violet-950/60 via-zinc-950 to-fuchsia-950/50 p-8 light:from-violet-100 light:via-white light:to-pink-100 sm:p-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
           <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-violet-300 light:text-violet-700">{t("home.creators.eyebrow")}</p>
           <h2 className="mt-2 max-w-xl font-display text-2xl font-black text-white light:text-slate-900 sm:text-4xl">{t("home.creators.title")}</h2>

@@ -63,8 +63,8 @@ export function RelationshipActions({
     size === "sm"
       ? "inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all disabled:opacity-50"
       : "inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-xs font-bold transition-all disabled:opacity-50";
-  const primary = `${base} bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-600/30 hover:scale-105`;
-  const ghost = `${base} border border-white/10 bg-zinc-900/90 text-zinc-300 hover:text-white hover:bg-white/10 light:bg-slate-50 light:border-black/10 light:text-slate-700 light:hover:bg-slate-200 light:hover:text-slate-950`;
+  const primary = `${base} bg-linear-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-600/30 hover:scale-105`;
+  const ghost = `${base} border border-white/10 bg-zinc-900/90 text-zinc-300 hover:text-white hover:bg-white/10 light:bg-slate-50 light:border-black/10 light:text-slate-700 hover:light:bg-slate-200 hover:light:text-slate-950`;
 
   if (!user) {
     return (

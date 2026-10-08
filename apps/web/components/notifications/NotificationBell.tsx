@@ -30,12 +30,12 @@ export function NotificationBell() {
   }, [open]);
 
   const badge = unread > 0 && (
-    <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-gradient-to-r from-fuchsia-600 to-pink-600 px-1 text-[10px] font-bold text-white ring-2 ring-zinc-950 light:ring-white">
+    <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-linear-to-r from-fuchsia-600 to-pink-600 px-1 text-[10px] font-bold text-white ring-2 ring-zinc-950 light:ring-white">
       {unread > 99 ? "99+" : unread}
     </span>
   );
   const bellClass =
-    "relative flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-zinc-900/80 text-zinc-300 transition-colors hover:border-violet-500/50 hover:text-white light:border-black/10 light:bg-slate-100 light:text-slate-600 light:hover:text-slate-950";
+    "relative flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-zinc-900/80 text-zinc-300 transition-colors hover:border-violet-500/50 hover:text-white light:border-black/10 light:bg-slate-100 light:text-slate-600 hover:light:text-slate-950";
   const label = unread ? `${t("notifications.title")} — ${t("notifications.unread", { count: unread })}` : t("notifications.title");
 
   return (
@@ -59,7 +59,7 @@ export function NotificationBell() {
                   <CheckCheck className="h-3.5 w-3.5" /> {t("notifications.markAll")}
                 </button>
               )}
-              <Link href="/dashboard?tab=settings#settings-notifications" onClick={() => setOpen(false)} aria-label={t("notifications.settings")} className="rounded-lg p-1.5 text-zinc-400 hover:bg-white/5 hover:text-white light:text-slate-500 light:hover:bg-black/5">
+              <Link href="/dashboard?tab=settings#settings-notifications" onClick={() => setOpen(false)} aria-label={t("notifications.settings")} className="rounded-lg p-1.5 text-zinc-400 hover:bg-white/5 hover:text-white light:text-slate-500 hover:light:bg-black/5">
                 <Settings className="h-3.5 w-3.5" />
               </Link>
             </div>
@@ -83,7 +83,7 @@ export function NotificationBell() {
               ))
             )}
           </div>
-          <Link href="/notifications" onClick={() => setOpen(false)} className="block border-t border-white/5 py-2.5 text-center text-xs font-semibold text-violet-300 hover:bg-white/5 light:border-black/5 light:text-violet-700 light:hover:bg-black/[0.03]">
+          <Link href="/notifications" onClick={() => setOpen(false)} className="block border-t border-white/5 py-2.5 text-center text-xs font-semibold text-violet-300 hover:bg-white/5 light:border-black/5 light:text-violet-700 hover:light:bg-black/3">
             {t("notifications.seeAll")}
           </Link>
         </div>

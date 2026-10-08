@@ -70,7 +70,7 @@ export default async function CreatorPage(props: { params: Promise<{ username: s
             {viewer?.id === creator.id ? (
               <Link
                 href="/dashboard?tab=settings#settings-profile"
-                className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-xs font-semibold text-zinc-200 transition-colors hover:border-violet-500/60 hover:bg-violet-500/10 light:border-black/10 light:text-slate-700 light:hover:bg-violet-50"
+                className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-xs font-semibold text-zinc-200 transition-colors hover:border-violet-500/60 hover:bg-violet-500/10 light:border-black/10 light:text-slate-700 hover:light:bg-violet-50"
               >
                 {t("profile.editProfile")}
               </Link>

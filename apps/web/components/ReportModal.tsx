@@ -18,7 +18,7 @@ const REASONS = ["UNDERAGE", "NON_CONSENSUAL", "DMCA_COPYRIGHT", "TERMS_VIOLATIO
 type Reason = (typeof REASONS)[number];
 
 const field =
-  "w-full rounded-xl border border-white/10 bg-zinc-900 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none light:border-black/10 light:bg-slate-50 light:text-slate-900 light:placeholder:text-slate-400";
+  "w-full rounded-xl border border-white/10 bg-zinc-900 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-hidden light:border-black/10 light:bg-slate-50 light:text-slate-900 light:placeholder:text-slate-400";
 
 /** Report a video: a reason, details and a contact address; persisted before it is acknowledged (compliance_reports). */
 export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModalProps) {
@@ -86,8 +86,8 @@ export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModa
                   aria-checked={reason === r}
                   onClick={() => setReason(r)}
                   className={cx(
-                    "w-full rounded-2xl border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400",
-                    reason === r ? "border-rose-500/60 bg-rose-500/10" : "border-white/10 hover:border-white/25 light:border-black/10 light:hover:border-black/25",
+                    "w-full rounded-2xl border p-3 text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400",
+                    reason === r ? "border-rose-500/60 bg-rose-500/10" : "border-white/10 hover:border-white/25 light:border-black/10 hover:light:border-black/25",
                   )}
                 >
                   <span className="block text-sm font-semibold text-white light:text-slate-900">{t(`report.reasons.${r}.title`)}</span>

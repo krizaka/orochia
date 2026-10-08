@@ -108,7 +108,7 @@ export const Stage = forwardRef<
           </span>
         )}
         {progress && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/75 px-6 text-center text-white backdrop-blur-sm" role="status" aria-live="polite">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/75 px-6 text-center text-white backdrop-blur-xs" role="status" aria-live="polite">
             <div className="relative h-20 w-20">
               <svg viewBox="0 0 36 36" className="h-20 w-20 -rotate-90">
                 <circle cx="18" cy="18" r="15.5" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="3" />

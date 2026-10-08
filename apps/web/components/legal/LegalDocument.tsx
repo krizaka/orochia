@@ -44,7 +44,7 @@ export function LegalDocument({ id, icon: Icon }: { id: LegalDocId; icon: Lucide
   };
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-      <Link href="/" className="mb-8 inline-flex items-center gap-2 text-xs font-semibold text-zinc-400 transition-colors hover:text-white light:text-slate-500 light:hover:text-slate-950">
+      <Link href="/" className="mb-8 inline-flex items-center gap-2 text-xs font-semibold text-zinc-400 transition-colors hover:text-white light:text-slate-500 hover:light:text-slate-950">
         <ArrowLeft className="h-4 w-4" /> {t("legal.back")}
       </Link>
 

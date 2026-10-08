@@ -56,7 +56,7 @@ export default function ForgotPasswordPage() {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-zinc-900 py-2.5 pl-10 pr-4 text-sm normal-case tracking-normal text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
+                  className="w-full rounded-xl border border-white/10 bg-zinc-900 py-2.5 pl-10 pr-4 text-sm normal-case tracking-normal text-white focus:border-violet-500 focus:outline-hidden light:bg-slate-50 light:border-black/10 light:text-slate-900"
                 />
               </div>
             </label>
@@ -66,7 +66,7 @@ export default function ForgotPasswordPage() {
             </button>
           </form>
         )}
-        <Link href="/auth/login" className="mt-6 inline-block text-xs text-zinc-400 hover:text-white light:text-slate-500 light:hover:text-slate-950">
+        <Link href="/auth/login" className="mt-6 inline-block text-xs text-zinc-400 hover:text-white light:text-slate-500 hover:light:text-slate-950">
           {t("auth.forgot.back")}
         </Link>
       </div>

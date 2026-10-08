@@ -160,7 +160,7 @@ export function TipModal({
                 disabled={!allowed}
                 onClick={() => setSelectedAmount(p.cents)}
                 className={cx(
-                  "rounded-xl border py-3 text-sm font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 disabled:cursor-not-allowed disabled:opacity-30",
+                  "rounded-xl border py-3 text-sm font-bold transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400 disabled:cursor-not-allowed disabled:opacity-30",
                   selected ? "border-violet-500 bg-violet-600 text-white shadow-md shadow-violet-600/30" : "border-white/10 text-zinc-200 hover:border-violet-500/50 light:border-black/10 light:text-slate-800",
                 )}
               >
@@ -183,8 +183,8 @@ export function TipModal({
               aria-checked={selected}
               onClick={() => setSelectedGateway(id)}
               className={cx(
-                "flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400",
-                selected ? "border-violet-500 bg-violet-500/10" : "border-white/10 hover:border-white/25 light:border-black/10 light:hover:border-black/25",
+                "flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400",
+                selected ? "border-violet-500 bg-violet-500/10" : "border-white/10 hover:border-white/25 light:border-black/10 hover:light:border-black/25",
               )}
             >
               <span className={cx("flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/5 light:bg-black/5", tone)}>

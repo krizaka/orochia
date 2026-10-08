@@ -224,7 +224,8 @@ orochia/                           npm workspaces
 - Aesthetic: **Obsidian Velvet Noir** — dark-first (`#09090b`), velvet violet → fuchsia → pink accents, glass
   panels, Outfit (display) + Plus Jakarta Sans (body), WCAG AA contrast. The brand mark is the animated
   `OrochiaLogo` (serpent + flame), never a placeholder icon; it stops under `prefers-reduced-motion`.
-- `app/globals.css` keeps `@config "../tailwind.config.js";`; Tailwind content paths are resolved with `path.join`.
+- **Tailwind CSS v4, configured in CSS** (`app/globals.css`: `@theme`, `@custom-variant dark` / `light`, `@source` for
+  the workspace packages) — there is no `tailwind.config.js`.
 - Every list has an empty state; every action shows its pending and error states; no `alert()`.
 - **Every user-facing string lives in `apps/web/messages/en.json`** and is read with `t("key", { vars })`
   (`lib/i18n.ts`, keys typed from the file, `<Rich>` for `<b>` and `{slot}` links; `messages("branch")` for long

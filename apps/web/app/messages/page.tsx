@@ -335,7 +335,7 @@ function MessagesContent() {
                   placeholder={t("inbox.newPlaceholder")}
                   value={newChatUsername}
                   onChange={(e) => setNewChatUsername(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-zinc-900/60 pl-9 pr-3 py-2 text-xs text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
+                  className="w-full rounded-xl border border-white/10 bg-zinc-900/60 pl-9 pr-3 py-2 text-xs text-white focus:border-violet-500 focus:outline-hidden light:bg-slate-50 light:border-black/10 light:text-slate-900"
                 />
               </div>
               <button
@@ -378,7 +378,7 @@ function MessagesContent() {
                     className={`w-full text-left p-4 flex items-center gap-3 transition-colors ${
                       isSelected
                         ? "bg-violet-600/15 border-l-2 border-violet-500"
-                        : "hover:bg-zinc-900/50 light:hover:bg-slate-50"
+                        : "hover:bg-zinc-900/50 hover:light:bg-slate-50"
                     }`}
                   >
                     <div className="relative shrink-0">
@@ -481,7 +481,7 @@ function MessagesContent() {
                 <div className="relative">
                   <button
                     onClick={() => setShowOptionsModal(!showOptionsModal)}
-                    className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-colors light:hover:text-slate-900"
+                    className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-colors hover:light:text-slate-900"
                     title={t("inbox.options")}
                     aria-label={t("inbox.options")}
                   >
@@ -537,11 +537,11 @@ function MessagesContent() {
                         <div
                           className={`max-w-[75%] px-4 py-2.5 text-xs rounded-2xl ${
                             isMine
-                              ? "bg-gradient-to-tr from-violet-600 to-fuchsia-600 text-white rounded-br-sm shadow-md"
+                              ? "bg-linear-to-tr from-violet-600 to-fuchsia-600 text-white rounded-br-sm shadow-md"
                               : "bg-zinc-900 border border-white/10 text-zinc-100 rounded-bl-sm light:bg-slate-100 light:border-black/10 light:text-slate-900"
                           }`}
                         >
-                          <p className="leading-relaxed whitespace-pre-wrap break-words">{msg.content}</p>
+                          <p className="leading-relaxed whitespace-pre-wrap wrap-break-word">{msg.content}</p>
                         </div>
                         <div className="flex items-center gap-1.5 mt-1 px-1 text-[10px] text-zinc-500">
                           <span>
@@ -576,7 +576,7 @@ function MessagesContent() {
                     onChange={(e) => setInputContent(e.target.value)}
                     placeholder={t("inbox.messagePlaceholder")}
                     maxLength={2000}
-                    className="flex-1 rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
+                    className="flex-1 rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-violet-500 focus:outline-hidden light:bg-slate-50 light:border-black/10 light:text-slate-900"
                   />
                   <button
                     type="submit"

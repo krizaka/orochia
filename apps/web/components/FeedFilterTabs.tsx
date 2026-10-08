@@ -66,8 +66,8 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
                 onClick={() => setActiveTab(id)}
                 className={`flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-bold transition-all shrink-0 ${
                   isActive
-                    ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-600/25 scale-105"
-                    : "border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/50 dark:bg-zinc-900/50 light:bg-slate-100 text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-black hover:border-violet-500/40"
+                    ? "bg-linear-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-600/25 scale-105"
+                    : "border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/50 dark:bg-zinc-900/50 light:bg-slate-100 text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white hover:light:text-black hover:border-violet-500/40"
                 }`}
               >
                 <Icon className={`h-3.5 w-3.5 ${isActive ? "text-white" : "text-violet-400"}`} />
@@ -85,7 +85,7 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
             title={t("feed.grid")}
             className={`flex h-8 w-8 items-center justify-center rounded-xl transition-all ${
               viewMode === "grid"
-                ? "bg-violet-600 text-white shadow-sm"
+                ? "bg-violet-600 text-white shadow-xs"
                 : "text-zinc-400 dark:text-zinc-400 light:text-slate-500 hover:text-white"
             }`}
           >
@@ -97,7 +97,7 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
             title={t("feed.cinematic")}
             className={`flex h-8 w-8 items-center justify-center rounded-xl transition-all ${
               viewMode === "cinematic"
-                ? "bg-violet-600 text-white shadow-sm"
+                ? "bg-violet-600 text-white shadow-xs"
                 : "text-zinc-400 dark:text-zinc-400 light:text-slate-500 hover:text-white"
             }`}
           >
@@ -110,7 +110,7 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
       {filteredVideos.length === 0 ? (
         initialVideos.length === 0 ? (
           <div className="kz-spotlight relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/40 px-6 py-14 text-center light:border-black/5 light:bg-white">
-            <div aria-hidden className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-pink-600 shadow-lg shadow-fuchsia-600/30">
+            <div aria-hidden className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-violet-600 to-pink-600 shadow-lg shadow-fuchsia-600/30">
               <Clapperboard className="h-7 w-7 text-white" />
             </div>
             <h3 className="font-display text-xl font-black text-white light:text-slate-900">{t("home.empty.title")}</h3>
@@ -183,11 +183,11 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-950/40 via-zinc-950 to-fuchsia-950/40 text-violet-400 light:from-violet-100 light:via-slate-50 light:to-fuchsia-100">
+                  <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-violet-950/40 via-zinc-950 to-fuchsia-950/40 text-violet-400 light:from-violet-100 light:via-slate-50 light:to-fuchsia-100">
                     <span className="font-display text-sm font-bold text-violet-300">{t("feed.noThumbnail")}</span>
                   </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
                   <div>
                     <h3 className="text-lg sm:text-xl font-bold text-white drop-shadow-md">
                       {video.title}
@@ -205,7 +205,7 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
               <div className="flex items-center justify-between p-4 bg-zinc-900/40 dark:bg-zinc-900/40 light:bg-slate-50">
                 <Link
                   href={`/watch/${video.id}`}
-                  className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-violet-600/30 hover:scale-105 transition-all"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 to-fuchsia-600 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-violet-600/30 hover:scale-105 transition-all"
                 >
                   <span>{t("feed.watch")}</span>
                 </Link>

@@ -33,7 +33,7 @@ export function Sheet({ open, onClose, title, children, footer, size = "md" }: {
   }, [open]);
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/70 backdrop-blur-sm kz-overlay sm:items-center sm:p-6" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+    <div className="fixed inset-0 z-70 flex items-end justify-center bg-black/70 backdrop-blur-xs kz-overlay sm:items-center sm:p-6" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div
         ref={panel}
         role="dialog"

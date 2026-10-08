@@ -72,7 +72,7 @@ export function EmailVerificationGate({ children }: { children: React.ReactNode 
         </p>
       )}
       <p className="mt-6 text-xs text-zinc-500 light:text-slate-500">{t("verifyGate.spam")}</p>
-      <button onClick={() => void logout()} className="mt-8 inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white light:text-slate-500 light:hover:text-slate-950">
+      <button onClick={() => void logout()} className="mt-8 inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white light:text-slate-500 hover:light:text-slate-950">
         <LogOut className="h-3.5 w-3.5" /> {t("verifyGate.signOut")}
       </button>
     </div>

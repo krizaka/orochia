@@ -94,7 +94,7 @@ function WalletPage() {
           className={cx(
             "mb-6 flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm",
             notice.tone === "ok" && "border-emerald-500/30 bg-emerald-500/10 text-emerald-200 light:text-emerald-800",
-            notice.tone === "info" && "border-white/10 bg-white/5 text-zinc-200 light:border-black/10 light:bg-black/[0.03] light:text-slate-700",
+            notice.tone === "info" && "border-white/10 bg-white/5 text-zinc-200 light:border-black/10 light:bg-black/3 light:text-slate-700",
             notice.tone === "error" && "border-rose-500/30 bg-rose-500/10 text-rose-200 light:text-rose-700",
           )}
         >
@@ -125,11 +125,11 @@ function WalletPage() {
                     aria-checked={active}
                     onClick={() => setPack(p.id)}
                     className={cx(
-                      "relative flex flex-col items-start rounded-2xl border p-4 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400",
-                      active ? "border-violet-500 bg-violet-500/10 shadow-lg shadow-violet-900/20" : "border-white/10 hover:border-white/25 light:border-black/10 light:hover:border-black/25",
+                      "relative flex flex-col items-start rounded-2xl border p-4 text-left transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400",
+                      active ? "border-violet-500 bg-violet-500/10 shadow-lg shadow-violet-900/20" : "border-white/10 hover:border-white/25 light:border-black/10 hover:light:border-black/25",
                     )}
                   >
-                    {p.id === POPULAR && <span className="absolute -top-2.5 left-3 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-2 py-0.5 text-[10px] font-bold text-white">{t("wallet.popular")}</span>}
+                    {p.id === POPULAR && <span className="absolute -top-2.5 left-3 rounded-full bg-linear-to-r from-violet-600 to-fuchsia-600 px-2 py-0.5 text-[10px] font-bold text-white">{t("wallet.popular")}</span>}
                     <span className="font-display text-xl font-black text-white light:text-slate-900">{usd(p.priceCents)}</span>
                     <span className="mt-0.5 text-[11px] font-semibold text-emerald-300 light:text-emerald-700">{bonus > 0 ? t("wallet.bonus", { amount: usd(bonus) }) : " "}</span>
                   </button>
@@ -151,8 +151,8 @@ function WalletPage() {
                     aria-checked={gateway === g}
                     onClick={() => setGateway(g)}
                     className={cx(
-                      "flex items-center gap-3 rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400",
-                      gateway === g ? "border-violet-500 bg-violet-500/10 text-white light:text-slate-900" : "border-white/10 text-zinc-300 hover:border-white/25 light:border-black/10 light:text-slate-700 light:hover:border-black/25",
+                      "flex items-center gap-3 rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400",
+                      gateway === g ? "border-violet-500 bg-violet-500/10 text-white light:text-slate-900" : "border-white/10 text-zinc-300 hover:border-white/25 light:border-black/10 light:text-slate-700 hover:light:border-black/25",
                     )}
                   >
                     <span className={cx("flex h-4 w-4 items-center justify-center rounded-full border-2", gateway === g ? "border-violet-400" : "border-zinc-500")}>{gateway === g && <span className="h-1.5 w-1.5 rounded-full bg-violet-400" />}</span>

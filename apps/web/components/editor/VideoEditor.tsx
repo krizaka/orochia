@@ -188,8 +188,8 @@ export function VideoEditor({
             onClick={() => setTool(id)}
             aria-current={active ? "true" : undefined}
             className={cx(
-              "relative flex min-h-[3.5rem] flex-col items-center justify-center gap-1 rounded-2xl text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400",
-              active ? "bg-white/[0.08] text-white" : "text-zinc-400 hover:bg-white/[0.04] hover:text-white",
+              "relative flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl text-[11px] font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400",
+              active ? "bg-white/8 text-white" : "text-zinc-400 hover:bg-white/4 hover:text-white",
             )}
           >
             <Icon className="h-5 w-5" />
@@ -202,11 +202,11 @@ export function VideoEditor({
   );
 
   return (
-    <div className="theme-dark fixed inset-0 z-[60] flex items-stretch justify-center bg-black/80 backdrop-blur-xl kz-overlay sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-labelledby="editor-title">
+    <div className="theme-dark fixed inset-0 z-60 flex items-stretch justify-center bg-black/80 backdrop-blur-xl kz-overlay sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-labelledby="editor-title">
       <div
         className={cx(
-          "relative flex h-[100dvh] w-full flex-col overflow-hidden bg-zinc-950 text-white sm:h-[min(94vh,920px)] sm:rounded-[2rem] sm:border sm:border-white/10 sm:shadow-2xl sm:shadow-black/60",
-          wide ? "sm:max-w-2xl lg:max-w-6xl" : "sm:max-w-[30rem]",
+          "relative flex h-dvh w-full flex-col overflow-hidden bg-zinc-950 text-white sm:h-[min(94vh,920px)] sm:rounded-4xl sm:border sm:border-white/10 sm:shadow-2xl sm:shadow-black/60",
+          wide ? "sm:max-w-2xl lg:max-w-6xl" : "sm:max-w-120",
         )}
       >
         {/* Header: Cancel · title · Save draft · Done */}
@@ -268,14 +268,14 @@ export function VideoEditor({
             {/* The open tool and the tool bar (tool bar at the bottom on phones, on top of the panel on wide screens) */}
             <aside className={cx("flex shrink-0 flex-col border-t border-white/10 bg-zinc-950", wide && "lg:w-[380px] lg:border-l lg:border-t-0")}>
               <div className={cx("order-2 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1", wide && "lg:order-1 lg:px-4 lg:pb-0 lg:pt-4")}>{toolbar}</div>
-              <div className={cx("order-1 max-h-[40dvh] min-h-[10rem] overflow-y-auto overscroll-contain px-4 pb-2 pt-4", wide && "lg:order-2 lg:max-h-none lg:flex-1 lg:pb-6")}>{panel}</div>
+              <div className={cx("order-1 max-h-[40dvh] min-h-40 overflow-y-auto overscroll-contain px-4 pb-2 pt-4", wide && "lg:order-2 lg:max-h-none lg:flex-1 lg:pb-6")}>{panel}</div>
             </aside>
           </div>
         )}
 
         {/* Leaving with changes: keep them as a draft, drop them, or stay */}
         {leaving && (
-          <div className="absolute inset-0 z-20 flex items-end justify-center bg-black/70 p-4 backdrop-blur-sm kz-overlay sm:items-center" role="alertdialog" aria-modal="true" aria-labelledby="leave-title" aria-describedby="leave-body">
+          <div className="absolute inset-0 z-20 flex items-end justify-center bg-black/70 p-4 backdrop-blur-xs kz-overlay sm:items-center" role="alertdialog" aria-modal="true" aria-labelledby="leave-title" aria-describedby="leave-body">
             <div className="w-full max-w-sm rounded-3xl border border-white/10 bg-zinc-900 p-6 shadow-2xl">
               <h3 id="leave-title" className="text-base font-bold">{t("editor.discard.title")}</h3>
               <p id="leave-body" className="mt-1.5 text-sm text-zinc-400">{t("editor.discard.body")}</p>

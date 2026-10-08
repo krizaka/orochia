@@ -74,7 +74,7 @@ export function AgeVerificationModal() {
         <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={handleConfirmAge}
-            className="flex-1 rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 py-3.5 px-6 text-sm font-bold text-white shadow-lg shadow-violet-600/25 transition-all hover:scale-[1.02] active:scale-95"
+            className="flex-1 rounded-xl bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 py-3.5 px-6 text-sm font-bold text-white shadow-lg shadow-violet-600/25 transition-all hover:scale-[1.02] active:scale-95"
           >
             {t("ageGate.enter")}
           </button>

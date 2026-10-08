@@ -21,7 +21,7 @@ const DEFAULT_COUNTRY: Partial<Record<Method, string>> = { BANK_US: "US", BANK_C
 
 const label = "mb-1.5 block text-xs font-semibold text-zinc-300 light:text-slate-700";
 const field =
-  "w-full rounded-xl border border-white/10 bg-zinc-900 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none light:border-black/10 light:bg-slate-50 light:text-slate-900";
+  "w-full rounded-xl border border-white/10 bg-zinc-900 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-hidden light:border-black/10 light:bg-slate-50 light:text-slate-900";
 
 /** Add or replace where earnings are sent. */
 export function PayoutAccountSheet({ open, onClose, onSaved }: { open: boolean; onClose: () => void; onSaved: () => void }) {

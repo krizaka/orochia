@@ -49,6 +49,8 @@ export function VideoCard({
   const [isTipModalOpen, setIsTipModalOpen] = useState(false);
   const [localLikes, setLocalLikes] = useState(likesCount);
   const [revealed, setRevealed] = useState(!isBlurred);
+  // A video still encoding has no picture yet: show the placeholder rather than a broken image.
+  const [broken, setBroken] = useState(false);
 
   const formatDuration = (secs: number) => {
     const m = Math.floor(secs / 60);
@@ -87,16 +89,17 @@ export function VideoCard({
       >
         {/* Thumbnail & Video Preview Container */}
         <Link href={`/watch/${id}`} className="relative block aspect-video w-full overflow-hidden bg-zinc-900">
-          {(isHovered && previewAnimationUrl) || thumbnailUrl ? (
+          {((isHovered && previewAnimationUrl) || thumbnailUrl) && !broken ? (
             <img
               src={isHovered && previewAnimationUrl ? previewAnimationUrl : thumbnailUrl!}
-              alt={title}
+              alt=""
+              onError={() => setBroken(true)}
               className={`h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 ${
                 isBlurred && !revealed ? "blur-xl scale-110" : ""
               }`}
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-950/40 via-zinc-950 to-fuchsia-950/40 text-violet-400 light:from-violet-100 light:via-slate-50 light:to-fuchsia-100">
+            <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-violet-950/40 via-zinc-950 to-fuchsia-950/40 text-violet-400 light:from-violet-100 light:via-slate-50 light:to-fuchsia-100">
               <Play className="h-10 w-10 text-violet-400/60" />
             </div>
           )}
@@ -130,10 +133,10 @@ export function VideoCard({
 
           {/* Quality & Duration badges */}
           <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1.5 z-10">
-            <span className="rounded bg-black/80 px-1.5 py-0.5 font-mono text-[10px] font-bold text-violet-300 backdrop-blur-md">
+            <span className="rounded-sm bg-black/80 px-1.5 py-0.5 font-mono text-[10px] font-bold text-violet-300 backdrop-blur-md">
               4K
             </span>
-            <span className="rounded bg-black/80 px-2 py-0.5 font-mono text-[10px] font-medium text-white backdrop-blur-md">
+            <span className="rounded-sm bg-black/80 px-2 py-0.5 font-mono text-[10px] font-medium text-white backdrop-blur-md">
               {formatDuration(durationSeconds)}
             </span>
           </div>
@@ -147,7 +150,7 @@ export function VideoCard({
             )}
 
             {isPaywalled && (
-              <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-3 py-1 text-[11px] font-bold text-white shadow-lg backdrop-blur-md">
+              <div className="flex items-center gap-1.5 rounded-full bg-linear-to-r from-violet-600 to-fuchsia-600 px-3 py-1 text-[11px] font-bold text-white shadow-lg backdrop-blur-md">
                 <Lock className="h-3 w-3" />
                 <span>{t("card.unlockFor", { price: `$${(minTipAmountCents / 100).toFixed(2)}` })}</span>
               </div>
@@ -223,7 +226,7 @@ export function VideoCard({
               <div className="mt-1 flex items-center gap-1.5">
                 <Link
                   href={creatorUsername ? `/@${creatorUsername}` : "#"}
-                  className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 hover:text-white dark:hover:text-white light:hover:text-black transition-colors truncate"
+                  className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 hover:text-white dark:hover:text-white hover:light:text-black transition-colors truncate"
                 >
                   {creatorName}
                 </Link>
@@ -250,7 +253,7 @@ export function VideoCard({
             {/* Direct Quick Tip Button */}
             <button
               onClick={handleOpenTip}
-              className="inline-flex items-center gap-1 rounded-lg border border-violet-500/30 bg-violet-500/10 hover:bg-violet-600 hover:text-white px-2 py-0.5 text-[10px] font-semibold text-violet-300 transition-all hover:scale-105 active:scale-95"
+              className="inline-flex items-center gap-1 rounded-lg border border-violet-500/30 bg-violet-500/10 hover:bg-violet-600 hover:text-white px-2 py-0.5 text-[10px] font-semibold text-violet-300 transition-all hover:scale-105 active:scale-95 light:border-violet-500/40 light:bg-violet-50 light:text-violet-700 hover:light:bg-violet-600 hover:light:text-white"
             >
               <Sparkles className="h-2.5 w-2.5" />
               <span>{t("card.tip")}</span>

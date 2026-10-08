@@ -105,7 +105,7 @@ function TabButton({ tab, active, icon: Icon, children }: {
       className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 transition-all ${
         active === tab
           ? "bg-violet-600 text-white shadow-md shadow-violet-600/25"
-          : "text-zinc-400 hover:bg-white/5 hover:text-white light:text-slate-500 light:hover:bg-black/5 light:hover:text-slate-950"
+          : "text-zinc-400 hover:bg-white/5 hover:text-white light:text-slate-500 hover:light:bg-black/5 hover:light:text-slate-950"
       }`}
     >
       <Icon className="h-3.5 w-3.5" />
@@ -216,14 +216,14 @@ function DashboardContent() {
             )}
             <Link
               href={`/@${user.username}`}
-              className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-xs font-semibold text-zinc-200 transition-colors hover:border-violet-500/60 hover:bg-violet-500/10 light:border-black/10 light:text-slate-700 light:hover:bg-violet-50"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-xs font-semibold text-zinc-200 transition-colors hover:border-violet-500/60 hover:bg-violet-500/10 light:border-black/10 light:text-slate-700 hover:light:bg-violet-50"
             >
               {t("profile.viewPublic")}
             </Link>
             {isCreator && (
               <Link
                 href="/creator/upload"
-                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-violet-600/30 transition-transform hover:scale-[1.03] active:scale-95"
+                className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-violet-600 to-fuchsia-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-violet-600/30 transition-transform hover:scale-[1.03] active:scale-95"
               >
                 <Upload className="h-4 w-4" /> {t("profile.upload")}
               </Link>
@@ -244,7 +244,7 @@ function DashboardContent() {
           </TabButton>
         )}
         {isCreator && (
-          <Link href="/earnings" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-white/5 transition-all light:text-slate-500 light:hover:bg-black/5 light:hover:text-slate-950">
+          <Link href="/earnings" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-white/5 transition-all light:text-slate-500 hover:light:bg-black/5 hover:light:text-slate-950">
             <CreditCard className="h-3.5 w-3.5 text-emerald-400" />
             <span>{t("dashboard.tabs.earnings")}</span>
           </Link>

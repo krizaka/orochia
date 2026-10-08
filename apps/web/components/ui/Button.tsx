@@ -33,7 +33,7 @@ export function IconButton({ label, className, children, ...rest }: React.Button
       title={label}
       {...rest}
       className={cx(
-        "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 disabled:opacity-40 light:text-slate-600 light:hover:bg-black/[0.06] light:hover:text-slate-950",
+        "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-zinc-300 transition-colors hover:bg-white/8 hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400 disabled:opacity-40 light:text-slate-600 hover:light:bg-black/6 hover:light:text-slate-950",
         className,
       )}
     >

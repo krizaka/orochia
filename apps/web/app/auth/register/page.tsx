@@ -14,7 +14,7 @@ import { t } from "@/lib/i18n";
 
 const label = "mb-1.5 block text-xs font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500";
 const field =
-  "w-full rounded-xl border border-white/10 light:border-black/10 bg-zinc-900 light:bg-slate-50 py-2.5 text-sm text-white light:text-slate-900 placeholder:text-zinc-600 light:placeholder:text-slate-400 focus:border-violet-500 focus:outline-none";
+  "w-full rounded-xl border border-white/10 light:border-black/10 bg-zinc-900 light:bg-slate-50 py-2.5 text-sm text-white light:text-slate-900 placeholder:text-zinc-600 light:placeholder:text-slate-400 focus:border-violet-500 focus:outline-hidden";
 
 /**
  * One kind of account: everyone joins to watch, follow, tip and unlock. Publishing is opened later
@@ -121,13 +121,13 @@ export default function RegisterPage() {
 
           <div className="space-y-2.5 border-t border-white/5 light:border-black/5 pt-3">
             <label className="flex cursor-pointer items-start gap-2.5 text-xs text-zinc-400 light:text-slate-600">
-              <input type="checkbox" checked={isAgeVerified} onChange={(e) => setIsAgeVerified(e.target.checked)} className="mt-0.5 h-4 w-4 rounded accent-violet-600" />
+              <input type="checkbox" checked={isAgeVerified} onChange={(e) => setIsAgeVerified(e.target.checked)} className="mt-0.5 h-4 w-4 rounded-sm accent-violet-600" />
               <span>
                 <Rich text={t("auth.register.ageCertify")} />
               </span>
             </label>
             <label className="flex cursor-pointer items-start gap-2.5 text-xs text-zinc-400 light:text-slate-600">
-              <input type="checkbox" checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} className="mt-0.5 h-4 w-4 rounded accent-violet-600" />
+              <input type="checkbox" checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} className="mt-0.5 h-4 w-4 rounded-sm accent-violet-600" />
               <span>
                 <Rich
                   text={t("auth.register.acceptTerms")}
@@ -151,7 +151,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 py-3.5 text-sm font-bold text-white shadow-xl shadow-fuchsia-600/25 transition-all hover:from-violet-500 hover:to-pink-500 disabled:opacity-60"
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 py-3.5 text-sm font-bold text-white shadow-xl shadow-fuchsia-600/25 transition-all hover:from-violet-500 hover:to-pink-500 disabled:opacity-60"
           >
             <UserPlus className="h-4 w-4" />
             {isLoading ? t("auth.register.submitting") : t("auth.register.submit")}

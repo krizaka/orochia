@@ -54,7 +54,7 @@ export function ProfileHero({
   };
 
   return (
-    <section className="relative mb-8 overflow-visible rounded-3xl border border-white/10 bg-zinc-950/60 shadow-2xl shadow-black/40 backdrop-blur light:border-black/5 light:bg-white light:shadow-xl light:shadow-violet-900/5">
+    <section className="relative mb-8 overflow-visible rounded-3xl border border-white/10 bg-zinc-950/60 shadow-2xl shadow-black/40 backdrop-blur-sm light:border-black/5 light:bg-white light:shadow-xl light:shadow-violet-900/5">
       {/* Cover */}
       <div className="group relative h-36 overflow-hidden rounded-t-3xl sm:h-56">
         {banner ? (
@@ -62,7 +62,7 @@ export function ProfileHero({
         ) : (
           <div className="h-full w-full bg-[radial-gradient(120%_120%_at_0%_0%,rgba(139,92,246,0.55),transparent_55%),radial-gradient(120%_120%_at_100%_100%,rgba(236,72,153,0.45),transparent_55%)] bg-zinc-900 light:bg-violet-50" />
         )}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-zinc-950/70 via-transparent to-transparent light:from-white/30" />
+        <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-zinc-950/70 via-transparent to-transparent light:from-white/30" />
         {editable && (
           <PictureQuickEdit
             kind="banner"
@@ -81,7 +81,7 @@ export function ProfileHero({
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-end sm:gap-5">
             {/* Avatar, overlapping the cover */}
             <div className="group relative -mt-14 shrink-0 sm:-mt-20">
-              <div className="h-28 w-28 overflow-hidden rounded-[2rem] bg-zinc-800 ring-4 ring-zinc-950 shadow-2xl shadow-violet-900/30 sm:h-36 sm:w-36 light:bg-slate-100 light:ring-white">
+              <div className="h-28 w-28 overflow-hidden rounded-4xl bg-zinc-800 ring-4 ring-zinc-950 shadow-2xl shadow-violet-900/30 sm:h-36 sm:w-36 light:bg-slate-100 light:ring-white">
                 <img src={avatar || AVATAR_PLACEHOLDER} alt={displayName} className="h-full w-full object-cover" />
               </div>
               {editable && (
@@ -122,7 +122,7 @@ export function ProfileHero({
                     target="_blank"
                     rel="noopener noreferrer nofollow ugc"
                     title={t("profile.visit", { network: t(`profile.networks.${l.network}` as MessageKey), handle: l.handle })}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-zinc-200 transition-colors hover:border-violet-500/60 hover:bg-violet-500/10 hover:text-white light:border-black/10 light:bg-black/[0.03] light:text-slate-700 light:hover:bg-violet-50 light:hover:text-slate-950"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-zinc-200 transition-colors hover:border-violet-500/60 hover:bg-violet-500/10 hover:text-white light:border-black/10 light:bg-black/3 light:text-slate-700 hover:light:bg-violet-50 hover:light:text-slate-950"
                   >
                     <SocialIcon network={l.network} className="h-3.5 w-3.5" />
                     {l.network === "website" ? l.handle : `@${l.handle}`}

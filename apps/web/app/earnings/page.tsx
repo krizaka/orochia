@@ -24,7 +24,7 @@ interface Earnings {
 }
 
 const PERIODS: Period[] = ["30d", "90d", "12m", "all"];
-const card = "rounded-[1.5rem] border border-white/10 bg-zinc-950/60 p-5 light:border-black/5 light:bg-white light:shadow-sm";
+const card = "rounded-3xl border border-white/10 bg-zinc-950/60 p-5 light:border-black/5 light:bg-white light:shadow-xs";
 const STATUS_TONE: Record<string, string> = {
   SETTLED: "bg-emerald-500/15 text-emerald-300 light:text-emerald-700",
   FAILED: "bg-rose-500/15 text-rose-300 light:text-rose-700",
@@ -98,7 +98,7 @@ function EarningsPage() {
           <h1 className="font-display text-3xl font-black tracking-tight text-white light:text-slate-900">{t("earnings.title")}</h1>
           <p className="mt-1 text-sm text-zinc-400 light:text-slate-500">{t("earnings.subtitle")}</p>
         </div>
-        <div className="w-full sm:w-[22rem]">
+        <div className="w-full sm:w-88">
           <Segmented label={t("earnings.title")} value={period} onChange={(p) => setParam("period", p, "30d")} options={PERIODS.map((p) => ({ value: p, label: t(`earnings.periods.${p}`) }))} />
         </div>
       </header>
@@ -146,7 +146,7 @@ function EarningsPage() {
                 <ol className="max-h-80 space-y-1 overflow-y-auto pr-1">
                   {videos.map((v, i) => (
                     <li key={v.id}>
-                      <Link href={`/watch/${v.id}`} className="flex items-center gap-3 rounded-xl p-2 transition-colors hover:bg-white/5 light:hover:bg-black/[0.03]">
+                      <Link href={`/watch/${v.id}`} className="flex items-center gap-3 rounded-xl p-2 transition-colors hover:bg-white/5 hover:light:bg-black/3">
                         <span className="w-5 text-right font-mono text-[11px] text-zinc-500">{i + 1}</span>
                         <span className="h-10 w-16 shrink-0 overflow-hidden rounded-lg bg-zinc-800">{v.thumbnailUrl ? <img src={v.thumbnailUrl} alt="" className="h-full w-full object-cover" /> : <Film className="m-auto mt-2.5 h-5 w-5 text-zinc-600" />}</span>
                         <span className="min-w-0 flex-1">

@@ -27,9 +27,9 @@ const VISIBILITIES: StudioVideo["visibility"][] = ["PUBLIC", "APPROVED_FOLLOWERS
 const visibilityLabel = (v: StudioVideo["visibility"]) => t(`publish.audiences.${v}.title`);
 
 const field =
-  "mt-1 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none light:border-black/10 light:bg-slate-50 light:text-slate-900";
+  "mt-1 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-hidden light:border-black/10 light:bg-slate-50 light:text-slate-900";
 const label = "block text-xs font-semibold text-zinc-400 light:text-slate-500";
-const iconAction = "rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 light:text-slate-500 light:hover:bg-black/5 light:hover:text-slate-950";
+const iconAction = "rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400 light:text-slate-500 hover:light:bg-black/5 hover:light:text-slate-950";
 
 const duration = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 

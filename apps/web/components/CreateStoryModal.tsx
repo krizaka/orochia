@@ -221,7 +221,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
               <p className="text-xs text-zinc-400 light:text-slate-500">{t("stories.create.subtitle")}</p>
             </div>
           </div>
-          <button onClick={closeAll} className="rounded-full p-1.5 text-zinc-400 hover:bg-white/5 light:hover:bg-black/5" aria-label={t("common.close")}>
+          <button onClick={closeAll} className="rounded-full p-1.5 text-zinc-400 hover:bg-white/5 hover:light:bg-black/5" aria-label={t("common.close")}>
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -239,7 +239,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
             <input ref={input} type="file" accept="image/jpeg,image/png,image/webp,video/*" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
             {file && preview ? (
               <div className="relative overflow-hidden rounded-2xl border border-white/10 light:border-black/10 bg-black">
-                <div className="mx-auto aspect-[9/16] max-h-80">
+                <div className="mx-auto aspect-9/16 max-h-80">
                   {isImage ? <img src={preview} alt="" className="h-full w-full object-cover" /> : <video src={preview} className="h-full w-full object-cover" muted playsInline controls />}
                 </div>
                 <div className="absolute right-2 top-2 flex gap-1.5">
@@ -292,7 +292,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
                 maxLength={280}
                 rows={2}
                 placeholder={t("stories.create.captionPlaceholder")}
-                className="mt-1.5 w-full resize-none rounded-xl border border-white/10 light:border-black/10 bg-zinc-900 light:bg-slate-50 px-3.5 py-2.5 text-sm normal-case tracking-normal text-white light:text-slate-900 focus:border-violet-500 focus:outline-none"
+                className="mt-1.5 w-full resize-none rounded-xl border border-white/10 light:border-black/10 bg-zinc-900 light:bg-slate-50 px-3.5 py-2.5 text-sm normal-case tracking-normal text-white light:text-slate-900 focus:border-violet-500 focus:outline-hidden"
               />
             </label>
 
@@ -357,7 +357,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
                   type="checkbox"
                   checked={isBlurred}
                   onChange={(e) => setIsBlurred(e.target.checked)}
-                  className="h-3.5 w-3.5 rounded border-zinc-700 bg-zinc-900 text-violet-600 focus:ring-violet-500 light:bg-slate-50 light:border-slate-300"
+                  className="h-3.5 w-3.5 rounded-sm border-zinc-700 bg-zinc-900 text-violet-600 focus:ring-violet-500 light:bg-slate-50 light:border-slate-300"
                 />
                 <span className="text-xs text-zinc-300 light:text-slate-700">{t("stories.create.blur")}</span>
               </label>
@@ -367,7 +367,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
 
             <button
               disabled={!file || (!isImage && !edited) || state === "uploading" || (audience === "INVITED_ONLY" && !listId)}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 py-3.5 text-sm font-bold text-white disabled:opacity-40"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 py-3.5 text-sm font-bold text-white disabled:opacity-40"
             >
               {state === "uploading" ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
               {state === "uploading" ? t("stories.create.uploading", { progress }) : t("stories.create.publish")}

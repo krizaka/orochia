@@ -72,9 +72,9 @@ export function AudienceEditor({ endpoint, onChange }: { endpoint: string; onCha
           maxLength={51}
           placeholder={t("audience.usernamePlaceholder")}
           aria-label={t("audience.usernameLabel")}
-          className="min-w-0 flex-1 rounded-xl border border-white/10 bg-zinc-900/80 px-3 py-2 text-xs text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900"
+          className="min-w-0 flex-1 rounded-xl border border-white/10 bg-zinc-900/80 px-3 py-2 text-xs text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-hidden light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900"
         />
-        <button disabled={busy || !username.trim()} className="inline-flex items-center gap-1.5 rounded-xl bg-violet-600 px-3 text-xs font-bold text-white transition-colors hover:bg-violet-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 disabled:opacity-40">
+        <button disabled={busy || !username.trim()} className="inline-flex items-center gap-1.5 rounded-xl bg-violet-600 px-3 text-xs font-bold text-white transition-colors hover:bg-violet-500 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400 disabled:opacity-40">
           <UserPlus className="h-3.5 w-3.5" /> {t("audience.invite")}
         </button>
       </form>
@@ -85,7 +85,7 @@ export function AudienceEditor({ endpoint, onChange }: { endpoint: string; onCha
           disabled={busy || available.length === 0}
           onChange={(e) => e.target.value && void call(endpoint, "POST", { listId: e.target.value })}
           aria-label={t("audience.listLabel")}
-          className="rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-xs text-zinc-200 focus:border-violet-500 focus:outline-none disabled:opacity-50 light:bg-slate-50 light:border-black/10 light:text-slate-700"
+          className="rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-xs text-zinc-200 focus:border-violet-500 focus:outline-hidden disabled:opacity-50 light:bg-slate-50 light:border-black/10 light:text-slate-700"
         >
           <option value="">{myLists.length === 0 ? t("audience.noList") : available.length === 0 ? t("audience.allAdded") : t("audience.addList")}</option>
           {available.map((l) => (

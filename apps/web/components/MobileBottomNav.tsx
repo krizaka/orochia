@@ -31,7 +31,7 @@ export function MobileBottomNav() {
           <Compass className="h-5 w-5" /> {t("nav.explore")}
         </Link>
         <Link href={user ? "/creator/upload" : "/auth/register"} className="-mt-5 flex flex-col items-center justify-self-center" aria-label={t("nav.create")}>
-          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-violet-600 via-fuchsia-600 to-pink-500 shadow-lg shadow-violet-600/40 active:scale-95">
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-tr from-violet-600 via-fuchsia-600 to-pink-500 shadow-lg shadow-violet-600/40 active:scale-95">
             <Plus className="h-6 w-6 text-white" strokeWidth={2.5} />
           </span>
           <span className="mt-1 text-[10px] font-semibold text-violet-400 light:text-violet-700">{t("nav.create")}</span>

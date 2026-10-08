@@ -14,11 +14,11 @@ export function Switch({ checked, onChange, label, disabled = false }: { checked
       disabled={disabled}
       onClick={() => onChange(!checked)}
       className={cx(
-        "relative h-6 w-11 shrink-0 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 disabled:opacity-30",
+        "relative h-6 w-11 shrink-0 rounded-full transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400 disabled:opacity-30",
         checked ? "bg-violet-600" : "bg-zinc-700 light:bg-slate-300",
       )}
     >
-      <span className={cx("absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform", checked && "translate-x-5")} />
+      <span className={cx("absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform", checked && "translate-x-5")} />
     </button>
   );
 }

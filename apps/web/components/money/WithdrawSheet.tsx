@@ -68,7 +68,7 @@ export function WithdrawSheet({ open, onClose, availableCents, destinationHint, 
                 inputMode="decimal"
                 placeholder="0.00"
                 aria-describedby="withdraw-hint"
-                className="w-full bg-transparent px-2 py-3 font-display text-2xl font-black text-white outline-none light:text-slate-900"
+                className="w-full bg-transparent px-2 py-3 font-display text-2xl font-black text-white outline-hidden light:text-slate-900"
               />
             </span>
             <span id="withdraw-hint" className="mt-1 block text-[11px] text-zinc-500">{t("earnings.request.min")}</span>
@@ -84,7 +84,7 @@ export function WithdrawSheet({ open, onClose, availableCents, destinationHint, 
               );
             })}
           </div>
-          <p className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300 light:border-black/10 light:bg-black/[0.02] light:text-slate-700">{t("earnings.request.to", { hint: destinationHint })}</p>
+          <p className="rounded-2xl border border-white/10 bg-white/3 px-4 py-3 text-sm text-zinc-300 light:border-black/10 light:bg-black/2 light:text-slate-700">{t("earnings.request.to", { hint: destinationHint })}</p>
           {error && <p role="alert" className="text-xs text-rose-400 light:text-rose-600">{error}</p>}
         </div>
       )}

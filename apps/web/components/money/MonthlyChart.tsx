@@ -34,7 +34,7 @@ export function MonthlyChart({ data, label }: { data: { month: string; netCents:
               onMouseEnter={() => setActive(i)}
               onFocus={() => setActive(i)}
               onBlur={() => setActive(null)}
-              className="group relative flex h-full flex-1 items-end justify-center focus-visible:outline-none"
+              className="group relative flex h-full flex-1 items-end justify-center focus-visible:outline-hidden"
             >
               <span
                 className={`block w-full max-w-[28px] rounded-t-[4px] bg-violet-500 transition-opacity light:bg-violet-600 ${active === null || active === i ? "opacity-100" : "opacity-40"} group-focus-visible:ring-2 group-focus-visible:ring-violet-300`}

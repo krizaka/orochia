@@ -220,7 +220,7 @@ export default function WatchClient() {
                         disabled={likeBusy}
                         aria-pressed={liked}
                         aria-label={liked ? t("watch.unlike") : t("watch.like")}
-                        className={cx(buttonClass({ size: "sm", round: false }), liked && "!border-fuchsia-500/40 !bg-fuchsia-500/10 !text-fuchsia-400")}
+                        className={cx(buttonClass({ size: "sm", round: false }), liked && "border-fuchsia-500/40! bg-fuchsia-500/10! text-fuchsia-400!")}
                       >
                         <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
                         <span>{details.likesCount.toLocaleString("en-US")}</span>
@@ -236,7 +236,7 @@ export default function WatchClient() {
                     <Share2 className="h-4 w-4" />
                     <span>{copied ? t("watch.copied") : t("watch.share")}</span>
                   </button>
-                  <button onClick={() => setIsReportModalOpen(true)} className={cx(buttonClass({ size: "sm", round: false }), "hover:!border-rose-500/40 hover:!bg-rose-500/10 hover:!text-rose-400")}>
+                  <button onClick={() => setIsReportModalOpen(true)} className={cx(buttonClass({ size: "sm", round: false }), "hover:border-rose-500/40! hover:bg-rose-500/10! hover:text-rose-400!")}>
                     <Flag className="h-3.5 w-3.5" />
                     <span>{t("watch.report")}</span>
                   </button>
@@ -266,7 +266,7 @@ export default function WatchClient() {
                 </span>
               </div>
 
-              <div className="mt-6 flex items-center justify-between rounded-2xl border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/60 dark:bg-zinc-900/60 light:bg-white p-4 shadow-sm">
+              <div className="mt-6 flex items-center justify-between rounded-2xl border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/60 dark:bg-zinc-900/60 light:bg-white p-4 shadow-xs">
                 <div className="flex items-center gap-3">
                   <div className="h-12 w-12 overflow-hidden rounded-full border border-violet-500/30">
                     <img src={details.creatorAvatar || AVATAR_PLACEHOLDER} alt={details.creatorName} className="h-full w-full object-cover" />
@@ -288,7 +288,7 @@ export default function WatchClient() {
               </div>
 
               {(details.description || details.creatorBio) && (
-                <p className="mt-4 text-sm text-zinc-300 dark:text-zinc-300 light:text-slate-700 leading-relaxed bg-zinc-900/30 dark:bg-zinc-900/30 light:bg-white rounded-2xl p-4 border border-white/5 dark:border-white/5 light:border-black/5 whitespace-pre-line shadow-sm">
+                <p className="mt-4 text-sm text-zinc-300 dark:text-zinc-300 light:text-slate-700 leading-relaxed bg-zinc-900/30 dark:bg-zinc-900/30 light:bg-white rounded-2xl p-4 border border-white/5 dark:border-white/5 light:border-black/5 whitespace-pre-line shadow-xs">
                   {details.description || details.creatorBio}
                 </p>
               )}
@@ -306,7 +306,7 @@ export default function WatchClient() {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-2xl border border-white/10 dark:border-white/10 light:border-black/5 bg-zinc-900/50 dark:bg-zinc-900/50 light:bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-white/10 dark:border-white/10 light:border-black/5 bg-zinc-900/50 dark:bg-zinc-900/50 light:bg-white p-5 shadow-xs">
             <h3 className="text-sm font-bold text-white dark:text-white light:text-slate-900 mb-3">{t("watch.protection.title")}</h3>
             <ul className="space-y-2.5 text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-600">
               <li className="flex items-start gap-2">
@@ -325,7 +325,7 @@ export default function WatchClient() {
           </div>
 
           {details && details.moreFromCreator.length > 0 && (
-            <div className="rounded-2xl border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/30 dark:bg-zinc-900/30 light:bg-white p-5 shadow-sm">
+            <div className="rounded-2xl border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/30 dark:bg-zinc-900/30 light:bg-white p-5 shadow-xs">
               <h3 className="text-sm font-bold text-white dark:text-white light:text-slate-900 mb-3">{t("watch.more", { name: details.creatorName })}</h3>
               <div className="space-y-3">
                 {details.moreFromCreator.map((video) => (

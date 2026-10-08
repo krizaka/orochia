@@ -26,10 +26,10 @@ function Screen({ scene }: { scene: Scene }) {
         </div>
         <div className="absolute left-3 top-6 flex items-center gap-2">
           <img src={AVATAR} alt="" className="h-7 w-7 rounded-full ring-2 ring-fuchsia-500" />
-          <span className="text-[11px] font-semibold text-white drop-shadow">{t("home.showcase.demo.storyAuthor")}</span>
+          <span className="text-[11px] font-semibold text-white drop-shadow-sm">{t("home.showcase.demo.storyAuthor")}</span>
         </div>
         <div className="absolute inset-x-3 bottom-4 flex items-center gap-2">
-          <span className="flex-1 rounded-full border border-white/40 bg-black/20 px-3 py-2 text-[10px] text-white/80 backdrop-blur">{t("home.showcase.reply")}</span>
+          <span className="flex-1 rounded-full border border-white/40 bg-black/20 px-3 py-2 text-[10px] text-white/80 backdrop-blur-sm">{t("home.showcase.reply")}</span>
           <Heart className="sc-pop h-6 w-6 fill-pink-500 text-pink-500" />
         </div>
       </div>
@@ -40,7 +40,7 @@ function Screen({ scene }: { scene: Scene }) {
       <div className="absolute inset-0 flex flex-col bg-zinc-950">
         <div className="relative m-3 flex-1 overflow-hidden rounded-2xl">
           <img src={COVERS[1]} alt="" className="sc-filter h-full w-full object-cover" />
-          <span className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-black/50 px-2 py-0.5 text-[9px] font-semibold text-white backdrop-blur">
+          <span className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-black/50 px-2 py-0.5 text-[9px] font-semibold text-white backdrop-blur-sm">
             <Sparkles className="h-2.5 w-2.5" /> {t("home.showcase.demo.filter")}
           </span>
         </div>
@@ -63,7 +63,7 @@ function Screen({ scene }: { scene: Scene }) {
             <span className="sc-count" />
           </div>
           <span className="block h-1.5 overflow-hidden rounded-full bg-white/10">
-            <span className="sc-upload block h-full rounded-full bg-gradient-to-r from-violet-500 to-pink-500" />
+            <span className="sc-upload block h-full rounded-full bg-linear-to-r from-violet-500 to-pink-500" />
           </span>
         </div>
       </div>
@@ -74,7 +74,7 @@ function Screen({ scene }: { scene: Scene }) {
       <div className="absolute inset-0 flex flex-col">
         <div className="relative flex-1">
           <img src={COVERS[2]} alt="" className="h-full w-full object-cover" />
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-10">
+          <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/80 to-transparent p-3 pt-10">
             <p className="text-[11px] font-bold text-white">{t("home.showcase.demo.videoTitle")}</p>
             <p className="flex items-center gap-1 text-[9px] text-white/70">
               {t("home.showcase.demo.creator")} <BadgeCheck className="h-2.5 w-2.5 text-violet-300" />
@@ -87,7 +87,7 @@ function Screen({ scene }: { scene: Scene }) {
         </div>
         <div className="flex items-center gap-2 bg-zinc-950 p-3">
           {["$5", "$10", "$25"].map((a, i) => (
-            <span key={a} className={`flex-1 rounded-lg py-1.5 text-center text-[10px] font-bold ${i === 1 ? "sc-press bg-gradient-to-r from-violet-600 to-pink-600 text-white" : "bg-white/5 text-zinc-300"}`}>
+            <span key={a} className={`flex-1 rounded-lg py-1.5 text-center text-[10px] font-bold ${i === 1 ? "sc-press bg-linear-to-r from-violet-600 to-pink-600 text-white" : "bg-white/5 text-zinc-300"}`}>
               {a}
             </span>
           ))}
@@ -103,7 +103,7 @@ function Screen({ scene }: { scene: Scene }) {
           <Lock className="sc-lock-icon h-5 w-5" />
           <Unlock className="sc-unlock-icon absolute h-5 w-5" />
         </span>
-        <span className="rounded-full bg-gradient-to-r from-violet-600 to-pink-600 px-3 py-1.5 text-[10px] font-bold text-white">{t("home.showcase.unlockFor")}</span>
+        <span className="rounded-full bg-linear-to-r from-violet-600 to-pink-600 px-3 py-1.5 text-[10px] font-bold text-white">{t("home.showcase.unlockFor")}</span>
       </div>
     </div>
   );
@@ -143,7 +143,7 @@ export function ProductShowcase() {
     <div ref={box} className="relative flex flex-col items-center" aria-label={t("home.showcase.label")} role="region">
       <div className="relative">
         {/* Glow */}
-        <div aria-hidden className="absolute -inset-10 -z-10 rounded-full bg-gradient-to-tr from-violet-600/40 via-fuchsia-500/30 to-pink-500/30 blur-3xl light:from-violet-300/50 light:via-fuchsia-200/50 light:to-pink-200/50" />
+        <div aria-hidden className="absolute -inset-10 -z-10 rounded-full bg-linear-to-tr from-violet-600/40 via-fuchsia-500/30 to-pink-500/30 blur-3xl light:from-violet-300/50 light:via-fuchsia-200/50 light:to-pink-200/50" />
         {/* Phone */}
         <div className="sc-float relative h-[480px] w-[236px] rounded-[2.6rem] border border-white/15 bg-zinc-900 p-2 shadow-2xl shadow-black/60 light:border-black/10 light:bg-white light:shadow-violet-900/20 sm:h-[540px] sm:w-[266px]">
           <div className="relative h-full w-full overflow-hidden rounded-[2.1rem] bg-black">
@@ -172,7 +172,7 @@ export function ProductShowcase() {
       </div>
 
       {/* Scene names: what the phone is showing, and a way to choose */}
-      <div className="mt-6 flex max-w-full gap-1 overflow-x-auto rounded-full border border-white/10 bg-zinc-950/70 p-1 backdrop-blur-xl [scrollbar-width:none] light:border-black/5 light:bg-white/80" role="tablist" aria-label={t("home.showcase.label")}>
+      <div className="mt-6 flex max-w-full gap-1 overflow-x-auto rounded-full border border-white/10 bg-zinc-950/70 p-1 backdrop-blur-xl scrollbar-none light:border-black/5 light:bg-white/80" role="tablist" aria-label={t("home.showcase.label")}>
         {SCENES.map((s, i) => (
           <button
             key={s}
@@ -181,12 +181,12 @@ export function ProductShowcase() {
             aria-selected={i === index}
             onClick={() => setIndex(i)}
             className={`relative shrink-0 overflow-hidden whitespace-nowrap rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors sm:px-3.5 sm:text-xs ${
-              i === index ? "bg-white/10 text-white light:bg-black/5 light:text-slate-900" : "text-zinc-400 hover:text-white light:text-slate-500 light:hover:text-slate-900"
+              i === index ? "bg-white/10 text-white light:bg-black/5 light:text-slate-900" : "text-zinc-400 hover:text-white light:text-slate-500 hover:light:text-slate-900"
             }`}
           >
             <span className="mr-1 font-mono text-[10px] opacity-60">{String(i + 1).padStart(2, "0")}</span>
             {t(`home.showcase.scenes.${s}`)}
-            {i === index && running && <span className="sc-tab absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-violet-500 to-pink-500" style={{ animationDuration: `${SCENE_MS}ms` }} />}
+            {i === index && running && <span className="sc-tab absolute inset-x-0 bottom-0 h-[2px] bg-linear-to-r from-violet-500 to-pink-500" style={{ animationDuration: `${SCENE_MS}ms` }} />}
           </button>
         ))}
       </div>

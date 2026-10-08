@@ -45,8 +45,8 @@ const CREATOR_EVENTS = new Set(["tipReceived", "videoUnlocked", "videoReady", "n
 const label = "mb-1.5 block text-xs font-semibold text-zinc-300 light:text-slate-700";
 const hint = "mt-1 block text-[11px] leading-relaxed text-zinc-500 light:text-slate-500";
 const field =
-  "w-full rounded-xl border border-white/10 bg-zinc-900 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none light:border-black/10 light:bg-slate-50 light:text-slate-900 light:placeholder:text-slate-400";
-const ghost = "inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-zinc-200 transition-colors hover:border-violet-500/60 hover:text-white light:border-black/10 light:text-slate-700 light:hover:text-slate-950";
+  "w-full rounded-xl border border-white/10 bg-zinc-900 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-hidden light:border-black/10 light:bg-slate-50 light:text-slate-900 light:placeholder:text-slate-400";
+const ghost = "inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-zinc-200 transition-colors hover:border-violet-500/60 hover:text-white light:border-black/10 light:text-slate-700 hover:light:text-slate-950";
 
 async function put(body: object): Promise<string | null> {
   const res = await fetch("/api/me/profile", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -75,7 +75,7 @@ function SaveRow({ state, error, onSave }: { state: "idle" | "saving" | "saved";
         type="button"
         onClick={onSave}
         disabled={state === "saving"}
-        className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-violet-600/20 disabled:opacity-50"
+        className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-violet-600 to-fuchsia-600 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-violet-600/20 disabled:opacity-50"
       >
         {state === "saving" && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
         {state === "saving" ? t("settings.saving") : t("settings.save")}
@@ -184,7 +184,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
   return (
     <div className="grid gap-6 lg:grid-cols-[200px_minmax(0,1fr)]">
       {/* Each section has its own address (/dashboard?tab=settings#settings-links): shareable, reloadable. */}
-      <nav aria-label={t("settings.title")} className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:px-0">
+      <nav aria-label={t("settings.title")} className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:overflow-visible lg:px-0">
         <ul className="flex gap-1 lg:sticky lg:top-24 lg:flex-col">
           {sections.map((id) => (
             <li key={id}>
@@ -194,7 +194,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
                 className={`block whitespace-nowrap rounded-xl px-3.5 py-2 text-xs font-semibold transition-colors ${
                   hash === `#settings-${id}`
                     ? "bg-violet-600/15 text-violet-200 light:text-violet-700"
-                    : "text-zinc-400 hover:bg-white/5 hover:text-white light:text-slate-500 light:hover:bg-black/5 light:hover:text-slate-950"
+                    : "text-zinc-400 hover:bg-white/5 hover:text-white light:text-slate-500 hover:light:bg-black/5 hover:light:text-slate-950"
                 }`}
               >
                 {t(`settings.sections.${id}`)}
@@ -246,7 +246,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
               </div>
             ) : (
               <div className="flex gap-2">
-                <input type="date" value={birthDate} max={latestAdultBirthDate()} min="1900-01-01" onChange={(e) => setBirthDate(e.target.value)} aria-label={t("settings.identity.birthDateAdd")} className={`${field} [color-scheme:dark] light:[color-scheme:light]`} />
+                <input type="date" value={birthDate} max={latestAdultBirthDate()} min="1900-01-01" onChange={(e) => setBirthDate(e.target.value)} aria-label={t("settings.identity.birthDateAdd")} className={`${field} scheme-dark light:scheme-light`} />
                 <button
                   type="button"
                   disabled={!birthDate || birth.state === "saving"}
@@ -310,7 +310,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
                 void prefs.run(() => put({ directMessagePrivacy: value }));
               }}
               className={`rounded-2xl border p-3.5 text-left transition-colors ${
-                profile.directMessagePrivacy === value ? "border-violet-500 bg-violet-600/10" : "border-white/10 hover:border-white/25 light:border-black/10 light:hover:border-black/25"
+                profile.directMessagePrivacy === value ? "border-violet-500 bg-violet-600/10" : "border-white/10 hover:border-white/25 light:border-black/10 hover:light:border-black/25"
               }`}
             >
               <span className="block text-sm font-semibold text-white light:text-slate-900">{t(value === "EVERYONE" ? "settings.privacy.everyone" : "settings.privacy.contacts")}</span>
@@ -323,7 +323,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
       <Section id="notifications" icon={<Bell className="h-4 w-4" />} title={t("settings.sections.notifications")}>
         <p className="-mt-2 mb-4 text-xs text-zinc-400 light:text-slate-500">{t("settings.notifications.intro")}</p>
         <div className="overflow-hidden rounded-2xl border border-white/10 light:border-black/10">
-          <div className="grid grid-cols-[minmax(0,1fr)_64px_64px] items-center gap-2 border-b border-white/10 bg-white/[0.03] px-4 py-2.5 text-[10px] font-bold uppercase tracking-wider text-zinc-400 light:border-black/10 light:bg-black/[0.02] light:text-slate-500 sm:grid-cols-[minmax(0,1fr)_96px_96px]">
+          <div className="grid grid-cols-[minmax(0,1fr)_64px_64px] items-center gap-2 border-b border-white/10 bg-white/3 px-4 py-2.5 text-[10px] font-bold uppercase tracking-wider text-zinc-400 light:border-black/10 light:bg-black/2 light:text-slate-500 sm:grid-cols-[minmax(0,1fr)_96px_96px]">
             <span />
             <span className="text-center">{t("settings.notifications.inApp")}</span>
             <span className="text-center">{t("settings.notifications.byEmail")}</span>
@@ -362,7 +362,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
                 void prefs.run(() => put({ emailFrequency: f }));
               }}
               className={`rounded-xl px-2 py-2 text-xs font-semibold transition-colors ${
-                frequency === f ? "bg-violet-600 text-white shadow" : "text-zinc-400 hover:bg-white/5 hover:text-white light:text-slate-600 light:hover:bg-black/5 light:hover:text-slate-950"
+                frequency === f ? "bg-violet-600 text-white shadow-sm" : "text-zinc-400 hover:bg-white/5 hover:text-white light:text-slate-600 hover:light:bg-black/5 hover:light:text-slate-950"
               }`}
             >
               {t(`settings.notifications.frequencies.${f}`)}
