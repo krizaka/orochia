@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import { ClientLayoutShell } from "@/components/ClientLayoutShell";
+import { MotionObserver } from "@/components/motion/MotionObserver";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AuthProvider } from "@/lib/auth-context";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -82,6 +83,7 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <ClientLayoutShell>{children}</ClientLayoutShell>
+            <MotionObserver />
             <SiteFooter />
           </AuthProvider>
         </ThemeProvider>

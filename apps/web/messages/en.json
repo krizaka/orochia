@@ -195,6 +195,53 @@
       "followers": "{count} supporters",
       "views": "{count} views",
       "videos": "{count} videos"
+    },
+    "titleLead": "The creators you love,",
+    "rotating": {
+      "a": "closer than ever.",
+      "b": "every single day.",
+      "c": "in stunning 4K.",
+      "d": "on their terms."
+    },
+    "showcase": {
+      "label": "What you can do on Orochia",
+      "reply": "Send a message…",
+      "publishing": "Publishing",
+      "unlockFor": "Unlock · $10",
+      "scenes": {
+        "story": "Post a story",
+        "publish": "Edit & publish",
+        "tip": "Send a tip",
+        "unlock": "Unlock a video"
+      },
+      "toasts": {
+        "follow": "@alex_vance followed you",
+        "tip": "+$9.00 tip from @mia",
+        "message": "New message from @sam"
+      }
+    },
+    "marquee": {
+      "a": "24-hour stories",
+      "b": "4K streaming",
+      "c": "Tips & unlocks",
+      "d": "Close-friends lists",
+      "e": "In-browser editor",
+      "f": "Private messages",
+      "g": "Creators keep {share}%",
+      "h": "Open source"
+    },
+    "creatorsPreview": {
+      "title": "This month",
+      "earned": "Earned",
+      "views": "Views",
+      "supporters": "Supporters",
+      "newTip": "New tip · +$9.00"
+    },
+    "empty": {
+      "title": "The first videos are on their way",
+      "body": "Creators are setting up their spaces. Create your account to follow them first — or open your own.",
+      "join": "Create your free account",
+      "create": "Become a creator"
     }
   },
   "payments": {
@@ -635,5 +682,8 @@
       "save": "Save payout method",
       "saved": "Payout method saved."
     }
+  },
+  "feed": {
+    "emptyFilter": "Nothing here yet in this category — try another tab."
   }
 }

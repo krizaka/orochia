@@ -82,7 +82,7 @@ export function VideoCard({
       <div
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 dark:border-white/10 light:border-black/5 bg-zinc-950/70 dark:bg-zinc-950/70 light:bg-white transition-all duration-300 hover:border-violet-500/50 hover:shadow-2xl hover:shadow-violet-950/20 md:hover:-translate-y-1 w-full max-w-full"
+        className="kz-spotlight group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 dark:border-white/10 light:border-black/5 bg-zinc-950/70 dark:bg-zinc-950/70 light:bg-white transition-all duration-300 hover:border-violet-500/50 hover:shadow-2xl hover:shadow-violet-950/20 md:hover:-translate-y-1 w-full max-w-full"
       >
         {/* Thumbnail & Video Preview Container */}
         <Link href={`/watch/${id}`} className="relative block aspect-video w-full overflow-hidden bg-zinc-900">

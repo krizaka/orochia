@@ -1,7 +1,8 @@
 import React from "react";
 
 /**
- * The moving backdrop of the home hero: real thumbnails of listed videos, in slow vertical columns
+ * The moving backdrop of the home hero: real thumbnails of listed videos, in slow vertical columns — dimmed and
+ * softened on wide screens so the product showcase in front reads first
  * (horizontal rows on phones). An empty platform shows soft gradients instead — never stock pictures.
  * Decorative (aria-hidden); still under prefers-reduced-motion.
  */
@@ -24,7 +25,7 @@ export function HeroWall({ images }: { images: string[] }) {
   );
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="absolute inset-y-0 right-0 hidden w-[55%] grid-cols-3 gap-3 p-3 md:grid [mask-image:linear-gradient(to_left,black_55%,transparent)]">
+      <div className="absolute inset-y-0 right-0 hidden w-[55%] grid-cols-3 gap-3 p-3 opacity-[0.22] blur-[3px] saturate-150 md:grid light:opacity-[0.28] [mask-image:linear-gradient(to_left,black_55%,transparent)]">
         {columns.map((col, c) => (
           <div key={c} className="hero-col flex flex-col gap-3" style={{ animationDuration: `${38 + c * 9}s`, animationDirection: c === 1 ? "reverse" : "normal" }}>
             {[...col, ...col].map((src, i) => tile(src, `${c}-${i}`))}

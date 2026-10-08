@@ -248,6 +248,12 @@ orochia/                           npm workspaces
 - **UI kit** (`components/ui`): `Button` / `buttonClass` (primary · secondary · ghost · danger, sm · md · lg, loading),
   `IconButton` (accessible name required), `Chip`, `Segmented`, `Switch`, `Slider`, `cx`. New screens use them; a
   screen touched for another reason moves its hand-rolled buttons to them.
+- **Krizaka motion signature** (shared with krizaka.com; `app/globals.css` → "Krizaka motion signature",
+  `components/motion`): one easing `--kz-ease`; every page enters (`app/template.tsx`); sections and cards rise into
+  view with `data-reveal` (stagger with `--kz-delay`; `MotionObserver` in the layout drives it); headline words roll
+  (`RotatingWord`); primary actions carry `kz-sheen`; cards `kz-spotlight` / `kz-lift`; bands `kz-marquee`. Motion
+  explains (a product showcase, a count-up), it never blocks reading, and **everything stops under
+  `prefers-reduced-motion`**. No animation library: CSS and a few lines of React.
 - **Dark islands**: a container with `theme-dark` stays dark in both themes (the `light:` variant does not apply
   inside) — media editors and players.
 - **The video editor** (`components/editor/`): `VideoEditor` (shell and layout) · `Stage` (picture, reframe,

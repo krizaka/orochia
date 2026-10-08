@@ -9,7 +9,7 @@ type Size = "sm" | "md" | "lg";
 
 const VARIANTS: Record<Variant, string> = {
   primary:
-    "bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 text-white shadow-lg shadow-fuchsia-600/20 hover:brightness-110 active:brightness-95",
+    "kz-sheen bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 text-white shadow-lg shadow-fuchsia-600/20 hover:brightness-110 active:brightness-95",
   secondary:
     "border border-white/10 bg-white/[0.04] text-zinc-100 hover:border-white/20 hover:bg-white/[0.08] light:border-black/10 light:bg-black/[0.03] light:text-slate-800 light:hover:border-black/20 light:hover:bg-black/[0.06]",
   ghost: "text-zinc-300 hover:bg-white/[0.06] hover:text-white light:text-slate-600 light:hover:bg-black/[0.05] light:hover:text-slate-950",

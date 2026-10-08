@@ -261,3 +261,124 @@ html.dark .text-gradient-neon {
 ::-webkit-scrollbar-thumb:hover {
   background: #8b5cf6;
 }
+
+/* ── Krizaka motion signature ─────────────────────────────────────────────────────────────────
+   The same grammar as krizaka.com: one easing (--kz-ease), entrances that rise and un-blur, words that roll,
+   a sheen across primary actions, a soft spotlight that follows the pointer on cards. Driven by
+   components/motion (MotionObserver, RotatingWord, app/template.tsx). Everything stops under reduced motion. */
+:root {
+  --kz-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Page entrance (app/template.tsx re-mounts on every navigation). */
+.kz-page {
+  animation: kz-page-in 0.5s var(--kz-ease) both;
+}
+@keyframes kz-page-in {
+  from { opacity: 0; transform: translateY(10px); }
+}
+
+/* Reveal on scroll: [data-reveal] rises into place when it enters the viewport (MotionObserver adds .kz-in). */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(22px);
+  filter: blur(4px);
+  transition: opacity 0.8s var(--kz-ease), transform 0.8s var(--kz-ease), filter 0.8s var(--kz-ease);
+  transition-delay: var(--kz-delay, 0ms);
+}
+[data-reveal].kz-in {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* A word that rolls in (RotatingWord). */
+.kz-word {
+  display: inline-block;
+  animation: kz-word-in 0.6s var(--kz-ease) both;
+}
+@keyframes kz-word-in {
+  from { opacity: 0; transform: translateY(70%); filter: blur(6px); }
+}
+
+/* Sheen across a primary action on hover. */
+.kz-sheen {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.kz-sheen::after {
+  content: "";
+  position: absolute;
+  inset: -20% auto -20% 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .kz-sheen:hover::after {
+    animation: kz-sheen-sweep 760ms var(--kz-ease);
+  }
+}
+@keyframes kz-sheen-sweep {
+  0% { opacity: 0; transform: translateX(-160%) skewX(-18deg); }
+  18% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(360%) skewX(-18deg); }
+}
+
+/* Spotlight: a soft accent bloom follows the pointer across a card (MotionObserver writes --spot-x/--spot-y). */
+.kz-spotlight {
+  position: relative;
+}
+.kz-spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(420px circle at var(--spot-x, 50%) var(--spot-y, 50%), rgba(168, 85, 247, 0.16), transparent 45%);
+  opacity: 0;
+  transition: opacity 0.35s var(--kz-ease);
+  pointer-events: none;
+  z-index: 0;
+}
+.kz-spotlight:hover::before {
+  opacity: 1;
+}
+
+/* Lift: cards rise a little under the pointer. */
+.kz-lift {
+  transition: transform 0.35s var(--kz-ease), box-shadow 0.35s var(--kz-ease), border-color 0.35s var(--kz-ease);
+}
+@media (hover: hover) {
+  .kz-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px -18px rgba(124, 58, 237, 0.45);
+  }
+}
+
+/* Gradient text that slowly drifts. */
+.kz-gradient-text {
+  background-size: 200% auto;
+  animation: kz-gradient-drift 8s ease-in-out infinite;
+}
+@keyframes kz-gradient-drift {
+  50% { background-position: 100% center; }
+}
+
+/* Marquee (logos, feature words): two copies side by side, sliding forever. */
+.kz-marquee {
+  display: flex;
+  width: max-content;
+  animation: kz-marquee var(--kz-marquee-duration, 40s) linear infinite;
+}
+@keyframes kz-marquee {
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kz-page, .kz-word, .kz-gradient-text, .kz-marquee { animation: none !important; }
+  [data-reveal] { opacity: 1; transform: none; filter: none; transition: none; }
+  .kz-sheen::after { display: none; }
+  .kz-lift, .kz-lift:hover { transform: none; transition: none; }
+}

@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Flame, Sparkles, Lock, Gift, Users, LayoutGrid, Rows3 } from "lucide-react";
+import { Clapperboard, Flame, Sparkles, Lock, Gift, Users, LayoutGrid, Rows3 } from "lucide-react";
+import { buttonClass } from "@/components/ui";
+import { t } from "@/lib/i18n";
 import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
 import Link from "next/link";
 
@@ -93,19 +95,32 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
 
       {/* Video Content Render */}
       {filteredVideos.length === 0 ? (
-        <div className="rounded-3xl border border-white/10 dark:border-white/10 light:border-black/5 bg-zinc-900/40 dark:bg-zinc-900/40 light:bg-slate-50 p-12 text-center">
-          <p className="text-sm font-semibold text-white dark:text-white light:text-slate-900">
-            No streams found in this category.
-          </p>
-          <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500">
-            Switch tabs or explore published broadcasts by our verified creators.
-          </p>
-        </div>
+        initialVideos.length === 0 ? (
+          <div className="kz-spotlight relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/40 px-6 py-14 text-center light:border-black/5 light:bg-white">
+            <div aria-hidden className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-pink-600 shadow-lg shadow-fuchsia-600/30">
+              <Clapperboard className="h-7 w-7 text-white" />
+            </div>
+            <h3 className="font-display text-xl font-black text-white light:text-slate-900">{t("home.empty.title")}</h3>
+            <p className="mx-auto mt-2 max-w-md text-sm text-zinc-400 light:text-slate-600">{t("home.empty.body")}</p>
+            <div className="mt-6 flex flex-col justify-center gap-2 sm:flex-row">
+              <Link href="/auth/register" className={buttonClass({ variant: "primary", size: "md" })}>
+                {t("home.empty.join")}
+              </Link>
+              <Link href="/creator/upload" className={buttonClass({ variant: "secondary", size: "md" })}>
+                {t("home.empty.create")}
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <p className="rounded-3xl border border-white/10 bg-zinc-900/40 p-10 text-center text-sm text-zinc-400 light:border-black/5 light:bg-white light:text-slate-500">{t("feed.emptyFilter")}</p>
+        )
       ) : viewMode === "grid" ? (
         /* Grid Layout */
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 animate-in fade-in duration-300">
-          {filteredVideos.map((video) => (
-            <VideoCard key={video.id} {...video} />
+          {filteredVideos.map((video, i) => (
+            <div key={video.id} data-reveal style={{ ["--kz-delay" as string]: `${(i % 4) * 70}ms` }}>
+              <VideoCard {...video} />
+            </div>
           ))}
         </div>
       ) : (
