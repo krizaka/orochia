@@ -52,9 +52,6 @@ export function Navbar() {
             <span className="text-base sm:text-lg font-black tracking-wider text-white dark:text-white light:text-slate-900 font-display">
               OROCHIA<span className="text-violet-400">.</span>
             </span>
-            <span className="hidden md:inline-block rounded-md border border-violet-500/30 bg-violet-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-violet-300 dark:text-violet-300 light:text-violet-700">
-              Open Source
-            </span>
           </Link>
 
           {/* Global Quick Search Bar Trigger (Desktop) */}

@@ -25,7 +25,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: "Orochia — Open-Source Video Platform for Independent Creators", template: "%s — Orochia" },
+  title: { default: "Orochia — Video Platform for Independent Creators", template: "%s — Orochia" },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
   keywords: [

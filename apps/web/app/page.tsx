@@ -43,7 +43,7 @@ export default async function HomePage() {
         <div className="relative z-10 max-w-2xl">
           <div className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-3.5 py-1 text-xs font-semibold text-violet-300 dark:text-violet-300 light:text-violet-700 mb-4 shadow-sm">
             <Sparkles className="h-3.5 w-3.5 text-violet-400" />
-            <span>Adult-Friendly Open-Source Creator Platform</span>
+            <span>Adult-Friendly Creator Platform</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white dark:text-white light:text-slate-900 leading-tight">

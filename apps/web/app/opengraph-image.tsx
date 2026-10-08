@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Orochia — the open-source video platform independent creators own";
+export const alt = "Orochia — the video platform independent creators own";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -32,7 +32,7 @@ export default function OpengraphImage() {
           <span style={{ color: "#d946ef" }}>·</span>
           <span>Gateway-confirmed payments</span>
           <span style={{ color: "#d946ef" }}>·</span>
-          <span>Open source</span>
+          <span>Independent creators</span>
         </div>
         <div style={{ marginTop: "auto", fontSize: 22, color: "#a1a1aa" }}>orochia.com · by Krizaka · 18+</div>
       </div>
