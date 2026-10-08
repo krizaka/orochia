@@ -28,6 +28,10 @@ npm run dev       # http://localhost:3000
 `npm run setup` is idempotent. `OROCHIA_DEMO_MODE=true` (the `.env.example` default, ignored in production) lets
 the login page offer the seeded accounts and settles unlocks immediately when no payment gateway is configured.
 
+No external account is needed to start: storage is local and e-mail goes to the log. Uploading and playing videos,
+video stories and editor drafts use a Bunny Stream library (a free trial is enough) — the Development guide's
+*Video features locally* lists what to set.
+
 ## 3. Seeded accounts
 
 | Role | E-mail | Password |

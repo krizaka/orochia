@@ -1,71 +1,87 @@
-# 🎬 Bunny.net Stream Media Pipeline
+# 🎬 Media Pipeline
 
-Orochia is engineered to provide adult-compliant, ultra-fast 4K video streaming with zero server bandwidth overhead by offloading ingest and delivery to **Bunny.net Stream**.
+Video never passes through the Orochia servers: the browser edits it, sends it straight to **Bunny Stream** over Tus,
+Bunny encodes it and reports back through a signed webhook, and every play is a short-lived signed URL issued only
+after the app has decided the viewer may watch.
 
 ---
 
-## 1. Direct-to-Bunny Tus Resumable Upload Flow
+## 1. Edit in the browser (optional)
 
-Rather than streaming heavy video files through application server instances, Orochia uses direct-to-edge resumable uploads via the open Tus protocol.
+Before an upload the creator can open the editor — trim with a filmstrip and two handles, speed 0.5–2×, 14 looks,
+brightness / contrast / colour, crop to 9:16 or 1:1 by dragging the picture, sound volume up to 200 %, fades, noise
+reduction and a music track mixed in. The preview is live (CSS, Web Audio); **Apply** renders the exact result with
+**ffmpeg.wasm** on the device (H.264 / AAC MP4, 1080 px on the short side at most). Nothing is uploaded to do it.
+
+Editing is non-destructive: the original stays on the device and reopens with its last settings. **Stories** are always
+vertical 9:16 and at most 60 seconds — a story clip goes through the editor before it can be shared.
+
+**Drafts.** *Save draft* keeps the original at Bunny (drafts collection, sent once over Tus), the settings and the form
+in `video_drafts` and the music privately in storage, so the edit continues on any device. Saving again only updates
+the settings. A draft is removed with its files when published, deleted, or after `DRAFT_RETENTION_DAYS` (30).
+
+## 2. Limits
+
+One table, `packages/media/src/limits.ts`, read by the browser and the server:
+
+| What | Size | Length |
+| :--- | :--- | :--- |
+| Video | 4 GB | 3 hours |
+| Story clip | 250 MB | 60 seconds |
+| Draft original (what the editor opens) | 400 MB | — |
+| Draft music | 25 MB | — |
+
+The browser refuses before sending; the upload session refuses a larger declared size; the webhook reads the encoded
+length and deletes at Bunny a video or story longer than allowed (status FAILED).
+
+## 3. Direct-to-Bunny Tus upload
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Creator as Creator Browser
-    participant App as Orochia Web Backend
+    actor Creator as Creator browser
+    participant App as Orochia API
     participant DB as PostgreSQL
-    participant BunnyAPI as Bunny Stream API
-    participant BunnyEdge as Bunny Tus Ingest Edge
+    participant Bunny as Bunny Stream
 
-    Creator->>App: POST /api/videos/create-upload-session (Title, Visibility, MinTip)
-    App->>App: Authenticate & Validate Creator Permissions
-    App->>BunnyAPI: POST /library/{id}/videos (Create Video Slot)
-    BunnyAPI-->>App: Return video GUID
-    App->>App: Calculate Tus Signature: sha256(libId + apiKey + expire + guid)
-    App->>DB: Insert videos (status = PENDING_UPLOAD)
-    App-->>Creator: Return { tusEndpoint, videoGuid, authHeaders }
-
-    Note over Creator,BunnyEdge: Resumable chunk streaming directly to Bunny Edge
-    Creator->>BunnyEdge: Tus Upload Stream (Chunks with Signed Headers)
-    BunnyEdge-->>Creator: 204 No Content / Upload Complete (100%)
+    Creator->>App: POST /api/videos/create-upload-session (title, visibility, size…)
+    App->>App: verified creator (2257) · limits · rate limit
+    App->>Bunny: create the video (in BUNNY_STREAM_COLLECTION_ID)
+    App->>App: Tus signature = sha256(libraryId + apiKey + expires + guid)
+    App->>DB: videos row, status PENDING_UPLOAD
+    App-->>Creator: { tusEndpoint, signed headers }
+    Creator->>Bunny: Tus upload, resumable chunks
 ```
 
----
+Story videos (`/api/stories/upload-session`) and draft originals (`/api/me/drafts`) take the same path into their own
+collections.
 
-## 2. Tokenized Playback Security (HMAC-SHA256)
+## 4. Encoding webhook
 
-To protect paywalled and private videos against hotlinking, URL scraping, and unauthorized downloading:
+`POST /api/webhooks/bunny` — signature v1 (HMAC-SHA256 over the raw body with the library's Read-Only key,
+`BUNNY_WEBHOOK_SECRET`), compared in constant time.
 
-1. Videos are stored in a Bunny Video Library with **Token Authentication Enabled**.
-2. Unsigned direct URLs return HTTP 403 Forbidden at Bunny's edge CDN.
-3. When an authorized viewer requests a stream, Orochia generates an expiring HMAC-SHA256 token:
+| Bunny status | Orochia |
+| :--- | :--- |
+| 0 queued · 1 processing · 2 encoding · 4 resolution finished · 6–7 presigned upload started / finished | `PROCESSING` |
+| 3 finished | `READY` — length, renditions and thumbnail read from the Stream API |
+| 5 failed · 8 presigned upload failed | `FAILED` |
+| 9–10 captions / title generated | ignored |
 
-$$\text{hashableBase} = \text{tokenAuthKey} + \text{path} + \text{expires} + [\text{userIp}]$$
-$$\text{token} = \text{base64url}(\text{sha256}(\text{hashableBase}))$$
+Events can arrive late or out of order: a READY video never goes back to PROCESSING. The GUID finds a video, else a
+story (its 24 hours start at READY), else a draft.
 
-The player requests:
+## 5. Signed playback
+
+The library has **CDN token authentication** on and only allows the app's domains, so an unsigned URL answers 403.
+After `evaluateVideoAccess` allows the viewer, `/api/videos/[id]/stream` signs a token for the video's directory,
+valid **300 seconds**:
+
 ```text
-https://{hostname}/{videoGuid}/playlist.m3u8?token={token}&expires={expires}
+https://{hostname}/bcdn_token={token}&expires={expires}&token_path=%2F{guid}%2F/{guid}/playlist.m3u8
+token = base64url(sha256(tokenAuthKey + "/{guid}/" + expires + "token_path=/{guid}/"))
 ```
 
-Bunny edge servers verify the hash before serving `.m3u8` manifests and `.ts` / `.m4s` video segments.
-
----
-
-## 3. Webhook Transcoding Lifecycle
-
-```mermaid
-stateDiagram-v2
-    [*] --> PENDING_UPLOAD: Slot Created
-    PENDING_UPLOAD --> PROCESSING: Bunny Encoding Initiated
-    PROCESSING --> READY: Webhook Status 4 (Transcoded)
-    PROCESSING --> FAILED: Webhook Status 5 (Encoding Error)
-
-    READY --> [*]
-    FAILED --> [*]
-```
-
-When Bunny completes encoding:
-- Dispatches webhook to `POST /api/webhooks/bunny`.
-- Orochia verifies the HMAC signature header against `BUNNY_WEBHOOK_SECRET`.
-- Updates resolutions list (`2160p`, `1080p`, `720p`, `480p`), duration, and thumbnail preview URLs.
+The token is in the path, not the query, because HLS players request renditions and segments by relative URL — the
+path prefix is kept, a query string would be dropped. Thumbnails and preview animations are signed one file at a time
+(`?token=…&expires=…`, 6-hour windows), which never opens the renditions.
