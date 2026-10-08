@@ -10,6 +10,7 @@ import {
   boolean,
 } from "drizzle-orm/pg-core";
 import { users } from "./users";
+import { contentRatings } from "./reference-data";
 import { videoVisibilityEnum, videoStatusEnum } from "./enums";
 
 export const videos = pgTable(
@@ -36,6 +37,8 @@ export const videos = pgTable(
     sharesCount: integer("shares_count").default(0).notNull(),
     /** The creator can close the discussion; existing comments stay readable. */
     commentsEnabled: boolean("comments_enabled").default(true).notNull(),
+    contentRatingId: varchar("content_rating_id", { length: 30 }).references(() => contentRatings.id, { onDelete: "set null" }),
+    isBlurred: boolean("is_blurred").default(false).notNull(),
     resolutions: text("resolutions").array(),
     tags: text("tags").array(),
     /** Taken down by an operator (DMCA, terms): hidden everywhere and never signed for playback. */

@@ -68,6 +68,8 @@ export async function POST(req: NextRequest) {
         status: "PENDING_UPLOAD",
         minTipAmountCents: input.minTipAmountCents,
         tags: input.tags,
+        contentRatingId: input.contentRatingId || null,
+        isBlurred: input.isBlurred || false,
       })
       .returning();
 

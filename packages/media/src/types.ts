@@ -21,6 +21,8 @@ export const CreateUploadSessionSchema = z.object({
   visibility: z.enum(["PUBLIC", "CONTACTS_ONLY", "APPROVED_FOLLOWERS_ONLY", "TIPPED_UNLOCKED", "INVITED_ONLY"]),
   minTipAmountCents: z.number().int().nonnegative().default(0),
   tags: z.array(z.string()).default([]),
+  contentRatingId: z.string().max(30).optional(),
+  isBlurred: z.boolean().optional().default(false),
   /** Size of the file about to be sent, refused above the video limit. */
   sizeBytes: z.number().int().positive().max(UPLOAD_LIMITS.video.maxBytes),
 });

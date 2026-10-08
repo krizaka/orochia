@@ -12,6 +12,8 @@ const ImageStory = z.object({
   caption: z.string().trim().max(280).nullish(),
   audience: z.enum(STORY_AUDIENCES).default("PUBLIC"),
   audienceListId: z.string().uuid().nullish(),
+  contentRatingId: z.string().max(30).nullish(),
+  isBlurred: z.boolean().optional().default(false),
 });
 
 /** The stories rail: one ring per creator with live stories you may see (yours first, then unseen), signed for you. */

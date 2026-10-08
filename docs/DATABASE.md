@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 28 tables · 15 enums · 8 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 34 tables · 15 enums · 9 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -19,10 +19,17 @@ erDiagram
     users ||--o{ audience_lists : "owner_id"
     users ||--o{ auth_identities : "user_id"
     users ||--o{ auth_tokens : "user_id"
+    users ||--o{ blocked_users : "blocker_id"
+    users ||--o{ blocked_users : "blocked_id"
     videos ||--o{ compliance_reports : "video_id"
     users ||--o{ compliance_reports : "reporter_id"
     users ||--o{ contacts : "requester_id"
     users ||--o{ contacts : "addressee_id"
+    users ||--o{ conversations : "participant1_id"
+    users ||--o{ conversations : "participant2_id"
+    conversations ||--o{ direct_messages : "conversation_id"
+    users ||--o{ direct_messages : "sender_id"
+    users ||--o{ direct_messages : "recipient_id"
     users ||--o{ follows : "follower_id"
     users ||--o{ follows : "creator_id"
     users ||--o{ payment_intents : "sender_id"
@@ -39,6 +46,7 @@ erDiagram
     users ||--o{ profiles : "user_id"
     users ||--o{ stories : "creator_id"
     audience_lists ||--o{ stories : "audience_list_id"
+    content_ratings ||--o{ stories : "content_rating_id"
     stories ||--o{ story_likes : "story_id"
     users ||--o{ story_likes : "user_id"
     stories ||--o{ story_views : "story_id"
@@ -46,6 +54,7 @@ erDiagram
     users ||--o{ tips_ledger : "sender_id"
     users ||--o{ tips_ledger : "creator_id"
     videos ||--o{ tips_ledger : "video_id"
+    users ||--o{ user_invitations : "inviter_id"
     videos ||--o{ video_access_grants : "video_id"
     users ||--o{ video_access_grants : "user_id"
     videos ||--o{ video_audience_lists : "video_id"
@@ -64,6 +73,7 @@ erDiagram
     videos ||--o{ video_views : "video_id"
     users ||--o{ video_views : "viewer_id"
     users ||--o{ videos : "creator_id"
+    content_ratings ||--o{ videos : "content_rating_id"
 ```
 
 ## Tables
@@ -119,6 +129,18 @@ erDiagram
 
 **Indexes:** `auth_tokens_hash_idx` (unique, token_hash) · `auth_tokens_user_purpose_idx` (user_id, purpose)
 
+### `blocked_users`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `blocker_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `blocked_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `reason` | text | yes |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `blocked_users_pair_idx` (unique, blocker_id, blocked_id) · `blocked_users_blocker_idx` (blocker_id) · `blocked_users_blocked_idx` (blocked_id)
+
 ### `compliance_reports`
 
 | Column | Type | Null | Default | Notes |
@@ -148,6 +170,49 @@ erDiagram
 | `updated_at` | timestamp with time zone | no | `now()` |  |
 
 **Indexes:** `contacts_pair_idx` (unique, requester_id, addressee_id)
+
+### `content_ratings`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | varchar(30) | no |  | primary key |
+| `label` | varchar(50) | no |  |  |
+| `description` | text | yes |  |  |
+| `is_adult` | boolean | no | `false` |  |
+| `requires_blur` | boolean | no | `false` |  |
+| `default_tags` | text[] | no | `'{}'::text[]` |  |
+| `min_age` | integer | no | `0` |  |
+| `display_order` | integer | no | `0` |  |
+| `icon_name` | varchar(50) | no | `"shield"` |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+### `conversations`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `participant1_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `participant2_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `last_message_at` | timestamp with time zone | no | `now()` |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+| `updated_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `conversations_participant1_idx` (participant1_id) · `conversations_participant2_idx` (participant2_id) · `conversations_last_message_at_idx` (last_message_at)
+
+### `direct_messages`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `conversation_id` | uuid | no |  | → `conversations.id` (on delete cascade) |
+| `sender_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `recipient_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `content` | text | no |  |  |
+| `is_read` | boolean | no | `false` |  |
+| `read_at` | timestamp with time zone | yes |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `direct_messages_conversation_idx` (conversation_id) · `direct_messages_sender_idx` (sender_id) · `direct_messages_recipient_idx` (recipient_id) · `direct_messages_created_at_idx` (created_at)
 
 ### `follows`
 
@@ -181,6 +246,22 @@ erDiagram
 | `updated_at` | timestamp with time zone | no | `now()` |  |
 
 **Indexes:** `payment_intents_sender_idx` (sender_id) · `payment_intents_status_idx` (status)
+
+### `payment_outbox`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `event_type` | varchar(50) | no |  |  |
+| `payload` | text | no |  |  |
+| `status` | varchar(20) | no | `"PENDING"` |  |
+| `attempts` | integer | no | `0` |  |
+| `last_error` | text | yes |  |  |
+| `next_attempt_at` | timestamp with time zone | no | `now()` |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+| `processed_at` | timestamp with time zone | yes |  |  |
+
+**Indexes:** `payment_outbox_status_attempt_idx` (status, next_attempt_at) · `payment_outbox_created_at_idx` (created_at)
 
 ### `payout_requests`
 
@@ -261,6 +342,7 @@ erDiagram
 | `banner_url` | text | yes |  |  |
 | `website_url` | text | yes |  |  |
 | `twitter_handle` | varchar(100) | yes |  |  |
+| `direct_message_privacy` | varchar(20) | no | `"EVERYONE"` |  |
 | `min_tip_amount_cents` | integer | no | `500` |  |
 | `payout_address_crypto` | text | yes |  |  |
 | `payout_account_ccbill` | varchar(100) | yes |  |  |
@@ -281,6 +363,8 @@ erDiagram
 | `caption` | varchar(280) | yes |  |  |
 | `visibility` | video_visibility | no | `"PUBLIC"` |  |
 | `audience_list_id` | uuid | yes |  | → `audience_lists.id` (on delete set null) |
+| `content_rating_id` | varchar(30) | yes |  | → `content_ratings.id` (on delete set null) |
+| `is_blurred` | boolean | no | `false` |  |
 | `status` | video_status | no | `"READY"` |  |
 | `duration_seconds` | integer | no | `0` |  |
 | `views_count` | integer | no | `0` |  |
@@ -334,6 +418,21 @@ erDiagram
 | `created_at` | timestamp with time zone | no | `now()` |  |
 
 **Indexes:** `tips_ledger_creator_idx` (creator_id) · `tips_ledger_sender_idx` (sender_id) · `tips_ledger_video_idx` (video_id) · `tips_ledger_created_at_idx` (created_at) · `tips_ledger_credit_once_idx` (unique, gateway, gateway_transaction_ref, partial)
+
+### `user_invitations`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `inviter_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `email` | varchar(255) | no |  |  |
+| `code` | varchar(64) | no |  | unique |
+| `status` | varchar(20) | no | `"PENDING"` |  |
+| `expires_at` | timestamp with time zone | no |  |  |
+| `accepted_at` | timestamp with time zone | yes |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `user_invitations_inviter_idx` (inviter_id) · `user_invitations_email_idx` (email) · `user_invitations_code_idx` (code)
 
 ### `users`
 
@@ -484,6 +583,8 @@ erDiagram
 | `comments_count` | integer | no | `0` |  |
 | `shares_count` | integer | no | `0` |  |
 | `comments_enabled` | boolean | no | `true` |  |
+| `content_rating_id` | varchar(30) | yes |  | → `content_ratings.id` (on delete set null) |
+| `is_blurred` | boolean | no | `false` |  |
 | `resolutions` | text[] | yes |  |  |
 | `tags` | text[] | yes |  |  |
 | `removed_at` | timestamp with time zone | yes |  |  |
@@ -523,3 +624,4 @@ erDiagram
 - `0005_credits_gateway.sql`
 - `0006_sign_in_providers.sql`
 - `0007_editor_drafts.sql`
+- `0008_user_management_messaging_and_ratings.sql`

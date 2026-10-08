@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Check, Clock, UserPlus, Users, UserCheck } from "lucide-react";
+import { Check, Clock, UserPlus, Users, UserCheck, MessageSquare } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
 type Follow = "PENDING" | "APPROVED" | null;
@@ -120,6 +120,17 @@ export function RelationshipActions({
             <Clock className="h-4 w-4 text-amber-400" /> Request sent
           </button>
         ) : null)}
+
+      {user && user.username !== username && (
+        <Link
+          href={`/messages?user=${username}`}
+          className={ghost}
+          title="Direct message"
+        >
+          <MessageSquare className="h-4 w-4 text-violet-400" /> Message
+        </Link>
+      )}
+
       {error && <span className="text-[11px] text-rose-400">{error}</span>}
     </div>
   );

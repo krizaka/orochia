@@ -30,6 +30,7 @@ export const profiles = pgTable("profiles", {
   bannerUrl: text("banner_url"),
   websiteUrl: text("website_url"),
   twitterHandle: varchar("twitter_handle", { length: 100 }),
+  directMessagePrivacy: varchar("direct_message_privacy", { length: 20 }).default("EVERYONE").notNull(),
   minTipAmountCents: integer("min_tip_amount_cents").default(500).notNull(), // default $5.00
   payoutAddressCrypto: text("payout_address_crypto"),
   payoutAccountCcbill: varchar("payout_account_ccbill", { length: 100 }),

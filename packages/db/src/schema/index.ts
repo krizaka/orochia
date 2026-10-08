@@ -7,6 +7,10 @@ import { videoComments, videoLikes, videoShares, videoViews } from "./engagement
 import { audienceLists, audienceListMembers } from "./audiences";
 import { tipsLedger, payoutRequests } from "./ledger";
 import { stories, storyViews, storyLikes } from "./stories";
+import { contentRatings } from "./reference-data";
+import { userInvitations } from "./invitations";
+import { conversations, directMessages, blockedUsers } from "./messaging";
+import { paymentOutbox } from "./payment-outbox";
 
 export * from "./enums";
 export * from "./users";
@@ -21,6 +25,10 @@ export * from "./ledger";
 export * from "./compliance";
 export * from "./stories";
 export * from "./drafts";
+export * from "./reference-data";
+export * from "./invitations";
+export * from "./messaging";
+export * from "./payment-outbox";
 
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -35,6 +43,10 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   receivedTips: many(tipsLedger, { relationName: "creator" }),
   accessGrants: many(videoAccessGrants),
   payoutRequests: many(payoutRequests),
+  invitations: many(userInvitations),
+  sentMessages: many(directMessages, { relationName: "sender" }),
+  receivedMessages: many(directMessages, { relationName: "recipient" }),
+  blockedUsers: many(blockedUsers, { relationName: "blocker" }),
 }));
 
 export const profilesRelations = relations(profiles, ({ one }) => ({
@@ -179,3 +191,60 @@ export const storyLikesRelations = relations(storyLikes, ({ one }) => ({
     references: [users.id],
   }),
 }));
+
+export const contentRatingsRelations = relations(contentRatings, ({ many }) => ({
+  videos: many(videos),
+  stories: many(stories),
+}));
+
+export const userInvitationsRelations = relations(userInvitations, ({ one }) => ({
+  inviter: one(users, {
+    fields: [userInvitations.inviterId],
+    references: [users.id],
+  }),
+}));
+
+export const conversationsRelations = relations(conversations, ({ one, many }) => ({
+  participant1: one(users, {
+    fields: [conversations.participant1Id],
+    references: [users.id],
+    relationName: "participant1",
+  }),
+  participant2: one(users, {
+    fields: [conversations.participant2Id],
+    references: [users.id],
+    relationName: "participant2",
+  }),
+  messages: many(directMessages),
+}));
+
+export const directMessagesRelations = relations(directMessages, ({ one }) => ({
+  conversation: one(conversations, {
+    fields: [directMessages.conversationId],
+    references: [conversations.id],
+  }),
+  sender: one(users, {
+    fields: [directMessages.senderId],
+    references: [users.id],
+    relationName: "sender",
+  }),
+  recipient: one(users, {
+    fields: [directMessages.recipientId],
+    references: [users.id],
+    relationName: "recipient",
+  }),
+}));
+
+export const blockedUsersRelations = relations(blockedUsers, ({ one }) => ({
+  blocker: one(users, {
+    fields: [blockedUsers.blockerId],
+    references: [users.id],
+    relationName: "blocker",
+  }),
+  blocked: one(users, {
+    fields: [blockedUsers.blockedId],
+    references: [users.id],
+    relationName: "blocked",
+  }),
+}));
+

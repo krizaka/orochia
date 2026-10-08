@@ -396,6 +396,43 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   }
 }
 
+// Reference Data & Presets
+{
+  const ratings = (await anon.call("/api/reference/content-ratings")).json.ratings;
+  check("content ratings served", Array.isArray(ratings) && ratings.some((r) => r.id === "GENERAL"));
+  const presets = (await anon.call("/api/reference/presets")).json;
+  check("preset assets served", Array.isArray(presets.avatars) && Array.isArray(presets.banners) && presets.avatars.length >= 8);
+}
+
+// User Invitations
+{
+  const invite = await alex.call("/api/me/invitations", "POST", { email: "newfriend@test.org" });
+  check("generate invite code", invite.status === 201 && typeof invite.json.invitation?.code === "string");
+  const myInvites = (await alex.call("/api/me/invitations")).json.invitations;
+  check("list sent invitations", Array.isArray(myInvites) && myInvites.some((i) => i.code === invite.json.invitation.code));
+}
+
+// Direct Messaging & Realtime
+{
+  const conv = await elena.call("/api/conversations", "POST", { recipientUsername: "miasterling" });
+  check("create or get conversation", conv.status === 200 || conv.status === 201);
+  const convId = conv.json.conversationId;
+  const sentMsg = await elena.call(`/api/conversations/${convId}/messages`, "POST", { content: "Hey Mia, let's collab!" });
+  check("post direct message", sentMsg.status === 201 && sentMsg.json.message?.content === "Hey Mia, let's collab!");
+  const miaConvs = (await mia.call("/api/conversations")).json.conversations;
+  check("recipient sees conversation", Array.isArray(miaConvs) && miaConvs.some((c) => c.id === convId));
+}
+
+// User Blocking & Privacy
+{
+  const blockRes = await sam.call("/api/users/alex_vance/block", "POST");
+  check("block user", blockRes.status === 200 && blockRes.json.blocked === true);
+  const myBlocks = (await sam.call("/api/me/blocks")).json.blocked;
+  check("list blocked users", Array.isArray(myBlocks) && myBlocks.some((b) => b.blockedUsername === "alex_vance"));
+  const unblockRes = await sam.call("/api/users/alex_vance/block", "POST");
+  check("unblock user", unblockRes.status === 200 && unblockRes.json.blocked === false);
+}
+
 // Search and AI discovery: public pages only
 const sitemapXml = await (await fetch(`${B}/sitemap.xml`)).text();
 check("sitemap lists public videos and creators", sitemapXml.includes(`/watch/${noir.id}`) && sitemapXml.includes("/creators/elenavox"));

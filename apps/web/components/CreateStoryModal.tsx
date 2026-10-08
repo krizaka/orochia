@@ -44,6 +44,8 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
   const [draftId, setDraftId] = useState<string | undefined>();
   const [edited, setEdited] = useState(false);
   const [draftsSeen, setDraftsSeen] = useState(0);
+  const [ratingId, setRatingId] = useState("GENERAL");
+  const [isBlurred, setIsBlurred] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -68,6 +70,8 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
     setCaption("");
     setAudience("PUBLIC");
     setListId("");
+    setRatingId("GENERAL");
+    setIsBlurred(false);
     setState("idle");
     setProgress(0);
     setError(null);
@@ -99,7 +103,13 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
     if (!file) return;
     setError(null);
     setState("uploading");
-    const common = { caption: caption.trim() || null, audience, audienceListId: audience === "INVITED_ONLY" ? listId || null : null };
+    const common = {
+      caption: caption.trim() || null,
+      audience,
+      audienceListId: audience === "INVITED_ONLY" ? listId || null : null,
+      contentRatingId: ratingId || null,
+      isBlurred,
+    };
     try {
       if (IMAGE_TYPES.includes(file.type)) {
         const form = new FormData();
@@ -313,6 +323,39 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
                   </select>
                 ))}
             </fieldset>
+
+            <div className="rounded-xl border border-white/10 light:border-black/10 bg-zinc-900/50 light:bg-slate-50 p-3 space-y-2.5">
+              <div>
+                <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500 mb-1">
+                  Content Rating
+                </label>
+                <select
+                  value={ratingId}
+                  onChange={(e) => {
+                    setRatingId(e.target.value);
+                    if (e.target.value === "ADULT_EXPLICIT") setIsBlurred(true);
+                  }}
+                  className="w-full rounded-xl border border-white/10 light:border-black/10 bg-zinc-900 light:bg-slate-50 px-3 py-2 text-xs text-white light:text-slate-900"
+                >
+                  <option value="GENERAL">General Audience</option>
+                  <option value="TEEN_13">Teens 13+</option>
+                  <option value="MATURE_18">Mature 18+</option>
+                  <option value="ADULT_EXPLICIT">Adult Explicit (18+ Sensitive)</option>
+                </select>
+              </div>
+
+              <label className="flex items-center gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isBlurred}
+                  onChange={(e) => setIsBlurred(e.target.checked)}
+                  className="h-3.5 w-3.5 rounded border-zinc-700 bg-zinc-900 text-violet-600 focus:ring-violet-500 light:bg-slate-50 light:border-slate-300"
+                />
+                <span className="text-xs text-zinc-300 light:text-slate-700">
+                  Sensitive content blur overlay
+                </span>
+              </label>
+            </div>
 
             {error && <p role="alert" className="text-xs text-rose-400">{error}</p>}
 

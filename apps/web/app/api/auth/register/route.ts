@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db, users, profiles, hashPassword } from "@orochia/db";
 import { setSessionCookie } from "@/lib/auth";
 import { sendVerificationEmail } from "@/lib/account-tokens";
+import { acceptInvitation } from "@/lib/invitations";
 import { isDemoMode } from "@/lib/env";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { errorResponse, isUniqueViolation, jsonError } from "@/lib/http";
@@ -18,6 +19,7 @@ const RegisterSchema = z.object({
   email: z.string().trim().toLowerCase().email().max(255),
   displayName: z.string().trim().min(1).max(80),
   password: z.string().min(10, "At least 10 characters").max(256),
+  inviteCode: z.string().trim().optional(),
   isAgeVerified: z.literal(true, {
     errorMap: () => ({ message: "18+ age certification is required (18 U.S.C. § 2257)" }),
   }),
@@ -53,6 +55,10 @@ export async function POST(req: NextRequest) {
       await tx.insert(profiles).values({ userId: user.id, displayName: input.displayName });
       return user;
     });
+
+    if (input.inviteCode) {
+      await acceptInvitation(input.inviteCode, account.id).catch(() => undefined);
+    }
 
     const link = await sendVerificationEmail(account);
     // Demo mode only (never production): the link is also returned, so the flow can be tested end to end.

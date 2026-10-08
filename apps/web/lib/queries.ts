@@ -219,7 +219,11 @@ export interface AccountProfile {
   email: string;
   role: SessionUser["role"];
   avatarUrl: string | null;
+  bannerUrl: string | null;
   bio: string | null;
+  websiteUrl: string | null;
+  twitterHandle: string | null;
+  directMessagePrivacy: "EVERYONE" | "CONTACTS_ONLY";
   payoutAddressCrypto: string | null;
   balanceCents: number;
   unlockedVideosCount: number;
@@ -239,7 +243,11 @@ export async function accountProfile(user: SessionUser): Promise<AccountProfile 
       emailVerified: sql<boolean>`${users.emailVerifiedAt} is not null`,
       displayName: sql<string>`coalesce(${profiles.displayName}, ${users.username})`,
       avatarUrl: profiles.avatarUrl,
+      bannerUrl: profiles.bannerUrl,
       bio: profiles.bio,
+      websiteUrl: profiles.websiteUrl,
+      twitterHandle: profiles.twitterHandle,
+      directMessagePrivacy: sql<"EVERYONE" | "CONTACTS_ONLY">`coalesce(${profiles.directMessagePrivacy}, 'EVERYONE')`,
       payoutAddressCrypto: profiles.payoutAddressCrypto,
     })
     .from(users)
@@ -254,7 +262,12 @@ export async function accountProfile(user: SessionUser): Promise<AccountProfile 
     .where(eq(videoAccessGrants.userId, user.id));
   const balanceCents = row.role === "CREATOR" ? await getCreatorAvailableBalanceCents(user.id) : 0;
 
-  return { ...row, balanceCents, unlockedVideosCount: Number(unlocked?.count ?? 0) };
+  return {
+    ...row,
+    directMessagePrivacy: row.directMessagePrivacy || "EVERYONE",
+    balanceCents,
+    unlockedVideosCount: Number(unlocked?.count ?? 0),
+  };
 }
 
 export interface LibraryEntry {

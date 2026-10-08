@@ -8,6 +8,8 @@ import { VideoManager, type StudioVideo } from "@/components/dashboard/VideoMana
 import { NetworkPanel } from "@/components/dashboard/NetworkPanel";
 import { PlaylistsPanel } from "@/components/dashboard/PlaylistsPanel";
 import { ListsPanel } from "@/components/dashboard/ListsPanel";
+import { InvitationsPanel } from "@/components/dashboard/InvitationsPanel";
+import { ProfileSettingsPanel } from "@/components/dashboard/ProfileSettingsPanel";
 import {
   LayoutDashboard,
   Film,
@@ -21,6 +23,7 @@ import {
   Users,
   ListVideo,
   ListChecks,
+  Sparkles,
 } from "lucide-react";
 
 interface LibraryEntry {
@@ -68,7 +71,7 @@ interface Treasury {
   payoutsSettledCents: number;
 }
 
-type Tab = "overview" | "library" | "ledger" | "uploads" | "network" | "playlists" | "lists" | "treasury" | "settings";
+type Tab = "overview" | "library" | "ledger" | "uploads" | "network" | "playlists" | "lists" | "invitations" | "treasury" | "settings";
 
 const money = (cents: number) =>
   `$${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -261,6 +264,7 @@ function DashboardContent() {
         <TabButton tab="network" active={activeTab} onSelect={setActiveTab} icon={Users}>Network</TabButton>
         <TabButton tab="playlists" active={activeTab} onSelect={setActiveTab} icon={ListVideo}>Collections</TabButton>
         <TabButton tab="lists" active={activeTab} onSelect={setActiveTab} icon={ListChecks}>Lists</TabButton>
+        <TabButton tab="invitations" active={activeTab} onSelect={setActiveTab} icon={Sparkles}>Invitations</TabButton>
         {isAdmin && <TabButton tab="treasury" active={activeTab} onSelect={setActiveTab} icon={Shield}>Treasury</TabButton>}
         <TabButton tab="settings" active={activeTab} onSelect={setActiveTab} icon={Settings}>Settings</TabButton>
       </div>
@@ -324,6 +328,7 @@ function DashboardContent() {
 
       {activeTab === "playlists" && <PlaylistsPanel />}
       {activeTab === "lists" && <ListsPanel />}
+      {activeTab === "invitations" && <InvitationsPanel />}
 
       {activeTab === "treasury" && isAdmin && (
         treasury ? (
@@ -347,53 +352,7 @@ function DashboardContent() {
         )
       )}
 
-      {activeTab === "settings" && (
-        <form onSubmit={saveSettings} className="glass-panel rounded-3xl p-6 sm:p-8 space-y-5 max-w-2xl">
-          <div>
-            <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block light:text-slate-500">Display name</label>
-            <input
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              required
-              maxLength={80}
-              className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block light:text-slate-500">Bio</label>
-            <textarea
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              rows={4}
-              maxLength={1000}
-              className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
-            />
-          </div>
-          {isCreator && (
-            <div>
-              <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block light:text-slate-500">Crypto payout address</label>
-              <input
-                value={payoutAddress}
-                onChange={(e) => setPayoutAddress(e.target.value)}
-                maxLength={200}
-                placeholder="USDT-TRC20 / BTC address"
-                className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm font-mono text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
-              />
-            </div>
-          )}
-          <div className="flex items-center gap-3">
-            <button
-              type="submit"
-              disabled={saveState === "saving"}
-              className="rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-6 py-2.5 text-xs font-bold text-white disabled:opacity-50"
-            >
-              {saveState === "saving" ? "Saving…" : "Save"}
-            </button>
-            {saveState === "saved" && <span className="text-xs text-emerald-400">Saved.</span>}
-            {saveState === "error" && <span className="text-xs text-rose-400">Could not save.</span>}
-          </div>
-        </form>
-      )}
+      {activeTab === "settings" && <ProfileSettingsPanel isCreator={isCreator} />}
     </div>
   );
 }

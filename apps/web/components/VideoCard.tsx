@@ -19,6 +19,9 @@ export interface VideoCardProps {
   viewsCount: number;
   tipsCount: number;
   likesCount?: number;
+  contentRatingId?: string | null;
+  isBlurred?: boolean;
+  isAdult?: boolean;
 }
 
 export function VideoCard({
@@ -35,12 +38,16 @@ export function VideoCard({
   viewsCount,
   tipsCount,
   likesCount = 0,
+  contentRatingId,
+  isBlurred = false,
+  isAdult = false,
 }: VideoCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [isTipModalOpen, setIsTipModalOpen] = useState(false);
   const [localLikes, setLocalLikes] = useState(likesCount);
+  const [revealed, setRevealed] = useState(!isBlurred);
 
   const formatDuration = (secs: number) => {
     const m = Math.floor(secs / 60);
@@ -83,11 +90,33 @@ export function VideoCard({
             <img
               src={isHovered && previewAnimationUrl ? previewAnimationUrl : thumbnailUrl!}
               alt={title}
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              className={`h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 ${
+                isBlurred && !revealed ? "blur-xl scale-110" : ""
+              }`}
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-950/40 via-zinc-950 to-fuchsia-950/40 text-violet-400 light:from-violet-100 light:via-slate-50 light:to-fuchsia-100">
               <Play className="h-10 w-10 text-violet-400/60" />
+            </div>
+          )}
+
+          {/* Sensitive Content Blur Reveal Overlay */}
+          {isBlurred && !revealed && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-md p-4 text-center z-10">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-fuchsia-300 mb-1">
+                Sensitive Content
+              </span>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setRevealed(true);
+                }}
+                className="px-3 py-1 rounded-full bg-white/20 hover:bg-white/30 text-[11px] font-semibold text-white transition-colors"
+              >
+                Click to reveal
+              </button>
             </div>
           )}
 
@@ -99,7 +128,7 @@ export function VideoCard({
           </div>
 
           {/* Quality & Duration badges */}
-          <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1.5">
+          <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1.5 z-10">
             <span className="rounded bg-black/80 px-1.5 py-0.5 font-mono text-[10px] font-bold text-violet-300 backdrop-blur-md">
               4K
             </span>
@@ -108,26 +137,34 @@ export function VideoCard({
             </span>
           </div>
 
-          {/* Visibility & Paywall Badges */}
-          {isPaywalled && (
-            <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-3 py-1 text-[11px] font-bold text-white shadow-lg backdrop-blur-md">
-              <Lock className="h-3 w-3" />
-              <span>Tip ${(minTipAmountCents / 100).toFixed(2)} to Unlock</span>
-            </div>
-          )}
+          {/* Badges Container Top-Left */}
+          <div className="absolute top-2.5 left-2.5 flex flex-wrap items-center gap-1.5 z-10">
+            {(isAdult || contentRatingId === "MATURE_18" || contentRatingId === "ADULT_EXPLICIT") && (
+              <span className="rounded-full bg-rose-600/90 px-2 py-0.5 text-[10px] font-black text-white shadow-md backdrop-blur-md font-mono">
+                18+
+              </span>
+            )}
 
-          {isContacts && (
-            <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 rounded-full bg-zinc-900/90 px-3 py-1 text-[11px] font-semibold text-zinc-300 backdrop-blur-md">
-              <Users className="h-3 w-3" />
-              <span>Contacts Only</span>
-            </div>
-          )}
+            {isPaywalled && (
+              <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-3 py-1 text-[11px] font-bold text-white shadow-lg backdrop-blur-md">
+                <Lock className="h-3 w-3" />
+                <span>Tip ${(minTipAmountCents / 100).toFixed(2)} to Unlock</span>
+              </div>
+            )}
 
-          {!isPaywalled && !isContacts && (
-            <div className="absolute top-2.5 left-2.5 flex items-center gap-1 rounded-full bg-emerald-950/80 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-300 backdrop-blur-md">
-              <span>Free Access</span>
-            </div>
-          )}
+            {isContacts && (
+              <div className="flex items-center gap-1.5 rounded-full bg-zinc-900/90 px-3 py-1 text-[11px] font-semibold text-zinc-300 backdrop-blur-md">
+                <Users className="h-3 w-3" />
+                <span>Contacts Only</span>
+              </div>
+            )}
+
+            {!isPaywalled && !isContacts && (
+              <div className="flex items-center gap-1 rounded-full bg-emerald-950/80 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-300 backdrop-blur-md">
+                <span>Free Access</span>
+              </div>
+            )}
+          </div>
 
           {/* Floating Quick Action Buttons on Hover */}
           <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">

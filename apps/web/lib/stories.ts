@@ -174,6 +174,8 @@ export interface NewStory {
   caption?: string | null;
   audience: StoryAudience;
   audienceListId?: string | null;
+  contentRatingId?: string | null;
+  isBlurred?: boolean;
 }
 
 /** An image story: the image was stored first by /api/uploads (category "stories"); its URL is derived from the reference. */
@@ -192,6 +194,8 @@ export async function createImageStory(creatorId: string, input: NewStory & { im
       caption: input.caption?.trim().slice(0, 280) || null,
       visibility: input.audience,
       audienceListId: listId,
+      contentRatingId: input.contentRatingId || null,
+      isBlurred: Boolean(input.isBlurred),
       status: "READY",
       expiresAt: new Date(Date.now() + STORY_LIFETIME_MS),
     })
@@ -215,6 +219,8 @@ export async function openVideoStoryUpload(creatorId: string, input: NewStory) {
       caption: input.caption?.trim().slice(0, 280) || null,
       visibility: input.audience,
       audienceListId: listId,
+      contentRatingId: input.contentRatingId || null,
+      isBlurred: Boolean(input.isBlurred),
       status: "PENDING_UPLOAD",
       expiresAt: new Date(Date.now() + STORY_LIFETIME_MS),
     })

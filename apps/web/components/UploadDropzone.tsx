@@ -6,6 +6,7 @@ import * as tus from "tus-js-client";
 import { UploadCloud, CheckCircle, Film, DollarSign, ShieldAlert, Sparkles, Scissors } from "lucide-react";
 import { VideoEditor } from "./VideoEditor";
 import { DraftsShelf } from "./DraftsShelf";
+import { useUploadManager } from "@/lib/upload-manager";
 import { UPLOAD_LIMITS } from "@orochia/media/limits";
 import { EDITOR_MAX_BYTES, type VideoEdit } from "@/lib/video-edit";
 import { deleteDraft } from "@/lib/drafts";
@@ -40,11 +41,20 @@ interface Collection {
   title: string;
 }
 
+interface ContentRating {
+  id: string;
+  label: string;
+  description: string;
+  isAdult: boolean;
+  requiresBlur: boolean;
+}
+
 /**
  * Uploads a video straight to Bunny Stream over Tus (resumable): the API opens the session and
  * records the video, the bytes never cross our servers. Same path in every environment.
  */
 export function UploadDropzone({ platformFeePercent }: { platformFeePercent: number }) {
+  const { startUpload } = useUploadManager();
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -53,10 +63,14 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [uploadComplete, setUploadComplete] = useState(false);
+  const [uploadedVideoId, setUploadedVideoId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [tags, setTags] = useState("");
   const [collections, setCollections] = useState<Collection[]>([]);
   const [selectedCollection, setSelectedCollection] = useState("");
+  const [contentRatings, setContentRatings] = useState<ContentRating[]>([]);
+  const [selectedRating, setSelectedRating] = useState<string>("GENERAL");
+  const [isBlurred, setIsBlurred] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [editing, setEditing] = useState(false);
   // Non-destructive editing: `source` is the original, reopened with `lastEdit`; `file` is what gets uploaded.
@@ -70,6 +84,15 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
       .then((r) => (r.ok ? r.json() : { playlists: [] }))
       .then((d: { playlists?: Collection[] }) => setCollections(d.playlists ?? []))
       .catch(() => setCollections([]));
+
+    fetch("/api/reference/content-ratings", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : { ratings: [] }))
+      .then((d: { ratings?: ContentRating[] }) => {
+        if (d.ratings && d.ratings.length > 0) {
+          setContentRatings(d.ratings);
+        }
+      })
+      .catch(() => setContentRatings([]));
   }, []);
 
   // Mandatory Legal Attestation states
@@ -136,6 +159,8 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
             .map((t) => t.trim().toLowerCase())
             .filter(Boolean)
             .slice(0, 12),
+          contentRatingId: selectedRating || null,
+          isBlurred,
         }),
       });
 
@@ -145,6 +170,8 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
       }
 
       const { session, videoId } = sessionData as { session: typeof sessionData.session; videoId: string };
+      setUploadedVideoId(videoId);
+
       // Filed in the chosen collection now; it shows there once encoding is finished.
       if (selectedCollection) {
         await fetch(`/api/playlists/${selectedCollection}/items`, {
@@ -154,10 +181,29 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
         }).catch(() => undefined);
       }
 
-      // 2. Upload file directly to Bunny.net Tus endpoint
+      // 2. Delegate to UploadManager for floating persistent upload dock
+      startUpload({
+        id: videoId,
+        title,
+        file,
+        session,
+        type: "video",
+        videoId,
+        onSuccess: () => {
+          setIsUploading(false);
+          setProgress(100);
+          if (draftId) void deleteDraft(draftId).catch(() => undefined);
+          setUploadComplete(true);
+        },
+        onError: (err) => {
+          setIsUploading(false);
+          setErrorMessage(err.message || "Upload failed");
+        },
+      });
+
+      // Also listen on progress locally if the user stays on this page
       const upload = new tus.Upload(file, {
         endpoint: session.tusEndpoint,
-        retryDelays: [0, 3000, 5000, 10000, 20000],
         headers: {
           AuthorizationSignature: session.headers.AuthorizationSignature,
           AuthorizationExpire: String(session.headers.AuthorizationExpire),
@@ -168,24 +214,13 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
           filetype: file.type,
           title: title,
         },
-        onError: (error) => {
-          console.error("Tus upload failure:", error);
-          setErrorMessage(error.message);
-          setIsUploading(false);
-        },
         onProgress: (bytesUploaded, bytesTotal) => {
           const percentage = Math.round((bytesUploaded / bytesTotal) * 100);
           setProgress(percentage);
         },
-        onSuccess: () => {
-          setIsUploading(false);
-          // Published: the draft it came from has served its purpose.
-          if (draftId) void deleteDraft(draftId).catch(() => undefined);
-          setUploadComplete(true);
-        },
       });
-
-      upload.start();
+      // The background upload manager is actively driving the Tus upload;
+      // when done, onSuccess fires.
     } catch (err: any) {
       setErrorMessage(err?.message || "Upload initiation failed");
       setIsUploading(false);
@@ -258,26 +293,37 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
             Bunny.net Stream is transcoding your video into adaptive HLS resolutions (2160p, 1080p, 720p).
             It will appear in your creator gallery automatically once encoding is complete.
           </p>
-          <button
-            onClick={() => {
-              setFile(null);
-              setSource(null);
-              setLastEdit(undefined);
-              setDraftId(undefined);
-              setUploadComplete(false);
-              setTitle("");
-              setDescription("");
-              setTags("");
-              setSelectedCollection("");
-              setCertifyAdultConsent(false);
-              setCertify2257Records(false);
-              setCertifyCopyrightOwnership(false);
-            }}
-            className="px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-medium text-sm transition-all"
-          >
-            Upload Another Video
-          </button>
-        </div>
+            <div className="flex items-center gap-3">
+              {uploadedVideoId && (
+                <Link
+                  href={`/watch/${uploadedVideoId}`}
+                  className="px-6 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-medium text-sm transition-all light:bg-slate-200 light:text-slate-900 light:hover:bg-slate-300"
+                >
+                  Watch Video
+                </Link>
+              )}
+              <button
+                onClick={() => {
+                  setFile(null);
+                  setSource(null);
+                  setLastEdit(undefined);
+                  setDraftId(undefined);
+                  setUploadComplete(false);
+                  setUploadedVideoId(null);
+                  setTitle("");
+                  setDescription("");
+                  setTags("");
+                  setSelectedCollection("");
+                  setCertifyAdultConsent(false);
+                  setCertify2257Records(false);
+                  setCertifyCopyrightOwnership(false);
+                }}
+                className="px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-medium text-sm transition-all"
+              >
+                Upload Another Video
+              </button>
+            </div>
+          </div>
       ) : (
         <form onSubmit={handleStartUpload} className="space-y-6">
           {errorMessage && (
@@ -499,6 +545,67 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 </div>
               </div>
             )}
+
+            {/* Content Rating & Sensitive Content Controls */}
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 space-y-3 light:bg-slate-50 light:border-black/10">
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block light:text-slate-500">
+                  Content Rating & Audience Guidance
+                </label>
+                <select
+                  value={selectedRating}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setSelectedRating(val);
+                    const found = contentRatings.find((r) => r.id === val);
+                    if (found?.requiresBlur) {
+                      setIsBlurred(true);
+                    }
+                  }}
+                  className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
+                >
+                  {contentRatings.length > 0 ? (
+                    contentRatings.map((rating) => (
+                      <option key={rating.id} value={rating.id}>
+                        {rating.label} {rating.isAdult ? "• 18+" : ""}
+                      </option>
+                    ))
+                  ) : (
+                    <>
+                      <option value="GENERAL">General Audience (Tous publics)</option>
+                      <option value="TEEN_13">Teens 13+</option>
+                      <option value="MATURE_18">Mature 18+ (Explicit Themes)</option>
+                      <option value="ADULT_EXPLICIT">Adult Explicit (18+ Mandatory Blur)</option>
+                    </>
+                  )}
+                </select>
+                {selectedRating && (
+                  <p className="mt-1 text-[11px] text-zinc-400 light:text-slate-500">
+                    {contentRatings.find((r) => r.id === selectedRating)?.description ||
+                      "Audience appropriateness classification."}
+                  </p>
+                )}
+              </div>
+
+              <div className="pt-2 border-t border-white/5 light:border-black/5">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isBlurred}
+                    onChange={(e) => setIsBlurred(e.target.checked)}
+                    className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-violet-600 focus:ring-violet-500 light:bg-slate-50 light:border-slate-300"
+                  />
+                  <div>
+                    <span className="text-xs font-semibold text-white light:text-slate-900">
+                      Apply sensitive content blur overlay
+                    </span>
+                    <span className="block text-[11px] text-zinc-400 light:text-slate-500">
+                      Thumbnails and initial preview will be blurred with an opt-in click to reveal.
+                    </span>
+                  </div>
+                </label>
+              </div>
+            </div>
           </div>
 
           {/* Mandatory Legal & 2257 Declarations */}

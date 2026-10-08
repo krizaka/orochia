@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, LayoutDashboard, LogOut, Search, Settings, Upload, User, Wallet } from "lucide-react";
+import { ChevronDown, LayoutDashboard, LogOut, MessageSquare, Search, Settings, Upload, User, Wallet } from "lucide-react";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
 import { OrochiaLogo } from "@/components/OrochiaLogo";
 import { ThemeToggle } from "@/components/ThemeProvider";
@@ -64,7 +64,10 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
           <kbd className="hidden rounded border border-white/10 light:border-black/10 px-1.5 font-mono text-[10px] lg:inline">⌘K</kbd>
         </button>
 
-        <nav className="hidden items-center gap-6 md:flex">{navLink("/explore", t("nav.explore"))}</nav>
+        <nav className="hidden items-center gap-6 md:flex">
+          {navLink("/explore", t("nav.explore"))}
+          {user && navLink("/messages", t("nav.messages"))}
+        </nav>
 
         <div className="flex items-center gap-2">
           <button
@@ -109,6 +112,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                       </div>
                     </div>
                     {menuItem("/dashboard", <LayoutDashboard className="h-4 w-4 text-violet-400" />, t("nav.dashboard"))}
+                    {menuItem("/messages", <MessageSquare className="h-4 w-4 text-violet-400" />, t("nav.messages"))}
                     {isCreator && menuItem(`/creators/${user.username}`, <User className="h-4 w-4 text-fuchsia-400" />, t("nav.profile"))}
                     {isCreator && menuItem("/creator/payouts", <Wallet className="h-4 w-4 text-emerald-400" />, t("nav.earnings"))}
                     {menuItem("/dashboard?tab=settings", <Settings className="h-4 w-4 text-zinc-400" />, t("nav.settings"))}

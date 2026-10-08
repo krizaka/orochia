@@ -1,7 +1,8 @@
-import { pgTable, text, timestamp, uuid, varchar, integer, index, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, varchar, integer, index, uniqueIndex, boolean } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { users } from "./users";
 import { audienceLists } from "./audiences";
+import { contentRatings } from "./reference-data";
 import { videoStatusEnum, videoVisibilityEnum } from "./enums";
 
 /**
@@ -27,6 +28,8 @@ export const stories = pgTable(
     caption: varchar("caption", { length: 280 }),
     visibility: videoVisibilityEnum("visibility").default("PUBLIC").notNull(),
     audienceListId: uuid("audience_list_id").references(() => audienceLists.id, { onDelete: "set null" }),
+    contentRatingId: varchar("content_rating_id", { length: 30 }).references(() => contentRatings.id, { onDelete: "set null" }),
+    isBlurred: boolean("is_blurred").default(false).notNull(),
     status: videoStatusEnum("status").default("READY").notNull(),
     durationSeconds: integer("duration_seconds").default(0).notNull(),
     viewsCount: integer("views_count").default(0).notNull(),

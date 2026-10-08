@@ -26,6 +26,9 @@ interface VideoPlayerProps {
   /** Rendered in the contacts / followers gate: the action that opens the video (follow, contact). */
   gateAction?: React.ReactNode;
   onUnlockRequested?: () => void;
+  contentRatingId?: string | null;
+  isBlurred?: boolean;
+  isAdult?: boolean;
 }
 
 export function VideoPlayer({
@@ -40,12 +43,16 @@ export function VideoPlayer({
   isInvitedOnly = false,
   gateAction,
   onUnlockRequested,
+  contentRatingId,
+  isBlurred = false,
+  isAdult = false,
 }: VideoPlayerProps) {
   const isGated = isContactsOnly || isFollowersOnly || isInvitedOnly;
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
+  const [revealed, setRevealed] = useState(!isBlurred);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
@@ -174,6 +181,15 @@ export function VideoPlayer({
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => isPlaying && setShowControls(false)}
     >
+      {/* 18+ Rating Badge Top Left */}
+      {(isAdult || contentRatingId === "MATURE_18" || contentRatingId === "ADULT_EXPLICIT") && (
+        <div className="absolute top-4 left-4 z-20">
+          <span className="rounded-full bg-rose-600/90 px-2 py-0.5 text-[10px] font-black text-white shadow-md backdrop-blur-md font-mono">
+            18+
+          </span>
+        </div>
+      )}
+
       {/* HTML5 Video Element */}
       <video
         ref={videoRef}
@@ -181,10 +197,32 @@ export function VideoPlayer({
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={() => setIsPlaying(false)}
-        className="h-full w-full object-contain cursor-pointer"
-        onClick={togglePlay}
+        className={`h-full w-full object-contain cursor-pointer transition-all duration-500 ${
+          isBlurred && !revealed ? "blur-2xl scale-105" : ""
+        }`}
+        onClick={isBlurred && !revealed ? undefined : togglePlay}
         playsInline
       />
+
+      {/* Sensitive Content Gate Overlay */}
+      {isBlurred && !revealed && (
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/85 backdrop-blur-lg p-6 text-center">
+          <div className="h-14 w-14 rounded-2xl bg-rose-600/20 border border-rose-500/30 flex items-center justify-center text-rose-400 mb-3">
+            <span className="font-mono font-black text-xl">18+</span>
+          </div>
+          <h3 className="text-lg font-bold text-white mb-1">Sensitive Content Warning</h3>
+          <p className="text-xs text-zinc-400 max-w-sm mb-5">
+            This media is marked with sensitive adult themes. Viewer discretion is advised.
+          </p>
+          <button
+            type="button"
+            onClick={() => setRevealed(true)}
+            className="px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-xs transition-colors shadow-lg shadow-violet-600/25"
+          >
+            I Understand, Show Video
+          </button>
+        </div>
+      )}
 
       {/* Paywall Overlay State */}
       {isPaywalled && (

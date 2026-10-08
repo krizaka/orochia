@@ -57,6 +57,13 @@
       "when": 1791430099808,
       "tag": "0007_editor_drafts",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791433785942,
+      "tag": "0008_user_management_messaging_and_ratings",
+      "breakpoints": true
     }
   ]
 }

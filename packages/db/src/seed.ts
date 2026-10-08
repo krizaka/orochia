@@ -20,6 +20,7 @@ import {
   follows,
   complianceReports,
   stories,
+  contentRatings,
 } from "./schema";
 import { loadRootEnv } from "./load-env";
 import { ensureOwner, ownerFromEnv } from "./owner";
@@ -144,6 +145,68 @@ const CREDITS = [
 
 export async function runSeed(): Promise<void> {
   console.log("🌱 Seeding Orochia (idempotent)…");
+
+  const RATINGS = [
+    {
+      id: "FOR_KIDS",
+      label: "Kids Safe (Tous publics)",
+      description: "Contenu adapté aux enfants et à la famille, sans langage inapproprié ni violence.",
+      isAdult: false,
+      requiresBlur: false,
+      defaultTags: ["family", "kids", "animation"],
+      minAge: 0,
+      displayOrder: 1,
+      iconName: "baby",
+    },
+    {
+      id: "GENERAL",
+      label: "General (Grand public)",
+      description: "Contenu tous publics convenant à la majorité des spectateurs.",
+      isAdult: false,
+      requiresBlur: false,
+      defaultTags: ["general"],
+      minAge: 0,
+      displayOrder: 2,
+      iconName: "users",
+    },
+    {
+      id: "TEEN",
+      label: "Teens (13+)",
+      description: "Convient aux adolescents dès 13 ans. Peut contenir des thèmes plus matures.",
+      isAdult: false,
+      requiresBlur: false,
+      defaultTags: ["teen", "13+"],
+      minAge: 13,
+      displayOrder: 3,
+      iconName: "user-check",
+    },
+    {
+      id: "MATURE",
+      label: "Mature (18+)",
+      description: "Réservé aux adultes de 18 ans et plus. Thèmes sensibles ou intenses.",
+      isAdult: true,
+      requiresBlur: false,
+      defaultTags: ["mature", "18+"],
+      minAge: 18,
+      displayOrder: 4,
+      iconName: "shield-alert",
+    },
+    {
+      id: "ADULT",
+      label: "Adult Explicit (18+ Adulte)",
+      description: "Contenu explicite réservé aux adultes certifiés 18+. Aperçu flouté par défaut.",
+      isAdult: true,
+      requiresBlur: true,
+      defaultTags: ["adult", "18+", "nsfw"],
+      minAge: 18,
+      displayOrder: 5,
+      iconName: "alert-triangle",
+    },
+  ];
+  for (const r of RATINGS) {
+    await db.insert(contentRatings).values(r).onConflictDoNothing();
+  }
+
   const id: Record<string, string> = {};
 
   for (const p of PEOPLE) {

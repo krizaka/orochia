@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (93)
+## Endpoints (108)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -40,6 +40,11 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/contacts` | session · MEMBER / CREATOR / ADMIN | Sends a contact request (accepted at once when the other person already asked). |
 | `DELETE` | `/api/contacts/[id]` | session · MEMBER / CREATOR / ADMIN | Removes a contact or withdraws a request (either side). |
 | `PATCH` | `/api/contacts/[id]` | session · MEMBER / CREATOR / ADMIN | Accepts or rejects a request addressed to you, or blocks the other person. |
+| `GET` | `/api/conversations` | session · ADMIN / CREATOR / MEMBER | Lists the signed-in user's active direct conversations. |
+| `POST` | `/api/conversations` | session · ADMIN / CREATOR / MEMBER | Starts or retrieves a conversation with a specified user. |
+| `GET` | `/api/conversations/[id]/messages` | session · ADMIN / CREATOR / MEMBER | Lists messages in a conversation and marks unread messages as read. |
+| `POST` | `/api/conversations/[id]/messages` | session · ADMIN / CREATOR / MEMBER | Sends a direct message in a conversation. |
+| `GET` | `/api/conversations/stream` | public | Realtime Server-Sent Events (SSE) stream for instant direct messages and notifications. |
 | `GET` | `/api/creator/payouts` | session · CREATOR | The signed-in creator's balance, lifetime earnings and payout history — from the ledger. |
 | `POST` | `/api/creator/payouts` | session · CREATOR | Requests a payout; balances are checked and reserved atomically (requestPayout). |
 | `GET` | `/api/creators/[username]` | public · session-aware | A creator's public page: profile, videos, the collections you may open and, signed in, how you relate to them. |
@@ -49,6 +54,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/health` | public | — |
 | `POST` | `/api/legal/report` | public · session-aware | Content reports. |
 | `POST` | `/api/me/become-creator` | session · MEMBER / CREATOR / ADMIN | Opens a creator space for a member: the account becomes CREATOR, pending its 18 U.S.C. § 2257 review (uploads open once an operator verifies it). |
+| `GET` | `/api/me/blocks` | session · ADMIN / CREATOR / MEMBER | Lists the accounts blocked by the signed-in user. |
 | `GET` | `/api/me/dashboard` | session · ADMIN / CREATOR / MEMBER | — |
 | `GET` | `/api/me/drafts` | session · CREATOR / ADMIN | Your editor drafts (newest first), with a short-lived link to each original clip; expired ones are removed. |
 | `POST` | `/api/me/drafts` | session · CREATOR / ADMIN | Keeps an edit as a draft: records its settings and returns a Tus session to send the original clip straight to Bunny. |
@@ -60,6 +66,10 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `PUT` | `/api/me/drafts/[id]/music` | session · CREATOR / ADMIN | Keeps (or replaces) the music track of a draft — MP3, M4A, AAC, WAV or OGG up to 25 MB. |
 | `POST` | `/api/me/drafts/[id]/uploaded` | session · CREATOR / ADMIN | Tells that a draft's original clip is fully sent, so it can be opened again before Bunny finishes processing. |
 | `PATCH` | `/api/me/followers/[id]` | session · CREATOR | A creator approves a follower (opening followers-only videos to them) or removes them. |
+| `GET` | `/api/me/identities` | session · ADMIN / CREATOR / MEMBER | Lists the external OAuth providers linked to the signed-in account. |
+| `DELETE` | `/api/me/identities/[id]` | session · ADMIN / CREATOR / MEMBER | Unlinks a connected OAuth provider identity from the signed-in account. |
+| `GET` | `/api/me/invitations` | session · ADMIN / CREATOR / MEMBER | Lists invitations sent by the signed-in user. |
+| `POST` | `/api/me/invitations` | session · ADMIN / CREATOR / MEMBER | Sends an invitation to join Orochia to a friend or collaborator. |
 | `GET` | `/api/me/lists` | session · MEMBER / CREATOR / ADMIN | Your reusable audience lists (private to you), with their size. |
 | `POST` | `/api/me/lists` | session · MEMBER / CREATOR / ADMIN | Creates an audience list (names are unique per account). |
 | `DELETE` | `/api/me/lists/[id]` | session · MEMBER / CREATOR / ADMIN | Deletes one of your lists; the videos and collections it opened close to its members. |
@@ -68,7 +78,8 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/me/lists/[id]/members` | session · MEMBER / CREATOR / ADMIN | The people in one of your lists. |
 | `POST` | `/api/me/lists/[id]/members` | session · MEMBER / CREATOR / ADMIN | Adds an account to one of your lists by username (idempotent; the list stays private). |
 | `GET` | `/api/me/network` | session · MEMBER / CREATOR / ADMIN | Your followers, the creators you follow, your contacts and pending requests. |
-| `PUT` | `/api/me/profile` | session · ADMIN / CREATOR / MEMBER | Updates the signed-in user's own profile. |
+| `GET` | `/api/me/profile` | session · ADMIN / CREATOR / MEMBER | Reads the signed-in user's own profile and settings. |
+| `PUT` | `/api/me/profile` | session · ADMIN / CREATOR / MEMBER | Updates the signed-in user's own profile and preferences. |
 | `GET` | `/api/me/stories` | session · CREATOR / ADMIN | Your stories of the last 30 days — live, encoding or expired — with their figures. |
 | `GET` | `/api/metrics` | bearer token | Prometheus metrics, behind a bearer token (METRICS_AUTH_TOKEN). |
 | `GET` | `/api/payments/gateways` | public | The gateways a buyer can pay through on this deployment. |
@@ -81,6 +92,8 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `DELETE` | `/api/playlists/[id]/items` | session · MEMBER / CREATOR / ADMIN | Removes a video from a playlist (owner only). |
 | `POST` | `/api/playlists/[id]/items` | session · MEMBER / CREATOR / ADMIN | Adds a video at the end of a playlist (owner only, idempotent). |
 | `GET` | `/api/playlists/shared` | session · MEMBER / CREATOR / ADMIN | Collections other accounts invited you to. |
+| `GET` | `/api/reference/content-ratings` | public | Reference content classifications and age ratings (Kids Safe, General, Teens, Mature, Adult). |
+| `GET` | `/api/reference/presets` | public | Default avatar and banner presets users can choose without uploading custom files. |
 | `GET` | `/api/search` | public | — |
 | `GET` | `/api/stories` | public · session-aware | The stories rail: one ring per creator with live stories you may see (yours first, then unseen), signed for you. |
 | `POST` | `/api/stories` | session · CREATOR / ADMIN | Publishes an image story (24 h) from an image stored by /api/uploads (category "stories"); verified creators only. |
@@ -90,6 +103,8 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/stories/[id]/view` | public · session-aware | Counts a view of a story you may see — once per viewer, never the creator's own. |
 | `POST` | `/api/stories/upload-session` | session · CREATOR / ADMIN | Starts a video story: records it and returns a Tus session straight to Bunny (stories collection). |
 | `POST` | `/api/uploads` | session · role depends on the request | Stores an avatar (any account), a thumbnail, a story image or a 2257 document (creators); size and type checked per kind. |
+| `DELETE` | `/api/users/[username]/block` | session · ADMIN / CREATOR / MEMBER | Unblocks a previously blocked user. |
+| `POST` | `/api/users/[username]/block` | session · ADMIN / CREATOR / MEMBER | Blocks or unblocks a user: toggles block state on POST. |
 | `DELETE` | `/api/videos/[id]` | session · CREATOR | The creator deletes their video. |
 | `PATCH` | `/api/videos/[id]` | session · CREATOR | The creator edits their video: title, description, visibility, unlock price, tags, comments open. |
 | `GET` | `/api/videos/[id]/comments` | public · session-aware | The comments of a video you may watch, oldest first; removed ones keep their place without text. |
@@ -105,7 +120,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/webhooks/bunny` | signed webhook | Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (BUNNY_WEBHOOK_SECRET). |
 | `POST` | `/api/webhooks/payments/[gateway]` | signed webhook | Gateway payment notifications. |
 
-## Database tables (28)
+## Database tables (34)
 
 | Table | Drizzle export | Defined in |
 | :--- | :--- | :--- |
@@ -124,12 +139,18 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `video_likes` | `videoLikes` | `packages/db/src/schema/engagement.ts` |
 | `video_comments` | `videoComments` | `packages/db/src/schema/engagement.ts` |
 | `video_shares` | `videoShares` | `packages/db/src/schema/engagement.ts` |
+| `user_invitations` | `userInvitations` | `packages/db/src/schema/invitations.ts` |
 | `tips_ledger` | `tipsLedger` | `packages/db/src/schema/ledger.ts` |
 | `payment_intents` | `paymentIntents` | `packages/db/src/schema/ledger.ts` |
 | `payout_requests` | `payoutRequests` | `packages/db/src/schema/ledger.ts` |
+| `conversations` | `conversations` | `packages/db/src/schema/messaging.ts` |
+| `direct_messages` | `directMessages` | `packages/db/src/schema/messaging.ts` |
+| `blocked_users` | `blockedUsers` | `packages/db/src/schema/messaging.ts` |
+| `payment_outbox` | `paymentOutbox` | `packages/db/src/schema/payment-outbox.ts` |
 | `playlists` | `playlists` | `packages/db/src/schema/playlists.ts` |
 | `playlist_items` | `playlistItems` | `packages/db/src/schema/playlists.ts` |
 | `playlist_members` | `playlistMembers` | `packages/db/src/schema/playlists.ts` |
+| `content_ratings` | `contentRatings` | `packages/db/src/schema/reference-data.ts` |
 | `stories` | `stories` | `packages/db/src/schema/stories.ts` |
 | `story_views` | `storyViews` | `packages/db/src/schema/stories.ts` |
 | `story_likes` | `storyLikes` | `packages/db/src/schema/stories.ts` |

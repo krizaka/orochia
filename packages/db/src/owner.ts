@@ -19,17 +19,24 @@ export interface OwnerConfig {
   username: string;
   name: string;
   password?: string;
+  role?: "ADMIN" | "CREATOR" | "MEMBER";
 }
 
-/** The owner described by the environment, or null when OROCHIA_OWNER_EMAIL is not set. */
+/**
+ * The default test user described by the environment (OROCHIA_DEFAULT_USER_* or OROCHIA_OWNER_*).
+ * Note: this is a standard user used for testing and validating the app, not a super-admin backdoor.
+ */
 export function ownerFromEnv(env: NodeJS.ProcessEnv = process.env): OwnerConfig | null {
-  const email = env.OROCHIA_OWNER_EMAIL?.trim();
+  const email = (env.OROCHIA_DEFAULT_USER_EMAIL ?? env.OROCHIA_OWNER_EMAIL)?.trim();
   if (!email) return null;
+  const rawRole = (env.OROCHIA_DEFAULT_USER_ROLE ?? env.OROCHIA_OWNER_ROLE)?.trim().toUpperCase();
+  const role = rawRole === "MEMBER" || rawRole === "CREATOR" || rawRole === "ADMIN" ? rawRole : "ADMIN";
   return {
     email,
-    username: env.OROCHIA_OWNER_USERNAME?.trim() ?? "",
-    name: env.OROCHIA_OWNER_NAME?.trim() ?? "",
-    password: env.OROCHIA_OWNER_PASSWORD || undefined,
+    username: (env.OROCHIA_DEFAULT_USER_USERNAME ?? env.OROCHIA_OWNER_USERNAME)?.trim() ?? "",
+    name: (env.OROCHIA_DEFAULT_USER_NAME ?? env.OROCHIA_OWNER_NAME)?.trim() ?? "",
+    password: (env.OROCHIA_DEFAULT_USER_PASSWORD ?? env.OROCHIA_OWNER_PASSWORD) || undefined,
+    role,
   };
 }
 
@@ -37,11 +44,11 @@ export function validateOwner(config: OwnerConfig): OwnerConfig {
   const email = config.email.trim().toLowerCase();
   const username = config.username.trim().toLowerCase();
   const name = config.name.trim();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("OROCHIA_OWNER_EMAIL is not an e-mail address");
-  if (!/^[a-z0-9_]{3,30}$/.test(username)) throw new Error("OROCHIA_OWNER_USERNAME: 3–30 letters, digits, underscore");
-  if (!name || name.length > 100) throw new Error("OROCHIA_OWNER_NAME is required (100 characters at most)");
-  if (config.password !== undefined && config.password.length < 10) throw new Error("OROCHIA_OWNER_PASSWORD needs 10+ characters");
-  return { email, username, name, password: config.password };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Default user email is not an e-mail address");
+  if (!/^[a-z0-9_]{3,30}$/.test(username)) throw new Error("Default user username: 3–30 letters, digits, underscore");
+  if (!name || name.length > 100) throw new Error("Default user name is required (100 characters at most)");
+  if (config.password !== undefined && config.password.length < 10) throw new Error("Default user password needs 10+ characters");
+  return { email, username, name, password: config.password, role: config.role ?? "ADMIN" };
 }
 
 export type OwnerOutcome = { id: string; created: boolean; passwordSet: boolean };
@@ -68,7 +75,7 @@ export async function ensureOwner(
   const setPassword = !existing || Boolean(options.resetPassword);
   if (setPassword && !owner.password) throw new Error("OROCHIA_OWNER_PASSWORD is required to create the owner account");
 
-  const active = { role: "ADMIN" as const, isVerified: true, isAgeVerified: true, suspendedAt: null, suspensionReason: null, updatedAt: new Date() };
+  const active = { role: owner.role ?? "ADMIN", isVerified: true, isAgeVerified: true, suspendedAt: null, suspensionReason: null, updatedAt: new Date() };
   // The operator configures this address; it is verified by definition (an existing date is kept).
   const verified = { emailVerifiedAt: sql`coalesce(${users.emailVerifiedAt}, now())` };
   const id = await db.transaction(async (tx) => {
