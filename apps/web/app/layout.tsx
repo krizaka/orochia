@@ -75,9 +75,22 @@ export default function RootLayout({
               <div className="mx-auto max-w-7xl px-4 sm:px-6">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-white/5 dark:border-white/5 light:border-black/5">
                   <div className="text-center md:text-left">
-                    <span className="text-base font-black tracking-wider text-white dark:text-white light:text-slate-900 font-display">
-                      OROCHIA<span className="text-violet-400">.</span>
-                    </span>
+                    <div className="flex items-center justify-center md:justify-start gap-2.5">
+                      <span className="text-base font-black tracking-wider text-white dark:text-white light:text-slate-900 font-display">
+                        OROCHIA<span className="text-violet-400">.</span>
+                      </span>
+                      <a
+                        href="https://krizaka.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] font-medium tracking-wide px-2.5 py-0.5 rounded-full bg-violet-500/10 text-violet-400 hover:text-violet-300 dark:text-violet-400 dark:hover:text-violet-300 light:text-violet-700 light:hover:text-violet-800 border border-violet-500/20 hover:border-violet-500/40 transition-colors"
+                      >
+                        by Krizaka
+                        <svg className="w-2.5 h-2.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </a>
+                    </div>
                     <p className="mt-1 text-zinc-400 dark:text-zinc-400 light:text-slate-600 max-w-md text-xs">
                       The Sovereign Sanctuary for Independent Creators. 4K HLS Streams, Zero-Chargeback Crypto & Adult Rails.
                     </p>
@@ -88,6 +101,17 @@ export default function RootLayout({
                     <Link href="/explore" className="hover:text-violet-400 transition-colors">
                       Explore
                     </Link>
+                    <a
+                      href="https://krizaka.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 font-semibold text-violet-400 hover:text-violet-300 dark:text-violet-400 dark:hover:text-violet-300 light:text-violet-600 light:hover:text-violet-700 transition-colors"
+                    >
+                      Krizaka
+                      <svg className="w-3 h-3 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </a>
                     <Link href="/legal/terms" className="hover:text-white dark:hover:text-white light:hover:text-black transition-colors">
                       Terms of Service
                     </Link>
@@ -104,7 +128,18 @@ export default function RootLayout({
                 </div>
 
                 <div className="pt-8 text-center text-[11px] text-zinc-600 dark:text-zinc-600 light:text-slate-400">
-                  <p>© {new Date().getFullYear()} Orochia. Open-source software released under Apache-2.0. Built by Krizaka Core Team.</p>
+                  <p>
+                    © {new Date().getFullYear()} Orochia. Open-source software released under Apache-2.0. Built by the{" "}
+                    <a
+                      href="https://krizaka.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-violet-400 hover:text-violet-300 dark:text-violet-400 dark:hover:text-violet-300 light:text-violet-600 light:hover:text-violet-700 underline underline-offset-2 transition-colors"
+                    >
+                      Krizaka
+                    </a>{" "}
+                    Core Team.
+                  </p>
                   <p className="mt-1">All performers depicted on this website are 18 years of age or older.</p>
                 </div>
               </div>
