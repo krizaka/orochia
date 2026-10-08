@@ -226,7 +226,7 @@ export function CreatorStoriesBar() {
                 ))}
               </div>
               <div className="flex items-center justify-between">
-                <Link href={`/creators/${ring.username}`} onClick={close} className="flex items-center gap-2.5">
+                <Link href={`/@${ring.username}`} onClick={close} className="flex items-center gap-2.5">
                   <img src={ring.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-9 w-9 rounded-xl border border-white/20 object-cover" />
                   <div>
                     <span className="block text-xs font-bold text-white">{ring.displayName}</span>
@@ -263,7 +263,7 @@ export function CreatorStoriesBar() {
               <div className="flex items-center gap-2">
                 {!ring.isOwn && (
                   <Link
-                    href={`/creators/${ring.username}`}
+                    href={`/@${ring.username}`}
                     onClick={close}
                     className="flex flex-1 items-center justify-center rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 py-3 text-xs font-bold text-white"
                   >

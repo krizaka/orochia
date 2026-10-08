@@ -119,7 +119,7 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
               {/* Creator Header */}
               <div className="flex items-center justify-between p-4 border-b border-white/5 dark:border-white/5 light:border-black/5">
                 <Link
-                  href={video.creatorUsername ? `/creators/${video.creatorUsername}` : "#"}
+                  href={video.creatorUsername ? `/@${video.creatorUsername}` : "#"}
                   className="flex items-center gap-3 group"
                 >
                   <div className="h-10 w-10 overflow-hidden rounded-xl border border-violet-500/40">

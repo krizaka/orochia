@@ -12,7 +12,7 @@ export default function ProfilePage() {
   useEffect(() => {
     if (isLoading) return;
     if (!user) router.replace("/auth/login");
-    else if (user.role === "CREATOR") router.replace(`/creators/${user.username}`);
+    else if (user.role === "CREATOR") router.replace(`/@${user.username}`);
     else router.replace("/dashboard");
   }, [user, isLoading, router]);
 

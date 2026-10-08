@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { OAUTH_PENDING_COOKIE, type ProviderProfile, suggestUsername, unseal } from "@/lib/oauth";
+import { freeUsername } from "@/lib/usernames";
 import { jsonError } from "@/lib/http";
 
 export const dynamic = "force-dynamic";
@@ -15,7 +16,7 @@ export async function GET(req: NextRequest) {
     email: profile.email,
     needsEmail: !profile.email,
     displayName: profile.name ?? "",
-    username: suggestUsername(profile),
+    username: await freeUsername(suggestUsername(profile)),
     avatarUrl: profile.avatarUrl,
   });
 }

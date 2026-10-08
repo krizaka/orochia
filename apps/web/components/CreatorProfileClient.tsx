@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Sparkles, Check, Crown, Flame, Shield, Play, Lock, Film, Heart, Share2, Layers } from "lucide-react";
 import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
 import { PlaylistCard, type PlaylistCardProps } from "@/components/PlaylistCard";
@@ -30,7 +31,13 @@ export function CreatorProfileClient({
   videos,
   playlists,
 }: CreatorProfileClientProps) {
-  const [activeTab, setActiveTab] = useState<"all" | "ppv" | "playlists" | "about">("all");
+  // The open tab is in the address (?tab=…), so a link to it opens it.
+  type ProfileTab = "all" | "ppv" | "playlists" | "about";
+  const router = useRouter();
+  const pathname = usePathname();
+  const tabParam = useSearchParams().get("tab");
+  const activeTab: ProfileTab = tabParam === "ppv" || tabParam === "playlists" || tabParam === "about" ? tabParam : "all";
+  const setActiveTab = (tab: ProfileTab) => router.replace(tab === "all" ? pathname : `${pathname}?tab=${tab}`, { scroll: false });
   const [isTipModalOpen, setIsTipModalOpen] = useState(false);
 
   const filteredVideos = activeTab === "ppv"

@@ -120,7 +120,7 @@ export function VideoComments({
       <img src={c.authorAvatar || AVATAR_PLACEHOLDER} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />
       <div className="min-w-0 flex-1">
         <p className="text-xs">
-          <Link href={`/creators/${c.authorUsername}`} className="font-semibold text-white hover:text-violet-300 light:text-slate-900">
+          <Link href={`/@${c.authorUsername}`} className="font-semibold text-white hover:text-violet-300 light:text-slate-900">
             {c.authorName}
           </Link>{" "}
           <span className="font-mono text-[10px] text-zinc-500 light:text-slate-500">

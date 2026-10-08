@@ -71,7 +71,7 @@
       "id": "data",
       "name": "Data persistence",
       "path": "packages/db",
-      "tablesCount": 34,
+      "tablesCount": 35,
       "tables": [
         "audience_lists",
         "audience_list_members",
@@ -95,6 +95,7 @@
         "conversations",
         "direct_messages",
         "blocked_users",
+        "notifications",
         "payment_outbox",
         "playlists",
         "playlist_items",
@@ -264,6 +265,12 @@
       "path": "/api/auth/reset-password",
       "access": "public",
       "summary": "Sets a new password with the link's one-time token (1 h)."
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/username",
+      "access": "public",
+      "summary": "Whether a username is free (unique address orochia.com/@username), with a free one suggested when it is not."
     },
     {
       "method": "POST",
@@ -528,6 +535,18 @@
       "path": "/api/me/network",
       "access": "session · MEMBER / CREATOR / ADMIN",
       "summary": "Your followers, the creators you follow, your contacts and pending requests."
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/notifications",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Your notifications, newest first, 25 at a time (`before` = an ISO date to page back), with the unread count."
+    },
+    {
+      "method": "POST",
+      "path": "/api/me/notifications",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Marks notifications read: the ones listed, or all of them."
     },
     {
       "method": "GET",

@@ -1,15 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1f092b"/>
-      <stop offset="100%" stop-color="#0a0212"/>
-    </linearGradient>
-    <linearGradient id="star" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f472b6"/>
-      <stop offset="100%" stop-color="#9333ea"/>
-    </linearGradient>
-  </defs>
-  <rect width="200" height="200" rx="40" fill="url(#bg)"/>
-  <path d="M100 25 Q100 100 175 100 Q100 100 100 175 Q100 100 25 100 Q100 100 100 25 Z" fill="url(#star)"/>
-  <circle cx="100" cy="100" r="14" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+<defs>
+<filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="60"/></filter>
+<filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.09 0"/></filter>
+<linearGradient id="gloss" gradientUnits="userSpaceOnUse" x1="100" y1="100" x2="300" y2="300"><stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/><stop offset="1" stop-color="#ffffff" stop-opacity="0.45"/></linearGradient>
+<radialGradient id="sheen" cx="30%" cy="22%" r="60%"><stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
+<radialGradient id="vignette" cx="50%" cy="50%" r="75%"><stop offset="0.6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.45"/></radialGradient>
+</defs>
+<rect width="400" height="400" fill="#03130d"/>
+<g filter="url(#blur)"><circle cx="236" cy="338" r="133" fill="#10b981" opacity="0.63"/><circle cx="125" cy="139" r="131" fill="#14b8a6" opacity="0.78"/><circle cx="86" cy="117" r="146" fill="#a3e635" opacity="0.80"/><circle cx="46" cy="265" r="169" fill="#10b981" opacity="0.85"/><circle cx="99" cy="54" r="176" fill="#14b8a6" opacity="0.61"/></g>
+<rect width="400" height="400" fill="url(#sheen)"/>
+<g opacity="0.9"><path d="M200 110 C270 150 270 250 200 290 C130 250 130 150 200 110 Z" fill="none" stroke="url(#gloss)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M200 130 L200 280" fill="none" stroke="url(#gloss)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/></g>
+<rect width="400" height="400" fill="url(#vignette)"/>
+<rect width="400" height="400" filter="url(#grain)"/>
 </svg>

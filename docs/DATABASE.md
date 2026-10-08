@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 34 tables · 15 enums · 11 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 35 tables · 15 enums · 12 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -32,6 +32,8 @@ erDiagram
     users ||--o{ direct_messages : "recipient_id"
     users ||--o{ follows : "follower_id"
     users ||--o{ follows : "creator_id"
+    users ||--o{ notifications : "user_id"
+    users ||--o{ notifications : "actor_id"
     users ||--o{ payment_intents : "sender_id"
     users ||--o{ payment_intents : "creator_id"
     videos ||--o{ payment_intents : "video_id"
@@ -227,6 +229,21 @@ erDiagram
 
 **Indexes:** `follows_pair_idx` (unique, follower_id, creator_id) · `follows_creator_status_idx` (creator_id, status)
 
+### `notifications`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `user_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `event` | varchar(40) | no |  |  |
+| `actor_id` | uuid | yes |  | → `users.id` (on delete set null) |
+| `vars` | jsonb | no | `'{}'::jsonb` |  |
+| `path` | text | no |  |  |
+| `read_at` | timestamp with time zone | yes |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `notifications_user_created_idx` (user_id, created_at) · `notifications_unread_idx` (user_id, partial)
+
 ### `payment_intents`
 
 | Column | Type | Null | Default | Notes |
@@ -343,6 +360,9 @@ erDiagram
 | `website_url` | text | yes |  |  |
 | `social_links` | jsonb | no | `'{}'::jsonb` |  |
 | `notifications_off` | jsonb | no | `'[]'::jsonb` |  |
+| `in_app_off` | jsonb | no | `'[]'::jsonb` |  |
+| `email_frequency` | varchar(10) | no | `"INSTANT"` |  |
+| `last_activity_email_at` | timestamp with time zone | yes |  |  |
 | `direct_message_privacy` | varchar(20) | no | `"EVERYONE"` |  |
 | `min_tip_amount_cents` | integer | no | `500` |  |
 | `payout_address_crypto` | text | yes |  |  |
@@ -629,3 +649,4 @@ erDiagram
 - `0008_user_management_messaging_and_ratings.sql`
 - `0009_profile_links_birthdate_notifications.sql`
 - `0010_drop_twitter_handle.sql`
+- `0011_notifications_center.sql`

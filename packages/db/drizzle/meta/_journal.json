@@ -78,6 +78,13 @@
       "when": 1791464899286,
       "tag": "0010_drop_twitter_handle",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791466137560,
+      "tag": "0011_notifications_center",
+      "breakpoints": true
     }
   ]
 }

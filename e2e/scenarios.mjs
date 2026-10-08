@@ -336,11 +336,38 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("a javascript: website is refused", (await put(alex, { websiteUrl: "javascript:alert(1)" })).status === 400);
   check("a picture URL chosen by the client is refused", (await put(alex, { avatar: "https://tracker.example/p.gif" })).status === 400);
   check("a preset picture is accepted", (await put(alex, { avatar: "avatar-02" })).status === 200 && (await alex.call("/api/me/profile")).json.profile.avatarUrl === "/defaults/avatars/avatar-02.svg");
-  check("notification choices are kept", (await put(alex, { notificationsOff: ["newMessage", "bogus"] })).status === 200 && JSON.stringify((await alex.call("/api/me/profile")).json.profile.notificationsOff) === '["newMessage"]');
+  check("notification choices are kept", (await put(alex, { emailsOff: ["newMessage", "bogus"] })).status === 200 && JSON.stringify((await alex.call("/api/me/profile")).json.profile.emailsOff) === '["newMessage"]');
   check("a recorded date of birth cannot be rewritten", (await alex.call("/api/me/birth-date", "POST", { dateOfBirth: "1980-01-01" })).status === 409);
   check("a member has a public page", (await fetch(`${B}/creators/alex_vance`)).status === 200);
   check("the operator account has a public page", (await fetch(`${B}/creators/orochia_admin`)).status === 200);
   check("the e-mail never appears on a public page", !(await (await fetch(`${B}/creators/alex_vance`)).text()).includes("alex@sanctuary.io"));
+}
+
+// Usernames, profile addresses, notifications
+{
+  const taken = (await anon.call("/api/auth/username?username=alex_vance")).json;
+  check("a taken username offers a free one", taken.available === false && taken.reason === "taken" && taken.suggestion === "alex_vance2");
+  check("a reserved username is refused", (await anon.call("/api/auth/username?username=admin")).json.reason === "reserved");
+  check("a free username is available", (await anon.call(`/api/auth/username?username=free_${Date.now().toString(36)}`)).json.available === true);
+  check("profiles live at /@username", (await fetch(`${B}/@alex_vance`)).status === 200);
+  const old = await fetch(`${B}/creators/alex_vance`, { redirect: "manual" });
+  check("the old address redirects there", old.status === 308 && (old.headers.get("location") ?? "").endsWith("/@alex_vance"));
+
+  await elena.call("/api/me/notifications", "POST", { all: true });
+  const target = feed.find((v) => v.creatorUsername === "elenavox" && v.visibility === "PUBLIC");
+  check("elena has a public video to comment on", Boolean(target));
+  await alex.call(`/api/videos/${target.id}/comments`, "POST", { body: "Love this one" });
+  let inbox = { items: [], unread: 0 };
+  for (let i = 0; i < 20 && !inbox.items.some((n) => n.event === "newComment" && !n.readAt); i++) {
+    await new Promise((r) => setTimeout(r, 150));
+    inbox = (await elena.call("/api/me/notifications")).json;
+  }
+  check("a comment notifies the creator in the app", inbox.items.some((n) => n.event === "newComment" && n.text.includes("commented")));
+  check("…unread until read", inbox.unread >= 1);
+  check("someone else's notification cannot be marked read", (await alex.call("/api/me/notifications", "POST", { ids: [inbox.items[0].id] })).status === 200 && (await elena.call("/api/me/notifications")).json.unread >= 1);
+  await elena.call("/api/me/notifications", "POST", { all: true });
+  check("mark all as read", (await elena.call("/api/me/notifications")).json.unread === 0);
+  check("e-mail pace is a setting", (await alex.call("/api/me/profile", "PUT", { emailFrequency: "HOURLY" })).status === 200 && (await alex.call("/api/me/profile")).json.profile.emailFrequency === "HOURLY");
 }
 
 // Upload limits and editor drafts (no Bunny call: every request below is refused before it)
@@ -458,7 +485,7 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
 
 // Search and AI discovery: public pages only
 const sitemapXml = await (await fetch(`${B}/sitemap.xml`)).text();
-check("sitemap lists public videos and creators", sitemapXml.includes(`/watch/${noir.id}`) && sitemapXml.includes("/creators/elenavox"));
+check("sitemap lists public videos and creators", sitemapXml.includes(`/watch/${noir.id}`) && sitemapXml.includes("/@elenavox"));
 check("sitemap never lists an invited-only video", !sitemapXml.includes(roughCut.id));
 check("invited-only watch page is noindex", /<meta name="robots" content="noindex/.test(await (await fetch(`${B}/watch/${roughCut.id}`)).text()));
 check("public watch page carries a VideoObject", (await (await fetch(`${B}/watch/${noir.id}`)).text()).includes('"@type":"VideoObject"'));

@@ -18,7 +18,9 @@ const ProfileSchema = z.object({
   websiteUrl: z.string().trim().max(200).nullable().optional(),
   socialLinks: z.record(z.string().max(200).nullable()).optional(),
   directMessagePrivacy: z.enum(["EVERYONE", "CONTACTS_ONLY"]).optional(),
-  notificationsOff: z.array(z.string().max(40)).max(20).optional(),
+  emailsOff: z.array(z.string().max(40)).max(20).optional(),
+  inAppOff: z.array(z.string().max(40)).max(20).optional(),
+  emailFrequency: z.enum(["INSTANT", "HOURLY", "NONE"]).optional(),
   payoutAddressCrypto: z.string().trim().max(200).optional(),
 });
 
@@ -38,7 +40,9 @@ async function read(userId: string) {
       bannerUrl: profiles.bannerUrl,
       websiteUrl: profiles.websiteUrl,
       socialLinks: profiles.socialLinks,
-      notificationsOff: profiles.notificationsOff,
+      emailsOff: profiles.emailsOff,
+      inAppOff: profiles.inAppOff,
+      emailFrequency: profiles.emailFrequency,
       directMessagePrivacy: profiles.directMessagePrivacy,
       payoutAddressCrypto: profiles.payoutAddressCrypto,
       updatedAt: profiles.updatedAt,
@@ -80,7 +84,9 @@ export async function PUT(req: NextRequest) {
     if (input.websiteUrl !== undefined) set.websiteUrl = normalizeWebsite(input.websiteUrl);
     if (input.socialLinks !== undefined) set.socialLinks = parseSocialLinks(input.socialLinks);
     if (input.directMessagePrivacy !== undefined) set.directMessagePrivacy = input.directMessagePrivacy;
-    if (input.notificationsOff !== undefined) set.notificationsOff = parseNotificationsOff(input.notificationsOff);
+    if (input.emailsOff !== undefined) set.emailsOff = parseNotificationsOff(input.emailsOff);
+    if (input.inAppOff !== undefined) set.inAppOff = parseNotificationsOff(input.inAppOff);
+    if (input.emailFrequency !== undefined) set.emailFrequency = input.emailFrequency;
     if (input.payoutAddressCrypto !== undefined && user.role === "CREATOR") set.payoutAddressCrypto = input.payoutAddressCrypto || null;
     await db.update(profiles).set(set).where(eq(profiles.userId, user.id));
     return NextResponse.json({ success: true });

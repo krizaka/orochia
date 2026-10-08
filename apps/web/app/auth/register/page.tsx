@@ -4,10 +4,11 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { SocialSignIn } from "@/components/SocialSignIn";
 import { useRouter } from "next/navigation";
-import { Lock, Mail, User, UserPlus } from "lucide-react";
+import { Lock, Mail, UserPlus } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { OrochiaLogo } from "@/components/OrochiaLogo";
 import { BirthDateField, isAdultBirthDate } from "@/components/BirthDateField";
+import { UsernameField } from "@/components/UsernameField";
 import { Rich } from "@/components/Rich";
 import { t } from "@/lib/i18n";
 
@@ -70,20 +71,7 @@ export default function RegisterPage() {
         <div className="relative mb-4"><SocialSignIn /></div>
         <form onSubmit={handleSubmit} className="relative space-y-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <label className={label}>
-              {t("auth.register.username")}
-              <div className="relative mt-1.5">
-                <User className="absolute left-3 top-3 h-4 w-4 text-zinc-500" />
-                <input
-                  required
-                  autoComplete="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder={t("auth.register.usernamePlaceholder")}
-                  className={`${field} pl-9 pr-3 normal-case tracking-normal`}
-                />
-              </div>
-            </label>
+            <UsernameField value={username} onChange={setUsername} labelClass={label} fieldClass={field} />
             <label className={label}>
               {t("auth.register.displayName")}
               <input

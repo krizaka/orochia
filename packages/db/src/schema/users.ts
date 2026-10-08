@@ -34,8 +34,13 @@ export const profiles = pgTable("profiles", {
   websiteUrl: text("website_url"),
   /** Handles on other networks (instagram, x, facebook, tiktok, youtube, telegram); URLs are built by the server. */
   socialLinks: jsonb("social_links").$type<Record<string, string>>().default(sql`'{}'::jsonb`).notNull(),
-  /** E-mail notifications turned off, by event (absent = on: everything is on by default). */
-  notificationsOff: jsonb("notifications_off").$type<string[]>().default(sql`'[]'::jsonb`).notNull(),
+  /** Activity e-mails turned off, by event (absent = on: everything is on by default). */
+  emailsOff: jsonb("notifications_off").$type<string[]>().default(sql`'[]'::jsonb`).notNull(),
+  /** In-app notifications (the bell) turned off, by event. */
+  inAppOff: jsonb("in_app_off").$type<string[]>().default(sql`'[]'::jsonb`).notNull(),
+  /** How many activity e-mails: INSTANT (each one), HOURLY (at most one an hour), NONE. */
+  emailFrequency: varchar("email_frequency", { length: 10 }).default("INSTANT").notNull(),
+  lastActivityEmailAt: timestamp("last_activity_email_at", { withTimezone: true }),
   directMessagePrivacy: varchar("direct_message_privacy", { length: 20 }).default("EVERYONE").notNull(),
   minTipAmountCents: integer("min_tip_amount_cents").default(500).notNull(), // default $5.00
   payoutAddressCrypto: text("payout_address_crypto"),

@@ -108,7 +108,7 @@ export function videoSchema(v: VideoSchemaInput) {
     isFamilyFriendly: false,
     contentRating: "adult",
     isAccessibleForFree: v.visibility === "PUBLIC",
-    author: { "@type": "Person", name: v.creatorName, url: absolute(`/creators/${v.creatorUsername}`) },
+    author: { "@type": "Person", name: v.creatorName, url: absolute(`/@${v.creatorUsername}`) },
     publisher: { "@id": `${SITE_URL}/#app` },
     interactionStatistic: [
       { "@type": "InteractionCounter", interactionType: { "@type": "WatchAction" }, userInteractionCount: v.viewsCount },
@@ -120,7 +120,7 @@ export function videoSchema(v: VideoSchemaInput) {
 
 /** A creator's public page. */
 export function profileSchema(c: { username: string; displayName: string; bio: string | null; avatarUrl: string | null; videosCount: number; links?: { url: string }[]; websiteUrl?: string | null }) {
-  const url = absolute(`/creators/${c.username}`);
+  const url = absolute(`/@${c.username}`);
   return {
     "@context": "https://schema.org",
     "@type": "ProfilePage",

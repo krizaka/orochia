@@ -11,6 +11,7 @@ export interface UserProfile {
   email: string;
   role: "CREATOR" | "MEMBER" | "ADMIN";
   avatarUrl: string;
+  bannerUrl?: string | null;
   bio?: string | null;
   payoutAddressCrypto?: string | null;
   balanceCents: number;

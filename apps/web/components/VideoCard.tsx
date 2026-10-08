@@ -198,7 +198,7 @@ export function VideoCard({
           <div className="flex gap-3">
             {/* Creator Avatar with link */}
             <Link
-              href={creatorUsername ? `/creators/${creatorUsername}` : "#"}
+              href={creatorUsername ? `/@${creatorUsername}` : "#"}
               className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl border border-white/10 dark:border-white/10 light:border-black/5 bg-zinc-800 transition-transform hover:scale-105"
             >
               <img
@@ -217,7 +217,7 @@ export function VideoCard({
               </Link>
               <div className="mt-1 flex items-center gap-1.5">
                 <Link
-                  href={creatorUsername ? `/creators/${creatorUsername}` : "#"}
+                  href={creatorUsername ? `/@${creatorUsername}` : "#"}
                   className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 hover:text-white dark:hover:text-white light:hover:text-black transition-colors truncate"
                 >
                   {creatorName}

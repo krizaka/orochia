@@ -11,6 +11,7 @@ import { PlaylistsPanel } from "@/components/dashboard/PlaylistsPanel";
 import { ListsPanel } from "@/components/dashboard/ListsPanel";
 import { InvitationsPanel } from "@/components/dashboard/InvitationsPanel";
 import { ProfileSettingsPanel } from "@/components/dashboard/ProfileSettingsPanel";
+import { ProfileHero } from "@/components/profile/ProfileHero";
 import {
   LayoutDashboard,
   Film,
@@ -18,7 +19,6 @@ import {
   Settings,
   Upload,
   Shield,
-  CheckCircle2,
   CreditCard,
   Clapperboard,
   Users,
@@ -79,23 +79,27 @@ const money = (cents: number) =>
 const duration = (secs: number) => `${Math.floor(secs / 60)}:${String(Math.floor(secs % 60)).padStart(2, "0")}`;
 const day = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
-function TabButton({ tab, active, onSelect, icon: Icon, children }: {
+/** A dashboard tab is a link (/dashboard?tab=…): the address always says where you are, so it can be shared or reloaded. */
+function TabButton({ tab, active, icon: Icon, children }: {
   tab: Tab;
   active: Tab;
-  onSelect: (tab: Tab) => void;
   icon: React.ComponentType<{ className?: string }>;
   children: React.ReactNode;
 }) {
   return (
-    <button
-      onClick={() => onSelect(tab)}
+    <Link
+      href={tab === "overview" ? "/dashboard" : `/dashboard?tab=${tab}`}
+      scroll={false}
+      aria-current={active === tab ? "page" : undefined}
       className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 transition-all ${
-        active === tab ? "bg-violet-600 text-white shadow-md shadow-violet-600/25" : "text-zinc-400 hover:text-white hover:bg-zinc-900 light:text-slate-500 light:hover:text-slate-950"
+        active === tab
+          ? "bg-violet-600 text-white shadow-md shadow-violet-600/25"
+          : "text-zinc-400 hover:bg-white/5 hover:text-white light:text-slate-500 light:hover:bg-black/5 light:hover:text-slate-950"
       }`}
     >
       <Icon className="h-3.5 w-3.5" />
       <span>{children}</span>
-    </button>
+    </Link>
   );
 }
 
@@ -138,7 +142,8 @@ function LedgerTable({ lines, isCreator }: { lines: LedgerLine[]; isCreator: boo
 function DashboardContent() {
   const { user, refresh } = useAuth();
   const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState<Tab>((searchParams.get("tab") as Tab) || "overview");
+  // The tab lives in the URL (?tab=…), never only in state.
+  const activeTab: Tab = (searchParams.get("tab") as Tab) || "overview";
   const [data, setData] = useState<Dashboard | null>(null);
   const [treasury, setTreasury] = useState<Treasury | null>(null);
   const [loadError, setLoadError] = useState(false);
@@ -183,74 +188,62 @@ function DashboardContent() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <div className="relative mb-8 overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r from-violet-950/60 via-zinc-950 to-fuchsia-950/50 p-6 sm:p-8 shadow-2xl light:border-black/10 light:from-violet-100 light:via-white light:to-fuchsia-100 light:shadow-lg">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative z-10">
-          <div className="flex items-center gap-4">
-            <div className="relative h-16 w-16 sm:h-20 sm:w-20 overflow-hidden rounded-2xl border-2 border-violet-500/40 bg-zinc-800 shadow-xl light:bg-slate-100">
-              <img src={user.avatarUrl} alt={user.displayName} className="h-full w-full object-cover" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl sm:text-3xl font-black text-white font-display light:text-slate-900">{user.displayName}</h1>
-                {isCreator && (
-                  <span className="rounded-md border border-violet-500/30 bg-violet-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-violet-300 light:text-violet-700">
-                    {t("profile.creator")}
-                  </span>
-                )}
-              </div>
-              <Link href={`/creators/${user.username}`} className="mt-0.5 inline-block font-mono text-xs text-zinc-400 hover:text-violet-300 light:text-slate-500">@{user.username}</Link>
-              {user.isAgeVerified && (
-                <div className="mt-2 flex items-center gap-2 text-xs text-emerald-400">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                  <span>18+ age certified</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
+      <ProfileHero
+        editable
+        displayName={user.displayName}
+        username={user.username}
+        avatarUrl={user.avatarUrl}
+        bannerUrl={user.bannerUrl ?? null}
+        roleLabel={isCreator ? t("profile.creator") : undefined}
+        actions={
+          <>
             {isCreator && (
-              <div className="rounded-2xl border border-white/10 bg-zinc-900/80 p-4 text-right light:bg-slate-50 light:border-black/10">
-                <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 light:text-slate-500">Available balance</span>
-                <span className="font-mono text-xl sm:text-2xl font-black text-emerald-400">{money(user.balanceCents)}</span>
+              <div className="rounded-2xl border border-white/10 bg-zinc-900/70 px-4 py-2 text-right light:border-black/10 light:bg-slate-50">
+                <span className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500">{t("profile.balance")}</span>
+                <span className="font-mono text-lg font-black text-emerald-400 light:text-emerald-600">{money(user.balanceCents)}</span>
               </div>
             )}
+            <Link
+              href={`/@${user.username}`}
+              className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-xs font-semibold text-zinc-200 transition-colors hover:border-violet-500/60 hover:bg-violet-500/10 light:border-black/10 light:text-slate-700 light:hover:bg-violet-50"
+            >
+              {t("profile.viewPublic")}
+            </Link>
             {isCreator && (
               <Link
                 href="/creator/upload"
-                className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-4 text-xs font-bold text-white shadow-lg shadow-violet-600/30 hover:scale-105 active:scale-95 transition-all"
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-violet-600/30 transition-transform hover:scale-[1.03] active:scale-95"
               >
-                <Upload className="h-4 w-4" />
-                <span>Upload</span>
+                <Upload className="h-4 w-4" /> {t("profile.upload")}
               </Link>
             )}
-          </div>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       <div className="flex overflow-x-auto space-x-2 border-b border-white/5 pb-3 mb-8 text-xs font-semibold light:border-black/10">
-        <TabButton tab="overview" active={activeTab} onSelect={setActiveTab} icon={LayoutDashboard}>Overview</TabButton>
-        <TabButton tab="library" active={activeTab} onSelect={setActiveTab} icon={Film}>
+        <TabButton tab="overview" active={activeTab} icon={LayoutDashboard}>Overview</TabButton>
+        <TabButton tab="library" active={activeTab} icon={Film}>
           My Library ({data?.library.length ?? 0})
         </TabButton>
-        <TabButton tab="ledger" active={activeTab} onSelect={setActiveTab} icon={Wallet}>Ledger</TabButton>
+        <TabButton tab="ledger" active={activeTab} icon={Wallet}>Ledger</TabButton>
         {isCreator && (
-          <TabButton tab="uploads" active={activeTab} onSelect={setActiveTab} icon={Clapperboard}>
+          <TabButton tab="uploads" active={activeTab} icon={Clapperboard}>
             My Videos ({data?.uploads.length ?? 0})
           </TabButton>
         )}
         {isCreator && (
-          <Link href="/creator/payouts" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all light:text-slate-500 light:hover:text-slate-950">
+          <Link href="/creator/payouts" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-white/5 transition-all light:text-slate-500 light:hover:bg-black/5 light:hover:text-slate-950">
             <CreditCard className="h-3.5 w-3.5 text-emerald-400" />
             <span>Payouts</span>
           </Link>
         )}
-        <TabButton tab="network" active={activeTab} onSelect={setActiveTab} icon={Users}>Network</TabButton>
-        <TabButton tab="playlists" active={activeTab} onSelect={setActiveTab} icon={ListVideo}>Collections</TabButton>
-        <TabButton tab="lists" active={activeTab} onSelect={setActiveTab} icon={ListChecks}>Lists</TabButton>
-        <TabButton tab="invitations" active={activeTab} onSelect={setActiveTab} icon={Sparkles}>Invitations</TabButton>
-        {isAdmin && <TabButton tab="treasury" active={activeTab} onSelect={setActiveTab} icon={Shield}>Treasury</TabButton>}
-        <TabButton tab="settings" active={activeTab} onSelect={setActiveTab} icon={Settings}>Settings</TabButton>
+        <TabButton tab="network" active={activeTab} icon={Users}>Network</TabButton>
+        <TabButton tab="playlists" active={activeTab} icon={ListVideo}>Collections</TabButton>
+        <TabButton tab="lists" active={activeTab} icon={ListChecks}>Lists</TabButton>
+        <TabButton tab="invitations" active={activeTab} icon={Sparkles}>Invitations</TabButton>
+        {isAdmin && <TabButton tab="treasury" active={activeTab} icon={Shield}>Treasury</TabButton>}
+        <TabButton tab="settings" active={activeTab} icon={Settings}>Settings</TabButton>
       </div>
 
       {loadError && <Empty>The dashboard could not be loaded. Please try again later.</Empty>}

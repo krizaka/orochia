@@ -199,7 +199,7 @@ export function GlobalSearchModal({
                 {creators.map((c) => (
                   <div
                     key={c.id}
-                    onClick={() => handleSelect(`/creators/${c.username}`)}
+                    onClick={() => handleSelect(`/@${c.username}`)}
                     className="flex items-center gap-3 rounded-2xl border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/40 dark:bg-zinc-900/40 light:bg-slate-50 p-2.5 hover:border-violet-500/50 hover:bg-zinc-900/80 cursor-pointer transition-all group"
                   >
                     <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl border border-violet-500/40 bg-zinc-800">

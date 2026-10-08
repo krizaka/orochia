@@ -166,9 +166,11 @@ orochia/                           npm workspaces
   the server (`profileImageUrl`); links are stored as handles of known networks and turned into URLs by the server
   (`socialLinksView`), the website must be http(s). Every active account has a public page; e-mail and date of birth
   are never on it.
-- **Activity e-mails** (`lib/notifications.ts`) are on by default, each one can be turned off
-  (`profiles.notifications_off`), go only to verified active addresses, are sent after the action is recorded
-  (`after()`), never throw, and are capped in bursts (messages: once per conversation and hour).
+- **Notifications** (`lib/notifications.ts`): each event is written to `notifications` (the bell, `/notifications`,
+  pushed live) and e-mailed; both channels are on by default and each event can be turned off on either
+  (`profiles.in_app_off`, `profiles.notifications_off`). E-mail pace: `profiles.email_frequency` INSTANT · HOURLY
+  (one an hour at most, claimed atomically) · NONE. E-mail only to verified active addresses; sent after the action
+  (`after()`), never throws; bursts capped (messages: once per conversation and hour).
 - No screen renders showcase data: pages read the database through `lib/queries.ts`; an empty platform renders
   empty states.
 
@@ -220,6 +222,20 @@ orochia/                           npm workspaces
   another language adds `messages/<locale>.json` with the same shape. Plain product words ("Dashboard", "Sign in"),
   never jargon or mixed languages.
 - Both themes are first-class: every surface and text colour has its `light:` counterpart.
+- **The address is the state — always.** Every place a person can be is a URL they can copy, share and reload:
+  tabs (`/dashboard?tab=settings`, `/@user?tab=ppv`), settings sections (`#settings-notifications`), lists and
+  their filters, detail views (`/notifications`, `/watch/<id>`). Tabs are `<Link>`s or `router.replace` — never
+  `useState` alone. A view that cannot be reached by URL is a bug.
+- **A profile's address is `/@username`** (members and creators alike); `/creators/<username>` redirects to it.
+  The username is unique (`users.username`) and checked live at sign-up with a free one offered
+  (`lib/usernames.ts`); display names repeat freely. Never build a profile URL from a display name.
+- **Quick actions live where the thing is shown.** Edit a photo on the photo (hover, always visible on touch), a
+  cover on the cover, a title on the title. Settings pages are for preferences, not for editing what is on screen.
+- **Production-grade UI, not demo UI**: every interactive element has hover, focus-visible, active, disabled and
+  loading states that read correctly **in both themes** (no dark hover on a light surface); real empty states;
+  skeletons while loading; menus and dialogs close on Escape and outside click and carry ARIA roles; text and tap
+  targets work at 360 px. Prefer the shared building blocks (`ProfileHero`, `PictureQuickEdit`, `NotificationBell`,
+  `SocialIcon`) over new one-offs.
 - Navigation: desktop — the top bar; phones — the top bar keeps brand, search and theme, and the bottom tab bar
   (Home · Explore · Create · Account / Sign in) holds everything else, so each action exists once.
 

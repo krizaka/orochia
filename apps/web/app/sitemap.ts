@@ -23,7 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const { videos, creators, collections } = await sitemapEntries();
     return [
       ...statics,
-      ...creators.map((c) => ({ url: absolute(`/creators/${c.username}`), lastModified: new Date(c.updatedAt), changeFrequency: "weekly" as const, priority: 0.8 })),
+      ...creators.map((c) => ({ url: absolute(`/@${c.username}`), lastModified: new Date(c.updatedAt), changeFrequency: "weekly" as const, priority: 0.8 })),
       ...videos.map((v) => ({ url: absolute(`/watch/${v.id}`), lastModified: v.updatedAt, changeFrequency: "weekly" as const, priority: 0.7 })),
       ...collections.map((c) => ({ url: absolute(`/playlists/${c.id}`), lastModified: c.updatedAt, changeFrequency: "weekly" as const, priority: 0.5 })),
     ];

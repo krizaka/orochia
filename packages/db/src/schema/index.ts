@@ -25,6 +25,7 @@ export * from "./ledger";
 export * from "./compliance";
 export * from "./stories";
 export * from "./drafts";
+export * from "./notifications";
 export * from "./reference-data";
 export * from "./invitations";
 export * from "./messaging";

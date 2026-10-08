@@ -123,7 +123,7 @@ export default async function HomePage() {
             </p>
           </div>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-            <Link href={`/creators/${featured.username}`} className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-xs font-bold text-white">
+            <Link href={`/@${featured.username}`} className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-xs font-bold text-white">
               {t("home.viewProfile")}
             </Link>
             <RelationshipActions username={featured.username} show={["follow"]} />

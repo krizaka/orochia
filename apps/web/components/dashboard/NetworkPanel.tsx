@@ -25,7 +25,7 @@ interface Network {
 function Row({ p, children }: { p: Person; children?: React.ReactNode }) {
   return (
     <li className="flex items-center justify-between gap-3 py-2.5">
-      <Link href={`/creators/${p.username}`} className="flex min-w-0 items-center gap-3">
+      <Link href={`/@${p.username}`} className="flex min-w-0 items-center gap-3">
         <img src={p.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-9 w-9 shrink-0 rounded-full border border-white/10 object-cover light:border-black/10" />
         <span className="min-w-0">
           <span className="block truncate text-sm font-semibold text-white light:text-slate-900">{p.displayName}</span>
@@ -125,7 +125,7 @@ export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
         render={(p) => (
           <Row key={p.id} p={p}>
             <span className={`text-[10px] font-bold uppercase ${p.status === "APPROVED" ? "text-emerald-400" : "text-amber-400"}`}>{p.status === "APPROVED" ? "approved" : "pending"}</span>
-            <button className={iconBtn} aria-label="Unfollow" onClick={() => act(`/api/creators/${p.username}/follow`, "DELETE")}><UserMinus className="h-4 w-4" /></button>
+            <button className={iconBtn} aria-label="Unfollow" onClick={() => act(`/api/@${p.username}/follow`, "DELETE")}><UserMinus className="h-4 w-4" /></button>
           </Row>
         )}
       />

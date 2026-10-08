@@ -290,7 +290,7 @@ export default function WatchClient() {
                 <div className="flex flex-wrap items-center justify-end gap-2">
                   <RelationshipActions username={details.creatorUsername} show={["follow"]} size="sm" onChange={() => void fetchStreamAccess()} />
                   <Link
-                    href={`/creators/${details.creatorUsername}`}
+                    href={`/@${details.creatorUsername}`}
                     className="rounded-xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-800 dark:bg-zinc-800 light:bg-slate-100 hover:bg-zinc-700 px-4 py-2 text-xs font-semibold text-white dark:text-white light:text-slate-800 transition-all"
                   >
                     View profile

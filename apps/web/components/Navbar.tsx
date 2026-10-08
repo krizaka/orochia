@@ -3,10 +3,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, LayoutDashboard, LogOut, MessageSquare, Search, Settings, Upload, User, Wallet } from "lucide-react";
+import { ChevronDown, ChevronRight, LayoutDashboard, LogOut, MessageSquare, Search, Settings, Upload, Wallet } from "lucide-react";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
 import { OrochiaLogo } from "@/components/OrochiaLogo";
 import { ThemeToggle } from "@/components/ThemeProvider";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { t } from "@/lib/i18n";
 
 /**
@@ -22,8 +23,13 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
 
   useEffect(() => {
     const close = (e: MouseEvent) => menuRef.current && !menuRef.current.contains(e.target as Node) && setMenuOpen(false);
+    const escape = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
     document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
+    document.addEventListener("keydown", escape);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", escape);
+    };
   }, []);
   useEffect(() => setMenuOpen(false), [pathname]);
 
@@ -39,8 +45,16 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
     </Link>
   );
   const menuItem = (href: string, icon: React.ReactNode, label: string) => (
-    <Link href={href} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-medium text-zinc-300 light:text-slate-700 hover:bg-violet-600/15 hover:text-white light:hover:text-slate-950">
-      {icon}
+    <Link
+      role="menuitem"
+      href={href}
+      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+        (href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href.split("?")[0]) && href !== "/dashboard?tab=settings")
+          ? "bg-violet-600/15 text-white light:text-violet-800"
+          : "text-zinc-300 hover:bg-white/5 hover:text-white light:text-slate-700 light:hover:bg-black/[0.04] light:hover:text-slate-950"
+      }`}
+    >
+      <span className="text-zinc-400 light:text-slate-500">{icon}</span>
       {label}
     </Link>
   );
@@ -81,6 +95,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
 
           {user ? (
             <>
+              <NotificationBell />
               {isCreator && (
                 <Link
                   href="/creator/upload"
@@ -93,6 +108,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                 <button
                   onClick={() => setMenuOpen((o) => !o)}
                   aria-expanded={menuOpen}
+                  aria-haspopup="menu"
                   className="flex items-center gap-2 rounded-full border border-white/10 light:border-black/10 bg-zinc-900/90 light:bg-slate-100 py-1 pl-1 pr-3 hover:border-violet-500/40"
                 >
                   <img src={user.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-8 w-8 rounded-full object-cover" />
@@ -100,25 +116,43 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                   <ChevronDown className="h-3.5 w-3.5 text-zinc-400" />
                 </button>
                 {menuOpen && (
-                  <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-white/10 light:border-black/10 bg-zinc-950/95 light:bg-white p-2 shadow-2xl backdrop-blur-2xl">
-                    <div className="mb-1 border-b border-white/5 light:border-black/5 p-3">
-                      <p className="text-xs font-bold text-white light:text-slate-900">{user.displayName}</p>
-                      <p className="text-[11px] text-zinc-400 light:text-slate-500">
-                        @{user.username} · {t(`nav.roles.${user.role}`)}
-                      </p>
-                      <div className="mt-2 flex items-center justify-between rounded-xl bg-zinc-900/80 light:bg-slate-100 px-2.5 py-1.5 font-mono text-[11px]">
-                        <span className="text-zinc-400 light:text-slate-500">{t("nav.balance")}</span>
-                        <span className="font-bold text-emerald-400 light:text-emerald-700">${(user.balanceCents / 100).toFixed(2)}</span>
-                      </div>
-                    </div>
-                    {menuItem("/dashboard", <LayoutDashboard className="h-4 w-4 text-violet-400" />, t("nav.dashboard"))}
-                    {menuItem("/messages", <MessageSquare className="h-4 w-4 text-violet-400" />, t("nav.messages"))}
-                    {isCreator && menuItem(`/creators/${user.username}`, <User className="h-4 w-4 text-fuchsia-400" />, t("nav.profile"))}
-                    {isCreator && menuItem("/creator/payouts", <Wallet className="h-4 w-4 text-emerald-400" />, t("nav.earnings"))}
-                    {menuItem("/dashboard?tab=settings", <Settings className="h-4 w-4 text-zinc-400" />, t("nav.settings"))}
+                  <div role="menu" className="absolute right-0 mt-2 w-72 overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/95 p-1.5 shadow-2xl shadow-black/50 backdrop-blur-2xl light:border-black/10 light:bg-white/95 light:shadow-violet-900/10">
+                    {/* Who you are — the whole card opens your public profile */}
+                    <Link
+                      role="menuitem"
+                      href={`/@${user.username}`}
+                      className="group flex items-center gap-3 rounded-xl p-2.5 transition-colors hover:bg-white/5 light:hover:bg-black/[0.04]"
+                    >
+                      <img src={user.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-11 w-11 rounded-2xl object-cover ring-2 ring-violet-500/30" />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-bold text-white light:text-slate-900">{user.displayName}</span>
+                        <span className="block truncate text-[11px] text-zinc-400 group-hover:text-violet-300 light:text-slate-500 light:group-hover:text-violet-700">
+                          @{user.username} · {t("nav.viewProfile")}
+                        </span>
+                      </span>
+                      <ChevronRight className="h-4 w-4 text-zinc-500 transition-transform group-hover:translate-x-0.5" />
+                    </Link>
+                    {isCreator && (
+                      <Link
+                        role="menuitem"
+                        href="/creator/payouts"
+                        className="mx-1 mb-1 mt-0.5 flex items-center justify-between rounded-xl bg-gradient-to-r from-emerald-500/10 to-transparent px-3 py-2.5 ring-1 ring-emerald-500/20 transition-colors hover:from-emerald-500/20"
+                      >
+                        <span className="flex items-center gap-2 text-xs font-semibold text-zinc-200 light:text-slate-700">
+                          <Wallet className="h-4 w-4 text-emerald-400" /> {t("nav.earnings")}
+                        </span>
+                        <span className="font-mono text-sm font-black text-emerald-400 light:text-emerald-600">${(user.balanceCents / 100).toFixed(2)}</span>
+                      </Link>
+                    )}
+                    <div className="my-1 h-px bg-white/5 light:bg-black/5" />
+                    {menuItem("/dashboard", <LayoutDashboard className="h-4 w-4" />, t("nav.dashboard"))}
+                    {menuItem("/messages", <MessageSquare className="h-4 w-4" />, t("nav.messages"))}
+                    {menuItem("/dashboard?tab=settings", <Settings className="h-4 w-4" />, t("nav.settings"))}
+                    <div className="my-1 h-px bg-white/5 light:bg-black/5" />
                     <button
+                      role="menuitem"
                       onClick={() => void logout()}
-                      className="mt-1 flex w-full items-center gap-2.5 rounded-xl border-t border-white/5 light:border-black/5 px-3 py-2 text-xs font-medium text-rose-400 hover:bg-rose-500/10"
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-zinc-400 transition-colors hover:bg-rose-500/10 hover:text-rose-300 light:text-slate-500 light:hover:text-rose-600"
                     >
                       <LogOut className="h-4 w-4" /> {t("nav.signOut")}
                     </button>

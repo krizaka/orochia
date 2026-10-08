@@ -1,18 +1,13 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Bell, Check, ExternalLink, ImagePlus, Link2, Loader2, Lock, Palette, Trash2, User, UserX, Wallet, KeyRound } from "lucide-react";
+import { Bell, Check, ExternalLink, Link2, Loader2, Lock, User, UserX, Wallet, KeyRound } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { SocialIcon } from "@/components/SocialIcon";
 import { latestAdultBirthDate } from "@/components/BirthDateField";
 import { t, type MessageKey } from "@/lib/i18n";
 
-interface PresetItem {
-  id: string;
-  name: string;
-  url: string;
-}
 interface BlockedUser {
   id: string;
   blockedUsername: string;
@@ -36,7 +31,9 @@ interface Profile {
   websiteUrl: string | null;
   socialLinks: Record<string, string>;
   networks: string[];
-  notificationsOff: string[];
+  emailsOff: string[];
+  inAppOff: string[];
+  emailFrequency: "INSTANT" | "HOURLY" | "NONE";
   directMessagePrivacy: "EVERYONE" | "CONTACTS_ONLY";
   payoutAddressCrypto: string | null;
 }
@@ -107,121 +104,19 @@ function useSaver() {
   return { state, error, run };
 }
 
-function Switch({ checked, onChange, labelText, hintText }: { checked: boolean; onChange: (v: boolean) => void; labelText: string; hintText?: string }) {
+function MiniSwitch({ checked, onChange, label: aria, disabled = false }: { checked: boolean; onChange: (v: boolean) => void; label: string; disabled?: boolean }) {
   return (
-    <label className="flex cursor-pointer items-center justify-between gap-4 py-2.5">
-      <span>
-        <span className="block text-sm text-zinc-200 light:text-slate-800">{labelText}</span>
-        {hintText && <span className="block text-[11px] text-zinc-500 light:text-slate-500">{hintText}</span>}
-      </span>
-      <input type="checkbox" role="switch" checked={checked} onChange={(e) => onChange(e.target.checked)} className="peer sr-only" />
-      <span
-        aria-hidden
-        className="relative h-6 w-11 shrink-0 rounded-full bg-zinc-700 transition-colors after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:bg-violet-600 peer-checked:after:translate-x-5 peer-focus-visible:ring-2 peer-focus-visible:ring-violet-400 light:bg-slate-300"
-      />
-    </label>
-  );
-}
-
-/** One picture (photo or cover): upload your own, pick a design, or remove it. Saved at once. */
-function PictureEditor({
-  kind,
-  url,
-  presets,
-  onChanged,
-}: {
-  kind: "avatar" | "banner";
-  url: string | null;
-  presets: PresetItem[];
-  onChanged: (url: string | null) => void;
-}) {
-  const input = useRef<HTMLInputElement>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [choosing, setChoosing] = useState(false);
-  const isAvatar = kind === "avatar";
-
-  const save = async (choice: string | null, preview: string | null) => {
-    setBusy(true);
-    setError(null);
-    const failure = await put({ [kind]: choice });
-    setBusy(false);
-    if (failure) return setError(failure);
-    onChanged(preview);
-  };
-
-  const upload = async (file: File | undefined) => {
-    if (!file) return;
-    setBusy(true);
-    setError(null);
-    const form = new FormData();
-    form.append("category", isAvatar ? "avatars" : "banners");
-    form.append("file", file);
-    const res = await fetch("/api/uploads", { method: "POST", body: form });
-    const data = (await res.json().catch(() => ({}))) as { data?: { ref: string; url: string | null } };
-    setBusy(false);
-    if (!res.ok || !data.data) return setError(t("settings.pictures.uploadFailed", { size: isAvatar ? "5 MB" : "10 MB" }));
-    await save(data.data.ref, data.data.url ?? URL.createObjectURL(file));
-  };
-
-  return (
-    <div>
-      <span className={label}>{t(isAvatar ? "settings.pictures.avatar" : "settings.pictures.banner")}</span>
-      <div className="flex flex-wrap items-center gap-4">
-        <div className={`relative shrink-0 overflow-hidden border border-white/10 bg-zinc-800 light:border-black/10 light:bg-slate-100 ${isAvatar ? "h-20 w-20 rounded-2xl" : "h-20 w-36 rounded-xl"}`}>
-          {url ? <img src={url} alt="" className="h-full w-full object-cover" /> : <span className="flex h-full w-full items-center justify-center text-zinc-500"><User className="h-6 w-6" /></span>}
-          {busy && (
-            <span className="absolute inset-0 flex items-center justify-center bg-black/60">
-              <Loader2 className="h-5 w-5 animate-spin text-white" />
-            </span>
-          )}
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={() => input.current?.click()} disabled={busy} className={ghost}>
-            <ImagePlus className="h-3.5 w-3.5" /> {t("settings.pictures.upload")}
-          </button>
-          <button type="button" onClick={() => setChoosing(true)} disabled={busy} className={ghost}>
-            <Palette className="h-3.5 w-3.5" /> {t("settings.pictures.choose")}
-          </button>
-          {url && (
-            <button type="button" onClick={() => save(null, null)} disabled={busy} className={`${ghost} hover:border-rose-500/60 hover:text-rose-300`}>
-              <Trash2 className="h-3.5 w-3.5" /> {t("settings.pictures.remove")}
-            </button>
-          )}
-        </div>
-        <input ref={input} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => void upload(e.target.files?.[0])} />
-      </div>
-      {error && <p role="alert" className="mt-2 text-xs text-rose-400 light:text-rose-600">{error}</p>}
-
-      {choosing && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-0 backdrop-blur-sm sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label={t("settings.pictures.presetsTitle")}>
-          <div className="w-full max-w-lg rounded-t-3xl border border-white/10 bg-zinc-950 p-5 shadow-2xl light:border-black/10 light:bg-white sm:rounded-3xl">
-            <h4 className="mb-4 text-sm font-bold text-white light:text-slate-900">{t("settings.pictures.presetsTitle")}</h4>
-            <div className={`grid max-h-[60vh] gap-3 overflow-y-auto p-1 ${isAvatar ? "grid-cols-4" : "grid-cols-2"}`}>
-              {presets.map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => {
-                    setChoosing(false);
-                    void save(p.id, p.url);
-                  }}
-                  aria-pressed={url === p.url}
-                  className={`overflow-hidden rounded-2xl border-2 transition-all ${url === p.url ? "border-violet-500" : "border-transparent hover:border-violet-500/50"}`}
-                >
-                  <img src={p.url} alt={p.name} className={`w-full object-cover ${isAvatar ? "aspect-square" : "aspect-[3/1]"}`} />
-                </button>
-              ))}
-            </div>
-            <div className="mt-4 flex justify-end">
-              <button type="button" onClick={() => setChoosing(false)} className={ghost}>
-                {t("settings.pictures.close")}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={aria}
+      disabled={disabled}
+      onClick={() => onChange(!checked)}
+      className={`relative h-6 w-11 shrink-0 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 disabled:opacity-30 ${checked ? "bg-violet-600" : "bg-zinc-700 light:bg-slate-300"}`}
+    >
+      <span className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${checked ? "translate-x-5" : ""}`} />
+    </button>
   );
 }
 
@@ -232,7 +127,6 @@ function PictureEditor({
 export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
   const { refresh } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [presets, setPresets] = useState<{ avatars: PresetItem[]; banners: PresetItem[] }>({ avatars: [], banners: [] });
   const [blocked, setBlocked] = useState<BlockedUser[]>([]);
   const [identities, setIdentities] = useState<ConnectedIdentity[]>([]);
 
@@ -242,20 +136,33 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
   const [links, setLinks] = useState<Record<string, string>>({});
   const [website, setWebsite] = useState("");
   const [payoutAddress, setPayoutAddress] = useState("");
-  const [off, setOff] = useState<string[]>([]);
+  const [emailsOff, setEmailsOff] = useState<string[]>([]);
+  const [inAppOff, setInAppOff] = useState<string[]>([]);
+  const [frequency, setFrequency] = useState<Profile["emailFrequency"]>("INSTANT");
   const identity = useSaver();
   const birth = useSaver();
   const linkSaver = useSaver();
   const payout = useSaver();
   const prefs = useSaver();
 
+  // The open section follows the address (#settings-…), and an address with a section opens there.
+  const [hash, setHash] = useState("");
+  useEffect(() => {
+    const sync = () => setHash(window.location.hash);
+    sync();
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
+  useEffect(() => {
+    if (profile && window.location.hash) document.querySelector(window.location.hash)?.scrollIntoView({ block: "start" });
+  }, [profile]);
+
   const load = useCallback(async () => {
-    const [p, pr, b, i] = await Promise.all([
+    const [p, b, i] = await Promise.all([
       fetch("/api/me/profile", { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)),
-      fetch("/api/reference/presets").then((r) => (r.ok ? r.json() : null)),
       fetch("/api/me/blocks", { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)),
       fetch("/api/me/identities", { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)),
-    ]).catch(() => [null, null, null, null]);
+    ]).catch(() => [null, null, null]);
     if (p?.profile) {
       const prof = p.profile as Profile;
       setProfile(prof);
@@ -264,9 +171,10 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
       setLinks(prof.socialLinks ?? {});
       setWebsite(prof.websiteUrl ?? "");
       setPayoutAddress(prof.payoutAddressCrypto ?? "");
-      setOff(prof.notificationsOff ?? []);
+      setEmailsOff(prof.emailsOff ?? []);
+      setInAppOff(prof.inAppOff ?? []);
+      setFrequency(prof.emailFrequency ?? "INSTANT");
     }
-    if (pr) setPresets({ avatars: pr.avatars ?? [], banners: pr.banners ?? [] });
     if (b) setBlocked(b.blocked ?? []);
     if (i) setIdentities(i.identities ?? []);
   }, []);
@@ -281,28 +189,40 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
   }
 
   const events = EVENTS.filter((e) => isCreator || !CREATOR_EVENTS.has(e));
-  const setPrefs = (next: string[]) => {
-    setOff(next);
-    void prefs.run(() => put({ notificationsOff: next }));
+  const setChannel = (channel: "inApp" | "email", next: string[]) => {
+    if (channel === "inApp") setInAppOff(next);
+    else setEmailsOff(next);
+    void prefs.run(() => put(channel === "inApp" ? { inAppOff: next } : { emailsOff: next }));
   };
+  const toggle = (list: string[], e: string, on: boolean) => (on ? list.filter((x) => x !== e) : [...list, e]);
+
+  const sections = (["profile", "links", "privacy", "notifications", "payouts", "accounts", "blocked"] as const).filter((s) => isCreator || s !== "payouts");
 
   return (
-    <div className="max-w-3xl space-y-6">
+    <div className="grid gap-6 lg:grid-cols-[200px_minmax(0,1fr)]">
+      {/* Each section has its own address (/dashboard?tab=settings#settings-links): shareable, reloadable. */}
+      <nav aria-label={t("settings.title")} className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:px-0">
+        <ul className="flex gap-1 lg:sticky lg:top-24 lg:flex-col">
+          {sections.map((id) => (
+            <li key={id}>
+              <a
+                href={`#settings-${id}`}
+                aria-current={hash === `#settings-${id}` ? "location" : undefined}
+                className={`block whitespace-nowrap rounded-xl px-3.5 py-2 text-xs font-semibold transition-colors ${
+                  hash === `#settings-${id}`
+                    ? "bg-violet-600/15 text-violet-200 light:text-violet-700"
+                    : "text-zinc-400 hover:bg-white/5 hover:text-white light:text-slate-500 light:hover:bg-black/5 light:hover:text-slate-950"
+                }`}
+              >
+                {t(`settings.sections.${id}`)}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    <div className="min-w-0 max-w-3xl space-y-6">
       <Section id="profile" icon={<User className="h-4 w-4" />} title={t("settings.sections.profile")}>
-        <div className="grid gap-6 sm:grid-cols-2">
-          <PictureEditor
-            kind="avatar"
-            url={profile.avatarUrl}
-            presets={presets.avatars}
-            onChanged={(url) => {
-              setProfile({ ...profile, avatarUrl: url });
-              void refresh();
-            }}
-          />
-          <PictureEditor kind="banner" url={profile.bannerUrl} presets={presets.banners} onChanged={(url) => setProfile({ ...profile, bannerUrl: url })} />
-        </div>
-
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2">
           <label className="block">
             <span className={label}>{t("settings.identity.displayName")}</span>
             <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} maxLength={80} required className={field} />
@@ -312,7 +232,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
             <span className={label}>{t("settings.identity.username")}</span>
             <div className={`${field} flex items-center justify-between gap-2 font-mono text-zinc-400 light:text-slate-500`}>
               @{profile.username}
-              <Link href={`/creators/${profile.username}`} className="inline-flex items-center gap-1 font-sans text-[11px] font-semibold text-violet-300 hover:underline light:text-violet-700">
+              <Link href={`/@${profile.username}`} className="inline-flex items-center gap-1 font-sans text-[11px] font-semibold text-violet-300 hover:underline light:text-violet-700">
                 {t("settings.identity.viewProfile")} <ExternalLink className="h-3 w-3" />
               </Link>
             </div>
@@ -418,25 +338,55 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
       </Section>
 
       <Section id="notifications" icon={<Bell className="h-4 w-4" />} title={t("settings.sections.notifications")}>
-        <p className="-mt-2 mb-3 text-xs text-zinc-400 light:text-slate-500">{t("settings.notifications.intro")}</p>
-        <div className="rounded-2xl border border-white/10 px-4 light:border-black/10">
-          <Switch
-            checked={events.every((e) => !off.includes(e))}
-            onChange={(on) => setPrefs(on ? [] : [...EVENTS])}
-            labelText={t("settings.notifications.all")}
-            hintText={t("settings.notifications.allHint")}
-          />
+        <p className="-mt-2 mb-4 text-xs text-zinc-400 light:text-slate-500">{t("settings.notifications.intro")}</p>
+        <div className="overflow-hidden rounded-2xl border border-white/10 light:border-black/10">
+          <div className="grid grid-cols-[minmax(0,1fr)_64px_64px] items-center gap-2 border-b border-white/10 bg-white/[0.03] px-4 py-2.5 text-[10px] font-bold uppercase tracking-wider text-zinc-400 light:border-black/10 light:bg-black/[0.02] light:text-slate-500 sm:grid-cols-[minmax(0,1fr)_96px_96px]">
+            <span />
+            <span className="text-center">{t("settings.notifications.inApp")}</span>
+            <span className="text-center">{t("settings.notifications.byEmail")}</span>
+          </div>
+          {[{ id: "all", label: t("settings.notifications.all") }, ...events.map((e) => ({ id: e, label: t(`settings.notifications.events.${e}`) }))].map((row) => {
+            const all = row.id === "all";
+            const inOn = all ? events.every((e) => !inAppOff.includes(e)) : !inAppOff.includes(row.id);
+            const mailOn = all ? events.every((e) => !emailsOff.includes(e)) : !emailsOff.includes(row.id);
+            return (
+              <div
+                key={row.id}
+                className={`grid grid-cols-[minmax(0,1fr)_64px_64px] items-center gap-2 px-4 py-2 sm:grid-cols-[minmax(0,1fr)_96px_96px] ${all ? "border-b border-white/10 font-semibold light:border-black/10" : "border-b border-white/5 last:border-0 light:border-black/5"}`}
+              >
+                <span className="text-sm text-zinc-200 light:text-slate-800">{row.label}</span>
+                <span className="flex justify-center">
+                  <MiniSwitch checked={inOn} label={`${row.label} — ${t("settings.notifications.inApp")}`} onChange={(on) => setChannel("inApp", all ? (on ? [] : [...EVENTS]) : toggle(inAppOff, row.id, on))} />
+                </span>
+                <span className="flex justify-center">
+                  <MiniSwitch checked={mailOn} disabled={frequency === "NONE"} label={`${row.label} — ${t("settings.notifications.byEmail")}`} onChange={(on) => setChannel("email", all ? (on ? [] : [...EVENTS]) : toggle(emailsOff, row.id, on))} />
+                </span>
+              </div>
+            );
+          })}
         </div>
-        <div className="mt-2 divide-y divide-white/5 px-4 light:divide-black/5">
-          {events.map((e) => (
-            <Switch
-              key={e}
-              checked={!off.includes(e)}
-              onChange={(on) => setPrefs(on ? off.filter((x) => x !== e) : [...off, e])}
-              labelText={t(`settings.notifications.events.${e}`)}
-            />
+
+        <span className={`${label} mt-5`}>{t("settings.notifications.frequency")}</span>
+        <div className="grid grid-cols-3 gap-1 rounded-2xl border border-white/10 p-1 light:border-black/10" role="radiogroup" aria-label={t("settings.notifications.frequency")}>
+          {(["INSTANT", "HOURLY", "NONE"] as const).map((f) => (
+            <button
+              key={f}
+              type="button"
+              role="radio"
+              aria-checked={frequency === f}
+              onClick={() => {
+                setFrequency(f);
+                void prefs.run(() => put({ emailFrequency: f }));
+              }}
+              className={`rounded-xl px-2 py-2 text-xs font-semibold transition-colors ${
+                frequency === f ? "bg-violet-600 text-white shadow" : "text-zinc-400 hover:bg-white/5 hover:text-white light:text-slate-600 light:hover:bg-black/5 light:hover:text-slate-950"
+              }`}
+            >
+              {t(`settings.notifications.frequencies.${f}`)}
+            </button>
           ))}
         </div>
+        <span className={hint}>{t("settings.notifications.frequencyHint")}</span>
         {(prefs.state === "saved" || prefs.error) && (
           <p role="status" className={`mt-2 text-xs ${prefs.error ? "text-rose-400" : "text-emerald-400 light:text-emerald-600"}`}>
             {prefs.error ?? t("settings.saved")}
@@ -519,6 +469,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
           </ul>
         )}
       </Section>
+    </div>
     </div>
   );
 }

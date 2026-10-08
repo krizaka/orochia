@@ -8,6 +8,7 @@ import { isDemoMode } from "@/lib/env";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { errorResponse, isUniqueViolation, jsonError } from "@/lib/http";
 import { checkDateOfBirth } from "@/lib/profile";
+import { isReserved } from "@/lib/usernames";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +42,7 @@ export async function POST(req: NextRequest) {
 
     const input = RegisterSchema.parse(await req.json());
     const dateOfBirth = checkDateOfBirth(input.dateOfBirth);
+    if (isReserved(input.username)) return jsonError(400, "This username is reserved. Choose another one.");
 
     const account = await db.transaction(async (tx) => {
       const [user] = await tx

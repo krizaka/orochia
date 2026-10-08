@@ -54,7 +54,7 @@ export default async function PlaylistPage(props: { params: Promise<{ id: string
         {playlist.description && <p className="mt-2 max-w-2xl text-sm text-zinc-300 light:text-slate-700">{playlist.description}</p>}
         <p className="mt-3 text-xs text-zinc-400 light:text-slate-500">
           By{" "}
-          <Link href={`/creators/${playlist.ownerUsername}`} className="text-violet-300 hover:underline">
+          <Link href={`/@${playlist.ownerUsername}`} className="text-violet-300 hover:underline">
             {playlist.ownerName}
           </Link>{" "}
           · {playlist.itemsCount} videos

@@ -1,21 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#180d2b"/>
-      <stop offset="100%" stop-color="#090514"/>
-    </linearGradient>
-    <linearGradient id="flame" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#8b5cf6"/>
-      <stop offset="50%" stop-color="#d946ef"/>
-      <stop offset="100%" stop-color="#ec4899"/>
-    </linearGradient>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="8" result="blur"/>
-      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-    </filter>
-  </defs>
-  <rect width="200" height="200" rx="40" fill="url(#bg)"/>
-  <circle cx="100" cy="100" r="70" fill="none" stroke="#3b1d60" stroke-width="2" stroke-dasharray="4 6"/>
-  <path d="M100 35 C115 65 145 95 140 125 C135 155 105 165 100 165 C95 165 65 155 60 125 C55 95 85 65 100 35 Z" fill="url(#flame)" filter="url(#glow)"/>
-  <path d="M100 70 C108 90 125 110 120 128 C116 145 102 150 100 150 C98 150 84 145 80 128 C75 110 92 90 100 70 Z" fill="#ffffff" opacity="0.85"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+<defs>
+<filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="60"/></filter>
+<filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.09 0"/></filter>
+<linearGradient id="gloss" gradientUnits="userSpaceOnUse" x1="100" y1="100" x2="300" y2="300"><stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/><stop offset="1" stop-color="#ffffff" stop-opacity="0.45"/></linearGradient>
+<radialGradient id="sheen" cx="30%" cy="22%" r="60%"><stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
+<radialGradient id="vignette" cx="50%" cy="50%" r="75%"><stop offset="0.6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.45"/></radialGradient>
+</defs>
+<rect width="400" height="400" fill="#12061f"/>
+<g filter="url(#blur)"><circle cx="161" cy="343" r="179" fill="#8b5cf6" opacity="0.60"/><circle cx="349" cy="282" r="190" fill="#d946ef" opacity="0.75"/><circle cx="350" cy="46" r="170" fill="#ec4899" opacity="0.64"/><circle cx="159" cy="138" r="170" fill="#8b5cf6" opacity="0.74"/><circle cx="321" cy="283" r="160" fill="#d946ef" opacity="0.77"/></g>
+<rect width="400" height="400" fill="url(#sheen)"/>
+<g opacity="0.9"><circle cx="200" cy="200" r="78" fill="none" stroke="url(#gloss)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="200" cy="200" r="46" fill="url(#gloss)" opacity="0.35"/></g>
+<rect width="400" height="400" fill="url(#vignette)"/>
+<rect width="400" height="400" filter="url(#grain)"/>
 </svg>

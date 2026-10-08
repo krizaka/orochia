@@ -6,6 +6,7 @@ import { OAUTH_PENDING_COOKIE, type ProviderProfile, completeSignUp, unseal } fr
 import { clearShortCookie } from "@/lib/oauth-cookies";
 import { errorResponse, isUniqueViolation, jsonError } from "@/lib/http";
 import { checkDateOfBirth } from "@/lib/profile";
+import { isReserved } from "@/lib/usernames";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,7 @@ export async function POST(req: NextRequest) {
     const pending = unseal<{ profile: ProviderProfile; next: string }>(req.cookies.get(OAUTH_PENDING_COOKIE)?.value);
     if (!pending) return jsonError(410, "This sign-in expired. Start again.");
     const input = Complete.parse(await req.json());
+    if (isReserved(input.username)) return jsonError(400, "This username is reserved. Choose another one.");
     const { user, needsEmailVerification } = await completeSignUp(pending.profile, { ...input, dateOfBirth: checkDateOfBirth(input.dateOfBirth) });
     if (needsEmailVerification) await sendVerificationEmail(user);
     const response = NextResponse.json({ success: true, next: pending.next, needsEmailVerification }, { status: 201 });

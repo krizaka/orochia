@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/auth-context";
 import { Rich } from "@/components/Rich";
 import { t } from "@/lib/i18n";
 import { BirthDateField, isAdultBirthDate } from "@/components/BirthDateField";
+import { UsernameField } from "@/components/UsernameField";
 
 interface Pending {
   provider: "google" | "facebook";
@@ -87,10 +88,7 @@ export default function CompleteSignUpPage() {
           <p className="mt-1.5 text-sm text-zinc-400 light:text-slate-500">{t("auth.complete.subtitle", { provider: providerName })}</p>
         </div>
         {error && <p role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-400">{error}</p>}
-        <label className={label}>
-          {t("auth.register.username")}
-          <input required value={username} onChange={(e) => setUsername(e.target.value)} className={field} autoComplete="username" />
-        </label>
+        <UsernameField value={username} onChange={setUsername} labelClass={label} fieldClass={field} />
         <label className={label}>
           {t("auth.register.displayName")}
           <input required value={displayName} onChange={(e) => setDisplayName(e.target.value)} className={field} />

@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (109)
+## Endpoints (112)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -35,6 +35,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/auth/register` | public | Creates an account (a member — creators are opened later, never an administrator), signs it in and e-mails the link that verifies its address — until then the account can do nothing else. |
 | `POST` | `/api/auth/resend-verification` | public | E-mails a new verification link to the signed-in account (the previous link stops working). |
 | `POST` | `/api/auth/reset-password` | public | Sets a new password with the link's one-time token (1 h). |
+| `GET` | `/api/auth/username` | public | Whether a username is free (unique address orochia.com/@username), with a free one suggested when it is not. |
 | `POST` | `/api/auth/verify-email` | public | Verifies an e-mail address with the link's one-time token (48 h); refreshes the session of that account. |
 | `GET` | `/api/bunny/analytics` | session · ADMIN | Catalogue statistics for administrators, from the database. |
 | `POST` | `/api/contacts` | session · MEMBER / CREATOR / ADMIN | Sends a contact request (accepted at once when the other person already asked). |
@@ -79,6 +80,8 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/me/lists/[id]/members` | session · MEMBER / CREATOR / ADMIN | The people in one of your lists. |
 | `POST` | `/api/me/lists/[id]/members` | session · MEMBER / CREATOR / ADMIN | Adds an account to one of your lists by username (idempotent; the list stays private). |
 | `GET` | `/api/me/network` | session · MEMBER / CREATOR / ADMIN | Your followers, the creators you follow, your contacts and pending requests. |
+| `GET` | `/api/me/notifications` | session · MEMBER / CREATOR / ADMIN | Your notifications, newest first, 25 at a time (`before` = an ISO date to page back), with the unread count. |
+| `POST` | `/api/me/notifications` | session · MEMBER / CREATOR / ADMIN | Marks notifications read: the ones listed, or all of them. |
 | `GET` | `/api/me/profile` | session · ADMIN / CREATOR / MEMBER | Reads the signed-in user's own profile and settings (private fields included: e-mail, date of birth). |
 | `PUT` | `/api/me/profile` | session · ADMIN / CREATOR / MEMBER | Updates the signed-in user's own profile and preferences (only the fields sent). |
 | `GET` | `/api/me/stories` | session · CREATOR / ADMIN | Your stories of the last 30 days — live, encoding or expired — with their figures. |
@@ -121,7 +124,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/webhooks/bunny` | signed webhook | Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (BUNNY_WEBHOOK_SECRET). |
 | `POST` | `/api/webhooks/payments/[gateway]` | signed webhook | Gateway payment notifications. |
 
-## Database tables (34)
+## Database tables (35)
 
 | Table | Drizzle export | Defined in |
 | :--- | :--- | :--- |
@@ -147,6 +150,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `conversations` | `conversations` | `packages/db/src/schema/messaging.ts` |
 | `direct_messages` | `directMessages` | `packages/db/src/schema/messaging.ts` |
 | `blocked_users` | `blockedUsers` | `packages/db/src/schema/messaging.ts` |
+| `notifications` | `notifications` | `packages/db/src/schema/notifications.ts` |
 | `payment_outbox` | `paymentOutbox` | `packages/db/src/schema/payment-outbox.ts` |
 | `playlists` | `playlists` | `packages/db/src/schema/playlists.ts` |
 | `playlist_items` | `playlistItems` | `packages/db/src/schema/playlists.ts` |

@@ -74,7 +74,13 @@
         "birthDate": "You must be at least 18 to join Orochia."
       },
       "birthDate": "Date of birth",
-      "birthDateHint": "Private — never shown on your profile. Orochia is for adults only."
+      "birthDateHint": "Private — never shown on your profile. Orochia is for adults only.",
+      "usernameHint": "Your address: orochia.com/@{username}",
+      "usernameFree": "Available",
+      "usernameTaken": "Taken — try {suggestion}",
+      "usernameReserved": "Reserved — try {suggestion}",
+      "usernameFormat": "3–30 letters, digits or _",
+      "useSuggestion": "Use it"
     },
     "becomeCreator": {
       "title": "Publish on Orochia",
@@ -123,18 +129,13 @@
     "search": "Search",
     "searchPlaceholder": "Search creators, videos, tags…",
     "dashboard": "Dashboard",
-    "profile": "Public profile",
     "earnings": "Earnings",
     "settings": "Settings",
     "messages": "Messages",
     "signOut": "Sign out",
     "balance": "Balance",
-    "roles": {
-      "CREATOR": "Creator",
-      "MEMBER": "Member",
-      "ADMIN": "Operator"
-    },
-    "saved": "Saved"
+    "saved": "Saved",
+    "viewProfile": "View profile"
   },
   "footer": {
     "tagline": "The video platform independent creators own.",
@@ -315,7 +316,14 @@
       "telegram": "Telegram",
       "website": "Website"
     },
-    "visit": "{network} — @{handle}"
+    "visit": "{network} — @{handle}",
+    "editProfile": "Edit profile",
+    "share": "Share profile",
+    "copied": "Link copied",
+    "balance": "Balance",
+    "upload": "Upload",
+    "ageCertified": "18+ certified",
+    "viewPublic": "View public profile"
   },
   "settings": {
     "title": "Settings",
@@ -341,13 +349,17 @@
       "uploading": "Uploading…",
       "uploadFailed": "The picture could not be uploaded (JPG, PNG or WEBP, up to {size}).",
       "presetsTitle": "Pick a design",
-      "close": "Close"
+      "close": "Close",
+      "edit": "Edit",
+      "editAvatar": "Change profile photo",
+      "editBanner": "Change cover image",
+      "add": "Add a cover"
     },
     "identity": {
       "displayName": "Display name",
       "displayNameHint": "Shown everywhere. Several people can have the same name.",
       "username": "Username",
-      "usernameHint": "Your unique address: orochia.com/creators/{username}. Nobody else can have it.",
+      "usernameHint": "Your unique address: orochia.com/@{username}. Nobody else can have it — several people can share a display name, never a username.",
       "bio": "About you",
       "bioPlaceholder": "A few words for your visitors",
       "email": "E-mail",
@@ -372,9 +384,8 @@
       "contactsHint": "Only people you have accepted as contacts."
     },
     "notifications": {
-      "intro": "E-mails about what happens on your account. Everything is on by default; turn off what you do not want.",
-      "all": "All notifications",
-      "allHint": "Turn every e-mail below on or off at once.",
+      "intro": "Choose what reaches you, in the app (the bell) and by e-mail. Everything is on by default.",
+      "all": "Everything",
       "events": {
         "newFollower": "Someone follows you or asks to",
         "contactRequest": "Someone asks to become your contact",
@@ -386,7 +397,15 @@
         "videoReady": "Your upload is processed and online",
         "creatorPublished": "A creator you follow publishes a video"
       },
-      "creatorOnly": "For creators"
+      "inApp": "In the app",
+      "byEmail": "By e-mail",
+      "frequency": "How many e-mails",
+      "frequencies": {
+        "INSTANT": "Each notification",
+        "HOURLY": "At most one an hour",
+        "NONE": "No activity e-mails"
+      },
+      "frequencyHint": "Account e-mails (security, password) are always sent."
     },
     "payouts": {
       "address": "Crypto payout address",
@@ -447,5 +466,14 @@
       "subject": "New from {name}: “{title}”",
       "body": "{name} just published “{title}”."
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAll": "Mark all as read",
+    "empty": "Nothing new. Follows, comments, tips and messages show up here.",
+    "seeAll": "See all notifications",
+    "settings": "Notification settings",
+    "unread": "{count} unread",
+    "loadMore": "Show older"
   }
 }

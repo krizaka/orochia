@@ -34,7 +34,7 @@ export function RelationshipActions({
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    const res = await fetch(`/api/creators/${username}`, { cache: "no-store" });
+    const res = await fetch(`/api/@${username}`, { cache: "no-store" });
     if (!res.ok) return;
     const data = (await res.json()) as { relationship: { follow: Follow; contact: Contact | null } | null };
     setFollow(data.relationship?.follow ?? null);
@@ -78,7 +78,7 @@ export function RelationshipActions({
     <div className="flex flex-wrap items-center gap-2">
       {show.includes("follow") &&
         (follow === null ? (
-          <button className={primary} disabled={busy} onClick={() => call(`/api/creators/${username}/follow`, { method: "POST" })}>
+          <button className={primary} disabled={busy} onClick={() => call(`/api/@${username}/follow`, { method: "POST" })}>
             <UserPlus className="h-4 w-4" /> Follow
           </button>
         ) : (
@@ -86,7 +86,7 @@ export function RelationshipActions({
             className={ghost}
             disabled={busy}
             title="Unfollow"
-            onClick={() => call(`/api/creators/${username}/follow`, { method: "DELETE" })}
+            onClick={() => call(`/api/@${username}/follow`, { method: "DELETE" })}
           >
             {follow === "APPROVED" ? <UserCheck className="h-4 w-4 text-emerald-400" /> : <Clock className="h-4 w-4 text-amber-400" />}
             {follow === "APPROVED" ? "Following" : "Follow requested"}

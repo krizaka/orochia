@@ -26,6 +26,14 @@ const nextConfig = {
       bodySizeLimit: "10mb",
     },
   },
+  // A profile's address is orochia.com/@username — the same for members and creators. The page lives in
+  // app/creators/[username]; its old address redirects permanently.
+  async rewrites() {
+    return [{ source: "/@:username", destination: "/creators/:username" }];
+  },
+  async redirects() {
+    return [{ source: "/creators/:username", destination: "/@:username", permanent: true }];
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

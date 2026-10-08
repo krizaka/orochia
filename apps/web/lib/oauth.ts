@@ -4,6 +4,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { appUrl, sessionSecret } from "./env";
 import { HttpError } from "./http";
 import type { SessionUser } from "./auth";
+import { usernameBase } from "./usernames";
 
 /**
  * Sign in with Google or Facebook — OAuth 2 authorization code with PKCE, plain fetch, no SDK. A provider is
@@ -239,14 +240,7 @@ export async function completeSignUp(profile: ProviderProfile, input: Completion
   return { user: sessionOf(row), needsEmailVerification: !verified };
 }
 
-/** A free username from the provider's name, as a suggestion for the completion form. */
+/** A username-shaped suggestion from the provider's name (checked for availability by the caller: freeUsername). */
 export function suggestUsername(profile: ProviderProfile): string {
-  const base = (profile.name ?? profile.email?.split("@")[0] ?? "member")
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "")
-    .slice(0, 24);
-  return (base.length >= 3 ? base : `member_${base}`).slice(0, 24);
+  return usernameBase(profile.name ?? profile.email?.split("@")[0] ?? "member");
 }
