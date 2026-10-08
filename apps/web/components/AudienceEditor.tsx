@@ -57,7 +57,7 @@ export function AudienceEditor({ endpoint, onChange }: { endpoint: string; onCha
   const empty = people !== null && people.length === 0 && attached.length === 0;
 
   return (
-    <div className="space-y-3 rounded-2xl border border-white/5 bg-black/20 p-3">
+    <div className="space-y-3 rounded-2xl border border-white/5 bg-black/20 p-3 light:border-black/10">
       <form
         onSubmit={async (e) => {
           e.preventDefault();
@@ -71,7 +71,7 @@ export function AudienceEditor({ endpoint, onChange }: { endpoint: string; onCha
           maxLength={51}
           placeholder="@username"
           aria-label="Username to invite"
-          className="min-w-0 flex-1 rounded-xl border border-white/10 bg-zinc-900/80 px-3 py-2 text-xs text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-none"
+          className="min-w-0 flex-1 rounded-xl border border-white/10 bg-zinc-900/80 px-3 py-2 text-xs text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900"
         />
         <button disabled={busy || !username.trim()} className="inline-flex items-center gap-1.5 rounded-xl bg-violet-600 px-3 text-xs font-bold text-white disabled:opacity-40">
           <UserPlus className="h-3.5 w-3.5" /> Invite
@@ -84,7 +84,7 @@ export function AudienceEditor({ endpoint, onChange }: { endpoint: string; onCha
           disabled={busy || available.length === 0}
           onChange={(e) => e.target.value && void call(endpoint, "POST", { listId: e.target.value })}
           aria-label="Open to one of your lists"
-          className="rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-xs text-zinc-200 focus:border-violet-500 focus:outline-none disabled:opacity-50"
+          className="rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-xs text-zinc-200 focus:border-violet-500 focus:outline-none disabled:opacity-50 light:bg-slate-50 light:border-black/10 light:text-slate-700"
         >
           <option value="">{myLists.length === 0 ? "No list yet" : available.length === 0 ? "All your lists are added" : "Add one of your lists…"}</option>
           {available.map((l) => (
@@ -100,9 +100,9 @@ export function AudienceEditor({ endpoint, onChange }: { endpoint: string; onCha
 
       {error && <p className="text-[11px] text-rose-300">{error}</p>}
       {people === null ? (
-        <p className="text-[11px] text-zinc-500">Loading…</p>
+        <p className="text-[11px] text-zinc-500 light:text-slate-500">Loading…</p>
       ) : empty ? (
-        <p className="text-[11px] text-zinc-500">Nobody yet: only you can open it.</p>
+        <p className="text-[11px] text-zinc-500 light:text-slate-500">Nobody yet: only you can open it.</p>
       ) : (
         <ul className="flex flex-wrap gap-1.5">
           {attached.map((l) => (
@@ -114,9 +114,9 @@ export function AudienceEditor({ endpoint, onChange }: { endpoint: string; onCha
             </li>
           ))}
           {people?.map((p) => (
-            <li key={p.userId} className="inline-flex items-center gap-1 rounded-full bg-white/5 py-1 pl-3 pr-1 text-[11px] text-zinc-200">
+            <li key={p.userId} className="inline-flex items-center gap-1 rounded-full bg-white/5 py-1 pl-3 pr-1 text-[11px] text-zinc-200 light:bg-black/5 light:text-slate-700">
               @{p.username}
-              <button disabled={busy} onClick={() => call(`${endpoint}?userId=${p.userId}`, "DELETE")} className="rounded-full p-0.5 text-zinc-400 hover:text-rose-300" aria-label={`Withdraw @${p.username}`}>
+              <button disabled={busy} onClick={() => call(`${endpoint}?userId=${p.userId}`, "DELETE")} className="rounded-full p-0.5 text-zinc-400 hover:text-rose-300 light:text-slate-500" aria-label={`Withdraw @${p.username}`}>
                 <X className="h-3 w-3" />
               </button>
             </li>

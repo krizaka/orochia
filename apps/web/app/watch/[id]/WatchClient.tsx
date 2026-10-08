@@ -178,7 +178,7 @@ export default function WatchClient() {
         <div className="lg:col-span-2">
           {isLoading || !details ? (
             <div className="aspect-video w-full rounded-2xl bg-zinc-900 dark:bg-zinc-900 light:bg-slate-200 animate-pulse flex items-center justify-center border border-white/5">
-              <span className="text-xs text-zinc-500 font-mono">Verifying access…</span>
+              <span className="text-xs text-zinc-500 font-mono light:text-slate-500">Verifying access…</span>
             </div>
           ) : (
             <VideoPlayer
@@ -253,17 +253,17 @@ export default function WatchClient() {
 
               <div className="mt-3 flex items-center gap-4 text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 font-mono">
                 <span className="flex items-center gap-1">
-                  <Eye className="h-3.5 w-3.5 text-zinc-500" />
+                  <Eye className="h-3.5 w-3.5 text-zinc-500 light:text-slate-500" />
                   {details.viewsCount.toLocaleString("en-US")} views
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1">
-                  <MessageSquare className="h-3.5 w-3.5 text-zinc-500" />
+                  <MessageSquare className="h-3.5 w-3.5 text-zinc-500 light:text-slate-500" />
                   {details.commentsCount.toLocaleString("en-US")}
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1">
-                  <Share2 className="h-3.5 w-3.5 text-zinc-500" />
+                  <Share2 className="h-3.5 w-3.5 text-zinc-500 light:text-slate-500" />
                   {details.sharesCount.toLocaleString("en-US")}
                 </span>
                 <span>•</span>
@@ -348,7 +348,7 @@ export default function WatchClient() {
                     </div>
                     <div>
                       <h4 className="text-xs font-semibold text-white dark:text-white light:text-slate-900 group-hover:text-violet-400 line-clamp-1">{video.title}</h4>
-                      <span className="block text-[10px] text-zinc-500 font-mono">
+                      <span className="block text-[10px] text-zinc-500 font-mono light:text-slate-500">
                         {formatDuration(video.durationSeconds)} • {video.visibility === "PUBLIC" ? "Free" : "Members"}
                       </span>
                     </div>

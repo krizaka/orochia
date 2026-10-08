@@ -28,33 +28,33 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="mx-auto max-w-md px-4 py-16">
-      <div className="rounded-3xl border border-white/10 bg-zinc-950 p-6 sm:p-8">
+      <div className="rounded-3xl border border-white/10 bg-zinc-950 p-6 sm:p-8 light:bg-white light:border-black/10">
         <KeyRound className="h-8 w-8 text-violet-400" />
-        <h1 className="mt-4 text-2xl font-black text-white font-display">Forgot your password?</h1>
+        <h1 className="mt-4 text-2xl font-black text-white font-display light:text-slate-900">Forgot your password?</h1>
         {state === "sent" ? (
           <>
-            <p className="mt-3 text-sm text-zinc-400">
-              If an account uses <strong className="break-all text-zinc-200">{email}</strong>, a reset link is on its way. It works once, for one hour.
+            <p className="mt-3 text-sm text-zinc-400 light:text-slate-500">
+              If an account uses <strong className="break-all text-zinc-200 light:text-slate-700">{email}</strong>, a reset link is on its way. It works once, for one hour.
             </p>
             {devLink && (
-              <p className="mt-4 break-all text-[11px] text-zinc-500">
+              <p className="mt-4 break-all text-[11px] text-zinc-500 light:text-slate-500">
                 Demo mode: <a href={devLink} className="text-violet-300 underline">{devLink}</a>
               </p>
             )}
           </>
         ) : (
           <form onSubmit={submit} className="mt-5 space-y-4">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500">
               E-mail
               <div className="relative mt-1.5">
-                <Mail className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500" />
+                <Mail className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500 light:text-slate-500" />
                 <input
                   type="email"
                   required
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-zinc-900 py-2.5 pl-10 pr-4 text-sm normal-case tracking-normal text-white focus:border-violet-500 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-zinc-900 py-2.5 pl-10 pr-4 text-sm normal-case tracking-normal text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
                 />
               </div>
             </label>
@@ -64,7 +64,7 @@ export default function ForgotPasswordPage() {
             </button>
           </form>
         )}
-        <Link href="/auth/login" className="mt-6 inline-block text-xs text-zinc-400 hover:text-white">
+        <Link href="/auth/login" className="mt-6 inline-block text-xs text-zinc-400 hover:text-white light:text-slate-500 light:hover:text-slate-950">
           ← Back to sign in
         </Link>
       </div>

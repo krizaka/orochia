@@ -86,7 +86,7 @@ function TabButton({ tab, active, onSelect, icon: Icon, children }: {
     <button
       onClick={() => onSelect(tab)}
       className={`flex items-center gap-2 rounded-xl px-4 py-2.5 transition-all ${
-        active === tab ? "bg-violet-600 text-white shadow-md shadow-violet-600/25" : "text-zinc-400 hover:text-white hover:bg-zinc-900"
+        active === tab ? "bg-violet-600 text-white shadow-md shadow-violet-600/25" : "text-zinc-400 hover:text-white hover:bg-zinc-900 light:text-slate-500 light:hover:text-slate-950"
       }`}
     >
       <Icon className="h-3.5 w-3.5" />
@@ -96,7 +96,7 @@ function TabButton({ tab, active, onSelect, icon: Icon, children }: {
 }
 
 function Empty({ children }: { children: React.ReactNode }) {
-  return <p className="rounded-2xl border border-white/5 bg-zinc-900/30 p-8 text-center text-xs text-zinc-400">{children}</p>;
+  return <p className="rounded-2xl border border-white/5 bg-zinc-900/30 p-8 text-center text-xs text-zinc-400 light:bg-slate-50 light:border-black/10 light:text-slate-500">{children}</p>;
 }
 
 function LedgerTable({ lines, isCreator }: { lines: LedgerLine[]; isCreator: boolean }) {
@@ -104,7 +104,7 @@ function LedgerTable({ lines, isCreator }: { lines: LedgerLine[]; isCreator: boo
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-xs">
-        <thead className="text-[10px] uppercase tracking-wider text-zinc-500">
+        <thead className="text-[10px] uppercase tracking-wider text-zinc-500 light:text-slate-500">
           <tr>
             <th className="py-2 pr-4">Date</th>
             <th className="py-2 pr-4">Type</th>
@@ -113,13 +113,13 @@ function LedgerTable({ lines, isCreator }: { lines: LedgerLine[]; isCreator: boo
             <th className="py-2 text-right">Amount</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/5">
+        <tbody className="divide-y divide-white/5 light:divide-black/5">
           {lines.map((tx) => (
-            <tr key={tx.id} className="text-zinc-300">
-              <td className="py-2.5 pr-4 font-mono text-zinc-400">{day(tx.createdAt)}</td>
+            <tr key={tx.id} className="text-zinc-300 light:text-slate-700">
+              <td className="py-2.5 pr-4 font-mono text-zinc-400 light:text-slate-500">{day(tx.createdAt)}</td>
               <td className="py-2.5 pr-4">{tx.entryType.replace(/_/g, " ").toLowerCase()}</td>
               <td className="py-2.5 pr-4">{tx.counterparty}</td>
-              <td className="py-2.5 pr-4 text-zinc-400">{tx.gateway}</td>
+              <td className="py-2.5 pr-4 text-zinc-400 light:text-slate-500">{tx.gateway}</td>
               <td className={`py-2.5 text-right font-mono font-bold ${tx.amountCents < 0 ? "text-rose-400" : "text-emerald-400"}`}>
                 {money(tx.amountCents)}
               </td>
@@ -183,8 +183,8 @@ function DashboardContent() {
   if (!user) {
     return (
       <div className="mx-auto max-w-lg px-4 py-24 text-center">
-        <h2 className="text-2xl font-bold text-white font-display">Session Required</h2>
-        <p className="mt-2 text-sm text-zinc-400">Sign in or register to access your personal space.</p>
+        <h2 className="text-2xl font-bold text-white font-display light:text-slate-900">Session Required</h2>
+        <p className="mt-2 text-sm text-zinc-400 light:text-slate-500">Sign in or register to access your personal space.</p>
         <Link href="/auth/login" className="mt-6 inline-block rounded-xl bg-violet-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg">
           Sign In
         </Link>
@@ -198,20 +198,20 @@ function DashboardContent() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <div className="relative mb-8 overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r from-violet-950/60 via-zinc-950 to-fuchsia-950/50 p-6 sm:p-8 shadow-2xl">
+      <div className="relative mb-8 overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r from-violet-950/60 via-zinc-950 to-fuchsia-950/50 p-6 sm:p-8 shadow-2xl light:border-black/10 light:from-violet-100 light:via-white light:to-fuchsia-100 light:shadow-lg">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative z-10">
           <div className="flex items-center gap-4">
-            <div className="relative h-16 w-16 sm:h-20 sm:w-20 overflow-hidden rounded-2xl border-2 border-violet-500/40 bg-zinc-800 shadow-xl">
+            <div className="relative h-16 w-16 sm:h-20 sm:w-20 overflow-hidden rounded-2xl border-2 border-violet-500/40 bg-zinc-800 shadow-xl light:bg-slate-100">
               <img src={user.avatarUrl} alt={user.displayName} className="h-full w-full object-cover" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl sm:text-3xl font-black text-white font-display">{user.displayName}</h1>
+                <h1 className="text-xl sm:text-3xl font-black text-white font-display light:text-slate-900">{user.displayName}</h1>
                 <span className="rounded-md border border-violet-500/30 bg-violet-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-violet-300">
                   {isAdmin ? "Administrator" : isCreator ? "Creator" : "Patron"}
                 </span>
               </div>
-              <p className="text-xs text-zinc-400 font-mono mt-0.5">@{user.username} • {user.email}</p>
+              <p className="text-xs text-zinc-400 font-mono mt-0.5 light:text-slate-500">@{user.username} • {user.email}</p>
               {user.isAgeVerified && (
                 <div className="mt-2 flex items-center gap-2 text-xs text-emerald-400">
                   <CheckCircle2 className="h-3.5 w-3.5" />
@@ -223,8 +223,8 @@ function DashboardContent() {
 
           <div className="flex items-center gap-3">
             {isCreator && (
-              <div className="rounded-2xl border border-white/10 bg-zinc-900/80 p-4 text-right">
-                <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400">Available balance</span>
+              <div className="rounded-2xl border border-white/10 bg-zinc-900/80 p-4 text-right light:bg-slate-50 light:border-black/10">
+                <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 light:text-slate-500">Available balance</span>
                 <span className="font-mono text-xl sm:text-2xl font-black text-emerald-400">{money(user.balanceCents)}</span>
               </div>
             )}
@@ -241,7 +241,7 @@ function DashboardContent() {
         </div>
       </div>
 
-      <div className="flex overflow-x-auto space-x-2 border-b border-white/5 pb-3 mb-8 text-xs font-semibold">
+      <div className="flex overflow-x-auto space-x-2 border-b border-white/5 pb-3 mb-8 text-xs font-semibold light:border-black/10">
         <TabButton tab="overview" active={activeTab} onSelect={setActiveTab} icon={LayoutDashboard}>Overview</TabButton>
         <TabButton tab="library" active={activeTab} onSelect={setActiveTab} icon={Film}>
           My Library ({data?.library.length ?? 0})
@@ -253,7 +253,7 @@ function DashboardContent() {
           </TabButton>
         )}
         {isCreator && (
-          <Link href="/creator/payouts" className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all">
+          <Link href="/creator/payouts" className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all light:text-slate-500 light:hover:text-slate-950">
             <CreditCard className="h-3.5 w-3.5 text-emerald-400" />
             <span>Payouts</span>
           </Link>
@@ -270,17 +270,17 @@ function DashboardContent() {
       {activeTab === "overview" && data && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="glass-panel rounded-2xl p-5">
-            <span className="text-[11px] font-mono uppercase text-zinc-400">{isCreator ? "Available balance" : "Total spent"}</span>
-            <p className="mt-2 text-2xl font-black text-white font-mono">{money(isCreator ? user.balanceCents : spentCents)}</p>
-            <span className="text-[11px] text-zinc-500 mt-1 block">Computed from the ledger</span>
+            <span className="text-[11px] font-mono uppercase text-zinc-400 light:text-slate-500">{isCreator ? "Available balance" : "Total spent"}</span>
+            <p className="mt-2 text-2xl font-black text-white font-mono light:text-slate-900">{money(isCreator ? user.balanceCents : spentCents)}</p>
+            <span className="text-[11px] text-zinc-500 mt-1 block light:text-slate-500">Computed from the ledger</span>
           </div>
           <div className="glass-panel rounded-2xl p-5">
-            <span className="text-[11px] font-mono uppercase text-zinc-400">{isCreator ? "Published videos" : "Unlocked videos"}</span>
-            <p className="mt-2 text-2xl font-black text-white font-mono">{isCreator ? data.uploads.length : data.library.length}</p>
+            <span className="text-[11px] font-mono uppercase text-zinc-400 light:text-slate-500">{isCreator ? "Published videos" : "Unlocked videos"}</span>
+            <p className="mt-2 text-2xl font-black text-white font-mono light:text-slate-900">{isCreator ? data.uploads.length : data.library.length}</p>
           </div>
           <div className="glass-panel rounded-2xl p-5">
-            <span className="text-[11px] font-mono uppercase text-zinc-400">{isCreator ? "Payouts in progress" : "Transactions"}</span>
-            <p className="mt-2 text-2xl font-black text-white font-mono">
+            <span className="text-[11px] font-mono uppercase text-zinc-400 light:text-slate-500">{isCreator ? "Payouts in progress" : "Transactions"}</span>
+            <p className="mt-2 text-2xl font-black text-white font-mono light:text-slate-900">
               {isCreator ? money(data.pendingPayoutCents) : data.ledger.length}
             </p>
           </div>
@@ -294,15 +294,15 @@ function DashboardContent() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {data.library.map((video) => (
               <Link key={video.id} href={`/watch/${video.id}`} className="glass-panel rounded-2xl overflow-hidden group">
-                <div className="aspect-video bg-zinc-800 overflow-hidden">
+                <div className="aspect-video bg-zinc-800 overflow-hidden light:bg-slate-100">
                   {video.thumbnailUrl && (
                     <img src={video.thumbnailUrl} alt="" className="h-full w-full object-cover group-hover:scale-105 transition-transform" />
                   )}
                 </div>
                 <div className="p-4">
-                  <h4 className="text-sm font-bold text-white line-clamp-1">{video.title}</h4>
-                  <p className="text-xs text-zinc-400">{video.creatorName}</p>
-                  <p className="mt-2 text-[11px] font-mono text-zinc-500">
+                  <h4 className="text-sm font-bold text-white line-clamp-1 light:text-slate-900">{video.title}</h4>
+                  <p className="text-xs text-zinc-400 light:text-slate-500">{video.creatorName}</p>
+                  <p className="mt-2 text-[11px] font-mono text-zinc-500 light:text-slate-500">
                     {duration(video.durationSeconds)} • unlocked {day(video.unlockedAt)} • {money(video.amountPaidCents)}
                   </p>
                 </div>
@@ -336,9 +336,9 @@ function DashboardContent() {
               ["Payouts settled", money(treasury.payoutsSettledCents), "paid to creators"],
             ].map(([label, value, hint]) => (
               <div key={label} className="glass-panel rounded-2xl p-5">
-                <span className="text-[11px] font-mono uppercase text-zinc-400">{label}</span>
+                <span className="text-[11px] font-mono uppercase text-zinc-400 light:text-slate-500">{label}</span>
                 <p className="mt-2 text-2xl font-black text-emerald-400 font-mono">{value}</p>
-                <span className="text-[11px] text-zinc-500">{hint}</span>
+                <span className="text-[11px] text-zinc-500 light:text-slate-500">{hint}</span>
               </div>
             ))}
           </div>
@@ -350,34 +350,34 @@ function DashboardContent() {
       {activeTab === "settings" && (
         <form onSubmit={saveSettings} className="glass-panel rounded-3xl p-6 sm:p-8 space-y-5 max-w-2xl">
           <div>
-            <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block">Display name</label>
+            <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block light:text-slate-500">Display name</label>
             <input
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               required
               maxLength={80}
-              className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none"
+              className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
             />
           </div>
           <div>
-            <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block">Bio</label>
+            <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block light:text-slate-500">Bio</label>
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               rows={4}
               maxLength={1000}
-              className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none"
+              className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
             />
           </div>
           {isCreator && (
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block">Crypto payout address</label>
+              <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block light:text-slate-500">Crypto payout address</label>
               <input
                 value={payoutAddress}
                 onChange={(e) => setPayoutAddress(e.target.value)}
                 maxLength={200}
                 placeholder="USDT-TRC20 / BTC address"
-                className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm font-mono text-white focus:border-violet-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm font-mono text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
               />
             </div>
           )}
@@ -400,7 +400,7 @@ function DashboardContent() {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-24 text-center text-xs text-zinc-500 font-mono">Loading…</div>}>
+    <Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-24 text-center text-xs text-zinc-500 font-mono light:text-slate-500">Loading…</div>}>
       <DashboardContent />
     </Suspense>
   );

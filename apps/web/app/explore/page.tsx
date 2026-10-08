@@ -43,7 +43,7 @@ export default async function ExplorePage(props: { searchParams: Promise<{ q?: s
 
       <form action="/explore" className="flex gap-3">
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500 light:text-slate-500" />
           <input
             name="q"
             defaultValue={q}
@@ -81,7 +81,7 @@ export default async function ExplorePage(props: { searchParams: Promise<{ q?: s
               }`}
             >
               <Hash className="h-3 w-3" /> {t.tag}{" "}
-              <span className="font-mono text-[10px] text-zinc-500">{t.count}</span>
+              <span className="font-mono text-[10px] text-zinc-500 light:text-slate-500">{t.count}</span>
             </Link>
           ))}
         </div>

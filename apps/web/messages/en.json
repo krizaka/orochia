@@ -101,7 +101,8 @@
       "CREATOR": "Creator",
       "MEMBER": "Member",
       "ADMIN": "Operator"
-    }
+    },
+    "saved": "Saved"
   },
   "footer": {
     "tagline": "The video platform independent creators own.",

@@ -69,8 +69,8 @@ export default function CreatorPayoutsPage() {
           <Wallet className="h-6 w-6" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-white">Creator Earnings & Payout Ledger</h1>
-          <p className="text-xs text-zinc-400">
+          <h1 className="text-2xl font-bold text-white light:text-slate-900">Creator Earnings & Payout Ledger</h1>
+          <p className="text-xs text-zinc-400 light:text-slate-500">
             Real-time double-entry escrow balances with adult-compliant automated disbursements
           </p>
         </div>
@@ -78,11 +78,11 @@ export default function CreatorPayoutsPage() {
 
       {/* Balance Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-        <div className="rounded-3xl border border-white/10 bg-zinc-900/60 p-6 shadow-xl">
-          <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+        <div className="rounded-3xl border border-white/10 bg-zinc-900/60 p-6 shadow-xl light:bg-slate-50 light:border-black/10">
+          <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500">
             Available Escrow Balance
           </span>
-          <div className="mt-2 text-3xl font-extrabold text-white">
+          <div className="mt-2 text-3xl font-extrabold text-white light:text-slate-900">
             ${availableBalance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
           </div>
           <span className="mt-2 inline-flex items-center gap-1 text-[11px] text-emerald-400">
@@ -91,24 +91,24 @@ export default function CreatorPayoutsPage() {
           </span>
         </div>
 
-        <div className="rounded-3xl border border-white/10 bg-zinc-900/60 p-6 shadow-xl">
-          <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+        <div className="rounded-3xl border border-white/10 bg-zinc-900/60 p-6 shadow-xl light:bg-slate-50 light:border-black/10">
+          <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500">
             Lifetime Tips Received
           </span>
           <div className="mt-2 text-3xl font-extrabold text-violet-400">
             ${lifetimeEarnings.toLocaleString("en-US", { minimumFractionDigits: 2 })}
           </div>
-          <span className="mt-2 block text-[11px] text-zinc-500 font-mono">
+          <span className="mt-2 block text-[11px] text-zinc-500 font-mono light:text-slate-500">
             {summary?.creditsCount ?? 0} payments received
           </span>
         </div>
 
-        <div className="rounded-3xl border border-white/10 bg-zinc-900/60 p-6 shadow-xl">
-          <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+        <div className="rounded-3xl border border-white/10 bg-zinc-900/60 p-6 shadow-xl light:bg-slate-50 light:border-black/10">
+          <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500">
             Platform Retained Fee
           </span>
-          <div className="mt-2 text-3xl font-extrabold text-zinc-300">{(summary?.platformFeePercent ?? 0).toFixed(1)}%</div>
-          <span className="mt-2 block text-[11px] text-zinc-500">
+          <div className="mt-2 text-3xl font-extrabold text-zinc-300 light:text-slate-700">{(summary?.platformFeePercent ?? 0).toFixed(1)}%</div>
+          <span className="mt-2 block text-[11px] text-zinc-500 light:text-slate-500">
             Deducted from each payment received
           </span>
         </div>
@@ -116,30 +116,30 @@ export default function CreatorPayoutsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Request Payout Form */}
-        <div className="rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl">
-          <h2 className="text-lg font-bold text-white mb-2">Request Payout Disbursement</h2>
-          <p className="text-xs text-zinc-400 mb-6">
+        <div className="rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl light:bg-white light:border-black/10">
+          <h2 className="text-lg font-bold text-white mb-2 light:text-slate-900">Request Payout Disbursement</h2>
+          <p className="text-xs text-zinc-400 mb-6 light:text-slate-500">
             Requests are reviewed by the platform before settlement; the amount is reserved immediately.
           </p>
 
           {successMsg ? (
             <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-6 text-center">
               <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-400 mb-2" />
-              <h3 className="text-sm font-bold text-white">Disbursement Initiated</h3>
-              <p className="text-xs text-zinc-400 mt-1">
+              <h3 className="text-sm font-bold text-white light:text-slate-900">Disbursement Initiated</h3>
+              <p className="text-xs text-zinc-400 mt-1 light:text-slate-500">
                 Your payout request is recorded and the amount is reserved until it is settled.
               </p>
             </div>
           ) : (
             <form onSubmit={handleSubmitPayout} className="space-y-4">
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block">
+                <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block light:text-slate-500">
                   Disbursement Rail
                 </label>
                 <select
                   value={payoutMethod}
                   onChange={(e) => setPayoutMethod(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
                 >
                   <option value="CRYPTO_USDT">USDT (TRC-20 / ERC-20 Crypto - Instant)</option>
                   <option value="CCBILL_DIRECT">CCBill Direct Creator Transfer</option>
@@ -149,7 +149,7 @@ export default function CreatorPayoutsPage() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block">
+                <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block light:text-slate-500">
                   Payout Amount ($ USD)
                 </label>
                 <input
@@ -159,12 +159,12 @@ export default function CreatorPayoutsPage() {
                   max={availableBalance}
                   value={amountDollars}
                   onChange={(e) => setAmountDollars(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block">
+                <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block light:text-slate-500">
                   Destination Address / Account
                 </label>
                 <input
@@ -173,7 +173,7 @@ export default function CreatorPayoutsPage() {
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
                   placeholder="e.g. USDT TRC20 Wallet Address or Bank IBAN"
-                  className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
                 />
               </div>
 
@@ -192,25 +192,25 @@ export default function CreatorPayoutsPage() {
         </div>
 
         {/* Ledger Transactions */}
-        <div className="rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl">
+        <div className="rounded-3xl border border-white/10 bg-zinc-950 p-6 shadow-2xl light:bg-white light:border-black/10">
           <div className="flex items-center gap-2 mb-4">
             <History className="h-4 w-4 text-violet-400" />
-            <h3 className="text-sm font-bold text-white">Payout requests</h3>
+            <h3 className="text-sm font-bold text-white light:text-slate-900">Payout requests</h3>
           </div>
 
           <div className="space-y-3">
             {(summary?.history ?? []).length === 0 && (
-              <p className="text-xs text-zinc-500">No payout requested yet.</p>
+              <p className="text-xs text-zinc-500 light:text-slate-500">No payout requested yet.</p>
             )}
             {(summary?.history ?? []).map((payout) => (
-              <div key={payout.id} className="flex items-center justify-between p-3 rounded-2xl border border-white/5 bg-zinc-900/40">
+              <div key={payout.id} className="flex items-center justify-between p-3 rounded-2xl border border-white/5 bg-zinc-900/40 light:bg-slate-50 light:border-black/10">
                 <div>
-                  <div className="text-xs font-semibold text-white">{payout.payoutMethod.replace(/_/g, " ")}</div>
-                  <div className="text-[10px] text-zinc-500 font-mono">
+                  <div className="text-xs font-semibold text-white light:text-slate-900">{payout.payoutMethod.replace(/_/g, " ")}</div>
+                  <div className="text-[10px] text-zinc-500 font-mono light:text-slate-500">
                     {new Date(payout.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} • {payout.status.replace(/_/g, " ").toLowerCase()}
                   </div>
                 </div>
-                <div className={`text-xs font-bold font-mono ${payout.status === "FAILED" ? "text-zinc-500 line-through" : "text-rose-400"}`}>
+                <div className={`text-xs font-bold font-mono ${payout.status === "FAILED" ? "text-zinc-500 line-through light:text-slate-500" : "text-rose-400"}`}>
                   -${(payout.amountCents / 100).toFixed(2)}
                 </div>
               </div>

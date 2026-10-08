@@ -42,9 +42,9 @@ export function EmailVerificationGate({ children }: { children: React.ReactNode 
       <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-600/15 text-violet-300">
         <MailCheck className="h-8 w-8" />
       </div>
-      <h1 className="text-2xl font-black text-white font-display">Verify your e-mail</h1>
-      <p className="mt-3 text-sm leading-relaxed text-zinc-400">
-        We sent a confirmation link to <strong className="break-all text-zinc-200">{user.email}</strong>. Open it to start using
+      <h1 className="text-2xl font-black text-white font-display light:text-slate-900">Verify your e-mail</h1>
+      <p className="mt-3 text-sm leading-relaxed text-zinc-400 light:text-slate-500">
+        We sent a confirmation link to <strong className="break-all text-zinc-200 light:text-slate-700">{user.email}</strong>. Open it to start using
         Orochia — until then your account can only sign in.
       </p>
 
@@ -59,19 +59,19 @@ export function EmailVerificationGate({ children }: { children: React.ReactNode 
         </button>
         <button
           onClick={() => void refresh()}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-5 py-3 text-sm font-semibold text-zinc-200 hover:bg-white/5"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-5 py-3 text-sm font-semibold text-zinc-200 hover:bg-white/5 light:border-black/10 light:text-slate-700"
         >
           I&apos;ve verified it
         </button>
       </div>
       {message && <p role="alert" className="mt-4 text-xs text-rose-300">{message}</p>}
       {devLink && (
-        <p className="mt-4 break-all text-[11px] text-zinc-500">
+        <p className="mt-4 break-all text-[11px] text-zinc-500 light:text-slate-500">
           Demo mode: <a href={devLink} className="text-violet-300 underline">{devLink}</a>
         </p>
       )}
-      <p className="mt-6 text-xs text-zinc-500">Check your spam folder. The link works once, for 48 hours.</p>
-      <button onClick={() => void logout()} className="mt-8 inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white">
+      <p className="mt-6 text-xs text-zinc-500 light:text-slate-500">Check your spam folder. The link works once, for 48 hours.</p>
+      <button onClick={() => void logout()} className="mt-8 inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white light:text-slate-500 light:hover:text-slate-950">
         <LogOut className="h-3.5 w-3.5" /> Sign out
       </button>
     </div>

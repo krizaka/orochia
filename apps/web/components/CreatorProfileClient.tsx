@@ -31,176 +31,15 @@ export function CreatorProfileClient({
   playlists,
 }: CreatorProfileClientProps) {
   const [activeTab, setActiveTab] = useState<"all" | "ppv" | "playlists" | "about">("all");
-  const [selectedTier, setSelectedTier] = useState<number | null>(null);
   const [isTipModalOpen, setIsTipModalOpen] = useState(false);
-  const [subscribedToast, setSubscribedToast] = useState<string | null>(null);
-
-  const minTipCents = creator.minTipAmountCents || 500;
-  const totalEarnedCents = creator.totalTipsEarnedCents || 0;
-  const tier1Price = Math.max(5, Math.round(minTipCents / 100));
-  const tier2Price = Math.round(tier1Price * 2.5);
-  const tier3Price = Math.round(tier1Price * 6);
-
-  // Dynamic goal computed directly from DB total tips earned
-  const goalCents = Math.max(10000, Math.ceil((totalEarnedCents + 5000) / 10000) * 10000);
-  const progressPercent = Math.min(100, Math.round((totalEarnedCents / goalCents) * 100));
-
-  const tiers = [
-    {
-      id: 1,
-      name: "Supporter Club",
-      price: `$${tier1Price}`,
-      period: "/month",
-      badge: "Patron",
-      color: "border-violet-500/30 bg-violet-950/20",
-      perks: [
-        "Full access to creator feed posts",
-        "Stream all public 4K releases",
-        "Exclusive subscriber comment badge",
-      ],
-    },
-    {
-      id: 2,
-      name: "VIP All-Access",
-      price: `$${tier2Price}`,
-      period: "/month",
-      badge: "Popular",
-      color: "border-fuchsia-500/50 bg-gradient-to-b from-fuchsia-950/30 to-zinc-950/80 shadow-lg shadow-fuchsia-950/30",
-      perks: [
-        "Everything in Supporter Club",
-        "Direct Messaging & Priority DM replies",
-        "Exclusive 4K Uncut Master downloads",
-        "15% Discount on all PPV exclusive streams",
-      ],
-    },
-    {
-      id: 3,
-      name: "Sovereign Tier",
-      price: `$${tier3Price}`,
-      period: "/month",
-      badge: "Elite",
-      color: "border-amber-500/40 bg-gradient-to-b from-amber-950/20 to-zinc-950/80",
-      perks: [
-        "Everything in VIP All-Access",
-        "Custom stream dedication & shoutout",
-        "Access to private 1-on-1 monthly live room",
-        "All PPV content automatically unlocked",
-      ],
-    },
-  ];
 
   const filteredVideos = activeTab === "ppv"
     ? videos.filter((v) => v.visibility === "TIPPED_UNLOCKED")
     : videos;
 
-  const handleSubscribe = (tierName: string) => {
-    setSubscribedToast(`🎉 Congratulations! You joined ${creator.displayName}'s ${tierName}!`);
-    setTimeout(() => setSubscribedToast(null), 5000);
-  };
 
   return (
     <div className="space-y-10">
-      {/* Wishlist / Tip Goal Progress Bar */}
-      <div className="rounded-3xl border border-white/10 dark:border-white/10 light:border-black/5 bg-zinc-950/70 dark:bg-zinc-950/70 light:bg-white p-6 shadow-xl">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <Flame className="h-4 w-4 text-fuchsia-400" />
-              <h4 className="text-sm font-bold text-white dark:text-white light:text-slate-900">
-                Creator Production Goal
-              </h4>
-            </div>
-            <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500">
-              Community milestone for upcoming 4K master streams and exclusive cinematic productions.
-            </p>
-          </div>
-          <button
-            onClick={() => setIsTipModalOpen(true)}
-            className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-violet-600/30 hover:scale-105 active:scale-95 transition-all shrink-0"
-          >
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>Contribute Tip</span>
-          </button>
-        </div>
-
-        {/* Progress Bar Track */}
-        <div className="mt-4">
-          <div className="flex items-center justify-between text-xs font-mono text-zinc-400 dark:text-zinc-400 light:text-slate-500 mb-1.5">
-            <span className="text-emerald-400 font-bold">${(totalEarnedCents / 100).toFixed(2)} raised</span>
-            <span>${(goalCents / 100).toFixed(2)} goal ({progressPercent}%)</span>
-          </div>
-          <div className="h-2.5 w-full overflow-hidden rounded-full bg-zinc-800 dark:bg-zinc-800 light:bg-slate-200">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-violet-600 via-fuchsia-500 to-pink-500 transition-all duration-1000"
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Subscription Tiers (OnlyFans / Fansly benchmark) */}
-      <div>
-        <div className="flex items-center gap-2 mb-4">
-          <Crown className="h-5 w-5 text-amber-400" />
-          <h3 className="text-lg font-bold text-white dark:text-white light:text-slate-900">
-            Subscription Perks & Tiers
-          </h3>
-        </div>
-
-        {subscribedToast && (
-          <div className="mb-4 rounded-2xl border border-emerald-500/40 bg-emerald-950/80 p-3 text-center text-xs font-bold text-emerald-300 animate-in zoom-in-95">
-            {subscribedToast}
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {tiers.map((tier) => (
-            <div
-              key={tier.id}
-              className={`relative flex flex-col justify-between rounded-3xl border p-6 transition-all duration-300 hover:scale-[1.02] ${tier.color} ${
-                tier.badge === "Popular" ? "ring-2 ring-fuchsia-500/50" : ""
-              }`}
-            >
-              {tier.badge === "Popular" && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-3 py-0.5 text-[10px] font-black uppercase tracking-wider text-white shadow-md">
-                  Most Popular
-                </span>
-              )}
-
-              <div>
-                <div className="flex items-center justify-between">
-                  <h4 className="text-base font-bold text-white dark:text-white light:text-slate-900">{tier.name}</h4>
-                  <span className="rounded-full bg-white/10 dark:bg-white/10 light:bg-black/10 px-2 py-0.5 text-[10px] font-mono text-zinc-300 dark:text-zinc-300 light:text-slate-700">
-                    {tier.badge}
-                  </span>
-                </div>
-
-                <div className="mt-3 flex items-baseline gap-1">
-                  <span className="text-3xl font-black text-white dark:text-white light:text-slate-900">{tier.price}</span>
-                  <span className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500">{tier.period}</span>
-                </div>
-
-                <ul className="mt-5 space-y-2.5 text-xs text-zinc-300 dark:text-zinc-300 light:text-slate-700">
-                  {tier.perks.map((perk, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <span>{perk}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <button
-                onClick={() => handleSubscribe(tier.name)}
-                className="mt-6 w-full rounded-2xl bg-white/10 dark:bg-white/10 light:bg-black/5 hover:bg-violet-600 hover:text-white py-2.5 text-xs font-bold text-white dark:text-white light:text-slate-900 transition-all hover:shadow-lg active:scale-95"
-              >
-                Join {tier.name}
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Media & Content Tabs */}
       <div>
         <div className="flex items-center gap-2 border-b border-white/10 dark:border-white/10 light:border-black/5 pb-3">
@@ -319,7 +158,7 @@ export function CreatorProfileClient({
           onClose={() => setIsTipModalOpen(false)}
           videoId={videos[0].id}
           creatorName={creator.displayName}
-          minTipAmountCents={minTipCents}
+          minTipAmountCents={creator.minTipAmountCents || 500}
           onUnlockedSuccess={() => {
             setIsTipModalOpen(false);
           }}

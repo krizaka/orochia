@@ -26,10 +26,10 @@ function Row({ p, children }: { p: Person; children?: React.ReactNode }) {
   return (
     <li className="flex items-center justify-between gap-3 py-2.5">
       <Link href={`/creators/${p.username}`} className="flex min-w-0 items-center gap-3">
-        <img src={p.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-9 w-9 shrink-0 rounded-full border border-white/10 object-cover" />
+        <img src={p.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-9 w-9 shrink-0 rounded-full border border-white/10 object-cover light:border-black/10" />
         <span className="min-w-0">
-          <span className="block truncate text-sm font-semibold text-white">{p.displayName}</span>
-          <span className="block text-[11px] font-mono text-zinc-500">@{p.username}</span>
+          <span className="block truncate text-sm font-semibold text-white light:text-slate-900">{p.displayName}</span>
+          <span className="block text-[11px] font-mono text-zinc-500 light:text-slate-500">@{p.username}</span>
         </span>
       </Link>
       <div className="flex shrink-0 items-center gap-1">{children}</div>
@@ -40,15 +40,15 @@ function Row({ p, children }: { p: Person; children?: React.ReactNode }) {
 function Section({ title, empty, people, render }: { title: string; empty: string; people: Person[]; render: (p: Person) => React.ReactNode }) {
   return (
     <div className="glass-panel rounded-3xl p-5">
-      <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400">
-        {title} <span className="ml-1 font-mono text-zinc-500">{people.length}</span>
+      <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400 light:text-slate-500">
+        {title} <span className="ml-1 font-mono text-zinc-500 light:text-slate-500">{people.length}</span>
       </h3>
-      {people.length === 0 ? <p className="mt-3 text-xs text-zinc-500">{empty}</p> : <ul className="mt-2 divide-y divide-white/5">{people.map(render)}</ul>}
+      {people.length === 0 ? <p className="mt-3 text-xs text-zinc-500 light:text-slate-500">{empty}</p> : <ul className="mt-2 divide-y divide-white/5 light:divide-black/5">{people.map(render)}</ul>}
     </div>
   );
 }
 
-const iconBtn = "rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white";
+const iconBtn = "rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white light:text-slate-500 light:hover:text-slate-950";
 
 /** Followers to approve (creators), contact requests to answer, and everyone you follow or know. */
 export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
@@ -65,7 +65,7 @@ export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
     await load();
   };
 
-  if (!data) return <p className="text-xs text-zinc-500">Loading your network…</p>;
+  if (!data) return <p className="text-xs text-zinc-500 light:text-slate-500">Loading your network…</p>;
   const pendingFollowers = data.followers.filter((p) => p.status === "PENDING");
   const approvedFollowers = data.followers.filter((p) => p.status === "APPROVED");
 

@@ -153,14 +153,14 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
     certifyCopyrightOwnership;
 
   return (
-    <div className="w-full max-w-2xl mx-auto rounded-3xl border border-white/10 bg-zinc-950 p-8 shadow-2xl">
+    <div className="w-full max-w-2xl mx-auto rounded-3xl border border-white/10 bg-zinc-950 p-8 shadow-2xl light:bg-white light:border-black/10">
       <div className="flex items-center gap-3 mb-6">
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-500/20">
           <Film className="h-6 w-6" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-white font-display">Upload New Video</h2>
-          <p className="text-xs text-zinc-400">
+          <h2 className="text-xl font-bold text-white font-display light:text-slate-900">Upload New Video</h2>
+          <p className="text-xs text-zinc-400 light:text-slate-500">
             Direct-to-Bunny global edge streaming with automatic 4K HLS transcoding
           </p>
         </div>
@@ -171,8 +171,8 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
           <div className="h-16 w-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4 border border-emerald-500/30">
             <CheckCircle className="h-8 w-8" />
           </div>
-          <h3 className="text-lg font-bold text-white mb-2 font-display">Video Uploaded Successfully!</h3>
-          <p className="text-sm text-zinc-400 max-w-sm mb-6">
+          <h3 className="text-lg font-bold text-white mb-2 font-display light:text-slate-900">Video Uploaded Successfully!</h3>
+          <p className="text-sm text-zinc-400 max-w-sm mb-6 light:text-slate-500">
             Bunny.net Stream is transcoding your video into adaptive HLS resolutions (2160p, 1080p, 720p).
             It will appear in your creator gallery automatically once encoding is complete.
           </p>
@@ -220,7 +220,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
             className={`border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all ${
               file || isDragging
                 ? "border-violet-500 bg-violet-500/5"
-                : "border-white/10 hover:border-violet-500/50 bg-zinc-900/40"
+                : "border-white/10 hover:border-violet-500/50 bg-zinc-900/40 light:bg-slate-50 light:border-black/10"
             }`}
           >
             <input
@@ -233,17 +233,17 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
             <UploadCloud className="h-10 w-10 text-violet-400 mb-3" />
             {file ? (
               <div className="text-center">
-                <span className="text-sm font-semibold text-white">{file.name}</span>
-                <span className="block text-xs text-zinc-400">
+                <span className="text-sm font-semibold text-white light:text-slate-900">{file.name}</span>
+                <span className="block text-xs text-zinc-400 light:text-slate-500">
                   {(file.size / (1024 * 1024)).toFixed(1)} MB
                 </span>
               </div>
             ) : (
               <div className="text-center">
-                <span className="text-sm font-semibold text-zinc-300">
+                <span className="text-sm font-semibold text-zinc-300 light:text-slate-700">
                   Click to select video or drag & drop here
                 </span>
-                <span className="block text-xs text-zinc-500 mt-1">
+                <span className="block text-xs text-zinc-500 mt-1 light:text-slate-500">
                   MP4, MOV, MKV up to 50 GB. Resumable direct upload.
                 </span>
               </div>
@@ -253,13 +253,13 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
           {/* Collection (optional): the creator's own collections */}
           {collections.length > 0 && (
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block">
-                Add to a collection <span className="normal-case tracking-normal text-zinc-500">— optional</span>
+              <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block light:text-slate-500">
+                Add to a collection <span className="normal-case tracking-normal text-zinc-500 light:text-slate-500">— optional</span>
               </label>
               <select
                 value={selectedCollection}
                 onChange={(e) => setSelectedCollection(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
               >
                 <option value="">No collection</option>
                 {collections.map((c) => (
@@ -274,7 +274,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
           {/* Video Metadata Form */}
           <div className="space-y-4">
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block">
+              <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block light:text-slate-500">
                 Video Title
               </label>
               <input
@@ -283,12 +283,12 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Midnight Private Session"
-                className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block">
+              <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block light:text-slate-500">
                 Description
               </label>
               <textarea
@@ -296,13 +296,13 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Give your viewers context, performer credits, and highlights..."
-                className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block">
-                Tags <span className="normal-case tracking-normal text-zinc-500">— comma-separated, up to 12</span>
+              <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block light:text-slate-500">
+                Tags <span className="normal-case tracking-normal text-zinc-500 light:text-slate-500">— comma-separated, up to 12</span>
               </label>
               <input
                 type="text"
@@ -310,19 +310,19 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 onChange={(e) => setTags(e.target.value)}
                 maxLength={500}
                 placeholder="e.g. acoustic, live, behind-the-scenes"
-                className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block">
+                <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block light:text-slate-500">
                   Access & Monetization Model
                 </label>
                 <select
                   value={visibility}
                   onChange={(e) => setVisibility(e.target.value as any)}
-                  className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
                 >
                   <option value="PUBLIC">Public (Free for All)</option>
                   <option value="TIPPED_UNLOCKED">Tipped Paywall (Tip to Unlock)</option>
@@ -331,24 +331,24 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                   <option value="INVITED_ONLY">Invited Only (People & Lists)</option>
                 </select>
                 {visibility === "INVITED_ONLY" && (
-                  <p className="mt-1.5 text-[11px] text-zinc-500">Only you can watch it until you choose who: Studio → the video → Who can watch.</p>
+                  <p className="mt-1.5 text-[11px] text-zinc-500 light:text-slate-500">Only you can watch it until you choose who: Studio → the video → Who can watch.</p>
                 )}
               </div>
 
               {visibility === "TIPPED_UNLOCKED" && (
                 <div>
-                  <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block">
+                  <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block light:text-slate-500">
                     Minimum Tip to Unlock ($)
                   </label>
                   <div className="relative">
-                    <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
+                    <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400 light:text-slate-500" />
                     <input
                       type="number"
                       step="0.50"
                       min="1.00"
                       value={minTipAmountDollars}
                       onChange={(e) => setMinTipAmountDollars(e.target.value)}
-                      className="w-full rounded-xl border border-white/10 bg-zinc-900 pl-9 pr-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none"
+                      className="w-full rounded-xl border border-white/10 bg-zinc-900 pl-9 pr-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
                     />
                   </div>
                 </div>
@@ -358,21 +358,21 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
             {/* Monetization Split Calculator Preview */}
             {visibility === "TIPPED_UNLOCKED" && (
               <div className="rounded-2xl border border-violet-500/20 bg-violet-950/20 p-4 text-xs">
-                <div className="flex items-center justify-between font-semibold text-white mb-2">
+                <div className="flex items-center justify-between font-semibold text-white mb-2 light:text-slate-900">
                   <span className="flex items-center gap-1.5 text-violet-300">
                     <Sparkles className="h-3.5 w-3.5" />
                     <span>Your revenue split</span>
                   </span>
                   <span className="text-emerald-400 font-mono">{100 - platformFeePercent}% Payout Rate</span>
                 </div>
-                <div className="grid grid-cols-3 gap-2 text-center pt-2 border-t border-white/5">
-                  <div className="rounded-lg bg-zinc-900/60 p-2">
-                    <span className="text-zinc-500 block text-[10px]">Patron Tip</span>
-                    <span className="font-mono font-bold text-white">${parsedTipAmount.toFixed(2)}</span>
+                <div className="grid grid-cols-3 gap-2 text-center pt-2 border-t border-white/5 light:border-black/10">
+                  <div className="rounded-lg bg-zinc-900/60 p-2 light:bg-slate-50">
+                    <span className="text-zinc-500 block text-[10px] light:text-slate-500">Patron Tip</span>
+                    <span className="font-mono font-bold text-white light:text-slate-900">${parsedTipAmount.toFixed(2)}</span>
                   </div>
-                  <div className="rounded-lg bg-zinc-900/60 p-2">
-                    <span className="text-zinc-500 block text-[10px]">Platform fee ({platformFeePercent}%)</span>
-                    <span className="font-mono text-zinc-400">${platformFeeDollars}</span>
+                  <div className="rounded-lg bg-zinc-900/60 p-2 light:bg-slate-50">
+                    <span className="text-zinc-500 block text-[10px] light:text-slate-500">Platform fee ({platformFeePercent}%)</span>
+                    <span className="font-mono text-zinc-400 light:text-slate-500">${platformFeeDollars}</span>
                   </div>
                   <div className="rounded-lg bg-emerald-950/40 border border-emerald-500/30 p-2">
                     <span className="text-emerald-400 block text-[10px] font-bold">You receive ({100 - platformFeePercent}%)</span>
@@ -384,8 +384,8 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
           </div>
 
           {/* Mandatory Legal & 2257 Declarations */}
-          <div className="space-y-3 rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white mb-1">
+          <div className="space-y-3 rounded-2xl border border-white/10 bg-zinc-900/40 p-5 light:bg-slate-50 light:border-black/10">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white mb-1 light:text-slate-900">
               <ShieldAlert className="h-4 w-4 text-fuchsia-400" />
               <span>Mandatory Performer & Legal Attestations</span>
             </div>
@@ -395,10 +395,10 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 type="checkbox"
                 checked={certifyAdultConsent}
                 onChange={(e) => setCertifyAdultConsent(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-violet-600 focus:ring-violet-500"
+                className="mt-0.5 h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-violet-600 focus:ring-violet-500 light:bg-slate-50 light:border-slate-300"
               />
-              <span className="text-xs text-zinc-300 leading-relaxed group-hover:text-white">
-                <strong className="text-white">Age & Consent:</strong> I certify under penalty of perjury that all performers depicted are at least 18 years of age and provided explicit, voluntary written consent.
+              <span className="text-xs text-zinc-300 leading-relaxed group-hover:text-white light:text-slate-700">
+                <strong className="text-white light:text-slate-900">Age & Consent:</strong> I certify under penalty of perjury that all performers depicted are at least 18 years of age and provided explicit, voluntary written consent.
               </span>
             </label>
 
@@ -407,10 +407,10 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 type="checkbox"
                 checked={certify2257Records}
                 onChange={(e) => setCertify2257Records(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-violet-600 focus:ring-violet-500"
+                className="mt-0.5 h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-violet-600 focus:ring-violet-500 light:bg-slate-50 light:border-slate-300"
               />
-              <span className="text-xs text-zinc-300 leading-relaxed group-hover:text-white">
-                <strong className="text-white">18 U.S.C. § 2257 Records:</strong> I maintain complete performer identification and verification records pursuant to 18 U.S.C. § 2257 and 28 C.F.R. Part 75 (
+              <span className="text-xs text-zinc-300 leading-relaxed group-hover:text-white light:text-slate-700">
+                <strong className="text-white light:text-slate-900">18 U.S.C. § 2257 Records:</strong> I maintain complete performer identification and verification records pursuant to 18 U.S.C. § 2257 and 28 C.F.R. Part 75 (
                 <Link href="/legal/2257" target="_blank" className="text-violet-400 underline">
                   see requirements
                 </Link>
@@ -423,10 +423,10 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 type="checkbox"
                 checked={certifyCopyrightOwnership}
                 onChange={(e) => setCertifyCopyrightOwnership(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-violet-600 focus:ring-violet-500"
+                className="mt-0.5 h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-violet-600 focus:ring-violet-500 light:bg-slate-50 light:border-slate-300"
               />
-              <span className="text-xs text-zinc-300 leading-relaxed group-hover:text-white">
-                <strong className="text-white">Intellectual Property:</strong> I hold full commercial rights and copyright to all audio, visual, and performance elements included in this upload.
+              <span className="text-xs text-zinc-300 leading-relaxed group-hover:text-white light:text-slate-700">
+                <strong className="text-white light:text-slate-900">Intellectual Property:</strong> I hold full commercial rights and copyright to all audio, visual, and performance elements included in this upload.
               </span>
             </label>
           </div>
@@ -434,11 +434,11 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
           {/* Upload Progress Bar */}
           {isUploading && (
             <div className="space-y-2">
-              <div className="flex justify-between text-xs text-zinc-400">
+              <div className="flex justify-between text-xs text-zinc-400 light:text-slate-500">
                 <span>Streaming directly to Bunny.net Edge...</span>
                 <span className="font-mono font-bold text-violet-400">{progress}%</span>
               </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800 light:bg-slate-100">
                 <div
                   className="h-full bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 transition-all duration-300"
                   style={{ width: `${progress}%` }}

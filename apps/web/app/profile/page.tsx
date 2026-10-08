@@ -17,6 +17,6 @@ export default function ProfilePage() {
   }, [user, isLoading, router]);
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-24 text-center text-xs text-zinc-500 font-mono">Loading profile…</div>
+    <div className="mx-auto max-w-lg px-4 py-24 text-center text-xs text-zinc-500 font-mono light:text-slate-500">Loading profile…</div>
   );
 }

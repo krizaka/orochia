@@ -52,11 +52,11 @@ export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModa
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-fade-in">
-      <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 p-6 sm:p-8 shadow-2xl">
+      <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 p-6 sm:p-8 shadow-2xl light:bg-white light:border-black/10">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 rounded-full p-2 text-zinc-400 hover:bg-zinc-900 hover:text-white transition-colors"
+          className="absolute top-5 right-5 rounded-full p-2 text-zinc-400 hover:bg-zinc-900 hover:text-white transition-colors light:text-slate-500 light:hover:text-slate-950"
         >
           <X className="h-5 w-5" />
         </button>
@@ -66,8 +66,8 @@ export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModa
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400">
               <CheckCircle2 className="h-8 w-8" />
             </div>
-            <h3 className="text-xl font-bold text-white font-display">Report Submitted</h3>
-            <p className="mt-2 text-sm text-zinc-400 max-w-sm mx-auto">
+            <h3 className="text-xl font-bold text-white font-display light:text-slate-900">Report Submitted</h3>
+            <p className="mt-2 text-sm text-zinc-400 max-w-sm mx-auto light:text-slate-500">
               Our 24/7 compliance and legal safety team has received your ticket. Content flagged for safety or non-consent is triaged immediately.
             </p>
             <button
@@ -75,7 +75,7 @@ export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModa
                 setSubmitted(false);
                 onClose();
               }}
-              className="mt-6 rounded-xl bg-zinc-800 hover:bg-zinc-700 px-6 py-2.5 text-xs font-semibold text-white transition-colors"
+              className="mt-6 rounded-xl bg-zinc-800 hover:bg-zinc-700 px-6 py-2.5 text-xs font-semibold text-white transition-colors light:bg-slate-100 light:hover:bg-slate-200 light:text-slate-900"
             >
               Close
             </button>
@@ -87,13 +87,13 @@ export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModa
                 <Flag className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white font-display">Report Content</h3>
-                <p className="text-xs text-zinc-400">Strict legal & safety enforcement</p>
+                <h3 className="text-lg font-bold text-white font-display light:text-slate-900">Report Content</h3>
+                <p className="text-xs text-zinc-400 light:text-slate-500">Strict legal & safety enforcement</p>
               </div>
             </div>
 
-            <p className="text-xs text-zinc-400 mb-4">
-              Flagging: <span className="text-white font-medium italic">&quot;{videoTitle}&quot;</span>
+            <p className="text-xs text-zinc-400 mb-4 light:text-slate-500">
+              Flagging: <span className="text-white font-medium italic light:text-slate-900">&quot;{videoTitle}&quot;</span>
             </p>
 
             {error && (
@@ -105,13 +105,13 @@ export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModa
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1.5 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-zinc-300 mb-1.5 uppercase tracking-wider light:text-slate-700">
                   Reason for Violation
                 </label>
                 <select
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3.5 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3.5 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
                 >
                   <option value="NON_CONSENSUAL">Non-consensual media / Lack of performer release</option>
                   <option value="UNDERAGE">Suspected underage performer (Immediate Removal)</option>
@@ -122,7 +122,7 @@ export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModa
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1.5 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-zinc-300 mb-1.5 uppercase tracking-wider light:text-slate-700">
                   Detailed Explanation
                 </label>
                 <textarea
@@ -131,12 +131,12 @@ export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModa
                   rows={3}
                   required
                   placeholder="Provide timestamps, proof of identity, or details regarding the claim..."
-                  className="w-full rounded-xl border border-white/10 bg-zinc-900 p-3 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-zinc-900 p-3 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1.5 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-zinc-300 mb-1.5 uppercase tracking-wider light:text-slate-700">
                   Your Contact Email
                 </label>
                 <input
@@ -145,7 +145,7 @@ export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModa
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="contact@rights-holder.com"
-                  className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3.5 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3.5 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900"
                 />
               </div>
             </div>
@@ -154,7 +154,7 @@ export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModa
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-xs font-semibold text-zinc-400 hover:text-white"
+                className="rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-xs font-semibold text-zinc-400 hover:text-white light:bg-slate-50 light:border-black/10 light:text-slate-500 light:hover:text-slate-950"
               >
                 Cancel
               </button>

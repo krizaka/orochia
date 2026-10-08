@@ -33,14 +33,14 @@ export default function LoginPage() {
 
   return (
     <div className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-md items-center justify-center px-4 py-12">
-      <div className="w-full overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 p-8 shadow-2xl relative">
+      <div className="w-full overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 p-8 shadow-2xl relative light:bg-white light:border-black/10">
         {/* Ambient Top Glow */}
         <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-40 w-40 rounded-full bg-violet-600/30 blur-3xl pointer-events-none" />
 
         <div className="text-center mb-8">
           <OrochiaLogo size={72} className="mx-auto mb-3" />
-          <h1 className="text-2xl font-black text-white font-display">Enter the Sanctuary</h1>
-          <p className="mt-1 text-xs text-zinc-400">
+          <h1 className="text-2xl font-black text-white font-display light:text-slate-900">Enter the Sanctuary</h1>
+          <p className="mt-1 text-xs text-zinc-400 light:text-slate-500">
             Sign in to your sovereign creator or patron account
           </p>
         </div>
@@ -79,11 +79,11 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block">
+            <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block light:text-slate-500">
               Email or Username
             </label>
             <div className="relative">
-              <Mail className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500" />
+              <Mail className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500 light:text-slate-500" />
               <input
                 type="text"
                 autoComplete="username"
@@ -91,14 +91,14 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="creator@orochia.org"
-                className="w-full rounded-xl border border-white/10 bg-zinc-900 pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-900 pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900"
               />
             </div>
           </div>
 
           <div>
             <div className="mb-1.5 flex items-center justify-between">
-              <label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+              <label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500">
                 Password
               </label>
               <Link href="/auth/forgot-password" className="text-xs text-violet-300 hover:underline">
@@ -106,7 +106,7 @@ export default function LoginPage() {
               </Link>
             </div>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500" />
+              <Lock className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500 light:text-slate-500" />
               <input
                 id="password"
                 type="password"
@@ -115,7 +115,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full rounded-xl border border-white/10 bg-zinc-900 pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-900 pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900"
               />
             </div>
           </div>
@@ -136,7 +136,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-xs text-zinc-400">
+        <p className="mt-6 text-center text-xs text-zinc-400 light:text-slate-500">
           New to the platform?{" "}
           <Link href="/auth/register" className="font-semibold text-violet-400 hover:underline">
             Register for Sanctuary

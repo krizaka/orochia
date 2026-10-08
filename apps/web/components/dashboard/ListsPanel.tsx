@@ -16,7 +16,7 @@ interface Member {
 }
 
 const field =
-  "rounded-2xl border border-white/10 bg-zinc-900/80 px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-none";
+  "rounded-2xl border border-white/10 bg-zinc-900/80 px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900";
 
 function Members({ list, onChange }: { list: List; onChange: () => void }) {
   const [members, setMembers] = useState<Member[] | null>(null);
@@ -56,7 +56,7 @@ function Members({ list, onChange }: { list: List; onChange: () => void }) {
   };
 
   return (
-    <div className="mt-3 space-y-2 rounded-2xl border border-white/5 bg-black/20 p-3">
+    <div className="mt-3 space-y-2 rounded-2xl border border-white/5 bg-black/20 p-3 light:border-black/10">
       <form onSubmit={add} className="flex gap-2">
         <input
           value={username}
@@ -72,15 +72,15 @@ function Members({ list, onChange }: { list: List; onChange: () => void }) {
       </form>
       {error && <p className="text-[11px] text-rose-300">{error}</p>}
       {members === null ? (
-        <p className="text-[11px] text-zinc-500">Loading…</p>
+        <p className="text-[11px] text-zinc-500 light:text-slate-500">Loading…</p>
       ) : members.length === 0 ? (
-        <p className="text-[11px] text-zinc-500">Empty list.</p>
+        <p className="text-[11px] text-zinc-500 light:text-slate-500">Empty list.</p>
       ) : (
         <ul className="flex flex-wrap gap-1.5">
           {members.map((m) => (
-            <li key={m.userId} className="inline-flex items-center gap-1 rounded-full bg-white/5 py-1 pl-3 pr-1 text-[11px] text-zinc-200">
+            <li key={m.userId} className="inline-flex items-center gap-1 rounded-full bg-white/5 py-1 pl-3 pr-1 text-[11px] text-zinc-200 light:bg-black/5 light:text-slate-700">
               @{m.username}
-              <button disabled={busy} onClick={() => remove(m.userId)} className="rounded-full p-0.5 text-zinc-400 hover:text-rose-300" aria-label={`Remove @${m.username}`}>
+              <button disabled={busy} onClick={() => remove(m.userId)} className="rounded-full p-0.5 text-zinc-400 hover:text-rose-300 light:text-slate-500" aria-label={`Remove @${m.username}`}>
                 <X className="h-3 w-3" />
               </button>
             </li>
@@ -133,26 +133,26 @@ export function ListsPanel() {
           <Plus className="h-4 w-4" /> Create
         </button>
       </form>
-      <p className="-mt-3 text-[11px] text-zinc-500">
+      <p className="-mt-3 text-[11px] text-zinc-500 light:text-slate-500">
         Lists are private. Open an invited-only video or collection to a list: whoever you add later gets in, whoever you remove loses access.
       </p>
       {error && <p className="text-xs text-rose-300">{error}</p>}
 
       {lists === null ? (
-        <p className="text-xs text-zinc-500">Loading…</p>
+        <p className="text-xs text-zinc-500 light:text-slate-500">Loading…</p>
       ) : lists.length === 0 ? (
-        <div className="rounded-3xl border border-white/10 bg-zinc-900/40 p-12 text-center text-sm text-zinc-400">No list yet.</div>
+        <div className="rounded-3xl border border-white/10 bg-zinc-900/40 p-12 text-center text-sm text-zinc-400 light:bg-slate-50 light:border-black/10 light:text-slate-500">No list yet.</div>
       ) : (
-        <ul className="glass-panel divide-y divide-white/5 rounded-3xl px-5">
+        <ul className="glass-panel divide-y divide-white/5 rounded-3xl px-5 light:divide-black/5">
           {lists.map((l) => (
             <li key={l.id} className="py-3.5">
               <div className="flex items-center justify-between gap-3">
                 <button onClick={() => setOpen(open === l.id ? null : l.id)} className="flex min-w-0 items-center gap-2 text-left" aria-expanded={open === l.id}>
                   <ChevronDown className={`h-4 w-4 shrink-0 text-zinc-500 transition-transform ${open === l.id ? "rotate-180" : ""}`} />
-                  <span className="truncate text-sm font-semibold text-white">{l.name}</span>
-                  <span className="font-mono text-[11px] text-zinc-500">{l.membersCount} people</span>
+                  <span className="truncate text-sm font-semibold text-white light:text-slate-900">{l.name}</span>
+                  <span className="font-mono text-[11px] text-zinc-500 light:text-slate-500">{l.membersCount} people</span>
                 </button>
-                <button onClick={() => remove(l)} className="rounded-lg p-2 text-zinc-400 hover:bg-rose-500/10 hover:text-rose-300" aria-label={`Delete ${l.name}`}>
+                <button onClick={() => remove(l)} className="rounded-lg p-2 text-zinc-400 hover:bg-rose-500/10 hover:text-rose-300 light:text-slate-500" aria-label={`Delete ${l.name}`}>
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               </div>
