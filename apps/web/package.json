@@ -3,12 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/copy-ffmpeg.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/copy-ffmpeg.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint ."
   },
   "dependencies": {
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/util": "^0.12.2",
     "@orochia/db": "*",
     "@orochia/media": "*",
     "@orochia/payments": "*",

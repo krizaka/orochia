@@ -3,7 +3,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import * as tus from "tus-js-client";
-import { UploadCloud, CheckCircle, Film, DollarSign, ShieldAlert, Sparkles } from "lucide-react";
+import { UploadCloud, CheckCircle, Film, DollarSign, ShieldAlert, Sparkles, Scissors } from "lucide-react";
+import { VideoEditor } from "./VideoEditor";
+import { EDITOR_MAX_BYTES } from "@/lib/video-edit";
+import { t } from "@/lib/i18n";
 
 interface Collection {
   id: string;
@@ -28,6 +31,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
   const [collections, setCollections] = useState<Collection[]>([]);
   const [selectedCollection, setSelectedCollection] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   useEffect(() => {
     fetch("/api/playlists", { cache: "no-store" })
@@ -152,6 +156,10 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
     certify2257Records &&
     certifyCopyrightOwnership;
 
+  if (editing && file) {
+    return <VideoEditor file={file} onClose={() => setEditing(false)} onApply={(edited) => { setFile(edited); setEditing(false); }} />;
+  }
+
   return (
     <div className="w-full max-w-2xl mx-auto rounded-3xl border border-white/10 bg-zinc-950 p-8 shadow-2xl light:bg-white light:border-black/10">
       <div className="flex items-center gap-3 mb-6">
@@ -237,6 +245,18 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 <span className="block text-xs text-zinc-400 light:text-slate-500">
                   {(file.size / (1024 * 1024)).toFixed(1)} MB
                 </span>
+                {file.size <= EDITOR_MAX_BYTES && !isUploading && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditing(true);
+                    }}
+                    className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-violet-600 px-3.5 py-1.5 text-xs font-semibold text-white"
+                  >
+                    <Scissors className="h-3.5 w-3.5" /> {t("editor.edit")}
+                  </button>
+                )}
               </div>
             ) : (
               <div className="text-center">

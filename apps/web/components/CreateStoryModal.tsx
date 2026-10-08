@@ -2,7 +2,8 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as tus from "tus-js-client";
-import { CheckCircle2, Image as ImageIcon, Loader2, Sparkles, UploadCloud, X } from "lucide-react";
+import { CheckCircle2, Image as ImageIcon, Loader2, Scissors, Sparkles, UploadCloud, X } from "lucide-react";
+import { VideoEditor } from "@/components/VideoEditor";
 import { t } from "@/lib/i18n";
 
 type Audience = "PUBLIC" | "APPROVED_FOLLOWERS_ONLY" | "CONTACTS_ONLY" | "INVITED_ONLY";
@@ -32,6 +33,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
   const [progress, setProgress] = useState(0);
   const [doneMessage, setDoneMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -133,6 +135,22 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
 
   const isImage = file ? IMAGE_TYPES.includes(file.type) : false;
 
+  if (editing && file && !isImage) {
+    return (
+      <VideoEditor
+        file={file}
+        maxSeconds={60}
+        defaultVertical
+        onClose={() => setEditing(false)}
+        onApply={(edited) => {
+          setFile(edited);
+          setPreview(URL.createObjectURL(edited));
+          setEditing(false);
+        }}
+      />
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 p-0 backdrop-blur-md sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="story-title">
       <div className="max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border border-white/10 light:border-black/10 bg-zinc-950 light:bg-white p-6 text-white light:text-slate-900 shadow-2xl sm:rounded-3xl">
@@ -165,9 +183,16 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
             {file && preview ? (
               <div className="relative overflow-hidden rounded-2xl border border-white/10 light:border-black/10 bg-black">
                 {isImage ? <img src={preview} alt="" className="mx-auto max-h-72 object-contain" /> : <video src={preview} className="mx-auto max-h-72" muted playsInline controls />}
-                <button type="button" onClick={() => input.current?.click()} className="absolute right-2 top-2 rounded-lg bg-black/70 px-2.5 py-1 text-xs font-semibold text-white">
-                  {t("stories.create.change")}
-                </button>
+                <div className="absolute right-2 top-2 flex gap-1.5">
+                  {!isImage && (
+                    <button type="button" onClick={() => setEditing(true)} className="flex items-center gap-1 rounded-lg bg-violet-600 px-2.5 py-1 text-xs font-semibold text-white">
+                      <Scissors className="h-3 w-3" /> {t("editor.edit")}
+                    </button>
+                  )}
+                  <button type="button" onClick={() => input.current?.click()} className="rounded-lg bg-black/70 px-2.5 py-1 text-xs font-semibold text-white">
+                    {t("stories.create.change")}
+                  </button>
+                </div>
               </div>
             ) : (
               <button

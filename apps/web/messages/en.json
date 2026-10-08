@@ -169,5 +169,32 @@
       "title": "Orochia credits",
       "hint": "Paid from your Orochia balance — instant"
     }
+  },
+  "editor": {
+    "title": "Edit video",
+    "edit": "Edit",
+    "trim": "Trim",
+    "start": "Start",
+    "end": "End",
+    "length": "{seconds} s",
+    "filters": "Filter",
+    "filterNames": {
+      "none": "Original",
+      "vivid": "Vivid",
+      "warm": "Warm",
+      "cool": "Cool",
+      "mono": "Mono",
+      "noir": "Noir",
+      "vintage": "Vintage"
+    },
+    "mute": "Mute sound",
+    "vertical": "Vertical (9:16)",
+    "apply": "Apply",
+    "loading": "Loading the editor (once)…",
+    "exporting": "Processing… {progress}%",
+    "tooLarge": "This file is too large to edit in the browser — it will be uploaded as it is.",
+    "failed": "The video could not be edited. You can still upload the original.",
+    "maxLength": "Stories last up to {seconds} seconds.",
+    "previewNote": "Preview is approximate; the exported video matches the filter exactly."
   }
 }
