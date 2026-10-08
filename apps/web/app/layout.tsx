@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import { ClientLayoutShell } from "@/components/ClientLayoutShell";
@@ -11,6 +11,17 @@ import "./globals.css";
 // Self-hosted at build time by next/font: no request to Google from the visitor's browser.
 const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-outfit", display: "swap" });
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-jakarta", display: "swap" });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
+    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
+  ],
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -44,7 +55,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${outfit.variable} ${jakarta.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${outfit.variable} ${jakarta.variable} overflow-x-hidden max-w-full w-full`}>
       <head>
         {/* Anti-flicker script for instant dark/light hydration */}
         <script
@@ -66,7 +77,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen bg-background text-foreground antialiased selection:bg-violet-600 selection:text-white pb-20 md:pb-0">
+      <body className="min-h-screen bg-background text-foreground antialiased selection:bg-violet-600 selection:text-white pb-20 md:pb-0 overflow-x-hidden max-w-full w-full relative">
         <JsonLd data={siteGraph()} />
         <ThemeProvider>
           <AuthProvider>

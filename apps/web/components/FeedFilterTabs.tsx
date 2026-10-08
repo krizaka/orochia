@@ -40,9 +40,9 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
   return (
     <div className="space-y-6">
       {/* Tab Control & View Mode Switcher Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 dark:border-white/10 light:border-black/5 pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 dark:border-white/10 light:border-black/5 pb-4 max-w-full overflow-hidden">
         {/* Feed Selection Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 scrollbar-none">
+        <div className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 scrollbar-none overscroll-x-contain touch-pan-x">
           {tabs.map(({ id, label, icon: Icon }) => {
             const isActive = activeTab === id;
             return (

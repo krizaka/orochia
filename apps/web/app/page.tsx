@@ -31,7 +31,7 @@ export default async function HomePage() {
   const showcase = featuredVideos[0];
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:py-8 sm:px-6">
+    <div className="mx-auto max-w-7xl px-3 sm:px-6 py-4 sm:py-8 overflow-x-hidden w-full max-w-full">
       {/* 1. Creator Ephemeral Stories / Live Pulse Bar */}
       <CreatorStoriesBar stories={stories} />
 
@@ -39,7 +39,7 @@ export default async function HomePage() {
       <UserCompanionBanner />
 
       {/* 3. Hero Showcase Banner with Luxury Neon Gradients */}
-      <div className="relative mb-12 overflow-hidden rounded-3xl border border-white/10 dark:border-white/10 light:border-black/5 bg-gradient-to-r from-violet-950/60 via-zinc-950 to-fuchsia-950/50 dark:from-violet-950/60 dark:via-zinc-950 dark:to-fuchsia-950/50 light:from-violet-100/70 light:via-white light:to-pink-100/60 p-8 sm:p-12 shadow-2xl">
+      <div className="relative mb-12 overflow-hidden isolate rounded-3xl border border-white/10 dark:border-white/10 light:border-black/5 bg-gradient-to-r from-violet-950/60 via-zinc-950 to-fuchsia-950/50 dark:from-violet-950/60 dark:via-zinc-950 dark:to-fuchsia-950/50 light:from-violet-100/70 light:via-white light:to-pink-100/60 p-6 sm:p-12 shadow-2xl max-w-full">
         <div className="relative z-10 max-w-2xl">
           <div className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-3.5 py-1 text-xs font-semibold text-violet-300 dark:text-violet-300 light:text-violet-700 mb-4 shadow-sm">
             <Sparkles className="h-3.5 w-3.5 text-violet-400" />
@@ -87,7 +87,7 @@ export default async function HomePage() {
         </div>
 
         {/* Decorative backdrop glow */}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/4 h-96 w-96 rounded-full bg-violet-600/20 blur-3xl pointer-events-none" />
+        <div className="absolute -right-8 top-1/2 -translate-y-1/2 h-72 w-72 sm:h-96 sm:w-96 rounded-full bg-violet-600/20 blur-3xl pointer-events-none" />
       </div>
 
       {/* 4. Feature Highlights Grid */}

@@ -89,23 +89,23 @@ export function CreatorStoriesBar({
       />
 
       {/* Stories Horizontal Carousel Bar */}
-      <div className="relative mb-8 overflow-hidden rounded-2xl border border-white/10 dark:border-white/10 light:border-black/5 bg-zinc-950/60 dark:bg-zinc-950/60 light:bg-white p-3.5 sm:p-4 backdrop-blur-xl">
-        <div className="flex items-center gap-4 sm:gap-5 overflow-x-auto scrollbar-none py-1 px-1">
+      <div className="relative mb-8 overflow-hidden rounded-2xl border border-white/10 dark:border-white/10 light:border-black/5 bg-zinc-950/60 dark:bg-zinc-950/60 light:bg-white p-3 sm:p-4 backdrop-blur-xl max-w-full">
+        <div className="flex items-center gap-3.5 sm:gap-5 overflow-x-auto scrollbar-none py-1 px-1 overscroll-x-contain touch-pan-x">
           {/* Creator Upload / Add Story Button */}
           {user?.role === "CREATOR" ? (
             <button
               onClick={() => setIsCreateStoryOpen(true)}
               className="flex flex-col items-center gap-1.5 shrink-0 group cursor-pointer"
             >
-              <div className="relative flex h-16 w-16 sm:h-18 sm:w-18 items-center justify-center rounded-2xl border-2 border-dashed border-violet-500/60 bg-violet-600/10 transition-transform group-hover:scale-105">
-                <Plus className="h-6 w-6 text-violet-400 group-hover:rotate-90 transition-transform duration-300" />
+              <div className="relative flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border-2 border-dashed border-violet-500/60 bg-violet-600/10 transition-transform group-hover:scale-105">
+                <Plus className="h-5 w-5 sm:h-6 sm:w-6 text-violet-400 group-hover:rotate-90 transition-transform duration-300" />
               </div>
               <span className="text-[11px] font-semibold text-zinc-300 dark:text-zinc-300 light:text-slate-700">Add Story</span>
             </button>
           ) : (
             <div className="hidden sm:flex flex-col items-center gap-1.5 shrink-0">
-              <div className="flex h-16 w-16 sm:h-18 sm:w-18 items-center justify-center rounded-2xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900/60 dark:bg-zinc-900/60 light:bg-slate-100 text-violet-400">
-                <Sparkles className="h-6 w-6" />
+              <div className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900/60 dark:bg-zinc-900/60 light:bg-slate-100 text-violet-400">
+                <Sparkles className="h-5 w-5 sm:h-6 sm:w-6" />
               </div>
               <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-400 light:text-slate-500">Live Fleets</span>
             </div>
@@ -125,7 +125,7 @@ export function CreatorStoriesBar({
                 className="flex flex-col items-center gap-1.5 shrink-0 group focus:outline-none"
               >
                 {/* Avatar with Animated Pulse Border */}
-                <div className="relative p-0.5 rounded-2xl transition-transform group-hover:scale-105 active:scale-95">
+                <div className="relative p-0.5 rounded-2xl transition-transform group-hover:scale-105 active:scale-95 shrink-0">
                   <div
                     className={`absolute inset-0 rounded-2xl ${
                       story.hasStory
@@ -133,7 +133,7 @@ export function CreatorStoriesBar({
                         : "bg-zinc-700 dark:bg-zinc-700 light:bg-slate-300"
                     }`}
                   />
-                  <div className="relative h-15 w-15 sm:h-16 sm:w-16 overflow-hidden rounded-[14px] bg-zinc-950 p-0.5">
+                  <div className="relative h-14 w-14 sm:h-16 sm:w-16 overflow-hidden rounded-[14px] bg-zinc-950 dark:bg-zinc-950 light:bg-white p-0.5 shrink-0">
                     <img
                       src={story.avatarUrl || AVATAR_PLACEHOLDER}
                       alt={story.displayName}
@@ -143,7 +143,7 @@ export function CreatorStoriesBar({
 
                   {/* Story Badge */}
                   {story.hasStory && (
-                    <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-violet-600 px-1.5 py-0.2 text-[9px] font-black uppercase tracking-wider text-white ring-2 ring-zinc-950 shadow-md">
+                    <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-violet-600 px-1.5 py-0.2 text-[9px] font-black uppercase tracking-wider text-white ring-2 ring-zinc-950 dark:ring-zinc-950 light:ring-white shadow-md">
                       NEW
                     </span>
                   )}

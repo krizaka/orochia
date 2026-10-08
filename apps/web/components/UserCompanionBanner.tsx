@@ -24,7 +24,7 @@ export function UserCompanionBanner() {
   if (dismissed) return null;
 
   return (
-    <div className="relative mb-10 overflow-hidden rounded-3xl border border-violet-500/30 bg-gradient-to-r from-violet-950/40 via-zinc-900/60 to-fuchsia-950/30 dark:from-violet-950/40 dark:via-zinc-900/60 dark:to-fuchsia-950/30 light:from-violet-50 light:via-white light:to-fuchsia-50 p-6 sm:p-8 backdrop-blur-xl shadow-xl transition-all animate-in fade-in slide-in-from-top-4 duration-300">
+    <div className="relative mb-10 overflow-hidden isolate rounded-3xl border border-violet-500/30 bg-gradient-to-r from-violet-950/40 via-zinc-900/60 to-fuchsia-950/30 dark:from-violet-950/40 dark:via-zinc-900/60 dark:to-fuchsia-950/30 light:from-violet-50 light:via-white light:to-fuchsia-50 p-5 sm:p-8 backdrop-blur-xl shadow-xl transition-all animate-in fade-in slide-in-from-top-4 duration-300 max-w-full">
       {/* Close button */}
       <button
         onClick={handleDismiss}
