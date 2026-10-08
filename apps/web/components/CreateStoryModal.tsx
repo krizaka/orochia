@@ -45,6 +45,15 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
   const [edited, setEdited] = useState(false);
   const [draftsSeen, setDraftsSeen] = useState(0);
   const [ratingId, setRatingId] = useState("GENERAL");
+  // The ratings come from the reference data (migration 0013) — never hard-coded ids.
+  const [ratings, setRatings] = useState<{ id: string; label: string; requiresBlur: boolean }[]>([]);
+  useEffect(() => {
+    if (!isOpen || ratings.length) return;
+    fetch("/api/reference/content-ratings")
+      .then((r) => (r.ok ? r.json() : { ratings: [] }))
+      .then((d: { ratings?: { id: string; label: string; requiresBlur: boolean }[] }) => setRatings(d.ratings ?? []))
+      .catch(() => setRatings([]));
+  }, [isOpen, ratings.length]);
   const [isBlurred, setIsBlurred] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
@@ -148,7 +157,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
             VideoId: session.headers.VideoId,
             LibraryId: String(session.headers.LibraryId),
           },
-          metadata: { filetype: file.type, title: "story" },
+          metadata: { filetype: file.type, title: "story" }, // i18n-ignore: Tus metadata, never shown
           onProgress: (sent, total) => setProgress(Math.round((sent / total) * 100)),
           onError: reject,
           onSuccess: () => resolve(),
@@ -325,24 +334,23 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
             </fieldset>
 
             <div className="rounded-xl border border-white/10 light:border-black/10 bg-zinc-900/50 light:bg-slate-50 p-3 space-y-2.5">
-              <div>
-                <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500 mb-1">
-                  Content Rating
-                </label>
+              <label className="block">
+                <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500">{t("stories.create.rating")}</span>
                 <select
                   value={ratingId}
                   onChange={(e) => {
                     setRatingId(e.target.value);
-                    if (e.target.value === "ADULT_EXPLICIT") setIsBlurred(true);
+                    if (ratings.find((r) => r.id === e.target.value)?.requiresBlur) setIsBlurred(true);
                   }}
                   className="w-full rounded-xl border border-white/10 light:border-black/10 bg-zinc-900 light:bg-slate-50 px-3 py-2 text-xs text-white light:text-slate-900"
                 >
-                  <option value="GENERAL">General Audience</option>
-                  <option value="TEEN_13">Teens 13+</option>
-                  <option value="MATURE_18">Mature 18+</option>
-                  <option value="ADULT_EXPLICIT">Adult Explicit (18+ Sensitive)</option>
+                  {ratings.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.label}
+                    </option>
+                  ))}
                 </select>
-              </div>
+              </label>
 
               <label className="flex items-center gap-2.5 cursor-pointer">
                 <input
@@ -351,9 +359,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
                   onChange={(e) => setIsBlurred(e.target.checked)}
                   className="h-3.5 w-3.5 rounded border-zinc-700 bg-zinc-900 text-violet-600 focus:ring-violet-500 light:bg-slate-50 light:border-slate-300"
                 />
-                <span className="text-xs text-zinc-300 light:text-slate-700">
-                  Sensitive content blur overlay
-                </span>
+                <span className="text-xs text-zinc-300 light:text-slate-700">{t("stories.create.blur")}</span>
               </label>
             </div>
 

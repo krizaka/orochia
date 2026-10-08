@@ -166,7 +166,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
               <Link
                 href="/creator/upload"
                 className="hidden lg:flex items-center gap-1.5 rounded-full border border-violet-500/25 bg-violet-500/5 hover:border-violet-500/40 hover:bg-violet-500/10 px-3.5 py-1.5 text-xs font-semibold text-violet-300 light:text-violet-700 transition-all"
-                title="Creator Studio Upload"
+                title={t("nav.uploadHint")}
               >
                 <Upload className="h-3.5 w-3.5 text-violet-400" />
                 <span>{t("nav.upload")}</span>

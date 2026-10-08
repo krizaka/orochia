@@ -15,6 +15,11 @@ export type MessageKey = Leaves<typeof en>;
 
 const dictionary: Record<string, unknown> = en;
 
+/** A whole branch of messages, for long structured content rendered from data (legal pages). */
+export function messages<K extends keyof typeof en>(key: K): (typeof en)[K] {
+  return (dictionary as typeof en)[key];
+}
+
 export function t(key: MessageKey, vars?: Record<string, string | number>): string {
   const value = key.split(".").reduce<unknown>((node, part) => (node as Record<string, unknown> | undefined)?.[part], dictionary);
   const text = typeof value === "string" ? value : key;

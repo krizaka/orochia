@@ -152,8 +152,12 @@ export function CreatorStoriesBar() {
     );
   };
 
+  // Two taps to delete (no browser dialog): the first arms the button.
+  const [armed, setArmed] = useState(false);
   const remove = async () => {
-    if (!story || !window.confirm(t("stories.removeConfirm"))) return;
+    if (!story) return;
+    if (!armed) return setArmed(true);
+    setArmed(false);
     await fetch(`/api/stories/${story.id}`, { method: "DELETE" });
     close();
   };
@@ -238,8 +242,14 @@ export function CreatorStoriesBar() {
                 </Link>
                 <div className="flex items-center gap-1.5">
                   {ring.isOwn && (
-                    <button onClick={remove} className="flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white hover:bg-rose-600/60" aria-label={t("stories.remove")}>
+                    <button
+                      onClick={remove}
+                      onBlur={() => setArmed(false)}
+                      className={`flex h-8 items-center justify-center gap-1.5 rounded-full text-white transition-all ${armed ? "bg-rose-600 px-3 text-xs font-semibold" : "w-8 bg-black/50 hover:bg-rose-600/60"}`}
+                      aria-label={armed ? t("stories.removeArmed") : t("stories.remove")}
+                    >
                       <Trash2 className="h-4 w-4" />
+                      {armed && t("stories.removeArmed")}
                     </button>
                   )}
                   <button onClick={close} className="flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/80" aria-label={t("common.close")}>

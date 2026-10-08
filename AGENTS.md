@@ -227,9 +227,15 @@ orochia/                           npm workspaces
 - `app/globals.css` keeps `@config "../tailwind.config.js";`; Tailwind content paths are resolved with `path.join`.
 - Every list has an empty state; every action shows its pending and error states; no `alert()`.
 - **Every user-facing string lives in `apps/web/messages/en.json`** and is read with `t("key", { vars })`
-  (`lib/i18n.ts`, keys typed from the file, `<Rich>` for `<b>` and inline links). English is the only locale for now;
-  another language adds `messages/<locale>.json` with the same shape. Plain product words ("Dashboard", "Sign in"),
-  never jargon or mixed languages.
+  (`lib/i18n.ts`, keys typed from the file, `<Rich>` for `<b>` and `{slot}` links; `messages("branch")` for long
+  structured content such as the legal pages). English is the only locale for now; another language adds
+  `messages/<locale>.json` with the same shape. Plain product words ("Dashboard", "Sign in"), never jargon or mixed
+  languages. **No exception, enforced**: `npm run check:i18n` (part of `npm run lint`, so of `check` and CI) parses
+  every page and component and fails on JSX text, user-facing attributes (`placeholder`, `title`, `aria-label`, `alt`,
+  `label`), messages given to state setters (`setError("…")`), words in data (`{ label: "…" }`) and browser dialogs.
+  Data modules keep structure (ids, icons, order) and read their words by id (``t(`collectionAudience.${id}.label`)``).
+  A string that is not shown (protocol metadata) carries `// i18n-ignore: <why>`. Destructive actions confirm with
+  a second tap (`ConfirmIconButton`), never `window.confirm`.
 - Both themes are first-class: every surface and text colour has its `light:` counterpart.
 - **The address is the state — always.** Every place a person can be is a URL they can copy, share and reload:
   tabs (`/dashboard?tab=settings`, `/@user?tab=ppv`), settings sections (`#settings-notifications`), lists and
@@ -247,7 +253,8 @@ orochia/                           npm workspaces
   targets work at 360 px. Prefer the shared building blocks (`ProfileHero`, `PictureQuickEdit`, `NotificationBell`,
   `SocialIcon`) over new one-offs.
 - **UI kit** (`components/ui`): `Button` / `buttonClass` (primary · secondary · ghost · danger, sm · md · lg, loading),
-  `IconButton` (accessible name required), `Chip`, `Segmented`, `Switch`, `Slider`, `Sheet`, `cx`. `buttonClass` and `cx`
+  `IconButton` (accessible name required), `ConfirmIconButton` (two-tap destructive action), `Chip`, `Segmented`,
+  `Switch`, `Slider`, `Sheet` (every dialog: phones get a bottom sheet), `cx`. `buttonClass` and `cx`
   are plain modules (no `"use client"`): server components style links with them; the components are client. New screens use them; a
   screen touched for another reason moves its hand-rolled buttons to them.
 - **Krizaka motion signature** (shared with krizaka.com; `app/globals.css` → "Krizaka motion signature",
@@ -300,7 +307,8 @@ orochia/                           npm workspaces
 
 ## 10. Definition of done
 
-1. `npm run check` passes (lint, type-check, unit tests, docs up to date) and `npm run build` succeeds.
+1. `npm run check` passes (lint incl. the no-hard-coded-text check, type-check, unit tests, docs up to date) and
+   `npm run build` succeeds.
 2. Schema changes ship with their migration and regenerated `DATABASE.md`; `npm run db:check` passes.
 3. New behaviour has scenarios in `e2e/scenarios.mjs`, and `npm run test:e2e` passes on a reset database.
 4. The invariants of §3 still hold; no credential, demo shortcut or showcase data reaches production code.

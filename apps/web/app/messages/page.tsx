@@ -18,6 +18,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { t } from "@/lib/i18n";
 
 interface OtherUser {
   id: string;
@@ -140,10 +141,10 @@ function MessagesContent() {
         setMessages(data.messages || []);
       } else {
         const err = await res.json();
-        setError(err.error || "Failed to load messages");
+        setError(err.error || t("inbox.loadFailed"));
       }
     } catch (e) {
-      setError("Network error while loading messages");
+      setError(t("inbox.network"));
     } finally {
       setLoadingMessages(false);
     }
@@ -222,7 +223,7 @@ function MessagesContent() {
 
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Cannot start conversation");
+        setError(data.error || t("inbox.startFailed"));
         return;
       }
 
@@ -235,7 +236,7 @@ function MessagesContent() {
       });
       setNewChatUsername("");
     } catch (e: any) {
-      setError(e.message || "Failed to start conversation");
+      setError(e.message || t("inbox.startFailed"));
     } finally {
       setStartingChat(false);
     }
@@ -260,7 +261,7 @@ function MessagesContent() {
 
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Failed to send message");
+        setError(data.error || t("inbox.sendFailed"));
         setInputContent(content); // restore input
         return;
       }
@@ -272,7 +273,7 @@ function MessagesContent() {
         });
       }
     } catch (e: any) {
-      setError(e.message || "Network error sending message");
+      setError(e.message || t("inbox.network"));
       setInputContent(content);
     } finally {
       setSending(false);
@@ -308,10 +309,10 @@ function MessagesContent() {
         <div>
           <h1 className="text-2xl font-bold text-white font-display flex items-center gap-2.5 light:text-slate-900">
             <MessageSquare className="h-6 w-6 text-violet-400" />
-            <span>Direct Messages</span>
+            <span>{t("inbox.title")}</span>
           </h1>
           <p className="text-xs text-zinc-400 light:text-slate-500 mt-1">
-            Private, end-to-end coordinated conversations with creators and mutual contacts
+            {t("inbox.intro")}
           </p>
         </div>
       </div>
@@ -331,7 +332,7 @@ function MessagesContent() {
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400 light:text-slate-500" />
                 <input
                   type="text"
-                  placeholder="New chat @username..."
+                  placeholder={t("inbox.newPlaceholder")}
                   value={newChatUsername}
                   onChange={(e) => setNewChatUsername(e.target.value)}
                   className="w-full rounded-xl border border-white/10 bg-zinc-900/60 pl-9 pr-3 py-2 text-xs text-white focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
@@ -341,7 +342,8 @@ function MessagesContent() {
                 type="submit"
                 disabled={startingChat || !newChatUsername.trim()}
                 className="px-3 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold disabled:opacity-40 transition-colors flex items-center gap-1"
-                title="Start conversation"
+                title={t("inbox.start")}
+                aria-label={t("inbox.start")}
               >
                 {startingChat ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
               </button>
@@ -353,14 +355,14 @@ function MessagesContent() {
             {loadingConversations ? (
               <div className="flex flex-col items-center justify-center p-8 text-zinc-400">
                 <Loader2 className="h-6 w-6 animate-spin mb-2" />
-                <span className="text-xs">Loading conversations...</span>
+                <span className="text-xs">{t("inbox.loadingConversations")}</span>
               </div>
             ) : conversations.length === 0 ? (
               <div className="p-8 text-center text-zinc-500">
                 <MessageSquare className="h-8 w-8 mx-auto mb-2 text-zinc-600" />
-                <p className="text-xs font-semibold text-zinc-400 light:text-slate-600">No conversations yet</p>
+                <p className="text-xs font-semibold text-zinc-400 light:text-slate-600">{t("inbox.none")}</p>
                 <p className="text-[11px] mt-1 text-zinc-500">
-                  Enter a username above to start chatting with creators or mutuals.
+                  {t("inbox.noneHint")}
                 </p>
               </div>
             ) : (
@@ -417,7 +419,7 @@ function MessagesContent() {
                             : "text-zinc-400 light:text-slate-500"
                         }`}
                       >
-                        {conv.lastMessage?.content || "No messages yet"}
+                        {conv.lastMessage?.content || t("inbox.noMessages")}
                       </p>
                     </div>
                   </button>
@@ -429,7 +431,7 @@ function MessagesContent() {
 
         {/* Right Column: Chat Thread */}
         <section
-          aria-label="Chat thread"
+          aria-label={t("inbox.thread")}
           className={`lg:col-span-8 flex flex-col h-full ${
             !activeConversation ? "hidden lg:flex" : "flex"
           }`}
@@ -442,7 +444,8 @@ function MessagesContent() {
                   <button
                     onClick={() => setActiveConversation(null)}
                     className="p-1 rounded-lg text-zinc-400 hover:text-white lg:hidden"
-                    title="Back to conversations"
+                    title={t("inbox.back")}
+                    aria-label={t("inbox.back")}
                   >
                     <ArrowLeft className="h-5 w-5" />
                   </button>
@@ -479,7 +482,8 @@ function MessagesContent() {
                   <button
                     onClick={() => setShowOptionsModal(!showOptionsModal)}
                     className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-colors light:hover:text-slate-900"
-                    title="Options"
+                    title={t("inbox.options")}
+                    aria-label={t("inbox.options")}
                   >
                     <MoreVertical className="h-4 w-4" />
                   </button>
@@ -492,7 +496,7 @@ function MessagesContent() {
                         className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold text-rose-400 hover:bg-rose-500/10 flex items-center gap-2 transition-colors"
                       >
                         <UserX className="h-3.5 w-3.5" />
-                        <span>Block User</span>
+                        <span>{t("inbox.block")}</span>
                       </button>
                     </div>
                   )}
@@ -516,9 +520,9 @@ function MessagesContent() {
                 ) : messages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-center text-zinc-500">
                     <MessageSquare className="h-8 w-8 mb-2 opacity-50" />
-                    <p className="text-xs font-semibold">Start the conversation</p>
+                    <p className="text-xs font-semibold">{t("inbox.startTitle")}</p>
                     <p className="text-[11px] mt-1 max-w-xs">
-                      Say hello to @{activeConversation.otherUser.username}.
+                      {t("inbox.sayHello", { username: activeConversation.otherUser.username })}
                     </p>
                   </div>
                 ) : (
@@ -570,7 +574,7 @@ function MessagesContent() {
                     type="text"
                     value={inputContent}
                     onChange={(e) => setInputContent(e.target.value)}
-                    placeholder="Type a message..."
+                    placeholder={t("inbox.messagePlaceholder")}
                     maxLength={2000}
                     className="flex-1 rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-900"
                   />
@@ -580,7 +584,7 @@ function MessagesContent() {
                     className="px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold disabled:opacity-40 transition-colors flex items-center gap-1.5 shadow-md shadow-violet-600/20"
                   >
                     {sending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
-                    <span className="hidden sm:inline">Send</span>
+                    <span className="hidden sm:inline">{t("inbox.send")}</span>
                   </button>
                 </form>
               </div>
@@ -590,9 +594,9 @@ function MessagesContent() {
               <div className="h-16 w-16 rounded-full bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 mb-4">
                 <MessageSquare className="h-8 w-8" />
               </div>
-              <h3 className="text-base font-bold text-white light:text-slate-900">Your Messages</h3>
+              <h3 className="text-base font-bold text-white light:text-slate-900">{t("inbox.emptyTitle")}</h3>
               <p className="text-xs text-zinc-400 max-w-sm mt-1 light:text-slate-500">
-                Select an existing conversation on the left, or enter a username to start a new chat.
+                {t("inbox.emptyHint")}
               </p>
             </div>
           )}
@@ -607,7 +611,7 @@ export default function MessagesPage() {
     <Suspense
       fallback={
         <div className="mx-auto max-w-7xl px-4 py-24 text-center text-xs text-zinc-500 font-mono light:text-slate-500">
-          Loading messages…
+          {t("inbox.loading")}
         </div>
       }
     >

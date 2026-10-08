@@ -15,6 +15,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useUploadManager, type UploadItem } from "@/lib/upload-manager";
+import { t } from "@/lib/i18n";
 
 function formatBytes(bytes: number): string {
   if (bytes <= 0) return "0 B";
@@ -65,7 +66,7 @@ export function FloatingUploadBar() {
         <button
           onClick={() => setIsDockMinimized(false)}
           className="flex items-center gap-3 px-4 py-2.5 rounded-full bg-zinc-950/95 border border-violet-500/30 text-white shadow-2xl backdrop-blur-xl hover:border-violet-500/60 transition-all light:bg-white light:border-violet-500/30 light:text-slate-900 group"
-          title="Expand uploads dock"
+          title={t("uploads.expand")}
         >
           <div className="relative flex items-center justify-center">
             {activeCount > 0 ? (
@@ -75,7 +76,7 @@ export function FloatingUploadBar() {
             )}
           </div>
           <span className="text-xs font-semibold">
-            {activeCount > 0 ? `Uploading (${totalProgress}%)` : "Uploads complete"}
+            {activeCount > 0 ? t("uploads.uploading", { progress: totalProgress }) : t("uploads.complete")}
           </span>
           <span className="text-[10px] bg-violet-600/30 text-violet-300 font-mono px-2 py-0.5 rounded-full">
             {uploads.length}
@@ -88,7 +89,7 @@ export function FloatingUploadBar() {
 
   return (
     <aside
-      aria-label="Upload manager"
+      aria-label={t("uploads.label")}
       className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-96 rounded-2xl border border-white/10 bg-zinc-950/95 p-4 shadow-2xl backdrop-blur-2xl light:bg-white/95 light:border-black/10 light:text-slate-900"
     >
       {/* Header */}
@@ -99,10 +100,10 @@ export function FloatingUploadBar() {
           </div>
           <div>
             <h4 className="text-xs font-bold text-white uppercase tracking-wider light:text-slate-900">
-              Upload Manager
+              {t("uploads.title")}
             </h4>
             <p className="text-[10px] text-zinc-400 light:text-slate-500">
-              {activeCount > 0 ? `${activeCount} streaming in background` : "All transfers finished"}
+              {activeCount > 0 ? t("uploads.running", { count: activeCount }) : t("uploads.finished")}
             </p>
           </div>
         </div>
@@ -111,7 +112,7 @@ export function FloatingUploadBar() {
           <button
             onClick={() => setIsDockMinimized(true)}
             className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 transition-colors light:hover:text-slate-900 light:hover:bg-black/5"
-            title="Minimize"
+            title={t("uploads.minimize")} aria-label={t("uploads.minimize")}
           >
             <ChevronDown className="h-4 w-4" />
           </button>
@@ -143,7 +144,7 @@ export function FloatingUploadBar() {
                   <button
                     onClick={() => pauseUpload(item.id)}
                     className="p-1 rounded text-zinc-400 hover:text-white hover:bg-white/10 transition-colors light:hover:text-slate-900"
-                    title="Pause upload"
+                    title={t("uploads.pause")} aria-label={t("uploads.pause")}
                   >
                     <Pause className="h-3 w-3" />
                   </button>
@@ -152,7 +153,7 @@ export function FloatingUploadBar() {
                   <button
                     onClick={() => resumeUpload(item.id)}
                     className="p-1 rounded text-emerald-400 hover:bg-emerald-500/10 transition-colors"
-                    title="Resume upload"
+                    title={t("uploads.resume")} aria-label={t("uploads.resume")}
                   >
                     <Play className="h-3 w-3" />
                   </button>
@@ -161,7 +162,7 @@ export function FloatingUploadBar() {
                   <button
                     onClick={() => cancelUpload(item.id)}
                     className="p-1 rounded text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
-                    title="Cancel upload"
+                    title={t("uploads.cancel")} aria-label={t("uploads.cancel")}
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -170,7 +171,7 @@ export function FloatingUploadBar() {
                   <button
                     onClick={() => dismissUpload(item.id)}
                     className="p-1 rounded text-zinc-400 hover:text-white hover:bg-white/10 transition-colors light:hover:text-slate-900"
-                    title="Dismiss"
+                    title={t("uploads.dismiss")} aria-label={t("uploads.dismiss")}
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -211,17 +212,17 @@ export function FloatingUploadBar() {
                   </>
                 )}
                 {item.status === "paused" && (
-                  <span className="text-amber-400 font-medium">Paused ({item.progress}%)</span>
+                  <span className="text-amber-400 font-medium">{t("uploads.paused", { progress: item.progress })}</span>
                 )}
                 {item.status === "completed" && (
                   <span className="text-emerald-400 font-medium flex items-center gap-1">
-                    <CheckCircle className="h-3 w-3 inline" /> Done • HLS Transcoding
+                    <CheckCircle className="h-3 w-3 inline" /> {t("uploads.processing")}
                   </span>
                 )}
                 {item.status === "error" && (
                   <span className="text-rose-400 font-medium flex items-center gap-1 truncate max-w-[200px]">
                     <AlertCircle className="h-3 w-3 inline shrink-0" />{" "}
-                    {item.errorMessage || "Upload failed"}
+                    {item.errorMessage || t("uploads.failed")}
                   </span>
                 )}
               </span>
@@ -237,7 +238,7 @@ export function FloatingUploadBar() {
                   href={`/watch/${item.videoId}`}
                   className="text-[11px] text-violet-400 hover:text-violet-300 font-semibold transition-colors"
                 >
-                  View Video →
+                  {t("uploads.view")}
                 </Link>
               </div>
             )}

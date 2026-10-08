@@ -1,16 +1,22 @@
 import React from "react";
 import { Globe, Lock, UserCheck, UserPlus, Users, type LucideIcon } from "lucide-react";
+import { t } from "@/lib/i18n";
 
 export type CollectionVisibility = "PUBLIC" | "APPROVED_FOLLOWERS_ONLY" | "CONTACTS_ONLY" | "INVITED_ONLY" | "PRIVATE";
 
 /** Who opens a collection, in the order the owner picks from. */
-export const COLLECTION_AUDIENCES: { value: CollectionVisibility; label: string; hint: string; icon: LucideIcon }[] = [
-  { value: "PRIVATE", label: "Only me", hint: "Nobody else sees it.", icon: Lock },
-  { value: "INVITED_ONLY", label: "Invited", hint: "The people you invite and your lists.", icon: UserPlus },
-  { value: "CONTACTS_ONLY", label: "Contacts", hint: "Your accepted contacts.", icon: Users },
-  { value: "APPROVED_FOLLOWERS_ONLY", label: "Followers", hint: "The followers you approved.", icon: UserCheck },
-  { value: "PUBLIC", label: "Everyone", hint: "Shown on your profile.", icon: Globe },
+const AUDIENCES: { value: CollectionVisibility; icon: LucideIcon }[] = [
+  { value: "PRIVATE", icon: Lock },
+  { value: "INVITED_ONLY", icon: UserPlus },
+  { value: "CONTACTS_ONLY", icon: Users },
+  { value: "APPROVED_FOLLOWERS_ONLY", icon: UserCheck },
+  { value: "PUBLIC", icon: Globe },
 ];
+export const COLLECTION_AUDIENCES = AUDIENCES.map((a) => ({
+  ...a,
+  label: t(`collectionAudience.${a.value}.label`),
+  hint: t(`collectionAudience.${a.value}.hint`),
+}));
 
 export function audienceOf(value: CollectionVisibility) {
   return COLLECTION_AUDIENCES.find((a) => a.value === value) ?? COLLECTION_AUDIENCES[0];

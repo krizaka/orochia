@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Search, X, Users, Tv, Hash, Lock, CheckCircle2, ArrowRight, Loader2, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
+import { t } from "@/lib/i18n";
 
 interface CreatorResult {
   id: string;
@@ -126,14 +127,16 @@ export function GlobalSearchModal({
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search creators, 4K streams, exclusive tags, collections…"
+            placeholder={t("search.placeholder")}
+            aria-label={t("search.placeholder")}
             className="flex-1 bg-transparent text-sm sm:text-base outline-none placeholder:text-zinc-500 dark:placeholder:text-zinc-500 light:placeholder:text-slate-400"
           />
           {loading && <Loader2 className="h-4 w-4 animate-spin text-violet-400 shrink-0" />}
           {query && (
             <button
               onClick={() => setQuery("")}
-              className="text-zinc-400 hover:text-white p-1 rounded-lg"
+              aria-label={t("search.clear")}
+              className="text-zinc-400 hover:text-white p-1 rounded-lg light:hover:text-slate-900"
             >
               <X className="h-4 w-4" />
             </button>
@@ -142,7 +145,7 @@ export function GlobalSearchModal({
             onClick={onClose}
             className="rounded-xl border border-white/10 dark:border-white/10 light:border-black/10 px-2 py-1 text-[11px] font-mono text-zinc-400 hover:text-white dark:hover:text-white light:hover:text-black transition-colors"
           >
-            ESC
+            {t("search.esc")}
           </button>
         </div>
 
@@ -158,7 +161,7 @@ export function GlobalSearchModal({
                   : "text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-black"
               }`}
             >
-              {tab === "all" ? "All Results" : tab === "videos" ? "4K Videos" : tab}
+              {t(`search.tabs.${tab}`)}
             </button>
           ))}
         </div>
@@ -170,18 +173,18 @@ export function GlobalSearchModal({
             <div>
               <div className="flex items-center gap-2 text-xs font-semibold text-zinc-400 dark:text-zinc-400 light:text-slate-500 uppercase tracking-wider mb-2.5">
                 <Sparkles className="h-3.5 w-3.5 text-violet-400" />
-                <span>Popular Tags</span>
+                <span>{t("search.popular")}</span>
               </div>
               <div className="flex flex-wrap gap-2">
-                {tags.map((t) => (
+                {tags.map((entry) => (
                   <button
-                    key={t.tag}
-                    onClick={() => setQuery(t.tag)}
+                    key={entry.tag}
+                    onClick={() => setQuery(entry.tag)}
                     className="inline-flex items-center gap-1.5 rounded-full border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900/60 dark:bg-zinc-900/60 light:bg-slate-100 px-3 py-1 text-xs text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:border-violet-500 hover:text-violet-400 transition-colors"
                   >
                     <Hash className="h-3 w-3 text-violet-400" />
-                    <span>{t.tag}</span>
-                    <span className="text-[10px] text-zinc-500 font-mono">({t.count})</span>
+                    <span>{entry.tag}</span>
+                    <span className="text-[10px] text-zinc-500 font-mono">({entry.count})</span>
                   </button>
                 ))}
               </div>
@@ -193,14 +196,15 @@ export function GlobalSearchModal({
             <div>
               <div className="flex items-center gap-2 text-xs font-semibold text-zinc-400 dark:text-zinc-400 light:text-slate-500 uppercase tracking-wider mb-3">
                 <Users className="h-3.5 w-3.5 text-fuchsia-400" />
-                <span>Creators ({creators.length})</span>
+                <span>{t("search.creators", { count: creators.length })}</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {creators.map((c) => (
-                  <div
+                  <button
+                    type="button"
                     key={c.id}
                     onClick={() => handleSelect(`/@${c.username}`)}
-                    className="flex items-center gap-3 rounded-2xl border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/40 dark:bg-zinc-900/40 light:bg-slate-50 p-2.5 hover:border-violet-500/50 hover:bg-zinc-900/80 cursor-pointer transition-all group"
+                    className="flex w-full items-center gap-3 text-left rounded-2xl border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/40 dark:bg-zinc-900/40 light:bg-slate-50 p-2.5 hover:border-violet-500/50 hover:bg-white/5 light:hover:bg-black/[0.03] cursor-pointer transition-all group"
                   >
                     <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl border border-violet-500/40 bg-zinc-800">
                       <img
@@ -221,7 +225,7 @@ export function GlobalSearchModal({
                       <span className="text-[11px] text-zinc-400 font-mono">@{c.username}</span>
                     </div>
                     <ArrowRight className="h-4 w-4 text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -232,14 +236,15 @@ export function GlobalSearchModal({
             <div>
               <div className="flex items-center gap-2 text-xs font-semibold text-zinc-400 dark:text-zinc-400 light:text-slate-500 uppercase tracking-wider mb-3">
                 <Tv className="h-3.5 w-3.5 text-violet-400" />
-                <span>4K Streams & Videos ({videos.length})</span>
+                <span>{t("search.videos", { count: videos.length })}</span>
               </div>
               <div className="space-y-2">
                 {videos.map((v) => (
-                  <div
+                  <button
+                    type="button"
                     key={v.id}
                     onClick={() => handleSelect(`/watch/${v.id}`)}
-                    className="flex items-center gap-3 rounded-2xl border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/40 dark:bg-zinc-900/40 light:bg-slate-50 p-2.5 hover:border-violet-500/50 hover:bg-zinc-900/80 cursor-pointer transition-all group"
+                    className="flex w-full items-center gap-3 text-left rounded-2xl border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/40 dark:bg-zinc-900/40 light:bg-slate-50 p-2.5 hover:border-violet-500/50 hover:bg-white/5 light:hover:bg-black/[0.03] cursor-pointer transition-all group"
                   >
                     <div className="relative aspect-video h-14 shrink-0 overflow-hidden rounded-xl bg-zinc-800">
                       {v.thumbnailUrl ? (
@@ -269,7 +274,7 @@ export function GlobalSearchModal({
                         ${(v.minTipAmountCents / 100).toFixed(2)}
                       </span>
                     )}
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -280,18 +285,18 @@ export function GlobalSearchModal({
             <div>
               <div className="flex items-center gap-2 text-xs font-semibold text-zinc-400 dark:text-zinc-400 light:text-slate-500 uppercase tracking-wider mb-2.5">
                 <Hash className="h-3.5 w-3.5 text-emerald-400" />
-                <span>Matching Tags ({tags.length})</span>
+                <span>{t("search.tags", { count: tags.length })}</span>
               </div>
               <div className="flex flex-wrap gap-2">
-                {tags.map((t) => (
+                {tags.map((entry) => (
                   <button
-                    key={t.tag}
-                    onClick={() => handleSelect(`/explore?tag=${encodeURIComponent(t.tag)}`)}
+                    key={entry.tag}
+                    onClick={() => handleSelect(`/explore?tag=${encodeURIComponent(entry.tag)}`)}
                     className="inline-flex items-center gap-1.5 rounded-full border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900/60 dark:bg-zinc-900/60 light:bg-slate-100 px-3 py-1.5 text-xs text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:border-violet-500 hover:text-white transition-colors"
                   >
                     <Hash className="h-3 w-3 text-violet-400" />
-                    <span>{t.tag}</span>
-                    <span className="font-mono text-[10px] text-zinc-500">{t.count}</span>
+                    <span>{entry.tag}</span>
+                    <span className="font-mono text-[10px] text-zinc-500">{entry.count}</span>
                   </button>
                 ))}
               </div>
@@ -301,7 +306,7 @@ export function GlobalSearchModal({
           {/* Empty State */}
           {query && !loading && creators.length === 0 && videos.length === 0 && tags.length === 0 && (
             <div className="py-8 text-center text-xs text-zinc-400">
-              No results found for “{query}”. Try searching for “elena”, “4k”, or “rave”.
+              {t("search.empty", { query })}
             </div>
           )}
         </div>
@@ -309,15 +314,15 @@ export function GlobalSearchModal({
         {/* Footer shortcuts */}
         <div className="flex items-center justify-between border-t border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/60 dark:bg-zinc-900/60 light:bg-slate-50 px-4 py-2.5 text-[11px] text-zinc-500">
           <div className="flex items-center gap-3">
-            <span><kbd className="rounded border border-white/10 px-1 py-0.5">↑↓</kbd> Navigate</span>
-            <span><kbd className="rounded border border-white/10 px-1 py-0.5">↵</kbd> Select</span>
+            <span><kbd className="rounded border border-white/10 px-1 py-0.5">↑↓</kbd> {t("search.navigate")}</span>
+            <span><kbd className="rounded border border-white/10 px-1 py-0.5">↵</kbd> {t("search.select")}</span>
           </div>
           <Link
             href={`/explore?q=${encodeURIComponent(query)}`}
             onClick={onClose}
             className="text-violet-400 hover:underline inline-flex items-center gap-1"
           >
-            <span>Full search view</span>
+            <span>{t("search.full")}</span>
             <ArrowRight className="h-3 w-3" />
           </Link>
         </div>

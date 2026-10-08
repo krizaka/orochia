@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { IconButton } from "./Button";
 import { cx } from "./cx";
+import { t } from "@/lib/i18n";
 
 /**
  * A modal sheet: slides up from the bottom on phones, centred on larger screens. Escape and a click outside close
@@ -11,20 +12,25 @@ import { cx } from "./cx";
  */
 export function Sheet({ open, onClose, title, children, footer, size = "md" }: { open: boolean; onClose: () => void; title: string; children: React.ReactNode; footer?: React.ReactNode; size?: "md" | "lg" }) {
   const panel = useRef<HTMLDivElement>(null);
+  // The latest onClose, so an inline handler does not re-run the focus and scroll management on every render.
+  const close = useRef(onClose);
+  useEffect(() => {
+    close.current = onClose;
+  }, [onClose]);
   useEffect(() => {
     if (!open) return;
     const previous = document.activeElement as HTMLElement | null;
     const overflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     panel.current?.querySelector<HTMLElement>("input, select, textarea, button:not([data-close])")?.focus();
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && close.current();
     document.addEventListener("keydown", onKey);
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = overflow;
       previous?.focus?.();
     };
-  }, [open, onClose]);
+  }, [open]);
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center sm:p-6" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
@@ -40,7 +46,7 @@ export function Sheet({ open, onClose, title, children, footer, size = "md" }: {
       >
         <div className="flex items-center justify-between gap-3 px-5 pb-2 pt-4">
           <h2 className="text-base font-bold text-white light:text-slate-900">{title}</h2>
-          <IconButton label="Close" data-close onClick={onClose} className="-mr-2 h-9 w-9">
+          <IconButton label={t("common.closeLabel")} data-close onClick={onClose} className="-mr-2 h-9 w-9">
             <X className="h-4 w-4" />
           </IconButton>
         </div>

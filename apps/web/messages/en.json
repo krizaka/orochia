@@ -5,7 +5,13 @@
     "save": "Save",
     "loading": "Loading…",
     "optional": "optional",
-    "tryAgain": "Try again"
+    "tryAgain": "Try again",
+    "closeLabel": "Close",
+    "delete": "Delete",
+    "create": "Create",
+    "add": "Add",
+    "copy": "Copy",
+    "copied": "Copied"
   },
   "stories": {
     "add": "Add story",
@@ -43,8 +49,11 @@
       "failed": "The story could not be shared.",
       "tooLargeToEdit": "This video is too large to prepare as a story (over 400 MB). Trim it on your device first.",
       "editFirst": "Stories are vertical and up to 60 seconds: adjust your clip before publishing.",
-      "adjust": "Adjust"
-    }
+      "adjust": "Adjust",
+      "rating": "Content rating",
+      "blur": "Blur the preview"
+    },
+    "removeArmed": "Tap again to delete"
   },
   "auth": {
     "register": {
@@ -116,6 +125,53 @@
         "google": "Google",
         "facebook": "Facebook"
       }
+    },
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to follow, watch and support your creators.",
+      "demo": "Demo accounts",
+      "demoCreator": "Sign in as a creator",
+      "demoMember": "Sign in as a member",
+      "identifier": "E-mail or username",
+      "identifierPlaceholder": "you@example.com",
+      "password": "Password",
+      "forgot": "Forgot your password?",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "failed": "Sign in failed. Check your details and try again.",
+      "new": "New to Orochia?",
+      "register": "Create your free account"
+    },
+    "forgot": {
+      "title": "Forgot your password?",
+      "sent": "If an account uses {email}, a reset link is on its way. It works once, for one hour.",
+      "demo": "Demo mode:",
+      "email": "E-mail",
+      "submit": "Send the reset link",
+      "back": "← Back to sign in",
+      "failed": "The request could not be sent. Try again."
+    },
+    "reset": {
+      "done": "Password changed",
+      "doneBody": "Sign in with your new password.",
+      "signIn": "Sign in",
+      "title": "Choose a new password",
+      "password": "New password",
+      "confirm": "Confirm it",
+      "submit": "Save the new password",
+      "tooShort": "At least 10 characters.",
+      "differ": "The two passwords differ.",
+      "failed": "The password could not be changed."
+    },
+    "verify": {
+      "working": "Verifying",
+      "done": "E-mail verified",
+      "doneBody": "Your account is ready.",
+      "continue": "Continue",
+      "failed": "Link not valid",
+      "newLink": "Ask for a new link",
+      "invalid": "This link is invalid or has expired.",
+      "unreachable": "The verification could not reach the server. Try again."
     }
   },
   "nav": {
@@ -136,7 +192,8 @@
     "balance": "Balance",
     "saved": "Saved",
     "viewProfile": "View profile",
-    "wallet": "Wallet"
+    "wallet": "Wallet",
+    "uploadHint": "Publish a video"
   },
   "footer": {
     "tagline": "The video platform independent creators own.",
@@ -218,6 +275,13 @@
         "follow": "@alex_vance followed you",
         "tip": "+$9.00 tip from @mia",
         "message": "New message from @sam"
+      },
+      "demo": {
+        "storyAuthor": "elenavox · 2h",
+        "filter": "Cinematic",
+        "videoTitle": "Velvet Lounge — Director’s Cut",
+        "creator": "Elena Vox",
+        "tipSent": "+ $9.00 · tip sent"
       }
     },
     "marquee": {
@@ -429,7 +493,8 @@
     "balance": "Balance",
     "upload": "Upload",
     "ageCertified": "18+ certified",
-    "viewPublic": "View public profile"
+    "viewPublic": "View public profile",
+    "loading": "Loading profile…"
   },
   "settings": {
     "title": "Settings",
@@ -726,7 +791,9 @@
     "minutes": "{count} min",
     "watch": "Watch",
     "noThumbnail": "Orochia",
-    "hd": "4K"
+    "hd": "4K",
+    "creatorFallback": "creator",
+    "unlockFor": "Unlock for {price}"
   },
   "publish": {
     "title": "Publish a video",
@@ -811,7 +878,9 @@
       "body": "It is uploading and then processing in up to 4K. We will notify you the moment it is online — you can keep browsing meanwhile.",
       "watch": "Open the video",
       "another": "Publish another"
-    }
+    },
+    "removeTag": "Remove {tag}",
+    "generalAudience": "General audience"
   },
   "explore": {
     "metaTitle": "Explore creators and videos",
@@ -974,5 +1043,471 @@
     "sentBody": "Thank you. Our team reviews every report; suspected minors and non-consensual content come first.",
     "close": "Close",
     "failed": "The report could not be sent. Try again."
+  },
+  "theme": {
+    "toLight": "Switch to light mode",
+    "toDark": "Switch to dark mode"
+  },
+  "collectionPage": {
+    "eyebrow": "Collection",
+    "by": "By {name}",
+    "videos": "{count} videos",
+    "empty": "This collection is empty. Use “Save” on any video to add it."
+  },
+  "verifyGate": {
+    "title": "Verify your e-mail",
+    "body": "We sent a confirmation link to {email}. Open it to start using Orochia — until then your account can only sign in.",
+    "sent": "Link sent — check your inbox",
+    "resend": "Send the link again",
+    "done": "I’ve verified it",
+    "demo": "Demo mode:",
+    "spam": "Check your spam folder. The link works once, for 48 hours.",
+    "signOut": "Sign out",
+    "sendFailed": "The link could not be sent. Try again in a moment."
+  },
+  "ageGate": {
+    "badge": "Adults only",
+    "title": "Welcome to Orochia",
+    "body": "Orochia is a video platform for independent creators. It contains <b>adult content</b>, so it is for adults only.",
+    "age": "I am 18 or older (or the age of majority where I live).",
+    "terms": "I accept the Terms of Service and the 18 U.S.C. § 2257 notice.",
+    "consent": "I choose to see adult content made by independent creators.",
+    "enter": "I am 18 or older — enter",
+    "leave": "Leave",
+    "termsLink": "Terms",
+    "privacyLink": "Privacy",
+    "noticeLink": "2257 notice"
+  },
+  "search": {
+    "placeholder": "Search creators, videos, tags…",
+    "clear": "Clear",
+    "close": "Close",
+    "esc": "Esc",
+    "tabs": {
+      "all": "All",
+      "creators": "Creators",
+      "videos": "Videos",
+      "tags": "Tags"
+    },
+    "popular": "Popular tags",
+    "creators": "Creators ({count})",
+    "videos": "Videos ({count})",
+    "tags": "Tags ({count})",
+    "empty": "Nothing found for “{query}”. Try another word or a tag.",
+    "navigate": "Navigate",
+    "select": "Open",
+    "full": "See all results"
+  },
+  "profileTabs": {
+    "all": "Videos ({count})",
+    "ppv": "Paid",
+    "playlists": "Collections ({count})",
+    "about": "About",
+    "empty": "No videos in this section yet.",
+    "verifiedTitle": "Verified creator",
+    "verifiedBody": "Orochia reviewed this creator’s identity and age records, as 18 U.S.C. § 2257 requires, before they could publish.",
+    "pendingTitle": "Verification in progress",
+    "pendingBody": "This creator’s 18 U.S.C. § 2257 records are being reviewed. They can publish once approved.",
+    "noBio": "No bio yet."
+  },
+  "uploads": {
+    "expand": "Show uploads",
+    "uploading": "Uploading ({progress}%)",
+    "complete": "Uploads complete",
+    "label": "Uploads",
+    "title": "Uploads",
+    "running": "{count} uploading in the background",
+    "finished": "All uploads finished",
+    "minimize": "Minimize",
+    "pause": "Pause",
+    "resume": "Resume",
+    "cancel": "Cancel",
+    "dismiss": "Dismiss",
+    "paused": "Paused ({progress}%)",
+    "processing": "Uploaded — processing",
+    "failed": "Upload failed",
+    "view": "Open the video →"
+  },
+  "audience": {
+    "usernamePlaceholder": "@username",
+    "usernameLabel": "Username to invite",
+    "invite": "Invite",
+    "listLabel": "Open to one of your lists",
+    "noList": "No list yet",
+    "allAdded": "All your lists are added",
+    "addList": "Add one of your lists…",
+    "manage": "Manage lists",
+    "loading": "Loading…",
+    "nobody": "Nobody yet: only you can open it.",
+    "removeList": "Remove list {name}",
+    "withdraw": "Withdraw @{username}",
+    "failed": "The change could not be saved.",
+    "noAccount": "No account with that username."
+  },
+  "dashboard": {
+    "ledger": {
+      "empty": "No transactions yet.",
+      "date": "Date",
+      "type": "Type",
+      "from": "From",
+      "creator": "Creator",
+      "gateway": "Payment method",
+      "amount": "Amount"
+    },
+    "signedOut": {
+      "title": "Sign in to continue",
+      "body": "Sign in or create an account to open your space.",
+      "cta": "Sign in"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "library": "Library ({count})",
+      "ledger": "Transactions",
+      "uploads": "My videos ({count})",
+      "earnings": "Earnings",
+      "network": "Network",
+      "playlists": "Collections",
+      "lists": "Lists",
+      "invitations": "Invitations",
+      "treasury": "Treasury",
+      "settings": "Settings"
+    },
+    "loadError": "Your dashboard could not be loaded. Please try again later.",
+    "stats": {
+      "available": "Available balance",
+      "spent": "Total spent",
+      "fromLedger": "Computed from the ledger",
+      "published": "Published videos",
+      "unlocked": "Unlocked videos",
+      "pendingPayouts": "Payouts in progress",
+      "transactions": "Transactions"
+    },
+    "libraryEmpty": "Videos you unlock appear here.",
+    "unlockedOn": "unlocked {date}",
+    "treasury": {
+      "gross": "Gross volume",
+      "grossHint": "{count} payments",
+      "fees": "Platform fees",
+      "feesHint": "{percent}% of gross",
+      "creators": "Creator earnings",
+      "creatorsHint": "net of fees",
+      "requested": "Payouts in progress",
+      "requestedHint": "requested, not settled",
+      "settled": "Payouts settled",
+      "settledHint": "paid to creators",
+      "unavailable": "Treasury figures are unavailable."
+    }
+  },
+  "collectionAudience": {
+    "PRIVATE": {
+      "label": "Only me",
+      "hint": "Nobody else sees it."
+    },
+    "INVITED_ONLY": {
+      "label": "Invited",
+      "hint": "The people you invite and your lists."
+    },
+    "CONTACTS_ONLY": {
+      "label": "Contacts",
+      "hint": "Your accepted contacts."
+    },
+    "APPROVED_FOLLOWERS_ONLY": {
+      "label": "Followers",
+      "hint": "The followers you approved."
+    },
+    "PUBLIC": {
+      "label": "Everyone",
+      "hint": "Shown on your profile."
+    }
+  },
+  "invites": {
+    "title": "Invite creators & friends",
+    "intro": "When friends sign up with your invite link, you become contacts automatically.",
+    "emailPlaceholder": "Friend's e-mail (optional)",
+    "create": "Create an invite link",
+    "createFailed": "The invitation could not be created.",
+    "networkError": "No connection. Try again.",
+    "ready": "Your invite link is ready",
+    "code": "Code: {code}",
+    "copyLink": "Copy the invite link",
+    "sent": "Sent invitations",
+    "loading": "Loading invitations…",
+    "empty": "You haven't created an invite link yet.",
+    "colCode": "Code",
+    "colRecipient": "Recipient",
+    "colStatus": "Status",
+    "colCreated": "Created",
+    "colActions": "Actions",
+    "openLink": "Anyone with the link",
+    "status": {
+      "ACCEPTED": "Accepted",
+      "EXPIRED": "Expired",
+      "PENDING": "Pending"
+    },
+    "copyTitle": "Copy the link"
+  },
+  "lists": {
+    "usernamePlaceholder": "@username",
+    "addTo": "Add someone to {name}",
+    "loading": "Loading…",
+    "empty": "Nobody in this list yet.",
+    "removeMember": "Remove @{username}",
+    "noAccount": "No account with that username.",
+    "addFailed": "This person could not be added.",
+    "duplicate": "You already have a list with this name.",
+    "createFailed": "The list could not be created.",
+    "namePlaceholder": "New list — e.g. Close friends",
+    "intro": "Lists are private. Open an invited-only video or collection to a list: whoever you add later gets in, whoever you remove loses access.",
+    "none": "No list yet.",
+    "people": "{count} people",
+    "delete": "Delete {name}",
+    "confirmDelete": "Delete? Members lose access"
+  },
+  "network": {
+    "loading": "Loading your network…",
+    "followRequests": "Follow requests",
+    "followRequestsEmpty": "No one is waiting for your approval.",
+    "approve": "Approve",
+    "decline": "Decline",
+    "contactRequests": "Contact requests",
+    "contactRequestsEmpty": "No pending contact request.",
+    "accept": "Accept",
+    "reject": "Reject",
+    "block": "Block",
+    "followers": "Approved followers",
+    "followersEmpty": "Approved followers can watch your followers-only videos.",
+    "removeFollower": "Remove follower",
+    "contacts": "Contacts",
+    "contactsEmpty": "Mutual contacts can watch each other's contacts-only videos.",
+    "removeContact": "Remove contact",
+    "following": "Following",
+    "followingEmpty": "Follow creators to see their followers-only videos once they approve you.",
+    "approved": "approved",
+    "pending": "pending",
+    "unfollow": "Unfollow",
+    "outgoing": "Requests you sent",
+    "outgoingEmpty": "No outgoing request.",
+    "withdraw": "Withdraw"
+  },
+  "playlistsPanel": {
+    "saveFailed": "The change could not be saved. Try again.",
+    "titlePlaceholder": "New collection title",
+    "whoOpens": "Who opens it",
+    "whoOpensNamed": "Who opens {title}",
+    "perVideo": "Each video in a collection keeps its own access rule.",
+    "loading": "Loading…",
+    "empty": "No collection yet. Create one, then use “Save” on any video.",
+    "videos": "{count} videos",
+    "invitedMeta": " · {members} invited · {lists} lists",
+    "delete": "Delete {title}",
+    "confirmDelete": "Delete?",
+    "shared": "Shared with you",
+    "sharedMeta": "@{owner} · {count} videos"
+  },
+  "studio": {
+    "status": {
+      "removed": "Taken down",
+      "live": "Live",
+      "failed": "Encoding failed",
+      "encoding": "Encoding"
+    },
+    "saveFailed": "The changes could not be saved.",
+    "empty": "No videos yet. {link}.",
+    "cols": {
+      "title": "Title",
+      "state": "State",
+      "visibility": "Visibility",
+      "duration": "Duration",
+      "views": "Views",
+      "tips": "Tips",
+      "actions": "Actions"
+    },
+    "whoCanWatchNamed": "Who can watch {title}",
+    "editNamed": "Edit {title}",
+    "deleteNamed": "Delete {title}",
+    "confirmDelete": "Delete? Earnings are kept",
+    "editTitle": "Edit video",
+    "title": "Title",
+    "description": "Description",
+    "visibility": "Who can watch",
+    "price": "Unlock price (USD)",
+    "audience": "Invited people and lists",
+    "tags": "Tags (comma-separated)",
+    "uploadFirst": "Upload your first one"
+  },
+  "inbox": {
+    "title": "Messages",
+    "intro": "Private conversations with creators and your contacts.",
+    "newPlaceholder": "New chat: @username",
+    "start": "Start a conversation",
+    "loadingConversations": "Loading conversations…",
+    "none": "No conversations yet",
+    "noneHint": "Type a username above to start chatting with a creator or a contact.",
+    "noMessages": "No messages yet",
+    "thread": "Conversation",
+    "back": "Back to conversations",
+    "options": "Options",
+    "block": "Block this account",
+    "startTitle": "Start the conversation",
+    "sayHello": "Say hello to @{username}.",
+    "messagePlaceholder": "Write a message…",
+    "send": "Send",
+    "emptyTitle": "Your messages",
+    "emptyHint": "Pick a conversation, or type a username to start a new one.",
+    "loading": "Loading messages…",
+    "loadFailed": "Messages could not be loaded.",
+    "network": "No connection. Try again.",
+    "startFailed": "The conversation could not be started.",
+    "sendFailed": "The message could not be sent."
+  },
+  "legal": {
+    "back": "Back to Orochia",
+    "dmcaLink": "DMCA policy",
+    "docs": {
+      "terms": {
+        "metaTitle": "Terms of Service — Orochia",
+        "metaDescription": "Terms of Service, creator responsibilities and acceptable use policy for Orochia.",
+        "badge": "Terms",
+        "title": "Terms of Service",
+        "subtitle": "Effective October 6, 2026 · Orochia, open-source creator platform",
+        "sections": {
+          "eligibility": {
+            "title": "1. Age and eligibility",
+            "paragraphs": {
+              "p1": "Orochia is a creator platform that may host adult content. By using it or publishing on it, you certify under penalty of perjury that:"
+            },
+            "items": {
+              "age": "You are at least eighteen (18) years old, or the age of majority where you live.",
+              "capacity": "You have the legal right and capacity to accept these terms.",
+              "local": "Viewing adult or mature media is not prohibited where you live."
+            }
+          },
+          "creators": {
+            "title": "2. Creator responsibilities",
+            "paragraphs": {
+              "p1": "Creators keep full ownership of their media. When they publish, they agree to the following obligations:"
+            },
+            "points": {
+              "consent": {
+                "lead": "Consent of everyone shown:",
+                "text": "every performer depicted gave affirmative, voluntary, written consent before recording."
+              },
+              "records": {
+                "lead": "18 U.S.C. § 2257 records:",
+                "text": "creators keep the records proving the age of every performer at the time of recording."
+              },
+              "ncii": {
+                "lead": "No non-consensual material:",
+                "text": "any upload showing non-consensual imagery, unlicensed deepfakes or a suspected minor leads to immediate permanent termination and a report to the authorities (NCMEC)."
+              }
+            }
+          },
+          "payments": {
+            "title": "3. Payments, tips and the ledger",
+            "paragraphs": {
+              "p1": "Tips and unlocks are recorded in an append-only double-entry ledger. A payment confirmed by the payment provider (card, Orochia credits or cryptocurrency) is final once access to the media has been granted."
+            }
+          },
+          "dmca": {
+            "title": "4. Copyright (DMCA)",
+            "paragraphs": {
+              "p1": "Orochia follows the Digital Millennium Copyright Act (17 U.S.C. § 512). Copyright holders can send a takedown notice as described in our {dmca}."
+            }
+          }
+        }
+      },
+      "dmca": {
+        "metaTitle": "DMCA Copyright Policy — Orochia",
+        "metaDescription": "How to send a copyright notice under the Digital Millennium Copyright Act (17 U.S.C. § 512), and who receives it.",
+        "badge": "Copyright",
+        "title": "DMCA copyright and takedown policy",
+        "subtitle": "How to report copyright infringement under 17 U.S.C. § 512(c).",
+        "sections": {
+          "policy": {
+            "title": "1. Our policy",
+            "paragraphs": {
+              "p1": "Orochia respects the intellectual property of creators and copyright holders. Under the Digital Millennium Copyright Act (“DMCA”), Orochia acts promptly on valid notices of infringement sent to its designated copyright agent."
+            }
+          },
+          "notice": {
+            "title": "2. Sending a notice",
+            "paragraphs": {
+              "p1": "A notice from a copyright owner or an authorised representative must include:"
+            },
+            "items": {
+              "signature": "A physical or electronic signature of a person authorised to act for the owner.",
+              "work": "The copyrighted work claimed to be infringed.",
+              "material": "The material to remove, with its Orochia addresses or video ids.",
+              "contact": "Contact details: legal name, postal address, telephone number and e-mail address.",
+              "goodFaith": "A statement of good-faith belief that the use is not authorised by the owner, its agent or the law.",
+              "accuracy": "A statement, under penalty of perjury, that the information in the notice is accurate."
+            }
+          },
+          "agent": {
+            "title": "3. Designated agent",
+            "contact": {
+              "name": "DMCA compliance officer",
+              "emails": "dmca@krizaka.com · legal@orochia.org"
+            },
+            "note": "You can also flag infringing media directly on a video page with the “Report” button, for faster review."
+          }
+        }
+      },
+      "records": {
+        "metaTitle": "18 U.S.C. § 2257 Record-Keeping Statement — Orochia",
+        "metaDescription": "Compliance statement on record-keeping under 18 U.S.C. § 2257.",
+        "badge": "Compliance",
+        "title": "18 U.S.C. § 2257 record-keeping statement",
+        "subtitle": "Statement under Title 18, United States Code, Section 2257 and 28 C.F.R. Part 75.",
+        "sections": {
+          "age": {
+            "title": "1. Age of performers",
+            "paragraphs": {
+              "p1": "Every model, actor, creator and other person appearing in any visual depiction of actual or simulated sexually explicit conduct on Orochia was at least eighteen (18) years old when it was created."
+            }
+          },
+          "custodian": {
+            "title": "2. Custodian of records",
+            "paragraphs": {
+              "p1": "Orochia is an open-source technical platform and hosting provider for creator-submitted material. For that material, the original records required by 18 U.S.C. § 2257 and 28 C.F.R. Part 75 are kept by the independent creator or producer.",
+              "p2": "Before publishing anything, every creator submits a declaration naming the custodian of records and their address, confirming age verification and accepting the ongoing record-keeping obligations."
+            }
+          },
+          "exemption": {
+            "title": "3. Exemption",
+            "paragraphs": {
+              "p1": "Some visual depictions on this website may be exempt from the requirements of 18 U.S.C. § 2257 and 28 C.F.R. Part 75 because they do not show actual sexually explicit conduct, or were created before the statute took effect."
+            }
+          }
+        }
+      },
+      "privacy": {
+        "metaTitle": "Privacy Policy — Orochia",
+        "metaDescription": "No advertising trackers, short-lived playback links and payments handled by the providers: how Orochia protects your data.",
+        "badge": "Privacy",
+        "title": "Privacy policy",
+        "subtitle": "Last updated October 6, 2026",
+        "sections": {
+          "tracking": {
+            "title": "1. No advertising trackers",
+            "paragraphs": {
+              "p1": "Orochia runs no third-party advertising trackers, no cross-site behavioural tracking and no data-broker integrations. What you watch, what you open and whom you tip stay private."
+            }
+          },
+          "playback": {
+            "title": "2. Protected playback",
+            "paragraphs": {
+              "p1": "Each playback receives a signed link valid for 300 seconds, issued only after your access has been checked. It cannot be shared or embedded elsewhere."
+            }
+          },
+          "payments": {
+            "title": "3. Payments",
+            "paragraphs": {
+              "p1": "Card payments, Apple Pay and Google Pay go through the payment provider's own checkout (CCBill, Segpay — PCI-DSS Level 1): your card details never reach Orochia. Cryptocurrency tips (USDT, BTC) go through a non-custodial provider; Orochia stores no financial credentials."
+            }
+          }
+        }
+      }
+    }
   }
 }

@@ -6,3 +6,4 @@ export { Chip, Segmented } from "./Chip";
 export { Switch } from "./Switch";
 export { Slider } from "./Slider";
 export { Sheet } from "./Sheet";
+export { ConfirmIconButton } from "./ConfirmButton";

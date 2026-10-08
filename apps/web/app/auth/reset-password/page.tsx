@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, Loader2, Lock } from "lucide-react";
+import { t } from "@/lib/i18n";
 
 /** The link e-mailed by "forgot password": /auth/reset-password?token=… sets a new password once. */
 export default function ResetPasswordPage() {
@@ -13,14 +14,14 @@ export default function ResetPasswordPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password.length < 10) return setError("At least 10 characters.");
-    if (password !== confirm) return setError("The two passwords differ.");
+    if (password.length < 10) return setError(t("auth.reset.tooShort"));
+    if (password !== confirm) return setError(t("auth.reset.differ"));
     setState("saving");
     setError(null);
     const token = new URLSearchParams(window.location.search).get("token") ?? "";
     const res = await fetch("/api/auth/reset-password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token, password }) });
     if (!res.ok) {
-      setError(((await res.json().catch(() => ({}))) as { error?: string }).error ?? "The password could not be changed.");
+      setError(((await res.json().catch(() => ({}))) as { error?: string }).error ?? t("auth.reset.failed"));
       setState("idle");
       return;
     }
@@ -35,19 +36,19 @@ export default function ResetPasswordPage() {
         {state === "done" ? (
           <div className="text-center">
             <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-400" />
-            <h1 className="mt-4 text-2xl font-black text-white font-display light:text-slate-900">Password changed</h1>
-            <p className="mt-2 text-sm text-zinc-400 light:text-slate-500">Sign in with your new password.</p>
+            <h1 className="mt-4 text-2xl font-black text-white font-display light:text-slate-900">{t("auth.reset.done")}</h1>
+            <p className="mt-2 text-sm text-zinc-400 light:text-slate-500">{t("auth.reset.doneBody")}</p>
             <Link href="/auth/login" className="mt-6 inline-block rounded-xl bg-violet-600 px-6 py-2.5 text-sm font-bold text-white">
-              Sign in
+              {t("auth.reset.signIn")}
             </Link>
           </div>
         ) : (
           <>
-            <h1 className="text-2xl font-black text-white font-display light:text-slate-900">Choose a new password</h1>
+            <h1 className="text-2xl font-black text-white font-display light:text-slate-900">{t("auth.reset.title")}</h1>
             <form onSubmit={submit} className="mt-5 space-y-4">
               {[
-                { value: password, set: setPassword, label: "New password" },
-                { value: confirm, set: setConfirm, label: "Confirm it" },
+                { value: password, set: setPassword, label: t("auth.reset.password") },
+                { value: confirm, set: setConfirm, label: t("auth.reset.confirm") },
               ].map((f) => (
                 <label key={f.label} className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500">
                   {f.label}
@@ -59,7 +60,7 @@ export default function ResetPasswordPage() {
               ))}
               {error && <p role="alert" className="text-xs text-rose-300">{error}</p>}
               <button disabled={state === "saving"} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 py-3 text-sm font-bold text-white disabled:opacity-60">
-                {state === "saving" && <Loader2 className="h-4 w-4 animate-spin" />} Save the new password
+                {state === "saving" && <Loader2 className="h-4 w-4 animate-spin" />} {t("auth.reset.submit")}
               </button>
             </form>
           </>

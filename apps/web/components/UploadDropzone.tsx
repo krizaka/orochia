@@ -388,7 +388,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                   {tags.map((tag) => (
                     <span key={tag} className="flex items-center gap-1 rounded-full bg-violet-500/15 py-0.5 pl-2.5 pr-1 text-xs font-semibold text-violet-200 light:text-violet-800">
                       #{tag}
-                      <button type="button" aria-label={`Remove ${tag}`} onClick={() => setTags(tags.filter((x) => x !== tag))} className="rounded-full p-0.5 hover:bg-white/10">
+                      <button type="button" aria-label={t("publish.removeTag", { tag })} onClick={() => setTags(tags.filter((x) => x !== tag))} className="rounded-full p-0.5 hover:bg-white/10">
                         <X className="h-3 w-3" />
                       </button>
                     </span>
@@ -495,7 +495,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 }}
                 className={field}
               >
-                {(contentRatings.length ? contentRatings : [{ id: "GENERAL", label: "General audience", description: "", isAdult: false, requiresBlur: false }]).map((r) => (
+                {(contentRatings.length ? contentRatings : [{ id: "GENERAL", label: t("publish.generalAudience"), description: "", isAdult: false, requiresBlur: false }]).map((r) => (
                   <option key={r.id} value={r.id}>
                     {r.label}
                     {r.isAdult ? " · 18+" : ""}

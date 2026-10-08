@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useCallback, useEffect, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
@@ -86,8 +86,19 @@ function TabButton({ tab, active, icon: Icon, children }: {
   icon: React.ComponentType<{ className?: string }>;
   children: React.ReactNode;
 }) {
+  // On a phone the tab strip scrolls sideways: keep the current tab in view (deep links included).
+  const ref = useRef<HTMLAnchorElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    const strip = el?.parentElement;
+    if (active !== tab || !el || !strip) return;
+    // Horizontal only: the page itself must not jump.
+    const offset = el.getBoundingClientRect().left - strip.getBoundingClientRect().left;
+    strip.scrollTo({ left: strip.scrollLeft + offset - (strip.clientWidth - el.offsetWidth) / 2 });
+  }, [active, tab]);
   return (
     <Link
+      ref={ref}
       href={tab === "overview" ? "/dashboard" : `/dashboard?tab=${tab}`}
       scroll={false}
       aria-current={active === tab ? "page" : undefined}
@@ -108,17 +119,17 @@ function Empty({ children }: { children: React.ReactNode }) {
 }
 
 function LedgerTable({ lines, isCreator }: { lines: LedgerLine[]; isCreator: boolean }) {
-  if (lines.length === 0) return <Empty>No transactions yet.</Empty>;
+  if (lines.length === 0) return <Empty>{t("dashboard.ledger.empty")}</Empty>;
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-xs">
         <thead className="text-[10px] uppercase tracking-wider text-zinc-500 light:text-slate-500">
           <tr>
-            <th className="py-2 pr-4">Date</th>
-            <th className="py-2 pr-4">Type</th>
-            <th className="py-2 pr-4">{isCreator ? "From" : "Creator"}</th>
-            <th className="py-2 pr-4">Gateway</th>
-            <th className="py-2 text-right">Amount</th>
+            <th className="py-2 pr-4">{t("dashboard.ledger.date")}</th>
+            <th className="py-2 pr-4">{t("dashboard.ledger.type")}</th>
+            <th className="py-2 pr-4">{isCreator ? t("dashboard.ledger.from") : t("dashboard.ledger.creator")}</th>
+            <th className="py-2 pr-4">{t("dashboard.ledger.gateway")}</th>
+            <th className="py-2 text-right">{t("dashboard.ledger.amount")}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-white/5 light:divide-black/5">
@@ -173,10 +184,10 @@ function DashboardContent() {
   if (!user) {
     return (
       <div className="mx-auto max-w-lg px-4 py-24 text-center">
-        <h2 className="text-2xl font-bold text-white font-display light:text-slate-900">Session Required</h2>
-        <p className="mt-2 text-sm text-zinc-400 light:text-slate-500">Sign in or register to access your personal space.</p>
+        <h2 className="text-2xl font-bold text-white font-display light:text-slate-900">{t("dashboard.signedOut.title")}</h2>
+        <p className="mt-2 text-sm text-zinc-400 light:text-slate-500">{t("dashboard.signedOut.body")}</p>
         <Link href="/auth/login" className="mt-6 inline-block rounded-xl bg-violet-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg">
-          Sign In
+          {t("dashboard.signedOut.cta")}
         </Link>
       </div>
     );
@@ -222,45 +233,45 @@ function DashboardContent() {
       />
 
       <div className="flex overflow-x-auto space-x-2 border-b border-white/5 pb-3 mb-8 text-xs font-semibold light:border-black/10">
-        <TabButton tab="overview" active={activeTab} icon={LayoutDashboard}>Overview</TabButton>
+        <TabButton tab="overview" active={activeTab} icon={LayoutDashboard}>{t("dashboard.tabs.overview")}</TabButton>
         <TabButton tab="library" active={activeTab} icon={Film}>
-          My Library ({data?.library.length ?? 0})
+          {t("dashboard.tabs.library", { count: data?.library.length ?? 0 })}
         </TabButton>
-        <TabButton tab="ledger" active={activeTab} icon={Wallet}>Ledger</TabButton>
+        <TabButton tab="ledger" active={activeTab} icon={Wallet}>{t("dashboard.tabs.ledger")}</TabButton>
         {isCreator && (
           <TabButton tab="uploads" active={activeTab} icon={Clapperboard}>
-            My Videos ({data?.uploads.length ?? 0})
+            {t("dashboard.tabs.uploads", { count: data?.uploads.length ?? 0 })}
           </TabButton>
         )}
         {isCreator && (
           <Link href="/earnings" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-white/5 transition-all light:text-slate-500 light:hover:bg-black/5 light:hover:text-slate-950">
             <CreditCard className="h-3.5 w-3.5 text-emerald-400" />
-            <span>Payouts</span>
+            <span>{t("dashboard.tabs.earnings")}</span>
           </Link>
         )}
-        <TabButton tab="network" active={activeTab} icon={Users}>Network</TabButton>
-        <TabButton tab="playlists" active={activeTab} icon={ListVideo}>Collections</TabButton>
-        <TabButton tab="lists" active={activeTab} icon={ListChecks}>Lists</TabButton>
-        <TabButton tab="invitations" active={activeTab} icon={Sparkles}>Invitations</TabButton>
-        {isAdmin && <TabButton tab="treasury" active={activeTab} icon={Shield}>Treasury</TabButton>}
-        <TabButton tab="settings" active={activeTab} icon={Settings}>Settings</TabButton>
+        <TabButton tab="network" active={activeTab} icon={Users}>{t("dashboard.tabs.network")}</TabButton>
+        <TabButton tab="playlists" active={activeTab} icon={ListVideo}>{t("dashboard.tabs.playlists")}</TabButton>
+        <TabButton tab="lists" active={activeTab} icon={ListChecks}>{t("dashboard.tabs.lists")}</TabButton>
+        <TabButton tab="invitations" active={activeTab} icon={Sparkles}>{t("dashboard.tabs.invitations")}</TabButton>
+        {isAdmin && <TabButton tab="treasury" active={activeTab} icon={Shield}>{t("dashboard.tabs.treasury")}</TabButton>}
+        <TabButton tab="settings" active={activeTab} icon={Settings}>{t("dashboard.tabs.settings")}</TabButton>
       </div>
 
-      {loadError && <Empty>The dashboard could not be loaded. Please try again later.</Empty>}
+      {loadError && <Empty>{t("dashboard.loadError")}</Empty>}
 
       {activeTab === "overview" && data && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="glass-panel rounded-2xl p-5">
-            <span className="text-[11px] font-mono uppercase text-zinc-400 light:text-slate-500">{isCreator ? "Available balance" : "Total spent"}</span>
+            <span className="text-[11px] font-mono uppercase text-zinc-400 light:text-slate-500">{isCreator ? t("dashboard.stats.available") : t("dashboard.stats.spent")}</span>
             <p className="mt-2 text-2xl font-black text-white font-mono light:text-slate-900">{money(isCreator ? user.balanceCents : spentCents)}</p>
-            <span className="text-[11px] text-zinc-500 mt-1 block light:text-slate-500">Computed from the ledger</span>
+            <span className="text-[11px] text-zinc-500 mt-1 block light:text-slate-500">{t("dashboard.stats.fromLedger")}</span>
           </div>
           <div className="glass-panel rounded-2xl p-5">
-            <span className="text-[11px] font-mono uppercase text-zinc-400 light:text-slate-500">{isCreator ? "Published videos" : "Unlocked videos"}</span>
+            <span className="text-[11px] font-mono uppercase text-zinc-400 light:text-slate-500">{isCreator ? t("dashboard.stats.published") : t("dashboard.stats.unlocked")}</span>
             <p className="mt-2 text-2xl font-black text-white font-mono light:text-slate-900">{isCreator ? data.uploads.length : data.library.length}</p>
           </div>
           <div className="glass-panel rounded-2xl p-5">
-            <span className="text-[11px] font-mono uppercase text-zinc-400 light:text-slate-500">{isCreator ? "Payouts in progress" : "Transactions"}</span>
+            <span className="text-[11px] font-mono uppercase text-zinc-400 light:text-slate-500">{isCreator ? t("dashboard.stats.pendingPayouts") : t("dashboard.stats.transactions")}</span>
             <p className="mt-2 text-2xl font-black text-white font-mono light:text-slate-900">
               {isCreator ? money(data.pendingPayoutCents) : data.ledger.length}
             </p>
@@ -270,7 +281,7 @@ function DashboardContent() {
 
       {activeTab === "library" && data && (
         data.library.length === 0 ? (
-          <Empty>Videos you unlock appear here.</Empty>
+          <Empty>{t("dashboard.libraryEmpty")}</Empty>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {data.library.map((video) => (
@@ -284,7 +295,7 @@ function DashboardContent() {
                   <h4 className="text-sm font-bold text-white line-clamp-1 light:text-slate-900">{video.title}</h4>
                   <p className="text-xs text-zinc-400 light:text-slate-500">{video.creatorName}</p>
                   <p className="mt-2 text-[11px] font-mono text-zinc-500 light:text-slate-500">
-                    {duration(video.durationSeconds)} • unlocked {day(video.unlockedAt)} • {money(video.amountPaidCents)}
+                    {duration(video.durationSeconds)} • {t("dashboard.unlockedOn", { date: day(video.unlockedAt) })} • {money(video.amountPaidCents)}
                   </p>
                 </div>
               </Link>
@@ -311,11 +322,11 @@ function DashboardContent() {
         treasury ? (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              ["Gross volume", money(treasury.grossCents), `${treasury.creditsCount} payments`],
-              ["Platform fees", money(treasury.platformFeeCents), `${treasury.protocolRakePercent}% of gross`],
-              ["Creator earnings", money(treasury.creatorNetCents), "net of fees"],
-              ["Payouts in progress", money(treasury.payoutsRequestedCents), "requested, not settled"],
-              ["Payouts settled", money(treasury.payoutsSettledCents), "paid to creators"],
+              [t("dashboard.treasury.gross"), money(treasury.grossCents), t("dashboard.treasury.grossHint", { count: treasury.creditsCount })],
+              [t("dashboard.treasury.fees"), money(treasury.platformFeeCents), t("dashboard.treasury.feesHint", { percent: treasury.protocolRakePercent })],
+              [t("dashboard.treasury.creators"), money(treasury.creatorNetCents), t("dashboard.treasury.creatorsHint")],
+              [t("dashboard.treasury.requested"), money(treasury.payoutsRequestedCents), t("dashboard.treasury.requestedHint")],
+              [t("dashboard.treasury.settled"), money(treasury.payoutsSettledCents), t("dashboard.treasury.settledHint")],
             ].map(([label, value, hint]) => (
               <div key={label} className="glass-panel rounded-2xl p-5">
                 <span className="text-[11px] font-mono uppercase text-zinc-400 light:text-slate-500">{label}</span>
@@ -325,7 +336,7 @@ function DashboardContent() {
             ))}
           </div>
         ) : (
-          <Empty>Treasury figures are unavailable.</Empty>
+          <Empty>{t("dashboard.treasury.unavailable")}</Empty>
         )
       )}
 
@@ -336,7 +347,7 @@ function DashboardContent() {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-24 text-center text-xs text-zinc-500 font-mono light:text-slate-500">Loading…</div>}>
+    <Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-24 text-center text-xs text-zinc-500 font-mono light:text-slate-500">{t("common.loading")}</div>}>
       <DashboardContent />
     </Suspense>
   );

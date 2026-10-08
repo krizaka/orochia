@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Ban, Check, UserMinus, X } from "lucide-react";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
+import { t } from "@/lib/i18n";
 
 interface Person {
   id: string;
@@ -65,7 +66,7 @@ export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
     await load();
   };
 
-  if (!data) return <p className="text-xs text-zinc-500 light:text-slate-500">Loading your network…</p>;
+  if (!data) return <p className="text-xs text-zinc-500 light:text-slate-500">{t("network.loading")}</p>;
   const pendingFollowers = data.followers.filter((p) => p.status === "PENDING");
   const approvedFollowers = data.followers.filter((p) => p.status === "APPROVED");
 
@@ -73,69 +74,69 @@ export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
     <div className="grid gap-6 lg:grid-cols-2">
       {isCreator && (
         <Section
-          title="Follow requests"
-          empty="No one is waiting for your approval."
+          title={t("network.followRequests")}
+          empty={t("network.followRequestsEmpty")}
           people={pendingFollowers}
           render={(p) => (
             <Row key={p.id} p={p}>
-              <button className={iconBtn} aria-label="Approve" onClick={() => act(`/api/me/followers/${p.id}`, "PATCH", { action: "approve" })}><Check className="h-4 w-4 text-emerald-400" /></button>
-              <button className={iconBtn} aria-label="Decline" onClick={() => act(`/api/me/followers/${p.id}`, "PATCH", { action: "remove" })}><X className="h-4 w-4" /></button>
+              <button className={iconBtn} aria-label={t("network.approve")} onClick={() => act(`/api/me/followers/${p.id}`, "PATCH", { action: "approve" })}><Check className="h-4 w-4 text-emerald-400" /></button>
+              <button className={iconBtn} aria-label={t("network.decline")} onClick={() => act(`/api/me/followers/${p.id}`, "PATCH", { action: "remove" })}><X className="h-4 w-4" /></button>
             </Row>
           )}
         />
       )}
       <Section
-        title="Contact requests"
-        empty="No pending contact request."
+        title={t("network.contactRequests")}
+        empty={t("network.contactRequestsEmpty")}
         people={data.incoming}
         render={(p) => (
           <Row key={p.id} p={p}>
-            <button className={iconBtn} aria-label="Accept" onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "accept" })}><Check className="h-4 w-4 text-emerald-400" /></button>
-            <button className={iconBtn} aria-label="Reject" onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "reject" })}><X className="h-4 w-4" /></button>
-            <button className={iconBtn} aria-label="Block" onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "block" })}><Ban className="h-4 w-4 text-rose-400" /></button>
+            <button className={iconBtn} aria-label={t("network.accept")} onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "accept" })}><Check className="h-4 w-4 text-emerald-400" /></button>
+            <button className={iconBtn} aria-label={t("network.reject")} onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "reject" })}><X className="h-4 w-4" /></button>
+            <button className={iconBtn} aria-label={t("network.block")} onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "block" })}><Ban className="h-4 w-4 text-rose-400" /></button>
           </Row>
         )}
       />
       {isCreator && (
         <Section
-          title="Approved followers"
-          empty="Approved followers can watch your followers-only videos."
+          title={t("network.followers")}
+          empty={t("network.followersEmpty")}
           people={approvedFollowers}
           render={(p) => (
             <Row key={p.id} p={p}>
-              <button className={iconBtn} aria-label="Remove follower" onClick={() => act(`/api/me/followers/${p.id}`, "PATCH", { action: "remove" })}><UserMinus className="h-4 w-4" /></button>
+              <button className={iconBtn} aria-label={t("network.removeFollower")} onClick={() => act(`/api/me/followers/${p.id}`, "PATCH", { action: "remove" })}><UserMinus className="h-4 w-4" /></button>
             </Row>
           )}
         />
       )}
       <Section
-        title="Contacts"
-        empty="Mutual contacts can watch each other's contacts-only videos."
+        title={t("network.contacts")}
+        empty={t("network.contactsEmpty")}
         people={data.contacts}
         render={(p) => (
           <Row key={p.id} p={p}>
-            <button className={iconBtn} aria-label="Remove contact" onClick={() => act(`/api/contacts/${p.id}`, "DELETE")}><UserMinus className="h-4 w-4" /></button>
+            <button className={iconBtn} aria-label={t("network.removeContact")} onClick={() => act(`/api/contacts/${p.id}`, "DELETE")}><UserMinus className="h-4 w-4" /></button>
           </Row>
         )}
       />
       <Section
-        title="Following"
-        empty="Follow creators to see their followers-only videos once they approve you."
+        title={t("network.following")}
+        empty={t("network.followingEmpty")}
         people={data.following}
         render={(p) => (
           <Row key={p.id} p={p}>
-            <span className={`text-[10px] font-bold uppercase ${p.status === "APPROVED" ? "text-emerald-400" : "text-amber-400"}`}>{p.status === "APPROVED" ? "approved" : "pending"}</span>
-            <button className={iconBtn} aria-label="Unfollow" onClick={() => act(`/api/creators/${p.username}/follow`, "DELETE")}><UserMinus className="h-4 w-4" /></button>
+            <span className={`text-[10px] font-bold uppercase ${p.status === "APPROVED" ? "text-emerald-400" : "text-amber-400"}`}>{p.status === "APPROVED" ? t("network.approved") : t("network.pending")}</span>
+            <button className={iconBtn} aria-label={t("network.unfollow")} onClick={() => act(`/api/creators/${p.username}/follow`, "DELETE")}><UserMinus className="h-4 w-4" /></button>
           </Row>
         )}
       />
       <Section
-        title="Requests you sent"
-        empty="No outgoing request."
+        title={t("network.outgoing")}
+        empty={t("network.outgoingEmpty")}
         people={data.outgoing}
         render={(p) => (
           <Row key={p.id} p={p}>
-            <button className={iconBtn} aria-label="Withdraw" onClick={() => act(`/api/contacts/${p.id}`, "DELETE")}><X className="h-4 w-4" /></button>
+            <button className={iconBtn} aria-label={t("network.withdraw")} onClick={() => act(`/api/contacts/${p.id}`, "DELETE")}><X className="h-4 w-4" /></button>
           </Row>
         )}
       />

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { Sun, Moon } from "lucide-react";
+import { t } from "@/lib/i18n";
 
 type Theme = "dark" | "light";
 
@@ -73,8 +74,8 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     <button
       onClick={toggleTheme}
       type="button"
-      aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-      title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+      aria-label={theme === "dark" ? t("theme.toLight") : t("theme.toDark")}
+      title={theme === "dark" ? t("theme.toLight") : t("theme.toDark")}
       className={`relative inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900/80 dark:bg-zinc-900/80 light:bg-slate-100 text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-black transition-all hover:scale-105 active:scale-95 shadow-sm ${className}`}
     >
       <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-amber-500" />

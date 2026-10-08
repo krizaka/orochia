@@ -162,7 +162,7 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
                       {video.creatorName}
                     </h4>
                     <span className="text-[11px] text-zinc-400 dark:text-zinc-400 light:text-slate-500 font-mono">
-                      @{video.creatorUsername || "creator"}
+                      @{video.creatorUsername || t("feed.creatorFallback")}
                     </span>
                   </div>
                 </Link>
@@ -212,7 +212,7 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
 
                 {video.visibility === "TIPPED_UNLOCKED" && (
                   <span className="text-xs font-bold text-violet-400 font-mono">
-                    Unlock for ${(video.minTipAmountCents / 100).toFixed(2)}
+                    {t("feed.unlockFor", { price: `$${(video.minTipAmountCents / 100).toFixed(2)}` })}
                   </span>
                 )}
               </div>

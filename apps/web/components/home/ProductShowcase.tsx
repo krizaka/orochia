@@ -26,7 +26,7 @@ function Screen({ scene }: { scene: Scene }) {
         </div>
         <div className="absolute left-3 top-6 flex items-center gap-2">
           <img src={AVATAR} alt="" className="h-7 w-7 rounded-full ring-2 ring-fuchsia-500" />
-          <span className="text-[11px] font-semibold text-white drop-shadow">elenavox · 2h</span>
+          <span className="text-[11px] font-semibold text-white drop-shadow">{t("home.showcase.demo.storyAuthor")}</span>
         </div>
         <div className="absolute inset-x-3 bottom-4 flex items-center gap-2">
           <span className="flex-1 rounded-full border border-white/40 bg-black/20 px-3 py-2 text-[10px] text-white/80 backdrop-blur">{t("home.showcase.reply")}</span>
@@ -41,7 +41,7 @@ function Screen({ scene }: { scene: Scene }) {
         <div className="relative m-3 flex-1 overflow-hidden rounded-2xl">
           <img src={COVERS[1]} alt="" className="sc-filter h-full w-full object-cover" />
           <span className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-black/50 px-2 py-0.5 text-[9px] font-semibold text-white backdrop-blur">
-            <Sparkles className="h-2.5 w-2.5" /> Cinematic
+            <Sparkles className="h-2.5 w-2.5" /> {t("home.showcase.demo.filter")}
           </span>
         </div>
         <div className="mx-3 mb-2 h-9 overflow-hidden rounded-lg bg-zinc-800">
@@ -75,15 +75,15 @@ function Screen({ scene }: { scene: Scene }) {
         <div className="relative flex-1">
           <img src={COVERS[2]} alt="" className="h-full w-full object-cover" />
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-10">
-            <p className="text-[11px] font-bold text-white">Velvet Lounge — Director&apos;s Cut</p>
+            <p className="text-[11px] font-bold text-white">{t("home.showcase.demo.videoTitle")}</p>
             <p className="flex items-center gap-1 text-[9px] text-white/70">
-              Elena Vox <BadgeCheck className="h-2.5 w-2.5 text-violet-300" />
+              {t("home.showcase.demo.creator")} <BadgeCheck className="h-2.5 w-2.5 text-violet-300" />
             </p>
           </div>
           <span className="sc-coin absolute bottom-20 right-8 flex h-8 w-8 items-center justify-center rounded-full bg-amber-400 text-amber-950 shadow-lg">
             <Coins className="h-4 w-4" />
           </span>
-          <span className="sc-toast absolute left-1/2 top-6 -translate-x-1/2 whitespace-nowrap rounded-full bg-emerald-500 px-3 py-1 text-[10px] font-bold text-white shadow-lg">+ $9.00 · tip sent</span>
+          <span className="sc-toast absolute left-1/2 top-6 -translate-x-1/2 whitespace-nowrap rounded-full bg-emerald-500 px-3 py-1 text-[10px] font-bold text-white shadow-lg">{t("home.showcase.demo.tipSent")}</span>
         </div>
         <div className="flex items-center gap-2 bg-zinc-950 p-3">
           {["$5", "$10", "$25"].map((a, i) => (

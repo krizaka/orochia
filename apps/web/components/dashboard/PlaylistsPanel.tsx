@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Plus, Trash2 } from "lucide-react";
 import { AudienceEditor } from "../AudienceEditor";
 import { COLLECTION_AUDIENCES, CollectionAudienceBadge, audienceOf, type CollectionVisibility } from "../CollectionAudience";
+import { t } from "@/lib/i18n";
+import { ConfirmIconButton } from "@/components/ui";
 
 interface Collection {
   id: string;
@@ -40,7 +42,7 @@ export function PlaylistsPanel() {
   const send = async (url: string, method: string, body?: object) => {
     setError(null);
     const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
-    if (!res.ok) setError("The change could not be saved. Try again.");
+    if (!res.ok) setError(t("playlistsPanel.saveFailed"));
     await load();
     return res.ok;
   };
@@ -55,8 +57,8 @@ export function PlaylistsPanel() {
         }}
         className="flex flex-col gap-3 sm:flex-row"
       >
-        <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} placeholder="New collection title" className={`${field} flex-1`} />
-        <select value={visibility} onChange={(e) => setVisibility(e.target.value as CollectionVisibility)} aria-label="Who opens it" className={field}>
+        <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} placeholder={t("playlistsPanel.titlePlaceholder")} className={`${field} flex-1`} />
+        <select value={visibility} onChange={(e) => setVisibility(e.target.value as CollectionVisibility)} aria-label={t("playlistsPanel.whoOpens")} className={field}>
           {COLLECTION_AUDIENCES.map((a) => (
             <option key={a.value} value={a.value}>
               {a.label}
@@ -64,19 +66,19 @@ export function PlaylistsPanel() {
           ))}
         </select>
         <button disabled={!title.trim()} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-xs font-bold text-white disabled:opacity-40">
-          <Plus className="h-4 w-4" /> Create
+          <Plus className="h-4 w-4" /> {t("common.create")}
         </button>
       </form>
       <p className="-mt-3 text-[11px] text-zinc-500 light:text-slate-500">
-        {audienceOf(visibility).hint} Each video in a collection keeps its own access rule.
+        {audienceOf(visibility).hint} {t("playlistsPanel.perVideo")}
       </p>
       {error && <p className="text-xs text-rose-300">{error}</p>}
 
       {lists === null ? (
-        <p className="text-xs text-zinc-500 light:text-slate-500">Loading…</p>
+        <p className="text-xs text-zinc-500 light:text-slate-500">{t("playlistsPanel.loading")}</p>
       ) : lists.length === 0 ? (
         <div className="rounded-3xl border border-white/10 bg-zinc-900/40 p-12 text-center text-sm text-zinc-400 light:bg-slate-50 light:border-black/10 light:text-slate-500">
-          No collection yet. Create one, then use “Save” on any video.
+          {t("playlistsPanel.empty")}
         </div>
       ) : (
         <ul className="glass-panel divide-y divide-white/5 rounded-3xl px-5 light:divide-black/5">
@@ -86,14 +88,15 @@ export function PlaylistsPanel() {
                 <Link href={`/playlists/${p.id}`} className="min-w-0">
                   <span className="block truncate text-sm font-semibold text-white hover:text-violet-300 light:text-slate-900">{p.title}</span>
                   <span className="text-[11px] font-mono text-zinc-500 light:text-slate-500">
-                    {p.itemsCount} videos{p.visibility === "INVITED_ONLY" && ` · ${p.membersCount} invited · ${p.listsCount} lists`}
+                    {t("playlistsPanel.videos", { count: p.itemsCount })}
+                    {p.visibility === "INVITED_ONLY" && t("playlistsPanel.invitedMeta", { members: p.membersCount, lists: p.listsCount })}
                   </span>
                 </Link>
                 <div className="flex items-center gap-1">
                   <select
                     value={p.visibility}
                     onChange={(e) => void send(`/api/playlists/${p.id}`, "PATCH", { visibility: e.target.value })}
-                    aria-label={`Who opens ${p.title}`}
+                    aria-label={t("playlistsPanel.whoOpensNamed", { title: p.title })}
                     className="rounded-lg border border-white/10 bg-zinc-900 px-2 py-1.5 text-[11px] font-semibold text-zinc-200 focus:border-violet-500 focus:outline-none light:bg-slate-50 light:border-black/10 light:text-slate-700"
                   >
                     {COLLECTION_AUDIENCES.map((a) => (
@@ -102,13 +105,13 @@ export function PlaylistsPanel() {
                       </option>
                     ))}
                   </select>
-                  <button
-                    onClick={() => window.confirm(`Delete “${p.title}”?`) && void send(`/api/playlists/${p.id}`, "DELETE")}
-                    className="rounded-lg p-2 text-zinc-400 hover:bg-rose-500/10 hover:text-rose-300 light:text-slate-500"
-                    aria-label={`Delete ${p.title}`}
+                  <ConfirmIconButton
+                    label={t("playlistsPanel.delete", { title: p.title })}
+                    confirmLabel={t("playlistsPanel.confirmDelete")}
+                    onConfirm={() => void send(`/api/playlists/${p.id}`, "DELETE")}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
-                  </button>
+                  </ConfirmIconButton>
                 </div>
               </div>
               {p.visibility === "INVITED_ONLY" && (
@@ -123,14 +126,14 @@ export function PlaylistsPanel() {
 
       {shared && shared.length > 0 && (
         <section>
-          <h3 className="mb-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500 light:text-slate-500">Shared with you</h3>
+          <h3 className="mb-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500 light:text-slate-500">{t("playlistsPanel.shared")}</h3>
           <ul className="glass-panel divide-y divide-white/5 rounded-3xl px-5 light:divide-black/5">
             {shared.map((p) => (
               <li key={p.id} className="flex items-center justify-between gap-3 py-3.5">
                 <Link href={`/playlists/${p.id}`} className="min-w-0">
                   <span className="block truncate text-sm font-semibold text-white hover:text-violet-300 light:text-slate-900">{p.title}</span>
                   <span className="text-[11px] font-mono text-zinc-500 light:text-slate-500">
-                    @{p.ownerUsername} · {p.itemsCount} videos
+                    {t("playlistsPanel.sharedMeta", { owner: p.ownerUsername, count: p.itemsCount })}
                   </span>
                 </Link>
                 <CollectionAudienceBadge visibility={p.visibility} className="text-[11px] text-zinc-400 light:text-slate-500" />
