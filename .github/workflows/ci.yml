@@ -88,6 +88,8 @@ jobs:
       BUNNY_WEBHOOK_SECRET: ci-only-bunny-read-only-key
       BUNNY_STREAM_LIBRARY_ID: "1"
       PAYMENTS_CREDITS_MODE: test
+      # The scenarios end with a factory reset of the database (development deployments only).
+      OROCHIA_ALLOW_DATABASE_RESET: "true"
       OROCHIA_DEMO_MODE: "true"
       NEXT_PUBLIC_APP_URL: http://localhost:3000
     steps:

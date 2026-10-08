@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Search, Hash, Compass } from "lucide-react";
+import { Search, Hash, Compass, Gavel } from "lucide-react";
 import { VideoCard } from "@/components/VideoCard";
 import { popularTags, searchVideos } from "@/lib/queries";
 import { buttonClass } from "@/components/ui";
@@ -38,9 +38,14 @@ export default async function ExplorePage(props: { searchParams: Promise<{ q?: s
         <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-violet-300 dark:text-violet-300 light:text-violet-700">
           <Compass className="h-3.5 w-3.5" /> {t("explore.eyebrow")}
         </p>
-        <h1 className="mt-2 text-2xl sm:text-3xl font-black text-white dark:text-white light:text-slate-900 font-display">
-          {t("explore.title")}
-        </h1>
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-2xl sm:text-3xl font-black text-white dark:text-white light:text-slate-900 font-display">
+            {t("explore.title")}
+          </h1>
+          <Link href="/auctions" className={buttonClass({ size: "sm", round: false })}>
+            <Gavel className="h-4 w-4 text-fuchsia-400 light:text-fuchsia-600" aria-hidden /> {t("explore.auctions")}
+          </Link>
+        </div>
       </div>
 
       <form action="/explore" className="flex gap-3">

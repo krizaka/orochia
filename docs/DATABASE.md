@@ -8,12 +8,17 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 38 tables · 16 enums · 14 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 39 tables · 20 enums · 1 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
 ```mermaid
 erDiagram
+    auctions ||--o{ auction_bids : "auction_id"
+    users ||--o{ auction_bids : "bidder_id"
+    videos ||--o{ auctions : "video_id"
+    users ||--o{ auctions : "creator_id"
+    users ||--o{ auctions : "leader_id"
     audience_lists ||--o{ audience_list_members : "list_id"
     users ||--o{ audience_list_members : "user_id"
     users ||--o{ audience_lists : "owner_id"
@@ -82,6 +87,48 @@ erDiagram
 ```
 
 ## Tables
+
+### `auction_bids`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `auction_id` | uuid | no |  | → `auctions.id` (on delete cascade) |
+| `bidder_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `amount_cents` | integer | no |  |  |
+| `status` | auction_bid_status | no | `"LEADING"` |  |
+| `released_at` | timestamp with time zone | yes |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `auction_bids_auction_idx` (auction_id, created_at) · `auction_bids_bidder_idx` (bidder_id, created_at) · `auction_bids_one_leader_idx` (unique, auction_id, partial)
+
+### `auctions`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `video_id` | uuid | no |  | → `videos.id` (on delete cascade) |
+| `creator_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `status` | auction_status | no | `"OPEN"` |  |
+| `rights` | auction_rights | no | `"WATCH"` |  |
+| `settlement` | auction_settlement | no | `"CREATOR_DECIDES"` |  |
+| `starting_price_cents` | integer | no |  |  |
+| `starts_at` | timestamp with time zone | no |  |  |
+| `ends_at` | timestamp with time zone | no |  |  |
+| `scheduled_ends_at` | timestamp with time zone | no |  |  |
+| `decision_deadline` | timestamp with time zone | yes |  |  |
+| `highest_bid_cents` | integer | no | `0` |  |
+| `bids_count` | integer | no | `0` |  |
+| `leading_bid_id` | uuid | yes |  |  |
+| `leader_id` | uuid | yes |  | → `users.id` (on delete set null) |
+| `previous_visibility` | video_visibility | no |  |  |
+| `closed_at` | timestamp with time zone | yes |  |  |
+| `settled_at` | timestamp with time zone | yes |  |  |
+| `cancel_reason` | text | yes |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+| `updated_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `auctions_one_active_per_video_idx` (unique, video_id, partial) · `auctions_status_ends_idx` (status, ends_at) · `auctions_decision_deadline_idx` (decision_deadline, partial) · `auctions_creator_idx` (creator_id, created_at)
 
 ### `audience_list_members`
 
@@ -282,22 +329,6 @@ erDiagram
 | `updated_at` | timestamp with time zone | no | `now()` |  |
 
 **Indexes:** `payment_intents_sender_idx` (sender_id) · `payment_intents_status_idx` (status)
-
-### `payment_outbox`
-
-| Column | Type | Null | Default | Notes |
-| :--- | :--- | :--- | :--- | :--- |
-| `id` | uuid | no | `gen_random_uuid()` | primary key |
-| `event_type` | varchar(50) | no |  |  |
-| `payload` | text | no |  |  |
-| `status` | varchar(20) | no | `"PENDING"` |  |
-| `attempts` | integer | no | `0` |  |
-| `last_error` | text | yes |  |  |
-| `next_attempt_at` | timestamp with time zone | no | `now()` |  |
-| `created_at` | timestamp with time zone | no | `now()` |  |
-| `processed_at` | timestamp with time zone | yes |  |  |
-
-**Indexes:** `payment_outbox_status_attempt_idx` (status, next_attempt_at) · `payment_outbox_created_at_idx` (created_at)
 
 ### `payout_accounts`
 
@@ -513,6 +544,7 @@ erDiagram
 | `video_id` | uuid | no |  | → `videos.id` (on delete cascade) |
 | `user_id` | uuid | no |  | → `users.id` (on delete cascade) |
 | `granted_via` | varchar(50) | no | `"TIP_PAYMENT"` |  |
+| `can_download` | boolean | no | `false` |  |
 | `amount_paid_cents` | integer | no |  |  |
 | `transaction_ref` | text | no |  |  |
 | `created_at` | timestamp with time zone | no | `now()` |  |
@@ -666,6 +698,10 @@ erDiagram
 
 | Enum | Values |
 | :--- | :--- |
+| `auction_bid_status` | `LEADING`, `OUTBID`, `WON`, `RELEASED` |
+| `auction_rights` | `WATCH`, `DOWNLOAD` |
+| `auction_settlement` | `CREATOR_DECIDES`, `HIGHEST_BID` |
+| `auction_status` | `OPEN`, `AWAITING_DECISION`, `SOLD`, `DECLINED`, `UNSOLD`, `CANCELLED` |
 | `auth_provider` | `GOOGLE`, `FACEBOOK` |
 | `auth_token_purpose` | `VERIFY_EMAIL`, `RESET_PASSWORD` |
 | `collection_visibility` | `PUBLIC`, `APPROVED_FOLLOWERS_ONLY`, `CONTACTS_ONLY`, `INVITED_ONLY`, `PRIVATE` |
@@ -680,22 +716,9 @@ erDiagram
 | `share_channel` | `LINK`, `X`, `WHATSAPP`, `TELEGRAM`, `EMAIL`, `OTHER` |
 | `user_role` | `ADMIN`, `CREATOR`, `MEMBER` |
 | `video_status` | `PENDING_UPLOAD`, `PROCESSING`, `READY`, `FAILED` |
-| `video_visibility` | `PUBLIC`, `CONTACTS_ONLY`, `APPROVED_FOLLOWERS_ONLY`, `TIPPED_UNLOCKED`, `INVITED_ONLY` |
-| `wallet_entry_type` | `TOPUP`, `SPEND`, `REFUND`, `ADJUSTMENT` |
+| `video_visibility` | `PUBLIC`, `CONTACTS_ONLY`, `APPROVED_FOLLOWERS_ONLY`, `TIPPED_UNLOCKED`, `INVITED_ONLY`, `AUCTION` |
+| `wallet_entry_type` | `TOPUP`, `SPEND`, `REFUND`, `ADJUSTMENT`, `HOLD`, `RELEASE` |
 
 ## Migrations
 
 - `0000_initial_schema.sql`
-- `0001_email_verification_and_password_reset.sql`
-- `0002_abnormal_metal_master.sql`
-- `0003_stories_access_and_bunny.sql`
-- `0004_story_views_keyed.sql`
-- `0005_credits_gateway.sql`
-- `0006_sign_in_providers.sql`
-- `0007_editor_drafts.sql`
-- `0008_user_management_messaging_and_ratings.sql`
-- `0009_profile_links_birthdate_notifications.sql`
-- `0010_drop_twitter_handle.sql`
-- `0011_notifications_center.sql`
-- `0012_wallet_and_payout_accounts.sql`
-- `0013_content_ratings_reference.sql`

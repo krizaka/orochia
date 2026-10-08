@@ -13,6 +13,8 @@ export interface RecordTipOptions {
   gateway: GatewayType;
   gatewayTransactionRef: string;
   note?: string;
+  /** How the buyer's access grant is recorded: an unlock (default, held to the video's minimum) or a won auction. */
+  grant?: { via: "TIP_PAYMENT" | "AUCTION"; canDownload?: boolean };
 }
 
 export interface TipResult {
@@ -53,7 +55,8 @@ export async function creditTip(tx: LedgerExecutor, options: RecordTipOptions): 
     const [targetVideo] = await tx.select().from(videos).where(eq(videos.id, options.videoId)).limit(1);
     if (!targetVideo) throw new Error("Video not found");
     if (targetVideo.creatorId !== options.creatorId) throw new Error("Video does not belong to creator");
-    if (targetVideo.minTipAmountCents > options.grossAmountCents) {
+    // An auction's price is the winning bid, whatever the video's unlock minimum.
+    if (options.grant?.via !== "AUCTION" && targetVideo.minTipAmountCents > options.grossAmountCents) {
       throw new Error("Amount is below the video's unlock minimum");
     }
   }
@@ -90,17 +93,22 @@ export async function creditTip(tx: LedgerExecutor, options: RecordTipOptions): 
       .where(eq(videos.id, options.videoId));
 
     if (options.senderId) {
-      const [grant] = await tx
-        .insert(videoAccessGrants)
-        .values({
-          videoId: options.videoId,
-          userId: options.senderId,
-          grantedVia: "TIP_PAYMENT",
-          amountPaidCents: options.grossAmountCents,
-          transactionRef: options.gatewayTransactionRef,
-        })
-        .onConflictDoNothing()
-        .returning();
+      const insert = tx.insert(videoAccessGrants).values({
+        videoId: options.videoId,
+        userId: options.senderId,
+        grantedVia: options.grant?.via ?? "TIP_PAYMENT",
+        canDownload: options.grant?.canDownload ?? false,
+        amountPaidCents: options.grossAmountCents,
+        transactionRef: options.gatewayTransactionRef,
+      });
+      // A buyer who unlocked the video earlier and then wins it at auction gains the auction's rights.
+      const [grant] = await (options.grant?.via === "AUCTION"
+        ? insert.onConflictDoUpdate({
+            target: [videoAccessGrants.videoId, videoAccessGrants.userId],
+            set: { grantedVia: "AUCTION", canDownload: options.grant.canDownload ?? false },
+          })
+        : insert.onConflictDoNothing()
+      ).returning();
       grantId = grant?.id;
     }
   }

@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 /**
  * End-to-end feature scenarios against a running Orochia on a freshly seeded database:
- * approved followers, contacts, invited-only videos and audience lists, collections and their permissions, views, likes, comments, shares, search, creator edits, takedowns, suspensions and
- * role changes — each checked through the HTTP API with real sessions.
+ * approved followers, contacts, invited-only videos and audience lists, collections and their permissions, views, likes, comments, shares, search, creator edits, takedowns, suspensions,
+ * role changes, the wallet and auctions — each checked through the HTTP API with real sessions.
  *
  *   npm run db:reset -- --yes && npm run dev      # in another terminal
  *   npm run test:e2e                              # OROCHIA_URL defaults to http://localhost:3000
  *
- * The scenarios change data (they approve, accept, take down…): reset the database before re-running.
+ * The scenarios change data (they approve, accept, take down…) and end with a factory reset of the database (when the
+ * deployment allows it): reset the database before re-running.
  */
 const B = (process.env.OROCHIA_URL || "http://localhost:3000").replace(/\/$/, "");
 let failures = 0;
@@ -473,7 +474,7 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
 // Reference Data & Presets
 {
   const reference = (await anon.call("/api/reference/content-ratings")).json.ratings ?? [];
-  check("content ratings exist in every environment (migration 0013), in English", reference.length === 5 && reference.some((r) => r.id === "GENERAL" && r.label === "General audience"));
+  check("content ratings exist in every environment (baseline migration), in English", reference.length === 5 && reference.some((r) => r.id === "GENERAL" && r.label === "General audience"));
   const ratings = (await anon.call("/api/reference/content-ratings")).json.ratings;
   check("content ratings served", Array.isArray(ratings) && ratings.some((r) => r.id === "GENERAL"));
   const presets = (await anon.call("/api/reference/presets")).json;
@@ -509,6 +510,131 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("unblock user", unblockRes.status === 200 && unblockRes.json.blocked === false);
 }
 
+// Auctions: bids in credits held while they lead and released when outbid, a soft close, aliases for bidders,
+// the creator's decision or an automatic sale, exclusive access and downloads for the winner, cancellations.
+// Time is moved forward in the database (the only SQL here): closing is then checked through the API.
+{
+  const { default: pg } = await import("pg");
+  const sqlClient = new pg.Client({ connectionString: process.env.DATABASE_URL || "postgresql://orochia_user:orochia_secret@localhost:5432/orochia_db?sslmode=disable" });
+  await sqlClient.connect();
+  const endIn = (id, interval) => sqlClient.query(`update auctions set ends_at = now() + $2::interval where id = $1`, [id, interval]);
+  const hour = 3600_000;
+  const auctionBody = (videoId, extra = {}) => ({ videoId, startingPriceCents: 1000, startsAt: new Date(), endsAt: new Date(Date.now() + 2 * hour), rights: "WATCH", settlement: "CREATOR_DECIDES", ...extra });
+  const wallet = async (s) => (await s.call("/api/me/wallet")).json;
+  const bid = (s, id, amountCents) => s.call(`/api/auctions/${id}/bids`, "POST", { amountCents });
+
+  check("a member cannot start an auction", (await alex.call("/api/auctions", "POST", auctionBody(neon.id))).status === 403);
+  check("another creator's video → 404", (await mia.call("/api/auctions", "POST", auctionBody(neon.id))).status === 404);
+  const short = await elena.call("/api/auctions", "POST", auctionBody(neon.id, { endsAt: new Date(Date.now() + 10 * 60_000) }));
+  check("an auction shorter than an hour is refused", short.status === 400 && short.json.problem === "TOO_SHORT");
+  const created = await elena.call("/api/auctions", "POST", auctionBody(neon.id, { rights: "DOWNLOAD" }));
+  check("the creator puts a video up for auction", created.status === 201, JSON.stringify(created.json));
+  const id = created.json.auctionId;
+  check("…nobody else plays it any more", (await alex.call(`/api/videos/${neon.id}/stream`)).json.reason === "AUCTION");
+  check("…its author still does", (await elena.call(`/api/videos/${neon.id}/stream`)).json.allowed === true);
+  check("…its audience is locked during the auction", (await elena.call(`/api/videos/${neon.id}`, "PATCH", { visibility: "PUBLIC" })).status === 409);
+  check("…it cannot be deleted during the auction", (await elena.call(`/api/videos/${neon.id}`, "DELETE")).status === 409);
+  check("a second auction of the same video → 409", (await elena.call("/api/auctions", "POST", auctionBody(neon.id))).status === 409);
+  check("listed among live auctions", (await anon.call("/api/auctions?tab=live")).json.items.some((a) => a.id === id));
+  check("the watch page finds it", (await anon.call(`/api/videos/${neon.id}/auction`)).json.auction?.id === id);
+  check("the creator cannot bid", (await bid(elena, id, 1000)).status === 403);
+  check("a visitor cannot bid", (await fetch(`${B}/api/auctions/${id}/bids`, { method: "POST", headers: { "Content-Type": "application/json" }, body: '{"amountCents":1000}' })).status === 401);
+
+  await alex.call("/api/me/wallet/topups", "POST", { packId: "plus", gateway: "TEST" });
+  await sam.call("/api/me/wallet/topups", "POST", { packId: "plus", gateway: "TEST" });
+  const alexBefore = (await wallet(alex)).balanceCents;
+  const samBefore = (await wallet(sam)).balanceCents;
+  const low = await bid(alex, id, 900);
+  check("below the starting price → 409 with the minimum", low.status === 409 && low.json.minimum === 1000);
+  const tooMuch = await bid(alex, id, alexBefore + 100);
+  check("more than the wallet → 402 with the balance", tooMuch.status === 402 && tooMuch.json.balance === alexBefore);
+
+  // The live feed: a bid reaches an open stream.
+  const controller = new AbortController();
+  const stream = await fetch(`${B}/api/auctions/${id}/stream`, { signal: controller.signal });
+  const reader = stream.body.getReader();
+  const firstBid = (async () => {
+    let text = "";
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) return null;
+      text += new TextDecoder().decode(value);
+      const line = text.split("\n").find((l) => l.startsWith("data: ") && l.includes('"type":"bid"'));
+      if (line) return JSON.parse(line.slice(6));
+    }
+  })();
+  const b1 = await bid(alex, id, 1000);
+  check("alex bids $10 and becomes Bidder 1", b1.status === 200 && b1.json.alias === 1, JSON.stringify(b1.json));
+  const pushed = await Promise.race([firstBid, sleep(5000).then(() => null)]);
+  controller.abort();
+  check("…every viewer receives the bid live, without names", pushed?.highestBidCents === 1000 && pushed.bid.alias === 1 && !JSON.stringify(pushed).includes("alex"));
+  const held = await wallet(alex);
+  check("…his credits are held", held.balanceCents === alexBefore - 1000 && held.heldCents === 1000 && held.history[0].type === "HOLD");
+  check("the next minimum is one step up", (await anon.call(`/api/auctions/${id}`)).json.auction.minimumNextBidCents === 1100);
+  check("sam outbids at $12 (Bidder 2)", (await bid(sam, id, 1200)).json.alias === 2);
+  const released = await wallet(alex);
+  check("alex's credits come back at once", released.balanceCents === alexBefore && released.heldCents === 0 && released.history[0].type === "RELEASE");
+  const seen = (await alex.call(`/api/auctions/${id}`)).json.auction;
+  check("alex sees he is outbid; bidders are aliases", !seen.viewer.isLeader && seen.viewer.alias === 1 && seen.recentBids[0].alias === 2 && !JSON.stringify(seen).includes("sam_rivers"));
+  check("the creator sees who leads", (await elena.call(`/api/auctions/${id}`)).json.auction.leaderUsername === "sam_rivers");
+  await sleep(500);
+  check("the outbid bidder is notified", (await alex.call("/api/me/notifications")).json.items.some((n) => n.event === "auctionOutbid"));
+  check("the creator is notified of bids", (await elena.call("/api/me/notifications")).json.items.some((n) => n.event === "auctionNewBid"));
+  check("an auction with bids cannot be cancelled by its creator", (await elena.call(`/api/auctions/${id}`, "DELETE")).status === 409);
+
+  await endIn(id, "30 seconds");
+  const late = await bid(alex, id, 1300);
+  check("a bid in the last 2 minutes pushes the end back", late.json.extended === true && new Date(late.json.endsAt).getTime() - Date.now() > 100_000, JSON.stringify(late.json));
+
+  await endIn(id, "-1 second");
+  const ended = (await elena.call(`/api/auctions/${id}`)).json.auction;
+  check("past its end, it waits for the creator's decision", ended.status === "AWAITING_DECISION" && Boolean(ended.decisionDeadline));
+  check("bidding is closed", (await bid(sam, id, 5000)).status === 409);
+  check("only its creator decides", (await mia.call(`/api/auctions/${id}/decision`, "POST", { accept: true })).status === 404);
+  check("the creator declines", (await elena.call(`/api/auctions/${id}/decision`, "POST", { accept: false })).json.status === "DECLINED");
+  const afterDecline = await wallet(alex);
+  check("…the best bidder's credits come back", afterDecline.balanceCents === alexBefore && afterDecline.heldCents === 0);
+  check("…the video has its audience back", (await alex.call(`/api/videos/${neon.id}/stream`)).json.allowed === true);
+
+  const auto = await elena.call("/api/auctions", "POST", auctionBody(neon.id, { rights: "DOWNLOAD", settlement: "HIGHEST_BID" }));
+  const id2 = auto.json.auctionId;
+  check("the video goes up again, to sell to the highest bid", auto.status === 201);
+  const earningsBefore = (await elena.call("/api/creator/earnings?period=all")).json.summary.netCents;
+  check("sam bids $10", (await bid(sam, id2, 1000)).status === 200);
+  check("others cannot download it", (await alex.call(`/api/videos/${neon.id}/download`)).status === 403);
+  await endIn(id2, "-1 second");
+  const sold = (await sam.call(`/api/auctions/${id2}`)).json.auction;
+  check("it sells itself to the highest bid", sold.status === "SOLD" && sold.viewer.won && sold.viewer.canDownload);
+  check("the winner watches it", (await sam.call(`/api/videos/${neon.id}/stream`)).json.allowed === true);
+  check("…and only the winner", (await alex.call(`/api/videos/${neon.id}/stream`)).json.reason === "AUCTION");
+  const download = await sam.call(`/api/videos/${neon.id}/download`);
+  check("the winner downloads it (a short-lived signed MP4)", download.status === 200 && /play_\d+p\.mp4\?token=/.test(download.json.url ?? ""), JSON.stringify(download.json));
+  const samAfter = await wallet(sam);
+  check("the winner paid exactly the bid, nothing held", samAfter.balanceCents === samBefore - 1000 && samAfter.heldCents === 0 && samAfter.history.some((h) => h.type === "SPEND"));
+  check("the creator is credited through the ledger", (await elena.call("/api/creator/earnings?period=all")).json.summary.netCents > earningsBefore);
+  check("a sold video is never auctioned again", (await elena.call("/api/auctions", "POST", auctionBody(neon.id))).status === 409);
+  check("listed among sold auctions", (await anon.call("/api/auctions?tab=ended")).json.items.some((a) => a.id === id2));
+  check("the winner finds it in their bids", (await sam.call("/api/auctions?tab=bidding")).json.items.some((a) => a.id === id2 && a.leading));
+  check("the creator finds both in their auctions", (await elena.call("/api/auctions?tab=selling")).json.items.filter((a) => a.videoId === neon.id).length === 2);
+  await sleep(500);
+  check("the winner is notified", (await sam.call("/api/me/notifications")).json.items.some((n) => n.event === "auctionWon"));
+
+  const later = await elena.call("/api/auctions", "POST", auctionBody(diaries.id, { startsAt: new Date(Date.now() + hour), endsAt: new Date(Date.now() + 3 * hour) }));
+  const id3 = later.json.auctionId;
+  check("an auction can be scheduled", later.status === 201 && (await anon.call("/api/auctions?tab=upcoming")).json.items.some((a) => a.id === id3));
+  check("bidding opens only at its start", (await bid(alex, id3, 1000)).status === 409);
+  check("without bids, its creator cancels it", (await elena.call(`/api/auctions/${id3}`, "DELETE")).status === 200);
+  check("…and the video has its audience back", (await sam.call(`/api/videos/${diaries.id}/stream`)).json.allowed === true);
+
+  const id4 = (await elena.call("/api/auctions", "POST", auctionBody(diaries.id))).json.auctionId;
+  await bid(alex, id4, 1000);
+  check("an operator cancels an auction with bids", (await admin.call(`/api/admin/auctions/${id4}`, "DELETE", { reason: "Reported content under review" })).status === 200);
+  check("…the bid's credits come back", (await wallet(alex)).heldCents === 0);
+  check("operators list every auction", ((await admin.call("/api/admin/auctions")).json.auctions ?? []).length >= 4);
+  check("members cannot", (await alex.call("/api/admin/auctions")).status === 403);
+  await sqlClient.end();
+}
+
 // Search and AI discovery: public pages only
 const sitemapXml = await (await fetch(`${B}/sitemap.xml`)).text();
 check("sitemap lists public videos and creators", sitemapXml.includes(`/watch/${noir.id}`) && sitemapXml.includes("/@elenavox"));
@@ -517,6 +643,35 @@ check("invited-only watch page is noindex", /<meta name="robots" content="noinde
 check("public watch page carries a VideoObject", (await (await fetch(`${B}/watch/${noir.id}`)).text()).includes('"@type":"VideoObject"'));
 check("robots.txt keeps accounts out", (await (await fetch(`${B}/robots.txt`)).text()).includes("Disallow: /dashboard"));
 check("llms.txt served", (await fetch(`${B}/llms.txt`)).status === 200);
+
+// Platform & database, for operators: status, backups, and — last, it wipes everything — the factory reset.
+{
+  const status = (await admin.call("/api/admin/platform")).json.platform;
+  check("operators see the platform: database, migrations up to date, rows per table", status?.history.kind === "current" && status.tables.some((t) => t.name === "users" && t.rows > 0));
+  check("members cannot", (await alex.call("/api/admin/platform")).status === 403);
+  const backup = await admin.call("/api/admin/platform/backups", "POST");
+  check("a backup is written to private storage", backup.status === 201 && /^orochia-.*\.json\.gz$/.test(backup.json.backup?.name ?? ""), JSON.stringify(backup.json));
+  const listed = (await admin.call("/api/admin/platform/backups")).json.backups ?? [];
+  check("…and listed", listed.some((b) => b.name === backup.json.backup.name));
+  const described = (await admin.call(`/api/admin/platform/backups/${backup.json.backup.name}`)).json.backup;
+  check("…holding every table", described?.tables.some((t) => t.name === "auctions" && t.rows > 0));
+  const file = await fetch(`${B}/api/admin/platform/backups/${backup.json.backup.name}?download=1`, { headers: { Cookie: admin.cookie } });
+  check("…downloadable by operators only", file.status === 200 && (file.headers.get("content-type") ?? "").includes("gzip") && (await alex.call(`/api/admin/platform/backups/${backup.json.backup.name}?download=1`)).status === 403);
+  check("a path in a backup name is refused", (await admin.call("/api/admin/platform/backups/..%2F..%2Fetc%2Fpasswd")).status === 404);
+  if (!status.reset.allowed) {
+    check("factory reset refused on this deployment", (await admin.call("/api/admin/platform/reset", "POST", { confirm: status.reset.confirmPhrase })).status === 403);
+  } else {
+    check("factory reset needs the typed phrase", (await admin.call("/api/admin/platform/reset", "POST", { confirm: "reset", backup: false })).status === 400);
+    check("members cannot reset", (await alex.call("/api/admin/platform/reset", "POST", { confirm: status.reset.confirmPhrase })).status === 403);
+    const reset = await admin.call("/api/admin/platform/reset", "POST", { confirm: status.reset.confirmPhrase, backup: true });
+    check("factory reset: backup first, then the database is rebuilt", reset.status === 200 && reset.json.migrationsApplied >= 1 && Boolean(reset.json.backup?.name), JSON.stringify(reset.json));
+    const after = (await admin.call("/api/admin/platform")).json.platform;
+    check("…the operator keeps their account and session", after?.history.kind === "current");
+    check("…everything else is gone", after.tables.find((t) => t.name === "videos").rows === 0 && after.tables.find((t) => t.name === "users").rows <= 2);
+    check("…other accounts can no longer sign in", (await alex.call("/api/me/wallet")).status === 401);
+    check("…the backup taken before is kept", ((await admin.call("/api/admin/platform/backups")).json.backups ?? []).some((b) => b.name === reset.json.backup.name));
+  }
+}
 
 console.log(failures ? `\n${failures} FAILED` : "\nALL PASSED");
 process.exit(failures ? 1 : 0);

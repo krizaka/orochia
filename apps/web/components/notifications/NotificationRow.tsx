@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { AtSign, Bell, CheckCircle2, Coins, MessageCircle, MessageSquare, PlayCircle, Unlock, UserPlus } from "lucide-react";
+import { AtSign, Bell, CheckCircle2, Coins, Gavel, MessageCircle, MessageSquare, PlayCircle, Trophy, Undo2, Unlock, UserPlus } from "lucide-react";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { type NotificationItem, timeAgo } from "./useNotifications";
 
@@ -16,6 +16,14 @@ const ICONS: Record<string, { icon: React.ElementType; tone: string }> = {
   videoUnlocked: { icon: Unlock, tone: "bg-emerald-500" },
   videoReady: { icon: CheckCircle2, tone: "bg-teal-500" },
   creatorPublished: { icon: PlayCircle, tone: "bg-pink-500" },
+  auctionAnnounced: { icon: Gavel, tone: "bg-pink-500" },
+  auctionNewBid: { icon: Gavel, tone: "bg-violet-500" },
+  auctionOutbid: { icon: Gavel, tone: "bg-amber-500" },
+  auctionWon: { icon: Trophy, tone: "bg-emerald-500" },
+  auctionDecision: { icon: Gavel, tone: "bg-fuchsia-500" },
+  auctionSold: { icon: Coins, tone: "bg-emerald-500" },
+  auctionUnsold: { icon: Gavel, tone: "bg-zinc-500" },
+  auctionDeclined: { icon: Undo2, tone: "bg-sky-500" },
 };
 
 /** One notification: who (avatar + event badge), what, when; unread ones are marked. */

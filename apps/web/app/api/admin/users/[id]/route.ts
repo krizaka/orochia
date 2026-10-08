@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { z } from "zod";
 import { db, users } from "@orochia/db";
 import { eq } from "drizzle-orm";
 import { requireUserWithRole } from "@/lib/auth";
 import { errorResponse, jsonError } from "@/lib/http";
+import { cancelAuctionsByOperator } from "@/lib/auctions";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,7 @@ const Action = z.discriminatedUnion("action", [
 
 /**
  * Suspends an account (it can no longer sign in, and its open sessions are refused on their next
- * request), reinstates it, or changes its role. An administrator cannot act on their own account.
+ * request; its open auctions are cancelled and their bids released), reinstates it, or changes its role. An administrator cannot act on their own account.
  */
 export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -33,6 +34,7 @@ export async function PATCH(req: NextRequest, props: { params: Promise<{ id: str
           : { role: input.role };
     const [row] = await db.update(users).set({ ...set, updatedAt: new Date() }).where(eq(users.id, id.data)).returning({ id: users.id });
     if (!row) return jsonError(404, "Account not found");
+    if (input.action === "suspend") after(() => cancelAuctionsByOperator({ creatorId: id.data }, `Creator suspended: ${input.reason}`));
     return NextResponse.json({ success: true });
   } catch (error) {
     return errorResponse(error, "admin/users/patch");

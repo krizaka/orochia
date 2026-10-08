@@ -1,9 +1,11 @@
 import React from "react";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Clapperboard, HeartHandshake, Lock, Sparkles, UserPlus } from "lucide-react";
+import { ArrowRight, CheckCircle2, Clapperboard, Gavel, HeartHandshake, Lock, Sparkles, UserPlus } from "lucide-react";
 import { platformFeePercent } from "@orochia/payments";
 import { getCurrentUser } from "@/lib/auth";
 import { featuredCreator, listFeed, platformStats } from "@/lib/queries";
+import { listAuctions } from "@/lib/auctions";
+import { AuctionCard } from "@/components/auctions/AuctionCard";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { CreatorStoriesBar } from "@/components/CreatorStoriesBar";
 import { FeedFilterTabs } from "@/components/FeedFilterTabs";
@@ -19,11 +21,11 @@ export const dynamic = "force-dynamic";
 
 async function loadHome() {
   try {
-    const [videos, featured, stats] = await Promise.all([listFeed(24), featuredCreator(), platformStats()]);
-    return { videos, featured, stats };
+    const [videos, featured, stats, auctions] = await Promise.all([listFeed(24), featuredCreator(), platformStats(), listAuctions("live", null, 4)]);
+    return { videos, featured, stats, auctions };
   } catch (error) {
     console.error("[home] feed unavailable:", error);
-    return { videos: [], featured: null, stats: { videos: 0, creators: 0 } };
+    return { videos: [], featured: null, stats: { videos: 0, creators: 0 }, auctions: [] };
   }
 }
 
@@ -32,7 +34,7 @@ async function loadHome() {
  * creators publish here — then the trending feed. Signed-in people go straight to stories and feed.
  */
 export default async function HomePage() {
-  const [viewer, { videos, featured, stats }] = await Promise.all([getCurrentUser(), loadHome()]);
+  const [viewer, { videos, featured, stats, auctions }] = await Promise.all([getCurrentUser(), loadHome()]);
   const share = 100 - platformFeePercent();
   const wall = videos.map((v) => v.thumbnailUrl).filter((u): u is string => Boolean(u)).slice(0, 18);
   const surface = "border border-white/10 light:border-black/5 bg-zinc-900/40 light:bg-white";
@@ -131,6 +133,24 @@ export default async function HomePage() {
                 <h3 className="text-base font-bold text-white light:text-slate-900">{t(`home.why.${key}.title`)}</h3>
                 <p className="mt-1.5 text-sm leading-relaxed text-zinc-400 light:text-slate-600">{t(`home.why.${key}.body`, { share })}</p>
               </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {auctions.length > 0 && (
+        <section className="mb-12" aria-labelledby="home-auctions">
+          <div className="mb-4 flex items-end justify-between gap-4" data-reveal>
+            <h2 id="home-auctions" className="flex items-center gap-2 font-display text-xl font-bold text-white light:text-slate-900">
+              <Gavel className="h-5 w-5 text-fuchsia-400 light:text-fuchsia-600" aria-hidden /> {t("home.auctions")}
+            </h2>
+            <Link href="/auctions" className="inline-flex items-center gap-1 text-sm font-semibold text-violet-300 hover:text-violet-200 light:text-violet-700 hover:light:text-violet-900">
+              {t("home.auctionsAll")} <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {auctions.map((a, i) => (
+              <AuctionCard key={a.id} auction={a} index={i} />
             ))}
           </div>
         </section>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { VideoPlayer } from "@/components/VideoPlayer";
@@ -9,8 +9,10 @@ import { ReportModal } from "@/components/ReportModal";
 import { RelationshipActions } from "@/components/RelationshipActions";
 import { SaveToPlaylist } from "@/components/SaveToPlaylist";
 import { VideoComments } from "@/components/VideoComments";
+import { AuctionPanel } from "@/components/auctions/AuctionPanel";
+import { useAuctionLive } from "@/components/auctions/useAuctionLive";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
-import { Sparkles, Eye, ShieldCheck, Share2, Flag, CheckCircle2, Heart, MessageSquare } from "lucide-react";
+import { Sparkles, Eye, ShieldCheck, Share2, Flag, CheckCircle2, Heart, MessageSquare, Gavel } from "lucide-react";
 import { buttonClass, cx } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
@@ -51,6 +53,15 @@ interface VideoDetails {
   moreFromCreator: RelatedVideo[];
 }
 
+// The auction panel sits beside the player on large screens and right under it on phones (mounted once, in one place).
+const LARGE = "(min-width: 1024px)";
+const subscribeLarge = (cb: () => void) => {
+  const query = window.matchMedia(LARGE);
+  query.addEventListener("change", cb);
+  return () => query.removeEventListener("change", cb);
+};
+const useLargeScreen = () => useSyncExternalStore(subscribeLarge, () => window.matchMedia(LARGE).matches, () => false);
+
 const formatDuration = (secs: number) => `${Math.floor(secs / 60)}:${String(Math.floor(secs % 60)).padStart(2, "0")}`;
 
 export default function WatchClient() {
@@ -68,6 +79,8 @@ export default function WatchClient() {
   const [liked, setLiked] = useState(false);
   const [likeBusy, setLikeBusy] = useState(false);
   const { user } = useAuth();
+  const live = useAuctionLive(`/api/videos/${videoId}/auction`);
+  const large = useLargeScreen();
 
   const fetchStreamAccess = useCallback(async () => {
     try {
@@ -110,6 +123,12 @@ export default function WatchClient() {
       clearTimeout(stop);
     };
   }, [paymentState, fetchStreamAccess]);
+
+  // Winning the auction opens the player at once.
+  const won = live.auction?.viewer.won ?? false;
+  useEffect(() => {
+    if (won) void fetchStreamAccess();
+  }, [won, fetchStreamAccess]);
 
   // A share is counted once the link was handed over; the link still enforces the video's access.
   const share = async () => {
@@ -161,6 +180,10 @@ export default function WatchClient() {
   const isContactsOnly = stream ? !stream.allowed && stream.reason === "CONTACTS_ONLY" : false;
   const isFollowersOnly = stream ? !stream.allowed && stream.reason === "FOLLOWERS_ONLY" : false;
   const isInvitedOnly = stream ? !stream.allowed && stream.reason === "INVITED_ONLY" : false;
+  const isAuction = stream ? !stream.allowed && stream.reason === "AUCTION" : false;
+  const auctionPanel = live.auction && (
+    <AuctionPanel auction={live.auction} skewMs={live.skewMs} pulse={live.pulse} onChanged={() => void live.reload()} onOwnBid={live.onOwnBid} />
+  );
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
@@ -193,16 +216,25 @@ export default function WatchClient() {
               isContactsOnly={isContactsOnly}
               isFollowersOnly={isFollowersOnly}
               isInvitedOnly={isInvitedOnly}
+              isAuction={isAuction}
               gateAction={
+                isAuction ? (
+                  <a href="#auction" className={buttonClass({ variant: "primary", round: false })}>
+                    <Gavel className="h-4 w-4" /> {t("player.auctionCta")}
+                  </a>
+                ) : (
                 <RelationshipActions
                   username={details.creatorUsername}
                   show={isFollowersOnly ? ["follow"] : ["contact"]}
                   onChange={() => void fetchStreamAccess()}
                 />
+                )
               }
               onUnlockRequested={() => setIsTipModalOpen(true)}
             />
           )}
+
+          {!large && auctionPanel && <div className="mt-6">{auctionPanel}</div>}
 
           {details && (
             <div className="mt-6">
@@ -306,6 +338,7 @@ export default function WatchClient() {
         </div>
 
         <div className="space-y-6">
+          {large && auctionPanel}
           <div className="rounded-2xl border border-white/10 dark:border-white/10 light:border-black/5 bg-zinc-900/50 dark:bg-zinc-900/50 light:bg-white p-5 shadow-xs">
             <h3 className="text-sm font-bold text-white dark:text-white light:text-slate-900 mb-3">{t("watch.protection.title")}</h3>
             <ul className="space-y-2.5 text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-600">

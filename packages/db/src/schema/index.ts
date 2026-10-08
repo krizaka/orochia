@@ -10,7 +10,7 @@ import { stories, storyViews, storyLikes } from "./stories";
 import { contentRatings } from "./reference-data";
 import { userInvitations } from "./invitations";
 import { conversations, directMessages, blockedUsers } from "./messaging";
-import { paymentOutbox } from "./payment-outbox";
+import { auctions, auctionBids } from "./auctions";
 
 export * from "./enums";
 export * from "./users";
@@ -30,7 +30,7 @@ export * from "./wallet";
 export * from "./reference-data";
 export * from "./invitations";
 export * from "./messaging";
-export * from "./payment-outbox";
+export * from "./auctions";
 
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -250,3 +250,13 @@ export const blockedUsersRelations = relations(blockedUsers, ({ one }) => ({
   }),
 }));
 
+export const auctionsRelations = relations(auctions, ({ one, many }) => ({
+  video: one(videos, { fields: [auctions.videoId], references: [videos.id] }),
+  creator: one(users, { fields: [auctions.creatorId], references: [users.id] }),
+  bids: many(auctionBids),
+}));
+
+export const auctionBidsRelations = relations(auctionBids, ({ one }) => ({
+  auction: one(auctions, { fields: [auctionBids.auctionId], references: [auctions.id] }),
+  bidder: one(users, { fields: [auctionBids.bidderId], references: [users.id] }),
+}));

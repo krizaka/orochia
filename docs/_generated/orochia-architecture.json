@@ -71,8 +71,10 @@
       "id": "data",
       "name": "Data persistence",
       "path": "packages/db",
-      "tablesCount": 38,
+      "tablesCount": 39,
       "tables": [
+        "auctions",
+        "auction_bids",
         "audience_lists",
         "audience_list_members",
         "video_viewers",
@@ -96,7 +98,6 @@
         "direct_messages",
         "blocked_users",
         "notifications",
-        "payment_outbox",
         "playlists",
         "playlist_items",
         "playlist_members",
@@ -125,6 +126,18 @@
     }
   ],
   "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/admin/auctions",
+      "access": "session · ADMIN",
+      "summary": "Every auction for operators (latest first, optionally by status): video, creator, price, bids, timing, outcome."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/admin/auctions/[id]",
+      "access": "session · ADMIN",
+      "summary": "Cancels an auction that is open or awaiting its decision, with a recorded reason; the leading bid is released."
+    },
     {
       "method": "GET",
       "path": "/api/admin/creators",
@@ -163,6 +176,42 @@
     },
     {
       "method": "GET",
+      "path": "/api/admin/platform",
+      "access": "session · ADMIN",
+      "summary": "The platform for operators: environment, database (size, rows per table), migration history, whether a reset is allowed."
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/platform/backups",
+      "access": "session · ADMIN",
+      "summary": "The database backups kept in private storage, newest first."
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/platform/backups",
+      "access": "session · ADMIN",
+      "summary": "Backs the whole database up now (gzipped JSON of every table, in private storage)."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/admin/platform/backups/[name]",
+      "access": "session · ADMIN",
+      "summary": "Deletes a backup from private storage."
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/platform/backups/[name]",
+      "access": "session · ADMIN",
+      "summary": "Downloads a backup file (`?download=1`), or describes it: tables, rows, migrations."
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/platform/reset",
+      "access": "session · ADMIN",
+      "summary": "Factory reset: backs the database up first (unless asked not to), wipes it and rebuilds it from the migrations — development deployments only (OROCHIA_ALLOW_DATABASE_RESET, never the indexed production), after the operator typed “reset <database>”. The operator and the owner are kept."
+    },
+    {
+      "method": "GET",
       "path": "/api/admin/reports",
       "access": "session · ADMIN",
       "summary": "Content reports, newest first; `?status=` filters."
@@ -183,7 +232,7 @@
       "method": "PATCH",
       "path": "/api/admin/users/[id]",
       "access": "session · ADMIN",
-      "summary": "Suspends an account (it can no longer sign in, and its open sessions are refused on their next request), reinstates it, or changes its role."
+      "summary": "Suspends an account (it can no longer sign in, and its open sessions are refused on their next request; its open auctions are cancelled and their bids released), reinstates it, or changes its role."
     },
     {
       "method": "GET",
@@ -195,7 +244,49 @@
       "method": "PATCH",
       "path": "/api/admin/videos/[id]",
       "access": "session · ADMIN",
-      "summary": "Takes a video down (DMCA, terms, a confirmed report) with a recorded reason, or restores it."
+      "summary": "Takes a video down (DMCA, terms, a confirmed report) with a recorded reason — cancelling its auction — or restores it."
+    },
+    {
+      "method": "GET",
+      "path": "/api/auctions",
+      "access": "public · session-aware",
+      "summary": "Lists auctions by tab: live, upcoming, ended (sold), bidding (yours) or selling (your own)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/auctions",
+      "access": "session · CREATOR",
+      "summary": "Puts one of the creator's ready videos up for auction (start, end, starting price, rights, how it ends)."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/auctions/[id]",
+      "access": "session · CREATOR",
+      "summary": "The creator cancels their auction while nobody has bid; the video gets its previous visibility back."
+    },
+    {
+      "method": "GET",
+      "path": "/api/auctions/[id]",
+      "access": "public · session-aware",
+      "summary": "An auction as the viewer sees it: price, minimum next bid, timing, recent bids (aliases), and their own standing."
+    },
+    {
+      "method": "POST",
+      "path": "/api/auctions/[id]/bids",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Places a bid in Orochia credits; they are held while the bid leads and released when it is outbid."
+    },
+    {
+      "method": "POST",
+      "path": "/api/auctions/[id]/decision",
+      "access": "session · CREATOR",
+      "summary": "The creator accepts the best bid (the video is sold to its bidder) or declines it (the credits go back)."
+    },
+    {
+      "method": "GET",
+      "path": "/api/auctions/[id]/stream",
+      "access": "public",
+      "summary": "Live Server-Sent Events of an auction: each bid (amount, alias, new end) and every change of state."
     },
     {
       "method": "POST",
@@ -597,7 +688,7 @@
       "method": "GET",
       "path": "/api/me/wallet",
       "access": "session · MEMBER / CREATOR / ADMIN",
-      "summary": "Your Orochia credits: balance, the packs you can buy, how you can pay for them, and your history."
+      "summary": "Your Orochia credits: balance (and what is held behind your leading bids), the packs you can buy, how you can pay for them, and your history."
     },
     {
       "method": "POST",
@@ -753,13 +844,19 @@
       "method": "DELETE",
       "path": "/api/videos/[id]",
       "access": "session · CREATOR",
-      "summary": "The creator deletes their video."
+      "summary": "The creator deletes their video (refused while it is in an auction)."
     },
     {
       "method": "PATCH",
       "path": "/api/videos/[id]",
       "access": "session · CREATOR",
-      "summary": "The creator edits their video: title, description, visibility, unlock price, tags, comments open."
+      "summary": "The creator edits their video (an auctioned video keeps its audience): title, description, visibility, unlock price, tags, comments open."
+    },
+    {
+      "method": "GET",
+      "path": "/api/videos/[id]/auction",
+      "access": "public · session-aware",
+      "summary": "The auction a video is in (open, awaiting its decision or sold), as the viewer sees it; null when there is none."
     },
     {
       "method": "GET",
@@ -784,6 +881,12 @@
       "path": "/api/videos/[id]/details",
       "access": "public · session-aware",
       "summary": "A video's public metadata and figures (and whether you liked it); the stream is only served by /stream."
+    },
+    {
+      "method": "GET",
+      "path": "/api/videos/[id]/download",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "A five-minute signed link to the video's MP4 file, for its author and for a buyer whose grant includes downloading."
     },
     {
       "method": "DELETE",

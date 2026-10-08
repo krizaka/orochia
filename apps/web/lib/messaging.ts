@@ -1,24 +1,13 @@
-import { EventEmitter } from "events";
 import { db, conversations, directMessages, blockedUsers, users, profiles, contacts } from "@orochia/db";
 import { and, desc, eq, gt, or, sql, isNull } from "drizzle-orm";
 import { HttpError } from "./http";
 import { after } from "next/server";
 import { notifyMessage } from "./notifications";
+import { publish } from "./realtime";
 
-/** Global in-process event bus for realtime server-sent events */
-const messageBus = new EventEmitter();
-messageBus.setMaxListeners(1000);
-
-export function subscribeToUserEvents(userId: string, callback: (event: any) => void): () => void {
-  const channel = `user:${userId}`;
-  messageBus.on(channel, callback);
-  return () => {
-    messageBus.off(channel, callback);
-  };
-}
-
-export function emitUserEvent(userId: string, event: any): void {
-  messageBus.emit(`user:${userId}`, event);
+/** Pushes an event to one account's open streams, on every app instance (lib/realtime.ts). */
+export function emitUserEvent(userId: string, event: Record<string, unknown>): void {
+  void publish(`user:${userId}`, event);
 }
 
 export interface ConversationSummary {

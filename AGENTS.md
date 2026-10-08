@@ -55,6 +55,10 @@
 
 - Destructive commands are **local-only by construction**: they refuse `NODE_ENV=production` and any
   `DATABASE_URL` whose host is not this machine or the dev container.
+- On a deployment, the only destructive database operation is the operator's **factory reset** (admin console →
+  Platform & Database, `/api/admin/platform/reset`), and the release job's rebuild of a database whose migration history
+  was squashed. Both require `OROCHIA_ALLOW_DATABASE_RESET=true`, are refused on the indexed production whatever it says,
+  and share `packages/db/src/migrations.ts`. Backups (gzipped JSON in private storage) are taken first by default.
 
 ---
 
@@ -65,11 +69,13 @@ orochia/                           npm workspaces
 ├── apps/web/                      Next.js 16 App Router — pages + API route handlers (the only HTTP surface)
 │   ├── app/api/**/route.ts        one handler per endpoint: authenticate → validate (zod) → call lib → respond
 │   ├── lib/                       access.ts (who may play what) · social.ts · playlists.ts · queries.ts (read
-│   │                              models) · auth.ts · env.ts · http.ts · rate-limit.ts · storage.ts
+│   │                              models) · auctions.ts · realtime.ts (the event bus, SSE) · auth.ts · env.ts ·
+│   │                              http.ts · rate-limit.ts · storage.ts
 │   └── components/                UI (player, modals, dashboard panels, relationship actions…)
 ├── packages/db/                   Drizzle schema (source of truth), migrations, migrator, seed
 ├── packages/media/                Bunny Stream client, Tus signing, signed playback tokens, webhook verifier
-├── packages/payments/             gateway adapters, payment intents, settlement, double-entry ledger, payouts
+├── packages/payments/             gateway adapters, payment intents, settlement, double-entry ledger, payouts,
+│                                  credits, auctions (rules + state machine)
 ├── deploy/                        Dockerfile (bundled migrator), compose (dev/prod), Caddy, DigitalOcean spec
 ├── e2e/                           HTTP feature scenarios
 ├── scripts/                       setup, db lifecycle, workspace, docs generation
@@ -100,7 +106,9 @@ orochia/                           npm workspaces
   `CONTACTS_ONLY` — an **accepted** contact in either direction (`contacts`) · `TIPPED_UNLOCKED` — an access grant
   written by settlement (`video_access_grants`), never below the creator's minimum · `INVITED_ONLY` — an account
   invited directly (`video_viewers`) or a member of one of the creator's audience lists attached to the video
-  (`video_audience_lists` → `audience_list_members`, live membership). The author always plays their own video.
+  (`video_audience_lists` → `audience_list_members`, live membership) · `AUCTION` — the winning bidder only (a grant
+  `granted_via = AUCTION` written by the sale); set by starting an auction, never chosen in a form. The author always
+  plays their own video.
 - `INVITED_ONLY` videos are **never listed** (feed, search, tags, profile) and their details answer 404 to anyone not
   invited; inside a collection they are shown only to those who may watch them.
 - Collections (`playlists.visibility`: PUBLIC · APPROVED_FOLLOWERS_ONLY · CONTACTS_ONLY · INVITED_ONLY · PRIVATE)
@@ -144,6 +152,17 @@ orochia/                           npm workspaces
   snapshot that the admin API decrypts for the operator. Minimum $20.
 - **Earnings** (`lib/earnings.ts`, `/earnings`) are read from the ledger only: period totals, views, per-video revenue,
   monthly trend, payments, payouts; CSV exports neutralise spreadsheet formulas.
+
+### C2. Auctions (`docs/AUCTIONS.md`)
+- Rules are pure functions (`packages/payments/src/auction-rules.ts`); transitions live in
+  `packages/payments/src/auctions.ts`, each in one transaction under the auction's row lock — never in a route.
+- Bids are **escrowed credits**: a bid holds the bidder's credits (`HOLD`, under the wallet advisory lock) while it leads;
+  outbid, declined or cancelled it is released (`RELEASE`); won it is released and spent (`SPEND`) and the creator is
+  credited through `tips_ledger` in the same transaction as the winner's grant. Every movement has a unique reference.
+- While an auction is open, awaiting its decision or sold, the video's visibility is `AUCTION` (locked: no PATCH, no
+  delete while open); an auction that ends without a sale restores the previous visibility. A sold video is exclusive.
+- Bidders are aliases in public (`Bidder N`); only the creator sees the leader's username.
+- A takedown or a suspension cancels the open auctions and releases their bids.
 
 ### D. The ledger is immutable
 - `tips_ledger` is double-entry and append-only. Balances are **computed** from it (`getCreatorAvailableBalanceCents`),
@@ -194,7 +213,8 @@ orochia/                           npm workspaces
   `npm run db:migrate` → commit schema + migration + regenerated docs together.
 - **Never edit or delete an applied migration**; fix forward with a new one. Migrations must be idempotent-safe
   (drizzle `IF NOT EXISTS` / `duplicate_object` guards) — CI applies them twice. Before the first release the
-  history was squashed into one baseline (`0000_initial_schema`, 2026-10-07); every change from then on is a new
+  history was squashed into one baseline (`0000_initial_schema`, last rebuilt 2026-10-08 with auctions — every
+  database created before must be reset); every change from then on is a new
   migration.
 - Production applies migrations with the bundled migrator (`packages/db/dist/migrate.cjs`) as the DigitalOcean
   `PRE_DEPLOY` job: a release never starts on an older schema.
@@ -215,6 +235,10 @@ orochia/                           npm workspaces
   domain call → `NextResponse.json({ success: true, … })`. Errors go through `errorResponse` (no internals leaked).
 - Ownership is enforced in the **query** (`where id = … and creator_id = me`), so another user's id is a 404.
 - Mutations that can be abused are rate-limited (`checkRateLimit`, in memory per instance — no Redis for now).
+- **Realtime goes through `lib/realtime.ts` only** (`publish` / `subscribe` / `sseResponse`): PostgreSQL `NOTIFY` fans
+  events out to every instance's `LISTEN` connection (`packages/db/src/listen.ts`) — no broker. Topics `user:<id>` and
+  `auction:<id>`; payloads are small facts (≤ 8 KB), never documents. `DATABASE_URL` must be a direct connection (not a
+  transaction pooler). Background loops start in `instrumentation.ts` and share work with `FOR UPDATE SKIP LOCKED`.
 - The **first sentence of the JSDoc** above each handler is the endpoint's summary in `docs/API_CONTRACTS.md`;
   the access column is read from the handler's `requireUserWithRole` call. Keep both truthful.
 
@@ -259,7 +283,8 @@ orochia/                           npm workspaces
 - **UI kit** — `@krizaka/orochia-design-system`, imported through `components/ui` (the app's door: it re-exports the
   kit and gives `Sheet` its translated close label): `Button` / `buttonClass` (primary · secondary · ghost · danger,
   sm · md · lg, loading), `IconButton` (accessible name required), `ConfirmIconButton` (two-tap destructive action),
-  `Chip`, `Segmented`, `Switch`, `Slider`, `Sheet` (every dialog: phones get a bottom sheet), `SocialIcon`, `cx`,
+  `Chip`, `Segmented`, `Switch`, `Slider`, `Sheet` (every dialog: phones get a bottom sheet), `SocialIcon`,
+  `Countdown` / `useCountdown` (one shared clock), `LiveBadge`, `cx`,
   and from `@krizaka/ui` `OrochiaLogo`, `MotionObserver`, `RotatingWord`. `buttonClass` and `cx` come from the
   package's plain `classes` entry, so server components can call them. New screens use the kit; a screen touched for
   another reason moves its hand-rolled buttons to it. A missing component is added to the package, not to the app.
@@ -286,7 +311,8 @@ orochia/                           npm workspaces
 
 - **Unit** (`npm test`, Vitest): pure logic — sessions, env, gateway signatures, ledger splits.
 - **End-to-end** (`npm run test:e2e`): `e2e/scenarios.mjs` drives the real API with real sessions on a seeded
-  PostgreSQL — followers, contacts, playlists, search, creator edits, takedowns, suspensions, role changes.
+  PostgreSQL — followers, contacts, playlists, search, creator edits, takedowns, suspensions, role changes, wallet,
+  auctions (time is moved forward in SQL to test closing; everything else goes through HTTP).
   A new feature adds its scenarios there.
 - **CI** (`.github/workflows/ci.yml`): verify (lint, types, unit, docs check, production build) · database
   (bundled migrator twice, seed) · e2e (Postgres service, dev server, scenarios).

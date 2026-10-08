@@ -77,3 +77,23 @@ export function signBunnyFileUrl({
     .replace(/=+$/, "");
   return `https://${hostname}${path}?token=${token}&expires=${expires}`;
 }
+
+/** Bunny Stream's MP4 fallback renditions (the library setting "MP4 fallback"), best first. */
+const MP4_RENDITIONS = ["1080p", "720p", "480p", "360p", "240p"] as const;
+
+/** The best MP4 file a video offers for download, from its encoded resolutions ("240p,360p,720p…"). */
+export function bestMp4Rendition(resolutions: string[] | null | undefined): string {
+  const available = new Set(resolutions ?? []);
+  return MP4_RENDITIONS.find((r) => available.has(r)) ?? "720p";
+}
+
+/** A short-lived signed URL of one video's MP4 file — the download a won auction can include. */
+export function signBunnyDownloadUrl(input: { hostname: string; videoGuid: string; tokenAuthKey: string; resolutions?: string[] | null; now?: number }): string {
+  return signBunnyFileUrl({
+    hostname: input.hostname,
+    path: `/${input.videoGuid}/play_${bestMp4Rendition(input.resolutions)}.mp4`,
+    tokenAuthKey: input.tokenAuthKey,
+    windowSeconds: 300,
+    now: input.now,
+  });
+}

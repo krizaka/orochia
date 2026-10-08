@@ -150,3 +150,80 @@ function getMimeType(ext: string): string {
   };
   return map[ext.toLowerCase()] || "application/octet-stream";
 }
+
+// ── Private objects by key (operator files: database backups) ─────────────────────────────────
+
+function bunnyStorage(): { base: string; key: string } | null {
+  if (process.env.STORAGE_DRIVER !== "bunny" || !process.env.BUNNY_STORAGE_API_KEY) return null;
+  const storageZone = process.env.BUNNY_STORAGE_ZONE || "orochia-media";
+  const regionHost = process.env.BUNNY_STORAGE_ENDPOINT || "storage.bunnycdn.com";
+  return { base: `https://${regionHost}/${storageZone}`, key: process.env.BUNNY_STORAGE_API_KEY };
+}
+
+const PRIVATE_KEY = /^private\/[a-z]+\/[A-Za-z0-9._-]+$/;
+function checkKey(key: string) {
+  if (!PRIVATE_KEY.test(key) || key.includes("..")) throw new Error(`invalid private key ${key}`);
+}
+
+/** Writes a private object (never publicly served); in production on Bunny Edge Storage only. */
+export async function putPrivateObject(key: string, body: Buffer): Promise<void> {
+  checkKey(key);
+  const bunny = bunnyStorage();
+  if (!bunny && process.env.NODE_ENV === "production") throw new ConfigurationError("STORAGE_DRIVER=bunny and BUNNY_STORAGE_API_KEY");
+  if (bunny) {
+    const res = await fetch(`${bunny.base}/${key}`, { method: "PUT", headers: { AccessKey: bunny.key, "Content-Type": "application/octet-stream" }, body: new Uint8Array(body) });
+    if (!res.ok) throw new Error(`Bunny storage upload failed: ${res.status}`);
+    return;
+  }
+  const file = path.join(LOCAL_PRIVATE_DIR, key.slice("private/".length));
+  await fs.promises.mkdir(path.dirname(file), { recursive: true });
+  await fs.promises.writeFile(file, body);
+}
+
+/** Reads a private object, or null when it does not exist. */
+export async function getPrivateObject(key: string): Promise<Buffer | null> {
+  checkKey(key);
+  const bunny = bunnyStorage();
+  if (bunny) {
+    const res = await fetch(`${bunny.base}/${key}`, { headers: { AccessKey: bunny.key } });
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error(`Bunny storage read failed: ${res.status}`);
+    return Buffer.from(await res.arrayBuffer());
+  }
+  const file = path.join(LOCAL_PRIVATE_DIR, key.slice("private/".length));
+  return fs.existsSync(file) ? fs.promises.readFile(file) : null;
+}
+
+/** Lists the private objects of a folder (`private/backups`). */
+export async function listPrivateObjects(folder: string): Promise<{ name: string; sizeBytes: number; createdAt: string }[]> {
+  checkKey(`${folder}/x`);
+  const bunny = bunnyStorage();
+  if (bunny) {
+    const res = await fetch(`${bunny.base}/${folder}/`, { headers: { AccessKey: bunny.key, Accept: "application/json" } });
+    if (res.status === 404) return [];
+    if (!res.ok) throw new Error(`Bunny storage list failed: ${res.status}`);
+    const items = (await res.json()) as { ObjectName: string; Length: number; DateCreated: string; IsDirectory: boolean }[];
+    return items.filter((i) => !i.IsDirectory).map((i) => ({ name: i.ObjectName, sizeBytes: i.Length, createdAt: new Date(`${i.DateCreated}Z`).toISOString() }));
+  }
+  const dir = path.join(LOCAL_PRIVATE_DIR, folder.slice("private/".length));
+  if (!fs.existsSync(dir)) return [];
+  const names = await fs.promises.readdir(dir);
+  return Promise.all(
+    names.map(async (name) => {
+      const stat = await fs.promises.stat(path.join(dir, name));
+      return { name, sizeBytes: stat.size, createdAt: stat.mtime.toISOString() };
+    }),
+  );
+}
+
+/** Removes a private object; a missing one is not an error. */
+export async function deletePrivateObject(key: string): Promise<void> {
+  checkKey(key);
+  const bunny = bunnyStorage();
+  if (bunny) {
+    const res = await fetch(`${bunny.base}/${key}`, { method: "DELETE", headers: { AccessKey: bunny.key } });
+    if (!res.ok && res.status !== 404) throw new Error(`Bunny storage delete failed: ${res.status}`);
+    return;
+  }
+  await fs.promises.rm(path.join(LOCAL_PRIVATE_DIR, key.slice("private/".length)), { force: true });
+}

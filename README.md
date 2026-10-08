@@ -31,6 +31,7 @@ The creator video platform: direct-to-CDN 4K streaming, server-side access contr
 - 📺 **Direct-to-CDN media**: uploads go straight to Bunny Stream over Tus; playback uses HMAC-signed HLS URLs that expire after 5 minutes. Video never passes through the app servers.
 - 🔐 **Server-side access control**: every play is authorised against the video's visibility — public, approved followers, contacts only, or paid unlock — before a URL is signed.
 - 💳 **Gateway-confirmed payments**: an unlock records a payment intent and sends the buyer to CCBill, Segpay, NowPayments (crypto) or Stripe; access is granted only when the gateway's signed webhook confirms it, exactly once.
+- 🔨 **Live video auctions** ([docs/AUCTIONS.md](docs/AUCTIONS.md)): bids in credits held while they lead and released the moment they are outbid, anti-sniping soft close, the creator accepts or declines (or sells to the highest bid), and only the winner watches or downloads — pushed live over PostgreSQL LISTEN/NOTIFY and Server-Sent Events, no broker.
 - 🤝 **Social graph**: creators approve their followers (followers-only videos), people become mutual contacts (contacts-only videos); explore search by title, creator or tag; public and private playlists.
 - 🧹 **Moderation**: operators take videos down with a recorded reason (and restore them), suspend accounts with immediate effect, change roles — from the admin console.
 - 📒 **Double-entry ledger**: platform fee and creator credit always add up to the gross; balances are computed from the ledger; concurrent payout requests are serialised.

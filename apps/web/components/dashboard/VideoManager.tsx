@@ -2,18 +2,21 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { AlertTriangle, Pencil, Trash2, Users } from "lucide-react";
+import { AlertTriangle, Gavel, Pencil, Trash2, Users } from "lucide-react";
 import { Button, ConfirmIconButton, Sheet } from "@/components/ui";
 import { Rich } from "@/components/Rich";
 import { t } from "@/lib/i18n";
 import { AudienceEditor } from "../AudienceEditor";
+import { StartAuctionSheet } from "../auctions/StartAuctionSheet";
+import { CHOOSABLE_VISIBILITIES } from "@/lib/visibility";
+import type { VideoVisibility } from "@/lib/visibility";
 
 export interface StudioVideo {
   id: string;
   title: string;
   description: string | null;
   tags: string[];
-  visibility: "PUBLIC" | "CONTACTS_ONLY" | "APPROVED_FOLLOWERS_ONLY" | "TIPPED_UNLOCKED" | "INVITED_ONLY";
+  visibility: VideoVisibility;
   minTipAmountCents: number;
   status: "PENDING_UPLOAD" | "PROCESSING" | "READY" | "FAILED";
   removedAt: string | null;
@@ -23,7 +26,6 @@ export interface StudioVideo {
   tipsCount: number;
 }
 
-const VISIBILITIES: StudioVideo["visibility"][] = ["PUBLIC", "APPROVED_FOLLOWERS_ONLY", "CONTACTS_ONLY", "TIPPED_UNLOCKED", "INVITED_ONLY"];
 const visibilityLabel = (v: StudioVideo["visibility"]) => t(`publish.audiences.${v}.title`);
 
 const field =
@@ -47,6 +49,7 @@ function StatusBadge({ v }: { v: StudioVideo }) {
 /** The creator's videos: state, figures, and editing (title, description, visibility, audience, price, tags) or deletion. */
 export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onChange: () => void }) {
   const [editing, setEditing] = useState<StudioVideo | null>(null);
+  const [auctioning, setAuctioning] = useState<StudioVideo | null>(null);
   const [visibility, setVisibility] = useState<StudioVideo["visibility"]>("PUBLIC");
   const edit = (v: StudioVideo) => {
     setEditing(v);
@@ -59,7 +62,7 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
     e.preventDefault();
     if (!editing) return;
     const f = new FormData(e.currentTarget);
-    const visibility = f.get("visibility") as StudioVideo["visibility"];
+    const visibility = (f.get("visibility") as StudioVideo["visibility"] | null) ?? undefined;
     setBusy(true);
     setError(null);
     const res = await fetch(`/api/videos/${editing.id}`, {
@@ -69,7 +72,7 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
         title: String(f.get("title")),
         description: String(f.get("description") || "") || null,
         visibility,
-        minTipAmountCents: visibility === "TIPPED_UNLOCKED" ? Math.round(Number(f.get("price")) * 100) : 0,
+        minTipAmountCents: visibility === undefined ? undefined : visibility === "TIPPED_UNLOCKED" ? Math.round(Number(f.get("price")) * 100) : 0,
         tags: String(f.get("tags") || "")
           .split(",")
           .map((tag) => tag.trim())
@@ -125,7 +128,13 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
               </td>
               <td className="py-2.5 pr-4"><StatusBadge v={v} /></td>
               <td className="py-2.5 pr-4 text-zinc-400 light:text-slate-500">
-                {visibilityLabel(v.visibility)}
+                {v.visibility === "AUCTION" ? (
+                  <Link href={`/watch/${v.id}#auction`} className="inline-flex items-center gap-1 font-semibold text-fuchsia-300 hover:text-fuchsia-200 light:text-fuchsia-700 hover:light:text-fuchsia-900">
+                    <Gavel className="h-3 w-3" aria-hidden /> {visibilityLabel(v.visibility)}
+                  </Link>
+                ) : (
+                  visibilityLabel(v.visibility)
+                )}
                 {v.visibility === "TIPPED_UNLOCKED" && <span className="ml-1 font-mono text-violet-300">${(v.minTipAmountCents / 100).toFixed(2)}</span>}
               </td>
               <td className="py-2.5 pr-4 font-mono">{duration(v.durationSeconds)}</td>
@@ -134,6 +143,11 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
               <td className="py-2.5 text-right">
                 {!v.removedAt && (
                   <div className="inline-flex gap-1">
+                    {v.status === "READY" && v.visibility !== "AUCTION" && (
+                      <button onClick={() => setAuctioning(v)} className={iconAction} aria-label={t("studio.auctionNamed", { title: v.title })} title={t("studio.auctionNamed", { title: v.title })}>
+                        <Gavel className="h-3.5 w-3.5" />
+                      </button>
+                    )}
                     {v.visibility === "INVITED_ONLY" && (
                       <button onClick={() => edit(v)} className={iconAction} aria-label={t("studio.whoCanWatchNamed", { title: v.title })} title={t("studio.whoCanWatchNamed", { title: v.title })}>
                         <Users className="h-3.5 w-3.5" />
@@ -177,9 +191,15 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
             <div className="grid gap-3 sm:grid-cols-2">
               <label className={label}>
                 {t("studio.visibility")}
-                <select name="visibility" value={visibility} onChange={(e) => setVisibility(e.target.value as StudioVideo["visibility"])} className={field}>
-                  {VISIBILITIES.map((value) => <option key={value} value={value}>{visibilityLabel(value)}</option>)}
-                </select>
+                {visibility === "AUCTION" ? (
+                  <span className={`${field} flex items-center gap-1.5 text-zinc-400 light:text-slate-500`}>
+                    <Gavel className="h-3.5 w-3.5" aria-hidden /> {t("studio.auctionLocked")}
+                  </span>
+                ) : (
+                  <select name="visibility" value={visibility} onChange={(e) => setVisibility(e.target.value as StudioVideo["visibility"])} className={field}>
+                    {CHOOSABLE_VISIBILITIES.map((value) => <option key={value} value={value}>{visibilityLabel(value)}</option>)}
+                  </select>
+                )}
               </label>
               {visibility === "TIPPED_UNLOCKED" && (
                 <label className={label}>
@@ -205,6 +225,8 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
           </div>
         )}
       </Sheet>
+
+      {auctioning && <StartAuctionSheet video={auctioning} open onClose={() => setAuctioning(null)} />}
     </div>
   );
 }

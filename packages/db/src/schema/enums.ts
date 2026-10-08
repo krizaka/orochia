@@ -9,6 +9,8 @@ export const videoVisibilityEnum = pgEnum("video_visibility", [
   "TIPPED_UNLOCKED",
   /** The accounts the creator invited, directly or through one of their audience lists. */
   "INVITED_ONLY",
+  /** Put up for auction: listed with its auction, played only by its author and the winning bidder. */
+  "AUCTION",
 ]);
 
 export const videoStatusEnum = pgEnum("video_status", [
@@ -92,4 +94,23 @@ export const authTokenPurposeEnum = pgEnum("auth_token_purpose", ["VERIFY_EMAIL"
 export const followStatusEnum = pgEnum("follow_status", ["PENDING", "APPROVED"]);
 
 /** Movements of an account's Orochia credits (wallet_ledger). */
-export const walletEntryTypeEnum = pgEnum("wallet_entry_type", ["TOPUP", "SPEND", "REFUND", "ADJUSTMENT"]);
+/**
+ * Movements of an account's Orochia credits (wallet_ledger). HOLD reserves credits behind an auction bid (−) and
+ * RELEASE gives them back (+) when the bid is outbid, declined or cancelled; a winning bid is released and SPENT.
+ */
+export const walletEntryTypeEnum = pgEnum("wallet_entry_type", ["TOPUP", "SPEND", "REFUND", "ADJUSTMENT", "HOLD", "RELEASE"]);
+
+/**
+ * An auction's life. OPEN covers "upcoming" and "live" (told apart by starts_at / ends_at); AWAITING_DECISION is the
+ * creator's window to accept or decline the best bid; SOLD, DECLINED, UNSOLD (no bid) and CANCELLED are final.
+ */
+export const auctionStatusEnum = pgEnum("auction_status", ["OPEN", "AWAITING_DECISION", "SOLD", "DECLINED", "UNSOLD", "CANCELLED"]);
+
+/** What the winning bidder receives: watching the video, or watching and downloading it. */
+export const auctionRightsEnum = pgEnum("auction_rights", ["WATCH", "DOWNLOAD"]);
+
+/** How an auction ends: the creator accepts or declines the best bid, or it sells to the highest bid, whatever it is. */
+export const auctionSettlementEnum = pgEnum("auction_settlement", ["CREATOR_DECIDES", "HIGHEST_BID"]);
+
+/** A bid: LEADING (its credits are held), OUTBID / RELEASED (credits given back), WON (credits paid). */
+export const auctionBidStatusEnum = pgEnum("auction_bid_status", ["LEADING", "OUTBID", "WON", "RELEASED"]);

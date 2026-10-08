@@ -38,8 +38,26 @@ interface Profile {
   payoutAddressCrypto: string | null;
 }
 
-const EVENTS = ["newFollower", "contactRequest", "newComment", "commentReply", "newMessage", "tipReceived", "videoUnlocked", "videoReady", "creatorPublished"] as const;
-const CREATOR_EVENTS = new Set(["tipReceived", "videoUnlocked", "videoReady", "newFollower"]);
+const EVENTS = [
+  "newFollower",
+  "contactRequest",
+  "newComment",
+  "commentReply",
+  "newMessage",
+  "tipReceived",
+  "videoUnlocked",
+  "videoReady",
+  "creatorPublished",
+  "auctionAnnounced",
+  "auctionOutbid",
+  "auctionWon",
+  "auctionDeclined",
+  "auctionNewBid",
+  "auctionDecision",
+  "auctionSold",
+  "auctionUnsold",
+] as const;
+const CREATOR_EVENTS = new Set(["tipReceived", "videoUnlocked", "videoReady", "newFollower", "auctionNewBid", "auctionDecision", "auctionSold", "auctionUnsold"]);
 
 const label = "mb-1.5 block text-xs font-semibold text-zinc-300 light:text-slate-700";
 const hint = "mt-1 block text-[11px] leading-relaxed text-zinc-500 light:text-slate-500";

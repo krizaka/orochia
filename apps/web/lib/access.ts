@@ -4,7 +4,7 @@ import { eq, and, or } from "drizzle-orm";
 
 export interface AccessEvaluation {
   allowed: boolean;
-  reason?: "PAYWALL_REQUIRED" | "CONTACTS_ONLY" | "FOLLOWERS_ONLY" | "INVITED_ONLY" | "AGE_VERIFICATION_REQUIRED" | "NOT_FOUND";
+  reason?: "PAYWALL_REQUIRED" | "CONTACTS_ONLY" | "FOLLOWERS_ONLY" | "INVITED_ONLY" | "AUCTION" | "AGE_VERIFICATION_REQUIRED" | "NOT_FOUND";
   minTipAmountCents?: number;
   creatorId?: string;
   videoTitle?: string;
@@ -99,6 +99,9 @@ export async function evaluateVideoAccess(
     if (video.visibility === "INVITED_ONLY") {
       return { allowed: false, reason: "INVITED_ONLY", creatorId: video.creatorId, videoTitle: video.title };
     }
+    if (video.visibility === "AUCTION") {
+      return { allowed: false, reason: "AUCTION", creatorId: video.creatorId, videoTitle: video.title };
+    }
     return { allowed: false, reason: "CONTACTS_ONLY", creatorId: video.creatorId, videoTitle: video.title };
   }
 
@@ -130,7 +133,19 @@ export async function evaluateVideoAccess(
       : { allowed: false, reason: "INVITED_ONLY", creatorId: video.creatorId, videoTitle: video.title };
   }
 
-  // 6. Paywalled / Tipped video check
+  // 6. Auctioned: only the winning bidder (an access grant written by the sale) — exclusive.
+  if (video.visibility === "AUCTION") {
+    const [grant] = await db
+      .select({ id: videoAccessGrants.id })
+      .from(videoAccessGrants)
+      .where(and(eq(videoAccessGrants.videoId, videoId), eq(videoAccessGrants.userId, viewerId), eq(videoAccessGrants.grantedVia, "AUCTION")))
+      .limit(1);
+    return grant
+      ? { allowed: true, creatorId: video.creatorId, videoTitle: video.title }
+      : { allowed: false, reason: "AUCTION", creatorId: video.creatorId, videoTitle: video.title };
+  }
+
+  // 7. Paywalled / Tipped video check
   if (video.visibility === "TIPPED_UNLOCKED") {
     const [grant] = await db
       .select()
@@ -157,4 +172,17 @@ export async function evaluateVideoAccess(
   }
 
   return { allowed: false, reason: "CONTACTS_ONLY", creatorId: video.creatorId, videoTitle: video.title };
+}
+
+/** Whether an account may download a video's file: its author, or a buyer whose grant includes downloading. */
+export async function canDownloadVideo(videoId: string, userId: string): Promise<boolean> {
+  const [video] = await db.select({ creatorId: videos.creatorId, removedAt: videos.removedAt }).from(videos).where(eq(videos.id, videoId)).limit(1);
+  if (!video || video.removedAt) return false;
+  if (video.creatorId === userId) return true;
+  const [grant] = await db
+    .select({ id: videoAccessGrants.id })
+    .from(videoAccessGrants)
+    .where(and(eq(videoAccessGrants.videoId, videoId), eq(videoAccessGrants.userId, userId), eq(videoAccessGrants.canDownload, true)))
+    .limit(1);
+  return Boolean(grant);
 }
