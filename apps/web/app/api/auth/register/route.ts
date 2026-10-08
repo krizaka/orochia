@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db, users, profiles, hashPassword } from "@orochia/db";
 import { setSessionCookie } from "@/lib/auth";
+import { sendVerificationEmail } from "@/lib/account-tokens";
+import { isDemoMode } from "@/lib/env";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { errorResponse, isUniqueViolation, jsonError } from "@/lib/http";
 
@@ -23,7 +25,10 @@ const RegisterSchema = z.object({
   acceptTerms: z.literal(true, { errorMap: () => ({ message: "The terms must be accepted" }) }),
 });
 
-/** Creates a member or creator account (never an administrator) and signs it in. */
+/**
+ * Creates a member or creator account (never an administrator), signs it in and e-mails the link that
+ * verifies its address — until then the account can do nothing else.
+ */
 export async function POST(req: NextRequest) {
   try {
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
@@ -49,13 +54,17 @@ export async function POST(req: NextRequest) {
       return user;
     });
 
-    const response = NextResponse.json({ success: true }, { status: 201 });
+    const link = await sendVerificationEmail(account);
+    // Demo mode only (never production): the link is also returned, so the flow can be tested end to end.
+    const devVerificationUrl = isDemoMode() ? link : undefined;
+    const response = NextResponse.json({ success: true, verificationRequired: true, devVerificationUrl }, { status: 201 });
     setSessionCookie(response, {
       id: account.id,
       username: account.username,
       email: account.email,
       role: account.role,
       isAgeVerified: account.isAgeVerified,
+      emailVerified: false,
     });
     return response;
   } catch (error) {

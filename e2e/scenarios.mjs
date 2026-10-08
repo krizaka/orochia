@@ -238,8 +238,11 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
 // Bunny Stream webhook (signature v1, keyed with the library's read-only API key)
 {
   const { createHmac } = await import("node:crypto");
-  const { readFileSync } = await import("node:fs");
-  const fromFile = (name) => readFileSync(new URL("../.env", import.meta.url), "utf8").match(new RegExp(`^${name}=(.*)$`, "m"))?.[1]?.trim();
+  const { existsSync, readFileSync } = await import("node:fs");
+  // The environment first (CI), the local .env otherwise — the same values the running app reads.
+  const envFile = new URL("../.env", import.meta.url);
+  const fromFile = (name) =>
+    existsSync(envFile) ? readFileSync(envFile, "utf8").match(new RegExp(`^${name}=(.*)$`, "m"))?.[1]?.trim() : undefined;
   const key = process.env.BUNNY_WEBHOOK_SECRET || fromFile("BUNNY_WEBHOOK_SECRET");
   const library = Number(process.env.BUNNY_STREAM_LIBRARY_ID || fromFile("BUNNY_STREAM_LIBRARY_ID") || 1);
   const guid = "9b4d3eaa-6f5a-4c8b-0d1e-2f3a4b5c6d7e"; // "Afterhours", seeded PROCESSING
@@ -268,6 +271,44 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
     check("'finished' (3) makes the video READY and listed", (await (await send(3)).json()).status === "READY" && (await listed()));
     check("a late 'encoding' (2) never un-publishes it", (await (await send(2)).json()).status === "READY" && (await listed()));
   }
+}
+
+// Accounts: an unverified e-mail can only sign in and ask for the link; links point to this origin
+{
+  const stamp = Date.now().toString(36);
+  const email = `new_${stamp}@example.com`;
+  const jar = { cookie: "" };
+  const call = async (path, method = "GET", body) => {
+    const res = await fetch(B + path, { method, headers: { Cookie: jar.cookie, ...(body ? { "Content-Type": "application/json" } : {}) }, body: body ? JSON.stringify(body) : undefined });
+    const set = res.headers.get("set-cookie");
+    if (set) jar.cookie = set.split(";")[0];
+    let json = {}; try { json = await res.json(); } catch {}
+    return { status: res.status, json };
+  };
+  const reg = await call("/api/auth/register", "POST", { username: `new_${stamp}`, email, displayName: "New Member", password: "first-password-1", role: "MEMBER", isAgeVerified: true, acceptTerms: true });
+  check("register → verification required", reg.status === 201 && reg.json.verificationRequired === true);
+  const firstLink = reg.json.devVerificationUrl ?? "";
+  check("verification link on this origin", firstLink.startsWith(`${B}/auth/verify?token=`), firstLink);
+  check("signed in but unverified", (await call("/api/auth/me")).json.user?.emailVerified === false);
+  check("unverified → every action refused", (await call("/api/playlists", "POST", { title: "x" })).json.error === "Email not verified");
+  check("unverified → dashboard API refused", (await call("/api/me/dashboard")).status === 403);
+  const again = await call("/api/auth/resend-verification", "POST");
+  check("resend the link", again.status === 200 && again.json.devVerificationUrl?.startsWith(`${B}/auth/verify?token=`));
+  const tokenOf = (link) => new URL(link).searchParams.get("token");
+  check("the previous link stops working", (await call("/api/auth/verify-email", "POST", { token: tokenOf(firstLink) })).status === 400);
+  check("verify with the new link", (await call("/api/auth/verify-email", "POST", { token: tokenOf(again.json.devVerificationUrl) })).status === 200);
+  check("a link works once", (await call("/api/auth/verify-email", "POST", { token: tokenOf(again.json.devVerificationUrl) })).status === 400);
+  check("verified → session refreshed", (await call("/api/auth/me")).json.user?.emailVerified === true);
+  check("verified → actions allowed", (await call("/api/playlists", "POST", { title: "Mine" })).status === 201);
+  const unknown = await call("/api/auth/forgot-password", "POST", { email: `nobody_${stamp}@example.com` });
+  check("forgot password never reveals an address", unknown.status === 200 && !unknown.json.devResetUrl);
+  const forgot = await call("/api/auth/forgot-password", "POST", { email });
+  check("reset link on this origin", forgot.json.devResetUrl?.startsWith(`${B}/auth/reset-password?token=`), JSON.stringify(forgot.json));
+  check("short password refused", (await call("/api/auth/reset-password", "POST", { token: tokenOf(forgot.json.devResetUrl), password: "short" })).status === 400);
+  check("reset the password", (await call("/api/auth/reset-password", "POST", { token: tokenOf(forgot.json.devResetUrl), password: "second-password-2" })).status === 200);
+  check("reset link works once", (await call("/api/auth/reset-password", "POST", { token: tokenOf(forgot.json.devResetUrl), password: "third-password-3" })).status === 400);
+  check("old password refused", (await session(email, "first-password-1")).status === 401);
+  check("new password accepted", (await session(email, "second-password-2")).status === 200);
 }
 
 // Search and AI discovery: public pages only

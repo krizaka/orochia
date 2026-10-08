@@ -9,7 +9,7 @@
  * password (unless asked to reset it), so it is safe on every start. The release job (migrate.cjs)
  * runs it after the migrations whenever OROCHIA_OWNER_EMAIL is set.
  */
-import { eq, or } from "drizzle-orm";
+import { eq, or, sql } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { hashPassword } from "./crypto";
 import { profiles, users } from "./schema";
@@ -69,16 +69,18 @@ export async function ensureOwner(
   if (setPassword && !owner.password) throw new Error("OROCHIA_OWNER_PASSWORD is required to create the owner account");
 
   const active = { role: "ADMIN" as const, isVerified: true, isAgeVerified: true, suspendedAt: null, suspensionReason: null, updatedAt: new Date() };
+  // The operator configures this address; it is verified by definition (an existing date is kept).
+  const verified = { emailVerifiedAt: sql`coalesce(${users.emailVerifiedAt}, now())` };
   const id = await db.transaction(async (tx) => {
     const [row] = existing
       ? await tx
           .update(users)
-          .set({ ...active, ...(setPassword ? { passwordHash: hashPassword(owner.password!) } : {}) })
+          .set({ ...active, ...verified, ...(setPassword ? { passwordHash: hashPassword(owner.password!) } : {}) })
           .where(eq(users.id, existing.id))
           .returning({ id: users.id })
       : await tx
           .insert(users)
-          .values({ email: owner.email, username: owner.username, passwordHash: hashPassword(owner.password!), ...active })
+          .values({ email: owner.email, username: owner.username, passwordHash: hashPassword(owner.password!), ...active, emailVerifiedAt: new Date() })
           .returning({ id: users.id });
     await tx
       .insert(profiles)

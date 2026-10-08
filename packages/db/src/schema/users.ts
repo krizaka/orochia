@@ -9,6 +9,8 @@ export const users = pgTable("users", {
   role: userRoleEnum("role").default("MEMBER").notNull(),
   isVerified: boolean("is_verified").default(false).notNull(),
   isAgeVerified: boolean("is_age_verified").default(false).notNull(), // Mandatory 18+ verification flag
+  /** Set when the owner of the address followed the verification link; until then the account can only sign in and ask for the link again. */
+  emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
   /** Set by an administrator: a suspended account can neither sign in nor publish. */
   suspendedAt: timestamp("suspended_at", { withTimezone: true }),
   suspensionReason: text("suspension_reason"),

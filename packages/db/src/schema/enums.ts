@@ -80,5 +80,8 @@ export const collectionVisibilityEnum = pgEnum("collection_visibility", [
 /** Where a video was shared to (counted, never used to grant access). */
 export const shareChannelEnum = pgEnum("share_channel", ["LINK", "X", "WHATSAPP", "TELEGRAM", "EMAIL", "OTHER"]);
 
+/** What a one-time account token is for. */
+export const authTokenPurposeEnum = pgEnum("auth_token_purpose", ["VERIFY_EMAIL", "RESET_PASSWORD"]);
+
 /** A follow of a creator: approved by the creator before it opens APPROVED_FOLLOWERS_ONLY videos. */
 export const followStatusEnum = pgEnum("follow_status", ["PENDING", "APPROVED"]);

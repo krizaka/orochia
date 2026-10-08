@@ -33,13 +33,14 @@ export async function POST(req: NextRequest) {
     }
     if (account.suspendedAt) return jsonError(403, "This account is suspended. Contact the platform operator.");
 
-    const response = NextResponse.json({ success: true });
+    const response = NextResponse.json({ success: true, emailVerified: Boolean(account.emailVerifiedAt) });
     setSessionCookie(response, {
       id: account.id,
       username: account.username,
       email: account.email,
       role: account.role,
       isAgeVerified: account.isAgeVerified,
+      emailVerified: Boolean(account.emailVerifiedAt),
     });
     return response;
   } catch (error) {

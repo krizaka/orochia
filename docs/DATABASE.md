@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 22 tables · 13 enums · 1 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 23 tables · 14 enums · 2 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -17,6 +17,7 @@ erDiagram
     audience_lists ||--o{ audience_list_members : "list_id"
     users ||--o{ audience_list_members : "user_id"
     users ||--o{ audience_lists : "owner_id"
+    users ||--o{ auth_tokens : "user_id"
     videos ||--o{ compliance_reports : "video_id"
     users ||--o{ compliance_reports : "reporter_id"
     users ||--o{ contacts : "requester_id"
@@ -81,6 +82,20 @@ erDiagram
 | `updated_at` | timestamp with time zone | no | `now()` |  |
 
 **Indexes:** `audience_lists_owner_name_idx` (unique, owner_id, name)
+
+### `auth_tokens`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `user_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `purpose` | auth_token_purpose | no |  |  |
+| `token_hash` | varchar(64) | no |  |  |
+| `expires_at` | timestamp with time zone | no |  |  |
+| `used_at` | timestamp with time zone | yes |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `auth_tokens_hash_idx` (unique, token_hash) · `auth_tokens_user_purpose_idx` (user_id, purpose)
 
 ### `compliance_reports`
 
@@ -261,6 +276,7 @@ erDiagram
 | `role` | user_role | no | `"MEMBER"` |  |
 | `is_verified` | boolean | no | `false` |  |
 | `is_age_verified` | boolean | no | `false` |  |
+| `email_verified_at` | timestamp with time zone | yes |  |  |
 | `suspended_at` | timestamp with time zone | yes |  |  |
 | `suspension_reason` | text | yes |  |  |
 | `created_at` | timestamp with time zone | no | `now()` |  |
@@ -388,6 +404,7 @@ erDiagram
 
 | Enum | Values |
 | :--- | :--- |
+| `auth_token_purpose` | `VERIFY_EMAIL`, `RESET_PASSWORD` |
 | `collection_visibility` | `PUBLIC`, `APPROVED_FOLLOWERS_ONLY`, `CONTACTS_ONLY`, `INVITED_ONLY`, `PRIVATE` |
 | `contact_status` | `PENDING`, `ACCEPTED`, `REJECTED`, `BLOCKED` |
 | `follow_status` | `PENDING`, `APPROVED` |
@@ -405,3 +422,4 @@ erDiagram
 ## Migrations
 
 - `0000_initial_schema.sql`
+- `0001_email_verification_and_password_reset.sql`

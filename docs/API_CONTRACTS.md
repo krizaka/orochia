@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (65)
+## Endpoints (70)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -23,10 +23,14 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `PATCH` | `/api/admin/users/[id]` | session · ADMIN | Suspends an account (it can no longer sign in, and its open sessions are refused on their next request), reinstates it, or changes its role. |
 | `GET` | `/api/admin/videos` | session · ADMIN | The catalogue for moderation: every video with its creator, state and open reports; `?state=removed` lists takedowns. |
 | `PATCH` | `/api/admin/videos/[id]` | session · ADMIN | Takes a video down (DMCA, terms, a confirmed report) with a recorded reason, or restores it. |
+| `POST` | `/api/auth/forgot-password` | public | E-mails a password-reset link (1 h) to the address, if an active account uses it. |
 | `POST` | `/api/auth/login` | public | Password login. |
 | `POST` | `/api/auth/logout` | public | — |
-| `GET` | `/api/auth/me` | public · session-aware | The signed-in account, or `user: null`. |
-| `POST` | `/api/auth/register` | public | Creates a member or creator account (never an administrator) and signs it in. |
+| `GET` | `/api/auth/me` | public | The signed-in account (with whether its e-mail is verified), or `user: null`. |
+| `POST` | `/api/auth/register` | public | Creates a member or creator account (never an administrator), signs it in and e-mails the link that verifies its address — until then the account can do nothing else. |
+| `POST` | `/api/auth/resend-verification` | public | E-mails a new verification link to the signed-in account (the previous link stops working). |
+| `POST` | `/api/auth/reset-password` | public | Sets a new password with the link's one-time token (1 h). |
+| `POST` | `/api/auth/verify-email` | public | Verifies an e-mail address with the link's one-time token (48 h); refreshes the session of that account. |
 | `GET` | `/api/bunny/analytics` | session · ADMIN | Catalogue statistics for administrators, from the database. |
 | `POST` | `/api/contacts` | session · MEMBER / CREATOR / ADMIN | Sends a contact request (accepted at once when the other person already asked). |
 | `DELETE` | `/api/contacts/[id]` | session · MEMBER / CREATOR / ADMIN | Removes a contact or withdraws a request (either side). |
@@ -61,6 +65,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `DELETE` | `/api/playlists/[id]/items` | session · MEMBER / CREATOR / ADMIN | Removes a video from a playlist (owner only). |
 | `POST` | `/api/playlists/[id]/items` | session · MEMBER / CREATOR / ADMIN | Adds a video at the end of a playlist (owner only, idempotent). |
 | `GET` | `/api/playlists/shared` | session · MEMBER / CREATOR / ADMIN | Collections other accounts invited you to. |
+| `GET` | `/api/search` | public | — |
 | `POST` | `/api/uploads` | session · role depends on the request | Stores an avatar (any account), a thumbnail or a 2257 document (creators); size and type checked per kind. |
 | `DELETE` | `/api/videos/[id]` | session · CREATOR | The creator deletes their video. |
 | `PATCH` | `/api/videos/[id]` | session · CREATOR | The creator edits their video: title, description, visibility, unlock price, tags, comments open. |
@@ -77,7 +82,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/webhooks/bunny` | signed webhook | Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (BUNNY_WEBHOOK_SECRET). |
 | `POST` | `/api/webhooks/payments/[gateway]` | signed webhook | Gateway payment notifications. |
 
-## Database tables (22)
+## Database tables (23)
 
 | Table | Drizzle export | Defined in |
 | :--- | :--- | :--- |
@@ -86,6 +91,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `video_viewers` | `videoViewers` | `packages/db/src/schema/audiences.ts` |
 | `video_audience_lists` | `videoAudienceLists` | `packages/db/src/schema/audiences.ts` |
 | `playlist_audience_lists` | `playlistAudienceLists` | `packages/db/src/schema/audiences.ts` |
+| `auth_tokens` | `authTokens` | `packages/db/src/schema/auth-tokens.ts` |
 | `compliance_reports` | `complianceReports` | `packages/db/src/schema/compliance.ts` |
 | `contacts` | `contacts` | `packages/db/src/schema/contacts.ts` |
 | `follows` | `follows` | `packages/db/src/schema/contacts.ts` |

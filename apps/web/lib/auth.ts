@@ -12,6 +12,8 @@ export interface SessionUser {
   email: string;
   role: Role;
   isAgeVerified: boolean;
+  /** The address was confirmed. Until then the account can only sign in and ask for the link again. */
+  emailVerified: boolean;
 }
 
 interface SessionPayload extends SessionUser {
@@ -38,6 +40,7 @@ export function signSessionToken(
     email: user.email,
     role: user.role,
     isAgeVerified: user.isAgeVerified,
+    emailVerified: user.emailVerified,
     exp: Math.floor(now / 1000) + SESSION_TTL_SECONDS,
   };
   const data = Buffer.from(JSON.stringify(payload)).toString("base64url");
@@ -66,6 +69,7 @@ export function verifySessionToken(
       email: payload.email,
       role: payload.role,
       isAgeVerified: payload.isAgeVerified === true,
+      emailVerified: payload.emailVerified === true,
     };
   } catch {
     return null;
@@ -93,10 +97,19 @@ export function clearSessionCookie(response: NextResponse): void {
   });
 }
 
-/** The authenticated user of the current request, if any. */
-export async function getCurrentUser(): Promise<SessionUser | null> {
+/** The signed-in session of the request, verified address or not (sign-in, /auth/me, the resend link). */
+export async function getSession(): Promise<SessionUser | null> {
   const token = (await cookies()).get(SESSION_COOKIE_NAME)?.value;
   return token ? verifySessionToken(token) : null;
+}
+
+/**
+ * The authenticated user of the current request, if any — an account whose address is not verified
+ * yet counts as a visitor everywhere (it can do nothing but sign in and ask for the link again).
+ */
+export async function getCurrentUser(): Promise<SessionUser | null> {
+  const session = await getSession();
+  return session?.emailVerified ? session : null;
 }
 
 /**
@@ -104,19 +117,21 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
  * re-read here: a suspension or a role change takes effect on the very next request, not when the
  * cookie expires.
  */
-export async function requireUserWithRole(roles: Role[]): Promise<SessionUser> {
-  const user = await getCurrentUser();
+export async function requireUserWithRole(roles: Role[], options: { allowUnverifiedEmail?: boolean } = {}): Promise<SessionUser> {
+  const user = await getSession();
   if (!user) throw new HttpError(401, "Authentication required");
   const { db, users } = await import("@orochia/db");
   const { eq } = await import("drizzle-orm");
   const [account] = await db
-    .select({ role: users.role, suspendedAt: users.suspendedAt })
+    .select({ role: users.role, suspendedAt: users.suspendedAt, emailVerifiedAt: users.emailVerifiedAt })
     .from(users)
     .where(eq(users.id, user.id))
     .limit(1);
   if (!account) throw new HttpError(401, "Authentication required");
   if (account.suspendedAt) throw new HttpError(403, "Account suspended");
+  // The database decides, not the cookie: verifying in another browser counts at once.
+  if (!account.emailVerifiedAt && !options.allowUnverifiedEmail) throw new HttpError(403, "Email not verified");
   // The role is the account's current one, not the one frozen in the cookie.
   if (!roles.includes(account.role)) throw new HttpError(403, "Insufficient role");
-  return { ...user, role: account.role };
+  return { ...user, role: account.role, emailVerified: Boolean(account.emailVerifiedAt) };
 }

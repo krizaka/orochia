@@ -8,6 +8,13 @@
       "when": 1791411766854,
       "tag": "0000_initial_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791415934275,
+      "tag": "0001_email_verification_and_password_reset",
+      "breakpoints": true
     }
   ]
 }

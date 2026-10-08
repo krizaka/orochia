@@ -71,13 +71,14 @@
       "id": "data",
       "name": "Data persistence",
       "path": "packages/db",
-      "tablesCount": 22,
+      "tablesCount": 23,
       "tables": [
         "audience_lists",
         "audience_list_members",
         "video_viewers",
         "video_audience_lists",
         "playlist_audience_lists",
+        "auth_tokens",
         "compliance_reports",
         "contacts",
         "follows",
@@ -183,6 +184,12 @@
     },
     {
       "method": "POST",
+      "path": "/api/auth/forgot-password",
+      "access": "public",
+      "summary": "E-mails a password-reset link (1 h) to the address, if an active account uses it."
+    },
+    {
+      "method": "POST",
       "path": "/api/auth/login",
       "access": "public",
       "summary": "Password login."
@@ -196,14 +203,32 @@
     {
       "method": "GET",
       "path": "/api/auth/me",
-      "access": "public · session-aware",
-      "summary": "The signed-in account, or `user: null`."
+      "access": "public",
+      "summary": "The signed-in account (with whether its e-mail is verified), or `user: null`."
     },
     {
       "method": "POST",
       "path": "/api/auth/register",
       "access": "public",
-      "summary": "Creates a member or creator account (never an administrator) and signs it in."
+      "summary": "Creates a member or creator account (never an administrator), signs it in and e-mails the link that verifies its address — until then the account can do nothing else."
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/resend-verification",
+      "access": "public",
+      "summary": "E-mails a new verification link to the signed-in account (the previous link stops working)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/reset-password",
+      "access": "public",
+      "summary": "Sets a new password with the link's one-time token (1 h)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/verify-email",
+      "access": "public",
+      "summary": "Verifies an e-mail address with the link's one-time token (48 h); refreshes the session of that account."
     },
     {
       "method": "GET",
@@ -408,6 +433,12 @@
       "path": "/api/playlists/shared",
       "access": "session · MEMBER / CREATOR / ADMIN",
       "summary": "Collections other accounts invited you to."
+    },
+    {
+      "method": "GET",
+      "path": "/api/search",
+      "access": "public",
+      "summary": ""
     },
     {
       "method": "POST",

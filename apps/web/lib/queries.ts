@@ -216,6 +216,7 @@ export interface AccountProfile {
   balanceCents: number;
   unlockedVideosCount: number;
   isAgeVerified: boolean;
+  emailVerified: boolean;
 }
 
 /** The signed-in account as the UI shows it; the balance is computed from the ledger. */
@@ -227,6 +228,7 @@ export async function accountProfile(user: SessionUser): Promise<AccountProfile 
       email: users.email,
       role: users.role,
       isAgeVerified: users.isAgeVerified,
+      emailVerified: sql<boolean>`${users.emailVerifiedAt} is not null`,
       displayName: sql<string>`coalesce(${profiles.displayName}, ${users.username})`,
       avatarUrl: profiles.avatarUrl,
       bio: profiles.bio,

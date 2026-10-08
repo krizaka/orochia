@@ -1,15 +1,14 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { ShieldCheck, Users, Eye, Film } from "lucide-react";
-import { VideoCard } from "@/components/VideoCard";
+import { ShieldCheck, Users, Eye, Film, Sparkles, Heart } from "lucide-react";
 import { creatorByUsername, creatorVideos } from "@/lib/queries";
 import { visiblePlaylists } from "@/lib/playlists";
 import { getCurrentUser } from "@/lib/auth";
 import { RelationshipActions } from "@/components/RelationshipActions";
-import { PlaylistCard } from "@/components/PlaylistCard";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { JsonLd } from "@/components/JsonLd";
 import { profileSchema } from "@/lib/seo";
+import { CreatorProfileClient } from "@/components/CreatorProfileClient";
 
 export const dynamic = "force-dynamic";
 
@@ -28,13 +27,16 @@ export async function generateMetadata(props: { params: Promise<{ username: stri
   };
 }
 
-/** A creator's public page: identity, figures and published videos — all from the database. */
+/** A creator's public luxury page: identity, figures, tiers, goal and published videos */
 export default async function CreatorPage(props: { params: Promise<{ username: string }> }) {
   const params = await props.params;
   const creator = await creatorByUsername(params.username.toLowerCase());
   if (!creator) notFound();
   const viewer = await getCurrentUser();
-  const [videos, playlists] = await Promise.all([creatorVideos(creator.id), visiblePlaylists(creator.id, viewer?.id ?? null)]);
+  const [videos, playlists] = await Promise.all([
+    creatorVideos(creator.id),
+    visiblePlaylists(creator.id, viewer?.id ?? null),
+  ]);
 
   const stats = [
     { icon: Users, label: "Patrons", value: creator.patrons },
@@ -45,59 +47,71 @@ export default async function CreatorPage(props: { params: Promise<{ username: s
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <JsonLd data={profileSchema(creator)} />
-      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r from-violet-950/60 via-zinc-950 to-fuchsia-950/50">
+
+      {/* Hero Panoramic Banner */}
+      <div className="relative mb-8 overflow-hidden rounded-3xl border border-white/10 dark:border-white/10 light:border-black/5 bg-gradient-to-r from-violet-950/60 via-zinc-950 to-fuchsia-950/50 dark:from-violet-950/60 dark:via-zinc-950 dark:to-fuchsia-950/50 light:from-violet-100 light:via-white light:to-pink-100 shadow-2xl">
         {creator.bannerUrl && (
-          <img src={creator.bannerUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-30" />
+          <img
+            src={creator.bannerUrl}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover opacity-40 dark:opacity-40 light:opacity-25"
+          />
         )}
-        <div className="relative flex flex-col sm:flex-row items-center sm:items-end gap-6 p-6 sm:p-10">
-          <div className="h-28 w-28 shrink-0 overflow-hidden rounded-2xl border-2 border-violet-500/60 shadow-xl shadow-violet-500/20">
-            <img src={creator.avatarUrl || AVATAR_PLACEHOLDER} alt={creator.displayName} className="h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 dark:from-zinc-950 light:from-white via-transparent to-transparent opacity-80" />
+
+        <div className="relative flex flex-col sm:flex-row items-center sm:items-end gap-6 p-6 sm:p-10 z-10">
+          {/* Avatar with pulsing verified ring */}
+          <div className="relative h-28 w-28 sm:h-32 sm:w-32 shrink-0 overflow-hidden rounded-3xl border-2 border-violet-500/80 shadow-2xl shadow-violet-500/30">
+            <img
+              src={creator.avatarUrl || AVATAR_PLACEHOLDER}
+              alt={creator.displayName}
+              className="h-full w-full object-cover"
+            />
+            <div className="absolute bottom-1 right-1 h-3.5 w-3.5 rounded-full bg-emerald-500 ring-2 ring-zinc-950" />
           </div>
-          <div className="text-center sm:text-left">
-            <div className="flex items-center justify-center sm:justify-start gap-2">
-              <h1 className="text-2xl sm:text-3xl font-black text-white font-display">{creator.displayName}</h1>
-              <ShieldCheck className="h-5 w-5 text-violet-400" aria-label="18 U.S.C. § 2257 verified creator" />
+
+          <div className="text-center sm:text-left flex-1">
+            <div className="flex items-center justify-center sm:justify-start gap-2.5">
+              <h1 className="text-2xl sm:text-4xl font-black text-white dark:text-white light:text-slate-900 font-display">
+                {creator.displayName}
+              </h1>
+              <ShieldCheck className="h-6 w-6 text-violet-400" aria-label="18 U.S.C. § 2257 verified creator" />
             </div>
-            <p className="text-xs text-zinc-400 font-mono mt-1">@{creator.username}</p>
-            {creator.bio && <p className="mt-3 max-w-2xl text-sm text-zinc-300 leading-relaxed">{creator.bio}</p>}
-            <div className="mt-4 flex flex-wrap justify-center sm:justify-start gap-5 text-xs font-mono text-zinc-400">
+
+            <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 font-mono mt-1">
+              @{creator.username} · Sovereign Creator
+            </p>
+
+            {creator.bio && (
+              <p className="mt-3 max-w-2xl text-xs sm:text-sm text-zinc-300 dark:text-zinc-300 light:text-slate-600 leading-relaxed">
+                {creator.bio}
+              </p>
+            )}
+
+            {/* Figures ticker */}
+            <div className="mt-4 flex flex-wrap justify-center sm:justify-start gap-5 text-xs font-mono text-zinc-400 dark:text-zinc-400 light:text-slate-500">
               {stats.map(({ icon: Icon, label, value }) => (
                 <span key={label} className="inline-flex items-center gap-1.5">
                   <Icon className="h-3.5 w-3.5 text-violet-400" />
-                  <strong className="text-white">{value.toLocaleString("en-US")}</strong> {label}
+                  <strong className="text-white dark:text-white light:text-slate-900">{value.toLocaleString("en-US")}</strong> {label}
                 </span>
               ))}
             </div>
-            <div className="mt-5 flex justify-center sm:justify-start">
+
+            {/* Actions */}
+            <div className="mt-5 flex flex-wrap justify-center sm:justify-start items-center gap-3">
               <RelationshipActions username={creator.username} />
             </div>
           </div>
         </div>
       </div>
 
-      {playlists.length > 0 && (
-        <>
-          <h2 className="mt-10 mb-6 text-xl font-bold text-white">Playlists</h2>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {playlists.map((p) => (
-              <PlaylistCard key={p.id} {...p} />
-            ))}
-          </div>
-        </>
-      )}
-
-      <h2 className="mt-10 mb-6 text-xl font-bold text-white">Videos</h2>
-      {videos.length === 0 ? (
-        <div className="rounded-3xl border border-white/10 bg-zinc-900/40 p-12 text-center text-sm text-zinc-400">
-          No published videos yet.
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {videos.map((video) => (
-            <VideoCard key={video.id} {...video} />
-          ))}
-        </div>
-      )}
+      {/* Interactive Client Sections (Goal, Tiers, Categorized Media Tabs) */}
+      <CreatorProfileClient
+        creator={creator}
+        videos={videos}
+        playlists={playlists}
+      />
     </div>
   );
 }

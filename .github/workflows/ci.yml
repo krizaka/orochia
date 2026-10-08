@@ -84,6 +84,9 @@ jobs:
     env:
       DATABASE_URL: postgresql://orochia_user:orochia_secret@localhost:5432/orochia_db
       SESSION_SECRET: ci-only-session-secret-0123456789abcdef0123456789
+      # Shared by the app and the scenarios that sign Bunny webhooks (test values, not a real library).
+      BUNNY_WEBHOOK_SECRET: ci-only-bunny-read-only-key
+      BUNNY_STREAM_LIBRARY_ID: "1"
       OROCHIA_DEMO_MODE: "true"
       NEXT_PUBLIC_APP_URL: http://localhost:3000
     steps:

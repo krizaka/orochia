@@ -97,12 +97,18 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 block">
-              Password
-            </label>
+            <div className="mb-1.5 flex items-center justify-between">
+              <label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                Password
+              </label>
+              <Link href="/auth/forgot-password" className="text-xs text-violet-300 hover:underline">
+                Forgot password?
+              </Link>
+            </div>
             <div className="relative">
               <Lock className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500" />
               <input
+                id="password"
                 type="password"
                 autoComplete="current-password"
                 required

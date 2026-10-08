@@ -16,6 +16,8 @@ export interface UserProfile {
   balanceCents: number;
   unlockedVideosCount: number;
   isAgeVerified: boolean;
+  /** False until the address is confirmed: the app then shows only the "verify your e-mail" page. */
+  emailVerified: boolean;
 }
 
 export interface RegisterInput {
