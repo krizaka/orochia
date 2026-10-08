@@ -2,16 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
-import {
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  Maximize,
-  Lock,
-  Users,
-  Sparkles,
-} from "lucide-react";
+import { Gavel, Lock, Maximize, Pause, Play, Sparkles, Users, Volume2, VolumeX } from "lucide-react";
 import { t } from "@/lib/i18n";
 
 interface VideoPlayerProps {
@@ -24,7 +15,9 @@ interface VideoPlayerProps {
   isContactsOnly?: boolean;
   isFollowersOnly?: boolean;
   isInvitedOnly?: boolean;
-  /** Rendered in the contacts / followers gate: the action that opens the video (follow, contact). */
+  /** Up for auction (or sold at one): only the winning bidder plays it. */
+  isAuction?: boolean;
+  /** Rendered in the contacts / followers / auction gate: the action that opens the video (follow, contact). */
   gateAction?: React.ReactNode;
   onUnlockRequested?: () => void;
   contentRatingId?: string | null;
@@ -42,13 +35,14 @@ export function VideoPlayer({
   isContactsOnly = false,
   isFollowersOnly = false,
   isInvitedOnly = false,
+  isAuction = false,
   gateAction,
   onUnlockRequested,
   contentRatingId,
   isBlurred = false,
   isAdult = false,
 }: VideoPlayerProps) {
-  const isGated = isContactsOnly || isFollowersOnly || isInvitedOnly;
+  const isGated = isContactsOnly || isFollowersOnly || isInvitedOnly || isAuction;
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -248,14 +242,14 @@ export function VideoPlayer({
       {/* Contacts-only / followers-only gate */}
       {!isPaywalled && isGated && (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md p-6 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-800/80 border border-zinc-700/50 mb-4">
-            <Users className="h-8 w-8 text-zinc-300" />
+          <div className="flex h-11 w-11 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-zinc-800/80 border border-zinc-700/50 mb-2 sm:mb-4">
+            {isAuction ? <Gavel className="h-5 w-5 sm:h-8 sm:w-8 text-fuchsia-300" /> : <Users className="h-5 w-5 sm:h-8 sm:w-8 text-zinc-300" />}
           </div>
-          <h3 className="text-xl font-bold text-white mb-1">
-            {t(isInvitedOnly ? "player.invitedTitle" : isFollowersOnly ? "player.followersTitle" : "player.contactsTitle")}
+          <h3 className="text-base sm:text-xl font-bold text-white mb-1">
+            {t(isAuction ? "player.auctionTitle" : isInvitedOnly ? "player.invitedTitle" : isFollowersOnly ? "player.followersTitle" : "player.contactsTitle")}
           </h3>
-          <p className="text-sm text-zinc-400 max-w-md mb-6">
-            {t(isInvitedOnly ? "player.invitedBody" : isFollowersOnly ? "player.followersBody" : "player.contactsBody")}
+          <p className="hidden sm:block text-sm text-zinc-400 max-w-md mb-6">
+            {t(isAuction ? "player.auctionBody" : isInvitedOnly ? "player.invitedBody" : isFollowersOnly ? "player.followersBody" : "player.contactsBody")}
           </p>
           {!isInvitedOnly && gateAction}
         </div>

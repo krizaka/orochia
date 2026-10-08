@@ -43,7 +43,7 @@ apps/web/.private-uploads/
 packages/db/dist/
 
 # Local database dumps (npm run db:dump)
-backups/
+/backups/
 
 # ffmpeg.wasm browser files, copied from node_modules before dev/build
 apps/web/public/ffmpeg/

@@ -147,6 +147,25 @@ The sending domain `mg.orochia.com` is declared in Resend; its records live at P
 verified, set `RESEND_API_KEY` (SECRET) and `COMPLIANCE_ALERT_EMAIL` in the app. Mailgun (`MAILGUN_API_KEY` +
 `MAILGUN_DOMAIN`) remains supported when no Resend key is set.
 
+## Backups and factory reset
+
+The admin console (**Platform & Database**) shows the deployment, the database (size, rows per table) and where its
+migration history stands against the release.
+
+- **Backups** — *Back up now* writes every table as gzipped JSON to private storage (`private/backups/` on Bunny Edge
+  Storage; `.private-uploads/backups/` locally), never publicly served, downloadable by administrators only. They hold
+  personal data: keep downloaded copies as carefully as the database. Available on every deployment.
+- **Factory reset** — wipes every table and rebuilds the schema from the release's migrations; the operator who asked
+  keeps their account (same id, so their session goes on) and the owner (`OROCHIA_OWNER_*`) is restored. A backup is
+  taken first unless unticked — a failed backup stops the reset. The operator types `reset <database>` to arm it.
+  Media at Bunny is not deleted.
+- Both the reset and the release job's rebuild need **`OROCHIA_ALLOW_DATABASE_RESET=true`**, and are refused on the
+  indexed production (`NODE_ENV=production` without `SEARCH_INDEXING=off`) whatever the flag says. Set it on the
+  development app only (web service and migrate job).
+- **Squashed migration history.** When a release ships a new baseline, a database that applied the old history cannot
+  migrate forward. The release job detects it: with the flag it rebuilds the development database (empty, owner
+  restored); without it the release fails with an explicit message and no data is touched.
+
 ## Self-hosted (Docker Compose + Caddy)
 
 ```bash

@@ -130,6 +130,14 @@ export const NOTIFICATION_EVENTS = [
   "videoUnlocked",
   "videoReady",
   "creatorPublished",
+  "auctionAnnounced",
+  "auctionNewBid",
+  "auctionOutbid",
+  "auctionWon",
+  "auctionDecision",
+  "auctionSold",
+  "auctionUnsold",
+  "auctionDeclined",
 ] as const;
 export type NotificationEvent = (typeof NOTIFICATION_EVENTS)[number];
 

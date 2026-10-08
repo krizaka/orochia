@@ -138,7 +138,25 @@ The tips engine operates on double-entry principles:
 
 ---
 
-## 6. Compliance
+## 6. Auctions and realtime
+
+Creators can put a video up for auction; bids are **escrowed Orochia credits** (held while they lead, released when
+outbid, spent when won), so a won auction is always paid. Every transition — bid, close, decision, cancellation — runs in
+one PostgreSQL transaction under the auction's row lock. Realtime needs no broker: PostgreSQL `NOTIFY` fans events out
+to every app instance, which streams them to browsers as Server-Sent Events; a per-instance loop closes due auctions
+with `FOR UPDATE SKIP LOCKED`. Details, trade-offs and the point at which a broker would pay off:
+[AUCTIONS.md](AUCTIONS.md).
+
+```mermaid
+graph LR
+    Bidder[Bidder] -->|POST bid| Web[apps/web]
+    Web -->|"tx: lock auction, HOLD credits, release previous"| PG[(PostgreSQL)]
+    PG -->|NOTIFY orochia_events| Web2[every app instance]
+    Web2 -->|SSE auction:id| Viewers[Everyone watching]
+    Closer[closer loop · SKIP LOCKED] --> PG
+```
+
+## 7. Compliance
 
 - Registration requires an explicit 18+ certification and acceptance of the terms.
 - A creator can open an upload session only once their 18 U.S.C. § 2257 records are verified (`users.is_verified`).

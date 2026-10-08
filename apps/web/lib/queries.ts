@@ -4,6 +4,7 @@ import { getCreatorAvailableBalanceCents } from "@orochia/payments";
 import type { SessionUser } from "./auth";
 import { withSignedMedia } from "./media-urls";
 import { socialLinksView } from "./profile";
+import type { VideoVisibility } from "./visibility";
 
 /**
  * Read models of the web app. Every screen reads the database through these functions — there is
@@ -19,7 +20,7 @@ export interface VideoSummary {
   thumbnailUrl: string | null;
   previewAnimationUrl: string | null;
   durationSeconds: number;
-  visibility: "PUBLIC" | "CONTACTS_ONLY" | "APPROVED_FOLLOWERS_ONLY" | "TIPPED_UNLOCKED" | "INVITED_ONLY";
+  visibility: VideoVisibility;
   minTipAmountCents: number;
   viewsCount: number;
   tipsCount: number;

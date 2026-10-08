@@ -193,7 +193,8 @@
     "saved": "Saved",
     "viewProfile": "View profile",
     "wallet": "Wallet",
-    "uploadHint": "Publish a video"
+    "uploadHint": "Publish a video",
+    "auctions": "Auctions"
   },
   "footer": {
     "tagline": "The video platform independent creators own.",
@@ -306,7 +307,9 @@
       "body": "Creators are setting up their spaces. Create your account to follow them first — or open your own.",
       "join": "Create your free account",
       "create": "Become a creator"
-    }
+    },
+    "auctions": "Live auctions",
+    "auctionsAll": "All auctions"
   },
   "payments": {
     "method": "Pay with",
@@ -566,7 +569,15 @@
         "tipReceived": "You receive a tip",
         "videoUnlocked": "Someone unlocks one of your videos",
         "videoReady": "Your upload is processed and online",
-        "creatorPublished": "A creator you follow publishes a video"
+        "creatorPublished": "A creator you follow publishes a video",
+        "auctionAnnounced": "A creator you follow starts an auction",
+        "auctionOutbid": "Someone outbids you",
+        "auctionWon": "You win an auction",
+        "auctionDeclined": "A bid of yours is declined or cancelled (credits returned)",
+        "auctionNewBid": "A new bid on one of your auctions",
+        "auctionDecision": "One of your auctions ends and waits for your decision",
+        "auctionSold": "One of your auctions sells",
+        "auctionUnsold": "One of your auctions ends without bids"
       },
       "inApp": "In the app",
       "byEmail": "By e-mail",
@@ -634,6 +645,38 @@
     "creatorPublished": {
       "subject": "New from {name}: “{title}”",
       "body": "{name} just published “{title}”."
+    },
+    "auctionAnnounced": {
+      "subject": "{name} put “{title}” up for auction",
+      "body": "{name} put “{title}” up for auction. The highest bid wins it."
+    },
+    "auctionNewBid": {
+      "subject": "New bid: {amount} on “{title}”",
+      "body": "Someone bid {amount} on “{title}”."
+    },
+    "auctionOutbid": {
+      "subject": "You were outbid on “{title}”",
+      "body": "Someone bid {amount} on “{title}”. Your credits are back in your wallet — bid again to take the lead."
+    },
+    "auctionWon": {
+      "subject": "You won “{title}”",
+      "body": "You won “{title}” for {amount}. It is yours to watch now."
+    },
+    "auctionDecision": {
+      "subject": "“{title}”: accept or decline {amount}",
+      "body": "Your auction of “{title}” ended at {amount}. Accept or decline the best bid within 48 hours."
+    },
+    "auctionSold": {
+      "subject": "“{title}” sold for {amount}",
+      "body": "Your auction of “{title}” sold for {amount}. It is in your balance."
+    },
+    "auctionUnsold": {
+      "subject": "“{title}”: the auction ended without bids",
+      "body": "Your auction of “{title}” ended without bids. The video is back to its previous audience."
+    },
+    "auctionDeclined": {
+      "subject": "Your bid on “{title}” was not kept",
+      "body": "Your bid of {amount} on “{title}” was not kept. Your credits are back in your wallet."
     }
   },
   "notifications": {
@@ -647,7 +690,7 @@
   },
   "wallet": {
     "title": "Wallet",
-    "subtitle": "Orochia credits pay for tips and unlocks in one tap. 1 credit = $0.01.",
+    "subtitle": "Orochia credits pay for tips, unlocks and auction bids in one tap. 1 credit = $0.01.",
     "balance": "Your credits",
     "balanceValue": "{amount} in credits",
     "add": "Add credits",
@@ -675,10 +718,13 @@
       "TOPUP": "Credits added",
       "SPEND": "Payment",
       "REFUND": "Refund",
-      "ADJUSTMENT": "Adjustment"
+      "ADJUSTMENT": "Adjustment",
+      "HOLD": "Held for a bid",
+      "RELEASE": "Bid released"
     },
     "failed": "The payment could not start. Try again or choose another method.",
-    "short": "Not enough credits (you have {balance})."
+    "short": "Not enough credits (you have {balance}).",
+    "held": "{amount} held in your leading bids"
   },
   "earnings": {
     "title": "Earnings",
@@ -848,6 +894,10 @@
       "INVITED_ONLY": {
         "title": "Invited",
         "hint": "People and lists you choose, after publishing."
+      },
+      "AUCTION": {
+        "title": "Auction",
+        "hint": "Only the winning bidder watches it."
       }
     },
     "split": {
@@ -895,7 +945,8 @@
     "noMatchHint": "Try another word or tag — new videos arrive every day.",
     "previous": "Previous",
     "next": "Next",
-    "results": "Results"
+    "results": "Results",
+    "auctions": "Live auctions"
   },
   "watch": {
     "metaTitle": "Video",
@@ -947,7 +998,10 @@
     "unmute": "Unmute",
     "volume": "Volume",
     "seek": "Seek",
-    "fullscreen": "Full screen"
+    "fullscreen": "Full screen",
+    "auctionTitle": "Up for auction",
+    "auctionBody": "The highest bid wins this video. Bid in credits — if someone outbids you, your credits come straight back.",
+    "auctionCta": "See the auction"
   },
   "comments": {
     "title": "Comments",
@@ -995,7 +1049,8 @@
     "saved": "Saved",
     "tip": "Tip",
     "sensitive": "Sensitive content",
-    "reveal": "Tap to reveal"
+    "reveal": "Tap to reveal",
+    "auction": "Auction"
   },
   "collections": {
     "save": "Save",
@@ -1333,7 +1388,9 @@
     "price": "Unlock price (USD)",
     "audience": "Invited people and lists",
     "tags": "Tags (comma-separated)",
-    "uploadFirst": "Upload your first one"
+    "uploadFirst": "Upload your first one",
+    "auctionNamed": "Put “{title}” up for auction",
+    "auctionLocked": "Auction — the winner watches it"
   },
   "inbox": {
     "title": "Messages",
@@ -1507,6 +1564,184 @@
             }
           }
         }
+      }
+    }
+  },
+  "auction": {
+    "title": "Auction",
+    "phase": {
+      "UPCOMING": "Starts soon",
+      "LIVE": "Live",
+      "ENDING": "Closing",
+      "AWAITING_DECISION": "In review",
+      "SOLD": "Sold",
+      "DECLINED": "Not sold",
+      "UNSOLD": "No bids",
+      "CANCELLED": "Cancelled"
+    },
+    "rights": {
+      "WATCH": "Watch",
+      "DOWNLOAD": "Watch & download"
+    },
+    "units": {
+      "d": "d",
+      "h": "h",
+      "m": "m",
+      "s": "s"
+    },
+    "extended": "Extended",
+    "currentBid": "Current bid",
+    "startingPrice": "Starting price",
+    "soldFor": "Sold for",
+    "counts": "{bids} bids · {bidders} bidders",
+    "bids": "{count} bids",
+    "startsIn": "Starts in",
+    "endsIn": "Ends in",
+    "decisionIn": "Decision within",
+    "closing": "Closing…",
+    "placeBid": "Place bid",
+    "quickBids": "Quick bids",
+    "yourBid": "Your bid in dollars",
+    "minimum": "Minimum {amount}",
+    "balance": "{amount} in credits",
+    "signInToBid": "Sign in to bid",
+    "accept": "Accept {amount}",
+    "decline": "Decline the best bid",
+    "declineConfirm": "Tap again to decline",
+    "cancel": "Cancel the auction",
+    "cancelConfirm": "Tap again to cancel",
+    "cancelHint": "No bids yet — you can still cancel.",
+    "download": "Download the video",
+    "placed": "Bid placed — you are in the lead.",
+    "topUp": "Add credits",
+    "history": "Bids",
+    "noBidsYet": "No bids yet. Be the first.",
+    "noBidsYetUpcoming": "Bidding opens when the countdown ends.",
+    "you": "You",
+    "youShort": "You",
+    "bidder": "Bidder {n}",
+    "leading": "Leading",
+    "howTitle": "How it works",
+    "how": {
+      "held": "Your bid is paid in credits and held while you lead. Outbid? The credits come straight back to your wallet.",
+      "softClose": "A bid in the last 2 minutes adds 2 minutes, so everyone gets a fair last word.",
+      "CREATOR_DECIDES": "When it ends, the creator has 48 hours to accept or decline the best bid. Declined, your credits come back.",
+      "HIGHEST_BID": "It sells to the highest bid when it ends — no review.",
+      "rights": {
+        "WATCH": "The winner — and only the winner — can watch it.",
+        "DOWNLOAD": "The winner — and only the winner — can watch and download it."
+      }
+    },
+    "standing": {
+      "leading": "You are the highest bidder.",
+      "outbid": "You have been outbid. Your credits are back — bid again to take the lead.",
+      "won": "You won this auction. The video is yours to watch.",
+      "wonDownload": "You won this auction. Watch it here or download it.",
+      "underReview": "Your bid of {amount} is the best. The creator is reviewing it — your credits stay held until they decide.",
+      "soldOther": "This video was sold at auction.",
+      "creatorSold": "Sold for {amount} to @{username}.",
+      "creatorDecide": "Best bid: {amount} by {username}. Accept it to sell, or decline and the credits go back.",
+      "creatorLeader": "Leading: {username}.",
+      "creatorAutomatic": "This auction sells to the highest bid when it ends.",
+      "DECLINED": "The auction ended without a sale.",
+      "UNSOLD": "The auction ended without bids.",
+      "CANCELLED": "The auction was cancelled."
+    },
+    "errors": {
+      "generic": "Something went wrong. Try again.",
+      "download": "The download could not start. Try again.",
+      "NOT_FOUND": "This auction is no longer available.",
+      "VIDEO_NOT_READY": "The video is still processing. Try again once it is online.",
+      "ALREADY_AUCTIONED": "This video is already in an auction.",
+      "BAD_SCHEDULE": "Check the start and the end of the auction.",
+      "BAD_PRICE": "The starting price is at least $1.00.",
+      "NOT_STARTED": "Bidding has not opened yet.",
+      "NOT_OPEN": "The auction has closed.",
+      "OWN_AUCTION": "You cannot bid on your own auction.",
+      "BID_TOO_LOW": "Bid at least {minimum}.",
+      "BID_TOO_HIGH": "That bid is above the maximum.",
+      "INSUFFICIENT_CREDITS": "Not enough credits (you have {balance}).",
+      "HAS_BIDS": "An auction with bids cannot be cancelled.",
+      "NOT_AWAITING_DECISION": "This auction is not waiting for a decision."
+    },
+    "start": {
+      "title": "Put up for auction",
+      "intro": "“{title}” goes to the highest bidder. While the auction runs, only you can watch it.",
+      "price": "Starting price",
+      "priceHint": "The first bid starts here. Bids are paid in Orochia credits (1 credit = $0.01).",
+      "when": "Start",
+      "now": "Now",
+      "later": "Later",
+      "nowLower": "now",
+      "startAt": "Start date and time",
+      "duration": "Duration",
+      "durations": {
+        "1h": "1 hour",
+        "24h": "1 day",
+        "3d": "3 days",
+        "7d": "7 days",
+        "custom": "Custom"
+      },
+      "endAt": "End date and time",
+      "durationHint": "From 1 hour to 14 days. A bid in the last 2 minutes adds 2 minutes.",
+      "rights": "The winner gets",
+      "exclusive": "Exclusive: once sold, only the winner and you can watch it.",
+      "automatic": "Sell to the highest bid automatically",
+      "summary": "Starts {when} at {price}, runs {duration}. The winner gets: {rights}.",
+      "submit": "Start the auction",
+      "problems": {
+        "START_IN_PAST": "The start is in the past.",
+        "START_TOO_FAR": "Start within the next 30 days.",
+        "TOO_SHORT": "An auction runs at least 1 hour.",
+        "TOO_LONG": "An auction runs at most 14 days."
+      },
+      "automaticHint": {
+        "on": "It sells to the highest bid when it ends, whatever the amount.",
+        "off": "When it ends, you have 48 hours to accept or decline the best bid. Declined, the bidder gets their credits back."
+      }
+    }
+  },
+  "auctions": {
+    "metaTitle": "Auctions — Orochia",
+    "metaDescription": "Bid on exclusive videos from Orochia creators. The highest bid wins — and only the winner watches.",
+    "eyebrow": "Auctions",
+    "title": "Exclusive videos, to the highest bid",
+    "subtitle": "Creators put videos up for auction. Bid in credits, follow the price live, and the winner — only the winner — watches it.",
+    "steps": {
+      "held": "Your credits are held while you lead, returned the moment you are outbid.",
+      "softClose": "A last-minute bid adds 2 minutes: no sniping.",
+      "win": "Win and it is yours: watch it, or download it when the creator allows."
+    },
+    "tabsLabel": "Auction lists",
+    "tabs": {
+      "live": "Live",
+      "upcoming": "Upcoming",
+      "ended": "Sold",
+      "bidding": "My bids",
+      "selling": "My auctions"
+    },
+    "seeLive": "See live auctions",
+    "empty": {
+      "live": {
+        "title": "No live auctions right now",
+        "body": "Creators put exclusive videos up for auction. Follow them to hear when the next one starts."
+      },
+      "upcoming": {
+        "title": "Nothing scheduled yet",
+        "body": "Scheduled auctions appear here with their countdown."
+      },
+      "ended": {
+        "title": "Nothing sold yet",
+        "body": "Videos sold at auction appear here."
+      },
+      "bidding": {
+        "title": "You have not bid yet",
+        "body": "Your auctions appear here: where you lead, where you were outbid, what you won."
+      },
+      "selling": {
+        "title": "No auctions yet",
+        "body": "Put one of your videos up for auction from your library — the gavel next to it.",
+        "cta": "Open my library"
       }
     }
   }

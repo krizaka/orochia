@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { z } from "zod";
 import { db, videos } from "@orochia/db";
 import { eq } from "drizzle-orm";
 import { requireUserWithRole } from "@/lib/auth";
 import { errorResponse, jsonError } from "@/lib/http";
+import { cancelAuctionsByOperator } from "@/lib/auctions";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +13,7 @@ const Action = z.discriminatedUnion("action", [
   z.object({ action: z.literal("restore") }),
 ]);
 
-/** Takes a video down (DMCA, terms, a confirmed report) with a recorded reason, or restores it. */
+/** Takes a video down (DMCA, terms, a confirmed report) with a recorded reason — cancelling its auction — or restores it. */
 export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   try {
@@ -30,6 +31,7 @@ export async function PATCH(req: NextRequest, props: { params: Promise<{ id: str
       .where(eq(videos.id, id.data))
       .returning({ id: videos.id });
     if (!row) return jsonError(404, "Video not found");
+    if (input.action === "remove") after(() => cancelAuctionsByOperator({ videoId: id.data }, `Video taken down: ${input.reason}`));
     return NextResponse.json({ success: true });
   } catch (error) {
     return errorResponse(error, "admin/videos/patch");

@@ -1,1 +1,0 @@
-ALTER TYPE "public"."payment_gateway" ADD VALUE IF NOT EXISTS 'CREDITS';

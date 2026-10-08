@@ -65,7 +65,10 @@ export const videoAccessGrants = pgTable(
     userId: uuid("user_id")
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
+    /** TIP_PAYMENT (an unlock) or AUCTION (the winning bid). */
     grantedVia: varchar("granted_via", { length: 50 }).default("TIP_PAYMENT").notNull(),
+    /** The holder may also download the file (an auction sold with download rights). */
+    canDownload: boolean("can_download").default(false).notNull(),
     amountPaidCents: integer("amount_paid_cents").notNull(),
     transactionRef: text("transaction_ref").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),

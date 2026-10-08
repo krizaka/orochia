@@ -2,9 +2,10 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Lock, Users, Sparkles, Eye, Play, Heart, Bookmark, CheckCircle2 } from "lucide-react";
+import { Bookmark, CheckCircle2, Eye, Gavel, Heart, Lock, Play, Sparkles, Users } from "lucide-react";
 import { t } from "@/lib/i18n";
 import { TipModal } from "@/components/TipModal";
+import type { VideoVisibility } from "@/lib/visibility";
 
 export interface VideoCardProps {
   id: string;
@@ -15,7 +16,7 @@ export interface VideoCardProps {
   thumbnailUrl?: string | null;
   previewAnimationUrl?: string | null;
   durationSeconds: number;
-  visibility: "PUBLIC" | "CONTACTS_ONLY" | "APPROVED_FOLLOWERS_ONLY" | "TIPPED_UNLOCKED" | "INVITED_ONLY";
+  visibility: VideoVisibility;
   minTipAmountCents: number;
   viewsCount: number;
   tipsCount: number;
@@ -66,6 +67,7 @@ export function VideoCard({
 
   const isPaywalled = visibility === "TIPPED_UNLOCKED";
   const isContacts = visibility === "CONTACTS_ONLY";
+  const isAuction = visibility === "AUCTION";
 
   const handleLike = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -170,7 +172,14 @@ export function VideoCard({
               </div>
             )}
 
-            {!isPaywalled && !isContacts && (
+            {isAuction && (
+              <div className="flex items-center gap-1.5 rounded-full bg-linear-to-r from-fuchsia-600 to-pink-600 px-3 py-1 text-[11px] font-bold text-white shadow-lg backdrop-blur-md">
+                <Gavel className="h-3 w-3" />
+                <span>{t("card.auction")}</span>
+              </div>
+            )}
+
+            {!isPaywalled && !isContacts && !isAuction && (
               <div className="flex items-center gap-1 rounded-full bg-emerald-950/80 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-300 backdrop-blur-md">
                 <span>{t("card.free")}</span>
               </div>

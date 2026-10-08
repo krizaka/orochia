@@ -3,7 +3,7 @@
 import React, { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Coins, Loader2, Lock, RotateCcw, Sparkles, XCircle } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Coins, Gavel, Loader2, Lock, RotateCcw, Sparkles, Undo2, XCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { Button, cx } from "@/components/ui";
 import { usd } from "@/components/money/format";
@@ -16,14 +16,15 @@ interface Pack {
 }
 interface Wallet {
   balanceCents: number;
+  heldCents: number;
   packs: Pack[];
   gateways: string[];
   testTopups: boolean;
-  history: { id: string; type: "TOPUP" | "SPEND" | "REFUND" | "ADJUSTMENT"; amountCents: number; createdAt: string }[];
+  history: { id: string; type: "TOPUP" | "SPEND" | "REFUND" | "ADJUSTMENT" | "HOLD" | "RELEASE"; amountCents: number; createdAt: string }[];
 }
 
 const POPULAR = "plus";
-const TYPE_ICON = { TOPUP: ArrowDownLeft, REFUND: RotateCcw, SPEND: ArrowUpRight, ADJUSTMENT: Coins };
+const TYPE_ICON = { TOPUP: ArrowDownLeft, REFUND: RotateCcw, SPEND: ArrowUpRight, ADJUSTMENT: Coins, HOLD: Gavel, RELEASE: Undo2 };
 
 /** The wallet: credits balance, buying credits through a hosted checkout, and every movement. */
 function WalletPage() {
@@ -109,6 +110,11 @@ function WalletPage() {
           <div className="relative overflow-hidden bg-[radial-gradient(120%_140%_at_0%_0%,rgba(139,92,246,0.45),transparent_60%),radial-gradient(100%_120%_at_100%_100%,rgba(236,72,153,0.35),transparent_60%)] px-6 py-7 light:bg-[radial-gradient(120%_140%_at_0%_0%,rgba(139,92,246,0.18),transparent_60%),radial-gradient(100%_120%_at_100%_100%,rgba(236,72,153,0.14),transparent_60%)]">
             <p className="text-xs font-semibold uppercase tracking-wider text-violet-200 light:text-violet-700">{t("wallet.balance")}</p>
             <p className="mt-1 font-display text-5xl font-black tabular-nums tracking-tight text-white light:text-slate-900">{wallet ? usd(wallet.balanceCents) : "—"}</p>
+            {wallet && wallet.heldCents > 0 && (
+              <Link href="/auctions?tab=bidding" className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/20 px-3 py-1 text-[11px] font-semibold text-violet-100 transition-colors hover:border-white/30 hover:text-white light:border-violet-900/10 light:bg-white/60 light:text-violet-800 hover:light:border-violet-900/25">
+                <Gavel className="h-3 w-3" aria-hidden /> {t("wallet.held", { amount: usd(wallet.heldCents) })}
+              </Link>
+            )}
           </div>
 
           <div className="p-6">
