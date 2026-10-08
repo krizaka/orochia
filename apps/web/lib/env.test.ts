@@ -42,3 +42,14 @@ describe("runtime configuration", () => {
     expect(sessionSecret().length).toBeGreaterThanOrEqual(32);
   });
 });
+
+describe("requireBunnyStream", () => {
+  it("names what to configure when a developer has no Bunny library", async () => {
+    const { requireBunnyStream } = await import("./env");
+    vi.stubEnv("NODE_ENV", "development");
+    vi.stubEnv("BUNNY_STREAM_API_KEY", "");
+    expect(() => requireBunnyStream()).toThrow(/BUNNY_STREAM_API_KEY is not set: .*Video features locally/);
+    vi.stubEnv("BUNNY_STREAM_API_KEY", "a-key");
+    expect(requireBunnyStream().apiKey).toBe("a-key");
+  });
+});

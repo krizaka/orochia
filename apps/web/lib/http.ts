@@ -27,7 +27,8 @@ export function errorResponse(error: unknown, context: string) {
   if (error instanceof SyntaxError) return jsonError(400, "Malformed JSON body");
   if (error instanceof ConfigurationError) {
     console.error(`[${context}] configuration error: ${error.message}`);
-    return jsonError(503, "Service temporarily unavailable");
+    // Developers see what to configure; production never tells visitors about its configuration.
+    return jsonError(503, process.env.NODE_ENV === "production" ? "Service temporarily unavailable" : error.message);
   }
   console.error(`[${context}]`, error);
   return jsonError(500, "Internal server error");

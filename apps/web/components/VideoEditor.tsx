@@ -281,7 +281,7 @@ export function VideoEditor({
       onClose(id);
     } catch (error) {
       console.error("video editor: draft not saved", error);
-      setNotice(t("editor.draftFailed"));
+      setNotice(error instanceof Error && error.message ? `${t("editor.draftFailed")} ${error.message}` : t("editor.draftFailed"));
       setState("idle");
       setLeaving(false);
     }

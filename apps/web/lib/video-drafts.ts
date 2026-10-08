@@ -1,7 +1,7 @@
 import { BunnyStreamClient, UPLOAD_LIMITS, DRAFT_MUSIC_MAX_BYTES, signBunnyFileUrl } from "@orochia/media";
 import { db, users, videoDrafts } from "@orochia/db";
 import { and, count, desc, eq, lte, ne } from "drizzle-orm";
-import { bunnyStreamConfig, draftsConfig } from "./env";
+import { bunnyStreamConfig, draftsConfig, requireBunnyStream } from "./env";
 import { HttpError } from "./http";
 import { deletePrivateFile, uploadMediaFile } from "./storage";
 import { parseStoredEdit, type StoredEdit } from "./video-edit-settings";
@@ -116,7 +116,7 @@ export async function createDraft(ownerId: string, input: NewDraft) {
   const [{ n }] = await db.select({ n: count() }).from(videoDrafts).where(eq(videoDrafts.ownerId, ownerId));
   if (n >= draftsConfig().maxPerUser) throw new HttpError(409, "You have too many drafts. Publish or delete one first.");
 
-  const config = bunnyStreamConfig();
+  const config = requireBunnyStream();
   const client = new BunnyStreamClient(config);
   const session = await client.createTusUploadSession(`draft · @${account.username}`, 7200, config.draftsCollectionId ?? config.collectionId);
   try {

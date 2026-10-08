@@ -95,6 +95,20 @@ export function draftsConfig() {
   return { retentionDays: setting("DRAFT_RETENTION_DAYS", 30, 1, 365), maxPerUser: setting("DRAFTS_MAX_PER_USER", 20, 1, 200) };
 }
 
+/**
+ * Before anything that sends video to Bunny (uploads, video stories, drafts): outside production, a library that is not
+ * configured is said plainly — what to set and where it is explained — instead of failing at Bunny with placeholders.
+ */
+export function requireBunnyStream(): BunnyStreamConfig {
+  if (!isProduction() && !process.env.BUNNY_STREAM_API_KEY?.trim()) {
+    throw new ConfigurationError(
+      "BUNNY_STREAM_API_KEY",
+      "is not set: uploads, video stories and drafts need a Bunny Stream library (docs/DEVELOPMENT.md, “Video features locally”)",
+    );
+  }
+  return bunnyStreamConfig();
+}
+
 /** The Stream library's Read-Only API key: Bunny signs every webhook with it (signature v1). */
 export function bunnyWebhookSecret(): string {
   return read("BUNNY_WEBHOOK_SECRET", "");

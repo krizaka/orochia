@@ -2,7 +2,7 @@ import { db, stories, storyViews, storyLikes, users, profiles, audienceLists, au
 import { and, asc, desc, eq, gt, inArray, isNull, sql } from "drizzle-orm";
 import { BunnyStreamClient, generateBunnyStreamToken, signBunnyFileUrl } from "@orochia/media";
 import { areContacts, isApprovedFollower } from "./access";
-import { bunnyStreamConfig } from "./env";
+import { bunnyStreamConfig, requireBunnyStream } from "./env";
 import { viewerKey } from "./engagement";
 import { HttpError } from "./http";
 import { signMediaUrl } from "./media-urls";
@@ -206,7 +206,7 @@ export async function createImageStory(creatorId: string, input: NewStory & { im
 export async function openVideoStoryUpload(creatorId: string, input: NewStory) {
   const account = await requireVerifiedCreator(creatorId);
   const listId = await checkAudience(creatorId, input.audience, input.audienceListId);
-  const config = bunnyStreamConfig();
+  const config = requireBunnyStream();
   const [row] = await db
     .insert(stories)
     .values({

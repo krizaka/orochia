@@ -4,7 +4,7 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { BunnyStreamClient, CreateUploadSessionSchema } from "@orochia/media";
 import { db, videos, users } from "@orochia/db";
 import { eq } from "drizzle-orm";
-import { bunnyStreamConfig } from "@/lib/env";
+import { requireBunnyStream } from "@/lib/env";
 import { errorResponse } from "@/lib/http";
 
 export const dynamic = "force-dynamic";
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     const input = parseResult.data;
 
     // 4. Bunny Stream client (credentials are mandatory in production)
-    const bunnyClient = new BunnyStreamClient(bunnyStreamConfig());
+    const bunnyClient = new BunnyStreamClient(requireBunnyStream());
 
     // 5. Generate Bunny Tus upload credentials
     const session = await bunnyClient.createTusUploadSession(input.title, 7200);
