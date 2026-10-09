@@ -75,6 +75,7 @@ orochia/                           npm workspaces
 │   └── components/                UI (player, modals, dashboard panels, relationship actions…)
 ├── packages/db/                   Drizzle schema (source of truth), migrations, migrator, seed
 ├── packages/media/                Bunny Stream client, Tus signing, signed playback tokens, webhook verifier
+├── packages/push/                 the mobile push client (Expo Push Service → FCM / APNs), pure and tested
 ├── packages/payments/             gateway adapters, payment intents, settlement, double-entry ledger, payouts,
 │                                  credits, auctions and challenges (rules + state machine)
 ├── deploy/                        Dockerfile (bundled migrator), compose (dev/prod), Caddy, DigitalOcean spec
@@ -212,8 +213,9 @@ orochia/                           npm workspaces
   the server (`profileImageUrl`); links are stored as handles of known networks and turned into URLs by the server
   (`socialLinksView`), the website must be http(s). Every active account has a public page; e-mail and date of birth
   are never on it.
-- **Notifications** (`lib/notifications.ts`): each event is written to `notifications` (the bell, `/notifications`,
-  pushed live) and e-mailed; both channels are on by default and each event can be turned off on either
+- **Notifications** (`lib/notifications.ts`, `docs/NOTIFICATIONS.md`): each event is written to `notifications` (the bell,
+  `/notifications`), pushed live to open pages over SSE (a toast + the bell), pushed to the account's phones
+  (`lib/push.ts` → `packages/push`, Expo Push → FCM / APNs, only in production or with `PUSH_DELIVERY=on`) and e-mailed; both channels are on by default and each event can be turned off on either
   (`profiles.in_app_off`, `profiles.notifications_off`). E-mail pace: `profiles.email_frequency` INSTANT · HOURLY
   (one an hour at most, claimed atomically) · NONE. E-mail only to verified active addresses; sent after the action
   (`after()`), never throws; bursts capped (messages: once per conversation and hour).

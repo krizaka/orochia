@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (147)
+## Endpoints (149)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -87,6 +87,8 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/me/birth-date` | session · ADMIN / CREATOR / MEMBER | Records your date of birth (18+) when the account has none yet; once set it cannot be changed here. |
 | `GET` | `/api/me/blocks` | session · ADMIN / CREATOR / MEMBER | Lists the accounts blocked by the signed-in user. |
 | `GET` | `/api/me/dashboard` | session · ADMIN / CREATOR / MEMBER | — |
+| `DELETE` | `/api/me/devices` | session · MEMBER / CREATOR / ADMIN | Forgets one of the account's phones (sign-out, notifications turned off on the device). |
+| `POST` | `/api/me/devices` | session · MEMBER / CREATOR / ADMIN | Registers the phone the app runs on for push notifications (an Expo push token, moved if it served another account). |
 | `GET` | `/api/me/drafts` | session · CREATOR / ADMIN | Your editor drafts (newest first), with a short-lived link to each original clip; expired ones are removed. |
 | `POST` | `/api/me/drafts` | session · CREATOR / ADMIN | Keeps an edit as a draft: records its settings and returns a Tus session to send the original clip straight to Bunny. |
 | `DELETE` | `/api/me/drafts/[id]` | session · CREATOR / ADMIN | Deletes one of your drafts with its clip and music. |
@@ -159,7 +161,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/webhooks/bunny` | signed webhook | Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (BUNNY_WEBHOOK_SECRET). |
 | `POST` | `/api/webhooks/payments/[gateway]` | signed webhook | Gateway payment notifications. |
 
-## Database tables (42)
+## Database tables (43)
 
 | Table | Drizzle export | Defined in |
 | :--- | :--- | :--- |
@@ -194,6 +196,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `playlists` | `playlists` | `packages/db/src/schema/playlists.ts` |
 | `playlist_items` | `playlistItems` | `packages/db/src/schema/playlists.ts` |
 | `playlist_members` | `playlistMembers` | `packages/db/src/schema/playlists.ts` |
+| `push_devices` | `pushDevices` | `packages/db/src/schema/push.ts` |
 | `content_ratings` | `contentRatings` | `packages/db/src/schema/reference-data.ts` |
 | `stories` | `stories` | `packages/db/src/schema/stories.ts` |
 | `story_views` | `storyViews` | `packages/db/src/schema/stories.ts` |

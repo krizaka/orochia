@@ -4,15 +4,16 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Bell, CheckCheck, Settings } from "lucide-react";
 import { NotificationRow } from "./NotificationRow";
+import { NotificationToasts } from "./NotificationToasts";
 import { useNotifications } from "./useNotifications";
 import { t } from "@/lib/i18n";
 
 /**
- * The bell in the top bar: unread count, live. On a computer it opens the latest notifications; on a phone it is a
+ * The bell in the top bar: unread count, live, and a toast for each notification that arrives while the page is open. On a computer it opens the latest notifications; on a phone it is a
  * link to /notifications (a page, so its address can be shared and reloaded).
  */
 export function NotificationBell() {
-  const { items, unread, loaded, markRead } = useNotifications(true);
+  const { items, unread, loaded, markRead, fresh, dismiss } = useNotifications(true);
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
 
@@ -88,6 +89,14 @@ export function NotificationBell() {
           </Link>
         </div>
       )}
+      <NotificationToasts
+        items={fresh}
+        onDismiss={dismiss}
+        onOpen={(n) => {
+          dismiss(n.id);
+          void markRead([n.id]);
+        }}
+      />
     </div>
   );
 }
