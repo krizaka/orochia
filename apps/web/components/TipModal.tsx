@@ -145,7 +145,7 @@ export function TipModal({
       <div className="mb-5">
         <div className="mb-2 flex items-baseline justify-between">
           <span className="text-xs font-semibold text-fg-secondary">{t("payments.amount")}</span>
-          {minTipAmountCents > 100 && <span className="text-[11px] text-zinc-500">{t("payments.minimum", { amount: usdOf(minTipAmountCents) })}</span>}
+          {minTipAmountCents > 100 && <span className="text-[11px] text-fg-muted">{t("payments.minimum", { amount: usdOf(minTipAmountCents) })}</span>}
         </div>
         <div className="grid grid-cols-4 gap-2" role="radiogroup" aria-label={t("payments.amount")}>
           {presets.map((p) => {

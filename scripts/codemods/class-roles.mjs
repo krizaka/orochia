@@ -4,7 +4,8 @@
 // Rules, per class string:
 // - a neutral colour (white, black, zinc, slate…) becomes a role ONLY when the string also carries its `light:`
 //   counterpart (same property, same other variants): that pair proves the colour follows the theme. The `light:`
-//   token and a redundant `dark:` twin are dropped. A neutral colour alone (white text on a video) is left as it is.
+//   token and a redundant `dark:` twin are dropped. A neutral colour alone (white text on a video) is left as it is,
+//   except a mid-grey text (400…600), which reads on both themes: text-fg-secondary (400) or text-fg-muted.
 // - an accent colour (violet, purple, fuchsia, pink → accent; in a gradient, fuchsia, pink and rose → accent-2) and a
 //   status colour (emerald, green → success; rose, red → danger; amber, yellow → warning) read on both themes: it
 //   always becomes its role, and its `light:` / `dark:` counterparts are dropped. Opacity (`/20`) and `!` are kept.
@@ -164,7 +165,14 @@ export function rewriteClasses(input) {
     }
     if (NEUTRAL.has(t.color.family)) {
       const light = counterpart(i, t);
-      if (light < 0) return;
+      if (light < 0) {
+        // A mid grey (400…600) reads on both themes: it is the secondary or muted text role, pair or not.
+        const { property, family, shade } = t.color;
+        if (property === "text" && family !== "white" && family !== "black" && shade !== null && shade >= 400 && shade <= 600) {
+          out[i] = render(t, { role: shade === 400 ? "fg-secondary" : "fg-muted", opacity: null });
+        }
+        return;
+      }
       const role = neutralRole(t.color);
       if (!role) return;
       out[i] = render(t, role);

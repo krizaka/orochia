@@ -115,7 +115,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                 >
                   <img src={user.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-8 w-8 rounded-full object-cover" />
                   <span className="max-w-36 truncate text-xs font-bold text-fg">{user.displayName}</span>
-                  <ChevronDown className="h-3.5 w-3.5 text-zinc-400" />
+                  <ChevronDown className="h-3.5 w-3.5 text-fg-secondary" />
                 </button>
                 {menuOpen && (
                   <div role="menu" className="kz-pop absolute right-0 mt-2 w-72 overflow-hidden rounded-2xl border border-border-default bg-surface-1/95 p-1.5 shadow-2xl shadow-black/50 backdrop-blur-2xl light:shadow-violet-900/10">
@@ -132,7 +132,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                           @{user.username} · {t("nav.viewProfile")}
                         </span>
                       </span>
-                      <ChevronRight className="h-4 w-4 text-zinc-500 transition-transform group-hover:translate-x-0.5" />
+                      <ChevronRight className="h-4 w-4 text-fg-muted transition-transform group-hover:translate-x-0.5" />
                     </Link>
                     {isCreator && (
                       <Link

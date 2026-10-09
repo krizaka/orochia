@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { KeyRound, Loader2, Mail } from "lucide-react";
+import { KeyRound, Mail } from "lucide-react";
+import { Button, Input } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { Rich } from "@/components/Rich";
 
@@ -49,21 +50,21 @@ export default function ForgotPasswordPage() {
             <label className="block text-xs font-semibold uppercase tracking-wider text-fg-secondary">
               {t("auth.forgot.email")}
               <div className="relative mt-1.5">
-                <Mail className="absolute left-3.5 top-3 h-4 w-4 text-fg-muted" />
-                <input
+                <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-fg-muted" aria-hidden />
+                <Input
                   type="email"
                   required
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-xl border border-border-default bg-surface-2 py-2.5 pl-10 pr-4 text-sm normal-case tracking-normal text-fg focus:border-accent focus:outline-hidden"
+                  className="rounded-xl pl-10 normal-case tracking-normal"
                 />
               </div>
             </label>
             {error && <p role="alert" className="text-xs text-danger">{error}</p>}
-            <button disabled={state === "sending"} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3 text-sm font-bold text-white disabled:opacity-60">
-              {state === "sending" && <Loader2 className="h-4 w-4 animate-spin" />} {t("auth.forgot.submit")}
-            </button>
+            <Button type="submit" variant="sensual" size="lg" shape="rounded" loading={state === "sending"} className="w-full rounded-xl font-bold">
+              {t("auth.forgot.submit")}
+            </Button>
           </form>
         )}
         <Link href="/auth/login" className="mt-6 inline-block text-xs text-fg-secondary hover:text-fg">

@@ -59,7 +59,7 @@ export function Timeline({
 
   return (
     <div className="select-none">
-      <div className="mb-2 flex items-center justify-between font-mono text-[11px] tabular-nums text-zinc-400">
+      <div className="mb-2 flex items-center justify-between font-mono text-[11px] tabular-nums text-fg-secondary">
         <span>{clock(start)}</span>
         <span className="rounded-full bg-accent/15 px-2.5 py-0.5 font-sans text-xs font-semibold text-accent">{t("editor.kept", { length: (end - start).toFixed(1) })}</span>
         <span>{clock(end)}</span>

@@ -53,7 +53,7 @@ export function CreatorsPreview({ share }: { share: number }) {
         <div className="mt-6">
           <div className="mb-2 flex items-baseline justify-between text-xs font-semibold">
             <span className="text-success">{t("home.creatorsPreview.creator", { share })}</span>
-            <span className="text-zinc-500">{t("home.creatorsPreview.platform", { fee: 100 - share })}</span>
+            <span className="text-fg-muted">{t("home.creatorsPreview.platform", { fee: 100 - share })}</span>
           </div>
           <div
             className="flex h-3 overflow-hidden rounded-full bg-surface-3"

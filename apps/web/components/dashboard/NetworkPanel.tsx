@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Ban, Check, UserMinus, X } from "lucide-react";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
+import { Avatar, Badge, IconButton } from "@/components/ui";
 
 interface Person {
   id: string;
@@ -27,7 +28,7 @@ function Row({ p, children }: { p: Person; children?: React.ReactNode }) {
   return (
     <li className="flex items-center justify-between gap-3 py-2.5">
       <Link href={`/@${p.username}`} className="flex min-w-0 items-center gap-3">
-        <img src={p.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-9 w-9 shrink-0 rounded-full border border-border-default object-cover" />
+        <Avatar src={p.avatarUrl || AVATAR_PLACEHOLDER} fallback={p.displayName.charAt(0)} className="h-9 w-9 border border-border-default" />
         <span className="min-w-0">
           <span className="block truncate text-sm font-semibold text-fg">{p.displayName}</span>
           <span className="block text-[11px] font-mono text-fg-muted">@{p.username}</span>
@@ -48,8 +49,6 @@ function Section({ title, empty, people, render }: { title: string; empty: strin
     </div>
   );
 }
-
-const iconBtn = "rounded-lg p-2 text-fg-secondary transition-colors hover:bg-white/5 hover:text-fg";
 
 /** Followers to approve (creators), contact requests to answer, and everyone you follow or know. */
 export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
@@ -79,8 +78,8 @@ export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
           people={pendingFollowers}
           render={(p) => (
             <Row key={p.id} p={p}>
-              <button className={iconBtn} aria-label={t("network.approve")} onClick={() => act(`/api/me/followers/${p.id}`, "PATCH", { action: "approve" })}><Check className="h-4 w-4 text-success" /></button>
-              <button className={iconBtn} aria-label={t("network.decline")} onClick={() => act(`/api/me/followers/${p.id}`, "PATCH", { action: "remove" })}><X className="h-4 w-4" /></button>
+              <IconButton size="sm" shape="rounded" className="h-8 w-8" label={t("network.approve")} onClick={() => act(`/api/me/followers/${p.id}`, "PATCH", { action: "approve" })}><Check className="h-4 w-4 text-success" aria-hidden /></IconButton>
+              <IconButton size="sm" shape="rounded" className="h-8 w-8" label={t("network.decline")} onClick={() => act(`/api/me/followers/${p.id}`, "PATCH", { action: "remove" })}><X className="h-4 w-4" aria-hidden /></IconButton>
             </Row>
           )}
         />
@@ -91,9 +90,9 @@ export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
         people={data.incoming}
         render={(p) => (
           <Row key={p.id} p={p}>
-            <button className={iconBtn} aria-label={t("network.accept")} onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "accept" })}><Check className="h-4 w-4 text-success" /></button>
-            <button className={iconBtn} aria-label={t("network.reject")} onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "reject" })}><X className="h-4 w-4" /></button>
-            <button className={iconBtn} aria-label={t("network.block")} onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "block" })}><Ban className="h-4 w-4 text-danger" /></button>
+            <IconButton size="sm" shape="rounded" className="h-8 w-8" label={t("network.accept")} onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "accept" })}><Check className="h-4 w-4 text-success" aria-hidden /></IconButton>
+            <IconButton size="sm" shape="rounded" className="h-8 w-8" label={t("network.reject")} onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "reject" })}><X className="h-4 w-4" aria-hidden /></IconButton>
+            <IconButton size="sm" shape="rounded" className="h-8 w-8" label={t("network.block")} onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "block" })}><Ban className="h-4 w-4 text-danger" aria-hidden /></IconButton>
           </Row>
         )}
       />
@@ -104,7 +103,7 @@ export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
           people={approvedFollowers}
           render={(p) => (
             <Row key={p.id} p={p}>
-              <button className={iconBtn} aria-label={t("network.removeFollower")} onClick={() => act(`/api/me/followers/${p.id}`, "PATCH", { action: "remove" })}><UserMinus className="h-4 w-4" /></button>
+              <IconButton size="sm" shape="rounded" className="h-8 w-8" label={t("network.removeFollower")} onClick={() => act(`/api/me/followers/${p.id}`, "PATCH", { action: "remove" })}><UserMinus className="h-4 w-4" aria-hidden /></IconButton>
             </Row>
           )}
         />
@@ -115,7 +114,7 @@ export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
         people={data.contacts}
         render={(p) => (
           <Row key={p.id} p={p}>
-            <button className={iconBtn} aria-label={t("network.removeContact")} onClick={() => act(`/api/contacts/${p.id}`, "DELETE")}><UserMinus className="h-4 w-4" /></button>
+            <IconButton size="sm" shape="rounded" className="h-8 w-8" label={t("network.removeContact")} onClick={() => act(`/api/contacts/${p.id}`, "DELETE")}><UserMinus className="h-4 w-4" aria-hidden /></IconButton>
           </Row>
         )}
       />
@@ -125,8 +124,8 @@ export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
         people={data.following}
         render={(p) => (
           <Row key={p.id} p={p}>
-            <span className={`text-[10px] font-bold uppercase ${p.status === "APPROVED" ? "text-success" : "text-warning"}`}>{p.status === "APPROVED" ? t("network.approved") : t("network.pending")}</span>
-            <button className={iconBtn} aria-label={t("network.unfollow")} onClick={() => act(`/api/creators/${p.username}/follow`, "DELETE")}><UserMinus className="h-4 w-4" /></button>
+            <Badge size="sm" tone={p.status === "APPROVED" ? "success" : "warning"}>{p.status === "APPROVED" ? t("network.approved") : t("network.pending")}</Badge>
+            <IconButton size="sm" shape="rounded" className="h-8 w-8" label={t("network.unfollow")} onClick={() => act(`/api/creators/${p.username}/follow`, "DELETE")}><UserMinus className="h-4 w-4" aria-hidden /></IconButton>
           </Row>
         )}
       />
@@ -136,7 +135,7 @@ export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
         people={data.outgoing}
         render={(p) => (
           <Row key={p.id} p={p}>
-            <button className={iconBtn} aria-label={t("network.withdraw")} onClick={() => act(`/api/contacts/${p.id}`, "DELETE")}><X className="h-4 w-4" /></button>
+            <IconButton size="sm" shape="rounded" className="h-8 w-8" label={t("network.withdraw")} onClick={() => act(`/api/contacts/${p.id}`, "DELETE")}><X className="h-4 w-4" aria-hidden /></IconButton>
           </Row>
         )}
       />

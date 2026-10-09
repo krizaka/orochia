@@ -259,7 +259,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
         <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-fg-secondary">{t("publish.done.body")}</p>
         {uploading && (
           <div className="mx-auto mt-6 max-w-sm">
-            <div className="mb-1.5 flex justify-between text-xs text-zinc-400">
+            <div className="mb-1.5 flex justify-between text-xs text-fg-secondary">
               <span>{t("publish.uploading", { progress: upload?.progress ?? 0 })}</span>
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-surface-3">
@@ -318,7 +318,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 <video src={`${previewUrl}#t=0.5`} muted playsInline preload="metadata" className="aspect-video w-full rounded-xl bg-black object-cover sm:w-48" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-fg">{file.name}</p>
-                  <p className="mt-0.5 text-xs text-zinc-500">
+                  <p className="mt-0.5 text-xs text-fg-muted">
                     {size(file.size)}
                     {duration !== null && ` · ${clockOf(duration)}`}
                     {lastEdit && <span className="ml-2 rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-semibold text-accent">{t("publish.drop.edited")}</span>}
@@ -366,7 +366,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                     {t("publish.drop.or")} <span className="font-semibold text-accent underline-offset-4 group-hover:underline">{t("publish.drop.browse")}</span>
                   </p>
                 )}
-                <p className="mt-3 text-[11px] text-zinc-500">{t("upload.limits", { size: size(LIMIT.maxBytes), duration: hours(LIMIT.maxSeconds) })}</p>
+                <p className="mt-3 text-[11px] text-fg-muted">{t("upload.limits", { size: size(LIMIT.maxBytes), duration: hours(LIMIT.maxSeconds) })}</p>
               </div>
             )}
           </Step>
@@ -375,7 +375,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
             <div className="space-y-4">
               <label className="block">
                 <span className={`${label} flex justify-between`}>
-                  {t("publish.fields.title")} <span className="font-mono font-normal text-zinc-500">{title.length}/120</span>
+                  {t("publish.fields.title")} <span className="font-mono font-normal text-fg-muted">{title.length}/120</span>
                 </span>
                 <input value={title} onChange={(e) => setTitle(e.target.value.slice(0, 120))} required placeholder={t("publish.fields.titlePlaceholder")} className={field} />
               </label>
@@ -411,7 +411,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                     />
                   )}
                 </div>
-                <span className="mt-1 block text-[11px] text-zinc-500">{t("publish.fields.tagsHint")}</span>
+                <span className="mt-1 block text-[11px] text-fg-muted">{t("publish.fields.tagsHint")}</span>
               </div>
             </div>
           </Step>
@@ -450,10 +450,10 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 <label className="block">
                   <span className={label}>{t("publish.fields.price")}</span>
                   <span className="flex items-center rounded-xl border border-border-default bg-surface-2/80 px-3 focus-within:border-accent">
-                    <span className="font-semibold text-zinc-500">$</span>
+                    <span className="font-semibold text-fg-muted">$</span>
                     <input type="number" step="0.50" min="1" value={minTipAmountDollars} onChange={(e) => setMinTipAmountDollars(e.target.value)} className="w-full bg-transparent px-2 py-3 text-sm font-semibold text-fg outline-hidden" />
                   </span>
-                  <span className="mt-1 block text-[11px] text-zinc-500">{t("publish.fields.priceHint")}</span>
+                  <span className="mt-1 block text-[11px] text-fg-muted">{t("publish.fields.priceHint")}</span>
                 </label>
                 <div className="mt-3 grid grid-cols-3 gap-2 text-center text-[11px]">
                   {[
@@ -504,7 +504,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 ))}
               </select>
               {contentRatings.find((r) => r.id === selectedRating)?.description && (
-                <span className="mt-1 block text-[11px] text-zinc-500">{contentRatings.find((r) => r.id === selectedRating)?.description}</span>
+                <span className="mt-1 block text-[11px] text-fg-muted">{contentRatings.find((r) => r.id === selectedRating)?.description}</span>
               )}
             </label>
             <div className="mt-4 flex items-center justify-between gap-4 rounded-2xl border border-border-default p-3.5">
@@ -542,13 +542,13 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
         <aside className="lg:sticky lg:top-24 lg:self-start">
           <div className="rounded-3xl border border-border-default bg-surface-1/60 p-4">
             <p className="text-xs font-semibold text-fg-secondary">{t("publish.preview")}</p>
-            <p className="mb-3 text-[11px] text-zinc-500">{t("publish.previewHint")}</p>
+            <p className="mb-3 text-[11px] text-fg-muted">{t("publish.previewHint")}</p>
             <div className="overflow-hidden rounded-2xl border border-border-default">
               <div className="relative aspect-video bg-zinc-900">
                 {previewUrl ? (
                   <video src={`${previewUrl}#t=0.5`} muted playsInline preload="metadata" className={cn("h-full w-full object-cover", isBlurred && "scale-110 blur-xl")} />
                 ) : (
-                  <span className="flex h-full items-center justify-center text-zinc-600">
+                  <span className="flex h-full items-center justify-center text-fg-muted">
                     <Film className="h-8 w-8" />
                   </span>
                 )}
@@ -561,7 +561,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
               </div>
               <div className="p-3">
                 <p className="line-clamp-2 text-sm font-semibold text-fg">{title.trim() || t("publish.untitled")}</p>
-                <p className="mt-1 text-[11px] text-zinc-500">{t(`publish.audiences.${visibility}.title` as MessageKey)}{tags.length > 0 && ` · ${tags.slice(0, 3).map((x) => `#${x}`).join(" ")}`}</p>
+                <p className="mt-1 text-[11px] text-fg-muted">{t(`publish.audiences.${visibility}.title` as MessageKey)}{tags.length > 0 && ` · ${tags.slice(0, 3).map((x) => `#${x}`).join(" ")}`}</p>
               </div>
             </div>
           </div>

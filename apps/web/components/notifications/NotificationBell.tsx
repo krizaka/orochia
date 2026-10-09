@@ -69,7 +69,7 @@ export function NotificationBell() {
             {!loaded ? (
               Array.from({ length: 4 }, (_, i) => <div key={i} className="m-1 h-14 animate-pulse rounded-xl bg-white/5" />)
             ) : items.length === 0 ? (
-              <p className="px-6 py-10 text-center text-xs text-zinc-500">{t("notifications.empty")}</p>
+              <p className="px-6 py-10 text-center text-xs text-fg-muted">{t("notifications.empty")}</p>
             ) : (
               items.slice(0, 8).map((n) => (
                 <NotificationRow

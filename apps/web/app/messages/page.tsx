@@ -353,15 +353,15 @@ function MessagesContent() {
           {/* Conversations List */}
           <div className="flex-1 overflow-y-auto divide-y divide-border-subtle">
             {loadingConversations ? (
-              <div className="flex flex-col items-center justify-center p-8 text-zinc-400">
+              <div className="flex flex-col items-center justify-center p-8 text-fg-secondary">
                 <Loader2 className="h-6 w-6 animate-spin mb-2" />
                 <span className="text-xs">{t("inbox.loadingConversations")}</span>
               </div>
             ) : conversations.length === 0 ? (
-              <div className="p-8 text-center text-zinc-500">
-                <MessageSquare className="h-8 w-8 mx-auto mb-2 text-zinc-600" />
+              <div className="p-8 text-center text-fg-muted">
+                <MessageSquare className="h-8 w-8 mx-auto mb-2 text-fg-muted" />
                 <p className="text-xs font-semibold text-fg-secondary">{t("inbox.none")}</p>
-                <p className="text-[11px] mt-1 text-zinc-500">
+                <p className="text-[11px] mt-1 text-fg-muted">
                   {t("inbox.noneHint")}
                 </p>
               </div>
@@ -390,7 +390,7 @@ function MessagesContent() {
                         />
                       ) : (
                         <div className="h-11 w-11 rounded-full bg-zinc-800 flex items-center justify-center text-white">
-                          <User className="h-5 w-5 text-zinc-400" />
+                          <User className="h-5 w-5 text-fg-secondary" />
                         </div>
                       )}
                       {hasUnread && (
@@ -404,7 +404,7 @@ function MessagesContent() {
                           {other.displayName || other.username}
                         </span>
                         {conv.lastMessage && (
-                          <span className="text-[10px] text-zinc-500 shrink-0">
+                          <span className="text-[10px] text-fg-muted shrink-0">
                             {new Date(conv.lastMessage.createdAt).toLocaleDateString([], {
                               month: "short",
                               day: "numeric",
@@ -443,7 +443,7 @@ function MessagesContent() {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setActiveConversation(null)}
-                    className="p-1 rounded-lg text-zinc-400 hover:text-white lg:hidden"
+                    className="p-1 rounded-lg text-fg-secondary hover:text-white lg:hidden"
                     title={t("inbox.back")}
                     aria-label={t("inbox.back")}
                   >
@@ -459,7 +459,7 @@ function MessagesContent() {
                       />
                     ) : (
                       <div className="h-10 w-10 rounded-full bg-zinc-800 flex items-center justify-center text-white">
-                        <User className="h-5 w-5 text-zinc-400" />
+                        <User className="h-5 w-5 text-fg-secondary" />
                       </div>
                     )}
                     <div>
@@ -481,7 +481,7 @@ function MessagesContent() {
                 <div className="relative">
                   <button
                     onClick={() => setShowOptionsModal(!showOptionsModal)}
-                    className="p-2 rounded-xl text-zinc-400 hover:text-fg hover:bg-white/5 transition-colors"
+                    className="p-2 rounded-xl text-fg-secondary hover:text-fg hover:bg-white/5 transition-colors"
                     title={t("inbox.options")}
                     aria-label={t("inbox.options")}
                   >
@@ -514,11 +514,11 @@ function MessagesContent() {
               {/* Messages Bubble Area */}
               <div className="flex-1 p-4 overflow-y-auto space-y-3">
                 {loadingMessages ? (
-                  <div className="flex items-center justify-center h-full text-zinc-500">
+                  <div className="flex items-center justify-center h-full text-fg-muted">
                     <Loader2 className="h-6 w-6 animate-spin" />
                   </div>
                 ) : messages.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full text-center text-zinc-500">
+                  <div className="flex flex-col items-center justify-center h-full text-center text-fg-muted">
                     <MessageSquare className="h-8 w-8 mb-2 opacity-50" />
                     <p className="text-xs font-semibold">{t("inbox.startTitle")}</p>
                     <p className="text-[11px] mt-1 max-w-xs">
@@ -543,7 +543,7 @@ function MessagesContent() {
                         >
                           <p className="leading-relaxed whitespace-pre-wrap wrap-break-word">{msg.content}</p>
                         </div>
-                        <div className="flex items-center gap-1.5 mt-1 px-1 text-[10px] text-zinc-500">
+                        <div className="flex items-center gap-1.5 mt-1 px-1 text-[10px] text-fg-muted">
                           <span>
                             {new Date(msg.createdAt).toLocaleTimeString([], {
                               hour: "2-digit",
@@ -555,7 +555,7 @@ function MessagesContent() {
                               {msg.isRead ? (
                                 <CheckCheck className="h-3 w-3 text-accent" />
                               ) : (
-                                <Check className="h-3 w-3 text-zinc-500" />
+                                <Check className="h-3 w-3 text-fg-muted" />
                               )}
                             </span>
                           )}
@@ -590,7 +590,7 @@ function MessagesContent() {
               </div>
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center p-8 text-zinc-500">
+            <div className="flex flex-col items-center justify-center h-full text-center p-8 text-fg-muted">
               <div className="h-16 w-16 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center text-accent mb-4">
                 <MessageSquare className="h-8 w-8" />
               </div>

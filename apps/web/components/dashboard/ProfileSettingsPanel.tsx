@@ -2,9 +2,9 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Bell, Check, ExternalLink, Flame, Link2, Loader2, Lock, User, UserX, Wallet, KeyRound } from "lucide-react";
+import { Bell, Check, ExternalLink, Flame, Link2, Lock, User, UserX, Wallet, KeyRound } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { SocialIcon, Switch } from "@/components/ui";
+import { Avatar, Button, buttonVariants, Input, SocialIcon, Spinner, Switch, Textarea } from "@/components/ui";
 import { latestAdultBirthDate } from "@/components/BirthDateField";
 import { t, type MessageKey } from "@/lib/i18n";
 
@@ -88,7 +88,7 @@ const label = "mb-1.5 block text-xs font-semibold text-fg-secondary";
 const hint = "mt-1 block text-[11px] leading-relaxed text-fg-muted";
 const field =
   "w-full rounded-xl border border-border-default bg-surface-2 px-3.5 py-2.5 text-sm text-fg placeholder:text-fg-muted focus:border-accent focus:outline-hidden";
-const ghost = "inline-flex items-center gap-1.5 rounded-xl border border-border-default px-3 py-2 text-xs font-semibold text-fg transition-colors hover:border-accent/60 hover:text-fg";
+const ghost = buttonVariants({ variant: "outline", size: "sm", shape: "rounded", className: "rounded-xl" });
 
 async function put(body: object): Promise<string | null> {
   const res = await fetch("/api/me/profile", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -113,15 +113,9 @@ function Section({ id, icon, title, children }: { id: string; icon: React.ReactN
 function SaveRow({ state, error, onSave }: { state: "idle" | "saving" | "saved"; error: string | null; onSave: () => void }) {
   return (
     <div className="mt-5 flex flex-wrap items-center gap-3">
-      <button
-        type="button"
-        onClick={onSave}
-        disabled={state === "saving"}
-        className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-accent to-accent-2 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-accent/20 disabled:opacity-50"
-      >
-        {state === "saving" && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+      <Button variant="sensual" size="sm" shape="rounded" onClick={onSave} loading={state === "saving"} className="rounded-xl px-5 font-bold">
         {state === "saving" ? t("settings.saving") : t("settings.save")}
-      </button>
+      </Button>
       {state === "saved" && (
         <span role="status" className="flex items-center gap-1 text-xs font-semibold text-success">
           <Check className="h-3.5 w-3.5" /> {t("settings.saved")}
@@ -211,7 +205,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
   if (!profile) {
     return (
       <div className="flex justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-accent" />
+        <Spinner size="md" />
       </div>
     );
   }
@@ -253,7 +247,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">
               <span className={label}>{t("settings.identity.displayName")}</span>
-              <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} maxLength={80} required className={field} />
+              <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} maxLength={80} required className="rounded-xl px-3.5" />
               <span className={hint}>{t("settings.identity.displayNameHint")}</span>
             </label>
             <div>
@@ -269,7 +263,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
           </div>
           <label className="mt-4 block">
             <span className={label}>{t("settings.identity.bio")}</span>
-            <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3} maxLength={1000} placeholder={t("settings.identity.bioPlaceholder")} className={`${field} resize-y`} />
+            <Textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3} maxLength={1000} placeholder={t("settings.identity.bioPlaceholder")} className="resize-y rounded-xl px-3.5" />
           </label>
           <SaveRow state={identity.state} error={identity.error} onSave={() => void identity.run(async () => {
             const failure = await put({ displayName, bio });
@@ -291,20 +285,22 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
                 </div>
               ) : (
                 <div className="flex gap-2">
-                  <input type="date" value={birthDate} max={latestAdultBirthDate()} min="1900-01-01" onChange={(e) => setBirthDate(e.target.value)} aria-label={t("settings.identity.birthDateAdd")} className={`${field} scheme-dark light:scheme-light`} />
-                  <button
-                    type="button"
-                    disabled={!birthDate || birth.state === "saving"}
+                  <Input type="date" value={birthDate} max={latestAdultBirthDate()} min="1900-01-01" onChange={(e) => setBirthDate(e.target.value)} aria-label={t("settings.identity.birthDateAdd")} className="rounded-xl px-3.5" />
+                  <Button
+                    variant="sensual"
+                    shape="rounded"
+                    disabled={!birthDate}
+                    loading={birth.state === "saving"}
                     onClick={() => void birth.run(async () => {
                       const res = await fetch("/api/me/birth-date", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dateOfBirth: birthDate }) });
                       if (!res.ok) return ((await res.json().catch(() => ({}))) as { error?: string }).error || t("settings.failed");
                       setProfile({ ...profile, dateOfBirth: birthDate });
                       return null;
                     })}
-                    className="shrink-0 rounded-xl bg-accent px-4 text-xs font-bold text-white disabled:opacity-40"
+                    className="h-11 rounded-xl px-4 text-xs font-bold"
                   >
                     {t("settings.save")}
-                  </button>
+                  </Button>
                 </div>
               )}
               <span className={hint}>{t("settings.identity.birthDateHint")}</span>
@@ -321,14 +317,14 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
                 <span className={`${label} flex items-center gap-1.5`}>
                   <SocialIcon network={network} className="h-3.5 w-3.5" /> {t(`profile.networks.${network}` as MessageKey)}
                 </span>
-                <input
+                <Input
                   value={links[network] ?? ""}
                   onChange={(e) => setLinks({ ...links, [network]: e.target.value })}
                   maxLength={200}
                   placeholder={t("settings.links.handlePlaceholder")}
                   autoCapitalize="none"
                   spellCheck={false}
-                  className={field}
+                  className="rounded-xl px-3.5"
                 />
               </label>
             ))}
@@ -336,7 +332,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
               <span className={`${label} flex items-center gap-1.5`}>
                 <SocialIcon network="website" className="h-3.5 w-3.5" /> {t("settings.links.website")}
               </span>
-              <input type="url" value={website} onChange={(e) => setWebsite(e.target.value)} maxLength={200} placeholder={t("settings.links.websitePlaceholder")} className={field} />
+              <Input type="url" value={website} onChange={(e) => setWebsite(e.target.value)} maxLength={200} placeholder={t("settings.links.websitePlaceholder")} className="rounded-xl px-3.5" />
             </label>
           </div>
           <SaveRow state={linkSaver.state} error={linkSaver.error} onSave={() => void linkSaver.run(() => put({ socialLinks: links, websiteUrl: website }))} />
@@ -384,8 +380,8 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
             <label className="mt-4 block">
               <span className={label}>{t("settings.challenges.minimum")}</span>
               <span className="relative block max-w-48">
-                <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-zinc-500">$</span>
-                <input value={challengeMin} onChange={(e) => setChallengeMin(e.target.value)} type="number" min={1} max={10000} inputMode="decimal" className={`${field} pl-6 font-mono`} />
+                <span className="pointer-events-none absolute inset-y-0 left-3 z-10 flex items-center text-sm font-semibold text-fg-muted">$</span>
+                <Input value={challengeMin} onChange={(e) => setChallengeMin(e.target.value)} type="number" min={1} max={10000} inputMode="decimal" className="rounded-xl pl-6 font-mono" />
               </span>
               <span className="mt-1 block text-[11px] text-fg-muted">{t("settings.challenges.minimumHint")}</span>
             </label>
@@ -462,26 +458,28 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
         <Section id="accounts" icon={<KeyRound className="h-4 w-4" />} title={t("settings.sections.accounts")}>
           <p className="-mt-2 mb-3 text-xs text-fg-secondary">{t("settings.accounts.intro")}</p>
           {identities.length === 0 ? (
-            <p className="text-xs text-zinc-500">{t("settings.accounts.none")}</p>
+            <p className="text-xs text-fg-muted">{t("settings.accounts.none")}</p>
           ) : (
             <ul className="divide-y divide-border-subtle">
               {identities.map((id) => (
                 <li key={id.id} className="flex items-center justify-between gap-3 py-3 text-sm">
                   <span>
                     <span className="font-semibold capitalize text-fg">{id.provider.toLowerCase()}</span>
-                    {id.email && <span className="ml-2 text-xs text-zinc-400">{id.email}</span>}
-                    <span className="block text-[11px] text-zinc-500">{t("settings.accounts.linkedOn", { date: new Date(id.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) })}</span>
+                    {id.email && <span className="ml-2 text-xs text-fg-secondary">{id.email}</span>}
+                    <span className="block text-[11px] text-fg-muted">{t("settings.accounts.linkedOn", { date: new Date(id.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) })}</span>
                   </span>
-                  <button
-                    type="button"
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    shape="rounded"
                     onClick={async () => {
                       const res = await fetch(`/api/me/identities/${id.id}`, { method: "DELETE" });
                       if (res.ok) setIdentities((all) => all.filter((x) => x.id !== id.id));
                     }}
-                    className={`${ghost} hover:border-danger/60 hover:text-danger`}
+                    className="rounded-xl hover:border-danger/60 hover:text-danger"
                   >
                     {t("settings.accounts.unlink")}
-                  </button>
+                  </Button>
                 </li>
               ))}
             </ul>
@@ -491,28 +489,30 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
         <Section id="blocked" icon={<UserX className="h-4 w-4" />} title={t("settings.sections.blocked")}>
           <p className="-mt-2 mb-3 text-xs text-fg-secondary">{t("settings.blocked.intro")}</p>
           {blocked.length === 0 ? (
-            <p className="text-xs text-zinc-500">{t("settings.blocked.none")}</p>
+            <p className="text-xs text-fg-muted">{t("settings.blocked.none")}</p>
           ) : (
             <ul className="divide-y divide-border-subtle">
               {blocked.map((b) => (
                 <li key={b.id} className="flex items-center justify-between gap-3 py-3 text-sm">
                   <span className="flex items-center gap-3">
-                    {b.avatarUrl ? <img src={b.avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" /> : <span className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-800 text-zinc-400"><User className="h-4 w-4" /></span>}
+                    <Avatar size="sm" src={b.avatarUrl} fallback={<User className="h-4 w-4" aria-hidden />} />
                     <span>
                       <span className="font-semibold text-fg">{b.displayName || b.blockedUsername}</span>
-                      <span className="ml-1.5 font-mono text-xs text-zinc-500">@{b.blockedUsername}</span>
+                      <span className="ml-1.5 font-mono text-xs text-fg-muted">@{b.blockedUsername}</span>
                     </span>
                   </span>
-                  <button
-                    type="button"
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    shape="rounded"
                     onClick={async () => {
                       const res = await fetch(`/api/users/${b.blockedUsername}/block`, { method: "POST" });
                       if (res.ok) setBlocked((all) => all.filter((x) => x.id !== b.id));
                     }}
-                    className={ghost}
+                    className="rounded-xl"
                   >
                     {t("settings.blocked.unblock")}
-                  </button>
+                  </Button>
                 </li>
               ))}
             </ul>

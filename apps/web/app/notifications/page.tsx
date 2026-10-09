@@ -62,7 +62,7 @@ export default function NotificationsPage() {
             <Loader2 className="h-6 w-6 animate-spin text-accent" />
           </div>
         ) : all.length === 0 ? (
-          <p className="px-6 py-16 text-center text-sm text-zinc-500">{t("notifications.empty")}</p>
+          <p className="px-6 py-16 text-center text-sm text-fg-muted">{t("notifications.empty")}</p>
         ) : (
           all.map((n) => <NotificationRow key={n.id} n={n} onOpen={() => !n.readAt && void markRead([n.id])} />)
         )}

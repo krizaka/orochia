@@ -21,7 +21,7 @@ const DEFAULT_COUNTRY: Partial<Record<Method, string>> = { BANK_US: "US", BANK_C
 
 const label = "mb-1.5 block text-xs font-semibold text-fg-secondary";
 const field =
-  "w-full rounded-xl border border-border-default bg-surface-2 px-3.5 py-2.5 text-sm text-fg placeholder:text-zinc-600 focus:border-accent focus:outline-hidden";
+  "w-full rounded-xl border border-border-default bg-surface-2 px-3.5 py-2.5 text-sm text-fg placeholder:text-fg-muted focus:border-accent focus:outline-hidden";
 
 /** Add or replace where earnings are sent. */
 export function PayoutAccountSheet({ open, onClose, onSaved }: { open: boolean; onClose: () => void; onSaved: () => void }) {
@@ -56,7 +56,7 @@ export function PayoutAccountSheet({ open, onClose, onSaved }: { open: boolean; 
           <Button variant="sensual" size="lg" shape="rounded" className="w-full" loading={busy} onClick={() => void save()}>
             {t("earnings.account.save")}
           </Button>
-          <p className="mt-3 flex items-center justify-center gap-1.5 text-[11px] text-zinc-500">
+          <p className="mt-3 flex items-center justify-center gap-1.5 text-[11px] text-fg-muted">
             <Lock className="h-3 w-3" /> {t("earnings.account.secure")}
           </p>
         </>
@@ -77,7 +77,7 @@ export function PayoutAccountSheet({ open, onClose, onSaved }: { open: boolean; 
           <label className="block">
             <span className={label}>{t("earnings.account.holder")}</span>
             <input value={holderName} onChange={(e) => setHolderName(e.target.value)} autoComplete="name" className={field} />
-            <span className="mt-1 block text-[11px] text-zinc-500">{t("earnings.account.holderHint")}</span>
+            <span className="mt-1 block text-[11px] text-fg-muted">{t("earnings.account.holderHint")}</span>
           </label>
           <label className="block">
             <span className={label}>{t("earnings.account.country")}</span>

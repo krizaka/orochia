@@ -17,7 +17,7 @@ export function PanelHeader({ tool, changed, onReset }: { tool: Tool; changed: b
     <div className="mb-4 flex items-start justify-between gap-3">
       <div>
         <h3 className="text-sm font-bold text-white">{t(`editor.panels.${tool}.title`)}</h3>
-        <p className="mt-0.5 text-xs leading-relaxed text-zinc-400">{t(`editor.panels.${tool}.hint`)}</p>
+        <p className="mt-0.5 text-xs leading-relaxed text-fg-secondary">{t(`editor.panels.${tool}.hint`)}</p>
       </div>
       {changed && (
         <button type="button" onClick={onReset} className="flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold text-zinc-300 hover:bg-white/8 hover:text-white">
@@ -43,7 +43,7 @@ export function TrimPanel(props: {
   return (
     <div className="space-y-4">
       <Timeline frames={props.frames} duration={props.duration} start={edit.startSeconds} end={edit.endSeconds} time={props.time} onStart={props.onStart} onEnd={props.onEnd} onSeek={props.onSeek} />
-      {maxSeconds && <p className="text-[11px] text-zinc-500">{t("editor.maxLength", { seconds: maxSeconds })}</p>}
+      {maxSeconds && <p className="text-[11px] text-fg-muted">{t("editor.maxLength", { seconds: maxSeconds })}</p>}
       <div>
         <span className="mb-2 block text-xs font-semibold text-zinc-300">{t("editor.speed")}</span>
         <div className="flex flex-wrap gap-2">
@@ -78,7 +78,7 @@ export function FiltersPanel({ edit, set, frames }: { edit: VideoEdit; set: Sett
                 </span>
               )}
             </span>
-            <span className={`text-[11px] font-semibold ${active ? "text-white" : "text-zinc-400"}`}>{t(`editor.filterNames.${name}`)}</span>
+            <span className={`text-[11px] font-semibold ${active ? "text-white" : "text-fg-secondary"}`}>{t(`editor.filterNames.${name}`)}</span>
           </button>
         );
       })}
@@ -115,9 +115,9 @@ export function FormatPanel({ edit, onFormat, locked }: { edit: VideoEdit; onFor
         <span className={`block rounded-[4px] border-2 border-white ${FORMAT_SHAPE.vertical}`} />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-white">{t("editor.formats.vertical")}</p>
-          <p className="text-xs text-zinc-400">{t("editor.storyVertical")}</p>
+          <p className="text-xs text-fg-secondary">{t("editor.storyVertical")}</p>
         </div>
-        <Lock className="h-4 w-4 text-zinc-500" />
+        <Lock className="h-4 w-4 text-fg-muted" />
       </div>
     );
   }
@@ -166,7 +166,7 @@ export function SoundPanel({ edit, set }: { edit: VideoEdit; set: Setter }) {
         {edit.music ? (
           <div className="space-y-4">
             <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2">
-              <Music2 className="h-4 w-4 shrink-0 text-zinc-400" />
+              <Music2 className="h-4 w-4 shrink-0 text-fg-secondary" />
               <span className="min-w-0 flex-1 truncate text-sm font-medium text-white">{edit.music.name}</span>
               <IconButton label={t("editor.sound.removeMusic")} onClick={() => set("music", null)} className="h-8 w-8 hover:text-danger">
                 <Trash2 className="h-4 w-4" />
@@ -180,7 +180,7 @@ export function SoundPanel({ edit, set }: { edit: VideoEdit; set: Setter }) {
             <input type="file" accept="audio/*" className="sr-only" onChange={(e) => e.target.files?.[0] && set("music", e.target.files[0])} />
           </label>
         )}
-        <p className="mt-3 text-[11px] leading-relaxed text-zinc-500">{t("editor.sound.musicHint")}</p>
+        <p className="mt-3 text-[11px] leading-relaxed text-fg-muted">{t("editor.sound.musicHint")}</p>
       </div>
     </div>
   );

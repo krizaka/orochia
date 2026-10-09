@@ -91,7 +91,7 @@ export function StartAuctionSheet({ video, open, onClose }: { video: { id: strin
         <label className={label}>
           {t("auction.start.price")}
           <span className="relative mt-1 block">
-            <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-zinc-500">$</span>
+            <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-fg-muted">$</span>
             <input value={price} onChange={(e) => setPrice(e.target.value)} type="number" inputMode="decimal" min={1} step={0.5} required className={`${field} mt-0 pl-6 font-mono tabular-nums`} />
           </span>
           <span className={hint}>{t("auction.start.priceHint")}</span>

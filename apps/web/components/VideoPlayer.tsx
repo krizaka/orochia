@@ -209,7 +209,7 @@ export function VideoPlayer({
             <span className="font-mono font-black text-xl">18+</span>
           </div>
           <h3 className="text-lg font-bold text-white mb-1">{t("player.sensitiveTitle")}</h3>
-          <p className="text-xs text-zinc-400 max-w-sm mb-5">
+          <p className="text-xs text-fg-secondary max-w-sm mb-5">
             {t("player.sensitiveBody")}
           </p>
           <button
@@ -229,7 +229,7 @@ export function VideoPlayer({
             <Lock className="h-8 w-8 text-accent" />
           </div>
           <h3 className="text-xl font-bold text-white mb-1">{t("player.paidTitle")}</h3>
-          <p className="text-sm text-zinc-400 max-w-md mb-6">
+          <p className="text-sm text-fg-secondary max-w-md mb-6">
             {t("player.paidBody")}
           </p>
           <button
@@ -251,7 +251,7 @@ export function VideoPlayer({
           <h3 className="text-base sm:text-xl font-bold text-white mb-1">
             {t(isAuction ? "player.auctionTitle" : isChallenge ? "player.challengeTitle" : isInvitedOnly ? "player.invitedTitle" : isFollowersOnly ? "player.followersTitle" : "player.contactsTitle")}
           </h3>
-          <p className="hidden sm:block text-sm text-zinc-400 max-w-md mb-6">
+          <p className="hidden sm:block text-sm text-fg-secondary max-w-md mb-6">
             {t(isAuction ? "player.auctionBody" : isChallenge ? "player.challengeBody" : isInvitedOnly ? "player.invitedBody" : isFollowersOnly ? "player.followersBody" : "player.contactsBody")}
           </p>
           {!isInvitedOnly && gateAction}

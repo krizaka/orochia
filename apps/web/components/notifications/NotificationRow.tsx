@@ -59,7 +59,7 @@ export function NotificationRow({ n, onOpen, compact = false }: { n: Notificatio
       </span>
       <span className="min-w-0 flex-1">
         <span className={`block text-sm leading-snug ${n.readAt ? "text-fg-secondary" : "font-semibold text-fg"}`}>{n.text}</span>
-        <span className="mt-0.5 block text-[11px] text-zinc-500">{timeAgo(n.createdAt)}</span>
+        <span className="mt-0.5 block text-[11px] text-fg-muted">{timeAgo(n.createdAt)}</span>
       </span>
       {!n.readAt && <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-accent" aria-hidden />}
     </Link>

@@ -31,6 +31,11 @@ describe("rewriteClasses", () => {
   it("leaves a neutral colour alone when nothing proves it follows the theme (white text on a video)", () => {
     expect(rewriteClasses("text-white drop-shadow")).toBe("text-white drop-shadow");
     expect(rewriteClasses("bg-zinc-900")).toBe("bg-zinc-900");
+    expect(rewriteClasses("text-zinc-300")).toBe("text-zinc-300");
+  });
+
+  it("turns a mid-grey text into a role even alone: it reads on both themes", () => {
+    expect(rewriteClasses("text-zinc-400 hover:text-zinc-500 text-slate-600")).toBe("text-fg-secondary hover:text-fg-muted text-fg-muted");
   });
 
   it("keeps the whitespace at both ends (template literal pieces) and the important flag", () => {

@@ -102,7 +102,7 @@ export function CreatorProfileClient({
               )}
             </div>
           ) : filteredVideos.length === 0 ? (
-            <div className="rounded-3xl border border-border-default bg-surface-2/40 p-12 text-center text-sm text-zinc-400">
+            <div className="rounded-3xl border border-border-default bg-surface-2/40 p-12 text-center text-sm text-fg-secondary">
               {t("profileTabs.empty")}
             </div>
           ) : (

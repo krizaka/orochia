@@ -40,7 +40,7 @@ function Stat({ icon: Icon, label, value, hint, action }: { icon: React.ElementT
         <Icon className="h-4 w-4 text-accent" /> {label}
       </div>
       <p className="mt-2 font-display text-2xl font-black tabular-nums tracking-tight text-fg sm:text-3xl">{value}</p>
-      {hint && <p className="mt-1 text-[11px] text-zinc-500">{hint}</p>}
+      {hint && <p className="mt-1 text-[11px] text-fg-muted">{hint}</p>}
       {action && <div className="mt-3">{action}</div>}
     </div>
   );
@@ -129,7 +129,7 @@ function EarningsPage() {
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
             <section className={card} aria-labelledby="trend-title">
               <h2 id="trend-title" className="text-sm font-bold text-fg">{t("earnings.trend")}</h2>
-              <p className="mb-3 text-[11px] text-zinc-500">{t("earnings.trendLabel")}</p>
+              <p className="mb-3 text-[11px] text-fg-muted">{t("earnings.trendLabel")}</p>
               <MonthlyChart data={data!.monthly} label={t("earnings.trendLabel")} />
             </section>
 
@@ -141,17 +141,17 @@ function EarningsPage() {
                 </div>
               </div>
               {videos.length === 0 ? (
-                <p className="py-8 text-center text-xs text-zinc-500">{t("earnings.noVideos")}</p>
+                <p className="py-8 text-center text-xs text-fg-muted">{t("earnings.noVideos")}</p>
               ) : (
                 <ol className="max-h-80 space-y-1 overflow-y-auto pr-1">
                   {videos.map((v, i) => (
                     <li key={v.id}>
                       <Link href={`/watch/${v.id}`} className="flex items-center gap-3 rounded-xl p-2 transition-colors hover:bg-surface-2">
-                        <span className="w-5 text-right font-mono text-[11px] text-zinc-500">{i + 1}</span>
-                        <span className="h-10 w-16 shrink-0 overflow-hidden rounded-lg bg-zinc-800">{v.thumbnailUrl ? <img src={v.thumbnailUrl} alt="" className="h-full w-full object-cover" /> : <Film className="m-auto mt-2.5 h-5 w-5 text-zinc-600" />}</span>
+                        <span className="w-5 text-right font-mono text-[11px] text-fg-muted">{i + 1}</span>
+                        <span className="h-10 w-16 shrink-0 overflow-hidden rounded-lg bg-zinc-800">{v.thumbnailUrl ? <img src={v.thumbnailUrl} alt="" className="h-full w-full object-cover" /> : <Film className="m-auto mt-2.5 h-5 w-5 text-fg-muted" />}</span>
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-sm font-medium text-fg">{v.title}</span>
-                          <span className="block text-[11px] text-zinc-500">{t("earnings.videoMeta", { views: compact(v.totalViews), payments: v.payments })}</span>
+                          <span className="block text-[11px] text-fg-muted">{t("earnings.videoMeta", { views: compact(v.totalViews), payments: v.payments })}</span>
                         </span>
                         <span className="font-mono text-sm font-semibold tabular-nums text-fg">{money(v.netCents)}</span>
                       </Link>
@@ -160,7 +160,7 @@ function EarningsPage() {
                 </ol>
               )}
               {low.length > 0 && earning.length > 3 && (
-                <p className="mt-3 border-t border-border-subtle pt-3 text-[11px] text-zinc-500">
+                <p className="mt-3 border-t border-border-subtle pt-3 text-[11px] text-fg-muted">
                   {t("earnings.low")}: {low.map((v) => `${v.title} (${money(v.netCents)})`).join(" · ")}
                 </p>
               )}
@@ -180,14 +180,14 @@ function EarningsPage() {
               </div>
             </div>
             {data!.lines.length === 0 ? (
-              <p className="py-8 text-center text-xs text-zinc-500">{t("earnings.noTransactions")}</p>
+              <p className="py-8 text-center text-xs text-fg-muted">{t("earnings.noTransactions")}</p>
             ) : (
               <div className="-mx-5 overflow-x-auto">
                 <table className="w-full min-w-[520px] text-left text-sm">
                   <tbody className="divide-y divide-border-subtle">
                     {data!.lines.map((l) => (
                       <tr key={l.id}>
-                        <td className="whitespace-nowrap px-5 py-2.5 text-xs text-zinc-500">{new Date(l.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</td>
+                        <td className="whitespace-nowrap px-5 py-2.5 text-xs text-fg-muted">{new Date(l.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</td>
                         <td className="px-2 py-2.5">
                           <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-semibold text-accent">{t(`earnings.kinds.${l.kind}`)}</span>
                         </td>
@@ -212,7 +212,7 @@ function EarningsPage() {
                     <Landmark className="h-5 w-5 shrink-0 text-accent" />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate font-mono text-sm text-fg">{data!.payoutAccount.hint}</span>
-                      <span className="block text-[11px] text-zinc-500">{data!.payoutAccount.holderName}</span>
+                      <span className="block text-[11px] text-fg-muted">{data!.payoutAccount.holderName}</span>
                     </span>
                     <Button size="sm" variant="ghost" onClick={() => setAccountOpen(true)}>
                       {t("earnings.changeAccount")}
@@ -226,17 +226,17 @@ function EarningsPage() {
                     </Button>
                   </div>
                 )}
-                <p className="mt-2 text-[11px] text-zinc-500">{t("earnings.paidOut", { amount: money(s.paidOutCents) })}</p>
+                <p className="mt-2 text-[11px] text-fg-muted">{t("earnings.paidOut", { amount: money(s.paidOutCents) })}</p>
               </div>
               <div>
                 <p className="mb-2 text-xs font-semibold text-fg-secondary">{t("earnings.history")}</p>
                 {data!.payouts.length === 0 ? (
-                  <p className="text-xs text-zinc-500">{t("earnings.noPayouts")}</p>
+                  <p className="text-xs text-fg-muted">{t("earnings.noPayouts")}</p>
                 ) : (
                   <ul className="divide-y divide-border-subtle">
                     {data!.payouts.map((p) => (
                       <li key={p.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
-                        <span className="text-xs text-zinc-500">{new Date(p.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                        <span className="text-xs text-fg-muted">{new Date(p.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
                         <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-semibold", STATUS_TONE[p.status])}>{t(`earnings.statuses.${p.status}`)}</span>
                         <span className="font-mono font-semibold tabular-nums text-fg">{money(p.amountCents)}</span>
                       </li>

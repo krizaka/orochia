@@ -268,7 +268,7 @@ function Auction({ still }: { still: boolean }) {
         </span>
       </div>
       <div className="flex flex-1 flex-col px-4 pt-3 text-white">
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">{t("home.showcase.ui.currentBid")}</p>
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-fg-secondary">{t("home.showcase.ui.currentBid")}</p>
         <p key={price} className="sc-pop font-display text-3xl font-black tabular-nums">${(price / 100).toFixed(0)}</p>
         <ul className="mt-2 space-y-1.5">
           {rows
@@ -316,8 +316,8 @@ function Challenge({ still }: { still: boolean }) {
           </svg>
           <div>
             <p key={pledged} className="sc-pop font-display text-2xl font-black tabular-nums">${pledged}</p>
-            <p className="text-[10px] text-zinc-400">{t("home.showcase.ui.pledged", { goal: "$500" })}</p>
-            <p className="text-[10px] text-zinc-400">{t("home.showcase.ui.backers", { count: 18 + step * 4 })}</p>
+            <p className="text-[10px] text-fg-secondary">{t("home.showcase.ui.pledged", { goal: "$500" })}</p>
+            <p className="text-[10px] text-fg-secondary">{t("home.showcase.ui.backers", { count: 18 + step * 4 })}</p>
           </div>
         </div>
         {reached ? (

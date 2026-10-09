@@ -80,7 +80,7 @@ export function PledgeBox({ c, onPledged }: { c: ChallengeView; onPledged: (bala
           </Chip>
         ))}
         <span className="relative">
-          <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-xs font-semibold text-zinc-500">$</span>
+          <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-xs font-semibold text-fg-muted">$</span>
           <input
             value={custom}
             onChange={(e) => setCustom(e.target.value)}
@@ -89,7 +89,7 @@ export function PledgeBox({ c, onPledged }: { c: ChallengeView; onPledged: (bala
             min={1}
             aria-label={t("challenge.pledge.custom")}
             placeholder={t("challenge.pledge.custom")}
-            className="w-28 rounded-full border border-border-default bg-transparent py-1.5 pl-6 pr-3 font-mono text-xs text-fg placeholder:text-zinc-500 focus:border-accent focus:outline-hidden"
+            className="w-28 rounded-full border border-border-default bg-transparent py-1.5 pl-6 pr-3 font-mono text-xs text-fg placeholder:text-fg-muted focus:border-accent focus:outline-hidden"
           />
         </span>
       </div>

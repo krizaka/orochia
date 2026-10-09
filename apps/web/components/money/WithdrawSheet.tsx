@@ -61,7 +61,7 @@ export function WithdrawSheet({ open, onClose, availableCents, destinationHint, 
           <label className="block">
             <span className="mb-1.5 block text-xs font-semibold text-fg-secondary">{t("earnings.request.amount")}</span>
             <span className="flex items-center rounded-2xl border border-border-default bg-surface-2 px-4 focus-within:border-accent">
-              <span className="font-display text-2xl font-black text-zinc-500">$</span>
+              <span className="font-display text-2xl font-black text-fg-muted">$</span>
               <input
                 value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^\d.,]/g, ""))}
@@ -71,7 +71,7 @@ export function WithdrawSheet({ open, onClose, availableCents, destinationHint, 
                 className="w-full bg-transparent px-2 py-3 font-display text-2xl font-black text-fg outline-hidden"
               />
             </span>
-            <span id="withdraw-hint" className="mt-1 block text-[11px] text-zinc-500">{t("earnings.request.min")}</span>
+            <span id="withdraw-hint" className="mt-1 block text-[11px] text-fg-muted">{t("earnings.request.min")}</span>
           </label>
           <div className="flex flex-wrap gap-2">
             {[0.25, 0.5, 1].map((share) => {

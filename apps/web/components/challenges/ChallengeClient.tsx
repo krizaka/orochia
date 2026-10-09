@@ -111,7 +111,7 @@ export function ChallengeClient({ id }: { id: string }) {
           <section className={panel}>
             <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-fg-secondary">{t("challenge.recent")}</h2>
             {c.recentPledges.length === 0 ? (
-              <p className="text-sm text-zinc-500">{t("challenge.noPledges")}</p>
+              <p className="text-sm text-fg-muted">{t("challenge.noPledges")}</p>
             ) : (
               <ol className="divide-y divide-border-subtle" aria-live="polite">
                 {c.recentPledges.map((p, i) => (

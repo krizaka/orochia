@@ -136,14 +136,14 @@ export function GlobalSearchModal({
             <button
               onClick={() => setQuery("")}
               aria-label={t("search.clear")}
-              className="text-zinc-400 hover:text-fg p-1 rounded-lg"
+              className="text-fg-secondary hover:text-fg p-1 rounded-lg"
             >
               <X className="h-4 w-4" />
             </button>
           )}
           <button
             onClick={onClose}
-            className="rounded-xl border border-border-default px-2 py-1 text-[11px] font-mono text-zinc-400 hover:text-fg transition-colors"
+            className="rounded-xl border border-border-default px-2 py-1 text-[11px] font-mono text-fg-secondary hover:text-fg transition-colors"
           >
             {t("search.esc")}
           </button>
@@ -184,7 +184,7 @@ export function GlobalSearchModal({
                   >
                     <Hash className="h-3 w-3 text-accent" />
                     <span>{entry.tag}</span>
-                    <span className="text-[10px] text-zinc-500 font-mono">({entry.count})</span>
+                    <span className="text-[10px] text-fg-muted font-mono">({entry.count})</span>
                   </button>
                 ))}
               </div>
@@ -222,9 +222,9 @@ export function GlobalSearchModal({
                           <CheckCircle2 className="h-3 w-3 text-success shrink-0" />
                         )}
                       </div>
-                      <span className="text-[11px] text-zinc-400 font-mono">@{c.username}</span>
+                      <span className="text-[11px] text-fg-secondary font-mono">@{c.username}</span>
                     </div>
-                    <ArrowRight className="h-4 w-4 text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <ArrowRight className="h-4 w-4 text-fg-muted opacity-0 group-hover:opacity-100 transition-opacity" />
                   </button>
                 ))}
               </div>
@@ -266,7 +266,7 @@ export function GlobalSearchModal({
                       <h4 className="text-xs font-semibold text-fg truncate group-hover:text-accent transition-colors">
                         {v.title}
                       </h4>
-                      <p className="text-[11px] text-zinc-400 mt-0.5">{v.creatorName}</p>
+                      <p className="text-[11px] text-fg-secondary mt-0.5">{v.creatorName}</p>
                     </div>
                     {v.visibility === "TIPPED_UNLOCKED" && (
                       <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 border border-accent/30 px-2 py-0.5 text-[10px] font-bold text-accent">
@@ -296,7 +296,7 @@ export function GlobalSearchModal({
                   >
                     <Hash className="h-3 w-3 text-accent" />
                     <span>{entry.tag}</span>
-                    <span className="font-mono text-[10px] text-zinc-500">{entry.count}</span>
+                    <span className="font-mono text-[10px] text-fg-muted">{entry.count}</span>
                   </button>
                 ))}
               </div>
@@ -305,14 +305,14 @@ export function GlobalSearchModal({
 
           {/* Empty State */}
           {query && !loading && creators.length === 0 && videos.length === 0 && tags.length === 0 && (
-            <div className="py-8 text-center text-xs text-zinc-400">
+            <div className="py-8 text-center text-xs text-fg-secondary">
               {t("search.empty", { query })}
             </div>
           )}
         </div>
 
         {/* Footer shortcuts */}
-        <div className="flex items-center justify-between border-t border-border-subtle bg-surface-2/60 px-4 py-2.5 text-[11px] text-zinc-500">
+        <div className="flex items-center justify-between border-t border-border-subtle bg-surface-2/60 px-4 py-2.5 text-[11px] text-fg-muted">
           <div className="flex items-center gap-3">
             <span><kbd className="rounded-sm border border-white/10 px-1 py-0.5">↑↓</kbd> {t("search.navigate")}</span>
             <span><kbd className="rounded-sm border border-white/10 px-1 py-0.5">↵</kbd> {t("search.select")}</span>

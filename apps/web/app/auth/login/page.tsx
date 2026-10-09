@@ -7,7 +7,7 @@ import { SocialSignIn } from "@/components/SocialSignIn";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { LogIn, Lock, Mail, ArrowRight, Sparkles } from "lucide-react";
-import { OrochiaLogo } from "@/components/ui";
+import { Button, Field, Input, OrochiaLogo } from "@/components/ui";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -63,62 +63,65 @@ export default function LoginPage() {
             <span>{t("auth.login.demo")}</span>
           </p>
           <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
+            <Button
+              variant="outline"
+              size="sm"
+              shape="rounded"
               onClick={async () => {
                 await switchProfile("creator");
                 router.push("/dashboard");
               }}
-              className="rounded-xl border border-accent/30 bg-accent/20 py-2 px-3 text-xs font-bold text-fg hover:bg-accent/40 transition-colors light:bg-white"
             >
               {t("auth.login.demoCreator")}
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              shape="rounded"
               onClick={async () => {
                 await switchProfile("patron");
                 router.push("/dashboard");
               }}
-              className="rounded-xl border border-accent/30 bg-accent/20 py-2 px-3 text-xs font-bold text-fg hover:bg-accent/40 transition-colors light:bg-white"
             >
               {t("auth.login.demoMember")}
-            </button>
+            </Button>
           </div>
         </div>
         )}
 
         <div className="relative mb-4"><SocialSignIn /></div>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="text-xs font-semibold uppercase tracking-wider text-fg-secondary mb-1.5 block">
+          <Field.Root>
+            <Field.Label htmlFor="identifier" className="uppercase tracking-wider">
               {t("auth.login.identifier")}
-            </label>
+            </Field.Label>
             <div className="relative">
-              <Mail className="absolute left-3.5 top-3 h-4 w-4 text-fg-muted" />
-              <input
+              <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-fg-muted" aria-hidden />
+              <Input
+                id="identifier"
                 type="text"
                 autoComplete="username"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t("auth.login.identifierPlaceholder")}
-                className="w-full rounded-xl border border-border-default bg-surface-2 pl-10 pr-4 py-2.5 text-sm text-fg placeholder:text-fg-muted focus:border-accent focus:outline-hidden"
+                className="rounded-xl pl-10"
               />
             </div>
-          </div>
+          </Field.Root>
 
-          <div>
-            <div className="mb-1.5 flex items-center justify-between">
-              <label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-fg-secondary">
+          <Field.Root>
+            <div className="flex items-center justify-between">
+              <Field.Label htmlFor="password" className="uppercase tracking-wider">
                 {t("auth.login.password")}
-              </label>
+              </Field.Label>
               <Link href="/auth/forgot-password" className="text-xs text-accent hover:underline">
                 {t("auth.login.forgot")}
               </Link>
             </div>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-3 h-4 w-4 text-fg-muted" />
-              <input
+              <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-fg-muted" aria-hidden />
+              <Input
                 id="password"
                 type="password"
                 autoComplete="current-password"
@@ -126,10 +129,10 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full rounded-xl border border-border-default bg-surface-2 pl-10 pr-4 py-2.5 text-sm text-fg placeholder:text-fg-muted focus:border-accent focus:outline-hidden"
+                className="rounded-xl pl-10"
               />
             </div>
-          </div>
+          </Field.Root>
 
           {error && (
             <p role="alert" className="rounded-xl border border-danger/30 bg-danger/10 px-3.5 py-2.5 text-xs text-danger">
@@ -137,14 +140,10 @@ export default function LoginPage() {
             </p>
           )}
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full py-3.5 rounded-xl bg-linear-to-r from-accent to-accent-2 hover:from-accent hover:to-accent-2 text-white font-bold text-sm shadow-lg shadow-accent/25 transition-all flex items-center justify-center gap-2 mt-6"
-          >
-            <LogIn className="h-4 w-4" />
+          <Button type="submit" variant="sensual" size="lg" shape="rounded" loading={isLoading} className="mt-6 w-full rounded-xl font-bold">
+            {!isLoading && <LogIn className="h-4 w-4" aria-hidden />}
             <span>{isLoading ? t("auth.login.submitting") : t("auth.login.submit")}</span>
-          </button>
+          </Button>
         </form>
 
         <p className="mt-6 text-center text-xs text-fg-secondary">

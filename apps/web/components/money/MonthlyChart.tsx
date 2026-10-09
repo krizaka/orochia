@@ -44,7 +44,7 @@ export function MonthlyChart({ data, label }: { data: { month: string; netCents:
           );
         })}
       </div>
-      <div className="mt-1.5 flex gap-[2px] text-center text-[10px] text-zinc-500">
+      <div className="mt-1.5 flex gap-[2px] text-center text-[10px] text-fg-muted">
         {data.map((d, i) => (
           <span key={d.month} className={`flex-1 ${i % 2 === 1 ? "invisible sm:visible" : ""}`}>
             {monthName(d.month)}

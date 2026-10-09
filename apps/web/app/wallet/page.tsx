@@ -162,7 +162,7 @@ function WalletPage() {
                     )}
                   >
                     <span className={cn("flex h-4 w-4 items-center justify-center rounded-full border-2", gateway === g ? "border-accent" : "border-zinc-500")}>{gateway === g && <span className="h-1.5 w-1.5 rounded-full bg-accent" />}</span>
-                    {g === "TEST" ? <Sparkles className="h-4 w-4 text-warning" /> : <Lock className="h-4 w-4 text-zinc-400" />}
+                    {g === "TEST" ? <Sparkles className="h-4 w-4 text-warning" /> : <Lock className="h-4 w-4 text-fg-secondary" />}
                     {t(`wallet.gateways.${g}` as MessageKey)}
                   </button>
                 ))}
@@ -172,7 +172,7 @@ function WalletPage() {
             <Button variant="sensual" size="lg" shape="rounded" className="mt-6 w-full" disabled={!chosen || !gateway} loading={busy} onClick={() => void buy()}>
               {busy ? t("wallet.processing") : chosen ? t("wallet.pay", { price: money(chosen.priceCents) }) : t("wallet.add")}
             </Button>
-            <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[11px] text-zinc-500">
+            <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[11px] text-fg-muted">
               <Lock className="h-3 w-3" /> {t("wallet.secure")}
             </p>
           </div>
@@ -184,7 +184,7 @@ function WalletPage() {
           {!wallet ? (
             <Loader2 className="mx-auto my-8 h-5 w-5 animate-spin text-accent" />
           ) : wallet.history.length === 0 ? (
-            <p className="py-8 text-center text-xs text-zinc-500">{t("wallet.empty")}</p>
+            <p className="py-8 text-center text-xs text-fg-muted">{t("wallet.empty")}</p>
           ) : (
             <ul className="divide-y divide-border-subtle">
               {wallet.history.map((h) => {
@@ -196,7 +196,7 @@ function WalletPage() {
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block text-sm font-medium text-fg">{t(`wallet.types.${h.type}`)}</span>
-                      <span className="block text-[11px] text-zinc-500">{new Date(h.createdAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>
+                      <span className="block text-[11px] text-fg-muted">{new Date(h.createdAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>
                     </span>
                     <span className={cn("font-mono text-sm font-semibold tabular-nums", h.amountCents >= 0 ? "text-success" : "text-fg-secondary")}>
                       {h.amountCents >= 0 ? "+" : "−"}

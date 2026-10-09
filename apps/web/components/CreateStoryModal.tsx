@@ -221,7 +221,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
               <p className="text-xs text-fg-secondary">{t("stories.create.subtitle")}</p>
             </div>
           </div>
-          <button onClick={closeAll} className="rounded-full p-1.5 text-zinc-400 hover:bg-surface-2" aria-label={t("common.close")}>
+          <button onClick={closeAll} className="rounded-full p-1.5 text-fg-secondary hover:bg-surface-2" aria-label={t("common.close")}>
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -278,14 +278,14 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
               >
                 <UploadCloud className="h-9 w-9 text-accent" />
                 <span className="text-sm font-semibold">{t("stories.create.choose")}</span>
-                <span className="text-xs text-zinc-500">{t("stories.create.chooseHint")}</span>
+                <span className="text-xs text-fg-muted">{t("stories.create.chooseHint")}</span>
               </button>
               </>
             )}
             {file && !isImage && !edited && <p className="text-xs text-warning">{t("stories.create.editFirst")}</p>}
 
             <label className="block text-xs font-semibold uppercase tracking-wider text-fg-secondary">
-              {t("stories.create.caption")} <span className="normal-case tracking-normal text-zinc-500">— {t("common.optional")}</span>
+              {t("stories.create.caption")} <span className="normal-case tracking-normal text-fg-muted">— {t("common.optional")}</span>
               <textarea
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
@@ -315,7 +315,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
               </div>
               {audience === "INVITED_ONLY" &&
                 (lists.length === 0 ? (
-                  <p className="mt-2 text-xs text-zinc-500">{t("stories.create.noList")}</p>
+                  <p className="mt-2 text-xs text-fg-muted">{t("stories.create.noList")}</p>
                 ) : (
                   <select
                     value={listId}

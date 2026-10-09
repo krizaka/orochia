@@ -201,7 +201,7 @@ export function CreatorStoriesBar() {
             </button>
           ))}
 
-          {rings?.length === 0 && isCreator && <p className="px-2 text-xs text-zinc-500">{t("stories.emptyCreator")}</p>}
+          {rings?.length === 0 && isCreator && <p className="px-2 text-xs text-fg-muted">{t("stories.emptyCreator")}</p>}
         </div>
       </div>
 

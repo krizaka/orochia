@@ -55,7 +55,7 @@ export function AgeVerificationModal() {
         </p>
 
         {/* Compliance Checklist */}
-        <div className="my-6 space-y-2.5 rounded-2xl border border-white/5 bg-zinc-900/60 p-4 text-left text-xs text-zinc-400">
+        <div className="my-6 space-y-2.5 rounded-2xl border border-white/5 bg-zinc-900/60 p-4 text-left text-xs text-fg-secondary">
           <div className="flex items-start gap-2.5">
             <CheckCircle className="h-4 w-4 shrink-0 text-accent mt-0.5" />
             <span>{t("ageGate.age")}</span>
@@ -80,14 +80,14 @@ export function AgeVerificationModal() {
           </button>
           <button
             onClick={handleDecline}
-            className="rounded-xl border border-white/10 bg-zinc-900 py-3.5 px-6 text-sm font-semibold text-zinc-400 transition-all hover:bg-white/10 hover:text-white"
+            className="rounded-xl border border-white/10 bg-zinc-900 py-3.5 px-6 text-sm font-semibold text-fg-secondary transition-all hover:bg-white/10 hover:text-white"
           >
             {t("ageGate.leave")}
           </button>
         </div>
 
         {/* Legal Links */}
-        <div className="mt-6 flex items-center justify-center gap-4 text-[11px] text-zinc-500">
+        <div className="mt-6 flex items-center justify-center gap-4 text-[11px] text-fg-muted">
           <Link href="/legal/terms" className="hover:text-zinc-300 transition-colors flex items-center gap-1">
             <span>{t("ageGate.termsLink")}</span>
             <ExternalLink className="h-2.5 w-2.5" />

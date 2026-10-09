@@ -99,7 +99,7 @@ export function InvitationsPanel() {
 
         <form onSubmit={handleCreateInvite} className="mt-4 flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Mail className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500" />
+            <Mail className="absolute left-3.5 top-3 h-4 w-4 text-fg-muted" />
             <input
               type="email"
               value={emailInput}
@@ -156,16 +156,16 @@ export function InvitationsPanel() {
       {/* Invitations History Table */}
       <div className="glass-panel rounded-3xl p-6 sm:p-8">
         <h3 className="text-xs font-bold uppercase tracking-widest text-fg-secondary mb-4">
-          {t("invites.sent")} <span className="font-mono text-zinc-500">({invitations.length})</span>
+          {t("invites.sent")} <span className="font-mono text-fg-muted">({invitations.length})</span>
         </h3>
 
         {loading ? (
-          <div className="py-8 text-center text-zinc-500">
+          <div className="py-8 text-center text-fg-muted">
             <Loader2 className="h-5 w-5 animate-spin mx-auto mb-2" />
             <span className="text-xs">{t("invites.loading")}</span>
           </div>
         ) : invitations.length === 0 ? (
-          <p className="text-xs text-zinc-500 py-6 text-center">
+          <p className="text-xs text-fg-muted py-6 text-center">
             {t("invites.empty")}
           </p>
         ) : (
@@ -185,7 +185,7 @@ export function InvitationsPanel() {
                   <tr key={inv.id} className="text-fg-secondary">
                     <td className="py-3 pr-4 font-mono font-bold text-accent">{inv.code}</td>
                     <td className="py-3 pr-4">
-                      {inv.email ? inv.email : <span className="text-zinc-500">{t("invites.openLink")}</span>}
+                      {inv.email ? inv.email : <span className="text-fg-muted">{t("invites.openLink")}</span>}
                     </td>
                     <td className="py-3 pr-4">
                       {inv.status === "ACCEPTED" ? (
@@ -193,7 +193,7 @@ export function InvitationsPanel() {
                           <UserCheck className="h-3 w-3" /> {t("invites.status.ACCEPTED")}
                         </span>
                       ) : inv.status === "EXPIRED" ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-zinc-800 px-2 py-0.5 text-[10px] font-bold text-zinc-400">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-zinc-800 px-2 py-0.5 text-[10px] font-bold text-fg-secondary">
                           <Clock className="h-3 w-3" /> {t("invites.status.EXPIRED")}
                         </span>
                       ) : (
@@ -202,7 +202,7 @@ export function InvitationsPanel() {
                         </span>
                       )}
                     </td>
-                    <td className="py-3 pr-4 text-zinc-500 font-mono text-[11px]">
+                    <td className="py-3 pr-4 text-fg-muted font-mono text-[11px]">
                       {new Date(inv.createdAt).toLocaleDateString([], {
                         month: "short",
                         day: "numeric",

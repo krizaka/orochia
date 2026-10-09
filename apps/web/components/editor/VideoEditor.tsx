@@ -189,7 +189,7 @@ export function VideoEditor({
             aria-current={active ? "true" : undefined}
             className={cn(
               "relative flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl text-[11px] font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
-              active ? "bg-white/8 text-white" : "text-zinc-400 hover:bg-white/4 hover:text-white",
+              active ? "bg-white/8 text-white" : "text-fg-secondary hover:bg-white/4 hover:text-white",
             )}
           >
             <Icon className="h-5 w-5" />
@@ -263,7 +263,7 @@ export function VideoEditor({
                 <IconButton label={playing ? t("editor.pause") : t("editor.play")} onClick={togglePlay} disabled={busy || duration === 0} className="h-9 w-9">
                   {playing ? <Pause className="h-4 w-4" fill="currentColor" /> : <Play className="ml-0.5 h-4 w-4" fill="currentColor" />}
                 </IconButton>
-                <span className="font-mono text-xs tabular-nums text-zinc-400">
+                <span className="font-mono text-xs tabular-nums text-fg-secondary">
                   <span className="text-white">{clock(Math.max(0, time - edit.startSeconds) / edit.speed)}</span> / {clock(keptSeconds)}
                 </span>
               </div>
@@ -283,7 +283,7 @@ export function VideoEditor({
           <div className="absolute inset-0 z-20 flex items-end justify-center bg-scrim-strong p-4 backdrop-blur-xs kz-overlay sm:items-center" role="alertdialog" aria-modal="true" aria-labelledby="leave-title" aria-describedby="leave-body">
             <div className="w-full max-w-sm rounded-3xl border border-white/10 bg-zinc-900 p-6 shadow-2xl">
               <h3 id="leave-title" className="text-base font-bold">{t("editor.discard.title")}</h3>
-              <p id="leave-body" className="mt-1.5 text-sm text-zinc-400">{t("editor.discard.body")}</p>
+              <p id="leave-body" className="mt-1.5 text-sm text-fg-secondary">{t("editor.discard.body")}</p>
               <div className="mt-6 grid gap-2">
                 <Button
                   variant="sensual"

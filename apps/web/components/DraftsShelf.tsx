@@ -70,7 +70,7 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
                 {d.thumbnailUrl ? (
                   <img src={d.thumbnailUrl} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" />
                 ) : (
-                  <span className="flex h-full w-full items-center justify-center text-zinc-500">
+                  <span className="flex h-full w-full items-center justify-center text-fg-muted">
                     <Clapperboard className="h-7 w-7" />
                   </span>
                 )}

@@ -104,7 +104,7 @@ export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModa
           <label className="block">
             <span className="mb-1.5 block text-xs font-semibold text-fg-secondary">{t("report.email")}</span>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className={field} />
-            <span className="mt-1 block text-[11px] text-zinc-500">{t("report.emailHint")}</span>
+            <span className="mt-1 block text-[11px] text-fg-muted">{t("report.emailHint")}</span>
           </label>
 
           {error && <p role="alert" className="rounded-xl border border-danger/30 bg-danger/10 px-3 py-2 text-xs text-danger">{error}</p>}

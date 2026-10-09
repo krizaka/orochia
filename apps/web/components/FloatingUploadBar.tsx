@@ -81,7 +81,7 @@ export function FloatingUploadBar() {
           <span className="text-[10px] bg-accent/30 text-accent font-mono px-2 py-0.5 rounded-full">
             {uploads.length}
           </span>
-          <ChevronUp className="h-3.5 w-3.5 text-zinc-400 group-hover:text-fg transition-colors" />
+          <ChevronUp className="h-3.5 w-3.5 text-fg-secondary group-hover:text-fg transition-colors" />
         </button>
       </div>
     );
@@ -111,7 +111,7 @@ export function FloatingUploadBar() {
         <div className="flex items-center gap-1">
           <button
             onClick={() => setIsDockMinimized(true)}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-fg hover:bg-surface-2 transition-colors"
+            className="p-1.5 rounded-lg text-fg-secondary hover:text-fg hover:bg-surface-2 transition-colors"
             title={t("uploads.minimize")} aria-label={t("uploads.minimize")}
           >
             <ChevronDown className="h-4 w-4" />
@@ -143,7 +143,7 @@ export function FloatingUploadBar() {
                 {item.status === "uploading" && (
                   <button
                     onClick={() => pauseUpload(item.id)}
-                    className="p-1 rounded-sm text-zinc-400 hover:text-fg hover:bg-white/10 transition-colors"
+                    className="p-1 rounded-sm text-fg-secondary hover:text-fg hover:bg-white/10 transition-colors"
                     title={t("uploads.pause")} aria-label={t("uploads.pause")}
                   >
                     <Pause className="h-3 w-3" />
@@ -161,7 +161,7 @@ export function FloatingUploadBar() {
                 {item.status !== "completed" && (
                   <button
                     onClick={() => cancelUpload(item.id)}
-                    className="p-1 rounded-sm text-zinc-400 hover:text-danger hover:bg-danger/10 transition-colors"
+                    className="p-1 rounded-sm text-fg-secondary hover:text-danger hover:bg-danger/10 transition-colors"
                     title={t("uploads.cancel")} aria-label={t("uploads.cancel")}
                   >
                     <X className="h-3 w-3" />
@@ -170,7 +170,7 @@ export function FloatingUploadBar() {
                 {item.status === "completed" && (
                   <button
                     onClick={() => dismissUpload(item.id)}
-                    className="p-1 rounded-sm text-zinc-400 hover:text-fg hover:bg-white/10 transition-colors"
+                    className="p-1 rounded-sm text-fg-secondary hover:text-fg hover:bg-white/10 transition-colors"
                     title={t("uploads.dismiss")} aria-label={t("uploads.dismiss")}
                   >
                     <X className="h-3 w-3" />

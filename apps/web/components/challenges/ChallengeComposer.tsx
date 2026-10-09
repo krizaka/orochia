@@ -257,7 +257,7 @@ export function ChallengeComposer({
         <label className={label}>
           {t(`challenge.compose.amount.${kind}`)}
           <span className="relative mt-1 block">
-            <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-zinc-500">$</span>
+            <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-fg-muted">$</span>
             <input
               value={amount}
               onChange={(e) => setAmount(e.target.value)}

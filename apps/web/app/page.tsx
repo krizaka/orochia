@@ -90,7 +90,7 @@ export default async function HomePage() {
               ))}
             </ul>
             {stats.videos > 0 && (
-              <p className="hero-fade mt-4 font-mono text-[11px] text-zinc-500 [animation-delay:400ms]">
+              <p className="hero-fade mt-4 font-mono text-[11px] text-fg-muted [animation-delay:400ms]">
                 {t("home.stats", { videos: stats.videos.toLocaleString("en-US"), creators: stats.creators.toLocaleString("en-US") })}
               </p>
             )}
@@ -205,7 +205,7 @@ export default async function HomePage() {
               <p className="text-[11px] font-semibold uppercase tracking-wider text-accent">{t("home.featured")}</p>
               <h3 className="mt-1 text-xl font-bold text-fg">{feat.displayName}</h3>
               {feat.bio && <p className="mt-1 line-clamp-2 text-sm text-fg-secondary">{feat.bio}</p>}
-              <p className="mt-2 font-mono text-xs text-zinc-500">
+              <p className="mt-2 font-mono text-xs text-fg-muted">
                 {t("home.figures.videos", { count: feat.videosCount })} · {t("home.figures.views", { count: feat.totalViews.toLocaleString("en-US") })}
               </p>
             </div>

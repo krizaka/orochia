@@ -286,7 +286,7 @@ export function AuctionPanel({
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm font-medium text-fg">{bidderName(b.alias, b.mine)}</span>
-                    <span className="block text-[11px] text-zinc-500">{timeAgo(b.createdAt)}</span>
+                    <span className="block text-[11px] text-fg-muted">{timeAgo(b.createdAt)}</span>
                   </span>
                   {i === 0 && a.status !== "DECLINED" && a.status !== "CANCELLED" && <Trophy className="h-3.5 w-3.5 text-warning" aria-label={t("auction.leading")} />}
                   <span className="font-mono text-sm font-semibold tabular-nums text-fg">{money(b.amountCents)}</span>
