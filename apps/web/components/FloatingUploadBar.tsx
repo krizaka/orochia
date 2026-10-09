@@ -1,22 +1,23 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
 import {
-  UploadCloud,
+  AlertCircle,
+  CheckCircle,
   ChevronDown,
   ChevronUp,
+  Film,
   Pause,
   Play,
-  X,
-  CheckCircle,
-  AlertCircle,
-  Film,
   Sparkles,
+  UploadCloud,
+  X,
 } from "lucide-react";
-import { useUploadManager, type UploadItem } from "@/lib/upload-manager";
-import { t } from "@/lib/i18n";
+import Link from "next/link";
+import React from "react";
+
 import { cn, IconButton, Spinner } from "@/components/ui";
+import { t } from "@/lib/i18n";
+import { type UploadItem,useUploadManager } from "@/lib/upload-manager";
 
 function formatBytes(bytes: number): string {
   if (bytes <= 0) return "0 B";
@@ -91,7 +92,7 @@ export function FloatingUploadBar() {
   return (
     <aside
       aria-label={t("uploads.label")}
-      className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-96 rounded-2xl border border-border-default bg-surface-1/95 p-4 shadow-2xl backdrop-blur-2xl light:text-slate-900"
+      className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-96 rounded-2xl border border-border-default bg-surface-1/95 p-4 shadow-2xl text-fg backdrop-blur-2xl"
     >
       {/* Header */}
       <div className="flex items-center justify-between pb-3 border-b border-border-default">

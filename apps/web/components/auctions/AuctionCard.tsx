@@ -1,66 +1,54 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
 import { Download, Gavel, Play, Trophy } from "lucide-react";
-import { Avatar, Badge, Countdown } from "@/components/ui";
-import { money } from "@/lib/money";
+import Link from "next/link";
+
+import { Avatar, Badge, Card, Countdown } from "@/components/ui";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
-import { AuctionStatusBadge } from "./AuctionPanel";
-import type { AuctionCard as Card } from "./types";
+import { money } from "@/lib/money";
 
-const UNITS = () => ({ d: t("auction.units.d"), h: t("auction.units.h"), m: t("auction.units.m"), s: t("auction.units.s") });
+import { auctionCountdown, auctionPrice } from "./auction-presenter";
+import { AuctionStatusBadge } from "./AuctionStatusBadge";
+import type { AuctionCard as AuctionCardView } from "./types";
 
 /** An auction in a list: picture, state, price, countdown, creator — the whole card opens its watch page. */
-export function AuctionCard({ auction: a, index = 0 }: { auction: Card; index?: number }) {
-  const price = a.bidsCount > 0 ? a.highestBidCents : a.startingPriceCents;
+export function AuctionCard({ auction: a, index = 0 }: { auction: AuctionCardView; index?: number }) {
+  const price = auctionPrice(a);
+  const countdown = auctionCountdown(a);
   return (
-    <Link
-      href={`/watch/${a.videoId}#auction`}
-      data-reveal
-      style={{ "--kz-delay": `${Math.min(index, 8) * 50}ms` } as React.CSSProperties}
-      className="kz-spotlight kz-lift group flex flex-col overflow-hidden rounded-2xl border border-border-default bg-surface-1/70 transition-colors hover:border-accent/50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
-    >
-      <div className="relative aspect-video overflow-hidden bg-zinc-900">
-        {a.thumbnailUrl ? (
-          <img src={a.thumbnailUrl} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-accent/15 via-surface-1 to-accent-2/15">
-            <Gavel className="h-10 w-10 text-accent/60" />
-          </div>
-        )}
-        <div className="theme-dark absolute left-2.5 top-2.5 flex gap-1.5">
-          <AuctionStatusBadge phase={a.phase} className="bg-scrim" />
-          {a.leading && (
-            <Badge size="md" className="bg-success/90 text-white ring-0">
-              <Trophy className="h-3 w-3" aria-hidden /> {t(a.phase === "SOLD" ? "auction.phase.SOLD" : "auction.leading")}
+    <Card.Root asChild interactive tone="glass" reveal={index}>
+      <Link href={`/watch/${a.videoId}#auction`}>
+        <Card.Media>
+          <Card.Image src={a.thumbnailUrl} fallback={<Gavel className="h-10 w-10" />} />
+          <Card.Overlay corner="top-left" className="theme-dark">
+            <AuctionStatusBadge phase={a.phase} className="bg-scrim-strong backdrop-blur-md" />
+            {a.leading && (
+              <Badge tone="success" size="md" className="bg-scrim-strong backdrop-blur-md">
+                <Trophy className="h-3 w-3" aria-hidden /> {t(a.phase === "SOLD" ? "auction.phase.SOLD" : "auction.leading")}
+              </Badge>
+            )}
+          </Card.Overlay>
+          <Card.Overlay corner="bottom-right">
+            <Badge tone="scrim" className="normal-case tracking-normal">
+              {a.rights === "DOWNLOAD" ? <Download className="h-3 w-3" aria-hidden /> : <Play className="h-3 w-3" aria-hidden />}
+              {t(`auction.rights.${a.rights}`)}
             </Badge>
-          )}
-        </div>
-        <Badge size="sm" tone="scrim" className="absolute bottom-2.5 right-2.5 normal-case tracking-normal">
-          {a.rights === "DOWNLOAD" ? <Download className="h-3 w-3" aria-hidden /> : <Play className="h-3 w-3" aria-hidden />}
-          {t(`auction.rights.${a.rights}`)}
-        </Badge>
-      </div>
-      <div className="flex flex-1 flex-col gap-3 p-4">
-        <h3 className="line-clamp-1 text-sm font-semibold text-fg group-hover:text-accent">{a.title}</h3>
-        <div className="flex items-end justify-between gap-3">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-fg-muted">
-              {a.bidsCount > 0 ? t(a.phase === "SOLD" ? "auction.soldFor" : "auction.currentBid") : t("auction.startingPrice")}
-            </p>
-            <p className="font-display text-xl font-black tabular-nums text-fg">{money(price)}</p>
+          </Card.Overlay>
+        </Card.Media>
+        <Card.Body>
+          <Card.Title>{a.title}</Card.Title>
+          <div className="flex items-end justify-between gap-3">
+            <Card.Stat label={t(price.labelKey)}>{money(price.cents)}</Card.Stat>
+            {countdown && <Countdown size="sm" label={t(countdown.labelKey)} target={countdown.target} />}
           </div>
-          {a.phase === "OPEN" && <Countdown label={t("auction.endsIn")} target={a.endsAt} units={UNITS()} size="sm" />}
-          {a.phase === "UPCOMING" && <Countdown label={t("auction.startsIn")} target={a.startsAt} units={UNITS()} size="sm" />}
-        </div>
-        <div className="mt-auto flex items-center gap-2 border-t border-border-subtle pt-3 text-xs text-fg-secondary">
-          <Avatar size="xs" src={a.creatorAvatar || AVATAR_PLACEHOLDER} fallback={a.creatorName.charAt(0)} />
-          <span className="min-w-0 flex-1 truncate">{a.creatorName}</span>
-          <span className="shrink-0 tabular-nums">{t("auction.bids", { count: a.bidsCount })}</span>
-        </div>
-      </div>
-    </Link>
+          <Card.Footer>
+            <Avatar src={a.creatorAvatar || AVATAR_PLACEHOLDER} size="xs" fallback={a.creatorName.charAt(0)} />
+            <span className="min-w-0 flex-1 truncate">{a.creatorName}</span>
+            <span className="shrink-0 tabular-nums">{t("auction.bids", { count: a.bidsCount })}</span>
+          </Card.Footer>
+        </Card.Body>
+      </Link>
+    </Card.Root>
   );
 }

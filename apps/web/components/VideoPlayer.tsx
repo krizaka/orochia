@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
 import { Gavel, Lock, Maximize, Pause, Play, Sparkles, Users, Volume2, VolumeX } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+
+import { Badge, Button, cn, IconButton } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
-import { Badge, Button, cn, IconButton } from "@/components/ui";
 
 interface VideoPlayerProps {
   videoId: string;
@@ -241,8 +242,8 @@ export function VideoPlayer({
       {/* Contacts-only / followers-only gate */}
       {!isPaywalled && isGated && (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-scrim-strong backdrop-blur-md p-6 text-center">
-          <div className="flex h-11 w-11 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-zinc-800/80 border border-zinc-700/50 mb-2 sm:mb-4">
-            {isAuction ? <Gavel className="h-5 w-5 sm:h-8 sm:w-8 text-accent" /> : <Users className="h-5 w-5 sm:h-8 sm:w-8 text-zinc-300" />}
+          <div className="flex h-11 w-11 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-scrim-strong border border-fg-on-media/20 mb-2 sm:mb-4">
+            {isAuction ? <Gavel className="h-5 w-5 sm:h-8 sm:w-8 text-accent" /> : <Users className="h-5 w-5 sm:h-8 sm:w-8 text-fg-on-media/80" />}
           </div>
           <h3 className="text-base sm:text-xl font-bold text-white mb-1">
             {t(isAuction ? "player.auctionTitle" : isChallenge ? "player.challengeTitle" : isInvitedOnly ? "player.invitedTitle" : isFollowersOnly ? "player.followersTitle" : "player.contactsTitle")}
@@ -305,7 +306,7 @@ export function VideoPlayer({
               </div>
 
               {/* Time Display */}
-              <div className="text-xs text-zinc-300 font-mono">
+              <div className="text-xs text-fg-on-media/80 font-mono">
                 {formatTime(currentTime)} / {formatTime(duration)}
               </div>
             </div>

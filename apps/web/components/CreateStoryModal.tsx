@@ -1,15 +1,16 @@
 "use client";
 
+import { UPLOAD_LIMITS } from "@orochia/media/limits";
+import { CheckCircle2, Image as ImageIcon, Scissors, Sparkles, UploadCloud } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import * as tus from "tus-js-client";
-import { CheckCircle2, Image as ImageIcon, Scissors, Sparkles, UploadCloud, X } from "lucide-react";
-import { Button, cn, IconButton, Select, Textarea } from "@/components/ui";
-import { VideoEditor } from "@/components/VideoEditor";
+
 import { DraftsShelf } from "@/components/DraftsShelf";
-import { UPLOAD_LIMITS } from "@orochia/media/limits";
-import { EDITOR_MAX_BYTES, type VideoEdit } from "@/lib/video-edit";
+import { Button, cn, Dialog, Select, Sheet, Textarea } from "@/components/ui";
+import { VideoEditor } from "@/components/VideoEditor";
 import { deleteDraft } from "@/lib/drafts";
 import { t } from "@/lib/i18n";
+import { EDITOR_MAX_BYTES, type VideoEdit } from "@/lib/video-edit";
 
 type Audience = "PUBLIC" | "APPROVED_FOLLOWERS_ONLY" | "CONTACTS_ONLY" | "INVITED_ONLY";
 const AUDIENCES: Audience[] = ["PUBLIC", "APPROVED_FOLLOWERS_ONLY", "CONTACTS_ONLY", "INVITED_ONLY"];
@@ -210,23 +211,18 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-scrim-strong p-0 backdrop-blur-md kz-overlay sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="story-title">
-      <div className="kz-dialog max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border border-border-default bg-surface-1 p-6 text-fg shadow-2xl sm:rounded-3xl">
-        <div className="flex items-start justify-between gap-3 border-b border-border-default pb-4">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent/20 text-accent">
-              <Sparkles className="h-4 w-4" />
-            </div>
-            <div>
-              <h2 id="story-title" className="text-base font-bold">{t("stories.create.title")}</h2>
-              <p className="text-xs text-fg-secondary">{t("stories.create.subtitle")}</p>
-            </div>
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && closeAll()}>
+      <Sheet size="md">
+        <Dialog.Header className="flex-row items-center gap-2.5 border-b border-border-default pb-4">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent/20 text-accent">
+            <Sparkles className="h-4 w-4" aria-hidden />
           </div>
-          <IconButton onClick={closeAll} className="h-8 w-8" label={t("common.close")}>
-            <X className="h-4 w-4" aria-hidden />
-          </IconButton>
-        </div>
-
+          <div>
+            <Dialog.Title>{t("stories.create.title")}</Dialog.Title>
+            <Dialog.Description className="text-xs">{t("stories.create.subtitle")}</Dialog.Description>
+          </div>
+        </Dialog.Header>
+        <Dialog.Body>
         {state === "done" ? (
           <div className="py-10 text-center">
             <CheckCircle2 className="mx-auto h-12 w-12 text-success" />
@@ -239,7 +235,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
           <form onSubmit={publish} className="mt-5 space-y-5">
             <input ref={input} type="file" accept="image/jpeg,image/png,image/webp,video/*" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
             {file && preview ? (
-              <div className="relative overflow-hidden rounded-2xl border border-border-default bg-black">
+              <div className="relative overflow-hidden rounded-2xl border border-border-default bg-media">
                 <div className="mx-auto aspect-9/16 max-h-80">
                   {isImage ? <img src={preview} alt="" className="h-full w-full object-cover" /> : <video src={preview} className="h-full w-full object-cover" muted playsInline controls />}
                 </div>
@@ -381,7 +377,8 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
             </Button>
           </form>
         )}
-      </div>
-    </div>
+        </Dialog.Body>
+      </Sheet>
+    </Dialog.Root>
   );
 }

@@ -1,11 +1,13 @@
 "use client";
 
-import React, { forwardRef, useRef, useState } from "react";
 import { Hand, Play } from "lucide-react";
-import { Spinner, cn } from "@/components/ui";
-import { previewFilter, type VideoEdit } from "@/lib/video-edit";
-import { useElementSize } from "./media";
+import React, { forwardRef, useRef, useState } from "react";
+
+import { cn,Spinner } from "@/components/ui";
 import { t } from "@/lib/i18n";
+import { previewFilter, type VideoEdit } from "@/lib/video-edit";
+
+import { useElementSize } from "./media";
 
 export interface StageProgress {
   label: string;
@@ -59,7 +61,7 @@ export const Stage = forwardRef<
     <div ref={box} className="relative flex min-h-0 flex-1 items-center justify-center">
       <div
         className={cn(
-          "relative overflow-hidden rounded-[1.25rem] bg-zinc-900 shadow-2xl shadow-black/60",
+          "relative overflow-hidden rounded-[1.25rem] bg-surface-1 shadow-2xl shadow-black/60",
           pannable ? (dragging ? "cursor-grabbing" : "cursor-grab") : "cursor-pointer",
           "touch-none"
         )}

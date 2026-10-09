@@ -1,26 +1,29 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
 import { AlertTriangle, Gavel, Pencil, Trash2, Users } from "lucide-react";
+import Link from "next/link";
+import React, { useState } from "react";
+
+import { Rich } from "@/components/Rich";
 import {
   Badge,
   Button,
+  cn,
   ConfirmIconButton,
+  Dialog,
   IconButton,
   Input,
   Select,
   Sheet,
   Textarea,
-  cn,
 } from "@/components/ui";
-import { money } from "@/lib/money";
-import { Rich } from "@/components/Rich";
 import { t } from "@/lib/i18n";
-import { AudienceEditor } from "../AudienceEditor";
-import { StartAuctionSheet } from "../auctions/StartAuctionSheet";
-import { CHOOSABLE_VISIBILITIES } from "@/lib/visibility";
+import { money } from "@/lib/money";
 import type { VideoVisibility } from "@/lib/visibility";
+import { CHOOSABLE_VISIBILITIES } from "@/lib/visibility";
+
+import { StartAuctionSheet } from "../auctions/StartAuctionSheet";
+import { AudienceEditor } from "../AudienceEditor";
 
 export interface StudioVideo {
   id: string;
@@ -178,64 +181,65 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
         </tbody>
       </table>
 
-      <Sheet
-        open={editing !== null}
-        onClose={() => setEditing(null)}
-        title={t("studio.editTitle")}
-        footer={
-          <div className="flex justify-end gap-2">
-            <Button variant="secondary" onClick={() => setEditing(null)}>{t("common.cancel")}</Button>
-            <Button variant="sensual" type="submit" form="studio-edit" loading={busy}>{t("common.save")}</Button>
-          </div>
-        }
-      >
-        {editing && (
-          <form id="studio-edit" key={editing.id} onSubmit={save} className="space-y-4">
-            <label className={label}>
-              {t("studio.title")}
-              <Input name="title" defaultValue={editing.title} required minLength={3} maxLength={255} className="mt-1 rounded-xl" />
-            </label>
-            <label className={label}>
-              {t("studio.description")}
-              <Textarea name="description" defaultValue={editing.description ?? ""} maxLength={5000} rows={3} className="mt-1 rounded-xl" />
-            </label>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <label className={label}>
-                {t("studio.visibility")}
-                {visibility === "AUCTION" || visibility === "CHALLENGE" ? (
-                  <span className={cn(field, "flex items-center gap-1.5 text-fg-secondary")}>
-                    <Gavel className="h-3.5 w-3.5" aria-hidden /> {t(visibility === "AUCTION" ? "studio.auctionLocked" : "studio.challengeLocked")}
-                  </span>
-                ) : (
-                  <Select name="visibility" value={visibility} onChange={(e) => setVisibility(e.target.value as StudioVideo["visibility"])} className="mt-1 rounded-xl">
-                    {CHOOSABLE_VISIBILITIES.map((value) => <option key={value} value={value}>{visibilityLabel(value)}</option>)}
-                  </Select>
-                )}
-              </label>
-              {visibility === "TIPPED_UNLOCKED" && (
+      <Dialog.Root open={editing !== null} onOpenChange={(open) => !open && setEditing(null)}>
+        <Sheet size="md" aria-describedby={undefined}>
+          <Dialog.Header>
+            <Dialog.Title>{t("studio.editTitle")}</Dialog.Title>
+          </Dialog.Header>
+          <Dialog.Body>
+            {editing && (
+              <form id="studio-edit" key={editing.id} onSubmit={save} className="space-y-4">
                 <label className={label}>
-                  {t("studio.price")}
-                  <Input name="price" type="number" min={1} step={0.5} defaultValue={Math.max(editing.minTipAmountCents / 100, 5)} className="mt-1 rounded-xl" />
+                  {t("studio.title")}
+                  <Input name="title" defaultValue={editing.title} required minLength={3} maxLength={255} className="mt-1 rounded-xl" />
                 </label>
-              )}
-            </div>
-            <label className={label}>
-              {t("studio.tags")}
-              <Input name="tags" defaultValue={editing.tags.join(", ")} maxLength={500} className="mt-1 rounded-xl" />
-            </label>
-            {error && <p role="alert" className="text-xs text-danger">{error}</p>}
-          </form>
-        )}
-        {/* Outside the form: the audience editor saves on its own (and has its own form). */}
-        {editing && visibility === "INVITED_ONLY" && (
-          <div className={cn(label, "mt-4")}>
-            {t("studio.audience")}
-            <div className="mt-1">
-              <AudienceEditor endpoint={`/api/videos/${editing.id}/audience`} />
-            </div>
-          </div>
-        )}
-      </Sheet>
+                <label className={label}>
+                  {t("studio.description")}
+                  <Textarea name="description" defaultValue={editing.description ?? ""} maxLength={5000} rows={3} className="mt-1 rounded-xl" />
+                </label>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <label className={label}>
+                    {t("studio.visibility")}
+                    {visibility === "AUCTION" || visibility === "CHALLENGE" ? (
+                      <span className={cn(field, "flex items-center gap-1.5 text-fg-secondary")}>
+                        <Gavel className="h-3.5 w-3.5" aria-hidden /> {t(visibility === "AUCTION" ? "studio.auctionLocked" : "studio.challengeLocked")}
+                      </span>
+                    ) : (
+                      <Select name="visibility" value={visibility} onChange={(e) => setVisibility(e.target.value as StudioVideo["visibility"])} className="mt-1 rounded-xl">
+                        {CHOOSABLE_VISIBILITIES.map((value) => <option key={value} value={value}>{visibilityLabel(value)}</option>)}
+                      </Select>
+                    )}
+                  </label>
+                  {visibility === "TIPPED_UNLOCKED" && (
+                    <label className={label}>
+                      {t("studio.price")}
+                      <Input name="price" type="number" min={1} step={0.5} defaultValue={Math.max(editing.minTipAmountCents / 100, 5)} className="mt-1 rounded-xl" />
+                    </label>
+                  )}
+                </div>
+                <label className={label}>
+                  {t("studio.tags")}
+                  <Input name="tags" defaultValue={editing.tags.join(", ")} maxLength={500} className="mt-1 rounded-xl" />
+                </label>
+                {error && <p role="alert" className="text-xs text-danger">{error}</p>}
+              </form>
+            )}
+            {/* Outside the form: the audience editor saves on its own (and has its own form). */}
+            {editing && visibility === "INVITED_ONLY" && (
+              <div className={cn(label, "mt-4")}>
+                {t("studio.audience")}
+                <div className="mt-1">
+                  <AudienceEditor endpoint={`/api/videos/${editing.id}/audience`} />
+                </div>
+              </div>
+            )}
+          </Dialog.Body>
+          <Dialog.Footer>
+            <Button variant="secondary" onClick={() => setEditing(null)}>{t("common.cancel")}</Button>
+                        <Button variant="sensual" type="submit" form="studio-edit" loading={busy}>{t("common.save")}</Button>
+          </Dialog.Footer>
+        </Sheet>
+      </Dialog.Root>
 
       {auctioning && <StartAuctionSheet video={auctioning} open onClose={() => setAuctioning(null)} />}
     </div>

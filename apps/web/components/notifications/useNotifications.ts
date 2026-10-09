@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export interface NotificationItem {
   id: string;
@@ -16,12 +16,15 @@ export interface NotificationItem {
  * The signed-in account's notifications: loaded once, kept live by the realtime stream (new ones arrive at once),
  * refreshed every minute as a fallback (several app instances do not share the stream).
  */
-export function useNotifications(enabled: boolean) {
+export function useNotifications(enabled: boolean, { onLive }: { onLive?: (n: NotificationItem) => void } = {}) {
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [unread, setUnread] = useState(0);
   const [loaded, setLoaded] = useState(false);
-  /** Notifications that arrived live while the page was open — shown as toasts, then dismissed. */
-  const [fresh, setFresh] = useState<NotificationItem[]>([]);
+  /** Called for each notification that arrives live while the page is open (the bell shows it as a toast). */
+  const live = useRef(onLive);
+  useEffect(() => {
+    live.current = onLive;
+  });
 
   const load = useCallback(async () => {
     const res = await fetch("/api/me/notifications", { cache: "no-store" }).catch(() => null);
@@ -43,7 +46,7 @@ export function useNotifications(enabled: boolean) {
         if (event.type === "notification" && event.notification) {
           setItems((all) => [event.notification!, ...all.filter((n) => n.id !== event.notification!.id)]);
           setUnread((n) => n + 1);
-          setFresh((all) => [event.notification!, ...all.filter((n) => n.id !== event.notification!.id)].slice(0, 3));
+          live.current?.(event.notification);
         }
       } catch {
         /* heartbeat or malformed */
@@ -62,9 +65,7 @@ export function useNotifications(enabled: boolean) {
     await fetch("/api/me/notifications", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(ids === "all" ? { all: true } : { ids }) }).catch(() => undefined);
   }, []);
 
-  const dismiss = useCallback((id: string) => setFresh((all) => all.filter((n) => n.id !== id)), []);
-
-  return { items, unread, loaded, markRead, reload: load, fresh, dismiss };
+  return { items, unread, loaded, markRead, reload: load };
 }
 
 const rtf = typeof Intl !== "undefined" ? new Intl.RelativeTimeFormat("en", { numeric: "auto", style: "short" }) : null;

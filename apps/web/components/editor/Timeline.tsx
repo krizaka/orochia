@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useRef } from "react";
-import { FILMSTRIP_FRAMES, clock } from "./media";
-import { t } from "@/lib/i18n";
+
 import { cn, Skeleton } from "@/components/ui";
+import { t } from "@/lib/i18n";
+
+import { clock,FILMSTRIP_FRAMES } from "./media";
 
 type Grip = "start" | "end" | "playhead";
 
@@ -67,7 +69,7 @@ export function Timeline({
       </div>
       <div
         ref={strip}
-        className="relative h-16 touch-none rounded-xl bg-zinc-900"
+        className="relative h-16 touch-none rounded-xl bg-surface-1"
         onPointerDown={(e) => begin("playhead", e)}
         onPointerMove={(e) => grip.current && drag(e.clientX)}
         onPointerUp={() => (grip.current = null)}
@@ -99,14 +101,14 @@ export function Timeline({
             onPointerDown={(e) => begin(which, e)}
             onKeyDown={(e) => nudge(which, e)}
             className={cn(
-              "absolute inset-y-0 z-10 flex w-6 cursor-ew-resize items-center justify-center bg-white text-zinc-900 shadow-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
+              "absolute inset-y-0 z-10 flex w-6 cursor-ew-resize items-center justify-center bg-white text-surface-0 shadow-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
               which === "start" ? "rounded-l-xl" : "-translate-x-full rounded-r-xl"
             )}
             style={{ left: `${pct(which === "start" ? start : end)}%` }}
           >
             <span className="flex gap-[3px]">
-              <span className="h-5 w-[2px] rounded-sm bg-zinc-400" />
-              <span className="h-5 w-[2px] rounded-sm bg-zinc-400" />
+              <span className="h-5 w-[2px] rounded-sm bg-fg-muted" />
+              <span className="h-5 w-[2px] rounded-sm bg-fg-muted" />
             </span>
           </div>
         ))}

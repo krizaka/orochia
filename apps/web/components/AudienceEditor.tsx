@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { ListChecks, UserPlus, X } from "lucide-react";
-import { t } from "@/lib/i18n";
+import Link from "next/link";
+import React, { useCallback, useEffect, useState } from "react";
+
 import { Button, IconButton, Input, Select } from "@/components/ui";
+import { t } from "@/lib/i18n";
 
 interface Person {
   userId: string;
@@ -59,7 +60,7 @@ export function AudienceEditor({ endpoint, onChange }: { endpoint: string; onCha
   const empty = people !== null && people.length === 0 && attached.length === 0;
 
   return (
-    <div className="space-y-3 rounded-2xl border border-border-subtle bg-black/20 p-3 light:bg-slate-50/70">
+    <div className="space-y-3 rounded-2xl border border-border-subtle bg-surface-2/60 p-3">
       <form
         onSubmit={async (e) => {
           e.preventDefault();

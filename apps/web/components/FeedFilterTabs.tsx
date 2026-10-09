@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Clapperboard, Flame, Sparkles, Lock, Gift, Users, LayoutGrid, Rows3 } from "lucide-react";
-import { Avatar, Badge, buttonVariants, cn, orochiaButton } from "@/components/ui";
-import { t } from "@/lib/i18n";
-import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
+import { Clapperboard, Flame, Gift, LayoutGrid, Lock, Rows3,Sparkles, Users } from "lucide-react";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import React, { useMemo,useState } from "react";
+
+import { Avatar, Badge, buttonVariants, cn, orochiaButton } from "@/components/ui";
+import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
+import { t } from "@/lib/i18n";
 
 interface FeedFilterTabsProps {
   initialVideos: VideoCardProps[];
@@ -174,7 +175,7 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
               </div>
 
               {/* Large Media Preview */}
-              <Link href={`/watch/${video.id}`} className="relative block aspect-video w-full overflow-hidden bg-zinc-900 group">
+              <Link href={`/watch/${video.id}`} className="relative block aspect-video w-full overflow-hidden bg-media group">
                 {video.thumbnailUrl ? (
                   <img
                     src={video.thumbnailUrl}
@@ -182,16 +183,16 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-accent/15 via-zinc-950 to-accent-2/15 text-accent light:via-slate-50">
+                  <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-accent/15 via-media to-accent-2/15 text-accent">
                     <span className="font-display text-sm font-bold text-accent">{t("feed.noThumbnail")}</span>
                   </div>
                 )}
                 <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
                   <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-white drop-shadow-md">
+                    <h3 className="text-lg sm:text-xl font-bold text-fg-on-media drop-shadow-md">
                       {video.title}
                     </h3>
-                    <div className="mt-2 flex items-center gap-3 text-xs text-zinc-300 font-mono">
+                    <div className="mt-2 flex items-center gap-3 text-xs text-fg-on-media/80 font-mono">
                       <span>{t("feed.views", { count: video.viewsCount.toLocaleString("en-US") })}</span>
                       <span>•</span>
                       <span>{t("feed.minutes", { count: Math.max(1, Math.round(video.durationSeconds / 60)) })}</span>

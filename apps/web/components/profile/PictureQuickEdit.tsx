@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
 import { Camera, ImagePlus, Palette, Trash2 } from "lucide-react";
-import { Button, cn, Skeleton, Spinner } from "@/components/ui";
+import React, { useEffect, useRef, useState } from "react";
+
+import { Button, cn, Dialog, Sheet, Skeleton, Spinner } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 interface Preset {
@@ -118,37 +119,34 @@ export function PictureQuickEdit({
         </div>
       )}
       <input ref={input} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => void upload(e.target.files?.[0])} />
-      {error && <p role="alert" className="absolute mt-2 w-64 rounded-lg bg-danger px-3 py-2 text-xs text-white shadow-lg">{error}</p>}
+      {error && <p role="alert" className="absolute mt-2 w-64 rounded-lg bg-danger px-3 py-2 text-xs text-fg-on-media shadow-lg">{error}</p>}
 
-      {choosing && (
-        <div className="fixed inset-0 z-70 flex items-end justify-center bg-scrim-strong backdrop-blur-xs kz-overlay sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label={t("settings.pictures.presetsTitle")} onClick={() => setChoosing(false)}>
-          <div className="w-full max-w-lg rounded-t-3xl border border-border-default bg-surface-1 p-5 shadow-2xl sm:rounded-3xl" onClick={(e) => e.stopPropagation()}>
-            <h4 className="mb-4 text-sm font-bold text-fg">{t("settings.pictures.presetsTitle")}</h4>
-            <div className={cn(
-              "grid max-h-[60vh] gap-3 overflow-y-auto p-1",
-              isAvatar ? "grid-cols-4" : "grid-cols-2"
-            )}>
+      <Dialog.Root open={choosing} onOpenChange={setChoosing}>
+        <Sheet size="lg" aria-describedby={undefined}>
+          <Dialog.Header>
+            <Dialog.Title>{t("settings.pictures.presetsTitle")}</Dialog.Title>
+          </Dialog.Header>
+          <Dialog.Body>
+            <div className={cn("grid max-h-[60vh] gap-3 overflow-y-auto p-1", isAvatar ? "grid-cols-4" : "grid-cols-2")}>
               {presets.length === 0
                 ? Array.from({ length: isAvatar ? 8 : 6 }, (_, i) => <Skeleton key={i} shape="rect" className={cn("h-auto rounded-2xl", isAvatar ? "aspect-square" : "aspect-3/1")} />)
                 : presets.map((p) => (
                     <button
                       key={p.id}
                       type="button"
-                      onClick={() => { setChoosing(false); void save(p.id, p.url); }}
-                      className="overflow-hidden rounded-2xl ring-2 ring-transparent transition-all hover:scale-[1.03] hover:ring-ring"
+                      onClick={() => {
+                        setChoosing(false);
+                        void save(p.id, p.url);
+                      }}
+                      className="overflow-hidden rounded-2xl ring-2 ring-transparent transition-all hover:scale-[1.03] hover:ring-ring focus-visible:outline-hidden focus-visible:ring-ring"
                     >
                       <img src={p.url} alt={p.name} className={cn("w-full object-cover", isAvatar ? "aspect-square" : "aspect-3/1")} />
                     </button>
                   ))}
             </div>
-            <div className="mt-4 flex justify-end">
-              <Button variant="ghost" size="sm" shape="rounded" onClick={() => setChoosing(false)} className="rounded-xl px-4">
-                {t("settings.pictures.close")}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+          </Dialog.Body>
+        </Sheet>
+      </Dialog.Root>
     </div>
   );
 }

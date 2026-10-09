@@ -1,35 +1,40 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { Bell, CheckCheck, Settings } from "lucide-react";
-import { NotificationRow } from "./NotificationRow";
-import { NotificationToasts } from "./NotificationToasts";
-import { useNotifications } from "./useNotifications";
+import Link from "next/link";
+import React, { useState } from "react";
+
+import { Button, buttonVariants, cn, IconButton, Popover, Skeleton, toast } from "@/components/ui";
 import { t } from "@/lib/i18n";
-import { Button, buttonVariants, cn, IconButton, Skeleton } from "@/components/ui";
+
+import { NotificationRow } from "./NotificationRow";
+import { NotificationToast } from "./NotificationToast";
+import { useNotifications } from "./useNotifications";
 
 /**
- * The bell in the top bar: unread count, live, and a toast for each notification that arrives while the page is open. On a computer it opens the latest notifications; on a phone it is a
+ * The bell in the top bar: unread count, live, and a toast (@krizaka/ui/toast, the `Toaster` of the layout) for each
+ * notification that arrives while the page is open. On a computer it opens the latest notifications (a popover); on a phone it is a
  * link to /notifications (a page, so its address can be shared and reloaded).
  */
 export function NotificationBell() {
-  const { items, unread, loaded, markRead, fresh, dismiss } = useNotifications(true);
+  const { items, unread, loaded, markRead } = useNotifications(true, {
+    // What just happened, as it happens: a toast for each notification that arrives while the page is open.
+    onLive: (n) =>
+      toast.custom(
+        (id) => (
+          <NotificationToast
+            n={n}
+            onOpen={() => {
+              toast.dismiss(id);
+              void markRead([n.id]);
+            }}
+            onDismiss={() => toast.dismiss(id)}
+          />
+        ),
+        { id: n.id, duration: 7000 },
+      ),
+  });
   const [open, setOpen] = useState(false);
-  const box = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const close = (e: MouseEvent | KeyboardEvent) => {
-      if (e instanceof KeyboardEvent ? e.key === "Escape" : !box.current?.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", close);
-    document.addEventListener("keydown", close);
-    return () => {
-      document.removeEventListener("mousedown", close);
-      document.removeEventListener("keydown", close);
-    };
-  }, [open]);
 
   const badge = unread > 0 && (
     <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent-2 px-1 text-[10px] font-bold text-on-accent ring-2 ring-surface-0">
@@ -40,18 +45,19 @@ export function NotificationBell() {
   const label = unread ? `${t("notifications.title")} — ${t("notifications.unread", { count: unread })}` : t("notifications.title");
 
   return (
-    <div ref={box} className="relative">
+    <div className="relative">
       <Link href="/notifications" aria-label={label} className={buttonVariants({ variant: "outline", size: "icon", shape: "pill", className: cn(bellClass, "md:hidden") })}>
         <Bell className="h-4 w-4" />
         {badge}
       </Link>
-      <IconButton variant="outline" shape="pill" label={label} aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen((o) => !o)} className={cn(bellClass, "hidden md:flex")}>
-        <Bell className="h-4 w-4" aria-hidden />
-        {badge}
-      </IconButton>
-
-      {open && (
-        <div role="dialog" aria-label={t("notifications.title")} className="kz-pop absolute right-0 mt-2 w-[380px] overflow-hidden rounded-2xl border border-border-default bg-surface-1/95 shadow-2xl shadow-black/50 backdrop-blur-2xl">
+      <Popover.Root open={open} onOpenChange={setOpen}>
+        <Popover.Trigger asChild>
+          <IconButton variant="outline" shape="pill" label={label} className={cn(bellClass, "hidden md:flex")}>
+            <Bell className="h-4 w-4" aria-hidden />
+            {badge}
+          </IconButton>
+        </Popover.Trigger>
+        <Popover.Content align="end" aria-label={t("notifications.title")} className="w-[380px] overflow-hidden rounded-2xl bg-surface-1/95 p-0 shadow-2xl backdrop-blur-2xl">
           <div className="flex items-center justify-between border-b border-border-subtle px-4 py-3">
             <h2 className="text-sm font-bold text-fg">{t("notifications.title")}</h2>
             <div className="flex items-center gap-1">
@@ -87,16 +93,8 @@ export function NotificationBell() {
           <Link href="/notifications" onClick={() => setOpen(false)} className="block border-t border-border-subtle py-2.5 text-center text-xs font-semibold text-accent hover:bg-surface-2">
             {t("notifications.seeAll")}
           </Link>
-        </div>
-      )}
-      <NotificationToasts
-        items={fresh}
-        onDismiss={dismiss}
-        onOpen={(n) => {
-          dismiss(n.id);
-          void markRead([n.id]);
-        }}
-      />
+        </Popover.Content>
+      </Popover.Root>
     </div>
   );
 }

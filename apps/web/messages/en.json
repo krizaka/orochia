@@ -815,7 +815,8 @@
     "settings": "Notification settings",
     "unread": "{count} unread",
     "loadMore": "Show older",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "region": "Live notifications"
   },
   "wallet": {
     "title": "Wallet",
@@ -1188,7 +1189,8 @@
     "sensitive": "Sensitive content",
     "reveal": "Tap to reveal",
     "auction": "Auction",
-    "challenge": "Backers only"
+    "challenge": "Backers only",
+    "adult": "18+"
   },
   "collections": {
     "save": "Save",
@@ -1290,7 +1292,8 @@
     "empty": "Nothing found for “{query}”. Try another word or a tag.",
     "navigate": "Navigate",
     "select": "Open",
-    "full": "See all results"
+    "full": "See all results",
+    "title": "Search"
   },
   "profileTabs": {
     "all": "Videos ({count})",

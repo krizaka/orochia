@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
 import { Flame, Gavel, Megaphone, Target } from "lucide-react";
-import { LiveBadge, cn } from "@/components/ui";
-import { money } from "@/lib/money";
-import { t } from "@/lib/i18n";
+import React from "react";
+
+import { cn,LiveBadge } from "@/components/ui";
 import type { ChallengeCardView } from "@/lib/challenges";
+import { t } from "@/lib/i18n";
+import { money } from "@/lib/money";
 
 export const KIND_ICONS = {
   GOAL: Target,
@@ -27,7 +28,7 @@ export function ChallengeStageBadge({ stage, className }: { stage: ChallengeCard
 }
 
 /**
- * The pot: a ring that fills towards the goal (a goal), or the amount pledged with a flame that grows with it (a request,
+ * The pot (its colours are the accent roles, so both themes follow; the bar becomes `Progress` when @krizaka/ui ships it): a ring that fills towards the goal (a goal), or the amount pledged with a flame that grows with it (a request,
  * an open call — they have no target). The ring's sweep animates on change; it stays still under reduced motion.
  */
 export function ChallengeMeter({
@@ -50,12 +51,12 @@ export function ChallengeMeter({
       <svg width={px} height={px} viewBox={`0 0 ${px} ${px}`} className="-rotate-90" aria-hidden>
         <defs>
           <linearGradient id={`cm-${size}`} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" style={{ stopColor: "var(--color-violet-500)" }} />
-            <stop offset="55%" style={{ stopColor: "var(--color-fuchsia-500)" }} />
-            <stop offset="100%" style={{ stopColor: "var(--color-pink-500)" }} />
+            <stop offset="0%" style={{ stopColor: "var(--kz-accent)" }} />
+            <stop offset="55%" style={{ stopColor: "color-mix(in oklab, var(--kz-accent) 50%, var(--kz-accent-2))" }} />
+            <stop offset="100%" style={{ stopColor: "var(--kz-accent-2)" }} />
           </linearGradient>
         </defs>
-        <circle cx={px / 2} cy={px / 2} r={r} fill="none" strokeWidth={stroke} className="stroke-fg" />
+        <circle cx={px / 2} cy={px / 2} r={r} fill="none" strokeWidth={stroke} className="stroke-border-default" />
         <circle
           cx={px / 2}
           cy={px / 2}

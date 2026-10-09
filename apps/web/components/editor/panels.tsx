@@ -1,13 +1,15 @@
 "use client";
 
-import React from "react";
 import { Check, Lock, Music2, RotateCcw, Trash2, Volume2, VolumeX, Wand2 } from "lucide-react";
-import { SPEEDS, VIDEO_FILTERS, previewFilter, type VideoEdit, type VideoFilter, type VideoFormat } from "@/lib/video-edit";
+import React from "react";
+
 import { Button, Chip, cn, IconButton, Segmented, Skeleton, Slider } from "@/components/ui";
+import { t } from "@/lib/i18n";
+import { previewFilter, SPEEDS, VIDEO_FILTERS, type VideoEdit, type VideoFilter, type VideoFormat } from "@/lib/video-edit";
+
 import { FILMSTRIP_FRAMES } from "./media";
 import { Timeline } from "./Timeline";
 import type { Tool } from "./useEditState";
-import { t } from "@/lib/i18n";
 
 type Setter = <K extends keyof VideoEdit>(key: K, value: VideoEdit[K]) => void;
 
@@ -45,7 +47,7 @@ export function TrimPanel(props: {
       <Timeline frames={props.frames} duration={props.duration} start={edit.startSeconds} end={edit.endSeconds} time={props.time} onStart={props.onStart} onEnd={props.onEnd} onSeek={props.onSeek} />
       {maxSeconds && <p className="text-[11px] text-fg-muted">{t("editor.maxLength", { seconds: maxSeconds })}</p>}
       <div>
-        <span className="mb-2 block text-xs font-semibold text-zinc-300">{t("editor.speed")}</span>
+        <span className="mb-2 block text-xs font-semibold text-fg-secondary">{t("editor.speed")}</span>
         <div className="flex flex-wrap gap-2">
           {SPEEDS.map((s) => (
             <Chip key={s} active={edit.speed === s} onClick={() => set("speed", s)} className="min-w-14">
@@ -67,7 +69,7 @@ export function FiltersPanel({ edit, set, frames }: { edit: VideoEdit; set: Sett
         return (
           <button key={name} type="button" onClick={() => set("filter", name)} aria-pressed={active} className="group flex w-18 shrink-0 snap-start flex-col items-center gap-1.5 lg:w-auto">
             <span className={cn(
-              "relative block aspect-square w-full overflow-hidden rounded-2xl ring-2 ring-offset-2 ring-offset-zinc-950 transition-all",
+              "relative block aspect-square w-full overflow-hidden rounded-2xl ring-2 ring-offset-2 ring-offset-surface-0 transition-all",
               active ? "ring-white" : "ring-transparent group-hover:ring-white/30"
             )}>
               {frame ? (
@@ -76,7 +78,7 @@ export function FiltersPanel({ edit, set, frames }: { edit: VideoEdit; set: Sett
                 <Skeleton shape="rect" className="h-full rounded-none" />
               )}
               {active && (
-                <span className="absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-white text-zinc-900">
+                <span className="absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-white text-surface-0">
                   <Check className="h-3 w-3" strokeWidth={3} />
                 </span>
               )}
@@ -163,7 +165,7 @@ export function SoundPanel({ edit, set }: { edit: VideoEdit; set: Setter }) {
         ))}
       </div>
       <div className="rounded-2xl border border-white/10 bg-white/3 p-4">
-        <p className="mb-3 flex items-center gap-2 text-xs font-semibold text-zinc-300">
+        <p className="mb-3 flex items-center gap-2 text-xs font-semibold text-fg-secondary">
           <Music2 className="h-4 w-4 text-accent" /> {t("editor.sound.music")}
         </p>
         {edit.music ? (

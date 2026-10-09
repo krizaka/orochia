@@ -1,16 +1,17 @@
 "use client";
 
-import React, { Suspense, useCallback, useEffect, useState } from "react";
+import { Download, Eye, Film, Landmark, Users, Wallet } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Download, Eye, Film, Landmark, Users, Wallet } from "lucide-react";
-import { useAuth } from "@/lib/auth-context";
-import { Badge, Button, buttonVariants, cn, orochiaButton, Segmented, Spinner, type BadgeProps } from "@/components/ui";
+import React, { Suspense, useCallback, useEffect, useState } from "react";
+
 import { MonthlyChart } from "@/components/money/MonthlyChart";
 import { PayoutAccountSheet } from "@/components/money/PayoutAccountSheet";
 import { WithdrawSheet } from "@/components/money/WithdrawSheet";
-import { compact, money } from "@/lib/money";
+import { Badge, type BadgeProps,Button, buttonVariants, cn, orochiaButton, Segmented, Spinner } from "@/components/ui";
+import { useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
+import { compact, money } from "@/lib/money";
 
 type Period = "30d" | "90d" | "12m" | "all";
 type Sort = "net" | "views";
@@ -24,7 +25,7 @@ interface Earnings {
 }
 
 const PERIODS: Period[] = ["30d", "90d", "12m", "all"];
-const card = "rounded-3xl border border-border-default bg-surface-1/60 p-5 light:shadow-xs";
+const card = "rounded-3xl border border-border-default bg-surface-1/60 p-5 shadow-xs";
 const STATUS_TONE: Record<string, BadgeProps["tone"]> = {
   SETTLED: "success",
   FAILED: "danger",
