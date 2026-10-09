@@ -205,7 +205,7 @@ orochia/                           npm workspaces
   (`/api/me/become-creator`): it becomes CREATOR pending the 2257 review and keeps tipping and unlocking.
 - An account whose e-mail is not verified can only sign in and ask for the link again: `requireUserWithRole` refuses
   it everything else, `getCurrentUser` treats it as a visitor, and the UI shows only the verification page.
-- Sessions are stateless signed cookies, but **authorisation is not**: `requireUserWithRole` re-reads the account,
+- Sessions are stateless signed tokens — an httpOnly cookie in the browser; for the native app ([`orochia-mobile`](https://github.com/krizaka/orochia-mobile)) the same token from `POST /api/auth/login` with `client: "native"`, kept in the device's secure storage and sent as `Authorization: Bearer` — but **authorisation is not**: `requireUserWithRole` re-reads the account,
   so a suspension or a role change applies on the next request. Suspended accounts cannot sign in.
 - **Profiles never carry a client-chosen URL**: pictures are a preset id or an uploaded file's reference, resolved by
   the server (`profileImageUrl`); links are stored as handles of known networks and turned into URLs by the server

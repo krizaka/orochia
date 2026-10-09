@@ -39,7 +39,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/auctions/[id]/decision` | session · CREATOR | The creator accepts the best bid (the video is sold to its bidder) or declines it (the credits go back). |
 | `GET` | `/api/auctions/[id]/stream` | public | Server-Sent Events of an auction: each bid (amount, alias, new end) and every change of state. |
 | `POST` | `/api/auth/forgot-password` | public | E-mails a password-reset link (1 h) to the address, if an active account uses it. |
-| `POST` | `/api/auth/login` | public | Password login. |
+| `POST` | `/api/auth/login` | public | Password login — a session cookie for the browser, a bearer token for a native app. |
 | `POST` | `/api/auth/logout` | public | — |
 | `GET` | `/api/auth/me` | public | The signed-in account (with whether its e-mail is verified), or `user: null`. |
 | `GET` | `/api/auth/oauth/[provider]/callback` | public | The provider's redirect: checks the state, exchanges the code, then signs in (linked account or same verified address) or sends a new person to complete their account. |

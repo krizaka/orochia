@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import type { NextResponse } from "next/server";
 import { HttpError } from "./http";
 import { isProduction, sessionSecret } from "./env";
@@ -97,10 +97,20 @@ export function clearSessionCookie(response: NextResponse): void {
   });
 }
 
-/** The signed-in session of the request, verified address or not (sign-in, /auth/me, the resend link). */
+/**
+ * The signed-in session of the request, verified address or not (sign-in, /auth/me, the resend link): the browser's
+ * session cookie, or — for the native apps, which carry no cookie jar of their own — the same signed token sent as
+ * `Authorization: Bearer <token>`. A bearer token is never sent by a browser on its own, so it opens no CSRF path.
+ */
 export async function getSession(): Promise<SessionUser | null> {
-  const token = (await cookies()).get(SESSION_COOKIE_NAME)?.value;
+  const token = (await cookies()).get(SESSION_COOKIE_NAME)?.value ?? bearerToken((await headers()).get("authorization"));
   return token ? verifySessionToken(token) : null;
+}
+
+/** The token of an `Authorization: Bearer …` header, if there is one. */
+export function bearerToken(authorization: string | null): string | undefined {
+  const match = authorization?.match(/^Bearer\s+([A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)$/);
+  return match?.[1];
 }
 
 /**
