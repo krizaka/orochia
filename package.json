@@ -34,7 +34,8 @@
     "db:dump": "node scripts/db.mjs dump",
     "db:restore": "node scripts/db.mjs restore",
     "docs:generate": "node scripts/generate-docs.mjs",
-    "workspace": "node scripts/workspace.mjs"
+    "workspace": "node scripts/workspace.mjs",
+    "screenshots": "node scripts/screenshots.mjs"
   },
   "keywords": [
     "video-streaming",
@@ -48,6 +49,7 @@
   "author": "Krizaka Core Team",
   "license": "Apache-2.0",
   "devDependencies": {
+    "playwright": "^1.64.0",
     "vitest": "^4.1.11"
   },
   "engines": {

@@ -3,7 +3,7 @@
 import React from "react";
 import { Check, Lock, Music2, RotateCcw, Trash2, Volume2, VolumeX, Wand2 } from "lucide-react";
 import { SPEEDS, VIDEO_FILTERS, previewFilter, type VideoEdit, type VideoFilter, type VideoFormat } from "@/lib/video-edit";
-import { Button, Chip, cn, IconButton, Segmented, Slider } from "@/components/ui";
+import { Button, Chip, cn, IconButton, Segmented, Skeleton, Slider } from "@/components/ui";
 import { FILMSTRIP_FRAMES } from "./media";
 import { Timeline } from "./Timeline";
 import type { Tool } from "./useEditState";
