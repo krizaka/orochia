@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { BadgeCheck } from "lucide-react";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
-import { SocialIcon } from "@/components/ui";
+import { Avatar, Badge, SocialIcon } from "@/components/ui";
 import { PictureQuickEdit } from "./PictureQuickEdit";
 import { t, type MessageKey } from "@/lib/i18n";
 
@@ -54,13 +54,13 @@ export function ProfileHero({
   };
 
   return (
-    <section className="relative mb-8 overflow-visible rounded-3xl border border-white/10 bg-zinc-950/60 shadow-2xl shadow-black/40 backdrop-blur-sm light:border-black/5 light:bg-white light:shadow-xl light:shadow-violet-900/5">
+    <section className="relative mb-8 overflow-visible rounded-3xl border border-border-default bg-surface-1/60 shadow-2xl shadow-black/40 backdrop-blur-sm light:shadow-xl light:shadow-violet-900/5">
       {/* Cover */}
       <div className="group relative h-36 overflow-hidden rounded-t-3xl sm:h-56">
         {banner ? (
           <img src={banner} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.02]" />
         ) : (
-          <div className="h-full w-full bg-[radial-gradient(120%_120%_at_0%_0%,rgba(139,92,246,0.55),transparent_55%),radial-gradient(120%_120%_at_100%_100%,rgba(236,72,153,0.45),transparent_55%)] bg-zinc-900 light:bg-violet-50" />
+          <div className="h-full w-full bg-[radial-gradient(120%_120%_at_0%_0%,rgba(139,92,246,0.55),transparent_55%),radial-gradient(120%_120%_at_100%_100%,rgba(236,72,153,0.45),transparent_55%)] bg-surface-2" />
         )}
         <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-zinc-950/70 via-transparent to-transparent light:from-white/30" />
         {editable && (
@@ -81,8 +81,8 @@ export function ProfileHero({
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-end sm:gap-5">
             {/* Avatar, overlapping the cover */}
             <div className="group relative -mt-14 shrink-0 sm:-mt-20">
-              <div className="h-28 w-28 overflow-hidden rounded-4xl bg-zinc-800 ring-4 ring-zinc-950 shadow-2xl shadow-violet-900/30 sm:h-36 sm:w-36 light:bg-slate-100 light:ring-white">
-                <img src={avatar || AVATAR_PLACEHOLDER} alt={displayName} className="h-full w-full object-cover" />
+              <div className="h-28 w-28 overflow-hidden rounded-4xl bg-surface-3 ring-4 ring-border-subtle shadow-2xl shadow-accent/30 sm:h-36 sm:w-36">
+                <Avatar src={avatar || AVATAR_PLACEHOLDER} alt={displayName} fallback={displayName.charAt(0)} className="h-full w-full rounded-none text-3xl" />
               </div>
               {editable && (
                 <PictureQuickEdit
@@ -97,20 +97,20 @@ export function ProfileHero({
               )}
             </div>
             <div className="text-center sm:pb-1 sm:text-left">
-              <h1 className="flex items-center justify-center gap-2 font-display text-2xl font-black tracking-tight text-white sm:justify-start sm:text-4xl light:text-slate-900">
+              <h1 className="flex items-center justify-center gap-2 font-display text-2xl font-black tracking-tight text-fg sm:justify-start sm:text-4xl">
                 {displayName}
-                {verified && <BadgeCheck className="h-6 w-6 shrink-0 text-violet-400" aria-label={t("profile.verified")} />}
+                {verified && <BadgeCheck className="h-6 w-6 shrink-0 text-accent" aria-label={t("profile.verified")} />}
               </h1>
-              <p className="mt-0.5 font-mono text-xs text-zinc-400 light:text-slate-500">
+              <p className="mt-0.5 font-mono text-xs text-fg-secondary">
                 @{username}
-                {roleLabel && <span className="ml-2 rounded-full bg-violet-500/15 px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider text-violet-300 light:text-violet-700">{roleLabel}</span>}
+                {roleLabel && <Badge size="sm" tone="accent" className="ml-2 font-sans font-bold">{roleLabel}</Badge>}
               </p>
             </div>
           </div>
           {actions && <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-end sm:pb-1">{actions}</div>}
         </div>
 
-        {bio && <p className="mx-auto mt-4 max-w-2xl text-center text-sm leading-relaxed text-zinc-300 sm:mx-0 sm:text-left light:text-slate-600">{bio}</p>}
+        {bio && <p className="mx-auto mt-4 max-w-2xl text-center text-sm leading-relaxed text-fg-secondary sm:mx-0 sm:text-left">{bio}</p>}
 
         {(links.length > 0 || stats.length > 0) && (
           <div className="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
@@ -122,7 +122,7 @@ export function ProfileHero({
                     target="_blank"
                     rel="noopener noreferrer nofollow ugc"
                     title={t("profile.visit", { network: t(`profile.networks.${l.network}` as MessageKey), handle: l.handle })}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-zinc-200 transition-colors hover:border-violet-500/60 hover:bg-violet-500/10 hover:text-white light:border-black/10 light:bg-black/3 light:text-slate-700 hover:light:bg-violet-50 hover:light:text-slate-950"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border-default bg-surface-2 px-3 py-1.5 text-xs font-semibold text-fg transition-colors hover:border-accent/60 hover:bg-accent/10 hover:text-fg"
                   >
                     <SocialIcon network={l.network} className="h-3.5 w-3.5" />
                     {l.network === "website" ? l.handle : `@${l.handle}`}
@@ -134,8 +134,8 @@ export function ProfileHero({
               <dl className="flex gap-6 text-center">
                 {stats.map((s) => (
                   <div key={s.label}>
-                    <dt className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 light:text-slate-500">{s.label}</dt>
-                    <dd className="font-mono text-lg font-black text-white light:text-slate-900">{s.value}</dd>
+                    <dt className="text-[10px] font-semibold uppercase tracking-wider text-fg-muted">{s.label}</dt>
+                    <dd className="font-mono text-lg font-black text-fg">{s.value}</dd>
                   </div>
                 ))}
               </dl>

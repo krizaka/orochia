@@ -1,7 +1,8 @@
 "use client";
 
 import React, { forwardRef, useRef, useState } from "react";
-import { Hand, Loader2, Play } from "lucide-react";
+import { Hand, Play } from "lucide-react";
+import { Spinner, cn } from "@/components/ui";
 import { previewFilter, type VideoEdit } from "@/lib/video-edit";
 import { useElementSize } from "./media";
 import { t } from "@/lib/i18n";
@@ -57,7 +58,11 @@ export const Stage = forwardRef<
   return (
     <div ref={box} className="relative flex min-h-0 flex-1 items-center justify-center">
       <div
-        className={`relative overflow-hidden rounded-[1.25rem] bg-zinc-900 shadow-2xl shadow-black/60 ${pannable ? (dragging ? "cursor-grabbing" : "cursor-grab") : "cursor-pointer"} touch-none`}
+        className={cn(
+          "relative overflow-hidden rounded-[1.25rem] bg-zinc-900 shadow-2xl shadow-black/60",
+          pannable ? (dragging ? "cursor-grabbing" : "cursor-grab") : "cursor-pointer",
+          "touch-none"
+        )}
         style={{ width: frame.w || "100%", height: frame.h || "100%" }}
         onPointerDown={(e) => {
           if (progress) return;
@@ -96,7 +101,7 @@ export const Stage = forwardRef<
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,transparent_33.2%,rgba(255,255,255,0.35)_33.3%,transparent_33.4%,transparent_66.6%,rgba(255,255,255,0.35)_66.7%,transparent_66.8%),linear-gradient(to_bottom,transparent_33.2%,rgba(255,255,255,0.35)_33.3%,transparent_33.4%,transparent_66.6%,rgba(255,255,255,0.35)_66.7%,transparent_66.8%)]" />
         )}
         {pannable && !dragging && (
-          <span className="pointer-events-none absolute left-1/2 top-3 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full bg-black/55 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-md">
+          <span className="pointer-events-none absolute left-1/2 top-3 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full bg-scrim px-3 py-1.5 text-[11px] font-medium text-fg-on-media backdrop-blur-md">
             <Hand className="h-3.5 w-3.5" /> {t("editor.reposition")}
           </span>
         )}
@@ -108,7 +113,7 @@ export const Stage = forwardRef<
           </span>
         )}
         {progress && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/75 px-6 text-center text-white backdrop-blur-xs" role="status" aria-live="polite">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-scrim-strong px-6 text-center text-fg-on-media backdrop-blur-xs" role="status" aria-live="polite">
             <div className="relative h-20 w-20">
               <svg viewBox="0 0 36 36" className="h-20 w-20 -rotate-90">
                 <circle cx="18" cy="18" r="15.5" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="3" />
@@ -121,7 +126,7 @@ export const Stage = forwardRef<
                 </defs>
               </svg>
               <span className="absolute inset-0 flex items-center justify-center font-mono text-sm font-bold">
-                {progress.percent > 0 ? `${progress.percent}%` : <Loader2 className="h-5 w-5 animate-spin" />}
+                {progress.percent > 0 ? `${progress.percent}%` : <Spinner size="md" className="text-current" />}
               </span>
             </div>
             <span className="max-w-[16rem] text-sm font-semibold">{progress.label}</span>

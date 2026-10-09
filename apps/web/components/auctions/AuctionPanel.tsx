@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, Clock, Download, Gavel, Info, Loader2, Play, ShieldCheck, Sparkles, Timer, Trophy, Wallet, X } from "lucide-react";
-import { Button, Chip, ConfirmIconButton, Countdown, LiveBadge, buttonClass, cx } from "@/components/ui";
-import { usd } from "@/components/money/format";
+import { CheckCircle2, Clock, Download, Gavel, Info, Play, ShieldCheck, Sparkles, Timer, Trophy, Wallet, X } from "lucide-react";
+import { Badge, Button, Chip, cn, ConfirmIconButton, Countdown, Input, LiveBadge, orochiaButton, Spinner } from "@/components/ui";
+import { money } from "@/lib/money";
 import { timeAgo } from "@/components/notifications/useNotifications";
 import { t, type MessageKey } from "@/lib/i18n";
 import type { Auction } from "./types";
@@ -63,8 +63,8 @@ export function AuctionPanel({
       return;
     }
     const code = data?.code;
-    if (code === "INSUFFICIENT_CREDITS") setError({ text: t("auction.errors.INSUFFICIENT_CREDITS", { balance: usd(data?.balance ?? 0) }), topUp: true });
-    else if (code === "BID_TOO_LOW") setError({ text: t("auction.errors.BID_TOO_LOW", { minimum: usd(data?.minimum ?? a.minimumNextBidCents) }) });
+    if (code === "INSUFFICIENT_CREDITS") setError({ text: t("auction.errors.INSUFFICIENT_CREDITS", { balance: money(data?.balance ?? 0) }), topUp: true });
+    else if (code === "BID_TOO_LOW") setError({ text: t("auction.errors.BID_TOO_LOW", { minimum: money(data?.minimum ?? a.minimumNextBidCents) }) });
     else if (code) setError({ text: t(`auction.errors.${code}` as MessageKey) });
     else setError({ text: t("auction.errors.generic") });
     if (code === "NOT_OPEN") onChanged();
@@ -74,7 +74,7 @@ export function AuctionPanel({
     e.preventDefault();
     const cents = Math.round(Number(amount) * 100);
     if (!Number.isFinite(cents) || cents < a.minimumNextBidCents) {
-      setError({ text: t("auction.errors.BID_TOO_LOW", { minimum: usd(a.minimumNextBidCents) }) });
+      setError({ text: t("auction.errors.BID_TOO_LOW", { minimum: money(a.minimumNextBidCents) }) });
       return;
     }
     void bid(cents);
@@ -106,52 +106,52 @@ export function AuctionPanel({
   const price = a.bidsCount > 0 ? a.highestBidCents : a.startingPriceCents;
 
   return (
-    <section id="auction" aria-labelledby="auction-title" className="scroll-mt-24 overflow-hidden rounded-3xl border border-fuchsia-500/25 bg-zinc-950/70 shadow-xl shadow-fuchsia-950/20 light:border-fuchsia-600/20 light:bg-white light:shadow-fuchsia-900/5">
+    <section id="auction" aria-labelledby="auction-title" className="scroll-mt-24 overflow-hidden rounded-3xl border border-accent/25 bg-surface-1/70 shadow-xl shadow-accent/20">
       {/* Head: what is sold, how it ends */}
       <div className="relative bg-[radial-gradient(120%_140%_at_0%_0%,rgba(139,92,246,0.35),transparent_60%),radial-gradient(100%_120%_at_100%_100%,rgba(236,72,153,0.28),transparent_60%)] px-5 pt-5 pb-4 light:bg-[radial-gradient(120%_140%_at_0%_0%,rgba(139,92,246,0.14),transparent_60%),radial-gradient(100%_120%_at_100%_100%,rgba(236,72,153,0.12),transparent_60%)]">
         <div className="flex flex-wrap items-center gap-2">
           <AuctionStatusBadge phase={a.phase} />
-          <span className="inline-flex items-center gap-1 rounded-full border border-white/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-300 light:border-black/10 light:text-slate-600">
+          <Badge tone="neutral" className="font-bold">
             {a.rights === "DOWNLOAD" ? <Download className="h-3 w-3" aria-hidden /> : <Play className="h-3 w-3" aria-hidden />}
             {t(`auction.rights.${a.rights}`)}
-          </span>
+          </Badge>
           {extended && open && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-200 light:text-amber-700">
+            <Badge tone="warning" className="font-bold">
               <Timer className="h-3 w-3" aria-hidden /> {t("auction.extended")}
-            </span>
+            </Badge>
           )}
         </div>
         <h2 id="auction-title" className="sr-only">{t("auction.title")}</h2>
 
         <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-violet-200 light:text-violet-700">{priceLabel}</p>
-            <p key={pulse} className="kz-fade font-display text-4xl font-black tabular-nums tracking-tight text-white light:text-slate-900">{usd(price)}</p>
-            <p className="mt-0.5 text-xs text-zinc-400 light:text-slate-500">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-accent">{priceLabel}</p>
+            <p key={pulse} className="kz-fade font-display text-4xl font-black tabular-nums tracking-tight text-fg">{money(price)}</p>
+            <p className="mt-0.5 text-xs text-fg-secondary">
               {t("auction.counts", { bids: a.bidsCount, bidders: a.biddersCount })}
             </p>
           </div>
           <div className="text-right">
             {a.phase === "UPCOMING" && (
               <>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500">{t("auction.startsIn")}</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-fg-secondary">{t("auction.startsIn")}</p>
                 <Countdown label={t("auction.startsIn")} target={a.startsAt} skewMs={skewMs} units={UNITS()} />
               </>
             )}
             {open && (
               <>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500">{t("auction.endsIn")}</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-fg-secondary">{t("auction.endsIn")}</p>
                 <Countdown label={t("auction.endsIn")} target={a.endsAt} skewMs={skewMs} units={UNITS()} />
               </>
             )}
             {a.phase === "ENDING" && (
-              <p className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-300 light:text-slate-600">
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> {t("auction.closing")}
+              <p className="inline-flex items-center gap-2 text-sm font-semibold text-fg-secondary">
+                <Spinner size="sm" className="text-current" label={t("auction.closing")} /> {t("auction.closing")}
               </p>
             )}
             {a.phase === "AWAITING_DECISION" && a.decisionDeadline && (
               <>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500">{t("auction.decisionIn")}</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-fg-secondary">{t("auction.decisionIn")}</p>
                 <Countdown label={t("auction.decisionIn")} target={a.decisionDeadline} skewMs={skewMs} units={UNITS()} size="sm" urgentBelowMs={3600_000} />
               </>
             )}
@@ -169,33 +169,39 @@ export function AuctionPanel({
             <div className="grid grid-cols-3 gap-2" role="group" aria-label={t("auction.quickBids")}>
               {a.suggestedBidsCents.map((cents) => (
                 <Chip key={cents} active={Math.round(Number(amount) * 100) === cents} onClick={() => setAmount((cents / 100).toFixed(2))} className="h-10 w-full font-mono tabular-nums">
-                  {usd(cents)}
+                  {money(cents)}
                 </Chip>
               ))}
             </div>
             <div className="flex gap-2">
               <label className="relative min-w-0 flex-1">
                 <span className="sr-only">{t("auction.yourBid")}</span>
-                <span className="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-sm font-semibold text-zinc-500 light:text-slate-400">$</span>
-                <input
+                <span className="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-sm font-semibold text-fg-muted">$</span>
+                <Input
                   inputMode="decimal"
                   type="number"
                   min={a.minimumNextBidCents / 100}
                   step="0.5"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="h-12 w-full rounded-xl border border-white/10 bg-zinc-900 pl-7 pr-3 font-mono text-base font-semibold tabular-nums text-white focus:border-violet-500 focus:outline-hidden light:border-black/10 light:bg-slate-50 light:text-slate-900"
+                  className="h-12 rounded-xl pl-7 pr-3 font-mono text-base font-semibold tabular-nums"
                 />
               </label>
-              <Button type="submit" variant="primary" size="lg" round={false} loading={busy} className="kz-sheen shrink-0" icon={<Gavel className="h-4 w-4" />}>
+              <Button
+                type="submit"
+                variant="sensual"
+                size="lg"
+                shape="rounded"
+                loading={busy}
+                className="kz-sheen shrink-0"><Gavel className="h-4 w-4" />
                 {t("auction.placeBid")}
               </Button>
             </div>
-            <p className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-500 light:text-slate-500">
-              <span>{t("auction.minimum", { amount: usd(a.minimumNextBidCents) })}</span>
+            <p className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-fg-muted">
+              <span>{t("auction.minimum", { amount: money(a.minimumNextBidCents) })}</span>
               {viewer.balanceCents !== null && (
-                <Link href="/wallet" className="inline-flex items-center gap-1 font-semibold text-violet-300 hover:text-violet-200 light:text-violet-700 hover:light:text-violet-900">
-                  <Wallet className="h-3 w-3" aria-hidden /> {t("auction.balance", { amount: usd(viewer.balanceCents) })}
+                <Link href="/wallet" className="inline-flex items-center gap-1 font-semibold text-accent hover:text-accent">
+                  <Wallet className="h-3 w-3" aria-hidden /> {t("auction.balance", { amount: money(viewer.balanceCents) })}
                 </Link>
               )}
             </p>
@@ -203,7 +209,7 @@ export function AuctionPanel({
         )}
 
         {(open || a.phase === "UPCOMING") && !viewer.signedIn && (
-          <Link href={`/auth/login?next=/watch/${a.video.id}%23auction`} className={buttonClass({ variant: "primary", size: "lg", round: false, className: "w-full" })}>
+          <Link href={`/auth/login?next=/watch/${a.video.id}%23auction`} className={orochiaButton({ variant: "sensual", size: "lg", shape: "rounded", className: "w-full" })}>
             <Gavel className="h-4 w-4" /> {t("auction.signInToBid")}
           </Link>
         )}
@@ -211,8 +217,14 @@ export function AuctionPanel({
         {/* The creator's controls */}
         {viewer.isCreator && a.phase === "AWAITING_DECISION" && (
           <div className="grid grid-cols-[1fr_auto] items-center gap-2">
-            <Button variant="primary" size="lg" round={false} loading={busy} icon={<CheckCircle2 className="h-4 w-4" />} onClick={() => void act("POST", `/api/auctions/${a.id}/decision`, { accept: true })}>
-              {t("auction.accept", { amount: usd(a.highestBidCents) })}
+            <Button
+              variant="sensual"
+              size="lg"
+              shape="rounded"
+              loading={busy}
+              onClick={() => void act("POST", `/api/auctions/${a.id}/decision`, { accept: true })}>
+              <CheckCircle2 className="h-4 w-4" aria-hidden />
+              {t("auction.accept", { amount: money(a.highestBidCents) })}
             </Button>
             <ConfirmIconButton label={t("auction.decline")} confirmLabel={t("auction.declineConfirm")} disabled={busy} onConfirm={() => void act("POST", `/api/auctions/${a.id}/decision`, { accept: false })}>
               <X className="h-4 w-4" />
@@ -220,8 +232,8 @@ export function AuctionPanel({
           </div>
         )}
         {viewer.isCreator && a.status === "OPEN" && a.bidsCount === 0 && (
-          <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-3 light:border-black/5 light:bg-black/[0.02]">
-            <span className="text-xs text-zinc-400 light:text-slate-500">{t("auction.cancelHint")}</span>
+          <div className="flex items-center justify-between gap-3 rounded-2xl border border-border-subtle bg-surface-2 px-4 py-3">
+            <span className="text-xs text-fg-secondary">{t("auction.cancelHint")}</span>
             <ConfirmIconButton label={t("auction.cancel")} confirmLabel={t("auction.cancelConfirm")} disabled={busy} onConfirm={() => void act("DELETE", `/api/auctions/${a.id}`)}>
               <X className="h-4 w-4" />
             </ConfirmIconButton>
@@ -230,18 +242,25 @@ export function AuctionPanel({
 
         {/* The winner's access */}
         {(viewer.won || (viewer.isCreator && a.status === "SOLD")) && viewer.canDownload && a.rights === "DOWNLOAD" && (
-          <Button variant="secondary" size="lg" round={false} className="w-full" loading={downloading} icon={<Download className="h-4 w-4" />} onClick={() => void download()}>
+          <Button
+            variant="secondary"
+            size="lg"
+            shape="rounded"
+            className="w-full"
+            loading={downloading}
+            onClick={() => void download()}>
+            <Download className="h-4 w-4" aria-hidden />
             {t("auction.download")}
           </Button>
         )}
 
         {placed && !error && (
-          <p role="status" className="kz-fade flex items-center gap-1.5 text-xs font-semibold text-emerald-300 light:text-emerald-700">
+          <p role="status" className="kz-fade flex items-center gap-1.5 text-xs font-semibold text-success">
             <CheckCircle2 className="h-3.5 w-3.5" aria-hidden /> {t("auction.placed")}
           </p>
         )}
         {error && (
-          <p role="alert" className="text-xs text-rose-400 light:text-rose-600">
+          <p role="alert" className="text-xs text-danger">
             {error.text}{" "}
             {error.topUp && (
               <Link href="/wallet" className="font-semibold underline underline-offset-2">
@@ -253,24 +272,24 @@ export function AuctionPanel({
 
         {/* History */}
         <div>
-          <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wider text-zinc-400 light:text-slate-500">{t("auction.history")}</h3>
+          <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wider text-fg-secondary">{t("auction.history")}</h3>
           {a.recentBids.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-white/10 px-4 py-5 text-center text-xs text-zinc-500 light:border-black/10 light:text-slate-500">
+            <p className="rounded-2xl border border-dashed border-border-default px-4 py-5 text-center text-xs text-fg-muted">
               {a.phase === "UPCOMING" ? t("auction.noBidsYetUpcoming") : t("auction.noBidsYet")}
             </p>
           ) : (
-            <ol className="divide-y divide-white/5 light:divide-black/5" aria-live="polite">
+            <ol className="divide-y divide-border-subtle" aria-live="polite">
               {a.recentBids.map((b, i) => (
-                <li key={b.id} className={cx("flex items-center gap-3 py-2.5", i === 0 && "kz-fade")}>
-                  <span className={cx("flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-black", b.mine ? "bg-violet-600 text-white" : "bg-white/5 text-zinc-300 light:bg-black/5 light:text-slate-600")}>
+                <li key={b.id} className={cn("flex items-center gap-3 py-2.5", i === 0 && "kz-fade")}>
+                  <span className={cn("flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-black", b.mine ? "bg-accent text-white" : "bg-surface-2 text-fg-secondary")}>
                     {b.mine ? t("auction.youShort") : b.alias}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-medium text-white light:text-slate-900">{bidderName(b.alias, b.mine)}</span>
-                    <span className="block text-[11px] text-zinc-500">{timeAgo(b.createdAt)}</span>
+                    <span className="block text-sm font-medium text-fg">{bidderName(b.alias, b.mine)}</span>
+                    <span className="block text-[11px] text-fg-muted">{timeAgo(b.createdAt)}</span>
                   </span>
-                  {i === 0 && a.status !== "DECLINED" && a.status !== "CANCELLED" && <Trophy className="h-3.5 w-3.5 text-amber-300 light:text-amber-600" aria-label={t("auction.leading")} />}
-                  <span className="font-mono text-sm font-semibold tabular-nums text-white light:text-slate-900">{usd(b.amountCents)}</span>
+                  {i === 0 && a.status !== "DECLINED" && a.status !== "CANCELLED" && <Trophy className="h-3.5 w-3.5 text-warning" aria-label={t("auction.leading")} />}
+                  <span className="font-mono text-sm font-semibold tabular-nums text-fg">{money(b.amountCents)}</span>
                 </li>
               ))}
             </ol>
@@ -278,15 +297,15 @@ export function AuctionPanel({
         </div>
 
         {/* How it works */}
-        <details className="group rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-3 text-xs text-zinc-400 light:border-black/5 light:bg-black/[0.02] light:text-slate-600">
-          <summary className="flex cursor-pointer list-none items-center gap-2 font-semibold text-zinc-300 light:text-slate-700 [&::-webkit-details-marker]:hidden">
+        <details className="group rounded-2xl border border-border-subtle bg-surface-2 px-4 py-3 text-xs text-fg-secondary">
+          <summary className="flex cursor-pointer list-none items-center gap-2 font-semibold text-fg-secondary [&::-webkit-details-marker]:hidden">
             <Info className="h-3.5 w-3.5" aria-hidden /> {t("auction.howTitle")}
           </summary>
           <ul className="mt-2 space-y-1.5">
-            <li className="flex gap-2"><ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-violet-400" aria-hidden />{t("auction.how.held")}</li>
-            <li className="flex gap-2"><Clock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-fuchsia-400" aria-hidden />{t("auction.how.softClose")}</li>
-            <li className="flex gap-2"><Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-pink-400" aria-hidden />{t(`auction.how.${a.settlement}`)}</li>
-            <li className="flex gap-2"><Trophy className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-400" aria-hidden />{t(`auction.how.rights.${a.rights}`)}</li>
+            <li className="flex gap-2"><ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" aria-hidden />{t("auction.how.held")}</li>
+            <li className="flex gap-2"><Clock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" aria-hidden />{t("auction.how.softClose")}</li>
+            <li className="flex gap-2"><Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" aria-hidden />{t(`auction.how.${a.settlement}`)}</li>
+            <li className="flex gap-2"><Trophy className="mt-0.5 h-3.5 w-3.5 shrink-0 text-warning" aria-hidden />{t(`auction.how.rights.${a.rights}`)}</li>
           </ul>
         </details>
       </div>
@@ -300,14 +319,14 @@ function Standing({ auction: a }: { auction: Auction }) {
   let tone: "ok" | "warn" | "info" = "info";
   let text: string | null = null;
   if (v.isCreator) {
-    if (a.status === "SOLD") [tone, text] = ["ok", t("auction.standing.creatorSold", { amount: usd(a.highestBidCents), username: a.leaderUsername ?? "" })];
-    else if (a.phase === "AWAITING_DECISION") text = t("auction.standing.creatorDecide", { amount: usd(a.highestBidCents), username: a.leaderUsername ?? t("auction.bidder", { n: a.leaderAlias ?? 0 }) });
+    if (a.status === "SOLD") [tone, text] = ["ok", t("auction.standing.creatorSold", { amount: money(a.highestBidCents), username: a.leaderUsername ?? "" })];
+    else if (a.phase === "AWAITING_DECISION") text = t("auction.standing.creatorDecide", { amount: money(a.highestBidCents), username: a.leaderUsername ?? t("auction.bidder", { n: a.leaderAlias ?? 0 }) });
     else if (a.phase === "OPEN" && a.bidsCount > 0) text = t("auction.standing.creatorLeader", { username: a.leaderUsername ?? t("auction.bidder", { n: a.leaderAlias ?? 0 }) });
     else if (a.settlement === "HIGHEST_BID" && (a.phase === "OPEN" || a.phase === "UPCOMING")) text = t("auction.standing.creatorAutomatic");
   } else if (v.won) {
     [tone, text] = ["ok", t(a.rights === "DOWNLOAD" ? "auction.standing.wonDownload" : "auction.standing.won")];
   } else if (a.phase === "AWAITING_DECISION" && v.isLeader) {
-    text = t("auction.standing.underReview", { amount: usd(a.highestBidCents) });
+    text = t("auction.standing.underReview", { amount: money(a.highestBidCents) });
   } else if (a.phase === "OPEN" && v.isLeader) {
     [tone, text] = ["ok", t("auction.standing.leading")];
   } else if (a.phase === "OPEN" && v.alias !== null) {
@@ -319,12 +338,12 @@ function Standing({ auction: a }: { auction: Auction }) {
   }
   if (!text) return null;
   const styles = {
-    ok: "border-emerald-500/30 bg-emerald-500/10 text-emerald-200 light:text-emerald-800",
-    warn: "border-amber-500/30 bg-amber-500/10 text-amber-200 light:text-amber-800",
-    info: "border-white/10 bg-white/[0.04] text-zinc-300 light:border-black/10 light:bg-black/[0.03] light:text-slate-700",
+    ok: "border-success/30 bg-success/10 text-success",
+    warn: "border-warning/30 bg-warning/10 text-warning",
+    info: "border-border-default bg-surface-2 text-fg-secondary",
   }[tone];
   return (
-    <p role="status" className={cx("flex items-start gap-2 rounded-2xl border px-4 py-3 text-xs font-medium leading-relaxed", styles)}>
+    <p role="status" className={cn("flex items-start gap-2 rounded-2xl border px-4 py-3 text-xs font-medium leading-relaxed", styles)}>
       {tone === "ok" ? <Trophy className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden /> : tone === "warn" ? <Gavel className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden /> : <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />}
       <span>{text}</span>
     </p>

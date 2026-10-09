@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Clapperboard, Clock, Flame, Lock, Megaphone, Target, Users } from "lucide-react";
-import { Button, Segmented, Sheet, cx } from "@/components/ui";
-import { usd } from "@/components/money/format";
+import { Button, cn, Input, Segmented, Sheet, Textarea } from "@/components/ui";
+import { money } from "@/lib/money";
 import { t, type MessageKey } from "@/lib/i18n";
 
 type Kind = "GOAL" | "REQUEST" | "OPEN_CALL";
@@ -27,9 +27,9 @@ const KINDS = [
 ];
 
 const field =
-  "mt-1 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-hidden light:border-black/10 light:bg-slate-50 light:text-slate-900 light:placeholder:text-slate-400";
-const label = "block text-xs font-semibold text-zinc-400 light:text-slate-500";
-const hint = "mt-1 block text-[11px] leading-relaxed text-zinc-500 light:text-slate-500";
+  "mt-1 w-full rounded-xl border border-border-default bg-surface-2 px-3 py-2.5 text-sm text-fg placeholder:text-fg-muted focus:border-accent focus:outline-hidden";
+const label = "block text-xs font-semibold text-fg-secondary";
+const hint = "mt-1 block text-[11px] leading-relaxed text-fg-muted";
 
 /**
  * Starts a challenge. A creator sets a goal (all or nothing: made only if the goal is reached by the deadline); anyone
@@ -115,7 +115,7 @@ export function ChallengeComposer({
     if (data?.code === "OFFER_TOO_LOW" && data.minimum)
       setError(
         t("challenge.errors.OFFER_TOO_LOW_AMOUNT", {
-          amount: usd(data.minimum),
+          amount: money(data.minimum),
         }),
       );
     else if (data?.code) setError(t(`challenge.errors.${data.code}` as MessageKey));
@@ -133,13 +133,12 @@ export function ChallengeComposer({
             {t("common.cancel")}
           </Button>
           <Button
-            variant="primary"
+            variant="sensual"
             type="submit"
             form="compose-challenge"
             loading={busy}
-            disabled={!(cents >= 100) || title.trim().length < 4}
-            icon={<Flame className="h-4 w-4" />}
-          >
+            disabled={!(cents >= 100) || title.trim().length < 4}>
+            <Flame className="h-4 w-4" aria-hidden />
             {t(`challenge.compose.submit.${kind}`)}
           </Button>
         </div>
@@ -154,16 +153,16 @@ export function ChallengeComposer({
               role="radio"
               aria-checked={kind === k}
               onClick={() => pickKind(k)}
-              className={cx(
-                "flex flex-col items-start gap-1.5 rounded-2xl border p-3 text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400",
+              className={cn(
+                "flex flex-col items-start gap-1.5 rounded-2xl border p-3 text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
                 kind === k
-                  ? "border-fuchsia-500/70 bg-fuchsia-500/10"
-                  : "border-white/10 hover:border-white/25 light:border-black/10 hover:light:border-black/25",
+                  ? "border-accent/70 bg-accent/10"
+                  : "border-border-default hover:border-border-strong",
               )}
             >
-              <Icon className="h-4 w-4 text-fuchsia-400 light:text-fuchsia-600" aria-hidden />
-              <span className="text-xs font-bold text-white light:text-slate-900">{t(`challenge.kind.${k}`)}</span>
-              <span className="text-[11px] leading-snug text-zinc-400 light:text-slate-500">{t(`challenge.compose.kindHint.${k}`)}</span>
+              <Icon className="h-4 w-4 text-accent" aria-hidden />
+              <span className="text-xs font-bold text-fg">{t(`challenge.kind.${k}`)}</span>
+              <span className="text-[11px] leading-snug text-fg-secondary">{t(`challenge.compose.kindHint.${k}`)}</span>
             </button>
           ))}
         </div>
@@ -171,7 +170,7 @@ export function ChallengeComposer({
         {kind === "REQUEST" && (
           <label className={label}>
             {t("challenge.compose.creator")}
-            <input
+            <Input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -185,7 +184,7 @@ export function ChallengeComposer({
 
         <label className={label}>
           {t("challenge.compose.titleLabel")}
-          <input
+          <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
@@ -197,7 +196,7 @@ export function ChallengeComposer({
         </label>
         <label className={label}>
           {t("challenge.compose.description")}
-          <textarea
+          <Textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             required
@@ -258,8 +257,8 @@ export function ChallengeComposer({
         <label className={label}>
           {t(`challenge.compose.amount.${kind}`)}
           <span className="relative mt-1 block">
-            <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-zinc-500">$</span>
-            <input
+            <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-fg-muted">$</span>
+            <Input
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               type="number"
@@ -267,7 +266,7 @@ export function ChallengeComposer({
               min={1}
               step={1}
               required
-              className={`${field} mt-0 pl-6 font-mono tabular-nums`}
+              className={cn(field, "mt-0 pl-6 font-mono tabular-nums")}
             />
           </span>
           <span className={hint}>{t(`challenge.compose.amountHint.${kind}`)}</span>
@@ -322,9 +321,9 @@ export function ChallengeComposer({
         )}
 
         {cents >= 100 && (
-          <p className="rounded-2xl border border-fuchsia-500/20 bg-fuchsia-500/[0.06] px-4 py-3 text-xs leading-relaxed text-zinc-300 light:text-slate-700">
+          <p className="rounded-2xl border border-accent/20 bg-accent/[0.06] px-4 py-3 text-xs leading-relaxed text-fg-secondary">
             {t(`challenge.compose.summary.${kind}`, {
-              amount: usd(cents),
+              amount: money(cents),
               days: windows.length > 0 ? DAYS[windowId] : 3,
               delivery,
               what: t(`challenge.deliverable.${deliverable}`).toLowerCase(),
@@ -333,7 +332,7 @@ export function ChallengeComposer({
           </p>
         )}
         {error && (
-          <p role="alert" className="text-xs text-rose-400 light:text-rose-600">
+          <p role="alert" className="text-xs text-danger">
             {error}
           </p>
         )}

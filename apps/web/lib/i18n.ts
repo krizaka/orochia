@@ -25,3 +25,8 @@ export function t(key: MessageKey, vars?: Record<string, string | number>): stri
   const text = typeof value === "string" ? value : key;
   return vars ? text.replace(/\{(\w+)\}/g, (_, name: string) => String(vars[name] ?? `{${name}}`)) : text;
 }
+
+/** The reader's locale, for numbers, money and dates (@krizaka/intl). English is the only locale for now. */
+export function currentLocale(): string {
+  return "en-US";
+}

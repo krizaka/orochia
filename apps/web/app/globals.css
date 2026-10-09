@@ -1,125 +1,39 @@
+/* The Krizaka platform, in this order (orochia-design-system 3.0 README):
+   1. Tailwind CSS v4;
+   2. @krizaka/tailwind — the --kz-* tokens, the role utilities (bg-surface-1, text-fg-secondary, border-border-default,
+      text-accent, text-danger…), the `light:` / `dark:` variants (`.theme-dark` islands stay dark) and the motion signature;
+   3. @krizaka/ui/tailwind.css — Tailwind scans the @krizaka/ui primitives;
+   4. the Orochia identity — the --kz-* roles with the Obsidian Velvet Noir values, the kit's composites. */
 @import "tailwindcss";
-/* The Orochia kit (@krizaka/orochia-design-system): dark/light variants (theme-dark islands), tokens, the Krizaka
-   motion signature and easing (@krizaka/ui), and the package's components as a Tailwind source. */
+@import "@krizaka/tailwind";
+@import "@krizaka/ui/tailwind.css";
 @import "@krizaka/orochia-design-system/theme.css";
 
 /* The workspace packages live outside this app. */
 @source "../../../packages";
 
-@theme inline {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
-
-  --font-sans: -apple-system, BlinkMacSystemFont, Inter, "Segoe UI", Roboto, sans-serif;
-  --font-display: var(--font-outfit), Outfit, -apple-system, BlinkMacSystemFont, sans-serif;
-
-  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  --animate-glow-fade: glow-fade 3s ease-in-out infinite alternate;
-  @keyframes glow-fade {
-    0% { opacity: 0.3; transform: scale(0.98); }
-    100% { opacity: 0.7; transform: scale(1.02); }
-  }
-}
-
-/* v3 drew borders in the theme's border colour by default; v4 uses currentColor. Keep the v3 look. */
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
-  }
-  button:not(:disabled),
-  [role="button"]:not(:disabled) {
-    cursor: pointer;
-  }
-  input::placeholder,
-  textarea::placeholder {
-    color: var(--color-gray-400);
-  }
-}
-
+/* The app's typefaces are loaded by next/font (app/layout.tsx: --font-jakarta, --font-outfit); the roles read them. */
 :root {
-  /* Default: Dark Obsidian Velvet Noir */
-  --background: 240 10% 3.9%;
-  --foreground: 0 0% 98%;
-  --card: 240 10% 5.5%;
-  --card-foreground: 0 0% 98%;
-  --popover: 240 10% 5.5%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 263.4 80% 60%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 240 4.8% 12%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 240 3.7% 15.9%;
-  --muted-foreground: 240 5% 64.9%;
-  --accent: 330 85% 60%;
-  --accent-foreground: 0 0% 98%;
-  --border: 240 3.7% 15.9%;
-  --input: 240 3.7% 15.9%;
-  --ring: 263.4 80% 60%;
-  --radius: 0.75rem;
-
-  --glass-bg: rgba(18, 18, 23, 0.75);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-highlight: rgba(255, 255, 255, 0.16);
-  --glow-violet: rgba(139, 92, 246, 0.35);
-  --glow-fuchsia: rgba(236, 72, 153, 0.3);
-  --card-surface: #10121a;
-  --card-border: rgba(255, 255, 255, 0.08);
-  --ambient-gradient-1: rgba(139, 92, 246, 0.12);
-  --ambient-gradient-2: rgba(236, 72, 153, 0.10);
-  --ambient-gradient-3: rgba(99, 102, 241, 0.08);
-  --story-ring-from: #8b5cf6;
-  --story-ring-to: #ec4899;
+  --kz-font-sans: var(--font-jakarta), "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --kz-font-display: var(--font-outfit), Outfit, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/* Orochia web — local product tokens (prefixed, never generic), derived from the roles so both themes follow.
+   --orochia-glass-*    the frosted panels (.glass-panel): a translucent surface-1 over the ambient glow.
+   --orochia-ambient-*  the page's three soft glows (velvet, magenta, indigo) behind everything. */
+:root {
+  --orochia-glass-bg: color-mix(in oklab, var(--kz-surface-1) 78%, transparent);
+  --orochia-glass-border: var(--kz-border-default);
+  --orochia-glass-highlight: color-mix(in oklab, var(--kz-accent) 30%, transparent);
+  --orochia-ambient-1: color-mix(in oklab, var(--kz-accent) 12%, transparent);
+  --orochia-ambient-2: color-mix(in oklab, var(--kz-accent-2) 10%, transparent);
+  --orochia-ambient-3: rgb(99 102 241 / 0.08);
+}
 html.light {
-  /* Luminous Ivory Cashmere & Rose Light Mode */
-  --background: 210 20% 98%;
-  --foreground: 222 47% 11%;
-  --card: 0 0% 100%;
-  --card-foreground: 222 47% 11%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222 47% 11%;
-  --primary: 263.4 80% 55%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 210 40% 95%;
-  --secondary-foreground: 222 47% 11%;
-  --muted: 210 40% 92%;
-  --muted-foreground: 215 16% 45%;
-  --accent: 330 85% 55%;
-  --accent-foreground: 0 0% 100%;
-  --border: 214 32% 88%;
-  --input: 214 32% 88%;
-  --ring: 263.4 80% 55%;
-
-  --glass-bg: rgba(255, 255, 255, 0.88);
-  --glass-border: rgba(15, 23, 42, 0.08);
-  --glass-highlight: rgba(139, 92, 246, 0.25);
-  --glow-violet: rgba(139, 92, 246, 0.18);
-  --glow-fuchsia: rgba(236, 72, 153, 0.14);
-  --card-surface: #ffffff;
-  --card-border: rgba(15, 23, 42, 0.08);
-  --ambient-gradient-1: rgba(139, 92, 246, 0.08);
-  --ambient-gradient-2: rgba(236, 72, 153, 0.06);
-  --ambient-gradient-3: rgba(99, 102, 241, 0.05);
-  --story-ring-from: #7c3aed;
-  --story-ring-to: #db2777;
+  --orochia-glass-bg: color-mix(in oklab, var(--kz-surface-1) 88%, transparent);
+  --orochia-ambient-1: color-mix(in oklab, var(--kz-accent) 8%, transparent);
+  --orochia-ambient-2: color-mix(in oklab, var(--kz-accent-2) 6%, transparent);
+  --orochia-ambient-3: rgb(99 102 241 / 0.05);
 }
 
 html {
@@ -132,31 +46,31 @@ html {
 }
 
 body {
-  color: hsl(var(--foreground));
-  background-color: hsl(var(--background));
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--kz-text-primary);
+  background-color: var(--kz-surface-0);
+  font-family: var(--kz-font-sans);
   overflow-x: hidden;
   max-width: 100vw;
   width: 100%;
   position: relative;
   overscroll-behavior-x: none;
   -webkit-overflow-scrolling: touch;
-  background-image: 
-    radial-gradient(at 0% 0%, var(--ambient-gradient-1) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, var(--ambient-gradient-2) 0px, transparent 50%),
-    radial-gradient(at 50% 100%, var(--ambient-gradient-3) 0px, transparent 50%);
+  background-image:
+    radial-gradient(at 0% 0%, var(--orochia-ambient-1) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, var(--orochia-ambient-2) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, var(--orochia-ambient-3) 0px, transparent 50%);
   background-attachment: fixed;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.3s var(--kz-ease), color 0.3s var(--kz-ease);
 }
 
 /* Touch Device Stabilization:
    Prevents hover-based transforms from sticking on iOS touch interactions,
    which previously caused cards, buttons, and elements to jump/wobble under fingers */
 @media (hover: none) and (pointer: coarse) {
-  a, button, [role="button"], .group, .card-luxury {
+  a, button, [role="button"], .group {
     -webkit-tap-highlight-color: transparent;
   }
-  
+
   .hover\:-translate-y-1:hover,
   .hover\:-translate-y-0\.5:hover,
   .hover\:-translate-y-2:hover,
@@ -171,125 +85,21 @@ body {
 }
 
 h1, h2, h3, h4, .font-display {
-  font-family: var(--font-outfit), 'Outfit', sans-serif;
+  font-family: var(--kz-font-display);
   letter-spacing: -0.02em;
 }
 
-/* Glassmorphic card styling */
+/* Glassmorphic panel */
 .glass-panel {
-  background: var(--glass-bg);
+  background: var(--orochia-glass-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  border: 1px solid var(--orochia-glass-border);
+  transition: border-color 0.2s var(--kz-ease), box-shadow 0.2s var(--kz-ease), transform 0.2s var(--kz-ease);
 }
 
 .glass-panel:hover {
-  border-color: var(--glass-highlight);
-}
-
-.glass-panel-elevated {
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15), 0 0 25px -5px var(--glow-violet);
-}
-
-html.dark .glass-panel-elevated {
-  background: rgba(24, 24, 32, 0.85);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 25px -5px var(--glow-violet);
-}
-
-/* Luxury Card with Glow */
-.card-luxury {
-  background: var(--card-surface);
-  border: 1px solid var(--card-border);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.card-luxury:hover {
-  transform: translateY(-2px);
-  border-color: var(--primary);
-  box-shadow: 0 12px 30px -10px var(--glow-violet);
-}
-
-/* Luminous Gradients */
-.text-gradient-neon {
-  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f43f5e 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-html.dark .text-gradient-neon {
-  background: linear-gradient(135deg, #ffffff 10%, #c4b5fd 50%, #f472b6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.text-gradient-purple {
-  background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.border-gradient-glow {
-  position: relative;
-}
-
-.border-gradient-glow::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.6), rgba(236, 72, 153, 0.4), transparent);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
-
-/* Ephemeral Stories animated border ring */
-@keyframes story-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.story-ring-animated {
-  background: conic-gradient(from 0deg, var(--story-ring-from), var(--story-ring-to), #f43f5e, var(--story-ring-from));
-  animation: story-spin 6s linear infinite;
-}
-
-/* Shimmer animation for skeletons & instant previews */
-@keyframes shimmer {
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-.shimmer-skeleton {
-  position: relative;
-  overflow: hidden;
-  background-color: hsl(var(--muted));
-}
-
-.shimmer-skeleton::after {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  transform: translateX(-100%);
-  background-image: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0,
-    rgba(255, 255, 255, 0.08) 20%,
-    rgba(255, 255, 255, 0.18) 60%,
-    rgba(255, 255, 255, 0)
-  );
-  animation: shimmer 2s infinite;
-  content: '';
+  border-color: var(--orochia-glass-highlight);
 }
 
 /* Custom scrollbars */
@@ -299,19 +109,18 @@ html.dark .text-gradient-neon {
 }
 
 ::-webkit-scrollbar-track {
-  background: hsl(var(--background));
+  background: var(--kz-surface-0);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted));
+  background: var(--kz-surface-3);
   border-radius: 9999px;
-  border: 1px solid var(--card-border);
+  border: 1px solid var(--kz-border-default);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #8b5cf6;
+  background: var(--kz-accent);
 }
 
 /* The Krizaka motion signature (kz-page, data-reveal, kz-word, kz-sheen, kz-spotlight, kz-lift, kz-marquee,
-   kz-overlay / kz-dialog / kz-pop / kz-fade, --kz-ease) comes from @krizaka/ui through the kit's theme.css. */
-
+   kz-overlay / kz-dialog / kz-pop / kz-fade, --kz-ease) comes from @krizaka/tailwind (@krizaka/ui/motion.css). */

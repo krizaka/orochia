@@ -24,7 +24,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - name: Lint (ESLint + package typecheck)
+      - name: Lint (ESLint, package typecheck, i18n, UI debt ratchet — lint-ratchet.json)
         run: npm run lint
       - name: Typecheck web app
         run: npm run typecheck

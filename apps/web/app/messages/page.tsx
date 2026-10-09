@@ -13,12 +13,12 @@ import {
   CheckCheck,
   UserX,
   Plus,
-  Loader2,
   ArrowLeft,
   ExternalLink,
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { t } from "@/lib/i18n";
+import { Avatar, Button, IconButton, Input, Spinner, cn } from "@/components/ui";
 
 interface OtherUser {
   id: string;
@@ -235,8 +235,8 @@ function MessagesContent() {
         updatedAt: new Date().toISOString(),
       });
       setNewChatUsername("");
-    } catch (e: any) {
-      setError(e.message || t("inbox.startFailed"));
+    } catch (e) {
+      setError((e instanceof Error && e.message) || t("inbox.startFailed"));
     } finally {
       setStartingChat(false);
     }
@@ -272,8 +272,8 @@ function MessagesContent() {
           return [...prev, data.message];
         });
       }
-    } catch (e: any) {
-      setError(e.message || t("inbox.network"));
+    } catch (e) {
+      setError((e instanceof Error && e.message) || t("inbox.network"));
       setInputContent(content);
     } finally {
       setSending(false);
@@ -307,61 +307,64 @@ function MessagesContent() {
       {/* Header */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white font-display flex items-center gap-2.5 light:text-slate-900">
-            <MessageSquare className="h-6 w-6 text-violet-400" />
+          <h1 className="text-2xl font-bold text-fg font-display flex items-center gap-2.5">
+            <MessageSquare className="h-6 w-6 text-accent" />
             <span>{t("inbox.title")}</span>
           </h1>
-          <p className="text-xs text-zinc-400 light:text-slate-500 mt-1">
+          <p className="text-xs text-fg-secondary mt-1">
             {t("inbox.intro")}
           </p>
         </div>
       </div>
 
       {/* Main Messaging Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[720px] rounded-3xl border border-white/10 bg-zinc-950/80 backdrop-blur-xl shadow-2xl overflow-hidden light:bg-white light:border-black/10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[720px] rounded-3xl border border-border-default bg-surface-1/80 backdrop-blur-xl shadow-2xl overflow-hidden">
         {/* Left Column: Conversations Sidebar */}
         <aside
-          className={`lg:col-span-4 border-r border-white/10 flex flex-col h-full light:border-black/10 ${
+          className={cn(
+            "lg:col-span-4 border-r border-border-default flex flex-col h-full",
             activeConversation ? "hidden lg:flex" : "flex"
-          }`}
+          )}
         >
           {/* Search / Start New Chat */}
-          <div className="p-4 border-b border-white/10 light:border-black/10">
+          <div className="p-4 border-b border-border-default">
             <form onSubmit={handleStartConversation} className="flex gap-2">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400 light:text-slate-500" />
-                <input
+                <Search className="absolute left-3 top-3 h-4 w-4 text-fg-secondary" aria-hidden />
+                <Input
                   type="text"
                   placeholder={t("inbox.newPlaceholder")}
                   value={newChatUsername}
                   onChange={(e) => setNewChatUsername(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-zinc-900/60 pl-9 pr-3 py-2 text-xs text-white focus:border-violet-500 focus:outline-hidden light:bg-slate-50 light:border-black/10 light:text-slate-900"
+                  className="h-10 rounded-xl bg-surface-2/60 pl-9 pr-3 text-xs"
                 />
               </div>
-              <button
+              <IconButton
                 type="submit"
-                disabled={startingChat || !newChatUsername.trim()}
-                className="px-3 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold disabled:opacity-40 transition-colors flex items-center gap-1"
-                title={t("inbox.start")}
-                aria-label={t("inbox.start")}
+                variant="primary"
+                shape="rounded"
+                disabled={!newChatUsername.trim()}
+                loading={startingChat}
+                className="rounded-xl"
+                label={t("inbox.start")}
               >
-                {startingChat ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
-              </button>
+                {startingChat ? <Spinner size="sm" className="text-current" /> : <Plus className="h-3.5 w-3.5" aria-hidden />}
+              </IconButton>
             </form>
           </div>
 
           {/* Conversations List */}
-          <div className="flex-1 overflow-y-auto divide-y divide-white/5 light:divide-black/5">
+          <div className="flex-1 overflow-y-auto divide-y divide-border-subtle">
             {loadingConversations ? (
-              <div className="flex flex-col items-center justify-center p-8 text-zinc-400">
-                <Loader2 className="h-6 w-6 animate-spin mb-2" />
+              <div className="flex flex-col items-center justify-center p-8 text-fg-secondary">
+                <Spinner size="md" className="mb-2 text-current" />
                 <span className="text-xs">{t("inbox.loadingConversations")}</span>
               </div>
             ) : conversations.length === 0 ? (
-              <div className="p-8 text-center text-zinc-500">
-                <MessageSquare className="h-8 w-8 mx-auto mb-2 text-zinc-600" />
-                <p className="text-xs font-semibold text-zinc-400 light:text-slate-600">{t("inbox.none")}</p>
-                <p className="text-[11px] mt-1 text-zinc-500">
+              <div className="p-8 text-center text-fg-muted">
+                <MessageSquare className="h-8 w-8 mx-auto mb-2 text-fg-muted" />
+                <p className="text-xs font-semibold text-fg-secondary">{t("inbox.none")}</p>
+                <p className="text-[11px] mt-1 text-fg-muted">
                   {t("inbox.noneHint")}
                 </p>
               </div>
@@ -375,36 +378,32 @@ function MessagesContent() {
                   <button
                     key={conv.id}
                     onClick={() => setActiveConversation(conv)}
-                    className={`w-full text-left p-4 flex items-center gap-3 transition-colors ${
+                    className={cn(
+                      "w-full text-left p-4 flex items-center gap-3 transition-colors",
                       isSelected
-                        ? "bg-violet-600/15 border-l-2 border-violet-500"
-                        : "hover:bg-zinc-900/50 hover:light:bg-slate-50"
-                    }`}
+                        ? "bg-accent/15 border-l-2 border-accent"
+                        : "hover:bg-surface-2/50"
+                    )}
                   >
                     <div className="relative shrink-0">
-                      {other.avatarUrl ? (
-                        <img
-                          src={other.avatarUrl}
-                          alt={other.displayName || other.username}
-                          className="h-11 w-11 rounded-full object-cover border border-white/10"
-                        />
-                      ) : (
-                        <div className="h-11 w-11 rounded-full bg-zinc-800 flex items-center justify-center text-white">
-                          <User className="h-5 w-5 text-zinc-400" />
-                        </div>
-                      )}
+                      <Avatar
+                        src={other.avatarUrl}
+                        alt={other.displayName || other.username}
+                        fallback={<User className="h-5 w-5" aria-hidden />}
+                        className="h-11 w-11 border border-border-default"
+                      />
                       {hasUnread && (
-                        <span className="absolute top-0 right-0 h-3 w-3 rounded-full bg-violet-500 border-2 border-zinc-950" />
+                        <span className="absolute top-0 right-0 h-3 w-3 rounded-full bg-accent border-2 border-surface-1" />
                       )}
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-bold text-white truncate light:text-slate-900">
+                        <span className="text-xs font-bold text-fg truncate">
                           {other.displayName || other.username}
                         </span>
                         {conv.lastMessage && (
-                          <span className="text-[10px] text-zinc-500 shrink-0">
+                          <span className="text-[10px] text-fg-muted shrink-0">
                             {new Date(conv.lastMessage.createdAt).toLocaleDateString([], {
                               month: "short",
                               day: "numeric",
@@ -413,11 +412,9 @@ function MessagesContent() {
                         )}
                       </div>
                       <p
-                        className={`text-[11px] truncate ${
-                          hasUnread
-                            ? "text-white font-semibold light:text-slate-900"
-                            : "text-zinc-400 light:text-slate-500"
-                        }`}
+                        className={cn("text-[11px] truncate", hasUnread
+                          ? "text-fg font-semibold"
+                          : "text-fg-secondary")}
                       >
                         {conv.lastMessage?.content || t("inbox.noMessages")}
                       </p>
@@ -432,43 +429,38 @@ function MessagesContent() {
         {/* Right Column: Chat Thread */}
         <section
           aria-label={t("inbox.thread")}
-          className={`lg:col-span-8 flex flex-col h-full ${
+          className={cn(
+            "lg:col-span-8 flex flex-col h-full",
             !activeConversation ? "hidden lg:flex" : "flex"
-          }`}
+          )}
         >
           {activeConversation ? (
             <>
               {/* Active Header */}
-              <div className="p-4 border-b border-white/10 flex items-center justify-between light:border-black/10">
+              <div className="p-4 border-b border-border-default flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <button
+                  <IconButton
                     onClick={() => setActiveConversation(null)}
-                    className="p-1 rounded-lg text-zinc-400 hover:text-white lg:hidden"
-                    title={t("inbox.back")}
-                    aria-label={t("inbox.back")}
+                    shape="rounded"
+                    className="h-8 w-8 lg:hidden"
+                    label={t("inbox.back")}
                   >
-                    <ArrowLeft className="h-5 w-5" />
-                  </button>
+                    <ArrowLeft className="h-5 w-5" aria-hidden />
+                  </IconButton>
 
                   <div className="flex items-center gap-3">
-                    {activeConversation.otherUser.avatarUrl ? (
-                      <img
-                        src={activeConversation.otherUser.avatarUrl}
-                        alt=""
-                        className="h-10 w-10 rounded-full object-cover border border-white/10"
-                      />
-                    ) : (
-                      <div className="h-10 w-10 rounded-full bg-zinc-800 flex items-center justify-center text-white">
-                        <User className="h-5 w-5 text-zinc-400" />
-                      </div>
-                    )}
+                    <Avatar
+                      src={activeConversation.otherUser.avatarUrl}
+                      fallback={<User className="h-5 w-5" aria-hidden />}
+                      className="border border-border-default"
+                    />
                     <div>
-                      <h3 className="text-sm font-bold text-white light:text-slate-900">
+                      <h3 className="text-sm font-bold text-fg">
                         {activeConversation.otherUser.displayName || activeConversation.otherUser.username}
                       </h3>
                       <Link
                         href={`/users/${activeConversation.otherUser.username}`}
-                        className="text-[11px] text-violet-400 hover:underline flex items-center gap-1"
+                        className="text-[11px] text-accent hover:underline flex items-center gap-1"
                         target="_blank"
                       >
                         @{activeConversation.otherUser.username}
@@ -479,21 +471,22 @@ function MessagesContent() {
                 </div>
 
                 <div className="relative">
-                  <button
+                  <IconButton
                     onClick={() => setShowOptionsModal(!showOptionsModal)}
-                    className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-colors hover:light:text-slate-900"
-                    title={t("inbox.options")}
-                    aria-label={t("inbox.options")}
+                    shape="rounded"
+                    className="h-9 w-9 rounded-xl"
+                    aria-expanded={showOptionsModal}
+                    label={t("inbox.options")}
                   >
-                    <MoreVertical className="h-4 w-4" />
-                  </button>
+                    <MoreVertical className="h-4 w-4" aria-hidden />
+                  </IconButton>
 
                   {showOptionsModal && (
-                    <div className="absolute right-0 top-10 w-44 rounded-xl border border-white/10 bg-zinc-900 p-1.5 shadow-2xl z-20 light:bg-white light:border-black/10">
+                    <div className="absolute right-0 top-10 w-44 rounded-xl border border-border-default bg-surface-2 p-1.5 shadow-2xl z-20">
                       <button
                         onClick={handleBlockUser}
                         disabled={blocking}
-                        className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold text-rose-400 hover:bg-rose-500/10 flex items-center gap-2 transition-colors"
+                        className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold text-danger hover:bg-danger/10 flex items-center gap-2 transition-colors"
                       >
                         <UserX className="h-3.5 w-3.5" />
                         <span>{t("inbox.block")}</span>
@@ -505,7 +498,7 @@ function MessagesContent() {
 
               {/* Error banner */}
               {error && (
-                <div className="m-4 p-3 rounded-xl border border-rose-500/30 bg-rose-500/10 text-xs text-rose-300 flex items-center gap-2">
+                <div className="m-4 p-3 rounded-xl border border-danger/30 bg-danger/10 text-xs text-danger flex items-center gap-2">
                   <ShieldAlert className="h-4 w-4 shrink-0" />
                   <span>{error}</span>
                 </div>
@@ -514,11 +507,11 @@ function MessagesContent() {
               {/* Messages Bubble Area */}
               <div className="flex-1 p-4 overflow-y-auto space-y-3">
                 {loadingMessages ? (
-                  <div className="flex items-center justify-center h-full text-zinc-500">
-                    <Loader2 className="h-6 w-6 animate-spin" />
+                  <div className="flex items-center justify-center h-full text-fg-muted">
+                    <Spinner size="md" className="text-current" />
                   </div>
                 ) : messages.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full text-center text-zinc-500">
+                  <div className="flex flex-col items-center justify-center h-full text-center text-fg-muted">
                     <MessageSquare className="h-8 w-8 mb-2 opacity-50" />
                     <p className="text-xs font-semibold">{t("inbox.startTitle")}</p>
                     <p className="text-[11px] mt-1 max-w-xs">
@@ -532,18 +525,16 @@ function MessagesContent() {
                     return (
                       <div
                         key={msg.id}
-                        className={`flex flex-col ${isMine ? "items-end" : "items-start"}`}
+                        className={cn("flex flex-col", isMine ? "items-end" : "items-start")}
                       >
                         <div
-                          className={`max-w-[75%] px-4 py-2.5 text-xs rounded-2xl ${
-                            isMine
-                              ? "bg-linear-to-tr from-violet-600 to-fuchsia-600 text-white rounded-br-sm shadow-md"
-                              : "bg-zinc-900 border border-white/10 text-zinc-100 rounded-bl-sm light:bg-slate-100 light:border-black/10 light:text-slate-900"
-                          }`}
+                          className={cn("max-w-[75%] px-4 py-2.5 text-xs rounded-2xl", isMine
+                            ? "bg-linear-to-tr from-accent to-accent-2 text-white rounded-br-sm shadow-md"
+                            : "bg-surface-2 border border-border-default text-fg rounded-bl-sm")}
                         >
                           <p className="leading-relaxed whitespace-pre-wrap wrap-break-word">{msg.content}</p>
                         </div>
-                        <div className="flex items-center gap-1.5 mt-1 px-1 text-[10px] text-zinc-500">
+                        <div className="flex items-center gap-1.5 mt-1 px-1 text-[10px] text-fg-muted">
                           <span>
                             {new Date(msg.createdAt).toLocaleTimeString([], {
                               hour: "2-digit",
@@ -553,9 +544,9 @@ function MessagesContent() {
                           {isMine && (
                             <span>
                               {msg.isRead ? (
-                                <CheckCheck className="h-3 w-3 text-violet-400" />
+                                <CheckCheck className="h-3 w-3 text-accent" />
                               ) : (
-                                <Check className="h-3 w-3 text-zinc-500" />
+                                <Check className="h-3 w-3 text-fg-muted" />
                               )}
                             </span>
                           )}
@@ -568,34 +559,37 @@ function MessagesContent() {
               </div>
 
               {/* Message Composer */}
-              <div className="p-4 border-t border-white/10 light:border-black/10">
+              <div className="p-4 border-t border-border-default">
                 <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-                  <input
+                  <Input
                     type="text"
                     value={inputContent}
                     onChange={(e) => setInputContent(e.target.value)}
                     placeholder={t("inbox.messagePlaceholder")}
                     maxLength={2000}
-                    className="flex-1 rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-violet-500 focus:outline-hidden light:bg-slate-50 light:border-black/10 light:text-slate-900"
+                    className="flex-1 rounded-xl px-4 text-xs"
                   />
-                  <button
+                  <Button
                     type="submit"
-                    disabled={!inputContent.trim() || sending}
-                    className="px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold disabled:opacity-40 transition-colors flex items-center gap-1.5 shadow-md shadow-violet-600/20"
+                    variant="primary"
+                    shape="rounded"
+                    disabled={!inputContent.trim()}
+                    loading={sending}
+                    className="h-11 rounded-xl text-xs shadow-md shadow-accent/20"
                   >
-                    {sending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                    {!sending && <Send className="h-3.5 w-3.5" aria-hidden />}
                     <span className="hidden sm:inline">{t("inbox.send")}</span>
-                  </button>
+                  </Button>
                 </form>
               </div>
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center p-8 text-zinc-500">
-              <div className="h-16 w-16 rounded-full bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 mb-4">
+            <div className="flex flex-col items-center justify-center h-full text-center p-8 text-fg-muted">
+              <div className="h-16 w-16 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center text-accent mb-4">
                 <MessageSquare className="h-8 w-8" />
               </div>
-              <h3 className="text-base font-bold text-white light:text-slate-900">{t("inbox.emptyTitle")}</h3>
-              <p className="text-xs text-zinc-400 max-w-sm mt-1 light:text-slate-500">
+              <h3 className="text-base font-bold text-fg">{t("inbox.emptyTitle")}</h3>
+              <p className="text-xs text-fg-secondary max-w-sm mt-1">
                 {t("inbox.emptyHint")}
               </p>
             </div>
@@ -610,7 +604,7 @@ export default function MessagesPage() {
   return (
     <Suspense
       fallback={
-        <div className="mx-auto max-w-7xl px-4 py-24 text-center text-xs text-zinc-500 font-mono light:text-slate-500">
+        <div className="mx-auto max-w-7xl px-4 py-24 text-center text-xs text-fg-muted font-mono">
           {t("inbox.loading")}
         </div>
       }

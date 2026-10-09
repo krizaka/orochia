@@ -7,6 +7,7 @@ import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
 import { PlaylistCard, type PlaylistCardProps } from "@/components/PlaylistCard";
 import { TipModal } from "@/components/TipModal";
 import { t } from "@/lib/i18n";
+import { cn } from "@/components/ui";
 
 interface CreatorProfileClientProps {
   creator: {
@@ -52,7 +53,7 @@ export function CreatorProfileClient({
     <div className="space-y-10">
       {/* Media & Content Tabs */}
       <div>
-        <div role="tablist" className="-mx-4 flex items-center gap-2 overflow-x-auto border-b border-white/10 px-4 pb-3 light:border-black/5 sm:mx-0 sm:px-0">
+        <div role="tablist" className="-mx-4 flex items-center gap-2 overflow-x-auto border-b border-border-default px-4 pb-3 sm:mx-0 sm:px-0">
           {(
             [
               { id: "all", icon: Film, label: t("profileTabs.all", { count: videos.length }) },
@@ -66,11 +67,12 @@ export function CreatorProfileClient({
               role="tab"
               aria-selected={activeTab === id}
               onClick={() => setActiveTab(id)}
-              className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+              className={cn(
+                "flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-xs font-bold transition-all",
                 activeTab === id
-                  ? "bg-violet-600 text-white shadow-md shadow-violet-600/30"
-                  : "text-zinc-400 hover:bg-white/5 hover:text-white light:text-slate-600 hover:light:bg-black/5 hover:light:text-slate-950"
-              }`}
+                  ? "bg-accent text-white shadow-md shadow-accent/30"
+                  : "text-fg-secondary hover:bg-surface-2 hover:text-fg"
+              )}
             >
               <Icon className="h-3.5 w-3.5" />
               <span>{label}</span>
@@ -87,22 +89,25 @@ export function CreatorProfileClient({
               ))}
             </div>
           ) : activeTab === "about" ? (
-            <div className="space-y-4 rounded-3xl border border-white/10 bg-zinc-950/60 p-6 light:border-black/5 light:bg-white sm:p-8">
-              <p className="whitespace-pre-line text-sm leading-relaxed text-zinc-300 light:text-slate-700">{creator.bio || t("profileTabs.noBio")}</p>
+            <div className="space-y-4 rounded-3xl border border-border-default bg-surface-1/60 p-6 sm:p-8">
+              <p className="whitespace-pre-line text-sm leading-relaxed text-fg-secondary">{creator.bio || t("profileTabs.noBio")}</p>
               {creator.isCreator && (
-              <div className="flex items-start gap-3 border-t border-white/5 pt-4 light:border-black/5">
-                <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${creator.isVerified ? "bg-emerald-600/15 text-emerald-400" : "bg-amber-500/15 text-amber-400"}`}>
+              <div className="flex items-start gap-3 border-t border-border-subtle pt-4">
+                <span className={cn(
+                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
+                  creator.isVerified ? "bg-success/15 text-success" : "bg-warning/15 text-warning"
+                )}>
                   <Shield className="h-5 w-5" />
                 </span>
                 <div>
-                  <h4 className="text-sm font-bold text-white light:text-slate-900">{t(creator.isVerified ? "profileTabs.verifiedTitle" : "profileTabs.pendingTitle")}</h4>
-                  <p className="mt-0.5 text-xs leading-relaxed text-zinc-400 light:text-slate-500">{t(creator.isVerified ? "profileTabs.verifiedBody" : "profileTabs.pendingBody")}</p>
+                  <h4 className="text-sm font-bold text-fg">{t(creator.isVerified ? "profileTabs.verifiedTitle" : "profileTabs.pendingTitle")}</h4>
+                  <p className="mt-0.5 text-xs leading-relaxed text-fg-secondary">{t(creator.isVerified ? "profileTabs.verifiedBody" : "profileTabs.pendingBody")}</p>
                 </div>
               </div>
               )}
             </div>
           ) : filteredVideos.length === 0 ? (
-            <div className="rounded-3xl border border-white/10 dark:border-white/10 light:border-black/5 bg-zinc-900/40 dark:bg-zinc-900/40 light:bg-slate-50 p-12 text-center text-sm text-zinc-400">
+            <div className="rounded-3xl border border-border-default bg-surface-2/40 p-12 text-center text-sm text-fg-secondary">
               {t("profileTabs.empty")}
             </div>
           ) : (

@@ -2,7 +2,7 @@
   "name": "orochia-monorepo",
   "version": "1.0.0",
   "private": true,
-  "description": "Orochia \u2014 the creator video platform: web app, API and packages (db, media, payments).",
+  "description": "Orochia — the creator video platform: web app, API and packages (db, media, payments).",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -12,8 +12,10 @@
     "dev": "npm run dev --workspace=apps/web",
     "build": "npm run build -w apps/web",
     "start": "npm run start -w apps/web",
-    "lint": "npm run lint --workspaces --if-present && npm run check:i18n",
+    "lint": "npm run lint --workspaces --if-present && npm run check:i18n && npm run ratchet",
     "check:i18n": "node scripts/check-i18n.mjs",
+    "ratchet": "krizaka-ratchet",
+    "ratchet:update": "krizaka-ratchet --update",
     "typecheck": "npm run lint --workspaces --if-present && tsc --noEmit -p apps/web/tsconfig.json",
     "test": "vitest run",
     "test:e2e": "node e2e/scenarios.mjs",
@@ -32,7 +34,8 @@
     "db:dump": "node scripts/db.mjs dump",
     "db:restore": "node scripts/db.mjs restore",
     "docs:generate": "node scripts/generate-docs.mjs",
-    "workspace": "node scripts/workspace.mjs"
+    "workspace": "node scripts/workspace.mjs",
+    "screenshots": "node scripts/screenshots.mjs"
   },
   "keywords": [
     "video-streaming",
@@ -46,6 +49,7 @@
   "author": "Krizaka Core Team",
   "license": "Apache-2.0",
   "devDependencies": {
+    "playwright": "^1.64.0",
     "vitest": "^4.1.11"
   },
   "engines": {

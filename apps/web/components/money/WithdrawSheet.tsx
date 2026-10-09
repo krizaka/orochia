@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
-import { Button, Chip, Sheet } from "@/components/ui";
-import { usd } from "./format";
+import { Button, Chip, Input, Sheet } from "@/components/ui";
+import { money } from "@/lib/money";
 import { t } from "@/lib/i18n";
 
 const MIN = 2000;
@@ -43,35 +43,35 @@ export function WithdrawSheet({ open, onClose, availableCents, destinationHint, 
       title={t("earnings.request.title")}
       footer={
         !done && (
-          <Button variant="primary" size="lg" round={false} className="w-full" disabled={!valid} loading={busy} onClick={() => void submit()}>
-            {t("earnings.request.submit", { amount: usd(cents) })}
+          <Button variant="sensual" size="lg" shape="rounded" className="w-full" disabled={!valid} loading={busy} onClick={() => void submit()}>
+            {t("earnings.request.submit", { amount: money(cents) })}
           </Button>
         )
       }
     >
       {done ? (
         <div className="py-6 text-center">
-          <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-400" />
-          <p className="mt-3 text-sm text-zinc-300 light:text-slate-700">{t("earnings.request.done")}</p>
+          <CheckCircle2 className="mx-auto h-12 w-12 text-success" />
+          <p className="mt-3 text-sm text-fg-secondary">{t("earnings.request.done")}</p>
         </div>
       ) : availableCents < MIN ? (
-        <p className="py-4 text-sm text-zinc-400 light:text-slate-600">{t("earnings.request.tooLow")}</p>
+        <p className="py-4 text-sm text-fg-secondary">{t("earnings.request.tooLow")}</p>
       ) : (
         <div className="space-y-4">
           <label className="block">
-            <span className="mb-1.5 block text-xs font-semibold text-zinc-300 light:text-slate-700">{t("earnings.request.amount")}</span>
-            <span className="flex items-center rounded-2xl border border-white/10 bg-zinc-900 px-4 focus-within:border-violet-500 light:border-black/10 light:bg-slate-50">
-              <span className="font-display text-2xl font-black text-zinc-500">$</span>
-              <input
+            <span className="mb-1.5 block text-xs font-semibold text-fg-secondary">{t("earnings.request.amount")}</span>
+            <span className="flex items-center rounded-2xl border border-border-default bg-surface-2 px-4 focus-within:border-accent">
+              <span className="font-display text-2xl font-black text-fg-muted">$</span>
+              <Input
                 value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^\d.,]/g, ""))}
                 inputMode="decimal"
                 placeholder="0.00"
                 aria-describedby="withdraw-hint"
-                className="w-full bg-transparent px-2 py-3 font-display text-2xl font-black text-white outline-hidden light:text-slate-900"
+                className="bg-transparent px-2 py-3 font-display text-2xl font-black outline-hidden"
               />
             </span>
-            <span id="withdraw-hint" className="mt-1 block text-[11px] text-zinc-500">{t("earnings.request.min")}</span>
+            <span id="withdraw-hint" className="mt-1 block text-[11px] text-fg-muted">{t("earnings.request.min")}</span>
           </label>
           <div className="flex flex-wrap gap-2">
             {[0.25, 0.5, 1].map((share) => {
@@ -79,13 +79,13 @@ export function WithdrawSheet({ open, onClose, availableCents, destinationHint, 
               if (value < MIN) return null;
               return (
                 <Chip key={share} active={cents === value} onClick={() => setAmount((value / 100).toFixed(2))}>
-                  {share === 1 ? t("earnings.request.max", { amount: usd(value) }) : usd(value)}
+                  {share === 1 ? t("earnings.request.max", { amount: money(value) }) : money(value)}
                 </Chip>
               );
             })}
           </div>
-          <p className="rounded-2xl border border-white/10 bg-white/3 px-4 py-3 text-sm text-zinc-300 light:border-black/10 light:bg-black/2 light:text-slate-700">{t("earnings.request.to", { hint: destinationHint })}</p>
-          {error && <p role="alert" className="text-xs text-rose-400 light:text-rose-600">{error}</p>}
+          <p className="rounded-2xl border border-border-default bg-surface-2 px-4 py-3 text-sm text-fg-secondary">{t("earnings.request.to", { hint: destinationHint })}</p>
+          {error && <p role="alert" className="text-xs text-danger">{error}</p>}
         </div>
       )}
     </Sheet>

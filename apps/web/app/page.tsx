@@ -16,7 +16,7 @@ import { HeroWall } from "@/components/home/HeroWall";
 import { ProductShowcase } from "@/components/home/ProductShowcase";
 import { CreatorsPreview } from "@/components/home/CreatorsPreview";
 import { AuctionsExplainer } from "@/components/home/AuctionsExplainer";
-import { RotatingWord } from "@/components/ui";
+import { RotatingWord, cn } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 export const metadata = { alternates: { canonical: "/" } };
@@ -42,55 +42,55 @@ export default async function HomePage() {
   const [viewer, { videos, featured, stats, auctions, challenges }] = await Promise.all([getCurrentUser(), loadHome()]);
   const share = 100 - platformFeePercent();
   const wall = videos.map((v) => v.thumbnailUrl).filter((u): u is string => Boolean(u)).slice(0, 18);
-  const surface = "border border-white/10 light:border-black/5 bg-zinc-900/40 light:bg-white";
+  const surface = "border border-border-default bg-surface-2/40";
 
   return (
     <div className="mx-auto w-full max-w-7xl overflow-x-hidden px-3 py-4 sm:px-6 sm:py-8">
       {!viewer && (
-        <section className="relative mb-10 overflow-hidden rounded-4xl border border-white/10 light:border-black/5 bg-zinc-950 light:bg-linear-to-br light:from-violet-50 light:via-white light:to-pink-50 isolate">
+        <section className="relative mb-10 overflow-hidden rounded-4xl border border-border-default bg-zinc-950 light:bg-linear-to-br light:from-violet-50 light:via-white light:to-pink-50 isolate">
           <HeroWall images={wall} />
           <div className="absolute inset-0 z-0 bg-linear-to-r from-zinc-950 via-zinc-950/85 to-transparent light:from-white light:via-white/85" />
           <div className="relative z-10 grid grid-cols-1 items-center gap-10 px-6 py-12 sm:px-12 sm:py-16 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-6 lg:py-20">
           <div className="min-w-0 max-w-xl">
-            <p className="hero-fade inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-3.5 py-1 text-xs font-semibold text-violet-300 light:text-violet-700">
+            <p className="hero-fade inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3.5 py-1 text-xs font-semibold text-accent">
               <Sparkles className="h-3.5 w-3.5" /> {t("home.eyebrow")}
             </p>
             <h1
               aria-label={`${t("home.titleLead")} ${t("home.rotating.a")}`}
-              className="hero-fade mt-5 font-display text-4xl font-black leading-[1.05] tracking-tight text-white light:text-slate-900 sm:text-6xl [animation-delay:80ms]"
+              className="hero-fade mt-5 font-display text-4xl font-black leading-[1.05] tracking-tight text-fg sm:text-6xl [animation-delay:80ms]"
             >
               <span aria-hidden>{t("home.titleLead")}</span>
               <span className="block">
                 <RotatingWord
                   words={[t("home.rotating.a"), t("home.rotating.b"), t("home.rotating.c"), t("home.rotating.d")]}
-                  className="kz-gradient-text bg-linear-to-r from-violet-400 via-fuchsia-400 to-pink-400 bg-clip-text pr-1 text-transparent light:from-violet-600 light:via-fuchsia-600 light:to-pink-600"
+                  className="kz-gradient-text bg-linear-to-r from-accent via-accent-2 to-accent-2 bg-clip-text pr-1 text-transparent"
                 />
               </span>
             </h1>
-            <p className="hero-fade mt-5 text-base leading-relaxed text-zinc-300 light:text-slate-600 sm:text-lg [animation-delay:160ms]">{t("home.body", { share })}</p>
+            <p className="hero-fade mt-5 text-base leading-relaxed text-fg-secondary sm:text-lg [animation-delay:160ms]">{t("home.body", { share })}</p>
             <div className="hero-fade mt-8 flex flex-col gap-3 sm:flex-row [animation-delay:240ms]">
               <Link
                 href="/auth/register"
-                className="kz-sheen inline-flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-fuchsia-600/30 transition-transform hover:scale-[1.02] active:scale-95"
+                className="kz-sheen inline-flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-accent via-accent-2 to-accent-2 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-accent/30 transition-transform hover:scale-[1.02] active:scale-95"
               >
                 <UserPlus className="h-4 w-4" /> {t("home.ctaJoin")}
               </Link>
               <Link
                 href="/explore"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 light:border-black/10 bg-white/5 light:bg-white px-6 py-3.5 text-sm font-semibold text-white light:text-slate-800 backdrop-blur-sm hover:bg-white/10"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border-strong bg-surface-2 px-6 py-3.5 text-sm font-semibold text-fg backdrop-blur-sm hover:bg-white/10"
               >
                 {t("home.ctaExplore")} <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
-            <ul className="hero-fade mt-8 flex flex-wrap gap-x-5 gap-y-2 text-xs text-zinc-400 light:text-slate-500 [animation-delay:320ms]">
+            <ul className="hero-fade mt-8 flex flex-wrap gap-x-5 gap-y-2 text-xs text-fg-secondary [animation-delay:320ms]">
               {[t("home.trust.free"), t("home.trust.private"), t("home.trust.share", { share })].map((item) => (
                 <li key={item} className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" /> {item}
+                  <CheckCircle2 className="h-3.5 w-3.5 text-success" /> {item}
                 </li>
               ))}
             </ul>
             {stats.videos > 0 && (
-              <p className="hero-fade mt-4 font-mono text-[11px] text-zinc-500 [animation-delay:400ms]">
+              <p className="hero-fade mt-4 font-mono text-[11px] text-fg-muted [animation-delay:400ms]">
                 {t("home.stats", { videos: stats.videos.toLocaleString("en-US"), creators: stats.creators.toLocaleString("en-US") })}
               </p>
             )}
@@ -108,8 +108,8 @@ export default async function HomePage() {
             {[0, 1].map((copy) => (
               <div key={copy} className="flex gap-3 pr-3">
                 {(["a", "b", "c", "i", "d", "e", "f", "g", "h"] as const).map((k) => (
-                  <span key={k} className="flex items-center gap-2 whitespace-nowrap rounded-full border border-white/10 bg-white/3 px-4 py-2 text-sm font-semibold text-zinc-300 light:border-black/5 light:bg-white light:text-slate-600">
-                    <Sparkles className="h-3.5 w-3.5 text-fuchsia-400" /> {t(`home.marquee.${k}`, { share })}
+                  <span key={k} className="flex items-center gap-2 whitespace-nowrap rounded-full border border-border-default bg-surface-2 px-4 py-2 text-sm font-semibold text-fg-secondary">
+                    <Sparkles className="h-3.5 w-3.5 text-accent" /> {t(`home.marquee.${k}`, { share })}
                   </span>
                 ))}
               </div>
@@ -122,21 +122,21 @@ export default async function HomePage() {
 
       {!viewer && (
         <section className="mb-12">
-          <h2 data-reveal className="mb-5 font-display text-xl font-bold text-white light:text-slate-900">{t("home.why.title")}</h2>
+          <h2 data-reveal className="mb-5 font-display text-xl font-bold text-fg">{t("home.why.title")}</h2>
           <div className="grid gap-4 sm:grid-cols-3">
             {(
               [
-                ["stories", Clapperboard, "text-violet-400 bg-violet-600/15"],
-                ["access", Lock, "text-fuchsia-400 bg-fuchsia-600/15"],
-                ["support", HeartHandshake, "text-emerald-400 bg-emerald-600/15"],
+                ["stories", Clapperboard, "text-accent bg-accent/15"],
+                ["access", Lock, "text-accent bg-accent/15"],
+                ["support", HeartHandshake, "text-success bg-success/15"],
               ] as const
             ).map(([key, Icon, tone], i) => (
-              <div key={key} data-reveal style={{ ["--kz-delay" as string]: `${i * 90}ms` }} className={`kz-spotlight kz-lift overflow-hidden rounded-3xl p-6 ${surface}`}>
-                <div className={`mb-4 flex h-11 w-11 items-center justify-center rounded-2xl ${tone}`}>
+              <div key={key} data-reveal style={{ ["--kz-delay" as string]: `${i * 90}ms` }} className={cn("kz-spotlight kz-lift overflow-hidden rounded-3xl p-6", surface)}>
+                <div className={cn("mb-4 flex h-11 w-11 items-center justify-center rounded-2xl", tone)}>
                   <Icon className="h-5 w-5" />
                 </div>
-                <h3 className="text-base font-bold text-white light:text-slate-900">{t(`home.why.${key}.title`)}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-zinc-400 light:text-slate-600">{t(`home.why.${key}.body`, { share })}</p>
+                <h3 className="text-base font-bold text-fg">{t(`home.why.${key}.title`)}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-fg-secondary">{t(`home.why.${key}.body`, { share })}</p>
               </div>
             ))}
           </div>
@@ -145,10 +145,10 @@ export default async function HomePage() {
 
       <section className="mb-12" aria-labelledby="home-auctions">
         <div className="mb-4 flex items-end justify-between gap-4" data-reveal>
-          <h2 id="home-auctions" className="flex items-center gap-2 font-display text-xl font-bold text-white light:text-slate-900">
-            <Gavel className="h-5 w-5 text-fuchsia-400 light:text-fuchsia-600" aria-hidden /> {t("home.auctions")}
+          <h2 id="home-auctions" className="flex items-center gap-2 font-display text-xl font-bold text-fg">
+            <Gavel className="h-5 w-5 text-accent" aria-hidden /> {t("home.auctions")}
           </h2>
-          <Link href="/auctions" className="inline-flex items-center gap-1 text-sm font-semibold text-violet-300 hover:text-violet-200 light:text-violet-700 hover:light:text-violet-900">
+          <Link href="/auctions" className="inline-flex items-center gap-1 text-sm font-semibold text-accent hover:text-accent">
             {t("home.auctionsAll")} <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>
         </div>
@@ -165,10 +165,10 @@ export default async function HomePage() {
 
       <section className="mb-12" aria-labelledby="home-challenges">
         <div className="mb-4 flex items-end justify-between gap-4" data-reveal>
-          <h2 id="home-challenges" className="flex items-center gap-2 font-display text-xl font-bold text-white light:text-slate-900">
-            <Flame className="h-5 w-5 text-fuchsia-400 light:text-fuchsia-600" aria-hidden /> {t("home.challenges.title")}
+          <h2 id="home-challenges" className="flex items-center gap-2 font-display text-xl font-bold text-fg">
+            <Flame className="h-5 w-5 text-accent" aria-hidden /> {t("home.challenges.title")}
           </h2>
-          <Link href="/challenges" className="inline-flex items-center gap-1 text-sm font-semibold text-violet-300 hover:text-violet-200 light:text-violet-700 hover:light:text-violet-900">
+          <Link href="/challenges" className="inline-flex items-center gap-1 text-sm font-semibold text-accent hover:text-accent">
             {t("home.challenges.all")} <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>
         </div>
@@ -179,12 +179,15 @@ export default async function HomePage() {
             ))}
           </div>
         ) : (
-          <div data-reveal className={`kz-spotlight flex flex-col items-start justify-between gap-4 rounded-3xl p-6 sm:flex-row sm:items-center sm:p-8 ${surface}`}>
+          <div data-reveal className={cn(
+            "kz-spotlight flex flex-col items-start justify-between gap-4 rounded-3xl p-6 sm:flex-row sm:items-center sm:p-8",
+            surface
+          )}>
             <div className="max-w-2xl">
-              <p className="font-display text-lg font-black text-white light:text-slate-900">{t("home.challenges.pitch")}</p>
-              <p className="mt-1 text-sm text-zinc-400 light:text-slate-600">{t("home.challenges.body")}</p>
+              <p className="font-display text-lg font-black text-fg">{t("home.challenges.pitch")}</p>
+              <p className="mt-1 text-sm text-fg-secondary">{t("home.challenges.body")}</p>
             </div>
-            <Link href="/challenges" className="kz-sheen inline-flex shrink-0 items-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-fuchsia-600/30">
+            <Link href="/challenges" className="kz-sheen inline-flex shrink-0 items-center gap-2 rounded-2xl bg-linear-to-r from-accent via-accent-2 to-accent-2 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-accent/30">
               <Flame className="h-4 w-4" aria-hidden /> {t("home.challenges.cta")}
             </Link>
           </div>
@@ -192,25 +195,28 @@ export default async function HomePage() {
       </section>
 
       <section className="mb-12" data-reveal>
-        <h2 className="mb-4 font-display text-xl font-bold text-white light:text-slate-900">{t("home.trending")}</h2>
+        <h2 className="mb-4 font-display text-xl font-bold text-fg">{t("home.trending")}</h2>
         <FeedFilterTabs initialVideos={videos} />
       </section>
 
       {featured && (() => {
         const feat = featured;
         return (
-          <section data-reveal className={`kz-spotlight mb-12 flex flex-col items-center gap-6 overflow-hidden rounded-3xl p-6 text-center sm:flex-row sm:p-8 sm:text-left ${surface}`}>
-            <img src={feat.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-24 w-24 shrink-0 rounded-2xl border-2 border-violet-500/60 object-cover shadow-xl" />
+          <section data-reveal className={cn(
+            "kz-spotlight mb-12 flex flex-col items-center gap-6 overflow-hidden rounded-3xl p-6 text-center sm:flex-row sm:p-8 sm:text-left",
+            surface
+          )}>
+            <img src={feat.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-24 w-24 shrink-0 rounded-2xl border-2 border-accent/60 object-cover shadow-xl" />
             <div className="min-w-0 flex-1">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-violet-400 light:text-violet-700">{t("home.featured")}</p>
-              <h3 className="mt-1 text-xl font-bold text-white light:text-slate-900">{feat.displayName}</h3>
-              {feat.bio && <p className="mt-1 line-clamp-2 text-sm text-zinc-400 light:text-slate-600">{feat.bio}</p>}
-              <p className="mt-2 font-mono text-xs text-zinc-500">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-accent">{t("home.featured")}</p>
+              <h3 className="mt-1 text-xl font-bold text-fg">{feat.displayName}</h3>
+              {feat.bio && <p className="mt-1 line-clamp-2 text-sm text-fg-secondary">{feat.bio}</p>}
+              <p className="mt-2 font-mono text-xs text-fg-muted">
                 {t("home.figures.videos", { count: feat.videosCount })} · {t("home.figures.views", { count: feat.totalViews.toLocaleString("en-US") })}
               </p>
             </div>
             <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-              <Link href={`/@${feat.username}`} className="inline-flex items-center justify-center rounded-2xl bg-linear-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-xs font-bold text-white shadow-lg">
+              <Link href={`/@${feat.username}`} className="inline-flex items-center justify-center rounded-2xl bg-linear-to-r from-accent to-accent-2 px-5 py-3 text-xs font-bold text-white shadow-lg">
                 {t("home.viewProfile")}
               </Link>
               <RelationshipActions username={feat.username} show={["follow"]} />
@@ -220,19 +226,19 @@ export default async function HomePage() {
       })()}
 
       {!viewer && (
-        <section data-reveal className="relative mb-6 grid items-center gap-10 overflow-hidden rounded-4xl border border-violet-500/20 bg-linear-to-br from-violet-950/60 via-zinc-950 to-fuchsia-950/50 p-8 light:from-violet-100 light:via-white light:to-pink-100 sm:p-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
+        <section data-reveal className="relative mb-6 grid items-center gap-10 overflow-hidden rounded-4xl border border-accent/20 bg-linear-to-br from-accent/20 via-zinc-950 to-accent-2/15 p-8 light:via-white sm:p-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
           <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-violet-300 light:text-violet-700">{t("home.creators.eyebrow")}</p>
-          <h2 className="mt-2 max-w-xl font-display text-2xl font-black text-white light:text-slate-900 sm:text-4xl">{t("home.creators.title")}</h2>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-zinc-300 light:text-slate-600 sm:text-base">{t("home.creators.body")}</p>
-          <ul className="mt-5 space-y-2 text-sm text-zinc-300 light:text-slate-700">
+          <p className="text-xs font-semibold uppercase tracking-wider text-accent">{t("home.creators.eyebrow")}</p>
+          <h2 className="mt-2 max-w-xl font-display text-2xl font-black text-fg sm:text-4xl">{t("home.creators.title")}</h2>
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-fg-secondary sm:text-base">{t("home.creators.body")}</p>
+          <ul className="mt-5 space-y-2 text-sm text-fg-secondary">
             {(["upload", "audience", "paid"] as const).map((i) => (
               <li key={i} className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-400" /> {t(`home.creators.points.${i}`, { share })}
+                <CheckCircle2 className="h-4 w-4 text-success" /> {t(`home.creators.points.${i}`, { share })}
               </li>
             ))}
           </ul>
-          <Link href="/auth/register" className="kz-sheen mt-7 inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-3 text-sm font-bold text-zinc-950 light:bg-slate-900 light:text-white">
+          <Link href="/auth/register" className="kz-sheen mt-7 inline-flex items-center gap-2 rounded-2xl bg-surface-2 px-6 py-3 text-sm font-bold text-fg-muted">
             {t("home.creators.cta")} <ArrowRight className="h-4 w-4" />
           </Link>
           </div>

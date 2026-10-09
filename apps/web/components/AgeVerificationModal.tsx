@@ -3,7 +3,7 @@
 import React, { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { ShieldAlert, CheckCircle, ExternalLink } from "lucide-react";
-import { OrochiaLogo } from "@/components/ui";
+import { Button, OrochiaLogo } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { Rich } from "@/components/Rich";
 
@@ -32,17 +32,17 @@ export function AgeVerificationModal() {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-2xl kz-overlay">
-      <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/15 bg-zinc-950 p-6 sm:p-8 shadow-2xl shadow-violet-950/40 text-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-scrim-strong backdrop-blur-2xl kz-overlay">
+      <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/15 bg-zinc-950 p-6 sm:p-8 shadow-2xl shadow-accent/40 text-center">
         {/* Ambient Top Glow */}
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 h-48 w-48 rounded-full bg-violet-600/30 blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 left-1/2 -translate-x-1/2 h-48 w-48 rounded-full bg-accent/30 blur-3xl pointer-events-none" />
 
         {/* Brand Icon */}
         <OrochiaLogo size={88} className="mx-auto mb-3" />
 
         {/* Header */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-300 mb-3">
-          <ShieldAlert className="h-3.5 w-3.5 text-violet-400" />
+        <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent mb-3">
+          <ShieldAlert className="h-3.5 w-3.5 text-accent" />
           <span>{t("ageGate.badge")}</span>
         </div>
 
@@ -55,39 +55,33 @@ export function AgeVerificationModal() {
         </p>
 
         {/* Compliance Checklist */}
-        <div className="my-6 space-y-2.5 rounded-2xl border border-white/5 bg-zinc-900/60 p-4 text-left text-xs text-zinc-400">
+        <div className="my-6 space-y-2.5 rounded-2xl border border-white/5 bg-zinc-900/60 p-4 text-left text-xs text-fg-secondary">
           <div className="flex items-start gap-2.5">
-            <CheckCircle className="h-4 w-4 shrink-0 text-violet-400 mt-0.5" />
+            <CheckCircle className="h-4 w-4 shrink-0 text-accent mt-0.5" />
             <span>{t("ageGate.age")}</span>
           </div>
           <div className="flex items-start gap-2.5">
-            <CheckCircle className="h-4 w-4 shrink-0 text-violet-400 mt-0.5" />
+            <CheckCircle className="h-4 w-4 shrink-0 text-accent mt-0.5" />
             <span>{t("ageGate.terms")}</span>
           </div>
           <div className="flex items-start gap-2.5">
-            <CheckCircle className="h-4 w-4 shrink-0 text-violet-400 mt-0.5" />
+            <CheckCircle className="h-4 w-4 shrink-0 text-accent mt-0.5" />
             <span>{t("ageGate.consent")}</span>
           </div>
         </div>
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3">
-          <button
-            onClick={handleConfirmAge}
-            className="flex-1 rounded-xl bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 py-3.5 px-6 text-sm font-bold text-white shadow-lg shadow-violet-600/25 transition-all hover:scale-[1.02] active:scale-95"
-          >
+          <Button variant="sensual" size="lg" shape="rounded" onClick={handleConfirmAge} className="flex-1 rounded-xl px-6 font-bold">
             {t("ageGate.enter")}
-          </button>
-          <button
-            onClick={handleDecline}
-            className="rounded-xl border border-white/10 bg-zinc-900 py-3.5 px-6 text-sm font-semibold text-zinc-400 transition-all hover:bg-white/10 hover:text-white"
-          >
+          </Button>
+          <Button variant="secondary" size="lg" shape="rounded" onClick={handleDecline} className="rounded-xl px-6">
             {t("ageGate.leave")}
-          </button>
+          </Button>
         </div>
 
         {/* Legal Links */}
-        <div className="mt-6 flex items-center justify-center gap-4 text-[11px] text-zinc-500">
+        <div className="mt-6 flex items-center justify-center gap-4 text-[11px] text-fg-muted">
           <Link href="/legal/terms" className="hover:text-zinc-300 transition-colors flex items-center gap-1">
             <span>{t("ageGate.termsLink")}</span>
             <ExternalLink className="h-2.5 w-2.5" />

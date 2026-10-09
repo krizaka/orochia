@@ -3,11 +3,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Coins, Gavel, Landmark, Lock, ShieldCheck } from "lucide-react";
 import { t } from "@/lib/i18n";
+import { cn } from "@/components/ui";
 
 const SOURCES = [
-  ["tips", Coins, "from-amber-400 to-yellow-300"],
-  ["unlocks", Lock, "from-violet-500 to-fuchsia-500"],
-  ["auctions", Gavel, "from-fuchsia-500 to-pink-500"],
+  ["tips", Coins, "from-warning to-warning"],
+  ["unlocks", Lock, "from-accent to-accent-2"],
+  ["auctions", Gavel, "from-accent-2 to-accent-2"],
 ] as const;
 
 /**
@@ -28,23 +29,30 @@ export function CreatorsPreview({ share }: { share: number }) {
     <div ref={box} className="relative mx-auto w-full max-w-sm">
       <div
         aria-hidden
-        className="absolute -inset-6 -z-10 rounded-4xl bg-linear-to-tr from-violet-600/35 via-fuchsia-600/25 to-pink-500/25 blur-2xl light:from-violet-300/40 light:to-pink-200/40"
+        className="absolute -inset-6 -z-10 rounded-4xl bg-linear-to-tr from-accent/35 via-accent-2/25 to-accent-2/25 blur-2xl"
       />
-      <div className="rounded-[2rem] border border-white/15 bg-zinc-950/85 p-6 shadow-2xl backdrop-blur-2xl light:border-black/5 light:bg-white/95">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-violet-300 light:text-violet-700">{t("home.creatorsPreview.title")}</p>
+      <div className="rounded-[2rem] border border-border-strong bg-surface-1/85 p-6 shadow-2xl backdrop-blur-2xl">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-accent">{t("home.creatorsPreview.title")}</p>
         <ul className="mt-4 space-y-2.5">
           {SOURCES.map(([key, Icon, tone], i) => (
             <li
               key={key}
-              className={`flex items-center gap-3 rounded-2xl border border-white/10 bg-white/3 p-3 light:border-black/5 light:bg-slate-50 ${seen ? "cp-in" : "opacity-0"}`}
+              className={cn(
+                "flex items-center gap-3 rounded-2xl border border-border-default bg-surface-2 p-3",
+                seen ? "cp-in" : "opacity-0"
+              )}
               style={{ animationDelay: `${i * 140}ms` }}
             >
-              <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br ${tone} text-white shadow-md`}>
+              <span className={cn(
+                "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br",
+                tone,
+                "text-white shadow-md"
+              )}>
                 <Icon className="h-4 w-4" aria-hidden />
               </span>
               <span className="min-w-0">
-                <span className="block text-sm font-bold text-white light:text-slate-900">{t(`home.creatorsPreview.${key}.title`)}</span>
-                <span className="block text-xs text-zinc-400 light:text-slate-500">{t(`home.creatorsPreview.${key}.body`)}</span>
+                <span className="block text-sm font-bold text-fg">{t(`home.creatorsPreview.${key}.title`)}</span>
+                <span className="block text-xs text-fg-secondary">{t(`home.creatorsPreview.${key}.body`)}</span>
               </span>
             </li>
           ))}
@@ -52,27 +60,30 @@ export function CreatorsPreview({ share }: { share: number }) {
 
         <div className="mt-6">
           <div className="mb-2 flex items-baseline justify-between text-xs font-semibold">
-            <span className="text-emerald-300 light:text-emerald-700">{t("home.creatorsPreview.creator", { share })}</span>
-            <span className="text-zinc-500">{t("home.creatorsPreview.platform", { fee: 100 - share })}</span>
+            <span className="text-success">{t("home.creatorsPreview.creator", { share })}</span>
+            <span className="text-fg-muted">{t("home.creatorsPreview.platform", { fee: 100 - share })}</span>
           </div>
           <div
-            className="flex h-3 overflow-hidden rounded-full bg-white/10 light:bg-black/5"
+            className="flex h-3 overflow-hidden rounded-full bg-surface-3"
             role="img"
             aria-label={t("home.creatorsPreview.split", { share })}
           >
             <span
-              className={`h-full rounded-full bg-linear-to-r from-emerald-500 to-teal-400 ${seen ? "cp-grow" : "scale-x-0"}`}
+              className={cn(
+                "h-full rounded-full bg-linear-to-r from-success to-teal-400",
+                seen ? "cp-grow" : "scale-x-0"
+              )}
               style={{ width: `${share}%` }}
             />
           </div>
         </div>
 
-        <ul className="mt-5 space-y-1.5 text-[11px] text-zinc-400 light:text-slate-500">
+        <ul className="mt-5 space-y-1.5 text-[11px] text-fg-secondary">
           <li className="flex items-center gap-2">
-            <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" aria-hidden /> {t("home.creatorsPreview.confirmed")}
+            <ShieldCheck className="h-3.5 w-3.5 text-success" aria-hidden /> {t("home.creatorsPreview.confirmed")}
           </li>
           <li className="flex items-center gap-2">
-            <Landmark className="h-3.5 w-3.5 text-violet-400" aria-hidden /> {t("home.creatorsPreview.payout")}
+            <Landmark className="h-3.5 w-3.5 text-accent" aria-hidden /> {t("home.creatorsPreview.payout")}
           </li>
         </ul>
       </div>

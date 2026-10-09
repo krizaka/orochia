@@ -4,6 +4,8 @@ import React, { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
 import { Gavel, Lock, Maximize, Pause, Play, Sparkles, Users, Volume2, VolumeX } from "lucide-react";
 import { t } from "@/lib/i18n";
+import { money } from "@/lib/money";
+import { Badge, Button, cn, IconButton } from "@/components/ui";
 
 interface VideoPlayerProps {
   videoId: string;
@@ -175,16 +177,16 @@ export function VideoPlayer({
   return (
     <div
       ref={containerRef}
-      className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-2xl group select-none"
+      className="theme-dark relative aspect-video w-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-2xl group select-none"
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => isPlaying && setShowControls(false)}
     >
       {/* 18+ Rating Badge Top Left */}
       {(isAdult || contentRatingId === "MATURE_18" || contentRatingId === "ADULT_EXPLICIT") && (
         <div className="absolute top-4 left-4 z-20">
-          <span className="rounded-full bg-rose-600/90 px-2 py-0.5 text-[10px] font-black text-white shadow-md backdrop-blur-md font-mono">
+          <Badge size="sm" className="bg-danger/90 font-mono font-black text-white shadow-md ring-0 backdrop-blur-md">
             18+
-          </span>
+          </Badge>
         </div>
       )}
 
@@ -195,63 +197,57 @@ export function VideoPlayer({
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={() => setIsPlaying(false)}
-        className={`h-full w-full object-contain cursor-pointer transition-all duration-500 ${
+        className={cn(
+          "h-full w-full object-contain cursor-pointer transition-all duration-500",
           isBlurred && !revealed ? "blur-2xl scale-105" : ""
-        }`}
+        )}
         onClick={isBlurred && !revealed ? undefined : togglePlay}
         playsInline
       />
 
       {/* Sensitive Content Gate Overlay */}
       {isBlurred && !revealed && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/85 backdrop-blur-lg p-6 text-center">
-          <div className="h-14 w-14 rounded-2xl bg-rose-600/20 border border-rose-500/30 flex items-center justify-center text-rose-400 mb-3">
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-scrim-strong backdrop-blur-lg p-6 text-center">
+          <div className="h-14 w-14 rounded-2xl bg-danger/20 border border-danger/30 flex items-center justify-center text-danger mb-3">
             <span className="font-mono font-black text-xl">18+</span>
           </div>
           <h3 className="text-lg font-bold text-white mb-1">{t("player.sensitiveTitle")}</h3>
-          <p className="text-xs text-zinc-400 max-w-sm mb-5">
+          <p className="text-xs text-fg-secondary max-w-sm mb-5">
             {t("player.sensitiveBody")}
           </p>
-          <button
-            type="button"
-            onClick={() => setRevealed(true)}
-            className="px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-xs transition-colors shadow-lg shadow-violet-600/25"
-          >
+          <Button variant="primary" shape="rounded" onClick={() => setRevealed(true)} className="rounded-xl px-5 text-xs shadow-lg shadow-accent/25">
             {t("player.reveal")}
-          </button>
+          </Button>
         </div>
       )}
 
       {/* Paywall Overlay State */}
       {isPaywalled && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md p-6 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-violet-600/30 to-fuchsia-600/30 border border-violet-500/30 mb-4 shadow-lg shadow-violet-500/20">
-            <Lock className="h-8 w-8 text-violet-400" />
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-scrim-strong backdrop-blur-md p-6 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-accent/30 to-accent-2/30 border border-accent/30 mb-4 shadow-lg shadow-accent/20">
+            <Lock className="h-8 w-8 text-accent" />
           </div>
           <h3 className="text-xl font-bold text-white mb-1">{t("player.paidTitle")}</h3>
-          <p className="text-sm text-zinc-400 max-w-md mb-6">
+          <p className="text-sm text-fg-secondary max-w-md mb-6">
             {t("player.paidBody")}
           </p>
-          <button
-            onClick={onUnlockRequested}
-            className="flex items-center gap-2.5 px-6 py-3 rounded-xl bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white font-semibold text-sm shadow-lg shadow-fuchsia-600/30 transition-all hover:scale-105 active:scale-95"
-          >
-            <Sparkles className="h-4 w-4" />
-            <span>{t("player.paidCta", { price: `$${(minTipAmountCents / 100).toFixed(2)}` })}</span>
-          </button>
+          <Button variant="sensual" size="lg" shape="rounded" onClick={onUnlockRequested} className="gap-2.5 rounded-xl px-6">
+            <Sparkles className="h-4 w-4" aria-hidden />
+            <span>{t("player.paidCta", { price: money(minTipAmountCents) })}</span>
+          </Button>
         </div>
       )}
 
       {/* Contacts-only / followers-only gate */}
       {!isPaywalled && isGated && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md p-6 text-center">
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-scrim-strong backdrop-blur-md p-6 text-center">
           <div className="flex h-11 w-11 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-zinc-800/80 border border-zinc-700/50 mb-2 sm:mb-4">
-            {isAuction ? <Gavel className="h-5 w-5 sm:h-8 sm:w-8 text-fuchsia-300" /> : <Users className="h-5 w-5 sm:h-8 sm:w-8 text-zinc-300" />}
+            {isAuction ? <Gavel className="h-5 w-5 sm:h-8 sm:w-8 text-accent" /> : <Users className="h-5 w-5 sm:h-8 sm:w-8 text-zinc-300" />}
           </div>
           <h3 className="text-base sm:text-xl font-bold text-white mb-1">
             {t(isAuction ? "player.auctionTitle" : isChallenge ? "player.challengeTitle" : isInvitedOnly ? "player.invitedTitle" : isFollowersOnly ? "player.followersTitle" : "player.contactsTitle")}
           </h3>
-          <p className="hidden sm:block text-sm text-zinc-400 max-w-md mb-6">
+          <p className="hidden sm:block text-sm text-fg-secondary max-w-md mb-6">
             {t(isAuction ? "player.auctionBody" : isChallenge ? "player.challengeBody" : isInvitedOnly ? "player.invitedBody" : isFollowersOnly ? "player.followersBody" : "player.contactsBody")}
           </p>
           {!isInvitedOnly && gateAction}
@@ -261,9 +257,10 @@ export function VideoPlayer({
       {/* Custom Video Controls */}
       {!isPaywalled && !isGated && (
         <div
-          className={`absolute bottom-0 left-0 right-0 z-20 bg-linear-to-t from-black/90 via-black/40 to-transparent p-4 transition-opacity duration-300 ${
+          className={cn(
+            "absolute bottom-0 left-0 right-0 z-20 bg-linear-to-t from-black/90 via-black/40 to-transparent p-4 transition-opacity duration-300",
             showControls ? "opacity-100" : "opacity-0"
-          }`}
+          )}
         >
           {/* Progress Timeline Slider */}
           <div className="mb-3">
@@ -275,34 +272,26 @@ export function VideoPlayer({
               value={currentTime}
               onChange={handleSeek}
               aria-label={t("player.seek")}
-              className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-violet-500 hover:h-1.5 transition-all"
+              className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-accent hover:h-1.5 transition-all"
             />
           </div>
 
           <div className="flex items-center justify-between text-white text-sm">
             <div className="flex items-center gap-4">
               {/* Play / Pause Button */}
-              <button
-                onClick={togglePlay}
-                className="hover:text-violet-400 transition-colors p-1"
-                aria-label={isPlaying ? t("player.pause") : t("player.play")}
-              >
-                {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
-              </button>
+              <IconButton onClick={togglePlay} className="h-8 w-8 text-current hover:bg-white/10 hover:text-accent" label={isPlaying ? t("player.pause") : t("player.play")}>
+                {isPlaying ? <Pause className="h-5 w-5" aria-hidden /> : <Play className="h-5 w-5" aria-hidden />}
+              </IconButton>
 
               {/* Volume Controls */}
               <div className="flex items-center gap-2 group/vol">
-                <button
-                  onClick={toggleMute}
-                  aria-label={isMuted || volume === 0 ? t("player.unmute") : t("player.mute")}
-                  className="hover:text-violet-400 transition-colors p-1"
-                >
+                <IconButton onClick={toggleMute} className="h-8 w-8 text-current hover:bg-white/10 hover:text-accent" label={isMuted || volume === 0 ? t("player.unmute") : t("player.mute")}>
                   {isMuted || volume === 0 ? (
                     <VolumeX className="h-5 w-5" />
                   ) : (
                     <Volume2 className="h-5 w-5" />
                   )}
-                </button>
+                </IconButton>
                 <input
                   type="range"
                   min={0}
@@ -311,7 +300,7 @@ export function VideoPlayer({
                   value={isMuted ? 0 : volume}
                   onChange={handleVolumeChange}
                   aria-label={t("player.volume")}
-                  className="w-16 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-violet-500 opacity-80 group-hover/vol:opacity-100"
+                  className="w-16 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-accent opacity-80 group-hover/vol:opacity-100"
                 />
               </div>
 
@@ -323,13 +312,9 @@ export function VideoPlayer({
 
             <div className="flex items-center gap-3">
               {/* Fullscreen Button */}
-              <button
-                onClick={toggleFullscreen}
-                className="hover:text-violet-400 transition-colors p-1"
-                aria-label={t("player.fullscreen")}
-              >
-                <Maximize className="h-5 w-5" />
-              </button>
+              <IconButton onClick={toggleFullscreen} className="h-8 w-8 text-current hover:bg-white/10 hover:text-accent" label={t("player.fullscreen")}>
+                <Maximize className="h-5 w-5" aria-hidden />
+              </IconButton>
             </div>
           </div>
         </div>

@@ -2,8 +2,8 @@
 
 import React from "react";
 import { Flame, Gavel, Megaphone, Target } from "lucide-react";
-import { LiveBadge } from "@/components/ui";
-import { usd } from "@/components/money/format";
+import { LiveBadge, cn } from "@/components/ui";
+import { money } from "@/lib/money";
 import { t } from "@/lib/i18n";
 import type { ChallengeCardView } from "@/lib/challenges";
 
@@ -55,7 +55,7 @@ export function ChallengeMeter({
             <stop offset="100%" style={{ stopColor: "var(--color-pink-500)" }} />
           </linearGradient>
         </defs>
-        <circle cx={px / 2} cy={px / 2} r={r} fill="none" strokeWidth={stroke} className="stroke-white/10 light:stroke-black/5" />
+        <circle cx={px / 2} cy={px / 2} r={r} fill="none" strokeWidth={stroke} className="stroke-fg" />
         <circle
           cx={px / 2}
           cy={px / 2}
@@ -69,17 +69,23 @@ export function ChallengeMeter({
           className="cm-sweep"
         />
       </svg>
-      <div key={pulse} className={`absolute inset-0 flex flex-col items-center justify-center text-center ${pulse ? "cm-pop" : ""}`}>
-        {size !== "sm" && <Icon className="mb-0.5 h-4 w-4 text-fuchsia-400 light:text-fuchsia-600" aria-hidden />}
+      <div key={pulse} className={cn(
+        "absolute inset-0 flex flex-col items-center justify-center text-center",
+        pulse ? "cm-pop" : ""
+      )}>
+        {size !== "sm" && <Icon className="mb-0.5 h-4 w-4 text-accent" aria-hidden />}
         <span
-          className={`font-display font-black tabular-nums text-white light:text-slate-900 ${size === "lg" ? "text-2xl" : size === "md" ? "text-base" : "text-xs"}`}
+          className={cn(
+            "font-display font-black tabular-nums text-fg",
+            size === "lg" ? "text-2xl" : size === "md" ? "text-base" : "text-xs"
+          )}
         >
-          {usd(c.pledgedCents)}
+          {money(c.pledgedCents)}
         </span>
         {size !== "sm" && c.goalCents !== null && (
-          <span className="text-[10px] font-semibold text-zinc-400 light:text-slate-500">
+          <span className="text-[10px] font-semibold text-fg-secondary">
             {t("challenge.ofGoal", {
-              goal: usd(c.goalCents),
+              goal: money(c.goalCents),
               percent: Math.round((c.progress ?? 0) * 100),
             })}
           </span>

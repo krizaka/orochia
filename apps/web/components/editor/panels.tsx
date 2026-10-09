@@ -3,7 +3,7 @@
 import React from "react";
 import { Check, Lock, Music2, RotateCcw, Trash2, Volume2, VolumeX, Wand2 } from "lucide-react";
 import { SPEEDS, VIDEO_FILTERS, previewFilter, type VideoEdit, type VideoFilter, type VideoFormat } from "@/lib/video-edit";
-import { Chip, IconButton, Segmented, Slider } from "@/components/ui";
+import { Button, Chip, cn, IconButton, Segmented, Skeleton, Slider } from "@/components/ui";
 import { FILMSTRIP_FRAMES } from "./media";
 import { Timeline } from "./Timeline";
 import type { Tool } from "./useEditState";
@@ -17,12 +17,12 @@ export function PanelHeader({ tool, changed, onReset }: { tool: Tool; changed: b
     <div className="mb-4 flex items-start justify-between gap-3">
       <div>
         <h3 className="text-sm font-bold text-white">{t(`editor.panels.${tool}.title`)}</h3>
-        <p className="mt-0.5 text-xs leading-relaxed text-zinc-400">{t(`editor.panels.${tool}.hint`)}</p>
+        <p className="mt-0.5 text-xs leading-relaxed text-fg-secondary">{t(`editor.panels.${tool}.hint`)}</p>
       </div>
       {changed && (
-        <button type="button" onClick={onReset} className="flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold text-zinc-300 hover:bg-white/8 hover:text-white">
-          <RotateCcw className="h-3 w-3" /> {t("editor.reset")}
-        </button>
+        <Button variant="ghost" size="sm" onClick={onReset} className="h-7 shrink-0 gap-1 px-2.5 text-[11px]">
+          <RotateCcw className="h-3 w-3" aria-hidden /> {t("editor.reset")}
+        </Button>
       )}
     </div>
   );
@@ -43,7 +43,7 @@ export function TrimPanel(props: {
   return (
     <div className="space-y-4">
       <Timeline frames={props.frames} duration={props.duration} start={edit.startSeconds} end={edit.endSeconds} time={props.time} onStart={props.onStart} onEnd={props.onEnd} onSeek={props.onSeek} />
-      {maxSeconds && <p className="text-[11px] text-zinc-500">{t("editor.maxLength", { seconds: maxSeconds })}</p>}
+      {maxSeconds && <p className="text-[11px] text-fg-muted">{t("editor.maxLength", { seconds: maxSeconds })}</p>}
       <div>
         <span className="mb-2 block text-xs font-semibold text-zinc-300">{t("editor.speed")}</span>
         <div className="flex flex-wrap gap-2">
@@ -66,11 +66,14 @@ export function FiltersPanel({ edit, set, frames }: { edit: VideoEdit; set: Sett
         const active = edit.filter === name;
         return (
           <button key={name} type="button" onClick={() => set("filter", name)} aria-pressed={active} className="group flex w-18 shrink-0 snap-start flex-col items-center gap-1.5 lg:w-auto">
-            <span className={`relative block aspect-square w-full overflow-hidden rounded-2xl ring-2 ring-offset-2 ring-offset-zinc-950 transition-all ${active ? "ring-white" : "ring-transparent group-hover:ring-white/30"}`}>
+            <span className={cn(
+              "relative block aspect-square w-full overflow-hidden rounded-2xl ring-2 ring-offset-2 ring-offset-zinc-950 transition-all",
+              active ? "ring-white" : "ring-transparent group-hover:ring-white/30"
+            )}>
               {frame ? (
                 <img src={frame} alt="" className="h-full w-full object-cover" style={{ filter: previewFilter({ filter: name, brightness: 0, contrast: 0, saturation: 0 }) }} />
               ) : (
-                <span className="block h-full w-full animate-pulse bg-white/10" />
+                <Skeleton shape="rect" className="h-full rounded-none" />
               )}
               {active && (
                 <span className="absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-white text-zinc-900">
@@ -78,7 +81,7 @@ export function FiltersPanel({ edit, set, frames }: { edit: VideoEdit; set: Sett
                 </span>
               )}
             </span>
-            <span className={`text-[11px] font-semibold ${active ? "text-white" : "text-zinc-400"}`}>{t(`editor.filterNames.${name}`)}</span>
+            <span className={cn("text-[11px] font-semibold", active ? "text-white" : "text-fg-secondary")}>{t(`editor.filterNames.${name}`)}</span>
           </button>
         );
       })}
@@ -112,12 +115,12 @@ export function FormatPanel({ edit, onFormat, locked }: { edit: VideoEdit; onFor
   if (locked) {
     return (
       <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/3 p-4">
-        <span className={`block rounded-[4px] border-2 border-white ${FORMAT_SHAPE.vertical}`} />
+        <span className={cn("block rounded-[4px] border-2 border-white", FORMAT_SHAPE.vertical)} />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-white">{t("editor.formats.vertical")}</p>
-          <p className="text-xs text-zinc-400">{t("editor.storyVertical")}</p>
+          <p className="text-xs text-fg-secondary">{t("editor.storyVertical")}</p>
         </div>
-        <Lock className="h-4 w-4 text-zinc-500" />
+        <Lock className="h-4 w-4 text-fg-muted" />
       </div>
     );
   }
@@ -130,7 +133,7 @@ export function FormatPanel({ edit, onFormat, locked }: { edit: VideoEdit; onFor
         value: f,
         label: (
           <span className="flex flex-col items-center gap-2 py-1">
-            <span className={`block rounded-[4px] border-2 border-current ${FORMAT_SHAPE[f]}`} />
+            <span className={cn("block rounded-[4px] border-2 border-current", FORMAT_SHAPE[f])} />
             {t(`editor.formats.${f}`)}
           </span>
         ),
@@ -145,7 +148,7 @@ export function SoundPanel({ edit, set }: { edit: VideoEdit; set: Setter }) {
     <div className="space-y-5">
       <div className="flex items-end gap-2">
         <IconButton label={muted ? t("editor.sound.unmute") : t("editor.sound.mute")} onClick={() => set("volume", muted ? 1 : 0)} className="mb-[-2px] border border-white/10">
-          {muted ? <VolumeX className="h-4 w-4 text-rose-300" /> : <Volume2 className="h-4 w-4" />}
+          {muted ? <VolumeX className="h-4 w-4 text-danger" /> : <Volume2 className="h-4 w-4" />}
         </IconButton>
         <div className="flex-1">
           <Slider label={t("editor.sound.volume")} value={edit.volume} min={0} max={2} step={0.05} reset={1} display={muted ? t("editor.sound.muted") : `${Math.round(edit.volume * 100)} %`} onChange={(v) => set("volume", v)} />
@@ -161,26 +164,26 @@ export function SoundPanel({ edit, set }: { edit: VideoEdit; set: Setter }) {
       </div>
       <div className="rounded-2xl border border-white/10 bg-white/3 p-4">
         <p className="mb-3 flex items-center gap-2 text-xs font-semibold text-zinc-300">
-          <Music2 className="h-4 w-4 text-fuchsia-400" /> {t("editor.sound.music")}
+          <Music2 className="h-4 w-4 text-accent" /> {t("editor.sound.music")}
         </p>
         {edit.music ? (
           <div className="space-y-4">
             <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2">
-              <Music2 className="h-4 w-4 shrink-0 text-zinc-400" />
+              <Music2 className="h-4 w-4 shrink-0 text-fg-secondary" />
               <span className="min-w-0 flex-1 truncate text-sm font-medium text-white">{edit.music.name}</span>
-              <IconButton label={t("editor.sound.removeMusic")} onClick={() => set("music", null)} className="h-8 w-8 hover:text-rose-300">
+              <IconButton label={t("editor.sound.removeMusic")} onClick={() => set("music", null)} className="h-8 w-8 hover:text-danger">
                 <Trash2 className="h-4 w-4" />
               </IconButton>
             </div>
             <Slider label={t("editor.sound.musicVolume")} value={edit.musicVolume} min={0} max={1} step={0.05} reset={0.6} display={`${Math.round(edit.musicVolume * 100)} %`} onChange={(v) => set("musicVolume", v)} />
           </div>
         ) : (
-          <label className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-white/20 text-sm font-semibold text-violet-200 transition-colors hover:border-violet-400 hover:bg-violet-500/10 focus-within:ring-2 focus-within:ring-violet-400">
+          <label className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-white/20 text-sm font-semibold text-accent transition-colors hover:border-accent hover:bg-accent/10 focus-within:ring-2 focus-within:ring-ring">
             <Music2 className="h-4 w-4" /> {t("editor.sound.addMusic")}
             <input type="file" accept="audio/*" className="sr-only" onChange={(e) => e.target.files?.[0] && set("music", e.target.files[0])} />
           </label>
         )}
-        <p className="mt-3 text-[11px] leading-relaxed text-zinc-500">{t("editor.sound.musicHint")}</p>
+        <p className="mt-3 text-[11px] leading-relaxed text-fg-muted">{t("editor.sound.musicHint")}</p>
       </div>
     </div>
   );

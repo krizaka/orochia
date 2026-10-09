@@ -6,6 +6,7 @@ import { MessageSquare, Reply, Trash2 } from "lucide-react";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
 import { Rich } from "@/components/Rich";
 import { t } from "@/lib/i18n";
+import { Avatar, Button, cn, Textarea } from "@/components/ui";
 
 interface Comment {
   id: string;
@@ -35,7 +36,7 @@ function Composer({ onSubmit, placeholder, autoFocus }: { onSubmit: (body: strin
       }}
       className="flex gap-2"
     >
-      <textarea
+      <Textarea
         value={body}
         onChange={(e) => setBody(e.target.value)}
         maxLength={COMMENT_MAX_LENGTH}
@@ -43,11 +44,11 @@ function Composer({ onSubmit, placeholder, autoFocus }: { onSubmit: (body: strin
         autoFocus={autoFocus}
         placeholder={placeholder}
         aria-label={placeholder}
-        className="min-w-0 flex-1 resize-y rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-hidden light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900"
+        className="min-w-0 flex-1 resize-y rounded-xl px-3 py-2"
       />
-      <button disabled={busy || !body.trim()} className="self-end rounded-xl bg-violet-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-40">
+      <Button type="submit" variant="primary" size="sm" shape="rounded" disabled={busy || !body.trim()} className="self-end rounded-xl px-4 font-bold">
         {busy ? t("comments.posting") : t("comments.post")}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -121,30 +122,36 @@ export function VideoComments({
   const replies = (id: string) => (comments ?? []).filter((c) => c.parentId === id);
 
   const item = (c: Comment, isReply = false) => (
-    <div key={c.id} className={`flex gap-3 ${isReply ? "mt-3" : ""}`}>
-      <img src={c.authorAvatar || AVATAR_PLACEHOLDER} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />
+    <div key={c.id} className={cn("flex gap-3", isReply ? "mt-3" : "")}>
+      <Avatar size="sm" src={c.authorAvatar || AVATAR_PLACEHOLDER} fallback={c.authorName.charAt(0)} />
       <div className="min-w-0 flex-1">
         <p className="text-xs">
-          <Link href={`/@${c.authorUsername}`} className="font-semibold text-white hover:text-violet-300 light:text-slate-900">
+          <Link href={`/@${c.authorUsername}`} className="font-semibold text-fg hover:text-accent">
             {c.authorName}
           </Link>{" "}
-          <span className="font-mono text-[10px] text-zinc-500 light:text-slate-500">
+          <span className="font-mono text-[10px] text-fg-muted">
             {new Date(c.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
           </span>
         </p>
-        <p className={`mt-1 whitespace-pre-line wrap-break-word text-sm ${c.removed ? "italic text-zinc-500 light:text-slate-500" : "text-zinc-300 light:text-slate-700"}`}>
+        <p className={cn(
+          "mt-1 whitespace-pre-line wrap-break-word text-sm",
+          c.removed ? "italic text-fg-muted" : "text-fg-secondary"
+        )}>
           {c.removed ? t("comments.removed") : c.body}
         </p>
-        <div className="mt-1 flex gap-3 text-[11px] text-zinc-500 light:text-slate-500">
+        <div className="mt-1 flex gap-3 text-[11px] text-fg-muted">
           {user && enabled && !isReply && !c.removed && (
-            <button onClick={() => setReplyTo(replyTo === c.id ? null : c.id)} className="inline-flex items-center gap-1 hover:text-violet-300">
-              <Reply className="h-3 w-3" /> {t("comments.reply")}
-            </button>
+            <Button variant="ghost" size="sm" onClick={() => setReplyTo(replyTo === c.id ? null : c.id)} className="h-auto gap-1 px-0 text-[inherit] font-normal hover:bg-transparent hover:text-accent">
+              <Reply className="h-3 w-3" aria-hidden /> {t("comments.reply")}
+            </Button>
           )}
           {c.canRemove && (
-            <button onClick={() => remove(c.id)} onBlur={() => setConfirming(null)} className={`inline-flex items-center gap-1 hover:text-rose-300 ${confirming === c.id ? "font-semibold text-rose-400" : ""}`}>
-              <Trash2 className="h-3 w-3" /> {confirming === c.id ? t("comments.removeConfirm") : t("comments.remove")}
-            </button>
+            <Button variant="ghost" size="sm" onClick={() => remove(c.id)} onBlur={() => setConfirming(null)} className={cn(
+              "h-auto gap-1 px-0 text-[inherit] font-normal hover:bg-transparent hover:text-danger",
+              confirming === c.id && "font-semibold text-danger"
+            )}>
+              <Trash2 className="h-3 w-3" aria-hidden /> {confirming === c.id ? t("comments.removeConfirm") : t("comments.remove")}
+            </Button>
           )}
         </div>
         {!isReply && replies(c.id).map((r) => item(r, true))}
@@ -160,13 +167,13 @@ export function VideoComments({
   return (
     <section className="mt-8" aria-labelledby="comments-title">
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 id="comments-title" className="flex items-center gap-2 text-sm font-bold text-white light:text-slate-900">
-          <MessageSquare className="h-4 w-4 text-violet-400" /> {t("comments.title")}
+        <h2 id="comments-title" className="flex items-center gap-2 text-sm font-bold text-fg">
+          <MessageSquare className="h-4 w-4 text-accent" /> {t("comments.title")}
         </h2>
         {isCreator && (
-          <button onClick={toggle} className="rounded-lg border border-white/10 px-3 py-1.5 text-[11px] font-semibold text-zinc-300 hover:bg-white/5 light:border-black/10 light:text-slate-700">
+          <Button variant="outline" size="sm" shape="rounded" onClick={toggle} className="h-7 px-3 text-[11px] text-fg-secondary">
             {enabled ? t("comments.close") : t("comments.open")}
-          </button>
+          </Button>
         )}
       </div>
 
@@ -174,12 +181,12 @@ export function VideoComments({
         user ? (
           <Composer onSubmit={(body) => post(body, null)} placeholder={t("comments.add")} />
         ) : (
-          <p className="text-xs text-zinc-400 light:text-slate-500">
+          <p className="text-xs text-fg-secondary">
             <Rich
               text={t("comments.signInToComment")}
               slots={{
                 signIn: (
-                  <Link href={`/auth/login?next=/watch/${videoId}`} className="text-violet-300 hover:underline light:text-violet-700">
+                  <Link href={`/auth/login?next=/watch/${videoId}`} className="text-accent hover:underline">
                     {t("comments.signIn")}
                   </Link>
                 ),
@@ -188,15 +195,15 @@ export function VideoComments({
           </p>
         )
       ) : (
-        <p className="text-xs text-zinc-500 light:text-slate-500">{t("comments.closed")}</p>
+        <p className="text-xs text-fg-muted">{t("comments.closed")}</p>
       )}
-      {error && <p className="mt-2 text-xs text-rose-300">{error}</p>}
+      {error && <p className="mt-2 text-xs text-danger">{error}</p>}
 
       <div className="mt-6 space-y-5">
         {comments === null ? (
-          <p className="text-xs text-zinc-500 light:text-slate-500">{t("comments.loading")}</p>
+          <p className="text-xs text-fg-muted">{t("comments.loading")}</p>
         ) : threads.length === 0 ? (
-          <p className="text-xs text-zinc-500 light:text-slate-500">{t("comments.empty")}</p>
+          <p className="text-xs text-fg-muted">{t("comments.empty")}</p>
         ) : (
           threads.map((c) => item(c))
         )}

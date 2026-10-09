@@ -1,7 +1,9 @@
 "use client";
 
-import React from "react";
 import { Cake } from "lucide-react";
+import React, { useId } from "react";
+
+import { Field, Input } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 /** The latest date of birth that is 18 today (YYYY-MM-DD), for the picker's limit. */
@@ -16,13 +18,17 @@ export function isAdultBirthDate(value: string): boolean {
 }
 
 /** Date of birth at sign-up: private, never shown, checked 18+ by the server. */
-export function BirthDateField({ value, onChange, labelClass, fieldClass }: { value: string; onChange: (v: string) => void; labelClass: string; fieldClass: string }) {
+export function BirthDateField({ value, onChange, className }: { value: string; onChange: (v: string) => void; className?: string }) {
+  const id = useId();
   return (
-    <label className={labelClass}>
-      {t("auth.register.birthDate")}
-      <div className="relative mt-1.5">
-        <Cake className="pointer-events-none absolute left-3.5 top-3 h-4 w-4 text-zinc-500" />
-        <input
+    <Field.Root className={className}>
+      <Field.Label htmlFor={id} className="uppercase tracking-wider">
+        {t("auth.register.birthDate")}
+      </Field.Label>
+      <div className="relative">
+        <Cake className="pointer-events-none absolute left-3.5 top-3.5 h-4 w-4 text-fg-muted" aria-hidden />
+        <Input
+          id={id}
           type="date"
           required
           autoComplete="bday"
@@ -30,10 +36,13 @@ export function BirthDateField({ value, onChange, labelClass, fieldClass }: { va
           max={latestAdultBirthDate()}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={`${fieldClass} pl-10 pr-4 normal-case tracking-normal scheme-dark light:scheme-light`}
+          aria-describedby={`${id}-hint`}
+          className="rounded-xl pl-10"
         />
       </div>
-      <span className="mt-1 block text-[11px] font-normal normal-case tracking-normal text-zinc-500">{t("auth.register.birthDateHint")}</span>
-    </label>
+      <Field.Hint id={`${id}-hint`} className="text-[11px]">
+        {t("auth.register.birthDateHint")}
+      </Field.Hint>
+    </Field.Root>
   );
 }

@@ -10,9 +10,9 @@ export function HeroWall({ images }: { images: string[] }) {
   if (images.length < 3) {
     return (
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="hero-blob absolute -right-24 -top-24 h-96 w-96 rounded-full bg-violet-600/30 blur-3xl light:bg-violet-300/40" />
-        <div className="hero-blob absolute bottom-0 right-1/4 h-80 w-80 rounded-full bg-fuchsia-600/25 blur-3xl [animation-delay:-6s] light:bg-fuchsia-300/35" />
-        <div className="hero-blob absolute -bottom-24 right-0 h-72 w-72 rounded-full bg-pink-500/20 blur-3xl [animation-delay:-12s] light:bg-pink-300/30" />
+        <div className="hero-blob absolute -right-24 -top-24 h-96 w-96 rounded-full bg-accent/30 blur-3xl" />
+        <div className="hero-blob absolute bottom-0 right-1/4 h-80 w-80 rounded-full bg-accent/25 blur-3xl [animation-delay:-6s]" />
+        <div className="hero-blob absolute -bottom-24 right-0 h-72 w-72 rounded-full bg-accent/20 blur-3xl [animation-delay:-12s]" />
         <style>{STYLES}</style>
       </div>
     );

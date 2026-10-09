@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Check, Clock, UserPlus, Users, UserCheck, MessageSquare } from "lucide-react";
 import { t } from "@/lib/i18n";
+import { Button, buttonVariants, cn, orochiaButton } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 
 type Follow = "PENDING" | "APPROVED" | null;
@@ -59,12 +60,10 @@ export function RelationshipActions({
     }
   };
 
-  const base =
-    size === "sm"
-      ? "inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all disabled:opacity-50"
-      : "inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-xs font-bold transition-all disabled:opacity-50";
-  const primary = `${base} bg-linear-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-600/30 hover:scale-105`;
-  const ghost = `${base} border border-white/10 bg-zinc-900/90 text-zinc-300 hover:text-white hover:bg-white/10 light:bg-slate-50 light:border-black/10 light:text-slate-700 hover:light:bg-slate-200 hover:light:text-slate-950`;
+  // Orochia's gradient (sensual) for the call to action, secondary for the rest; sm in a row of actions.
+  const look = { size: size === "sm" ? "sm" : "lg", shape: "rounded", className: size === "sm" ? "rounded-xl" : "rounded-2xl text-xs font-bold" } as const;
+  const primary = orochiaButton({ ...look, variant: "sensual" });
+  const ghost = buttonVariants({ ...look, variant: "secondary" });
 
   if (!user) {
     return (
@@ -79,47 +78,50 @@ export function RelationshipActions({
     <div className="flex flex-wrap items-center gap-2">
       {show.includes("follow") &&
         (follow === null ? (
-          <button className={primary} disabled={busy} onClick={() => call(`/api/creators/${username}/follow`, { method: "POST" })}>
+          <Button {...look} variant="sensual" disabled={busy} onClick={() => call(`/api/creators/${username}/follow`, { method: "POST" })}>
             <UserPlus className="h-4 w-4" /> {t("relationship.follow")}
-          </button>
+          </Button>
         ) : (
-          <button
-            className={ghost}
+          <Button
+            {...look}
+            variant="secondary"
             disabled={busy}
             title={t("relationship.unfollow")}
             onClick={() => call(`/api/creators/${username}/follow`, { method: "DELETE" })}
           >
-            {follow === "APPROVED" ? <UserCheck className="h-4 w-4 text-emerald-400" /> : <Clock className="h-4 w-4 text-amber-400" />}
+            {follow === "APPROVED" ? <UserCheck className="h-4 w-4 text-success" /> : <Clock className="h-4 w-4 text-warning" />}
             {follow === "APPROVED" ? t("relationship.following") : t("relationship.requested")}
-          </button>
+          </Button>
         ))}
 
       {show.includes("contact") &&
         (contact === null || contact.status === "REJECTED" ? (
-          <button className={ghost} disabled={busy} onClick={() => call("/api/contacts", { method: "POST", body: JSON.stringify({ username }) })}>
+          <Button {...look} variant="secondary" disabled={busy} onClick={() => call("/api/contacts", { method: "POST", body: JSON.stringify({ username }) })}>
             <Users className="h-4 w-4" /> {t("relationship.addContact")}
-          </button>
+          </Button>
         ) : contact.status === "ACCEPTED" ? (
-          <span className={`${ghost} cursor-default`}>
-            <Check className="h-4 w-4 text-emerald-400" /> {t("relationship.contact")}
+          <span className={cn(ghost, "cursor-default hover:bg-surface-2")}>
+            <Check className="h-4 w-4 text-success" /> {t("relationship.contact")}
           </span>
         ) : contact.status === "PENDING" && contact.direction === "incoming" ? (
-          <button
-            className={primary}
+          <Button
+            {...look}
+            variant="sensual"
             disabled={busy}
             onClick={() => call(`/api/contacts/${contact.id}`, { method: "PATCH", body: JSON.stringify({ action: "accept" }) })}
           >
             <Check className="h-4 w-4" /> {t("relationship.accept")}
-          </button>
+          </Button>
         ) : contact.status === "PENDING" ? (
-          <button
-            className={ghost}
+          <Button
+            {...look}
+            variant="secondary"
             disabled={busy}
             title={t("relationship.withdraw")}
             onClick={() => call(`/api/contacts/${contact.id}`, { method: "DELETE" })}
           >
-            <Clock className="h-4 w-4 text-amber-400" /> {t("relationship.requestSent")}
-          </button>
+            <Clock className="h-4 w-4 text-warning" /> {t("relationship.requestSent")}
+          </Button>
         ) : null)}
 
       {user && user.username !== username && (
@@ -128,11 +130,11 @@ export function RelationshipActions({
           className={ghost}
           title={t("relationship.message")}
         >
-          <MessageSquare className="h-4 w-4 text-violet-400" /> {t("relationship.message")}
+          <MessageSquare className="h-4 w-4 text-accent" /> {t("relationship.message")}
         </Link>
       )}
 
-      {error && <span className="text-[11px] text-rose-400">{error}</span>}
+      {error && <span className="text-[11px] text-danger">{error}</span>}
     </div>
   );
 }

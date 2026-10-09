@@ -2,7 +2,8 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as tus from "tus-js-client";
-import { CheckCircle2, Image as ImageIcon, Loader2, Scissors, Sparkles, UploadCloud, X } from "lucide-react";
+import { CheckCircle2, Image as ImageIcon, Scissors, Sparkles, UploadCloud, X } from "lucide-react";
+import { Button, cn, IconButton, Select, Textarea } from "@/components/ui";
 import { VideoEditor } from "@/components/VideoEditor";
 import { DraftsShelf } from "@/components/DraftsShelf";
 import { UPLOAD_LIMITS } from "@orochia/media/limits";
@@ -209,48 +210,48 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 p-0 backdrop-blur-md kz-overlay sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="story-title">
-      <div className="kz-dialog max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border border-white/10 light:border-black/10 bg-zinc-950 light:bg-white p-6 text-white light:text-slate-900 shadow-2xl sm:rounded-3xl">
-        <div className="flex items-start justify-between gap-3 border-b border-white/10 light:border-black/5 pb-4">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-scrim-strong p-0 backdrop-blur-md kz-overlay sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="story-title">
+      <div className="kz-dialog max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border border-border-default bg-surface-1 p-6 text-fg shadow-2xl sm:rounded-3xl">
+        <div className="flex items-start justify-between gap-3 border-b border-border-default pb-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-600/20 text-violet-400">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent/20 text-accent">
               <Sparkles className="h-4 w-4" />
             </div>
             <div>
               <h2 id="story-title" className="text-base font-bold">{t("stories.create.title")}</h2>
-              <p className="text-xs text-zinc-400 light:text-slate-500">{t("stories.create.subtitle")}</p>
+              <p className="text-xs text-fg-secondary">{t("stories.create.subtitle")}</p>
             </div>
           </div>
-          <button onClick={closeAll} className="rounded-full p-1.5 text-zinc-400 hover:bg-white/5 hover:light:bg-black/5" aria-label={t("common.close")}>
-            <X className="h-4 w-4" />
-          </button>
+          <IconButton onClick={closeAll} className="h-8 w-8" label={t("common.close")}>
+            <X className="h-4 w-4" aria-hidden />
+          </IconButton>
         </div>
 
         {state === "done" ? (
           <div className="py-10 text-center">
-            <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-400" />
-            <p className="mt-4 text-sm text-zinc-300 light:text-slate-700">{doneMessage}</p>
-            <button onClick={closeAll} className="mt-6 rounded-xl bg-violet-600 px-6 py-2.5 text-sm font-bold text-white">
+            <CheckCircle2 className="mx-auto h-12 w-12 text-success" />
+            <p className="mt-4 text-sm text-fg-secondary">{doneMessage}</p>
+            <Button variant="primary" shape="rounded" onClick={closeAll} className="mt-6 rounded-xl px-6 font-bold">
               {t("common.close")}
-            </button>
+            </Button>
           </div>
         ) : (
           <form onSubmit={publish} className="mt-5 space-y-5">
             <input ref={input} type="file" accept="image/jpeg,image/png,image/webp,video/*" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
             {file && preview ? (
-              <div className="relative overflow-hidden rounded-2xl border border-white/10 light:border-black/10 bg-black">
+              <div className="relative overflow-hidden rounded-2xl border border-border-default bg-black">
                 <div className="mx-auto aspect-9/16 max-h-80">
                   {isImage ? <img src={preview} alt="" className="h-full w-full object-cover" /> : <video src={preview} className="h-full w-full object-cover" muted playsInline controls />}
                 </div>
                 <div className="absolute right-2 top-2 flex gap-1.5">
                   {!isImage && (
-                    <button type="button" onClick={() => setEditing(true)} className="flex items-center gap-1 rounded-lg bg-violet-600 px-2.5 py-1 text-xs font-semibold text-white">
-                      <Scissors className="h-3 w-3" /> {t("stories.create.adjust")}
-                    </button>
+                    <Button variant="primary" size="sm" shape="rounded" onClick={() => setEditing(true)} className="h-7 gap-1 px-2.5">
+                      <Scissors className="h-3 w-3" aria-hidden /> {t("stories.create.adjust")}
+                    </Button>
                   )}
-                  <button type="button" onClick={() => input.current?.click()} className="rounded-lg bg-black/70 px-2.5 py-1 text-xs font-semibold text-white">
+                  <Button size="sm" shape="rounded" onClick={() => input.current?.click()} className="h-7 border-0 bg-scrim-strong px-2.5 text-fg-on-media hover:bg-scrim-strong">
                     {t("stories.create.change")}
-                  </button>
+                  </Button>
                 </div>
               </div>
             ) : (
@@ -274,30 +275,30 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
               <button
                 type="button"
                 onClick={() => input.current?.click()}
-                className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-white/10 light:border-black/10 bg-zinc-900/40 light:bg-slate-50 px-4 py-10 text-center hover:border-violet-500/50"
+                className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border-default bg-surface-2/40 px-4 py-10 text-center hover:border-accent/50"
               >
-                <UploadCloud className="h-9 w-9 text-violet-400" />
+                <UploadCloud className="h-9 w-9 text-accent" />
                 <span className="text-sm font-semibold">{t("stories.create.choose")}</span>
-                <span className="text-xs text-zinc-500">{t("stories.create.chooseHint")}</span>
+                <span className="text-xs text-fg-muted">{t("stories.create.chooseHint")}</span>
               </button>
               </>
             )}
-            {file && !isImage && !edited && <p className="text-xs text-amber-300 light:text-amber-700">{t("stories.create.editFirst")}</p>}
+            {file && !isImage && !edited && <p className="text-xs text-warning">{t("stories.create.editFirst")}</p>}
 
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500">
-              {t("stories.create.caption")} <span className="normal-case tracking-normal text-zinc-500">— {t("common.optional")}</span>
-              <textarea
+            <label className="block text-xs font-semibold uppercase tracking-wider text-fg-secondary">
+              {t("stories.create.caption")} <span className="normal-case tracking-normal text-fg-muted">— {t("common.optional")}</span>
+              <Textarea
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
                 maxLength={280}
                 rows={2}
                 placeholder={t("stories.create.captionPlaceholder")}
-                className="mt-1.5 w-full resize-none rounded-xl border border-white/10 light:border-black/10 bg-zinc-900 light:bg-slate-50 px-3.5 py-2.5 text-sm normal-case tracking-normal text-white light:text-slate-900 focus:border-violet-500 focus:outline-hidden"
+                className="mt-1.5 resize-none rounded-xl px-3.5 py-2.5 normal-case tracking-normal"
               />
             </label>
 
             <fieldset>
-              <legend className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500">{t("stories.create.audience")}</legend>
+              <legend className="mb-2 text-xs font-semibold uppercase tracking-wider text-fg-secondary">{t("stories.create.audience")}</legend>
               <div className="grid grid-cols-2 gap-2">
                 {AUDIENCES.map((a) => (
                   <button
@@ -305,9 +306,10 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
                     type="button"
                     onClick={() => setAudience(a)}
                     aria-pressed={audience === a}
-                    className={`rounded-xl border px-3 py-2.5 text-xs font-semibold ${
-                      audience === a ? "border-violet-500 bg-violet-600/15 text-violet-200 light:text-violet-700" : "border-white/10 light:border-black/10 text-zinc-300 light:text-slate-600"
-                    }`}
+                    className={cn(
+                      "rounded-xl border px-3 py-2.5 text-xs font-semibold",
+                      audience === a ? "border-accent bg-accent/15 text-accent" : "border-border-default text-fg-secondary"
+                    )}
                   >
                     {t(`stories.create.audiences.${a}`)}
                   </button>
@@ -315,13 +317,13 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
               </div>
               {audience === "INVITED_ONLY" &&
                 (lists.length === 0 ? (
-                  <p className="mt-2 text-xs text-zinc-500">{t("stories.create.noList")}</p>
+                  <p className="mt-2 text-xs text-fg-muted">{t("stories.create.noList")}</p>
                 ) : (
-                  <select
+                  <Select
                     value={listId}
                     onChange={(e) => setListId(e.target.value)}
                     aria-label={t("stories.create.list")}
-                    className="mt-2 w-full rounded-xl border border-white/10 light:border-black/10 bg-zinc-900 light:bg-slate-50 px-3 py-2.5 text-sm text-white light:text-slate-900"
+                    className="mt-2 rounded-xl px-3 py-2.5"
                   >
                     <option value="">{t("stories.create.list")}…</option>
                     {lists.map((l) => (
@@ -329,27 +331,27 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
                         {l.name} ({l.membersCount})
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 ))}
             </fieldset>
 
-            <div className="rounded-xl border border-white/10 light:border-black/10 bg-zinc-900/50 light:bg-slate-50 p-3 space-y-2.5">
+            <div className="rounded-xl border border-border-default bg-surface-2/50 p-3 space-y-2.5">
               <label className="block">
-                <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500">{t("stories.create.rating")}</span>
-                <select
+                <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-fg-secondary">{t("stories.create.rating")}</span>
+                <Select
                   value={ratingId}
                   onChange={(e) => {
                     setRatingId(e.target.value);
                     if (ratings.find((r) => r.id === e.target.value)?.requiresBlur) setIsBlurred(true);
                   }}
-                  className="w-full rounded-xl border border-white/10 light:border-black/10 bg-zinc-900 light:bg-slate-50 px-3 py-2 text-xs text-white light:text-slate-900"
+                  className="rounded-xl px-3 py-2 text-xs"
                 >
                   {ratings.map((r) => (
                     <option key={r.id} value={r.id}>
                       {r.label}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
 
               <label className="flex items-center gap-2.5 cursor-pointer">
@@ -357,21 +359,26 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
                   type="checkbox"
                   checked={isBlurred}
                   onChange={(e) => setIsBlurred(e.target.checked)}
-                  className="h-3.5 w-3.5 rounded-sm border-zinc-700 bg-zinc-900 text-violet-600 focus:ring-violet-500 light:bg-slate-50 light:border-slate-300"
+                  className="h-3.5 w-3.5 rounded-sm border-border-strong bg-surface-2 text-accent focus:ring-ring"
                 />
-                <span className="text-xs text-zinc-300 light:text-slate-700">{t("stories.create.blur")}</span>
+                <span className="text-xs text-fg-secondary">{t("stories.create.blur")}</span>
               </label>
             </div>
 
-            {error && <p role="alert" className="text-xs text-rose-400">{error}</p>}
+            {error && <p role="alert" className="text-xs text-danger">{error}</p>}
 
-            <button
-              disabled={!file || (!isImage && !edited) || state === "uploading" || (audience === "INVITED_ONLY" && !listId)}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 py-3.5 text-sm font-bold text-white disabled:opacity-40"
+            <Button
+              type="submit"
+              variant="sensual"
+              size="lg"
+              shape="rounded"
+              disabled={!file || (!isImage && !edited) || (audience === "INVITED_ONLY" && !listId)}
+              loading={state === "uploading"}
+              className="w-full rounded-2xl font-bold"
             >
-              {state === "uploading" ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
+              {state !== "uploading" && <ImageIcon className="h-4 w-4" aria-hidden />}
               {state === "uploading" ? t("stories.create.uploading", { progress }) : t("stories.create.publish")}
-            </button>
+            </Button>
           </form>
         )}
       </div>

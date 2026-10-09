@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import { Button } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 
@@ -22,20 +23,15 @@ export function BecomeCreatorCard() {
 
   return (
     <div className="mx-auto max-w-lg px-4 py-24 text-center">
-      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-600/15 text-violet-400">
+      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/15 text-accent">
         <Sparkles className="h-7 w-7" />
       </div>
-      <h1 className="font-display text-2xl font-bold text-white light:text-slate-900">{t("auth.becomeCreator.title")}</h1>
-      <p className="mt-2 text-sm text-zinc-400 light:text-slate-600">{t("auth.becomeCreator.body")}</p>
-      <button
-        onClick={become}
-        disabled={state === "working"}
-        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-violet-600 to-fuchsia-600 px-6 py-3 text-sm font-bold text-white disabled:opacity-60"
-      >
-        {state === "working" && <Loader2 className="h-4 w-4 animate-spin" />}
+      <h1 className="font-display text-2xl font-bold text-fg">{t("auth.becomeCreator.title")}</h1>
+      <p className="mt-2 text-sm text-fg-secondary">{t("auth.becomeCreator.body")}</p>
+      <Button variant="sensual" size="lg" shape="rounded" onClick={become} loading={state === "working"} className="mt-6 rounded-xl px-6 font-bold">
         {state === "working" ? t("auth.becomeCreator.working") : t("auth.becomeCreator.cta")}
-      </button>
-      {state === "error" && <p role="alert" className="mt-3 text-xs text-rose-400">{t("auth.becomeCreator.failed")}</p>}
+      </Button>
+      {state === "error" && <p role="alert" className="mt-3 text-xs text-danger">{t("auth.becomeCreator.failed")}</p>}
     </div>
   );
 }

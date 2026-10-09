@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Clapperboard, Loader2, Music2, Trash2 } from "lucide-react";
+import { Clapperboard, Music2, Trash2 } from "lucide-react";
+import { Button, cn, Spinner } from "@/components/ui";
 import { type DraftKind, type DraftSummary, type OpenedDraft, deleteDraft, listDrafts, openDraft } from "@/lib/drafts";
 import { t } from "@/lib/i18n";
 
@@ -50,8 +51,8 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
   };
 
   return (
-    <section aria-labelledby={`drafts-${kind}`} className="rounded-2xl border border-violet-500/25 bg-violet-600/6 p-3">
-      <h3 id={`drafts-${kind}`} className="mb-2 px-1 text-xs font-bold uppercase tracking-wider text-violet-300 light:text-violet-700">
+    <section aria-labelledby={`drafts-${kind}`} className="rounded-2xl border border-accent/25 bg-accent/6 p-3">
+      <h3 id={`drafts-${kind}`} className="mb-2 px-1 text-xs font-bold uppercase tracking-wider text-accent">
         {t("editor.drafts.title")} · {drafts.length}
       </h3>
       <ul className="flex gap-2.5 overflow-x-auto pb-1">
@@ -64,20 +65,20 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
                 type="button"
                 onClick={() => void open(d)}
                 disabled={Boolean(opening)}
-                className="group relative block aspect-9/16 max-h-48 w-full overflow-hidden rounded-xl bg-zinc-900 text-left light:bg-slate-200"
+                className="group relative block aspect-9/16 max-h-48 w-full overflow-hidden rounded-xl bg-surface-2 text-left"
                 aria-label={`${t("editor.drafts.resume")}: ${title}`}
               >
                 {d.thumbnailUrl ? (
                   <img src={d.thumbnailUrl} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" />
                 ) : (
-                  <span className="flex h-full w-full items-center justify-center text-zinc-500">
+                  <span className="flex h-full w-full items-center justify-center text-fg-muted">
                     <Clapperboard className="h-7 w-7" />
                   </span>
                 )}
                 <span className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/85 to-transparent p-2 pt-6 text-[11px] font-semibold text-white">
                   {busy ? (
                     <span className="flex items-center gap-1.5">
-                      <Loader2 className="h-3 w-3 animate-spin" /> {t("editor.drafts.opening", { progress: opening.progress })}
+                      <Spinner size="sm" className="text-current" /> {t("editor.drafts.opening", { progress: opening.progress })}
                     </span>
                   ) : (
                     <>
@@ -87,26 +88,26 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
                   )}
                 </span>
                 {d.hasMusic && (
-                  <span className="absolute left-1.5 top-1.5 rounded-full bg-black/60 p-1 text-white">
+                  <span className="absolute left-1.5 top-1.5 rounded-full bg-scrim p-1 text-fg-on-media">
                     <Music2 className="h-3 w-3" />
                   </span>
                 )}
               </button>
-              <button
-                type="button"
+              <Button
+                variant={confirming === d.id ? "danger" : "ghost"}
+                size="sm"
+                shape="rounded"
                 onClick={() => void remove(d.id)}
                 onBlur={() => setConfirming(null)}
-                className={`mt-1.5 flex w-full items-center justify-center gap-1 rounded-lg py-1 text-[11px] font-semibold ${
-                  confirming === d.id ? "bg-rose-600 text-white" : "text-zinc-400 hover:text-rose-300 light:text-slate-500"
-                }`}
+                className={cn("mt-1.5 h-7 w-full gap-1 text-[11px]", confirming !== d.id && "hover:bg-transparent hover:text-danger")}
               >
-                <Trash2 className="h-3 w-3" /> {confirming === d.id ? t("editor.drafts.deleteConfirm") : t("editor.drafts.delete")}
-              </button>
+                <Trash2 className="h-3 w-3" aria-hidden /> {confirming === d.id ? t("editor.drafts.deleteConfirm") : t("editor.drafts.delete")}
+              </Button>
             </li>
           );
         })}
       </ul>
-      {error && <p role="alert" className="mt-2 px-1 text-xs text-rose-300 light:text-rose-600">{error}</p>}
+      {error && <p role="alert" className="mt-2 px-1 text-xs text-danger">{error}</p>}
     </section>
   );
 }

@@ -3,10 +3,11 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, UserPlus } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { Rich } from "@/components/Rich";
 import { t } from "@/lib/i18n";
+import { Avatar, Button, buttonVariants, Field, Input, Spinner } from "@/components/ui";
 import { BirthDateField, isAdultBirthDate } from "@/components/BirthDateField";
 import { UsernameField } from "@/components/UsernameField";
 
@@ -19,9 +20,6 @@ interface Pending {
   avatarUrl: string | null;
 }
 
-const label = "block text-xs font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500";
-const field =
-  "mt-1.5 w-full rounded-xl border border-white/10 light:border-black/10 bg-zinc-900 light:bg-slate-50 px-3.5 py-2.5 text-sm normal-case tracking-normal text-white light:text-slate-900 focus:border-violet-500 focus:outline-hidden";
 
 /** After a first Google / Facebook sign-in: username, display name, 18+ certification and terms, then the account. */
 export default function CompleteSignUpPage() {
@@ -68,12 +66,12 @@ export default function CompleteSignUpPage() {
     router.push(data.next ?? "/");
   };
 
-  if (pending === null) return <div className="flex min-h-[50vh] items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-violet-400" /></div>;
+  if (pending === null) return <div className="flex min-h-[50vh] items-center justify-center"><Spinner size="md" /></div>;
   if (pending === "expired") {
     return (
       <div className="mx-auto max-w-md px-4 py-24 text-center">
-        <p className="text-sm text-zinc-400 light:text-slate-600">{t("auth.complete.expired")}</p>
-        <Link href="/auth/login" className="mt-6 inline-block rounded-xl bg-violet-600 px-6 py-2.5 text-sm font-bold text-white">{t("auth.complete.restart")}</Link>
+        <p className="text-sm text-fg-secondary">{t("auth.complete.expired")}</p>
+        <Link href="/auth/login" className={buttonVariants({ variant: "primary", shape: "rounded", className: "mt-6 rounded-xl px-6 font-bold" })}>{t("auth.complete.restart")}</Link>
       </div>
     );
   }
@@ -81,48 +79,48 @@ export default function CompleteSignUpPage() {
   const providerName = t(`auth.complete.providers.${pending.provider}`);
   return (
     <div className="mx-auto max-w-md px-4 py-12">
-      <form onSubmit={submit} className="space-y-4 rounded-3xl border border-white/10 light:border-black/5 bg-zinc-950 light:bg-white p-6 shadow-2xl sm:p-8">
+      <form onSubmit={submit} className="space-y-4 rounded-3xl border border-border-default bg-surface-1 p-6 shadow-2xl sm:p-8">
         <div className="text-center">
-          {pending.avatarUrl && <img src={pending.avatarUrl} alt="" className="mx-auto mb-3 h-16 w-16 rounded-full object-cover" />}
-          <h1 className="font-display text-2xl font-black text-white light:text-slate-900">{t("auth.complete.title")}</h1>
-          <p className="mt-1.5 text-sm text-zinc-400 light:text-slate-500">{t("auth.complete.subtitle", { provider: providerName })}</p>
+          {pending.avatarUrl && <Avatar src={pending.avatarUrl} fallback={pending.displayName.charAt(0)} className="mx-auto mb-3 h-16 w-16" />}
+          <h1 className="font-display text-2xl font-black text-fg">{t("auth.complete.title")}</h1>
+          <p className="mt-1.5 text-sm text-fg-secondary">{t("auth.complete.subtitle", { provider: providerName })}</p>
         </div>
-        {error && <p role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-400">{error}</p>}
-        <UsernameField value={username} onChange={setUsername} labelClass={label} fieldClass={field} />
-        <label className={label}>
-          {t("auth.register.displayName")}
-          <input required value={displayName} onChange={(e) => setDisplayName(e.target.value)} className={field} />
-        </label>
+        {error && <p role="alert" className="rounded-xl border border-danger/30 bg-danger/10 p-3 text-xs text-danger">{error}</p>}
+        <UsernameField value={username} onChange={setUsername} />
+        <Field.Root>
+          <Field.Label htmlFor="displayName" className="uppercase tracking-wider">{t("auth.register.displayName")}</Field.Label>
+          <Input id="displayName" required value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="rounded-xl px-3.5" />
+        </Field.Root>
         {pending.needsEmail ? (
-          <label className={label}>
-            {t("auth.complete.email")}
-            <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={field} autoComplete="email" />
-            <span className="mt-1 block text-[11px] normal-case tracking-normal text-zinc-500">{t("auth.complete.emailHint", { provider: providerName })}</span>
-          </label>
+          <Field.Root>
+            <Field.Label htmlFor="email" className="uppercase tracking-wider">{t("auth.complete.email")}</Field.Label>
+            <Input id="email" required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="rounded-xl px-3.5" autoComplete="email" aria-describedby="email-hint" />
+            <Field.Hint id="email-hint" className="text-[11px]">{t("auth.complete.emailHint", { provider: providerName })}</Field.Hint>
+          </Field.Root>
         ) : (
-          <p className="text-xs text-zinc-400 light:text-slate-500">{pending.email}</p>
+          <p className="text-xs text-fg-secondary">{pending.email}</p>
         )}
-        <BirthDateField value={dateOfBirth} onChange={setDateOfBirth} labelClass={label} fieldClass={field} />
-        <label className="flex cursor-pointer items-start gap-2.5 text-xs text-zinc-400 light:text-slate-600">
-          <input type="checkbox" checked={isAgeVerified} onChange={(e) => setIsAgeVerified(e.target.checked)} className="mt-0.5 h-4 w-4 accent-violet-600" />
+        <BirthDateField value={dateOfBirth} onChange={setDateOfBirth} />
+        <label className="flex cursor-pointer items-start gap-2.5 text-xs text-fg-secondary">
+          <input type="checkbox" checked={isAgeVerified} onChange={(e) => setIsAgeVerified(e.target.checked)} className="mt-0.5 h-4 w-4 accent-accent" />
           <span><Rich text={t("auth.register.ageCertify")} /></span>
         </label>
-        <label className="flex cursor-pointer items-start gap-2.5 text-xs text-zinc-400 light:text-slate-600">
-          <input type="checkbox" checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} className="mt-0.5 h-4 w-4 accent-violet-600" />
+        <label className="flex cursor-pointer items-start gap-2.5 text-xs text-fg-secondary">
+          <input type="checkbox" checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} className="mt-0.5 h-4 w-4 accent-accent" />
           <span>
             <Rich
               text={t("auth.register.acceptTerms")}
               slots={{
-                terms: <Link href="/legal/terms" target="_blank" className="text-violet-400 underline light:text-violet-700">{t("auth.register.terms")}</Link>,
-                notice: <Link href="/legal/2257" target="_blank" className="text-violet-400 underline light:text-violet-700">{t("auth.register.notice")}</Link>,
+                terms: <Link href="/legal/terms" target="_blank" className="text-accent underline">{t("auth.register.terms")}</Link>,
+                notice: <Link href="/legal/2257" target="_blank" className="text-accent underline">{t("auth.register.notice")}</Link>,
               }}
             />
           </span>
         </label>
-        <button disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 py-3.5 text-sm font-bold text-white disabled:opacity-60">
-          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
+        <Button type="submit" variant="sensual" size="lg" shape="rounded" loading={busy} className="w-full rounded-xl font-bold">
+          {!busy && <UserPlus className="h-4 w-4" aria-hidden />}
           {busy ? t("auth.complete.submitting") : t("auth.complete.submit")}
-        </button>
+        </Button>
       </form>
     </div>
   );

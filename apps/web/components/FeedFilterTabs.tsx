@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Clapperboard, Flame, Sparkles, Lock, Gift, Users, LayoutGrid, Rows3 } from "lucide-react";
-import { buttonClass } from "@/components/ui";
+import { Avatar, Badge, buttonVariants, cn, orochiaButton } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
 import Link from "next/link";
@@ -55,7 +55,7 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
   return (
     <div className="space-y-6">
       {/* Tab Control & View Mode Switcher Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 dark:border-white/10 light:border-black/5 pb-4 max-w-full overflow-hidden">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border-default pb-4 max-w-full overflow-hidden">
         {/* Feed Selection Tabs */}
         <div className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 scrollbar-none overscroll-x-contain touch-pan-x">
           {tabs.map(({ id, label, icon: Icon }) => {
@@ -64,13 +64,14 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
               <button
                 key={id}
                 onClick={() => setActiveTab(id)}
-                className={`flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-bold transition-all shrink-0 ${
+                className={cn(
+                  "flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-bold transition-all shrink-0",
                   isActive
-                    ? "bg-linear-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-600/25 scale-105"
-                    : "border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/50 dark:bg-zinc-900/50 light:bg-slate-100 text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white hover:light:text-black hover:border-violet-500/40"
-                }`}
+                    ? "bg-linear-to-r from-accent to-accent-2 text-white shadow-lg shadow-accent/25 scale-105"
+                    : "border border-border-subtle bg-surface-2/50 text-fg-secondary hover:text-fg hover:border-accent/40"
+                )}
               >
-                <Icon className={`h-3.5 w-3.5 ${isActive ? "text-white" : "text-violet-400"}`} />
+                <Icon className={cn("h-3.5 w-3.5", isActive ? "text-white" : "text-accent")} />
                 <span>{label}</span>
               </button>
             );
@@ -78,16 +79,17 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
         </div>
 
         {/* View Mode Switcher (Grid vs Cinematic) */}
-        <div className="flex items-center gap-1 rounded-2xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900/60 dark:bg-zinc-900/60 light:bg-slate-100 p-1 self-end sm:self-auto shrink-0">
+        <div className="flex items-center gap-1 rounded-2xl border border-border-default bg-surface-2/60 p-1 self-end sm:self-auto shrink-0">
           <button
             onClick={() => setViewMode("grid")}
             aria-label={t("feed.grid")}
             title={t("feed.grid")}
-            className={`flex h-8 w-8 items-center justify-center rounded-xl transition-all ${
+            className={cn(
+              "flex h-8 w-8 items-center justify-center rounded-xl transition-all",
               viewMode === "grid"
-                ? "bg-violet-600 text-white shadow-xs"
-                : "text-zinc-400 dark:text-zinc-400 light:text-slate-500 hover:text-white"
-            }`}
+                ? "bg-accent text-white shadow-xs"
+                : "text-fg-secondary hover:text-white"
+            )}
           >
             <LayoutGrid className="h-4 w-4" />
           </button>
@@ -95,11 +97,12 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
             onClick={() => setViewMode("cinematic")}
             aria-label={t("feed.cinematic")}
             title={t("feed.cinematic")}
-            className={`flex h-8 w-8 items-center justify-center rounded-xl transition-all ${
+            className={cn(
+              "flex h-8 w-8 items-center justify-center rounded-xl transition-all",
               viewMode === "cinematic"
-                ? "bg-violet-600 text-white shadow-xs"
-                : "text-zinc-400 dark:text-zinc-400 light:text-slate-500 hover:text-white"
-            }`}
+                ? "bg-accent text-white shadow-xs"
+                : "text-fg-secondary hover:text-white"
+            )}
           >
             <Rows3 className="h-4 w-4" />
           </button>
@@ -110,24 +113,24 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
       {filteredVideos.length === 0 ? (
         initialVideos.length === 0 ? (
           <div className="space-y-8">
-            <div className="kz-spotlight relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/40 px-6 py-10 text-center light:border-black/5 light:bg-white">
-              <div aria-hidden className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-violet-600 to-pink-600 shadow-lg shadow-fuchsia-600/30">
+            <div className="kz-spotlight relative overflow-hidden rounded-3xl border border-border-default bg-surface-2/40 px-6 py-10 text-center">
+              <div aria-hidden className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-accent to-accent-2 shadow-lg shadow-accent/30">
                 <Clapperboard className="h-6 w-6 text-white" />
               </div>
-              <h3 className="font-display text-xl font-black text-white light:text-slate-900">{t("home.empty.title")}</h3>
-              <p className="mx-auto mt-2 max-w-md text-sm text-zinc-400 light:text-slate-600">{t("home.empty.body")}</p>
+              <h3 className="font-display text-xl font-black text-fg">{t("home.empty.title")}</h3>
+              <p className="mx-auto mt-2 max-w-md text-sm text-fg-secondary">{t("home.empty.body")}</p>
               <div className="mt-5 flex flex-col justify-center gap-2 sm:flex-row">
-                <Link href="/auth/register" className={buttonClass({ variant: "primary", size: "md" })}>
+                <Link href="/auth/register" className={orochiaButton({ variant: "sensual", size: "md", shape: "pill" })}>
                   {t("home.empty.join")}
                 </Link>
-                <Link href="/creator/upload" className={buttonClass({ variant: "secondary", size: "md" })}>
+                <Link href="/creator/upload" className={buttonVariants({ variant: "secondary", size: "md", shape: "pill" })}>
                   {t("home.empty.create")}
                 </Link>
               </div>
             </div>
           </div>
         ) : (
-          <p className="rounded-3xl border border-white/10 bg-zinc-900/40 p-10 text-center text-sm text-zinc-400 light:border-black/5 light:bg-white light:text-slate-500">{t("feed.emptyFilter")}</p>
+          <p className="rounded-3xl border border-border-default bg-surface-2/40 p-10 text-center text-sm text-fg-secondary">{t("feed.emptyFilter")}</p>
         )
       ) : viewMode === "grid" ? (
         /* Grid Layout */
@@ -144,35 +147,29 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
           {filteredVideos.map((video) => (
             <div
               key={video.id}
-              className="overflow-hidden rounded-3xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-950/80 dark:bg-zinc-950/80 light:bg-white shadow-2xl transition-all hover:border-violet-500/40"
+              className="overflow-hidden rounded-3xl border border-border-default bg-surface-1/80 shadow-2xl transition-all hover:border-accent/40"
             >
               {/* Creator Header */}
-              <div className="flex items-center justify-between p-4 border-b border-white/5 dark:border-white/5 light:border-black/5">
+              <div className="flex items-center justify-between p-4 border-b border-border-subtle">
                 <Link
                   href={video.creatorUsername ? `/@${video.creatorUsername}` : "#"}
                   className="flex items-center gap-3 group"
                 >
-                  <div className="h-10 w-10 overflow-hidden rounded-xl border border-violet-500/40">
-                    <img
-                      src={video.creatorAvatar || "/avatar-placeholder.svg"}
-                      alt={video.creatorName}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
+                  <Avatar src={video.creatorAvatar || "/avatar-placeholder.svg"} alt={video.creatorName} fallback={video.creatorName.charAt(0)} className="h-10 w-10 rounded-xl border border-accent/40" />
                   <div>
-                    <h4 className="text-xs sm:text-sm font-bold text-white dark:text-white light:text-slate-900 group-hover:text-violet-400 transition-colors">
+                    <h4 className="text-xs sm:text-sm font-bold text-fg group-hover:text-accent transition-colors">
                       {video.creatorName}
                     </h4>
-                    <span className="text-[11px] text-zinc-400 dark:text-zinc-400 light:text-slate-500 font-mono">
+                    <span className="text-[11px] text-fg-secondary font-mono">
                       @{video.creatorUsername || t("feed.creatorFallback")}
                     </span>
                   </div>
                 </Link>
 
                 <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-violet-600/20 border border-violet-500/30 px-2.5 py-0.5 text-[10px] font-bold text-violet-300">
+                  <Badge size="sm" tone="accent" className="font-bold">
                     {t("feed.hd")}
-                  </span>
+                  </Badge>
                 </div>
               </div>
 
@@ -185,8 +182,8 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-violet-950/40 via-zinc-950 to-fuchsia-950/40 text-violet-400 light:from-violet-100 light:via-slate-50 light:to-fuchsia-100">
-                    <span className="font-display text-sm font-bold text-violet-300">{t("feed.noThumbnail")}</span>
+                  <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-accent/15 via-zinc-950 to-accent-2/15 text-accent light:via-slate-50">
+                    <span className="font-display text-sm font-bold text-accent">{t("feed.noThumbnail")}</span>
                   </div>
                 )}
                 <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
@@ -204,16 +201,16 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
               </Link>
 
               {/* Actions Bottom Bar */}
-              <div className="flex items-center justify-between p-4 bg-zinc-900/40 dark:bg-zinc-900/40 light:bg-slate-50">
+              <div className="flex items-center justify-between p-4 bg-surface-2/40">
                 <Link
                   href={`/watch/${video.id}`}
-                  className="inline-flex items-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 to-fuchsia-600 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-violet-600/30 hover:scale-105 transition-all"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-linear-to-r from-accent to-accent-2 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-accent/30 hover:scale-105 transition-all"
                 >
                   <span>{t("feed.watch")}</span>
                 </Link>
 
                 {video.visibility === "TIPPED_UNLOCKED" && (
-                  <span className="text-xs font-bold text-violet-400 font-mono">
+                  <span className="text-xs font-bold text-accent font-mono">
                     {t("feed.unlockFor", { price: `$${(video.minTipAmountCents / 100).toFixed(2)}` })}
                   </span>
                 )}

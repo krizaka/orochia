@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { BatteryFull, Clock, Coins, Flame, Gavel, PlayCircle, SignalHigh, Unlock, Wifi } from "lucide-react";
 import { t } from "@/lib/i18n";
 import { SCENES, SCENE_MS, SCENE_STYLES, Screen, type Scene } from "./showcase/Scenes";
+import { cn } from "@/components/ui";
 
 const ICONS: Record<Scene, typeof Coins> = { feed: PlayCircle, stories: Clock, tip: Coins, unlock: Unlock, auction: Gavel, challenge: Flame };
 
@@ -35,7 +36,7 @@ export function ProductShowcase({ share }: { share: number }) {
   return (
     <div ref={box} className="relative flex w-full min-w-0 flex-col items-center" aria-label={t("home.showcase.label")} role="region">
       <div className="relative">
-        <div aria-hidden className="sc-aura absolute -inset-12 -z-10 rounded-full bg-linear-to-tr from-violet-600/45 via-fuchsia-500/30 to-pink-500/35 blur-3xl light:from-violet-300/55 light:via-fuchsia-200/50 light:to-pink-200/55" />
+        <div aria-hidden className="sc-aura absolute -inset-12 -z-10 rounded-full bg-linear-to-tr from-accent/45 via-accent-2/30 to-accent-2/35 blur-3xl" />
         <div className="sc-float relative h-[560px] w-[264px] rounded-[3rem] bg-linear-to-b from-zinc-600 via-zinc-900 to-zinc-700 p-[3px] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.85)] light:from-slate-300 light:via-slate-200 light:to-slate-300 sm:h-[600px] sm:w-[284px]">
           <div className="theme-dark relative h-full w-full overflow-hidden rounded-[2.85rem] border-[7px] border-black bg-black">
             <div aria-hidden className="absolute inset-x-0 top-0 z-50 flex h-9 items-center justify-between px-6 text-[11px] font-semibold text-white">
@@ -66,16 +67,17 @@ export function ProductShowcase({ share }: { share: number }) {
               role="tab"
               aria-selected={active}
               onClick={() => setIndex(i)}
-              className={`relative flex items-center justify-center gap-1.5 overflow-hidden rounded-xl border px-2.5 py-2 text-[11px] font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400 sm:text-xs ${
+              className={cn(
+                "relative flex items-center justify-center gap-1.5 overflow-hidden rounded-xl border px-2.5 py-2 text-[11px] font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring sm:text-xs",
                 active
-                  ? "border-white/20 bg-white/12 text-white light:border-black/10 light:bg-black/6 light:text-slate-900"
-                  : "border-white/8 bg-zinc-950/40 text-zinc-400 hover:text-white light:border-black/5 light:bg-white/70 light:text-slate-500 hover:light:text-slate-900"
-              }`}
+                  ? "border-border-strong bg-surface-3 text-fg"
+                  : "border-border-default bg-surface-1/40 text-fg-secondary hover:text-fg"
+              )}
             >
               <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
               <span className="truncate">{t(`home.showcase.scenes.${s}`)}</span>
               {active && running && (
-                <span className="sc-tab absolute inset-x-0 bottom-0 h-[2px] origin-left bg-linear-to-r from-violet-500 via-fuchsia-500 to-pink-500" style={{ animationDuration: `${SCENE_MS}ms` }} />
+                <span className="sc-tab absolute inset-x-0 bottom-0 h-[2px] origin-left bg-linear-to-r from-accent via-accent-2 to-accent-2" style={{ animationDuration: `${SCENE_MS}ms` }} />
               )}
             </button>
           );

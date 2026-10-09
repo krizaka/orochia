@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { CheckCircle2, Flag } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { Button, Sheet, cx } from "@/components/ui";
+import { Button, cn, Input, Sheet, Textarea } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 export interface ReportModalProps {
@@ -18,7 +18,7 @@ const REASONS = ["UNDERAGE", "NON_CONSENSUAL", "DMCA_COPYRIGHT", "TERMS_VIOLATIO
 type Reason = (typeof REASONS)[number];
 
 const field =
-  "w-full rounded-xl border border-white/10 bg-zinc-900 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-hidden light:border-black/10 light:bg-slate-50 light:text-slate-900 light:placeholder:text-slate-400";
+  "w-full rounded-xl border border-border-default bg-surface-2 px-3.5 py-2.5 text-sm text-fg placeholder:text-fg-muted focus:border-accent focus:outline-hidden";
 
 /** Report a video: a reason, details and a contact address; persisted before it is acknowledged (compliance_reports). */
 export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModalProps) {
@@ -60,23 +60,23 @@ export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModa
     <Sheet open={isOpen} onClose={close} title={sent ? t("report.sent") : t("report.title")}>
       {sent ? (
         <div className="py-6 text-center">
-          <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-400" />
-          <p className="mx-auto mt-3 max-w-sm text-sm text-zinc-300 light:text-slate-700">{t("report.sentBody")}</p>
+          <CheckCircle2 className="mx-auto h-12 w-12 text-success" />
+          <p className="mx-auto mt-3 max-w-sm text-sm text-fg-secondary">{t("report.sentBody")}</p>
           <Button className="mt-6" onClick={close}>
             {t("report.close")}
           </Button>
         </div>
       ) : (
         <form onSubmit={submit} className="space-y-4">
-          <p className="flex items-start gap-2 pt-1 text-xs text-zinc-400 light:text-slate-500">
-            <Flag className="mt-0.5 h-3.5 w-3.5 shrink-0 text-rose-400" />
+          <p className="flex items-start gap-2 pt-1 text-xs text-fg-secondary">
+            <Flag className="mt-0.5 h-3.5 w-3.5 shrink-0 text-danger" />
             <span>
-              {t("report.subtitle")} <span className="italic text-zinc-300 light:text-slate-700">{t("report.about", { title: videoTitle })}</span>
+              {t("report.subtitle")} <span className="italic text-fg-secondary">{t("report.about", { title: videoTitle })}</span>
             </span>
           </p>
 
           <fieldset>
-            <legend className="mb-2 text-xs font-semibold text-zinc-300 light:text-slate-700">{t("report.reason")}</legend>
+            <legend className="mb-2 text-xs font-semibold text-fg-secondary">{t("report.reason")}</legend>
             <div className="space-y-2" role="radiogroup">
               {REASONS.map((r) => (
                 <button
@@ -85,29 +85,29 @@ export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModa
                   role="radio"
                   aria-checked={reason === r}
                   onClick={() => setReason(r)}
-                  className={cx(
-                    "w-full rounded-2xl border p-3 text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400",
-                    reason === r ? "border-rose-500/60 bg-rose-500/10" : "border-white/10 hover:border-white/25 light:border-black/10 hover:light:border-black/25",
+                  className={cn(
+                    "w-full rounded-2xl border p-3 text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
+                    reason === r ? "border-danger/60 bg-danger/10" : "border-border-default hover:border-border-strong",
                   )}
                 >
-                  <span className="block text-sm font-semibold text-white light:text-slate-900">{t(`report.reasons.${r}.title`)}</span>
-                  <span className="block text-xs text-zinc-400 light:text-slate-500">{t(`report.reasons.${r}.hint`)}</span>
+                  <span className="block text-sm font-semibold text-fg">{t(`report.reasons.${r}.title`)}</span>
+                  <span className="block text-xs text-fg-secondary">{t(`report.reasons.${r}.hint`)}</span>
                 </button>
               ))}
             </div>
           </fieldset>
 
           <label className="block">
-            <span className="mb-1.5 block text-xs font-semibold text-zinc-300 light:text-slate-700">{t("report.details")}</span>
-            <textarea value={details} onChange={(e) => setDetails(e.target.value)} rows={3} required placeholder={t("report.detailsPlaceholder")} className={`${field} resize-y`} />
+            <span className="mb-1.5 block text-xs font-semibold text-fg-secondary">{t("report.details")}</span>
+            <Textarea value={details} onChange={(e) => setDetails(e.target.value)} rows={3} required placeholder={t("report.detailsPlaceholder")} className={cn(field, "resize-y")} />
           </label>
           <label className="block">
-            <span className="mb-1.5 block text-xs font-semibold text-zinc-300 light:text-slate-700">{t("report.email")}</span>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className={field} />
-            <span className="mt-1 block text-[11px] text-zinc-500">{t("report.emailHint")}</span>
+            <span className="mb-1.5 block text-xs font-semibold text-fg-secondary">{t("report.email")}</span>
+            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className={field} />
+            <span className="mt-1 block text-[11px] text-fg-muted">{t("report.emailHint")}</span>
           </label>
 
-          {error && <p role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-300 light:text-rose-700">{error}</p>}
+          {error && <p role="alert" className="rounded-xl border border-danger/30 bg-danger/10 px-3 py-2 text-xs text-danger">{error}</p>}
 
           <div className="flex justify-end gap-2 pt-1">
             <Button variant="ghost" onClick={close}>
