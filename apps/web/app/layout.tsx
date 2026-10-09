@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import { ClientLayoutShell } from "@/components/ClientLayoutShell";
 import { MotionObserver } from "@/components/ui";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -9,9 +9,10 @@ import { JsonLd } from "@/components/JsonLd";
 import { INDEXABLE, NOINDEX, SITE_DESCRIPTION, SITE_NAME, SITE_URL, siteGraph } from "@/lib/seo";
 import "./globals.css";
 
-// Self-hosted at build time by next/font: no request to Google from the visitor's browser.
-const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-outfit", display: "swap" });
-const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-jakarta", display: "swap" });
+// Variable fonts in the repository (app/fonts, SIL OFL 1.1): no request to Google from the browser, and none from the
+// build either — a build that fetched them failed whenever fonts.googleapis.com did not answer the builder.
+const outfit = localFont({ src: "./fonts/outfit-latin-wght.woff2", weight: "100 900", variable: "--font-outfit", display: "swap" });
+const jakarta = localFont({ src: "./fonts/plus-jakarta-sans-latin-wght.woff2", weight: "200 800", variable: "--font-jakarta", display: "swap" });
 
 export const viewport: Viewport = {
   width: "device-width",
