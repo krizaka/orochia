@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
 import { Gavel, Lock, Maximize, Pause, Play, Sparkles, Users, Volume2, VolumeX } from "lucide-react";
 import { t } from "@/lib/i18n";
+import { cn } from "@/components/ui";
 
 interface VideoPlayerProps {
   videoId: string;
@@ -195,9 +196,10 @@ export function VideoPlayer({
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={() => setIsPlaying(false)}
-        className={`h-full w-full object-contain cursor-pointer transition-all duration-500 ${
+        className={cn(
+          "h-full w-full object-contain cursor-pointer transition-all duration-500",
           isBlurred && !revealed ? "blur-2xl scale-105" : ""
-        }`}
+        )}
         onClick={isBlurred && !revealed ? undefined : togglePlay}
         playsInline
       />
@@ -261,9 +263,10 @@ export function VideoPlayer({
       {/* Custom Video Controls */}
       {!isPaywalled && !isGated && (
         <div
-          className={`absolute bottom-0 left-0 right-0 z-20 bg-linear-to-t from-black/90 via-black/40 to-transparent p-4 transition-opacity duration-300 ${
+          className={cn(
+            "absolute bottom-0 left-0 right-0 z-20 bg-linear-to-t from-black/90 via-black/40 to-transparent p-4 transition-opacity duration-300",
             showControls ? "opacity-100" : "opacity-0"
-          }`}
+          )}
         >
           {/* Progress Timeline Slider */}
           <div className="mb-3">

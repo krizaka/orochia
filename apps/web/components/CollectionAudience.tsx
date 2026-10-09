@@ -1,6 +1,7 @@
 import React from "react";
 import { Globe, Lock, UserCheck, UserPlus, Users, type LucideIcon } from "lucide-react";
 import { t } from "@/lib/i18n";
+import { cn } from "@/components/ui";
 
 export type CollectionVisibility = "PUBLIC" | "APPROVED_FOLLOWERS_ONLY" | "CONTACTS_ONLY" | "INVITED_ONLY" | "PRIVATE";
 
@@ -26,7 +27,7 @@ export function audienceOf(value: CollectionVisibility) {
 export function CollectionAudienceBadge({ visibility, className = "" }: { visibility: CollectionVisibility; className?: string }) {
   const { label, icon: Icon } = audienceOf(visibility);
   return (
-    <span className={`inline-flex items-center gap-1 ${className}`}>
+    <span className={cn("inline-flex items-center gap-1", className)}>
       <Icon className="h-3 w-3 shrink-0" aria-hidden /> {label}
     </span>
   );

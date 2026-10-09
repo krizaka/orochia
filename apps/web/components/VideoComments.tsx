@@ -6,6 +6,7 @@ import { MessageSquare, Reply, Trash2 } from "lucide-react";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
 import { Rich } from "@/components/Rich";
 import { t } from "@/lib/i18n";
+import { Textarea, cn } from "@/components/ui";
 
 interface Comment {
   id: string;
@@ -35,7 +36,7 @@ function Composer({ onSubmit, placeholder, autoFocus }: { onSubmit: (body: strin
       }}
       className="flex gap-2"
     >
-      <textarea
+      <Textarea
         value={body}
         onChange={(e) => setBody(e.target.value)}
         maxLength={COMMENT_MAX_LENGTH}
@@ -43,7 +44,7 @@ function Composer({ onSubmit, placeholder, autoFocus }: { onSubmit: (body: strin
         autoFocus={autoFocus}
         placeholder={placeholder}
         aria-label={placeholder}
-        className="min-w-0 flex-1 resize-y rounded-xl border border-border-default bg-surface-2 px-3 py-2 text-sm text-fg placeholder:text-fg-muted focus:border-accent focus:outline-hidden"
+        className="min-w-0 flex-1 resize-y rounded-xl px-3 py-2"
       />
       <button disabled={busy || !body.trim()} className="self-end rounded-xl bg-accent px-4 py-2 text-xs font-bold text-white disabled:opacity-40">
         {busy ? t("comments.posting") : t("comments.post")}
@@ -121,7 +122,7 @@ export function VideoComments({
   const replies = (id: string) => (comments ?? []).filter((c) => c.parentId === id);
 
   const item = (c: Comment, isReply = false) => (
-    <div key={c.id} className={`flex gap-3 ${isReply ? "mt-3" : ""}`}>
+    <div key={c.id} className={cn("flex gap-3", isReply ? "mt-3" : "")}>
       <img src={c.authorAvatar || AVATAR_PLACEHOLDER} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />
       <div className="min-w-0 flex-1">
         <p className="text-xs">
@@ -132,7 +133,10 @@ export function VideoComments({
             {new Date(c.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
           </span>
         </p>
-        <p className={`mt-1 whitespace-pre-line wrap-break-word text-sm ${c.removed ? "italic text-fg-muted" : "text-fg-secondary"}`}>
+        <p className={cn(
+          "mt-1 whitespace-pre-line wrap-break-word text-sm",
+          c.removed ? "italic text-fg-muted" : "text-fg-secondary"
+        )}>
           {c.removed ? t("comments.removed") : c.body}
         </p>
         <div className="mt-1 flex gap-3 text-[11px] text-fg-muted">
@@ -142,7 +146,10 @@ export function VideoComments({
             </button>
           )}
           {c.canRemove && (
-            <button onClick={() => remove(c.id)} onBlur={() => setConfirming(null)} className={`inline-flex items-center gap-1 hover:text-danger ${confirming === c.id ? "font-semibold text-danger" : ""}`}>
+            <button onClick={() => remove(c.id)} onBlur={() => setConfirming(null)} className={cn(
+              "inline-flex items-center gap-1 hover:text-danger",
+              confirming === c.id ? "font-semibold text-danger" : ""
+            )}>
               <Trash2 className="h-3 w-3" /> {confirming === c.id ? t("comments.removeConfirm") : t("comments.remove")}
             </button>
           )}

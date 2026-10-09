@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowLeft, Clapperboard, Clock, Crown, Lock, Play, Timer, Users } from "lucide-react";
-import { Countdown, buttonVariants, orochiaButton } from "@/components/ui";
+import { Countdown, buttonVariants, orochiaButton, cn } from "@/components/ui";
 import { money } from "@/lib/money";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
@@ -115,7 +115,10 @@ export function ChallengeClient({ id }: { id: string }) {
             ) : (
               <ol className="divide-y divide-border-subtle" aria-live="polite">
                 {c.recentPledges.map((p, i) => (
-                  <li key={p.id} className={`flex items-center justify-between py-2 text-sm ${i === 0 && pulse ? "kz-fade" : ""}`}>
+                  <li key={p.id} className={cn(
+                    "flex items-center justify-between py-2 text-sm",
+                    i === 0 && pulse ? "kz-fade" : ""
+                  )}>
                     <span className="text-fg-secondary">{p.mine ? t("challenge.you") : t("challenge.backer", { n: p.alias })}</span>
                     <span className="font-mono font-semibold tabular-nums text-fg">+{money(p.amountCents)}</span>
                   </li>
@@ -127,7 +130,7 @@ export function ChallengeClient({ id }: { id: string }) {
 
         {/* On phones the pot comes first: it is what a visitor opens a challenge for. */}
         <aside className="order-first space-y-4 lg:sticky lg:top-20 lg:order-none lg:self-start">
-          <div className={`${panel} flex flex-col items-center gap-4 text-center`}>
+          <div className={cn(panel, "flex flex-col items-center gap-4 text-center")}>
             <ChallengeMeter c={c} size="lg" pulse={pulse} />
             <p className="text-xs text-fg-secondary">{t("challenge.backers", { count: c.backersCount })}</p>
             {ticking && (
@@ -159,7 +162,10 @@ export function ChallengeClient({ id }: { id: string }) {
                 {c.topBackers.map((b, i) => (
                   <li key={b.alias} className="flex items-center gap-3 text-sm">
                     <span
-                      className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-black ${i === 0 ? "bg-warning text-warning" : "bg-surface-3 text-fg-secondary"}`}
+                      className={cn(
+                        "flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-black",
+                        i === 0 ? "bg-warning text-warning" : "bg-surface-3 text-fg-secondary"
+                      )}
                     >
                       {i + 1}
                     </span>

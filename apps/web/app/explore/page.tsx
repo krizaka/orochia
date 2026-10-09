@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Search, Hash, Compass, Flame, Gavel } from "lucide-react";
 import { VideoCard } from "@/components/VideoCard";
 import { popularTags, searchVideos } from "@/lib/queries";
-import { Button, buttonVariants, Input } from "@/components/ui";
+import { Button, buttonVariants, Input, cn } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
@@ -73,11 +73,9 @@ export default async function ExplorePage(props: { searchParams: Promise<{ q?: s
         <div className="mt-5 flex flex-wrap gap-2">
           <Link
             href={href({ tag: undefined, page: undefined })}
-            className={`rounded-full border px-3 py-1.5 text-xs transition-colors ${
-              !tag
-                ? "border-accent bg-accent/20 text-fg"
-                : "border-border-default text-fg-secondary hover:text-fg"
-            }`}
+            className={cn("rounded-full border px-3 py-1.5 text-xs transition-colors", !tag
+              ? "border-accent bg-accent/20 text-fg"
+              : "border-border-default text-fg-secondary hover:text-fg")}
           >
             {t("explore.all")}
           </Link>
@@ -85,11 +83,12 @@ export default async function ExplorePage(props: { searchParams: Promise<{ q?: s
             <Link
               key={entry.tag}
               href={href({ tag: entry.tag, page: undefined })}
-              className={`inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs transition-colors ${
+              className={cn(
+                "inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs transition-colors",
                 tag === entry.tag
                   ? "border-accent bg-accent/20 text-fg font-bold"
                   : "border-border-default text-fg-secondary hover:text-fg"
-              }`}
+              )}
             >
               <Hash className="h-3 w-3" /> {entry.tag}{" "}
               <span className="font-mono text-[10px] text-fg-muted">{entry.count}</span>

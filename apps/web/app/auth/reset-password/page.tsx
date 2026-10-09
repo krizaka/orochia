@@ -58,7 +58,7 @@ export default function ResetPasswordPage() {
                 </label>
               ))}
               {error && <p role="alert" className="text-xs text-danger">{error}</p>}
-              <Button type="submit" variant="sensual" size="lg" shape="rounded" loading={state === "saving"} className="w-full rounded-xl font-bold">
+              <Button type="submit" variant="primary" size="lg" shape="rounded" loading={state === "saving"} className="w-full rounded-xl font-bold">
                 {t("auth.reset.submit")}
               </Button>
             </form>

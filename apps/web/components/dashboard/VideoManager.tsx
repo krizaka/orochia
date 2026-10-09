@@ -3,7 +3,17 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { AlertTriangle, Gavel, Pencil, Trash2, Users } from "lucide-react";
-import { Badge, Button, ConfirmIconButton, IconButton, Input, Select, Sheet, Textarea } from "@/components/ui";
+import {
+  Badge,
+  Button,
+  ConfirmIconButton,
+  IconButton,
+  Input,
+  Select,
+  Sheet,
+  Textarea,
+  cn,
+} from "@/components/ui";
 import { money } from "@/lib/money";
 import { Rich } from "@/components/Rich";
 import { t } from "@/lib/i18n";
@@ -193,7 +203,7 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
               <label className={label}>
                 {t("studio.visibility")}
                 {visibility === "AUCTION" || visibility === "CHALLENGE" ? (
-                  <span className={`${field} flex items-center gap-1.5 text-fg-secondary`}>
+                  <span className={cn(field, "flex items-center gap-1.5 text-fg-secondary")}>
                     <Gavel className="h-3.5 w-3.5" aria-hidden /> {t(visibility === "AUCTION" ? "studio.auctionLocked" : "studio.challengeLocked")}
                   </span>
                 ) : (
@@ -218,7 +228,7 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
         )}
         {/* Outside the form: the audience editor saves on its own (and has its own form). */}
         {editing && visibility === "INVITED_ONLY" && (
-          <div className={`${label} mt-4`}>
+          <div className={cn(label, "mt-4")}>
             {t("studio.audience")}
             <div className="mt-1">
               <AudienceEditor endpoint={`/api/videos/${editing.id}/audience`} />

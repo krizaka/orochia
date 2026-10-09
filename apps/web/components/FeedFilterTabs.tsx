@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Clapperboard, Flame, Sparkles, Lock, Gift, Users, LayoutGrid, Rows3 } from "lucide-react";
-import { orochiaButton, buttonVariants } from "@/components/ui";
+import { orochiaButton, buttonVariants, cn } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
 import Link from "next/link";
@@ -64,13 +64,14 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
               <button
                 key={id}
                 onClick={() => setActiveTab(id)}
-                className={`flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-bold transition-all shrink-0 ${
+                className={cn(
+                  "flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-bold transition-all shrink-0",
                   isActive
                     ? "bg-linear-to-r from-accent to-accent-2 text-white shadow-lg shadow-accent/25 scale-105"
                     : "border border-border-subtle bg-surface-2/50 text-fg-secondary hover:text-fg hover:border-accent/40"
-                }`}
+                )}
               >
-                <Icon className={`h-3.5 w-3.5 ${isActive ? "text-white" : "text-accent"}`} />
+                <Icon className={cn("h-3.5 w-3.5", isActive ? "text-white" : "text-accent")} />
                 <span>{label}</span>
               </button>
             );
@@ -83,11 +84,12 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
             onClick={() => setViewMode("grid")}
             aria-label={t("feed.grid")}
             title={t("feed.grid")}
-            className={`flex h-8 w-8 items-center justify-center rounded-xl transition-all ${
+            className={cn(
+              "flex h-8 w-8 items-center justify-center rounded-xl transition-all",
               viewMode === "grid"
                 ? "bg-accent text-white shadow-xs"
                 : "text-fg-secondary hover:text-white"
-            }`}
+            )}
           >
             <LayoutGrid className="h-4 w-4" />
           </button>
@@ -95,11 +97,12 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
             onClick={() => setViewMode("cinematic")}
             aria-label={t("feed.cinematic")}
             title={t("feed.cinematic")}
-            className={`flex h-8 w-8 items-center justify-center rounded-xl transition-all ${
+            className={cn(
+              "flex h-8 w-8 items-center justify-center rounded-xl transition-all",
               viewMode === "cinematic"
                 ? "bg-accent text-white shadow-xs"
                 : "text-fg-secondary hover:text-white"
-            }`}
+            )}
           >
             <Rows3 className="h-4 w-4" />
           </button>

@@ -6,6 +6,7 @@ import { Bookmark, CheckCircle2, Eye, Flame, Gavel, Heart, Lock, Play, Sparkles,
 import { t } from "@/lib/i18n";
 import { TipModal } from "@/components/TipModal";
 import type { VideoVisibility } from "@/lib/visibility";
+import { cn } from "@/components/ui";
 
 export interface VideoCardProps {
   id: string;
@@ -104,9 +105,10 @@ export function VideoCard({
               ref={picture}
               alt=""
               onError={() => setBroken(true)}
-              className={`h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 ${
+              className={cn(
+                "h-full w-full object-cover transition-transform duration-500 group-hover:scale-105",
                 isBlurred && !revealed ? "blur-xl scale-110" : ""
-              }`}
+              )}
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-accent/15 via-zinc-950 to-accent-2/15 text-accent light:via-slate-50">
@@ -201,26 +203,28 @@ export function VideoCard({
               title={isLiked ? t("card.unlike") : t("card.like")}
               aria-label={isLiked ? t("card.unlike") : t("card.like")}
               aria-pressed={isLiked}
-              className={`flex h-8 w-8 items-center justify-center rounded-xl backdrop-blur-md transition-all active:scale-90 ${
+              className={cn(
+                "flex h-8 w-8 items-center justify-center rounded-xl backdrop-blur-md transition-all active:scale-90",
                 isLiked
                   ? "bg-danger text-white shadow-md shadow-danger/40"
                   : "bg-scrim text-fg-on-media hover:bg-black/80"
-              }`}
+              )}
             >
-              <Heart className={`h-4 w-4 ${isLiked ? "fill-white" : ""}`} />
+              <Heart className={cn("h-4 w-4", isLiked ? "fill-white" : "")} />
             </button>
             <button
               onClick={handleSave}
               title={isSaved ? t("card.saved") : t("card.save")}
               aria-label={isSaved ? t("card.saved") : t("card.save")}
               aria-pressed={isSaved}
-              className={`flex h-8 w-8 items-center justify-center rounded-xl backdrop-blur-md transition-all active:scale-90 ${
+              className={cn(
+                "flex h-8 w-8 items-center justify-center rounded-xl backdrop-blur-md transition-all active:scale-90",
                 isSaved
                   ? "bg-accent text-white shadow-md shadow-accent/40"
                   : "bg-scrim text-fg-on-media hover:bg-black/80"
-              }`}
+              )}
             >
-              <Bookmark className={`h-4 w-4 ${isSaved ? "fill-white" : ""}`} />
+              <Bookmark className={cn("h-4 w-4", isSaved ? "fill-white" : "")} />
             </button>
           </div>
         </Link>

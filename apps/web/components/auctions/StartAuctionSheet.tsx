@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Download, Gavel, Play } from "lucide-react";
-import { Button, Segmented, Sheet, Switch } from "@/components/ui";
+import { Button, Input, Segmented, Sheet, Switch, cn } from "@/components/ui";
 import { money } from "@/lib/money";
 import { t, type MessageKey } from "@/lib/i18n";
 
@@ -92,7 +92,7 @@ export function StartAuctionSheet({ video, open, onClose }: { video: { id: strin
           {t("auction.start.price")}
           <span className="relative mt-1 block">
             <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-fg-muted">$</span>
-            <input value={price} onChange={(e) => setPrice(e.target.value)} type="number" inputMode="decimal" min={1} step={0.5} required className={`${field} mt-0 pl-6 font-mono tabular-nums`} />
+            <Input value={price} onChange={(e) => setPrice(e.target.value)} type="number" inputMode="decimal" min={1} step={0.5} required className={cn(field, "mt-0 pl-6 font-mono tabular-nums")} />
           </span>
           <span className={hint}>{t("auction.start.priceHint")}</span>
         </label>
@@ -102,7 +102,7 @@ export function StartAuctionSheet({ video, open, onClose }: { video: { id: strin
           <div className="mt-1">
             <Segmented label={t("auction.start.when")} value={when} onChange={setWhen} options={[{ value: "now", label: t("auction.start.now") }, { value: "later", label: t("auction.start.later") }]} />
           </div>
-          {when === "later" && <input type="datetime-local" value={startAt} onChange={(e) => setStartAt(e.target.value)} required className={field} aria-label={t("auction.start.startAt")} />}
+          {when === "later" && <Input type="datetime-local" value={startAt} onChange={(e) => setStartAt(e.target.value)} required className={field} aria-label={t("auction.start.startAt")} />}
         </div>
 
         <div className={label}>
@@ -110,7 +110,7 @@ export function StartAuctionSheet({ video, open, onClose }: { video: { id: strin
           <div className="mt-1">
             <Segmented label={t("auction.start.duration")} value={duration} onChange={setDuration} options={DURATIONS.map((d) => ({ value: d.id, label: t(`auction.start.durations.${d.id}`) }))} />
           </div>
-          {duration === "custom" && <input type="datetime-local" value={endAt} onChange={(e) => setEndAt(e.target.value)} required className={field} aria-label={t("auction.start.endAt")} />}
+          {duration === "custom" && <Input type="datetime-local" value={endAt} onChange={(e) => setEndAt(e.target.value)} required className={field} aria-label={t("auction.start.endAt")} />}
           <span className={hint}>{t("auction.start.durationHint")}</span>
         </div>
 

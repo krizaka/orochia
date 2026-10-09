@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import { LogOut, MailCheck, RefreshCw } from "lucide-react";
-import { Spinner } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 import { Rich } from "@/components/Rich";
@@ -51,20 +51,13 @@ export function EmailVerificationGate({ children }: { children: React.ReactNode 
       </p>
 
       <div className="mt-8 flex w-full flex-col gap-3 sm:flex-row sm:justify-center">
-        <button
-          onClick={resend}
-          disabled={state === "sending" || state === "sent"}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
-        >
-          {state === "sending" ? <Spinner size="sm" className="text-current" /> : <RefreshCw className="h-4 w-4" />}
+        <Button variant="primary" size="lg" shape="rounded" onClick={resend} disabled={state === "sent"} loading={state === "sending"} className="rounded-xl px-5 font-bold">
+          {state !== "sending" && <RefreshCw className="h-4 w-4" aria-hidden />}
           {state === "sent" ? t("verifyGate.sent") : t("verifyGate.resend")}
-        </button>
-        <button
-          onClick={() => void refresh()}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-border-default px-5 py-3 text-sm font-semibold text-fg hover:bg-white/5"
-        >
+        </Button>
+        <Button variant="outline" size="lg" shape="rounded" onClick={() => void refresh()} className="rounded-xl px-5">
           {t("verifyGate.done")}
-        </button>
+        </Button>
       </div>
       {message && <p role="alert" className="mt-4 text-xs text-danger">{message}</p>}
       {devLink && (
@@ -73,9 +66,9 @@ export function EmailVerificationGate({ children }: { children: React.ReactNode 
         </p>
       )}
       <p className="mt-6 text-xs text-fg-muted">{t("verifyGate.spam")}</p>
-      <button onClick={() => void logout()} className="mt-8 inline-flex items-center gap-1.5 text-xs text-fg-secondary hover:text-fg">
-        <LogOut className="h-3.5 w-3.5" /> {t("verifyGate.signOut")}
-      </button>
+      <Button variant="ghost" size="sm" shape="rounded" onClick={() => void logout()} className="mt-8 text-xs">
+        <LogOut className="h-3.5 w-3.5" aria-hidden /> {t("verifyGate.signOut")}
+      </Button>
     </div>
   );
 }

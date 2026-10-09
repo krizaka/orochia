@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { money } from "@/lib/money";
+import { cn } from "@/components/ui";
 
 /**
  * Net earnings per month — one series, so one hue and no legend (the heading names it). Bars sit on the baseline with
@@ -37,7 +38,11 @@ export function MonthlyChart({ data, label }: { data: { month: string; netCents:
               className="group relative flex h-full flex-1 items-end justify-center focus-visible:outline-hidden"
             >
               <span
-                className={`block w-full max-w-[28px] rounded-t-[4px] bg-accent transition-opacity ${active === null || active === i ? "opacity-100" : "opacity-40"} group-focus-visible:ring-2 group-focus-visible:ring-ring`}
+                className={cn(
+                  "block w-full max-w-[28px] rounded-t-[4px] bg-accent transition-opacity",
+                  active === null || active === i ? "opacity-100" : "opacity-40",
+                  "group-focus-visible:ring-2 group-focus-visible:ring-ring"
+                )}
                 style={{ height: `${h}%` }}
               />
             </button>
@@ -46,7 +51,7 @@ export function MonthlyChart({ data, label }: { data: { month: string; netCents:
       </div>
       <div className="mt-1.5 flex gap-[2px] text-center text-[10px] text-fg-muted">
         {data.map((d, i) => (
-          <span key={d.month} className={`flex-1 ${i % 2 === 1 ? "invisible sm:visible" : ""}`}>
+          <span key={d.month} className={cn("flex-1", i % 2 === 1 ? "invisible sm:visible" : "")}>
             {monthName(d.month)}
           </span>
         ))}

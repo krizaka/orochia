@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Lock } from "lucide-react";
-import { Button, Segmented, Sheet } from "@/components/ui";
+import { Button, Input, Segmented, Select, Sheet, cn } from "@/components/ui";
 import { t, type MessageKey } from "@/lib/i18n";
 
 const METHODS = ["BANK_IBAN", "BANK_US", "BANK_CA", "PAYPAL", "CRYPTO_USDT_TRC20", "CRYPTO_BTC"] as const;
@@ -65,42 +65,42 @@ export function PayoutAccountSheet({ open, onClose, onSaved }: { open: boolean; 
       <div className="space-y-4">
         <label className="block">
           <span className={label}>{t("earnings.account.method")}</span>
-          <select value={method} onChange={(e) => setMethod(e.target.value as Method)} className={field}>
+          <Select value={method} onChange={(e) => setMethod(e.target.value as Method)} className={field}>
             {METHODS.map((m) => (
               <option key={m} value={m}>
                 {t(`earnings.account.methods.${m}`)}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_7rem]">
           <label className="block">
             <span className={label}>{t("earnings.account.holder")}</span>
-            <input value={holderName} onChange={(e) => setHolderName(e.target.value)} autoComplete="name" className={field} />
+            <Input value={holderName} onChange={(e) => setHolderName(e.target.value)} autoComplete="name" className={field} />
             <span className="mt-1 block text-[11px] text-fg-muted">{t("earnings.account.holderHint")}</span>
           </label>
           <label className="block">
             <span className={label}>{t("earnings.account.country")}</span>
-            <input
+            <Input
               value={country || DEFAULT_COUNTRY[method] || ""}
               onChange={(e) => setCountry(e.target.value.toUpperCase().slice(0, 2))}
               placeholder="FR"
               autoComplete="country"
               maxLength={2}
-              className={`${field} uppercase`}
+              className={cn(field, "uppercase")}
             />
           </label>
         </div>
         {FIELDS[method].map((f) => (
           <label key={f.key} className="block">
             <span className={label}>{t(`earnings.account.fields.${f.key}` as MessageKey)}</span>
-            <input
+            <Input
               value={details[f.key] ?? ""}
               onChange={(e) => setDetails({ ...details, [f.key]: e.target.value })}
               inputMode={f.inputMode}
               autoComplete={f.autoComplete ?? "off"}
               spellCheck={false}
-              className={`${field} font-mono`}
+              className={cn(field, "font-mono")}
             />
           </label>
         ))}

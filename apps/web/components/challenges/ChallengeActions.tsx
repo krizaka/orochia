@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Check, Clapperboard, Megaphone, PackageCheck, Play, Undo2, X } from "lucide-react";
-import { Button, ConfirmIconButton, Sheet, cn } from "@/components/ui";
+import { Button, cn, ConfirmIconButton, Sheet, Textarea } from "@/components/ui";
 import { money } from "@/lib/money";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
@@ -171,12 +171,12 @@ export function ChallengeActions({ c, onChanged }: { c: ChallengeView; onChanged
         <div className="space-y-2">
           <label className="block text-xs font-semibold text-fg-secondary">
             {t("challenge.actions.applyNote")}
-            <textarea
+            <Textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               maxLength={280}
               rows={2}
-              className="mt-1 w-full rounded-xl border border-border-default bg-surface-2 px-3 py-2 text-sm text-fg focus:border-accent focus:outline-hidden"
+              className="mt-1 rounded-xl px-3 py-2"
             />
           </label>
           <Button

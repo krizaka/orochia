@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Check, ListPlus, Plus } from "lucide-react";
-import { buttonVariants } from "@/components/ui";
+import { Button, buttonVariants, IconButton, Input } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { audienceOf, type CollectionVisibility } from "./CollectionAudience";
 import { useAuth } from "@/lib/auth-context";
@@ -77,9 +77,9 @@ export function SaveToPlaylist({ videoId }: { videoId: string }) {
 
   return (
     <div className="relative" ref={ref}>
-      <button className={button} onClick={() => setOpen((o) => !o)} aria-expanded={open}>
-        <ListPlus className="h-4 w-4" /> {t("collections.save")}
-      </button>
+      <Button size="sm" shape="rounded" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
+        <ListPlus className="h-4 w-4" aria-hidden /> {t("collections.save")}
+      </Button>
       {open && (
         <div className="absolute right-0 z-40 mt-2 w-72 rounded-2xl border border-border-default bg-surface-1/95 p-3 shadow-2xl backdrop-blur-xl">
           <p className="px-1 pb-2 text-[10px] font-bold uppercase tracking-widest text-fg-muted">{t("collections.saveTo")}</p>
@@ -91,7 +91,7 @@ export function SaveToPlaylist({ videoId }: { videoId: string }) {
                 key={p.id}
                 disabled={busy || saved.has(p.id)}
                 onClick={() => add(p.id)}
-                className="flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2 text-left text-xs text-fg hover:bg-white/5 disabled:opacity-70"
+                className="flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2 text-left text-xs text-fg hover:bg-surface-2 disabled:opacity-70"
               >
                 <span className="flex items-center gap-2 truncate">
                   {React.createElement(audienceOf(p.visibility).icon, { className: "h-3 w-3 shrink-0 text-fg-muted", "aria-label": audienceOf(p.visibility).label })}
@@ -102,17 +102,17 @@ export function SaveToPlaylist({ videoId }: { videoId: string }) {
             ))}
           </div>
           <form onSubmit={create} className="mt-2 flex gap-2 border-t border-border-subtle pt-3">
-            <input
+            <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               maxLength={120}
               placeholder={t("collections.newPlaceholder")}
               aria-label={t("collections.newPlaceholder")}
-              className="min-w-0 flex-1 rounded-xl border border-border-default bg-surface-2 px-3 py-2 text-xs text-fg placeholder:text-fg-muted focus:border-accent focus:outline-hidden"
+              className="h-9 min-w-0 flex-1 rounded-xl px-3 text-xs"
             />
-            <button disabled={busy || !title.trim()} className="rounded-xl bg-accent px-3 text-white disabled:opacity-40" aria-label={t("collections.create")}>
-              <Plus className="h-4 w-4" />
-            </button>
+            <IconButton type="submit" variant="primary" shape="rounded" disabled={busy || !title.trim()} className="h-9 w-9 rounded-xl" label={t("collections.create")}>
+              <Plus className="h-4 w-4" aria-hidden />
+            </IconButton>
           </form>
         </div>
       )}

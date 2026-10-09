@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Coins, Gavel, Landmark, Lock, ShieldCheck } from "lucide-react";
 import { t } from "@/lib/i18n";
+import { cn } from "@/components/ui";
 
 const SOURCES = [
   ["tips", Coins, "from-warning to-warning"],
@@ -36,10 +37,17 @@ export function CreatorsPreview({ share }: { share: number }) {
           {SOURCES.map(([key, Icon, tone], i) => (
             <li
               key={key}
-              className={`flex items-center gap-3 rounded-2xl border border-border-default bg-surface-2 p-3 ${seen ? "cp-in" : "opacity-0"}`}
+              className={cn(
+                "flex items-center gap-3 rounded-2xl border border-border-default bg-surface-2 p-3",
+                seen ? "cp-in" : "opacity-0"
+              )}
               style={{ animationDelay: `${i * 140}ms` }}
             >
-              <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br ${tone} text-white shadow-md`}>
+              <span className={cn(
+                "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br",
+                tone,
+                "text-white shadow-md"
+              )}>
                 <Icon className="h-4 w-4" aria-hidden />
               </span>
               <span className="min-w-0">
@@ -61,7 +69,10 @@ export function CreatorsPreview({ share }: { share: number }) {
             aria-label={t("home.creatorsPreview.split", { share })}
           >
             <span
-              className={`h-full rounded-full bg-linear-to-r from-success to-teal-400 ${seen ? "cp-grow" : "scale-x-0"}`}
+              className={cn(
+                "h-full rounded-full bg-linear-to-r from-success to-teal-400",
+                seen ? "cp-grow" : "scale-x-0"
+              )}
               style={{ width: `${share}%` }}
             />
           </div>

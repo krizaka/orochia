@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { BatteryFull, Clock, Coins, Flame, Gavel, PlayCircle, SignalHigh, Unlock, Wifi } from "lucide-react";
 import { t } from "@/lib/i18n";
 import { SCENES, SCENE_MS, SCENE_STYLES, Screen, type Scene } from "./showcase/Scenes";
+import { cn } from "@/components/ui";
 
 const ICONS: Record<Scene, typeof Coins> = { feed: PlayCircle, stories: Clock, tip: Coins, unlock: Unlock, auction: Gavel, challenge: Flame };
 
@@ -66,11 +67,12 @@ export function ProductShowcase({ share }: { share: number }) {
               role="tab"
               aria-selected={active}
               onClick={() => setIndex(i)}
-              className={`relative flex items-center justify-center gap-1.5 overflow-hidden rounded-xl border px-2.5 py-2 text-[11px] font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring sm:text-xs ${
+              className={cn(
+                "relative flex items-center justify-center gap-1.5 overflow-hidden rounded-xl border px-2.5 py-2 text-[11px] font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring sm:text-xs",
                 active
                   ? "border-border-strong bg-surface-3 text-fg"
                   : "border-border-default bg-surface-1/40 text-fg-secondary hover:text-fg"
-              }`}
+              )}
             >
               <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
               <span className="truncate">{t(`home.showcase.scenes.${s}`)}</span>

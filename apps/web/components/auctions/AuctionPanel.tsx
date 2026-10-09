@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, Clock, Download, Gavel, Info, Play, ShieldCheck, Sparkles, Timer, Trophy, Wallet, X } from "lucide-react";
-import { Button, Chip, cn, ConfirmIconButton, Countdown, LiveBadge, orochiaButton, Spinner } from "@/components/ui";
+import { Button, Chip, cn, ConfirmIconButton, Countdown, Input, LiveBadge, orochiaButton, Spinner } from "@/components/ui";
 import { money } from "@/lib/money";
 import { timeAgo } from "@/components/notifications/useNotifications";
 import { t, type MessageKey } from "@/lib/i18n";
@@ -177,14 +177,14 @@ export function AuctionPanel({
               <label className="relative min-w-0 flex-1">
                 <span className="sr-only">{t("auction.yourBid")}</span>
                 <span className="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-sm font-semibold text-fg-muted">$</span>
-                <input
+                <Input
                   inputMode="decimal"
                   type="number"
                   min={a.minimumNextBidCents / 100}
                   step="0.5"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="h-12 w-full rounded-xl border border-border-default bg-surface-2 pl-7 pr-3 font-mono text-base font-semibold tabular-nums text-fg focus:border-accent focus:outline-hidden"
+                  className="h-12 rounded-xl pl-7 pr-3 font-mono text-base font-semibold tabular-nums"
                 />
               </label>
               <Button

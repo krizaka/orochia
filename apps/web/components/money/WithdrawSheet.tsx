@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
-import { Button, Chip, Sheet } from "@/components/ui";
+import { Button, Chip, Input, Sheet } from "@/components/ui";
 import { money } from "@/lib/money";
 import { t } from "@/lib/i18n";
 
@@ -62,13 +62,13 @@ export function WithdrawSheet({ open, onClose, availableCents, destinationHint, 
             <span className="mb-1.5 block text-xs font-semibold text-fg-secondary">{t("earnings.request.amount")}</span>
             <span className="flex items-center rounded-2xl border border-border-default bg-surface-2 px-4 focus-within:border-accent">
               <span className="font-display text-2xl font-black text-fg-muted">$</span>
-              <input
+              <Input
                 value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^\d.,]/g, ""))}
                 inputMode="decimal"
                 placeholder="0.00"
                 aria-describedby="withdraw-hint"
-                className="w-full bg-transparent px-2 py-3 font-display text-2xl font-black text-fg outline-hidden"
+                className="bg-transparent px-2 py-3 font-display text-2xl font-black outline-hidden"
               />
             </span>
             <span id="withdraw-hint" className="mt-1 block text-[11px] text-fg-muted">{t("earnings.request.min")}</span>

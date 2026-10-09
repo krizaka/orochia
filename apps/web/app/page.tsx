@@ -16,7 +16,7 @@ import { HeroWall } from "@/components/home/HeroWall";
 import { ProductShowcase } from "@/components/home/ProductShowcase";
 import { CreatorsPreview } from "@/components/home/CreatorsPreview";
 import { AuctionsExplainer } from "@/components/home/AuctionsExplainer";
-import { RotatingWord } from "@/components/ui";
+import { RotatingWord, cn } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 export const metadata = { alternates: { canonical: "/" } };
@@ -131,8 +131,8 @@ export default async function HomePage() {
                 ["support", HeartHandshake, "text-success bg-success/15"],
               ] as const
             ).map(([key, Icon, tone], i) => (
-              <div key={key} data-reveal style={{ ["--kz-delay" as string]: `${i * 90}ms` }} className={`kz-spotlight kz-lift overflow-hidden rounded-3xl p-6 ${surface}`}>
-                <div className={`mb-4 flex h-11 w-11 items-center justify-center rounded-2xl ${tone}`}>
+              <div key={key} data-reveal style={{ ["--kz-delay" as string]: `${i * 90}ms` }} className={cn("kz-spotlight kz-lift overflow-hidden rounded-3xl p-6", surface)}>
+                <div className={cn("mb-4 flex h-11 w-11 items-center justify-center rounded-2xl", tone)}>
                   <Icon className="h-5 w-5" />
                 </div>
                 <h3 className="text-base font-bold text-fg">{t(`home.why.${key}.title`)}</h3>
@@ -179,7 +179,10 @@ export default async function HomePage() {
             ))}
           </div>
         ) : (
-          <div data-reveal className={`kz-spotlight flex flex-col items-start justify-between gap-4 rounded-3xl p-6 sm:flex-row sm:items-center sm:p-8 ${surface}`}>
+          <div data-reveal className={cn(
+            "kz-spotlight flex flex-col items-start justify-between gap-4 rounded-3xl p-6 sm:flex-row sm:items-center sm:p-8",
+            surface
+          )}>
             <div className="max-w-2xl">
               <p className="font-display text-lg font-black text-fg">{t("home.challenges.pitch")}</p>
               <p className="mt-1 text-sm text-fg-secondary">{t("home.challenges.body")}</p>
@@ -199,7 +202,10 @@ export default async function HomePage() {
       {featured && (() => {
         const feat = featured;
         return (
-          <section data-reveal className={`kz-spotlight mb-12 flex flex-col items-center gap-6 overflow-hidden rounded-3xl p-6 text-center sm:flex-row sm:p-8 sm:text-left ${surface}`}>
+          <section data-reveal className={cn(
+            "kz-spotlight mb-12 flex flex-col items-center gap-6 overflow-hidden rounded-3xl p-6 text-center sm:flex-row sm:p-8 sm:text-left",
+            surface
+          )}>
             <img src={feat.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-24 w-24 shrink-0 rounded-2xl border-2 border-accent/60 object-cover shadow-xl" />
             <div className="min-w-0 flex-1">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-accent">{t("home.featured")}</p>

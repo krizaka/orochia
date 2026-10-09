@@ -27,6 +27,7 @@ import {
   ListChecks,
   Sparkles,
 } from "lucide-react";
+import { cn } from "@/components/ui";
 
 interface LibraryEntry {
   id: string;
@@ -101,11 +102,12 @@ function TabButton({ tab, active, icon: Icon, children }: {
       href={tab === "overview" ? "/dashboard" : `/dashboard?tab=${tab}`}
       scroll={false}
       aria-current={active === tab ? "page" : undefined}
-      className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 transition-all ${
+      className={cn(
+        "flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 transition-all",
         active === tab
           ? "bg-accent text-white shadow-md shadow-accent/25"
           : "text-fg-secondary hover:bg-surface-2 hover:text-fg"
-      }`}
+      )}
     >
       <Icon className="h-3.5 w-3.5" />
       <span>{children}</span>
@@ -138,7 +140,10 @@ function LedgerTable({ lines, isCreator }: { lines: LedgerLine[]; isCreator: boo
               <td className="py-2.5 pr-4">{tx.entryType.replace(/_/g, " ").toLowerCase()}</td>
               <td className="py-2.5 pr-4">{tx.counterparty}</td>
               <td className="py-2.5 pr-4 text-fg-secondary">{tx.gateway}</td>
-              <td className={`py-2.5 text-right font-mono font-bold ${tx.amountCents < 0 ? "text-danger" : "text-success"}`}>
+              <td className={cn(
+                "py-2.5 text-right font-mono font-bold",
+                tx.amountCents < 0 ? "text-danger" : "text-success"
+              )}>
                 {money(tx.amountCents)}
               </td>
             </tr>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AtSign, Bell, CheckCircle2, Coins, Flame, Gavel, Megaphone, MessageCircle, MessageSquare, PlayCircle, Target, Trophy, Undo2, Unlock, UserPlus } from "lucide-react";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { type NotificationItem, timeAgo } from "./useNotifications";
+import { Avatar, cn } from "@/components/ui";
 
 const ICONS: Record<string, { icon: React.ElementType; tone: string }> = {
   newFollower: { icon: UserPlus, tone: "bg-accent" },
@@ -43,22 +44,33 @@ export function NotificationRow({ n, onOpen, compact = false }: { n: Notificatio
     <Link
       href={n.path}
       onClick={onOpen}
-      className={`group flex items-start gap-3 rounded-xl transition-colors hover:bg-surface-2 ${compact ? "p-2.5" : "p-3.5"} ${n.readAt ? "" : "bg-accent/[0.07]"}`}
+      className={cn(
+        "group flex items-start gap-3 rounded-xl transition-colors hover:bg-surface-2",
+        compact ? "p-2.5" : "p-3.5",
+        n.readAt ? "" : "bg-accent/[0.07]"
+      )}
     >
       <span className="relative shrink-0">
         {n.actorAvatar !== undefined && n.actorAvatar !== null ? (
-          <img src={n.actorAvatar || AVATAR_PLACEHOLDER} alt="" className="h-10 w-10 rounded-full object-cover" />
+          <Avatar src={n.actorAvatar || AVATAR_PLACEHOLDER} fallback={<Icon className="h-4 w-4" aria-hidden />} />
         ) : (
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-surface-3">
             <Icon className="h-4 w-4 text-fg" />
           </span>
         )}
-        <span className={`absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full ${tone} ring-2 ring-border-subtle`}>
+        <span className={cn(
+          "absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full",
+          tone,
+          "ring-2 ring-border-subtle"
+        )}>
           <Icon className="h-2.5 w-2.5 text-white" />
         </span>
       </span>
       <span className="min-w-0 flex-1">
-        <span className={`block text-sm leading-snug ${n.readAt ? "text-fg-secondary" : "font-semibold text-fg"}`}>{n.text}</span>
+        <span className={cn(
+          "block text-sm leading-snug",
+          n.readAt ? "text-fg-secondary" : "font-semibold text-fg"
+        )}>{n.text}</span>
         <span className="mt-0.5 block text-[11px] text-fg-muted">{timeAgo(n.createdAt)}</span>
       </span>
       {!n.readAt && <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-accent" aria-hidden />}

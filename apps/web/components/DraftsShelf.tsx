@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Clapperboard, Music2, Trash2 } from "lucide-react";
-import { Spinner } from "@/components/ui";
+import { Button, cn, Spinner } from "@/components/ui";
 import { type DraftKind, type DraftSummary, type OpenedDraft, deleteDraft, listDrafts, openDraft } from "@/lib/drafts";
 import { t } from "@/lib/i18n";
 
@@ -93,16 +93,16 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
                   </span>
                 )}
               </button>
-              <button
-                type="button"
+              <Button
+                variant={confirming === d.id ? "danger" : "ghost"}
+                size="sm"
+                shape="rounded"
                 onClick={() => void remove(d.id)}
                 onBlur={() => setConfirming(null)}
-                className={`mt-1.5 flex w-full items-center justify-center gap-1 rounded-lg py-1 text-[11px] font-semibold ${
-                  confirming === d.id ? "bg-danger text-white" : "text-fg-secondary hover:text-danger"
-                }`}
+                className={cn("mt-1.5 h-7 w-full gap-1 text-[11px]", confirming !== d.id && "hover:bg-transparent hover:text-danger")}
               >
-                <Trash2 className="h-3 w-3" /> {confirming === d.id ? t("editor.drafts.deleteConfirm") : t("editor.drafts.delete")}
-              </button>
+                <Trash2 className="h-3 w-3" aria-hidden /> {confirming === d.id ? t("editor.drafts.deleteConfirm") : t("editor.drafts.delete")}
+              </Button>
             </li>
           );
         })}

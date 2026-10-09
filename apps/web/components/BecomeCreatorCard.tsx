@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Sparkles } from "lucide-react";
-import { Spinner } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 
@@ -28,14 +28,9 @@ export function BecomeCreatorCard() {
       </div>
       <h1 className="font-display text-2xl font-bold text-fg">{t("auth.becomeCreator.title")}</h1>
       <p className="mt-2 text-sm text-fg-secondary">{t("auth.becomeCreator.body")}</p>
-      <button
-        onClick={become}
-        disabled={state === "working"}
-        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-accent to-accent-2 px-6 py-3 text-sm font-bold text-white disabled:opacity-60"
-      >
-        {state === "working" && <Spinner size="sm" className="text-current" />}
+      <Button variant="sensual" size="lg" shape="rounded" onClick={become} loading={state === "working"} className="mt-6 rounded-xl px-6 font-bold">
         {state === "working" ? t("auth.becomeCreator.working") : t("auth.becomeCreator.cta")}
-      </button>
+      </Button>
       {state === "error" && <p role="alert" className="mt-3 text-xs text-danger">{t("auth.becomeCreator.failed")}</p>}
     </div>
   );

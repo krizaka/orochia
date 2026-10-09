@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X, Users, Tv, Hash, Lock, CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
-import { Spinner } from "@/components/ui";
+import { Spinner, cn } from "@/components/ui";
 import Link from "next/link";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
@@ -156,11 +156,12 @@ export function GlobalSearchModal({
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`rounded-lg px-3 py-1 font-semibold capitalize transition-all ${
+              className={cn(
+                "rounded-lg px-3 py-1 font-semibold capitalize transition-all",
                 activeTab === tab
                   ? "bg-accent text-white shadow-xs"
                   : "text-fg-secondary hover:text-fg"
-              }`}
+              )}
             >
               {t(`search.tabs.${tab}`)}
             </button>

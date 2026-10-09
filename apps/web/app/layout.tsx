@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { ClientLayoutShell } from "@/components/ClientLayoutShell";
-import { MotionObserver, ThemeProvider, ThemeScript } from "@/components/ui";
+import { MotionObserver, ThemeProvider, ThemeScript, cn } from "@/components/ui";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AuthProvider } from "@/lib/auth-context";
 import { JsonLd } from "@/components/JsonLd";
@@ -56,7 +56,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${outfit.variable} ${jakarta.variable} overflow-x-hidden max-w-full w-full`}>
+    <html lang="en" suppressHydrationWarning className={cn(outfit.variable, jakarta.variable, "overflow-x-hidden max-w-full w-full")}>
       <head>
         {/* Applies the persisted theme (`kz-theme`: dark · light · system) before the first paint: no flash. */}
         <ThemeScript />

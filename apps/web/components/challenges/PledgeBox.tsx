@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Coins, Lock, Wallet } from "lucide-react";
-import { Button, Chip, orochiaButton } from "@/components/ui";
+import { Button, Chip, Input, orochiaButton } from "@/components/ui";
 import { money } from "@/lib/money";
 import { t, type MessageKey } from "@/lib/i18n";
 import type { ChallengeView } from "@/lib/challenges";
@@ -81,7 +81,7 @@ export function PledgeBox({ c, onPledged }: { c: ChallengeView; onPledged: (bala
         ))}
         <span className="relative">
           <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-xs font-semibold text-fg-muted">$</span>
-          <input
+          <Input
             value={custom}
             onChange={(e) => setCustom(e.target.value)}
             type="number"
@@ -89,7 +89,7 @@ export function PledgeBox({ c, onPledged }: { c: ChallengeView; onPledged: (bala
             min={1}
             aria-label={t("challenge.pledge.custom")}
             placeholder={t("challenge.pledge.custom")}
-            className="w-28 rounded-full border border-border-default bg-transparent py-1.5 pl-6 pr-3 font-mono text-xs text-fg placeholder:text-fg-muted focus:border-accent focus:outline-hidden"
+            className="w-28 rounded-full bg-transparent py-1.5 pl-6 pr-3 font-mono text-xs"
           />
         </span>
       </div>

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Camera, ImagePlus, Palette, Trash2 } from "lucide-react";
-import { Spinner } from "@/components/ui";
+import { Spinner, cn } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 interface Preset {
@@ -81,7 +81,7 @@ export function PictureQuickEdit({
   const item = "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-fg hover:bg-surface-3";
 
   return (
-    <div ref={menu} className={`z-20 ${className}`}>
+    <div ref={menu} className={cn("z-20", className)}>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -89,16 +89,21 @@ export function PictureQuickEdit({
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={t(isAvatar ? "settings.pictures.editAvatar" : "settings.pictures.editBanner")}
-        className={`flex items-center gap-1.5 rounded-full bg-scrim text-fg-on-media shadow-lg ring-1 ring-white/20 backdrop-blur-md transition-all hover:bg-black/80 focus-visible:opacity-100 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 ${
-          open ? "opacity-100!" : ""
-        } ${isAvatar ? "h-9 w-9 justify-center" : "px-3.5 py-2 text-xs font-semibold"}`}
+        className={cn(
+          "flex items-center gap-1.5 rounded-full bg-scrim text-fg-on-media shadow-lg ring-1 ring-white/20 backdrop-blur-md transition-all hover:bg-black/80 focus-visible:opacity-100 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100",
+          open ? "opacity-100!" : "",
+          isAvatar ? "h-9 w-9 justify-center" : "px-3.5 py-2 text-xs font-semibold"
+        )}
       >
         {busy ? <Spinner size="sm" className="text-current" /> : <Camera className="h-4 w-4" />}
         {!isAvatar && <span>{hasPicture ? t("settings.pictures.editBanner") : t("settings.pictures.add")}</span>}
       </button>
 
       {open && (
-        <div role="menu" className={`kz-pop absolute mt-2 w-56 rounded-2xl border border-border-default bg-surface-2/95 p-1.5 shadow-2xl backdrop-blur-xl ${isAvatar ? "left-0" : "right-0"}`}>
+        <div role="menu" className={cn(
+          "kz-pop absolute mt-2 w-56 rounded-2xl border border-border-default bg-surface-2/95 p-1.5 shadow-2xl backdrop-blur-xl",
+          isAvatar ? "left-0" : "right-0"
+        )}>
           <button role="menuitem" type="button" className={item} onClick={() => { setOpen(false); input.current?.click(); }}>
             <ImagePlus className="h-4 w-4 text-accent" /> {t("settings.pictures.upload")}
           </button>
@@ -106,7 +111,7 @@ export function PictureQuickEdit({
             <Palette className="h-4 w-4 text-accent" /> {t("settings.pictures.choose")}
           </button>
           {hasPicture && (
-            <button role="menuitem" type="button" className={`${item} text-danger`} onClick={() => { setOpen(false); void save(null, null); }}>
+            <button role="menuitem" type="button" className={cn(item, "text-danger")} onClick={() => { setOpen(false); void save(null, null); }}>
               <Trash2 className="h-4 w-4" /> {t("settings.pictures.remove")}
             </button>
           )}
@@ -119,9 +124,15 @@ export function PictureQuickEdit({
         <div className="fixed inset-0 z-70 flex items-end justify-center bg-scrim-strong backdrop-blur-xs kz-overlay sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label={t("settings.pictures.presetsTitle")} onClick={() => setChoosing(false)}>
           <div className="w-full max-w-lg rounded-t-3xl border border-border-default bg-surface-1 p-5 shadow-2xl sm:rounded-3xl" onClick={(e) => e.stopPropagation()}>
             <h4 className="mb-4 text-sm font-bold text-fg">{t("settings.pictures.presetsTitle")}</h4>
-            <div className={`grid max-h-[60vh] gap-3 overflow-y-auto p-1 ${isAvatar ? "grid-cols-4" : "grid-cols-2"}`}>
+            <div className={cn(
+              "grid max-h-[60vh] gap-3 overflow-y-auto p-1",
+              isAvatar ? "grid-cols-4" : "grid-cols-2"
+            )}>
               {presets.length === 0
-                ? Array.from({ length: isAvatar ? 8 : 6 }, (_, i) => <span key={i} className={`animate-pulse rounded-2xl bg-white/5 ${isAvatar ? "aspect-square" : "aspect-3/1"}`} />)
+                ? Array.from({ length: isAvatar ? 8 : 6 }, (_, i) => <span key={i} className={cn(
+                "animate-pulse rounded-2xl bg-white/5",
+                isAvatar ? "aspect-square" : "aspect-3/1"
+              )} />)
                 : presets.map((p) => (
                     <button
                       key={p.id}
@@ -129,7 +140,7 @@ export function PictureQuickEdit({
                       onClick={() => { setChoosing(false); void save(p.id, p.url); }}
                       className="overflow-hidden rounded-2xl ring-2 ring-transparent transition-all hover:scale-[1.03] hover:ring-ring"
                     >
-                      <img src={p.url} alt={p.name} className={`w-full object-cover ${isAvatar ? "aspect-square" : "aspect-3/1"}`} />
+                      <img src={p.url} alt={p.name} className={cn("w-full object-cover", isAvatar ? "aspect-square" : "aspect-3/1")} />
                     </button>
                   ))}
             </div>

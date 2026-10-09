@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { ListChecks, UserPlus, X } from "lucide-react";
 import { t } from "@/lib/i18n";
+import { Button, IconButton, Input, Select } from "@/components/ui";
 
 interface Person {
   userId: string;
@@ -66,26 +67,27 @@ export function AudienceEditor({ endpoint, onChange }: { endpoint: string; onCha
         }}
         className="flex gap-2"
       >
-        <input
+        <Input
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           maxLength={51}
           placeholder={t("audience.usernamePlaceholder")}
           aria-label={t("audience.usernameLabel")}
-          className="min-w-0 flex-1 rounded-xl border border-border-default bg-surface-2/80 px-3 py-2 text-xs text-fg placeholder:text-fg-muted focus:border-accent focus:outline-hidden"
+          className="h-9 min-w-0 flex-1 rounded-xl bg-surface-2/80 px-3 text-xs"
         />
-        <button disabled={busy || !username.trim()} className="inline-flex items-center gap-1.5 rounded-xl bg-accent px-3 text-xs font-bold text-white transition-colors hover:bg-accent-hover focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-40">
-          <UserPlus className="h-3.5 w-3.5" /> {t("audience.invite")}
-        </button>
+        <Button type="submit" variant="primary" size="sm" shape="rounded" disabled={busy || !username.trim()} className="h-9 rounded-xl font-bold">
+          <UserPlus className="h-3.5 w-3.5" aria-hidden /> {t("audience.invite")}
+        </Button>
       </form>
 
       <div className="flex flex-wrap items-center gap-2">
-        <select
+        <span className="w-auto">
+        <Select
           value=""
           disabled={busy || available.length === 0}
           onChange={(e) => e.target.value && void call(endpoint, "POST", { listId: e.target.value })}
           aria-label={t("audience.listLabel")}
-          className="rounded-xl border border-border-default bg-surface-2 px-3 py-2 text-xs text-fg focus:border-accent focus:outline-hidden disabled:opacity-50"
+          className="h-9 rounded-xl pl-3 text-xs"
         >
           <option value="">{myLists.length === 0 ? t("audience.noList") : available.length === 0 ? t("audience.allAdded") : t("audience.addList")}</option>
           {available.map((l) => (
@@ -93,7 +95,8 @@ export function AudienceEditor({ endpoint, onChange }: { endpoint: string; onCha
               {l.name} ({l.membersCount})
             </option>
           ))}
-        </select>
+        </Select>
+        </span>
         <Link href="/dashboard?tab=lists" className="text-[11px] font-semibold text-accent underline-offset-2 hover:underline">
           {t("audience.manage")}
         </Link>
@@ -109,17 +112,17 @@ export function AudienceEditor({ endpoint, onChange }: { endpoint: string; onCha
           {attached.map((l) => (
             <li key={l.id} className="inline-flex items-center gap-1 rounded-full bg-accent/15 py-1 pl-3 pr-1 text-[11px] text-accent">
               <ListChecks className="h-3 w-3" aria-hidden /> {l.name} · {l.membersCount}
-              <button disabled={busy} onClick={() => call(`${endpoint}?listId=${l.id}`, "DELETE")} className="rounded-full p-0.5 hover:text-danger" aria-label={t("audience.removeList", { name: l.name })}>
-                <X className="h-3 w-3" />
-              </button>
+              <IconButton disabled={busy} onClick={() => call(`${endpoint}?listId=${l.id}`, "DELETE")} className="h-5 w-5 text-current hover:bg-transparent hover:text-danger" label={t("audience.removeList", { name: l.name })}>
+                <X className="h-3 w-3" aria-hidden />
+              </IconButton>
             </li>
           ))}
           {people?.map((p) => (
             <li key={p.userId} className="inline-flex items-center gap-1 rounded-full bg-surface-2 py-1 pl-3 pr-1 text-[11px] text-fg">
               @{p.username}
-              <button disabled={busy} onClick={() => call(`${endpoint}?userId=${p.userId}`, "DELETE")} className="rounded-full p-0.5 text-fg-secondary hover:text-danger" aria-label={t("audience.withdraw", { username: p.username })}>
-                <X className="h-3 w-3" />
-              </button>
+              <IconButton disabled={busy} onClick={() => call(`${endpoint}?userId=${p.userId}`, "DELETE")} className="h-5 w-5 hover:bg-transparent hover:text-danger" label={t("audience.withdraw", { username: p.username })}>
+                <X className="h-3 w-3" aria-hidden />
+              </IconButton>
             </li>
           ))}
         </ul>

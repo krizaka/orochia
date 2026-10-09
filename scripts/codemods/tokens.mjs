@@ -1,6 +1,9 @@
 // jscodeshift transform — Orochia web onto the Krizaka platform (study §2.12, "Codemods"). Run once per file set:
 //
-//   npx jscodeshift@17 --parser=tsx --extensions=tsx -t scripts/codemods/tokens.mjs apps/web/app apps/web/components
+//   npx jscodeshift@17 --parser=tsx --extensions=tsx -t scripts/codemods/tokens.mjs apps/web/app apps/web/components --kit2
+//
+// Steps 1, 3 and 5 are idempotent. Steps 2 and 4 read the 2.x kit API (`primary` was the gradient) and run only with
+// `--kit2`, once: run again, they would turn a 3.x `variant="primary"` into the gradient.
 //
 // 1. Every class string (string literals, template literal pieces) → the roles of @krizaka/tailwind (class-roles.mjs).
 // 2. `buttonClass({ variant, size, round, className })` → `buttonVariants({ variant, size, shape, className })`, the
@@ -8,6 +11,7 @@
 // 3. `cx(` → `cn(`.
 // 4. `<Button>` of the app's door: `round={false}` → `shape="rounded"` (pill is the door's default), `icon={…}` → first
 //    child (@krizaka/ui has no icon prop), `variant="primary"` (the 2.x gradient) → `variant="sensual"`.
+// 5. className={`a ${b}`} → className={cn("a", b)} (the fourth UI rule: no template string in className).
 // The rest of the migration (hand-rolled buttons, fields, pills, avatars) is done by hand.
 import { rewriteClasses } from "./class-roles.mjs";
 
@@ -15,7 +19,7 @@ const DOOR = "@/components/ui";
 
 export const parser = "tsx";
 
-export default function transform(file, api) {
+export default function transform(file, api, options = {}) {
   const j = api.jscodeshift;
   const root = j(file.source);
   let changed = false;
@@ -45,7 +49,7 @@ export default function transform(file, api) {
   const need = new Set();
 
   // 2. buttonClass(…) → buttonVariants(…) / orochiaButton(…).
-  if (imported.has("buttonClass")) {
+  if (options.kit2 && imported.has("buttonClass")) {
     root.find(j.CallExpression, { callee: { type: "Identifier", name: "buttonClass" } }).forEach((path) => {
       const [arg] = path.node.arguments;
       const props = arg && arg.type === "ObjectExpression" ? arg.properties : [];
@@ -78,7 +82,7 @@ export default function transform(file, api) {
   }
 
   // 4. <Button> of the door.
-  if (imported.has("Button")) {
+  if (options.kit2 && imported.has("Button")) {
     root.findJSXElements("Button").forEach((path) => {
       const opening = path.node.openingElement;
       let icon = null;
@@ -112,8 +116,30 @@ export default function transform(file, api) {
     });
   }
 
+  // 5. className={`a ${b} c`} → className={cn("a", b, "c")}: cn merges, so the override wins (no template strings).
+  root
+    .find(j.JSXAttribute, { name: { name: "className" } })
+    .filter((path) => path.node.value && path.node.value.type === "JSXExpressionContainer" && path.node.value.expression.type === "TemplateLiteral")
+    .forEach((path) => {
+      const tpl = path.node.value.expression;
+      const args = [];
+      tpl.quasis.forEach((quasi, i) => {
+        const text = quasi.value.cooked.trim().replace(/\s+/g, " ");
+        if (text) args.push(j.stringLiteral(text));
+        if (i < tpl.expressions.length) args.push(tpl.expressions[i]);
+      });
+      path.node.value = j.jsxExpressionContainer(j.callExpression(j.identifier("cn"), args));
+      need.add("cn");
+      changed = true;
+    });
+
   // Imports from the door: drop what is no longer used, add what the rewrite needs.
-  if (need.size > 0) {
+  if (need.size > 0 && doorImports.size() === 0) {
+    const program = root.find(j.Program).get();
+    const body = program.node.body;
+    const lastImport = body.map((n) => n.type).lastIndexOf("ImportDeclaration");
+    body.splice(lastImport + 1, 0, j.importDeclaration([...need].map((name) => j.importSpecifier(j.identifier(name))), j.stringLiteral(DOOR)));
+  } else if (need.size > 0) {
     doorImports.forEach((path) => {
       const names = new Set(path.node.specifiers.map((s) => s.imported && s.imported.name));
       path.node.specifiers = path.node.specifiers.filter((s) => {

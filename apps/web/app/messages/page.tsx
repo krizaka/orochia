@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { t } from "@/lib/i18n";
-import { Avatar, Button, IconButton, Input, Spinner } from "@/components/ui";
+import { Avatar, Button, IconButton, Input, Spinner, cn } from "@/components/ui";
 
 interface OtherUser {
   id: string;
@@ -321,9 +321,10 @@ function MessagesContent() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[720px] rounded-3xl border border-border-default bg-surface-1/80 backdrop-blur-xl shadow-2xl overflow-hidden">
         {/* Left Column: Conversations Sidebar */}
         <aside
-          className={`lg:col-span-4 border-r border-border-default flex flex-col h-full ${
+          className={cn(
+            "lg:col-span-4 border-r border-border-default flex flex-col h-full",
             activeConversation ? "hidden lg:flex" : "flex"
-          }`}
+          )}
         >
           {/* Search / Start New Chat */}
           <div className="p-4 border-b border-border-default">
@@ -377,11 +378,12 @@ function MessagesContent() {
                   <button
                     key={conv.id}
                     onClick={() => setActiveConversation(conv)}
-                    className={`w-full text-left p-4 flex items-center gap-3 transition-colors ${
+                    className={cn(
+                      "w-full text-left p-4 flex items-center gap-3 transition-colors",
                       isSelected
                         ? "bg-accent/15 border-l-2 border-accent"
                         : "hover:bg-surface-2/50"
-                    }`}
+                    )}
                   >
                     <div className="relative shrink-0">
                       <Avatar
@@ -410,11 +412,9 @@ function MessagesContent() {
                         )}
                       </div>
                       <p
-                        className={`text-[11px] truncate ${
-                          hasUnread
-                            ? "text-fg font-semibold"
-                            : "text-fg-secondary"
-                        }`}
+                        className={cn("text-[11px] truncate", hasUnread
+                          ? "text-fg font-semibold"
+                          : "text-fg-secondary")}
                       >
                         {conv.lastMessage?.content || t("inbox.noMessages")}
                       </p>
@@ -429,9 +429,10 @@ function MessagesContent() {
         {/* Right Column: Chat Thread */}
         <section
           aria-label={t("inbox.thread")}
-          className={`lg:col-span-8 flex flex-col h-full ${
+          className={cn(
+            "lg:col-span-8 flex flex-col h-full",
             !activeConversation ? "hidden lg:flex" : "flex"
-          }`}
+          )}
         >
           {activeConversation ? (
             <>
@@ -524,14 +525,12 @@ function MessagesContent() {
                     return (
                       <div
                         key={msg.id}
-                        className={`flex flex-col ${isMine ? "items-end" : "items-start"}`}
+                        className={cn("flex flex-col", isMine ? "items-end" : "items-start")}
                       >
                         <div
-                          className={`max-w-[75%] px-4 py-2.5 text-xs rounded-2xl ${
-                            isMine
-                              ? "bg-linear-to-tr from-accent to-accent-2 text-white rounded-br-sm shadow-md"
-                              : "bg-surface-2 border border-border-default text-fg rounded-bl-sm"
-                          }`}
+                          className={cn("max-w-[75%] px-4 py-2.5 text-xs rounded-2xl", isMine
+                            ? "bg-linear-to-tr from-accent to-accent-2 text-white rounded-br-sm shadow-md"
+                            : "bg-surface-2 border border-border-default text-fg rounded-bl-sm")}
                         >
                           <p className="leading-relaxed whitespace-pre-wrap wrap-break-word">{msg.content}</p>
                         </div>

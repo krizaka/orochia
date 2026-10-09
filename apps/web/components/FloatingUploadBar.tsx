@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useUploadManager, type UploadItem } from "@/lib/upload-manager";
 import { t } from "@/lib/i18n";
+import { cn } from "@/components/ui";
 
 function formatBytes(bytes: number): string {
   if (bytes <= 0) return "0 B";
@@ -182,15 +183,13 @@ export function FloatingUploadBar() {
             {/* Progress Bar */}
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-3 mb-2">
               <div
-                className={`h-full transition-all duration-300 ${
-                  item.status === "completed"
-                    ? "bg-success"
-                    : item.status === "error"
-                    ? "bg-danger"
-                    : item.status === "paused"
-                    ? "bg-warning"
-                    : "bg-linear-to-r from-accent via-accent-2 to-accent-2"
-                }`}
+                className={cn("h-full transition-all duration-300", item.status === "completed"
+                  ? "bg-success"
+                  : item.status === "error"
+                  ? "bg-danger"
+                  : item.status === "paused"
+                  ? "bg-warning"
+                  : "bg-linear-to-r from-accent via-accent-2 to-accent-2")}
                 style={{ width: `${item.progress}%` }}
               />
             </div>

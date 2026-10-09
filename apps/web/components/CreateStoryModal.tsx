@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as tus from "tus-js-client";
 import { CheckCircle2, Image as ImageIcon, Scissors, Sparkles, UploadCloud, X } from "lucide-react";
-import { Spinner } from "@/components/ui";
+import { Select, Spinner, Textarea, cn } from "@/components/ui";
 import { VideoEditor } from "@/components/VideoEditor";
 import { DraftsShelf } from "@/components/DraftsShelf";
 import { UPLOAD_LIMITS } from "@orochia/media/limits";
@@ -287,13 +287,13 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
 
             <label className="block text-xs font-semibold uppercase tracking-wider text-fg-secondary">
               {t("stories.create.caption")} <span className="normal-case tracking-normal text-fg-muted">— {t("common.optional")}</span>
-              <textarea
+              <Textarea
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
                 maxLength={280}
                 rows={2}
                 placeholder={t("stories.create.captionPlaceholder")}
-                className="mt-1.5 w-full resize-none rounded-xl border border-border-default bg-surface-2 px-3.5 py-2.5 text-sm normal-case tracking-normal text-fg focus:border-accent focus:outline-hidden"
+                className="mt-1.5 resize-none rounded-xl px-3.5 py-2.5 normal-case tracking-normal"
               />
             </label>
 
@@ -306,9 +306,10 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
                     type="button"
                     onClick={() => setAudience(a)}
                     aria-pressed={audience === a}
-                    className={`rounded-xl border px-3 py-2.5 text-xs font-semibold ${
+                    className={cn(
+                      "rounded-xl border px-3 py-2.5 text-xs font-semibold",
                       audience === a ? "border-accent bg-accent/15 text-accent" : "border-border-default text-fg-secondary"
-                    }`}
+                    )}
                   >
                     {t(`stories.create.audiences.${a}`)}
                   </button>
@@ -318,11 +319,11 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
                 (lists.length === 0 ? (
                   <p className="mt-2 text-xs text-fg-muted">{t("stories.create.noList")}</p>
                 ) : (
-                  <select
+                  <Select
                     value={listId}
                     onChange={(e) => setListId(e.target.value)}
                     aria-label={t("stories.create.list")}
-                    className="mt-2 w-full rounded-xl border border-border-default bg-surface-2 px-3 py-2.5 text-sm text-fg"
+                    className="mt-2 rounded-xl px-3 py-2.5"
                   >
                     <option value="">{t("stories.create.list")}…</option>
                     {lists.map((l) => (
@@ -330,27 +331,27 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
                         {l.name} ({l.membersCount})
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 ))}
             </fieldset>
 
             <div className="rounded-xl border border-border-default bg-surface-2/50 p-3 space-y-2.5">
               <label className="block">
                 <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-fg-secondary">{t("stories.create.rating")}</span>
-                <select
+                <Select
                   value={ratingId}
                   onChange={(e) => {
                     setRatingId(e.target.value);
                     if (ratings.find((r) => r.id === e.target.value)?.requiresBlur) setIsBlurred(true);
                   }}
-                  className="w-full rounded-xl border border-border-default bg-surface-2 px-3 py-2 text-xs text-fg"
+                  className="rounded-xl px-3 py-2 text-xs"
                 >
                   {ratings.map((r) => (
                     <option key={r.id} value={r.id}>
                       {r.label}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
 
               <label className="flex items-center gap-2.5 cursor-pointer">

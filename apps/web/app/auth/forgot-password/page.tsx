@@ -62,7 +62,7 @@ export default function ForgotPasswordPage() {
               </div>
             </label>
             {error && <p role="alert" className="text-xs text-danger">{error}</p>}
-            <Button type="submit" variant="sensual" size="lg" shape="rounded" loading={state === "sending"} className="w-full rounded-xl font-bold">
+            <Button type="submit" variant="primary" size="lg" shape="rounded" loading={state === "sending"} className="w-full rounded-xl font-bold">
               {t("auth.forgot.submit")}
             </Button>
           </form>

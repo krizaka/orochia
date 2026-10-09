@@ -148,7 +148,10 @@ export function ListsPanel() {
             <li key={l.id} className="py-3.5">
               <div className="flex items-center justify-between gap-3">
                 <button onClick={() => setOpen(open === l.id ? null : l.id)} className="flex min-w-0 items-center gap-2 text-left" aria-expanded={open === l.id}>
-                  <ChevronDown className={`h-4 w-4 shrink-0 text-fg-muted transition-transform ${open === l.id ? "rotate-180" : ""}`} />
+                  <ChevronDown className={cn(
+                    "h-4 w-4 shrink-0 text-fg-muted transition-transform",
+                    open === l.id ? "rotate-180" : ""
+                  )} />
                   <span className="truncate text-sm font-semibold text-fg">{l.name}</span>
                   <span className="font-mono text-[11px] text-fg-muted">{t("lists.people", { count: l.membersCount })}</span>
                 </button>

@@ -5,8 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, ChevronRight, Coins, LayoutDashboard, LogOut, MessageSquare, Search, Settings, Upload, Wallet } from "lucide-react";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
-import { OrochiaLogo } from "@/components/ui";
-import { ThemeToggle } from "@/components/ui";
+import { Avatar, IconButton, OrochiaLogo, ThemeToggle, cn } from "@/components/ui";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { t } from "@/lib/i18n";
 
@@ -37,9 +36,10 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
   const navLink = (href: string, label: string) => (
     <Link
       href={href}
-      className={`text-xs font-semibold uppercase tracking-wider transition-colors ${
+      className={cn(
+        "text-xs font-semibold uppercase tracking-wider transition-colors",
         pathname.startsWith(href) ? "text-accent" : "text-fg-secondary hover:text-fg"
-      }`}
+      )}
     >
       {label}
     </Link>
@@ -48,11 +48,12 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
     <Link
       role="menuitem"
       href={href}
-      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+      className={cn(
+        "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
         (href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href.split("?")[0]) && href !== "/dashboard?tab=settings")
           ? "bg-accent/15 text-fg"
           : "text-fg-secondary hover:bg-surface-2 hover:text-fg"
-      }`}
+      )}
     >
       <span className="text-fg-secondary">{icon}</span>
       {label}
@@ -86,13 +87,9 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
         </nav>
 
         <div className="flex items-center gap-2">
-          <button
-            onClick={onOpenSearch}
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-fg-secondary hover:bg-surface-2 md:hidden"
-            aria-label={t("nav.search")}
-          >
-            <Search className="h-5 w-5" />
-          </button>
+          <IconButton onClick={onOpenSearch} shape="rounded" className="h-9 w-9 rounded-xl md:hidden" label={t("nav.search")}>
+            <Search className="h-5 w-5" aria-hidden />
+          </IconButton>
           <ThemeToggle />
 
           {user ? (
@@ -113,19 +110,19 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                   aria-haspopup="menu"
                   className="flex items-center gap-2 rounded-full border border-border-default bg-surface-2/90 py-1 pl-1 pr-3 hover:border-accent/40"
                 >
-                  <img src={user.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-8 w-8 rounded-full object-cover" />
+                  <Avatar size="sm" src={user.avatarUrl || AVATAR_PLACEHOLDER} fallback={user.displayName.charAt(0)} />
                   <span className="max-w-36 truncate text-xs font-bold text-fg">{user.displayName}</span>
                   <ChevronDown className="h-3.5 w-3.5 text-fg-secondary" />
                 </button>
                 {menuOpen && (
-                  <div role="menu" className="kz-pop absolute right-0 mt-2 w-72 overflow-hidden rounded-2xl border border-border-default bg-surface-1/95 p-1.5 shadow-2xl shadow-black/50 backdrop-blur-2xl light:shadow-violet-900/10">
+                  <div role="menu" className="kz-pop absolute right-0 mt-2 w-72 overflow-hidden rounded-2xl border border-border-default bg-surface-1/95 p-1.5 shadow-lg backdrop-blur-2xl">
                     {/* Who you are — the whole card opens your public profile */}
                     <Link
                       role="menuitem"
                       href={`/@${user.username}`}
                       className="group flex items-center gap-3 rounded-xl p-2.5 transition-colors hover:bg-surface-2"
                     >
-                      <img src={user.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-11 w-11 rounded-2xl object-cover ring-2 ring-accent/30" />
+                      <Avatar src={user.avatarUrl || AVATAR_PLACEHOLDER} fallback={user.displayName.charAt(0)} className="h-11 w-11 rounded-2xl ring-2 ring-accent/30" />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-bold text-fg">{user.displayName}</span>
                         <span className="block truncate text-[11px] text-fg-secondary group-hover:text-accent">

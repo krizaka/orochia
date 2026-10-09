@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { BadgeCheck } from "lucide-react";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
-import { SocialIcon } from "@/components/ui";
+import { Avatar, SocialIcon } from "@/components/ui";
 import { PictureQuickEdit } from "./PictureQuickEdit";
 import { t, type MessageKey } from "@/lib/i18n";
 
@@ -82,7 +82,7 @@ export function ProfileHero({
             {/* Avatar, overlapping the cover */}
             <div className="group relative -mt-14 shrink-0 sm:-mt-20">
               <div className="h-28 w-28 overflow-hidden rounded-4xl bg-surface-3 ring-4 ring-border-subtle shadow-2xl shadow-accent/30 sm:h-36 sm:w-36">
-                <img src={avatar || AVATAR_PLACEHOLDER} alt={displayName} className="h-full w-full object-cover" />
+                <Avatar src={avatar || AVATAR_PLACEHOLDER} alt={displayName} fallback={displayName.charAt(0)} className="h-full w-full rounded-none text-3xl" />
               </div>
               {editable && (
                 <PictureQuickEdit

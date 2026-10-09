@@ -4,7 +4,17 @@ import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Bell, Check, ExternalLink, Flame, Link2, Lock, User, UserX, Wallet, KeyRound } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { Avatar, Button, buttonVariants, Input, SocialIcon, Spinner, Switch, Textarea } from "@/components/ui";
+import {
+  Avatar,
+  Button,
+  buttonVariants,
+  Input,
+  SocialIcon,
+  Spinner,
+  Switch,
+  Textarea,
+  cn,
+} from "@/components/ui";
 import { latestAdultBirthDate } from "@/components/BirthDateField";
 import { t, type MessageKey } from "@/lib/i18n";
 
@@ -230,11 +240,12 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
               <a
                 href={`#settings-${id}`}
                 aria-current={hash === `#settings-${id}` ? "location" : undefined}
-                className={`block whitespace-nowrap rounded-xl px-3.5 py-2 text-xs font-semibold transition-colors ${
+                className={cn(
+                  "block whitespace-nowrap rounded-xl px-3.5 py-2 text-xs font-semibold transition-colors",
                   hash === `#settings-${id}`
                     ? "bg-accent/15 text-accent"
                     : "text-fg-secondary hover:bg-surface-2 hover:text-fg"
-                }`}
+                )}
               >
                 {t(`settings.sections.${id}`)}
               </a>
@@ -252,7 +263,10 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
             </label>
             <div>
               <span className={label}>{t("settings.identity.username")}</span>
-              <div className={`${field} flex items-center justify-between gap-2 font-mono text-fg-secondary`}>
+              <div className={cn(
+                field,
+                "flex items-center justify-between gap-2 font-mono text-fg-secondary"
+              )}>
                 @{profile.username}
                 <Link href={`/@${profile.username}`} className="inline-flex items-center gap-1 font-sans text-[11px] font-semibold text-accent hover:underline">
                   {t("settings.identity.viewProfile")} <ExternalLink className="h-3 w-3" />
@@ -273,21 +287,21 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
 
           <div className="mt-6 grid gap-4 border-t border-border-subtle pt-5 sm:grid-cols-2">
             <div>
-              <span className={`${label} flex items-center gap-1.5`}><Lock className="h-3 w-3" /> {t("settings.identity.email")}</span>
-              <div className={`${field} truncate text-fg-secondary`}>{profile.email}</div>
+              <span className={cn(label, "flex items-center gap-1.5")}><Lock className="h-3 w-3" /> {t("settings.identity.email")}</span>
+              <div className={cn(field, "truncate text-fg-secondary")}>{profile.email}</div>
               <span className={hint}>{t("settings.identity.emailHint")}</span>
             </div>
             <div>
-              <span className={`${label} flex items-center gap-1.5`}><Lock className="h-3 w-3" /> {t("settings.identity.birthDate")}</span>
+              <span className={cn(label, "flex items-center gap-1.5")}><Lock className="h-3 w-3" /> {t("settings.identity.birthDate")}</span>
               {profile.dateOfBirth ? (
-                <div className={`${field} text-fg-secondary`}>
+                <div className={cn(field, "text-fg-secondary")}>
                   {new Date(`${profile.dateOfBirth}T00:00:00Z`).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })}
                 </div>
               ) : (
                 <div className="flex gap-2">
                   <Input type="date" value={birthDate} max={latestAdultBirthDate()} min="1900-01-01" onChange={(e) => setBirthDate(e.target.value)} aria-label={t("settings.identity.birthDateAdd")} className="rounded-xl px-3.5" />
                   <Button
-                    variant="sensual"
+                    variant="primary"
                     shape="rounded"
                     disabled={!birthDate}
                     loading={birth.state === "saving"}
@@ -314,7 +328,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
           <div className="grid gap-3 sm:grid-cols-2">
             {profile.networks.map((network) => (
               <label key={network} className="block">
-                <span className={`${label} flex items-center gap-1.5`}>
+                <span className={cn(label, "flex items-center gap-1.5")}>
                   <SocialIcon network={network} className="h-3.5 w-3.5" /> {t(`profile.networks.${network}` as MessageKey)}
                 </span>
                 <Input
@@ -329,7 +343,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
               </label>
             ))}
             <label className="block sm:col-span-2">
-              <span className={`${label} flex items-center gap-1.5`}>
+              <span className={cn(label, "flex items-center gap-1.5")}>
                 <SocialIcon network="website" className="h-3.5 w-3.5" /> {t("settings.links.website")}
               </span>
               <Input type="url" value={website} onChange={(e) => setWebsite(e.target.value)} maxLength={200} placeholder={t("settings.links.websitePlaceholder")} className="rounded-xl px-3.5" />
@@ -350,9 +364,10 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
                   setProfile({ ...profile, directMessagePrivacy: value });
                   void prefs.run(() => put({ directMessagePrivacy: value }));
                 }}
-                className={`rounded-2xl border p-3.5 text-left transition-colors ${
+                className={cn(
+                  "rounded-2xl border p-3.5 text-left transition-colors",
                   profile.directMessagePrivacy === value ? "border-accent bg-accent/10" : "border-border-default hover:border-border-strong"
-                }`}
+                )}
               >
                 <span className="block text-sm font-semibold text-fg">{t(value === "EVERYONE" ? "settings.privacy.everyone" : "settings.privacy.contacts")}</span>
                 <span className="mt-0.5 block text-[11px] text-fg-secondary">{t(value === "EVERYONE" ? "settings.privacy.everyoneHint" : "settings.privacy.contactsHint")}</span>
@@ -404,7 +419,10 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
               return (
                 <div
                   key={row.id}
-                  className={`grid grid-cols-[minmax(0,1fr)_64px_64px] items-center gap-2 px-4 py-2 sm:grid-cols-[minmax(0,1fr)_96px_96px] ${all ? "border-b border-border-default font-semibold" : "border-b border-border-subtle last:border-0"}`}
+                  className={cn(
+                    "grid grid-cols-[minmax(0,1fr)_64px_64px] items-center gap-2 px-4 py-2 sm:grid-cols-[minmax(0,1fr)_96px_96px]",
+                    all ? "border-b border-border-default font-semibold" : "border-b border-border-subtle last:border-0"
+                  )}
                 >
                   <span className="text-sm text-fg">{row.label}</span>
                   <span className="flex justify-center">
@@ -418,7 +436,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
             })}
           </div>
 
-          <span className={`${label} mt-5`}>{t("settings.notifications.frequency")}</span>
+          <span className={cn(label, "mt-5")}>{t("settings.notifications.frequency")}</span>
           <div className="grid grid-cols-3 gap-1 rounded-2xl border border-border-default p-1" role="radiogroup" aria-label={t("settings.notifications.frequency")}>
             {(["INSTANT", "HOURLY", "NONE"] as const).map((f) => (
               <button
@@ -430,9 +448,10 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
                   setFrequency(f);
                   void prefs.run(() => put({ emailFrequency: f }));
                 }}
-                className={`rounded-xl px-2 py-2 text-xs font-semibold transition-colors ${
+                className={cn(
+                  "rounded-xl px-2 py-2 text-xs font-semibold transition-colors",
                   frequency === f ? "bg-accent text-white shadow-sm" : "text-fg-secondary hover:bg-surface-2 hover:text-fg"
-                }`}
+                )}
               >
                 {t(`settings.notifications.frequencies.${f}`)}
               </button>
@@ -440,7 +459,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
           </div>
           <span className={hint}>{t("settings.notifications.frequencyHint")}</span>
           {(prefs.state === "saved" || prefs.error) && (
-            <p role="status" className={`mt-2 text-xs ${prefs.error ? "text-danger" : "text-success"}`}>
+            <p role="status" className={cn("mt-2 text-xs", prefs.error ? "text-danger" : "text-success")}>
               {prefs.error ?? t("settings.saved")}
             </p>
           )}

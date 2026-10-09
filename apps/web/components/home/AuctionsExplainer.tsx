@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { Clock, Gavel, Lock, Trophy } from "lucide-react";
-import { buttonVariants } from "@/components/ui";
+import { buttonVariants, cn } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 const STEPS = [
@@ -27,7 +27,11 @@ export function AuctionsExplainer() {
         {STEPS.map(([key, Icon, tone], i) => (
           <li key={key} data-reveal style={{ ["--kz-delay" as string]: `${i * 110}ms` }} className="relative flex gap-4 sm:flex-col sm:gap-3">
             <span
-              className={`ae-dot relative flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br ${tone} text-white shadow-lg`}
+              className={cn(
+                "ae-dot relative flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br",
+                tone,
+                "text-white shadow-lg"
+              )}
               style={{ animationDelay: `${i * 0.9}s` }}
             >
               <Icon className="h-4.5 w-4.5" aria-hidden />

@@ -6,7 +6,7 @@ import { Check, CheckCircle2, Clapperboard, Eye, Film, Lock, Mail, Scissors, Shi
 import { VideoEditor } from "./VideoEditor";
 import { DraftsShelf } from "./DraftsShelf";
 import { useObjectUrl } from "./editor/media";
-import { Button, Switch, buttonVariants, cn } from "@/components/ui";
+import { Button, buttonVariants, cn, Input, Select, Switch, Textarea } from "@/components/ui";
 import { money } from "@/lib/money";
 import { useUploadManager } from "@/lib/upload-manager";
 import { UPLOAD_LIMITS } from "@orochia/media/limits";
@@ -374,18 +374,18 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
           <Step n={2} title={t("publish.steps.details")} done={Boolean(title.trim())}>
             <div className="space-y-4">
               <label className="block">
-                <span className={`${label} flex justify-between`}>
+                <span className={cn(label, "flex justify-between")}>
                   {t("publish.fields.title")} <span className="font-mono font-normal text-fg-muted">{title.length}/120</span>
                 </span>
-                <input value={title} onChange={(e) => setTitle(e.target.value.slice(0, 120))} required placeholder={t("publish.fields.titlePlaceholder")} className={field} />
+                <Input value={title} onChange={(e) => setTitle(e.target.value.slice(0, 120))} required placeholder={t("publish.fields.titlePlaceholder")} className={field} />
               </label>
               <label className="block">
                 <span className={label}>{t("publish.fields.description")}</span>
-                <textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} placeholder={t("publish.fields.descriptionPlaceholder")} className={`${field} resize-y`} />
+                <Textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} placeholder={t("publish.fields.descriptionPlaceholder")} className={cn(field, "resize-y")} />
               </label>
               <div>
                 <span className={label}>{t("publish.fields.tags")}</span>
-                <div className={`${field} flex flex-wrap items-center gap-1.5 py-2`} onClick={(e) => (e.currentTarget.querySelector("input") as HTMLInputElement | null)?.focus()}>
+                <div className={cn(field, "flex flex-wrap items-center gap-1.5 py-2")} onClick={(e) => (e.currentTarget.querySelector("input") as HTMLInputElement | null)?.focus()}>
                   {tags.map((tag) => (
                     <span key={tag} className="flex items-center gap-1 rounded-full bg-accent/15 py-0.5 pl-2.5 pr-1 text-xs font-semibold text-accent">
                       #{tag}
@@ -473,14 +473,14 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
             {collections.length > 0 && (
               <label className="mt-4 block">
                 <span className={label}>{t("publish.fields.collection")}</span>
-                <select value={selectedCollection} onChange={(e) => setSelectedCollection(e.target.value)} className={field}>
+                <Select value={selectedCollection} onChange={(e) => setSelectedCollection(e.target.value)} className={field}>
                   <option value="">{t("publish.fields.noCollection")}</option>
                   {collections.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.title}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
             )}
           </Step>
@@ -488,7 +488,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
           <Step n={4} title={t("publish.steps.rating")} done={Boolean(selectedRating)}>
             <label className="block">
               <span className={label}>{t("publish.rating.label")}</span>
-              <select
+              <Select
                 value={selectedRating}
                 onChange={(e) => {
                   setSelectedRating(e.target.value);
@@ -502,7 +502,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                     {r.isAdult ? " · 18+" : ""}
                   </option>
                 ))}
-              </select>
+              </Select>
               {contentRatings.find((r) => r.id === selectedRating)?.description && (
                 <span className="mt-1 block text-[11px] text-fg-muted">{contentRatings.find((r) => r.id === selectedRating)?.description}</span>
               )}

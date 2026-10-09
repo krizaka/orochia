@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Clapperboard, Clock, Flame, Lock, Megaphone, Target, Users } from "lucide-react";
-import { Button, Segmented, Sheet, cn } from "@/components/ui";
+import { Button, cn, Input, Segmented, Sheet, Textarea } from "@/components/ui";
 import { money } from "@/lib/money";
 import { t, type MessageKey } from "@/lib/i18n";
 
@@ -170,7 +170,7 @@ export function ChallengeComposer({
         {kind === "REQUEST" && (
           <label className={label}>
             {t("challenge.compose.creator")}
-            <input
+            <Input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -184,7 +184,7 @@ export function ChallengeComposer({
 
         <label className={label}>
           {t("challenge.compose.titleLabel")}
-          <input
+          <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
@@ -196,7 +196,7 @@ export function ChallengeComposer({
         </label>
         <label className={label}>
           {t("challenge.compose.description")}
-          <textarea
+          <Textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             required
@@ -258,7 +258,7 @@ export function ChallengeComposer({
           {t(`challenge.compose.amount.${kind}`)}
           <span className="relative mt-1 block">
             <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-fg-muted">$</span>
-            <input
+            <Input
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               type="number"
@@ -266,7 +266,7 @@ export function ChallengeComposer({
               min={1}
               step={1}
               required
-              className={`${field} mt-0 pl-6 font-mono tabular-nums`}
+              className={cn(field, "mt-0 pl-6 font-mono tabular-nums")}
             />
           </span>
           <span className={hint}>{t(`challenge.compose.amountHint.${kind}`)}</span>

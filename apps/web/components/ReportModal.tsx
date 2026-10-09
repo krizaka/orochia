@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { CheckCircle2, Flag } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { Button, Sheet, cn } from "@/components/ui";
+import { Button, cn, Input, Sheet, Textarea } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 export interface ReportModalProps {
@@ -99,11 +99,11 @@ export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModa
 
           <label className="block">
             <span className="mb-1.5 block text-xs font-semibold text-fg-secondary">{t("report.details")}</span>
-            <textarea value={details} onChange={(e) => setDetails(e.target.value)} rows={3} required placeholder={t("report.detailsPlaceholder")} className={`${field} resize-y`} />
+            <Textarea value={details} onChange={(e) => setDetails(e.target.value)} rows={3} required placeholder={t("report.detailsPlaceholder")} className={cn(field, "resize-y")} />
           </label>
           <label className="block">
             <span className="mb-1.5 block text-xs font-semibold text-fg-secondary">{t("report.email")}</span>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className={field} />
+            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className={field} />
             <span className="mt-1 block text-[11px] text-fg-muted">{t("report.emailHint")}</span>
           </label>
 

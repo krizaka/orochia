@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Flame, Gavel, Megaphone, Target } from "lucide-react";
-import { LiveBadge } from "@/components/ui";
+import { LiveBadge, cn } from "@/components/ui";
 import { money } from "@/lib/money";
 import { t } from "@/lib/i18n";
 import type { ChallengeCardView } from "@/lib/challenges";
@@ -69,10 +69,16 @@ export function ChallengeMeter({
           className="cm-sweep"
         />
       </svg>
-      <div key={pulse} className={`absolute inset-0 flex flex-col items-center justify-center text-center ${pulse ? "cm-pop" : ""}`}>
+      <div key={pulse} className={cn(
+        "absolute inset-0 flex flex-col items-center justify-center text-center",
+        pulse ? "cm-pop" : ""
+      )}>
         {size !== "sm" && <Icon className="mb-0.5 h-4 w-4 text-accent" aria-hidden />}
         <span
-          className={`font-display font-black tabular-nums text-fg ${size === "lg" ? "text-2xl" : size === "md" ? "text-base" : "text-xs"}`}
+          className={cn(
+            "font-display font-black tabular-nums text-fg",
+            size === "lg" ? "text-2xl" : size === "md" ? "text-base" : "text-xs"
+          )}
         >
           {money(c.pledgedCents)}
         </span>

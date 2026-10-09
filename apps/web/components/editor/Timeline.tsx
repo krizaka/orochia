@@ -3,6 +3,7 @@
 import React, { useRef } from "react";
 import { FILMSTRIP_FRAMES, clock } from "./media";
 import { t } from "@/lib/i18n";
+import { cn } from "@/components/ui";
 
 type Grip = "start" | "end" | "playhead";
 
@@ -97,9 +98,10 @@ export function Timeline({
             aria-valuetext={clock(which === "start" ? start : end)}
             onPointerDown={(e) => begin(which, e)}
             onKeyDown={(e) => nudge(which, e)}
-            className={`absolute inset-y-0 z-10 flex w-6 cursor-ew-resize items-center justify-center bg-white text-zinc-900 shadow-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring ${
+            className={cn(
+              "absolute inset-y-0 z-10 flex w-6 cursor-ew-resize items-center justify-center bg-white text-zinc-900 shadow-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
               which === "start" ? "rounded-l-xl" : "-translate-x-full rounded-r-xl"
-            }`}
+            )}
             style={{ left: `${pct(which === "start" ? start : end)}%` }}
           >
             <span className="flex gap-[3px]">

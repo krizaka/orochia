@@ -2,7 +2,7 @@
 
 import React, { forwardRef, useRef, useState } from "react";
 import { Hand, Play } from "lucide-react";
-import { Spinner } from "@/components/ui";
+import { Spinner, cn } from "@/components/ui";
 import { previewFilter, type VideoEdit } from "@/lib/video-edit";
 import { useElementSize } from "./media";
 import { t } from "@/lib/i18n";
@@ -58,7 +58,11 @@ export const Stage = forwardRef<
   return (
     <div ref={box} className="relative flex min-h-0 flex-1 items-center justify-center">
       <div
-        className={`relative overflow-hidden rounded-[1.25rem] bg-zinc-900 shadow-2xl shadow-black/60 ${pannable ? (dragging ? "cursor-grabbing" : "cursor-grab") : "cursor-pointer"} touch-none`}
+        className={cn(
+          "relative overflow-hidden rounded-[1.25rem] bg-zinc-900 shadow-2xl shadow-black/60",
+          pannable ? (dragging ? "cursor-grabbing" : "cursor-grab") : "cursor-pointer",
+          "touch-none"
+        )}
         style={{ width: frame.w || "100%", height: frame.h || "100%" }}
         onPointerDown={(e) => {
           if (progress) return;

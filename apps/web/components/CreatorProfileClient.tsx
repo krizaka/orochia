@@ -7,6 +7,7 @@ import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
 import { PlaylistCard, type PlaylistCardProps } from "@/components/PlaylistCard";
 import { TipModal } from "@/components/TipModal";
 import { t } from "@/lib/i18n";
+import { cn } from "@/components/ui";
 
 interface CreatorProfileClientProps {
   creator: {
@@ -66,11 +67,12 @@ export function CreatorProfileClient({
               role="tab"
               aria-selected={activeTab === id}
               onClick={() => setActiveTab(id)}
-              className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+              className={cn(
+                "flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-xs font-bold transition-all",
                 activeTab === id
                   ? "bg-accent text-white shadow-md shadow-accent/30"
                   : "text-fg-secondary hover:bg-surface-2 hover:text-fg"
-              }`}
+              )}
             >
               <Icon className="h-3.5 w-3.5" />
               <span>{label}</span>
@@ -91,7 +93,10 @@ export function CreatorProfileClient({
               <p className="whitespace-pre-line text-sm leading-relaxed text-fg-secondary">{creator.bio || t("profileTabs.noBio")}</p>
               {creator.isCreator && (
               <div className="flex items-start gap-3 border-t border-border-subtle pt-4">
-                <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${creator.isVerified ? "bg-success/15 text-success" : "bg-warning/15 text-warning"}`}>
+                <span className={cn(
+                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
+                  creator.isVerified ? "bg-success/15 text-success" : "bg-warning/15 text-warning"
+                )}>
                   <Shield className="h-5 w-5" />
                 </span>
                 <div>

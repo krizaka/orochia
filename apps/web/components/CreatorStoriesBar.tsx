@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, Heart, Plus, Trash2, X } from "lucide-react"
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
 import { CreateStoryModal } from "@/components/CreateStoryModal";
 import { t } from "@/lib/i18n";
+import { cn } from "@/components/ui";
 
 interface StoryItem {
   id: string;
@@ -187,9 +188,10 @@ export function CreatorStoriesBar() {
             <button key={r.creatorId} onClick={() => setOpen({ ring: index, story: Math.max(0, r.stories.findIndex((s) => !s.seen)) })} className="flex flex-col items-center gap-1.5 shrink-0 group focus:outline-hidden">
               <div className="relative p-0.5 rounded-2xl transition-transform group-hover:scale-105 active:scale-95">
                 <div
-                  className={`absolute inset-0 rounded-2xl ${
+                  className={cn(
+                    "absolute inset-0 rounded-2xl",
                     r.allSeen ? "bg-surface-3" : "bg-linear-to-tr from-accent via-accent-2 to-accent-2 shadow-xs shadow-accent/20"
-                  }`}
+                  )}
                 />
                 <div className="relative h-14 w-14 sm:h-16 sm:w-16 overflow-hidden rounded-[14px] bg-surface-1 p-0.5">
                   <img src={r.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-full w-full rounded-[12px] object-cover" />
@@ -245,7 +247,10 @@ export function CreatorStoriesBar() {
                     <button
                       onClick={remove}
                       onBlur={() => setArmed(false)}
-                      className={`flex h-8 items-center justify-center gap-1.5 rounded-full text-white transition-all ${armed ? "bg-danger px-3 text-xs font-semibold" : "w-8 bg-scrim hover:bg-danger/60"}`}
+                      className={cn(
+                        "flex h-8 items-center justify-center gap-1.5 rounded-full text-white transition-all",
+                        armed ? "bg-danger px-3 text-xs font-semibold" : "w-8 bg-scrim hover:bg-danger/60"
+                      )}
                       aria-label={armed ? t("stories.removeArmed") : t("stories.remove")}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -284,9 +289,12 @@ export function CreatorStoriesBar() {
                   <button
                     onClick={toggleLike}
                     aria-pressed={story.liked}
-                    className={`flex h-11 items-center gap-1.5 rounded-2xl border px-3.5 ${story.liked ? "border-danger bg-danger/20 text-danger" : "border-white/20 bg-scrim text-fg-on-media"}`}
+                    className={cn(
+                      "flex h-11 items-center gap-1.5 rounded-2xl border px-3.5",
+                      story.liked ? "border-danger bg-danger/20 text-danger" : "border-white/20 bg-scrim text-fg-on-media"
+                    )}
                   >
-                    <Heart className={`h-4 w-4 ${story.liked ? "fill-danger" : ""}`} />
+                    <Heart className={cn("h-4 w-4", story.liked ? "fill-danger" : "")} />
                     <span className="font-mono text-xs">{story.likesCount}</span>
                   </button>
                 )}

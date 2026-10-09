@@ -3,7 +3,7 @@
 import React from "react";
 import { Check, Lock, Music2, RotateCcw, Trash2, Volume2, VolumeX, Wand2 } from "lucide-react";
 import { SPEEDS, VIDEO_FILTERS, previewFilter, type VideoEdit, type VideoFilter, type VideoFormat } from "@/lib/video-edit";
-import { Chip, IconButton, Segmented, Slider } from "@/components/ui";
+import { Chip, IconButton, Segmented, Slider, cn } from "@/components/ui";
 import { FILMSTRIP_FRAMES } from "./media";
 import { Timeline } from "./Timeline";
 import type { Tool } from "./useEditState";
@@ -66,7 +66,10 @@ export function FiltersPanel({ edit, set, frames }: { edit: VideoEdit; set: Sett
         const active = edit.filter === name;
         return (
           <button key={name} type="button" onClick={() => set("filter", name)} aria-pressed={active} className="group flex w-18 shrink-0 snap-start flex-col items-center gap-1.5 lg:w-auto">
-            <span className={`relative block aspect-square w-full overflow-hidden rounded-2xl ring-2 ring-offset-2 ring-offset-zinc-950 transition-all ${active ? "ring-white" : "ring-transparent group-hover:ring-white/30"}`}>
+            <span className={cn(
+              "relative block aspect-square w-full overflow-hidden rounded-2xl ring-2 ring-offset-2 ring-offset-zinc-950 transition-all",
+              active ? "ring-white" : "ring-transparent group-hover:ring-white/30"
+            )}>
               {frame ? (
                 <img src={frame} alt="" className="h-full w-full object-cover" style={{ filter: previewFilter({ filter: name, brightness: 0, contrast: 0, saturation: 0 }) }} />
               ) : (
@@ -78,7 +81,7 @@ export function FiltersPanel({ edit, set, frames }: { edit: VideoEdit; set: Sett
                 </span>
               )}
             </span>
-            <span className={`text-[11px] font-semibold ${active ? "text-white" : "text-fg-secondary"}`}>{t(`editor.filterNames.${name}`)}</span>
+            <span className={cn("text-[11px] font-semibold", active ? "text-white" : "text-fg-secondary")}>{t(`editor.filterNames.${name}`)}</span>
           </button>
         );
       })}
@@ -112,7 +115,7 @@ export function FormatPanel({ edit, onFormat, locked }: { edit: VideoEdit; onFor
   if (locked) {
     return (
       <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/3 p-4">
-        <span className={`block rounded-[4px] border-2 border-white ${FORMAT_SHAPE.vertical}`} />
+        <span className={cn("block rounded-[4px] border-2 border-white", FORMAT_SHAPE.vertical)} />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-white">{t("editor.formats.vertical")}</p>
           <p className="text-xs text-fg-secondary">{t("editor.storyVertical")}</p>
@@ -130,7 +133,7 @@ export function FormatPanel({ edit, onFormat, locked }: { edit: VideoEdit; onFor
         value: f,
         label: (
           <span className="flex flex-col items-center gap-2 py-1">
-            <span className={`block rounded-[4px] border-2 border-current ${FORMAT_SHAPE[f]}`} />
+            <span className={cn("block rounded-[4px] border-2 border-current", FORMAT_SHAPE[f])} />
             {t(`editor.formats.${f}`)}
           </span>
         ),
