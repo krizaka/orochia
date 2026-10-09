@@ -306,7 +306,10 @@ orochia/                           npm workspaces
   (`lib/i18n.ts`, keys typed from the file, `<Rich>` for `<b>` and `{slot}` links; `messages("branch")` for long
   structured content such as the legal pages). English is the only locale for now; another language adds
   `messages/<locale>.json` with the same shape. Plain product words ("Dashboard", "Sign in"), never jargon or mixed
-  languages. **No exception, enforced**: `npm run check:i18n` (part of `npm run lint`, so of `check` and CI) parses
+  languages. The engine (`t`, `format`, `<Rich>`) and the gate are [`@krizaka/i18n`](https://www.npmjs.com/package/@krizaka/i18n),
+  shared with every Krizaka app — `lib/i18n.ts` and `components/Rich.tsx` only bind it; a change to them is a PR in
+  `krizaka-ui`. **No exception, enforced**: `npm run check:i18n` (part of `npm run lint`, so of `check` and CI) runs
+  `krizaka-i18n check` (the catalogue: no empty string) and `krizaka-i18n scan`, which parses
   every page and component and fails on JSX text, user-facing attributes (`placeholder`, `title`, `aria-label`, `alt`,
   `label`), messages given to state setters (`setError("…")`), words in data (`{ label: "…" }`) and browser dialogs.
   Data modules keep structure (ids, icons, order) and read their words by id (``t(`collectionAudience.${id}.label`)``).
