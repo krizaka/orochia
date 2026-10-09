@@ -263,27 +263,66 @@
     },
     "showcase": {
       "label": "What you can do on Orochia",
-      "reply": "Send a message…",
+      "reply": "Send a message or tip…",
       "publishing": "Publishing",
-      "unlockFor": "Unlock · $10",
+      "unlockFor": "Unlock · $15",
       "scenes": {
-        "story": "Post a story",
-        "publish": "Edit & publish",
-        "tip": "Send a tip",
-        "unlock": "Unlock a video"
+        "reel": "Live & reels",
+        "tip": "Instant tips",
+        "auction": "Live auctions",
+        "unlock": "4K VIP unlock",
+        "publish": "In-browser studio",
+        "story": "Post a story"
       },
       "toasts": {
         "follow": "@alex_vance followed you",
-        "tip": "+$9.00 tip from @mia",
-        "message": "New message from @sam"
+        "tip": "+$50.00 Super-Tip from @alex",
+        "message": "New message from @sam",
+        "auction": "New bid: $950 on 1-of-1 Vault",
+        "unlock": "@valentin unlocked 4K Director's Cut"
       },
       "demo": {
+        "live": "LIVE",
+        "viewers": "2.4k",
         "storyAuthor": "elenavox · 2h",
         "filter": "Cinematic",
         "videoTitle": "Velvet Lounge — Director’s Cut",
         "creator": "Elena Vox",
-        "tipSent": "+ $9.00 · tip sent"
+        "tipSent": "+ $50.00 · Super-Tip sent",
+        "superTipBadge": "VIP Super-Tip",
+        "tipNote": "90% direct to creator · instant",
+        "auctionTitle": "Velvet Lounge — 1-of-1 Vault + VIP Call",
+        "auctionBadge": "1-of-1 Auction",
+        "auctionTimer": "03h 42m 18s left",
+        "currentBid": "Current bid",
+        "placeBid": "Place bid · $950",
+        "outbidAlert": "New top bid: $950 by @valentin",
+        "unlockBadge": "4K Director's Cut",
+        "unlockedBadge": "VIP 4K Unlocked",
+        "unlockInstant": "Unlock for $15 · Instant Access",
+        "comment1": "Pure cinema quality tonight! 🔥",
+        "comment2": "The neon atmosphere is unreal ✨",
+        "creatorElena": "Elena Vox",
+        "creatorMia": "Mia Sterling",
+        "tokyoNeon": "Tokyo Neon 4K",
+        "midnightSession": "Midnight Noir · Live Session",
+        "collector": "@collector_paris",
+        "bidsCount": "14 bids",
+        "bidTime": "12s ago",
+        "unlockSub": "4K 60fps · DRM Protected · Direct Creator Access",
+        "studioBadge": "4K Pro",
+        "userAlex": "@alex:",
+        "userSam": "@sam:"
       }
+    },
+    "spotlight": {
+      "video1": "Tokyo Neon Horizons — Episode 01: The Velvet Alley",
+      "video2": "Velvet Lounge Private Session — 4K Director's Cut",
+      "video3": "Midnight Noir — Acoustic Lounge Session",
+      "video4": "Tokyo Penthouse VIP Premiere — 4K 60fps",
+      "auc1": "Velvet Lounge — 4K Director's Cut Master Reel + VIP Call",
+      "auc2": "Midnight Noir Acoustic Stems & Private Virtual Concert",
+      "auc3": "Tokyo Penthouse VIP Premiere — 1-of-1 Collector Rights"
     },
     "marquee": {
       "a": "24-hour stories",
@@ -300,7 +339,11 @@
       "earned": "Earned",
       "views": "Views",
       "supporters": "Supporters",
-      "newTip": "New tip · +$9.00"
+      "newTip": "New tip · +$50.00",
+      "tips": "Tips",
+      "auctions": "Auctions",
+      "unlocks": "Unlocks",
+      "payoutBadge": "90% Direct Creator Share · Instant Payouts"
     },
     "empty": {
       "title": "The first videos are on their way",
@@ -308,6 +351,8 @@
       "join": "Create your free account",
       "create": "Become a creator"
     },
+    "spotlightTitle": "Featured creator reels",
+    "spotlightBadge": "Premieres & Exclusive Vaults",
     "auctions": "Live auctions",
     "auctionsAll": "All auctions"
   },
