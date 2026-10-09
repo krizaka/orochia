@@ -219,8 +219,9 @@ orochia/                           npm workspaces
   (`after()`), never throws; bursts capped (messages: once per conversation and hour).
 - No screen renders showcase data: pages read the database through `lib/queries.ts`; an empty platform renders
   empty states. The one exception is the home's product showcase (the phone, `components/home/ProductShowcase.tsx`):
-  it explains the product over illustrative footage (`public/showcase`), and never shows a name, a handle, a profile
-  or a figure that could be taken for a real account.
+  it replays the app's real flows (watch, stories, tip, unlock, auction, challenge) over licensed stock footage
+  (`public/showcase`, Mixkit free licence, vertical 540×960 clips) and never shows a name, a handle, a profile or a figure
+  that could be taken for a real account.
 
 ---
 

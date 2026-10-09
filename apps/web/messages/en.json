@@ -263,49 +263,56 @@
       "d": "on their terms."
     },
     "showcase": {
-      "label": "What you can do on Orochia",
+      "label": "How Orochia works, on a phone",
       "scenes": {
-        "publish": "Publish in 4K",
-        "audience": "Choose who sees it",
-        "stories": "24-hour stories",
-        "tip": "Tips",
-        "auction": "Auctions",
-        "challenge": "Challenges"
+        "feed": "Watch",
+        "stories": "Stories",
+        "tip": "Tip",
+        "unlock": "Unlock",
+        "auction": "Auction",
+        "challenge": "Challenge"
       },
-      "publish": {
-        "upload": "Uploaded straight to the video network",
-        "encode": "Encoded up to 4K",
-        "ready": "Ready — playback signed per viewer"
-      },
-      "audience": {
-        "title": "Who can watch this video?",
-        "public": "Everyone",
-        "followers": "Followers you approved",
-        "contacts": "Your contacts",
-        "paid": "Paid unlock",
-        "invited": "An invited list"
-      },
-      "stories": {
-        "expires": "Up for 24 hours",
-        "reply": "Reply in private…"
-      },
-      "tip": {
-        "title": "Send a tip",
-        "keep": "The creator keeps {share}% — confirmed by the payment provider"
-      },
-      "auction": {
-        "badge": "Auction",
-        "held": "Your bid is held in credits while you lead",
-        "outbid": "Outbid? Your credits come straight back",
-        "softClose": "A bid in the last 2 minutes adds 2 minutes",
-        "winner": "Only the winner watches it"
-      },
-      "challenge": {
-        "badge": "Challenge",
-        "goal": "Goal",
-        "pledge": "Back it",
-        "allOrNothing": "All or nothing: below the goal, every pledge comes back",
-        "made": "Reached — the creator makes it"
+      "ui": {
+        "following": "Following",
+        "forYou": "For you",
+        "creator": "Verified creator",
+        "caption1": "Front-row set, shot in 4K",
+        "caption2": "Neon session — tonight's cut",
+        "storyBadge": "Story",
+        "storyExpires": "Up for 24 h",
+        "reply": "Reply in private…",
+        "tipTitle": "Send a tip",
+        "tipSend": "Send {amount}",
+        "tipSent": "Tip sent",
+        "tipKeep": "The creator keeps {share}%",
+        "unlockBadge": "Paid unlock",
+        "unlockCta": "Unlock for {amount}",
+        "confirming": "Confirming with the payment provider…",
+        "unlocked": "Unlocked — playing in 4K",
+        "auctionBadge": "Auction · open",
+        "currentBid": "Current bid",
+        "endsIn": "Ends in",
+        "bidder": "Bidder {n}",
+        "you": "You",
+        "lead": "You lead",
+        "bidCta": "Bid {amount}",
+        "extended": "+2:00 · a last-minute bid extends the clock",
+        "challengeBadge": "Challenge · goal",
+        "challengeTitle": "Midnight dance battle, one take",
+        "pledged": "pledged of {goal}",
+        "backers": "{count} backers",
+        "pledgeCta": "Back it with {amount}",
+        "goalReached": "Goal reached — the creator makes it",
+        "tabs": {
+          "home": "Home",
+          "explore": "Explore",
+          "create": "Create",
+          "saved": "Saved",
+          "you": "You"
+        },
+        "clock": "9:41",
+        "elapsed": "0:04",
+        "length": "4K · 12:48"
       }
     },
     "marquee": {
