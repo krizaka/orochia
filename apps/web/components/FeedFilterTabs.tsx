@@ -8,6 +8,63 @@ import { t } from "@/lib/i18n";
 import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
 import Link from "next/link";
 
+function getShowcaseVideos(): VideoCardProps[] {
+  return [
+    {
+      id: "showcase-vid-1",
+      title: t("home.spotlight.video1"),
+      creatorName: t("home.showcase.demo.creatorElena"),
+      creatorUsername: "elenavox",
+      creatorAvatar: "/showcase/stream-elena.jpg",
+      thumbnailUrl: "/showcase/stream-elena.jpg",
+      durationSeconds: 1420,
+      visibility: "PUBLIC",
+      minTipAmountCents: 0,
+      viewsCount: 8940,
+      tipsCount: 42,
+    },
+    {
+      id: "showcase-vid-2",
+      title: t("home.spotlight.video2"),
+      creatorName: t("home.showcase.demo.creatorElena"),
+      creatorUsername: "elenavox",
+      creatorAvatar: "/showcase/stream-elena.jpg",
+      thumbnailUrl: "/showcase/auction-velvet.jpg",
+      durationSeconds: 2850,
+      visibility: "TIPPED_UNLOCKED",
+      minTipAmountCents: 1000,
+      viewsCount: 3100,
+      tipsCount: 88,
+    },
+    {
+      id: "showcase-vid-3",
+      title: t("home.spotlight.video3"),
+      creatorName: t("home.showcase.demo.creatorMia"),
+      creatorUsername: "miasterling",
+      creatorAvatar: "/showcase/live-tips-mia.jpg",
+      thumbnailUrl: "/showcase/live-tips-mia.jpg",
+      durationSeconds: 1980,
+      visibility: "PUBLIC",
+      minTipAmountCents: 500,
+      viewsCount: 5210,
+      tipsCount: 35,
+    },
+    {
+      id: "showcase-vid-4",
+      title: t("home.spotlight.video4"),
+      creatorName: t("home.showcase.demo.creatorElena"),
+      creatorUsername: "elenavox",
+      creatorAvatar: "/showcase/stream-elena.jpg",
+      thumbnailUrl: "/showcase/unlock-premiere.jpg",
+      durationSeconds: 1120,
+      visibility: "TIPPED_UNLOCKED",
+      minTipAmountCents: 1500,
+      viewsCount: 12400,
+      tipsCount: 112,
+    },
+  ];
+}
+
 interface FeedFilterTabsProps {
   initialVideos: VideoCardProps[];
 }
@@ -109,19 +166,41 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
       {/* Video Content Render */}
       {filteredVideos.length === 0 ? (
         initialVideos.length === 0 ? (
-          <div className="kz-spotlight relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/40 px-6 py-14 text-center light:border-black/5 light:bg-white">
-            <div aria-hidden className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-violet-600 to-pink-600 shadow-lg shadow-fuchsia-600/30">
-              <Clapperboard className="h-7 w-7 text-white" />
+          <div className="space-y-8">
+            <div className="kz-spotlight relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/40 px-6 py-10 text-center light:border-black/5 light:bg-white">
+              <div aria-hidden className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-violet-600 to-pink-600 shadow-lg shadow-fuchsia-600/30">
+                <Clapperboard className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="font-display text-xl font-black text-white light:text-slate-900">{t("home.empty.title")}</h3>
+              <p className="mx-auto mt-2 max-w-md text-sm text-zinc-400 light:text-slate-600">{t("home.empty.body")}</p>
+              <div className="mt-5 flex flex-col justify-center gap-2 sm:flex-row">
+                <Link href="/auth/register" className={buttonClass({ variant: "primary", size: "md" })}>
+                  {t("home.empty.join")}
+                </Link>
+                <Link href="/creator/upload" className={buttonClass({ variant: "secondary", size: "md" })}>
+                  {t("home.empty.create")}
+                </Link>
+              </div>
             </div>
-            <h3 className="font-display text-xl font-black text-white light:text-slate-900">{t("home.empty.title")}</h3>
-            <p className="mx-auto mt-2 max-w-md text-sm text-zinc-400 light:text-slate-600">{t("home.empty.body")}</p>
-            <div className="mt-6 flex flex-col justify-center gap-2 sm:flex-row">
-              <Link href="/auth/register" className={buttonClass({ variant: "primary", size: "md" })}>
-                {t("home.empty.join")}
-              </Link>
-              <Link href="/creator/upload" className={buttonClass({ variant: "secondary", size: "md" })}>
-                {t("home.empty.create")}
-              </Link>
+
+            {/* Curated Platform Showcase Reels */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-fuchsia-400" />
+                  <h4 className="font-display text-base font-bold text-white light:text-slate-900">{t("home.spotlightTitle")}</h4>
+                </div>
+                <span className="rounded-full bg-violet-600/20 border border-violet-500/30 px-2.5 py-0.5 text-[10px] font-bold text-violet-300">
+                  {t("home.spotlightBadge")}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 kz-fade">
+                {getShowcaseVideos().map((video, i) => (
+                  <div key={video.id} data-reveal style={{ ["--kz-delay" as string]: `${i * 70}ms` }}>
+                    <VideoCard {...video} />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         ) : (

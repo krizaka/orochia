@@ -6,20 +6,26 @@ import React from "react";
  * (horizontal rows on phones). An empty platform shows soft gradients instead — never stock pictures.
  * Decorative (aria-hidden); still under prefers-reduced-motion.
  */
+const DEFAULT_WALL = [
+  "/showcase/stream-elena.jpg",
+  "/showcase/live-tips-mia.jpg",
+  "/showcase/auction-velvet.jpg",
+  "/showcase/unlock-premiere.jpg",
+  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=600&q=80",
+];
+
 export function HeroWall({ images }: { images: string[] }) {
-  if (images.length < 3) {
-    return (
-      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="hero-blob absolute -left-24 top-0 h-80 w-80 rounded-full bg-violet-600/30 blur-3xl" />
-        <div className="hero-blob absolute right-0 top-20 h-96 w-96 rounded-full bg-fuchsia-600/25 blur-3xl [animation-delay:-6s]" />
-        <div className="hero-blob absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-pink-500/20 blur-3xl [animation-delay:-12s]" />
-        <style>{STYLES}</style>
-      </div>
-    );
-  }
-  const columns = [0, 1, 2].map((c) => images.filter((_, i) => i % 3 === c));
+  const activeImages = images.length >= 3 ? images : DEFAULT_WALL;
+  const columns = [0, 1, 2].map((c) => activeImages.filter((_, i) => i % 3 === c));
   const tile = (src: string, key: string) => (
-    <div key={key} className="aspect-3/4 w-full shrink-0 overflow-hidden rounded-2xl bg-zinc-900">
+    <div key={key} className="aspect-3/4 w-full shrink-0 overflow-hidden rounded-2xl bg-zinc-900 border border-white/5">
       <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" />
     </div>
   );

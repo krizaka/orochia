@@ -33,6 +33,67 @@ async function loadHome() {
  * Home. Visitors get the pitch — a moving wall of what is really on the platform, why fans stay, why
  * creators publish here — then the trending feed. Signed-in people go straight to stories and feed.
  */
+import type { AuctionCard as Card } from "@/components/auctions/types";
+
+function getShowcaseAuctions(): Card[] {
+  return [
+    {
+      id: "showcase-auc-1",
+      videoId: "showcase-1",
+      phase: "LIVE",
+      title: t("home.spotlight.auc1"),
+      startingPriceCents: 50000,
+      highestBidCents: 85000,
+      bidsCount: 14,
+      rights: "DOWNLOAD",
+      settlement: "HIGHEST_BID",
+      startsAt: new Date(Date.now() - 3600000 * 12).toISOString(),
+      endsAt: new Date(Date.now() + 3600000 * 18).toISOString(),
+      creatorName: t("home.showcase.demo.creatorElena"),
+      creatorUsername: "elenavox",
+      creatorAvatar: "/showcase/stream-elena.jpg",
+      thumbnailUrl: "/showcase/auction-velvet.jpg",
+      leading: false,
+    },
+    {
+      id: "showcase-auc-2",
+      videoId: "showcase-2",
+      phase: "LIVE",
+      title: t("home.spotlight.auc2"),
+      startingPriceCents: 30000,
+      highestBidCents: 62000,
+      bidsCount: 9,
+      rights: "WATCH",
+      settlement: "HIGHEST_BID",
+      startsAt: new Date(Date.now() - 3600000 * 8).toISOString(),
+      endsAt: new Date(Date.now() + 3600000 * 24).toISOString(),
+      creatorName: t("home.showcase.demo.creatorMia"),
+      creatorUsername: "miasterling",
+      creatorAvatar: "/showcase/live-tips-mia.jpg",
+      thumbnailUrl: "/showcase/live-tips-mia.jpg",
+      leading: false,
+    },
+    {
+      id: "showcase-auc-3",
+      videoId: "showcase-3",
+      phase: "UPCOMING",
+      title: t("home.spotlight.auc3"),
+      startingPriceCents: 100000,
+      highestBidCents: 0,
+      bidsCount: 0,
+      rights: "DOWNLOAD",
+      settlement: "HIGHEST_BID",
+      startsAt: new Date(Date.now() + 3600000 * 6).toISOString(),
+      endsAt: new Date(Date.now() + 3600000 * 54).toISOString(),
+      creatorName: t("home.showcase.demo.creatorElena"),
+      creatorUsername: "elenavox",
+      creatorAvatar: "/showcase/stream-elena.jpg",
+      thumbnailUrl: "/showcase/unlock-premiere.jpg",
+      leading: false,
+    },
+  ];
+}
+
 export default async function HomePage() {
   const [viewer, { videos, featured, stats, auctions }] = await Promise.all([getCurrentUser(), loadHome()]);
   const share = 100 - platformFeePercent();
@@ -138,48 +199,57 @@ export default async function HomePage() {
         </section>
       )}
 
-      {auctions.length > 0 && (
-        <section className="mb-12" aria-labelledby="home-auctions">
-          <div className="mb-4 flex items-end justify-between gap-4" data-reveal>
-            <h2 id="home-auctions" className="flex items-center gap-2 font-display text-xl font-bold text-white light:text-slate-900">
-              <Gavel className="h-5 w-5 text-fuchsia-400 light:text-fuchsia-600" aria-hidden /> {t("home.auctions")}
-            </h2>
-            <Link href="/auctions" className="inline-flex items-center gap-1 text-sm font-semibold text-violet-300 hover:text-violet-200 light:text-violet-700 hover:light:text-violet-900">
-              {t("home.auctionsAll")} <ArrowRight className="h-4 w-4" aria-hidden />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {auctions.map((a, i) => (
-              <AuctionCard key={a.id} auction={a} index={i} />
-            ))}
-          </div>
-        </section>
-      )}
+      <section className="mb-12" aria-labelledby="home-auctions">
+        <div className="mb-4 flex items-end justify-between gap-4" data-reveal>
+          <h2 id="home-auctions" className="flex items-center gap-2 font-display text-xl font-bold text-white light:text-slate-900">
+            <Gavel className="h-5 w-5 text-fuchsia-400 light:text-fuchsia-600" aria-hidden /> {t("home.auctions")}
+          </h2>
+          <Link href="/auctions" className="inline-flex items-center gap-1 text-sm font-semibold text-violet-300 hover:text-violet-200 light:text-violet-700 hover:light:text-violet-900">
+            {t("home.auctionsAll")} <ArrowRight className="h-4 w-4" aria-hidden />
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {(auctions.length > 0 ? auctions : getShowcaseAuctions()).map((a, i) => (
+            <AuctionCard key={a.id} auction={a} index={i} />
+          ))}
+        </div>
+      </section>
 
       <section className="mb-12" data-reveal>
         <h2 className="mb-4 font-display text-xl font-bold text-white light:text-slate-900">{t("home.trending")}</h2>
         <FeedFilterTabs initialVideos={videos} />
       </section>
 
-      {featured && (
-        <section data-reveal className={`kz-spotlight mb-12 flex flex-col items-center gap-6 overflow-hidden rounded-3xl p-6 text-center sm:flex-row sm:p-8 sm:text-left ${surface}`}>
-          <img src={featured.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-24 w-24 shrink-0 rounded-2xl border-2 border-violet-500/60 object-cover" />
-          <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-violet-400 light:text-violet-700">{t("home.featured")}</p>
-            <h3 className="mt-1 text-xl font-bold text-white light:text-slate-900">{featured.displayName}</h3>
-            {featured.bio && <p className="mt-1 line-clamp-2 text-sm text-zinc-400 light:text-slate-600">{featured.bio}</p>}
-            <p className="mt-2 font-mono text-xs text-zinc-500">
-              {t("home.figures.videos", { count: featured.videosCount })} · {t("home.figures.views", { count: featured.totalViews.toLocaleString("en-US") })}
-            </p>
-          </div>
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-            <Link href={`/@${featured.username}`} className="inline-flex items-center justify-center rounded-2xl bg-linear-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-xs font-bold text-white">
-              {t("home.viewProfile")}
-            </Link>
-            <RelationshipActions username={featured.username} show={["follow"]} />
-          </div>
-        </section>
-      )}
+      {(() => {
+        const feat = featured || {
+          userId: "elena-showcase",
+          username: "elenavox",
+          displayName: "Elena Vox",
+          avatarUrl: "/showcase/stream-elena.jpg",
+          bio: "Visual artist, nocturnal producer & independent 4K cinema director.",
+          videosCount: 8,
+          totalViews: 38400,
+        };
+        return (
+          <section data-reveal className={`kz-spotlight mb-12 flex flex-col items-center gap-6 overflow-hidden rounded-3xl p-6 text-center sm:flex-row sm:p-8 sm:text-left ${surface}`}>
+            <img src={feat.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-24 w-24 shrink-0 rounded-2xl border-2 border-violet-500/60 object-cover shadow-xl" />
+            <div className="min-w-0 flex-1">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-violet-400 light:text-violet-700">{t("home.featured")}</p>
+              <h3 className="mt-1 text-xl font-bold text-white light:text-slate-900">{feat.displayName}</h3>
+              {feat.bio && <p className="mt-1 line-clamp-2 text-sm text-zinc-400 light:text-slate-600">{feat.bio}</p>}
+              <p className="mt-2 font-mono text-xs text-zinc-500">
+                {t("home.figures.videos", { count: feat.videosCount })} · {t("home.figures.views", { count: feat.totalViews.toLocaleString("en-US") })}
+              </p>
+            </div>
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+              <Link href={`/@${feat.username}`} className="inline-flex items-center justify-center rounded-2xl bg-linear-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-xs font-bold text-white shadow-lg">
+                {t("home.viewProfile")}
+              </Link>
+              <RelationshipActions username={feat.username} show={["follow"]} />
+            </div>
+          </section>
+        );
+      })()}
 
       {!viewer && (
         <section data-reveal className="relative mb-6 grid items-center gap-10 overflow-hidden rounded-4xl border border-violet-500/20 bg-linear-to-br from-violet-950/60 via-zinc-950 to-fuchsia-950/50 p-8 light:from-violet-100 light:via-white light:to-pink-100 sm:p-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
