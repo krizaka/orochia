@@ -6,7 +6,7 @@ import { Check, CheckCircle2, Clapperboard, Eye, Film, Lock, Mail, Scissors, Shi
 import { VideoEditor } from "./VideoEditor";
 import { DraftsShelf } from "./DraftsShelf";
 import { useObjectUrl } from "./editor/media";
-import { Button, buttonVariants, cn, IconButton, Input, Select, Switch, Textarea } from "@/components/ui";
+import { Badge, Button, buttonVariants, cn, IconButton, Input, Select, Switch, Textarea } from "@/components/ui";
 import { money } from "@/lib/money";
 import { useUploadManager } from "@/lib/upload-manager";
 import { UPLOAD_LIMITS } from "@orochia/media/limits";
@@ -321,7 +321,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                   <p className="mt-0.5 text-xs text-fg-muted">
                     {size(file.size)}
                     {duration !== null && ` · ${clockOf(duration)}`}
-                    {lastEdit && <span className="ml-2 rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-semibold text-accent">{t("publish.drop.edited")}</span>}
+                    {lastEdit && <Badge size="sm" tone="accent" className="ml-2 normal-case tracking-normal">{t("publish.drop.edited")}</Badge>}
                   </p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {(source?.size ?? 0) <= EDITOR_MAX_BYTES && (
@@ -553,9 +553,9 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                   </span>
                 )}
                 {visibility === "TIPPED_UNLOCKED" && (
-                  <span className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-linear-to-r from-accent to-accent-2 px-2 py-0.5 text-[10px] font-bold text-white">
-                    <Lock className="h-3 w-3" /> {money(priceCents)}
-                  </span>
+                  <Badge size="sm" className="absolute left-2 top-2 bg-linear-to-r from-accent to-accent-2 font-bold normal-case tracking-normal text-on-accent">
+                    <Lock className="h-3 w-3" aria-hidden /> {money(priceCents)}
+                  </Badge>
                 )}
                 {duration !== null && <span className="absolute bottom-2 right-2 rounded-sm bg-scrim-strong px-1.5 py-0.5 font-mono text-[10px] text-fg-on-media">{clockOf(duration)}</span>}
               </div>

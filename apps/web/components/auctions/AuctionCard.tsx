@@ -38,10 +38,10 @@ export function AuctionCard({ auction: a, index = 0 }: { auction: Card; index?: 
             </Badge>
           )}
         </div>
-        <span className="absolute bottom-2.5 right-2.5 inline-flex items-center gap-1 rounded-full bg-scrim px-2 py-0.5 text-[10px] font-semibold text-fg-on-media backdrop-blur-md">
+        <Badge size="sm" tone="scrim" className="absolute bottom-2.5 right-2.5 normal-case tracking-normal">
           {a.rights === "DOWNLOAD" ? <Download className="h-3 w-3" aria-hidden /> : <Play className="h-3 w-3" aria-hidden />}
           {t(`auction.rights.${a.rights}`)}
-        </span>
+        </Badge>
       </div>
       <div className="flex flex-1 flex-col gap-3 p-4">
         <h3 className="line-clamp-1 text-sm font-semibold text-fg group-hover:text-accent">{a.title}</h3>

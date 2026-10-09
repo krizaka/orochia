@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { BadgeCheck } from "lucide-react";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
-import { Avatar, SocialIcon } from "@/components/ui";
+import { Avatar, Badge, SocialIcon } from "@/components/ui";
 import { PictureQuickEdit } from "./PictureQuickEdit";
 import { t, type MessageKey } from "@/lib/i18n";
 
@@ -103,7 +103,7 @@ export function ProfileHero({
               </h1>
               <p className="mt-0.5 font-mono text-xs text-fg-secondary">
                 @{username}
-                {roleLabel && <span className="ml-2 rounded-full bg-accent/15 px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider text-accent">{roleLabel}</span>}
+                {roleLabel && <Badge size="sm" tone="accent" className="ml-2 font-sans font-bold">{roleLabel}</Badge>}
               </p>
             </div>
           </div>

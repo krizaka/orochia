@@ -5,7 +5,7 @@ import Hls from "hls.js";
 import { Gavel, Lock, Maximize, Pause, Play, Sparkles, Users, Volume2, VolumeX } from "lucide-react";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
-import { Button, cn, IconButton } from "@/components/ui";
+import { Badge, Button, cn, IconButton } from "@/components/ui";
 
 interface VideoPlayerProps {
   videoId: string;
@@ -184,9 +184,9 @@ export function VideoPlayer({
       {/* 18+ Rating Badge Top Left */}
       {(isAdult || contentRatingId === "MATURE_18" || contentRatingId === "ADULT_EXPLICIT") && (
         <div className="absolute top-4 left-4 z-20">
-          <span className="rounded-full bg-danger/90 px-2 py-0.5 text-[10px] font-black text-white shadow-md backdrop-blur-md font-mono">
+          <Badge size="sm" className="bg-danger/90 font-mono font-black text-white shadow-md ring-0 backdrop-blur-md">
             18+
-          </span>
+          </Badge>
         </div>
       )}
 

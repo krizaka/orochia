@@ -3,10 +3,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X, Users, Tv, Hash, Lock, CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
-import { Avatar, Button, cn, IconButton, Spinner } from "@/components/ui";
+import { Avatar, Badge, Button, cn, IconButton, Spinner } from "@/components/ui";
 import Link from "next/link";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
+import { money } from "@/lib/money";
 
 interface CreatorResult {
   id: string;
@@ -258,10 +259,10 @@ export function GlobalSearchModal({
                       <p className="text-[11px] text-fg-secondary mt-0.5">{v.creatorName}</p>
                     </div>
                     {v.visibility === "TIPPED_UNLOCKED" && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 border border-accent/30 px-2 py-0.5 text-[10px] font-bold text-accent">
-                        <Lock className="h-2.5 w-2.5" />
-                        ${(v.minTipAmountCents / 100).toFixed(2)}
-                      </span>
+                      <Badge size="sm" tone="accent" className="font-bold normal-case tracking-normal">
+                        <Lock className="h-2.5 w-2.5" aria-hidden />
+                        {money(v.minTipAmountCents)}
+                      </Badge>
                     )}
                   </button>
                 ))}

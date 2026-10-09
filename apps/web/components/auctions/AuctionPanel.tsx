@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, Clock, Download, Gavel, Info, Play, ShieldCheck, Sparkles, Timer, Trophy, Wallet, X } from "lucide-react";
-import { Button, Chip, cn, ConfirmIconButton, Countdown, Input, LiveBadge, orochiaButton, Spinner } from "@/components/ui";
+import { Badge, Button, Chip, cn, ConfirmIconButton, Countdown, Input, LiveBadge, orochiaButton, Spinner } from "@/components/ui";
 import { money } from "@/lib/money";
 import { timeAgo } from "@/components/notifications/useNotifications";
 import { t, type MessageKey } from "@/lib/i18n";
@@ -111,14 +111,14 @@ export function AuctionPanel({
       <div className="relative bg-[radial-gradient(120%_140%_at_0%_0%,rgba(139,92,246,0.35),transparent_60%),radial-gradient(100%_120%_at_100%_100%,rgba(236,72,153,0.28),transparent_60%)] px-5 pt-5 pb-4 light:bg-[radial-gradient(120%_140%_at_0%_0%,rgba(139,92,246,0.14),transparent_60%),radial-gradient(100%_120%_at_100%_100%,rgba(236,72,153,0.12),transparent_60%)]">
         <div className="flex flex-wrap items-center gap-2">
           <AuctionStatusBadge phase={a.phase} />
-          <span className="inline-flex items-center gap-1 rounded-full border border-border-default px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-fg-secondary">
+          <Badge tone="neutral" className="font-bold">
             {a.rights === "DOWNLOAD" ? <Download className="h-3 w-3" aria-hidden /> : <Play className="h-3 w-3" aria-hidden />}
             {t(`auction.rights.${a.rights}`)}
-          </span>
+          </Badge>
           {extended && open && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-warning/30 bg-warning/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-warning">
+            <Badge tone="warning" className="font-bold">
               <Timer className="h-3 w-3" aria-hidden /> {t("auction.extended")}
-            </span>
+            </Badge>
           )}
         </div>
         <h2 id="auction-title" className="sr-only">{t("auction.title")}</h2>

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Download, Eye, Film, Landmark, Users, Wallet } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { Button, Segmented, orochiaButton, buttonVariants, cn, Spinner } from "@/components/ui";
+import { Badge, Button, buttonVariants, cn, orochiaButton, Segmented, Spinner, type BadgeProps } from "@/components/ui";
 import { MonthlyChart } from "@/components/money/MonthlyChart";
 import { PayoutAccountSheet } from "@/components/money/PayoutAccountSheet";
 import { WithdrawSheet } from "@/components/money/WithdrawSheet";
@@ -25,12 +25,12 @@ interface Earnings {
 
 const PERIODS: Period[] = ["30d", "90d", "12m", "all"];
 const card = "rounded-3xl border border-border-default bg-surface-1/60 p-5 light:shadow-xs";
-const STATUS_TONE: Record<string, string> = {
-  SETTLED: "bg-success/15 text-success",
-  FAILED: "bg-danger/15 text-danger",
-  REQUESTED: "bg-surface-3 text-fg",
-  UNDER_REVIEW: "bg-warning/15 text-warning",
-  PROCESSING: "bg-sky-500/15 text-sky-200 light:text-sky-800",
+const STATUS_TONE: Record<string, BadgeProps["tone"]> = {
+  SETTLED: "success",
+  FAILED: "danger",
+  REQUESTED: "neutral",
+  UNDER_REVIEW: "warning",
+  PROCESSING: "accent",
 };
 
 function Stat({ icon: Icon, label, value, hint, action }: { icon: React.ElementType; label: string; value: string; hint?: string; action?: React.ReactNode }) {
@@ -189,7 +189,7 @@ function EarningsPage() {
                       <tr key={l.id}>
                         <td className="whitespace-nowrap px-5 py-2.5 text-xs text-fg-muted">{new Date(l.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</td>
                         <td className="px-2 py-2.5">
-                          <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-semibold text-accent">{t(`earnings.kinds.${l.kind}`)}</span>
+                          <Badge tone="accent" className="normal-case tracking-normal">{t(`earnings.kinds.${l.kind}`)}</Badge>
                         </td>
                         <td className="max-w-[16rem] truncate px-2 py-2.5 text-fg">{l.videoTitle ?? "—"}</td>
                         <td className="px-2 py-2.5 text-xs text-fg-secondary">{l.supporter ?? ""}</td>
@@ -237,7 +237,7 @@ function EarningsPage() {
                     {data!.payouts.map((p) => (
                       <li key={p.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
                         <span className="text-xs text-fg-muted">{new Date(p.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
-                        <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-semibold", STATUS_TONE[p.status])}>{t(`earnings.statuses.${p.status}`)}</span>
+                        <Badge tone={STATUS_TONE[p.status] ?? "neutral"} className="normal-case tracking-normal">{t(`earnings.statuses.${p.status}`)}</Badge>
                         <span className="font-mono font-semibold tabular-nums text-fg">{money(p.amountCents)}</span>
                       </li>
                     ))}

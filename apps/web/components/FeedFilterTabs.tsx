@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Clapperboard, Flame, Sparkles, Lock, Gift, Users, LayoutGrid, Rows3 } from "lucide-react";
-import { Avatar, buttonVariants, cn, orochiaButton } from "@/components/ui";
+import { Avatar, Badge, buttonVariants, cn, orochiaButton } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
 import Link from "next/link";
@@ -167,9 +167,9 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
                 </Link>
 
                 <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-accent/20 border border-accent/30 px-2.5 py-0.5 text-[10px] font-bold text-accent">
+                  <Badge size="sm" tone="accent" className="font-bold">
                     {t("feed.hd")}
-                  </span>
+                  </Badge>
                 </div>
               </div>
 

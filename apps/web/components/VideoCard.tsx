@@ -6,7 +6,7 @@ import { Bookmark, CheckCircle2, Eye, Flame, Gavel, Heart, Lock, Play, Sparkles,
 import { t } from "@/lib/i18n";
 import { TipModal } from "@/components/TipModal";
 import type { VideoVisibility } from "@/lib/visibility";
-import { Avatar, Button, cn, IconButton } from "@/components/ui";
+import { Avatar, Badge, Button, cn, IconButton } from "@/components/ui";
 
 export interface VideoCardProps {
   id: string;
@@ -156,9 +156,9 @@ export function VideoCard({
           {/* Badges Container Top-Left */}
           <div className="absolute top-2.5 left-2.5 flex flex-wrap items-center gap-1.5 z-10">
             {(isAdult || contentRatingId === "MATURE_18" || contentRatingId === "ADULT_EXPLICIT") && (
-              <span className="rounded-full bg-danger/90 px-2 py-0.5 text-[10px] font-black text-white shadow-md backdrop-blur-md font-mono">
+              <Badge size="sm" className="bg-danger/90 font-mono font-black text-white shadow-md ring-0 backdrop-blur-md">
                 18+
-              </span>
+              </Badge>
             )}
 
             {isPaywalled && (
@@ -190,9 +190,9 @@ export function VideoCard({
             )}
 
             {!isPaywalled && !isContacts && !isAuction && !isChallenge && (
-              <div className="flex items-center gap-1 rounded-full bg-success/25 border border-success/30 px-2.5 py-0.5 text-[10px] font-semibold text-success backdrop-blur-md">
-                <span>{t("card.free")}</span>
-              </div>
+              <Badge size="sm" tone="success" className="normal-case tracking-normal backdrop-blur-md">
+                {t("card.free")}
+              </Badge>
             )}
           </div>
 
