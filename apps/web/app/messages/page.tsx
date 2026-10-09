@@ -235,8 +235,8 @@ function MessagesContent() {
         updatedAt: new Date().toISOString(),
       });
       setNewChatUsername("");
-    } catch (e: any) {
-      setError(e.message || t("inbox.startFailed"));
+    } catch (e) {
+      setError((e instanceof Error && e.message) || t("inbox.startFailed"));
     } finally {
       setStartingChat(false);
     }
@@ -272,8 +272,8 @@ function MessagesContent() {
           return [...prev, data.message];
         });
       }
-    } catch (e: any) {
-      setError(e.message || t("inbox.network"));
+    } catch (e) {
+      setError((e instanceof Error && e.message) || t("inbox.network"));
       setInputContent(content);
     } finally {
       setSending(false);

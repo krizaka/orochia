@@ -64,8 +64,8 @@ export function InvitationsPanel() {
       setLastCreatedCode(data.invitation.code);
       setEmailInput("");
       await loadInvitations();
-    } catch (err: any) {
-      setError(err?.message || t("invites.networkError"));
+    } catch (err) {
+      setError((err instanceof Error && err.message) || t("invites.networkError"));
     } finally {
       setCreating(false);
     }

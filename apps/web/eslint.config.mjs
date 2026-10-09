@@ -1,7 +1,11 @@
-import nextVitals from "eslint-config-next/core-web-vitals";
+import { krizakaNext } from "@krizaka/config/eslint/next";
+import { krizakaUi } from "@krizaka/config/eslint/krizaka-ui";
 
 const config = [
-  ...nextVitals,
+  ...krizakaNext,
+  // The four UI rules of the Krizaka platform (no raw palette, no `light:`, no `[var(--…)]`, no className template):
+  // warnings while the ratchet (lint-ratchet.json, `npm run ratchet`) brings the debt down; `error` once it is zero.
+  ...krizakaUi({ severity: "warn" }),
   // public/ffmpeg: ffmpeg.wasm browser files copied from node_modules (scripts/copy-ffmpeg.mjs).
   { ignores: [".next/**", "next-env.d.ts", "public/ffmpeg/**"] },
   {
