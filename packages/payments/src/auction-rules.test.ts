@@ -30,7 +30,7 @@ describe("auction rules", () => {
   it("tells upcoming, live and ending apart, and keeps final states", () => {
     const auction = { status: "OPEN", startsAt: at("2026-01-01T10:00:00Z"), endsAt: at("2026-01-01T12:00:00Z") };
     expect(auctionPhase(auction, at("2026-01-01T09:00:00Z"))).toBe("UPCOMING");
-    expect(auctionPhase(auction, at("2026-01-01T11:00:00Z"))).toBe("LIVE");
+    expect(auctionPhase(auction, at("2026-01-01T11:00:00Z"))).toBe("OPEN");
     expect(auctionPhase(auction, at("2026-01-01T12:00:00Z"))).toBe("ENDING");
     expect(auctionPhase({ ...auction, status: "SOLD" }, at("2026-01-01T11:00:00Z"))).toBe("SOLD");
   });

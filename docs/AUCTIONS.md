@@ -1,7 +1,7 @@
 # 🔨 Auctions
 
 A creator puts one of their videos up for auction between a start and an end. Members bid in **Orochia credits**; the
-price moves **live** for everyone watching; when the auction ends, the highest bidder — and only them — gets the video:
+price moves **in real time** for everyone watching; when the auction ends, the highest bidder — and only them — gets the video:
 to **watch**, or to **watch and download**, as the creator chose. The creator either **decides** (accepts or declines the
 best bid within 48 hours) or lets it **sell to the highest bid** automatically.
 
@@ -36,7 +36,7 @@ stateDiagram-v2
     AWAITING_DECISION --> CANCELLED: operator
 ```
 
-`OPEN` covers both *upcoming* and *live*; the UI phase (`UPCOMING`, `LIVE`, `ENDING`…) is derived from the clock
+`OPEN` covers both *upcoming* and *open*; the UI phase (`UPCOMING`, `OPEN`, `ENDING`…) is derived from the clock
 (`auctionPhase`). Every transition runs in **one transaction under the auction's row lock** (`SELECT … FOR UPDATE`),
 so concurrent bids, the closer and the creator's decision serialise per auction and nothing happens twice.
 
@@ -89,14 +89,14 @@ to the local instance meanwhile.
 ## 5. Privacy
 
 Bidders are shown under a per-auction alias — *Bidder 1, Bidder 2…* by order of first bid. A viewer sees *You* for
-their own bids; only the creator sees the leader's username (to decide). Nobody's bidding history is public; the live
+their own bids; only the creator sees the leader's username (to decide). Nobody's bidding history is public; the real-time
 feed carries no identity.
 
 ## 6. API
 
 | Endpoint | Who | What |
 | :--- | :--- | :--- |
-| `GET /api/auctions?tab=live\|upcoming\|ended\|bidding\|selling` | public / signed in | lists |
+| `GET /api/auctions?tab=open\|upcoming\|ended\|bidding\|selling` | public / signed in | lists |
 | `POST /api/auctions` | creator | start an auction for one of their ready videos |
 | `GET /api/auctions/[id]` | public | the auction as the viewer sees it |
 | `DELETE /api/auctions/[id]` | creator | cancel while nobody has bid |
@@ -112,7 +112,7 @@ A takedown of the video or a suspension of its creator cancels its open auctions
 ## 7. Notifications
 
 `auctionAnnounced` (followers), `auctionNewBid`, `auctionDecision`, `auctionSold`, `auctionUnsold` (creator),
-`auctionOutbid`, `auctionWon`, `auctionDeclined` (bidders) — in the bell, live, and by e-mail, each one switchable in
+`auctionOutbid`, `auctionWon`, `auctionDeclined` (bidders) — in the bell, in real time, and by e-mail, each one switchable in
 the notification settings; e-mails about one auction are throttled.
 
 ## 8. Where things are
@@ -123,7 +123,7 @@ packages/payments/src/auctions.ts         the state machine and its money (trans
 packages/db/src/schema/auctions.ts        auctions, auction_bids
 packages/db/src/listen.ts                 LISTEN / NOTIFY
 apps/web/lib/realtime.ts                  the realtime bus + SSE responses
-apps/web/lib/auctions.ts                  read models, live feed, notifications, HTTP errors
+apps/web/lib/auctions.ts                  read models, real-time feed, notifications, HTTP errors
 apps/web/lib/auction-scheduler.ts         the closer
 apps/web/components/auctions/             AuctionPanel, StartAuctionSheet, AuctionCard, useAuctionLive
 apps/web/app/auctions/page.tsx            /auctions (tabs in the URL)

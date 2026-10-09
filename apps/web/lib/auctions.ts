@@ -180,7 +180,7 @@ export async function auctionIdForVideo(videoId: string): Promise<string | null>
 
 // ── Lists ─────────────────────────────────────────────────────────────────────────────────────
 
-export const AUCTION_TABS = ["live", "upcoming", "ended", "bidding", "selling"] as const;
+export const AUCTION_TABS = ["open", "upcoming", "ended", "bidding", "selling"] as const;
 export type AuctionTab = (typeof AUCTION_TABS)[number];
 
 export interface AuctionCardView {
@@ -204,7 +204,7 @@ export interface AuctionCardView {
 }
 
 /**
- * A tab of the auctions page. live — ending soonest first; upcoming — starting soonest; ended — sold recently;
+ * A tab of the auctions page. open — ending soonest first; upcoming — starting soonest; ended — sold recently;
  * bidding — the viewer's auctions (where they bid); selling — the viewer's own auctions, every state.
  */
 export async function listAuctions(tab: AuctionTab, viewerId: string | null, limit = 24): Promise<AuctionCardView[]> {
@@ -213,7 +213,7 @@ export async function listAuctions(tab: AuctionTab, viewerId: string | null, lim
   let where: SQL | undefined;
   let order: SQL[] = [asc(auctions.endsAt)];
   switch (tab) {
-    case "live":
+    case "open":
       where = and(eq(auctions.status, "OPEN"), lte(auctions.startsAt, now), gt(auctions.endsAt, now));
       break;
     case "upcoming":

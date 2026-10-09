@@ -117,7 +117,7 @@ const VIDEOS: SeedVideo[] = [
   {
     bunnyVideoId: "7f2b1c88-4d3e-4a6f-8b9c-0d1e2f3a4b5c", creator: "miasterling", title: "Midnight Noir — Acoustic Lounge Session",
     description: "Three songs, one microphone, no second take.", visibility: "PUBLIC", duration: 1980,
-    thumb: "photo-1511671782779-c97d3d27a1d4", views: 5210, tags: ["acoustic", "live", "lounge"],
+    thumb: "photo-1511671782779-c97d3d27a1d4", views: 5210, tags: ["acoustic", "concert", "lounge"],
   },
   {
     bunnyVideoId: "8a3c2d99-5e4f-4b7a-9c0d-1e2f3a4b5c6d", creator: "miasterling", title: "Rehearsal Tapes — Contacts Only",
@@ -127,7 +127,7 @@ const VIDEOS: SeedVideo[] = [
   {
     bunnyVideoId: "9b4d3eaa-6f5a-4c8b-0d1e-2f3a4b5c6d7e", creator: "miasterling", title: "Afterhours (encoding)",
     description: "Uploaded, still encoding on Bunny Stream.", visibility: "PUBLIC", status: "PROCESSING", duration: 0,
-    thumb: "photo-1470225620780-dba8ba36b745", views: 0, tags: ["live"],
+    thumb: "photo-1470225620780-dba8ba36b745", views: 0, tags: ["concert"],
   },
   {
     bunnyVideoId: "c4e5f6a7-8b9c-4d0e-9f1a-2b3c4d5e6f70", creator: "elenavox", title: "Inner Circle — Rough Cut",
@@ -335,7 +335,7 @@ export async function runSeed(): Promise<void> {
     });
   }
 
-  // Live stories (24 h): image stories, so they render locally without Bunny. Counters start at zero, as the rows say.
+  // Current stories (24 h): image stories, so they render locally without Bunny. Counters start at zero, as the rows say.
   const [liveStories] = await db.select({ count: sql<string>`count(*)` }).from(stories).where(sql`expires_at > now()`);
   if (Number(liveStories?.count ?? 0) === 0) {
     const inHours = (h: number) => new Date(Date.now() + h * 3600 * 1000);

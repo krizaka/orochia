@@ -5,7 +5,7 @@ import { errorResponse } from "@/lib/http";
 
 export const dynamic = "force-dynamic";
 
-/** Your stories of the last 30 days — live, encoding or expired — with their figures. */
+/** Your stories of the last 30 days — up, encoding or expired — with their figures. */
 export async function GET() {
   try {
     const user = await requireUserWithRole(["CREATOR", "ADMIN"]);

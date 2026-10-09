@@ -10,7 +10,7 @@ import { RelationshipActions } from "@/components/RelationshipActions";
 import { SaveToPlaylist } from "@/components/SaveToPlaylist";
 import { VideoComments } from "@/components/VideoComments";
 import { AuctionPanel } from "@/components/auctions/AuctionPanel";
-import { useAuctionLive } from "@/components/auctions/useAuctionLive";
+import { useAuctionStream } from "@/components/auctions/useAuctionStream";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
 import { Sparkles, Eye, ShieldCheck, Share2, Flag, CheckCircle2, Heart, MessageSquare, Gavel } from "lucide-react";
 import { buttonClass, cx } from "@/components/ui";
@@ -79,7 +79,7 @@ export default function WatchClient() {
   const [liked, setLiked] = useState(false);
   const [likeBusy, setLikeBusy] = useState(false);
   const { user } = useAuth();
-  const live = useAuctionLive(`/api/videos/${videoId}/auction`);
+  const auctionState = useAuctionStream(`/api/videos/${videoId}/auction`);
   const large = useLargeScreen();
 
   const fetchStreamAccess = useCallback(async () => {
@@ -125,7 +125,7 @@ export default function WatchClient() {
   }, [paymentState, fetchStreamAccess]);
 
   // Winning the auction opens the player at once.
-  const won = live.auction?.viewer.won ?? false;
+  const won = auctionState.auction?.viewer.won ?? false;
   useEffect(() => {
     if (won) void fetchStreamAccess();
   }, [won, fetchStreamAccess]);
@@ -181,8 +181,8 @@ export default function WatchClient() {
   const isFollowersOnly = stream ? !stream.allowed && stream.reason === "FOLLOWERS_ONLY" : false;
   const isInvitedOnly = stream ? !stream.allowed && stream.reason === "INVITED_ONLY" : false;
   const isAuction = stream ? !stream.allowed && stream.reason === "AUCTION" : false;
-  const auctionPanel = live.auction && (
-    <AuctionPanel auction={live.auction} skewMs={live.skewMs} pulse={live.pulse} onChanged={() => void live.reload()} onOwnBid={live.onOwnBid} />
+  const auctionPanel = auctionState.auction && (
+    <AuctionPanel auction={auctionState.auction} skewMs={auctionState.skewMs} pulse={auctionState.pulse} onChanged={() => void auctionState.reload()} onOwnBid={auctionState.onOwnBid} />
   );
 
   return (

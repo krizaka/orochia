@@ -40,14 +40,14 @@ export function suggestedBidsCents(minimumCents: number): number[] {
 }
 
 /** Where an auction stands for a viewer, derived from its stored status and the clock. */
-export type AuctionPhase = "UPCOMING" | "LIVE" | "ENDING" | "AWAITING_DECISION" | "SOLD" | "DECLINED" | "UNSOLD" | "CANCELLED";
+export type AuctionPhase = "UPCOMING" | "OPEN" | "ENDING" | "AWAITING_DECISION" | "SOLD" | "DECLINED" | "UNSOLD" | "CANCELLED";
 
 export function auctionPhase(auction: { status: string; startsAt: Date; endsAt: Date }, now: Date): AuctionPhase {
   if (auction.status !== "OPEN") return auction.status as AuctionPhase;
   if (now < auction.startsAt) return "UPCOMING";
   // Past its end, an open auction is being closed (by the scheduler or the next read).
   if (now >= auction.endsAt) return "ENDING";
-  return "LIVE";
+  return "OPEN";
 }
 
 /** The end after a bid placed at `now`: unchanged, or pushed back when the bid lands in the soft-close window. */

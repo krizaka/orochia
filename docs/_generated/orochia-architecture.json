@@ -250,7 +250,7 @@
       "method": "GET",
       "path": "/api/auctions",
       "access": "public · session-aware",
-      "summary": "Lists auctions by tab: live, upcoming, ended (sold), bidding (yours) or selling (your own)."
+      "summary": "Lists auctions by tab: open, upcoming, ended (sold), bidding (yours) or selling (your own)."
     },
     {
       "method": "POST",
@@ -286,7 +286,7 @@
       "method": "GET",
       "path": "/api/auctions/[id]/stream",
       "access": "public",
-      "summary": "Live Server-Sent Events of an auction: each bid (amount, alias, new end) and every change of state."
+      "summary": "Server-Sent Events of an auction: each bid (amount, alias, new end) and every change of state."
     },
     {
       "method": "POST",
@@ -682,7 +682,7 @@
       "method": "GET",
       "path": "/api/me/stories",
       "access": "session · CREATOR / ADMIN",
-      "summary": "Your stories of the last 30 days — live, encoding or expired — with their figures."
+      "summary": "Your stories of the last 30 days — up, encoding or expired — with their figures."
     },
     {
       "method": "GET",
@@ -784,7 +784,7 @@
       "method": "GET",
       "path": "/api/stories",
       "access": "public · session-aware",
-      "summary": "The stories rail: one ring per creator with live stories you may see (yours first, then unseen), signed for you."
+      "summary": "The stories rail: one ring per creator with current stories you may see (yours first, then unseen), signed for you."
     },
     {
       "method": "POST",

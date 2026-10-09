@@ -15,12 +15,12 @@ export const metadata = {
   alternates: { canonical: "/auctions" },
 };
 
-/** Auctions: live (ending soonest first), upcoming, sold, and — signed in — yours as a bidder and as a seller. */
+/** Auctions: open (ending soonest first), upcoming, sold, and — signed in — yours as a bidder and as a seller. */
 export default async function AuctionsPage(props: { searchParams: Promise<{ tab?: string }> }) {
   const { tab: asked } = await props.searchParams;
   const user = await getCurrentUser();
   const tabs = AUCTION_TABS.filter((id) => (id === "bidding" ? Boolean(user) : id === "selling" ? user?.role === "CREATOR" : true));
-  const tab: AuctionTab = (tabs as readonly string[]).includes(asked ?? "") ? (asked as AuctionTab) : "live";
+  const tab: AuctionTab = (tabs as readonly string[]).includes(asked ?? "") ? (asked as AuctionTab) : "open";
   const items = await listAuctions(tab, user?.id ?? null);
 
   return (
@@ -51,7 +51,7 @@ export default async function AuctionsPage(props: { searchParams: Promise<{ tab?
         {tabs.map((id) => (
           <Link
             key={id}
-            href={id === "live" ? "/auctions" : `/auctions?tab=${id}`}
+            href={id === "open" ? "/auctions" : `/auctions?tab=${id}`}
             aria-current={tab === id ? "page" : undefined}
             className={cx(
               "-mb-px shrink-0 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400",
@@ -73,9 +73,9 @@ export default async function AuctionsPage(props: { searchParams: Promise<{ tab?
               {t("auctions.empty.selling.cta")}
             </Link>
           )}
-          {tab !== "live" && tab !== "selling" && (
+          {tab !== "open" && tab !== "selling" && (
             <Link href="/auctions" className={buttonClass({ variant: "secondary", className: "mt-5" })}>
-              {t("auctions.seeLive")}
+              {t("auctions.seeOpen")}
             </Link>
           )}
         </div>

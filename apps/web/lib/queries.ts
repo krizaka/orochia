@@ -164,13 +164,15 @@ async function creatorCardFor(userId: string): Promise<CreatorCard | null> {
   };
 }
 
-/** Active verified creators from DB with their latest video thumbnail for the stories bar */
+/** The creator whose listed videos earned the most tips — the home's featured creator, or null on an empty platform. */
 export async function featuredCreator(): Promise<CreatorCard | null> {
+  // A creator is featured for what people can watch: at least one listed video, never an empty space.
   const [top] = await db
-    .select({ userId: profiles.userId })
+    .selectDistinct({ userId: profiles.userId, earned: profiles.totalTipsEarnedCents })
     .from(profiles)
     .innerJoin(users, eq(users.id, profiles.userId))
-    .where(and(eq(users.role, "CREATOR"), isNull(users.suspendedAt)))
+    .innerJoin(videos, eq(videos.creatorId, users.id))
+    .where(and(eq(users.role, "CREATOR"), listable()))
     .orderBy(desc(profiles.totalTipsEarnedCents))
     .limit(1);
   return top ? creatorCardFor(top.userId) : null;

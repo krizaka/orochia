@@ -16,7 +16,7 @@ const ImageStory = z.object({
   isBlurred: z.boolean().optional().default(false),
 });
 
-/** The stories rail: one ring per creator with live stories you may see (yours first, then unseen), signed for you. */
+/** The stories rail: one ring per creator with current stories you may see (yours first, then unseen), signed for you. */
 export async function GET() {
   try {
     const viewer = await getCurrentUser();

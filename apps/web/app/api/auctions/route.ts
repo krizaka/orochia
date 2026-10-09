@@ -17,10 +17,10 @@ const Create = z.object({
   settlement: z.enum(["CREATOR_DECIDES", "HIGHEST_BID"]),
 });
 
-/** Lists auctions by tab: live, upcoming, ended (sold), bidding (yours) or selling (your own). */
+/** Lists auctions by tab: open, upcoming, ended (sold), bidding (yours) or selling (your own). */
 export async function GET(req: NextRequest) {
   try {
-    const tab = z.enum(AUCTION_TABS).catch("live").parse(req.nextUrl.searchParams.get("tab"));
+    const tab = z.enum(AUCTION_TABS).catch("open").parse(req.nextUrl.searchParams.get("tab"));
     const user = tab === "bidding" || tab === "selling" ? await getCurrentUser() : null;
     if ((tab === "bidding" || tab === "selling") && !user) return jsonError(401, "Sign in to see your auctions");
     return NextResponse.json({ success: true, tab, items: await listAuctions(tab, user?.id ?? null) });
