@@ -4,12 +4,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Auction, BidEvent } from "./types";
 
 /**
- * An auction kept live: loaded once from `source` (an /api route answering `{ auction }`), then moved by the auction's
+ * An auction kept current: loaded once from `source` (an /api route answering `{ auction }`), then moved by the auction's
  * event stream — each bid updates price, minimum, end and history in place; a change of state (closed, sold, declined)
  * reloads it. A reconnection reloads too, so nothing missed while offline stays missing. `skewMs` aligns countdowns on
  * the server's clock.
  */
-export function useAuctionLive(source: string) {
+export function useAuctionStream(source: string) {
   const [auction, setAuction] = useState<Auction | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [skewMs, setSkewMs] = useState(0);

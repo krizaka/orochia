@@ -13,16 +13,16 @@ const UNITS = () => ({ d: t("auction.units.d"), h: t("auction.units.h"), m: t("a
 
 /** The status pill of an auction phase. */
 export function AuctionStatusBadge({ phase, className }: { phase: Auction["phase"]; className?: string }) {
-  const tone = phase === "LIVE" ? "live" : phase === "UPCOMING" ? "upcoming" : phase === "SOLD" ? "success" : "muted";
+  const tone = phase === "OPEN" ? "live" : phase === "UPCOMING" ? "upcoming" : phase === "SOLD" ? "success" : "muted";
   return <LiveBadge label={t(`auction.phase.${phase}`)} tone={tone} className={className} />;
 }
 
 const bidderName = (alias: number, mine: boolean) => (mine ? t("auction.you") : t("auction.bidder", { n: alias }));
 
 /**
- * An auction on the watch page, live: price, countdown (aligned on the server clock), the viewer's standing, the bid
+ * An auction on the watch page, kept current: price, countdown (aligned on the server clock), the viewer's standing, the bid
  * form with one-tap amounts, the bid history under aliases, and — for its creator — cancel, accept or decline. Every
- * state of the auction has its screen: upcoming, live, closing, awaiting the creator, sold, declined, unsold, cancelled.
+ * state of the auction has its screen: upcoming, open, closing, awaiting the creator, sold, declined, unsold, cancelled.
  */
 export function AuctionPanel({
   auction,
@@ -101,7 +101,7 @@ export function AuctionPanel({
     else setError({ text: t("auction.errors.download") });
   };
 
-  const live = a.phase === "LIVE";
+  const open = a.phase === "OPEN";
   const priceLabel = a.bidsCount > 0 ? t(a.status === "SOLD" ? "auction.soldFor" : "auction.currentBid") : t("auction.startingPrice");
   const price = a.bidsCount > 0 ? a.highestBidCents : a.startingPriceCents;
 
@@ -115,7 +115,7 @@ export function AuctionPanel({
             {a.rights === "DOWNLOAD" ? <Download className="h-3 w-3" aria-hidden /> : <Play className="h-3 w-3" aria-hidden />}
             {t(`auction.rights.${a.rights}`)}
           </span>
-          {extended && live && (
+          {extended && open && (
             <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-200 light:text-amber-700">
               <Timer className="h-3 w-3" aria-hidden /> {t("auction.extended")}
             </span>
@@ -138,7 +138,7 @@ export function AuctionPanel({
                 <Countdown label={t("auction.startsIn")} target={a.startsAt} skewMs={skewMs} units={UNITS()} />
               </>
             )}
-            {live && (
+            {open && (
               <>
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500">{t("auction.endsIn")}</p>
                 <Countdown label={t("auction.endsIn")} target={a.endsAt} skewMs={skewMs} units={UNITS()} />
@@ -164,7 +164,7 @@ export function AuctionPanel({
         <Standing auction={a} />
 
         {/* Bid form */}
-        {live && !viewer.isCreator && viewer.signedIn && (
+        {open && !viewer.isCreator && viewer.signedIn && (
           <form onSubmit={submit} className="space-y-3" aria-label={t("auction.placeBid")}>
             <div className="grid grid-cols-3 gap-2" role="group" aria-label={t("auction.quickBids")}>
               {a.suggestedBidsCents.map((cents) => (
@@ -202,7 +202,7 @@ export function AuctionPanel({
           </form>
         )}
 
-        {(live || a.phase === "UPCOMING") && !viewer.signedIn && (
+        {(open || a.phase === "UPCOMING") && !viewer.signedIn && (
           <Link href={`/auth/login?next=/watch/${a.video.id}%23auction`} className={buttonClass({ variant: "primary", size: "lg", round: false, className: "w-full" })}>
             <Gavel className="h-4 w-4" /> {t("auction.signInToBid")}
           </Link>
@@ -302,15 +302,15 @@ function Standing({ auction: a }: { auction: Auction }) {
   if (v.isCreator) {
     if (a.status === "SOLD") [tone, text] = ["ok", t("auction.standing.creatorSold", { amount: usd(a.highestBidCents), username: a.leaderUsername ?? "" })];
     else if (a.phase === "AWAITING_DECISION") text = t("auction.standing.creatorDecide", { amount: usd(a.highestBidCents), username: a.leaderUsername ?? t("auction.bidder", { n: a.leaderAlias ?? 0 }) });
-    else if (a.phase === "LIVE" && a.bidsCount > 0) text = t("auction.standing.creatorLeader", { username: a.leaderUsername ?? t("auction.bidder", { n: a.leaderAlias ?? 0 }) });
-    else if (a.settlement === "HIGHEST_BID" && (a.phase === "LIVE" || a.phase === "UPCOMING")) text = t("auction.standing.creatorAutomatic");
+    else if (a.phase === "OPEN" && a.bidsCount > 0) text = t("auction.standing.creatorLeader", { username: a.leaderUsername ?? t("auction.bidder", { n: a.leaderAlias ?? 0 }) });
+    else if (a.settlement === "HIGHEST_BID" && (a.phase === "OPEN" || a.phase === "UPCOMING")) text = t("auction.standing.creatorAutomatic");
   } else if (v.won) {
     [tone, text] = ["ok", t(a.rights === "DOWNLOAD" ? "auction.standing.wonDownload" : "auction.standing.won")];
   } else if (a.phase === "AWAITING_DECISION" && v.isLeader) {
     text = t("auction.standing.underReview", { amount: usd(a.highestBidCents) });
-  } else if (a.phase === "LIVE" && v.isLeader) {
+  } else if (a.phase === "OPEN" && v.isLeader) {
     [tone, text] = ["ok", t("auction.standing.leading")];
-  } else if (a.phase === "LIVE" && v.alias !== null) {
+  } else if (a.phase === "OPEN" && v.alias !== null) {
     [tone, text] = ["warn", t("auction.standing.outbid")];
   } else if (a.status === "SOLD") {
     text = t("auction.standing.soldOther");

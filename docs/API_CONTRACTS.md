@@ -31,13 +31,13 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `PATCH` | `/api/admin/users/[id]` | session · ADMIN | Suspends an account (it can no longer sign in, and its open sessions are refused on their next request; its open auctions are cancelled and their bids released), reinstates it, or changes its role. |
 | `GET` | `/api/admin/videos` | session · ADMIN | The catalogue for moderation: every video with its creator, state and open reports; `?state=removed` lists takedowns. |
 | `PATCH` | `/api/admin/videos/[id]` | session · ADMIN | Takes a video down (DMCA, terms, a confirmed report) with a recorded reason — cancelling its auction — or restores it. |
-| `GET` | `/api/auctions` | public · session-aware | Lists auctions by tab: live, upcoming, ended (sold), bidding (yours) or selling (your own). |
+| `GET` | `/api/auctions` | public · session-aware | Lists auctions by tab: open, upcoming, ended (sold), bidding (yours) or selling (your own). |
 | `POST` | `/api/auctions` | session · CREATOR | Puts one of the creator's ready videos up for auction (start, end, starting price, rights, how it ends). |
 | `DELETE` | `/api/auctions/[id]` | session · CREATOR | The creator cancels their auction while nobody has bid; the video gets its previous visibility back. |
 | `GET` | `/api/auctions/[id]` | public · session-aware | An auction as the viewer sees it: price, minimum next bid, timing, recent bids (aliases), and their own standing. |
 | `POST` | `/api/auctions/[id]/bids` | session · MEMBER / CREATOR / ADMIN | Places a bid in Orochia credits; they are held while the bid leads and released when it is outbid. |
 | `POST` | `/api/auctions/[id]/decision` | session · CREATOR | The creator accepts the best bid (the video is sold to its bidder) or declines it (the credits go back). |
-| `GET` | `/api/auctions/[id]/stream` | public | Live Server-Sent Events of an auction: each bid (amount, alias, new end) and every change of state. |
+| `GET` | `/api/auctions/[id]/stream` | public | Server-Sent Events of an auction: each bid (amount, alias, new end) and every change of state. |
 | `POST` | `/api/auth/forgot-password` | public | E-mails a password-reset link (1 h) to the address, if an active account uses it. |
 | `POST` | `/api/auth/login` | public | Password login. |
 | `POST` | `/api/auth/logout` | public | — |
@@ -103,7 +103,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `PUT` | `/api/me/payout-account` | session · CREATOR / ADMIN | Saves (or replaces) where your earnings are sent; the details are checked and encrypted at rest. |
 | `GET` | `/api/me/profile` | session · ADMIN / CREATOR / MEMBER | Reads the signed-in user's own profile and settings (private fields included: e-mail, date of birth). |
 | `PUT` | `/api/me/profile` | session · ADMIN / CREATOR / MEMBER | Updates the signed-in user's own profile and preferences (only the fields sent). |
-| `GET` | `/api/me/stories` | session · CREATOR / ADMIN | Your stories of the last 30 days — live, encoding or expired — with their figures. |
+| `GET` | `/api/me/stories` | session · CREATOR / ADMIN | Your stories of the last 30 days — up, encoding or expired — with their figures. |
 | `GET` | `/api/me/wallet` | session · MEMBER / CREATOR / ADMIN | Your Orochia credits: balance (and what is held behind your leading bids), the packs you can buy, how you can pay for them, and your history. |
 | `POST` | `/api/me/wallet/topups` | session · MEMBER / CREATOR / ADMIN | Buys credits: returns the gateway's hosted checkout (card, Apple Pay, Google Pay — card details never reach Orochia); the gateway's signed webhook adds the credits. |
 | `GET` | `/api/metrics` | bearer token | Prometheus metrics, behind a bearer token (METRICS_AUTH_TOKEN). |
@@ -120,7 +120,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/reference/content-ratings` | public | Reference content classifications and age ratings (Kids Safe, General, Teens, Mature, Adult). |
 | `GET` | `/api/reference/presets` | public | Default avatar and banner presets users can choose without uploading custom files. |
 | `GET` | `/api/search` | public | — |
-| `GET` | `/api/stories` | public · session-aware | The stories rail: one ring per creator with live stories you may see (yours first, then unseen), signed for you. |
+| `GET` | `/api/stories` | public · session-aware | The stories rail: one ring per creator with current stories you may see (yours first, then unseen), signed for you. |
 | `POST` | `/api/stories` | session · CREATOR / ADMIN | Publishes an image story (24 h) from an image stored by /api/uploads (category "stories"); verified creators only. |
 | `DELETE` | `/api/stories/[id]` | session · CREATOR / ADMIN | Withdraws a story: its creator or an operator. |
 | `DELETE` | `/api/stories/[id]/like` | session · MEMBER / CREATOR / ADMIN | Removes your like (idempotent). |

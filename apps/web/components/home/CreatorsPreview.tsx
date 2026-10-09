@@ -1,34 +1,21 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { BadgeCheck, Coins, Eye, Gavel, Lock, Sparkles, TrendingUp, Users } from "lucide-react";
+import { Coins, Gavel, Landmark, Lock, ShieldCheck } from "lucide-react";
 import { t } from "@/lib/i18n";
 
-const BARS = [36, 48, 42, 58, 54, 70, 64, 82, 76, 92, 86, 100];
-
-/** Counts from 0 to `to` once `active` turns on (ease-out), or shows it at once under reduced motion. */
-function useCountUp(to: number, active: boolean, ms = 1400) {
-  const [value, setValue] = useState(0);
-  useEffect(() => {
-    if (!active) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return setValue(to);
-    let frame = 0;
-    const start = performance.now();
-    const tick = (now: number) => {
-      const p = Math.min(1, (now - start) / ms);
-      setValue(Math.round(to * (1 - Math.pow(1 - p, 3))));
-      if (p < 1) frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [to, active, ms]);
-  return value;
-}
+const SOURCES = [
+  ["tips", Coins, "from-amber-400 to-yellow-300"],
+  ["unlocks", Lock, "from-violet-500 to-fuchsia-500"],
+  ["auctions", Gavel, "from-fuchsia-500 to-pink-500"],
+] as const;
 
 /**
- * A creator's revenue dashboard at a glance — demonstrating tips, auctions, and paid unlocks.
+ * How a creator is paid on Orochia — the three ways money comes in and where each payment goes, drawn from the
+ * platform's own rules (the creator's share is the configured fee, nothing else). No account, no figures that would
+ * pretend to be someone's earnings. The split fills once it scrolls into view; still under prefers-reduced-motion.
  */
-export function CreatorsPreview() {
+export function CreatorsPreview({ share }: { share: number }) {
   const box = useRef<HTMLDivElement>(null);
   const [seen, setSeen] = useState(false);
   useEffect(() => {
@@ -36,115 +23,58 @@ export function CreatorsPreview() {
     if (box.current) io.observe(box.current);
     return () => io.disconnect();
   }, []);
-  const earned = useCountUp(482_350, seen);
-  const views = useCountUp(128_400, seen);
-  const fans = useCountUp(1_240, seen);
 
   return (
-    <div ref={box} aria-hidden className="relative mx-auto w-full max-w-sm">
-      <div className="absolute -inset-6 -z-10 rounded-4xl bg-linear-to-tr from-violet-600/35 via-fuchsia-600/25 to-pink-500/25 blur-2xl light:from-violet-300/40 light:to-pink-200/40" />
+    <div ref={box} className="relative mx-auto w-full max-w-sm">
+      <div aria-hidden className="absolute -inset-6 -z-10 rounded-4xl bg-linear-to-tr from-violet-600/35 via-fuchsia-600/25 to-pink-500/25 blur-2xl light:from-violet-300/40 light:to-pink-200/40" />
       <div className="rounded-[2rem] border border-white/15 bg-zinc-950/85 p-6 shadow-2xl backdrop-blur-2xl light:border-black/5 light:bg-white/95">
-        {/* Creator Identity Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-white/10 light:border-black/5">
-          <div className="flex items-center gap-2.5">
-            <div className="relative">
-              <img
-                src="/showcase/stream-elena.jpg"
-                alt=""
-                className="h-9 w-9 rounded-full object-cover ring-2 ring-violet-500 shadow-md"
-              />
-              <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-black" />
-            </div>
-            <div>
-              <div className="flex items-center gap-1">
-                <span className="text-xs font-bold text-white light:text-slate-900">{t("home.showcase.demo.creatorElena")}</span>
-                <BadgeCheck className="h-3 w-3 text-violet-400" />
-              </div>
-              <span className="text-[10px] text-zinc-400 light:text-slate-500">{t("home.creatorsPreview.title")}</span>
-            </div>
-          </div>
-          <span className="flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300 light:text-emerald-700">
-            <TrendingUp className="h-3 w-3" /> +24%
-          </span>
-        </div>
-
-        {/* Total Earned */}
-        <div className="mt-4">
-          <p className="text-[11px] font-medium text-zinc-400 light:text-slate-500">{t("home.creatorsPreview.earned")}</p>
-          <p className="font-display text-4xl font-black tabular-nums tracking-tight text-white light:text-slate-900 mt-0.5">
-            ${(earned / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </p>
-        </div>
-
-        {/* Revenue Streams Breakdown */}
-        <div className="mt-3 grid grid-cols-3 gap-1.5 text-center">
-          <div className="rounded-xl bg-white/5 p-2 light:bg-black/5">
-            <div className="flex items-center justify-center gap-1 text-[9px] font-semibold text-emerald-400">
-              <Coins className="h-2.5 w-2.5" /> {t("home.creatorsPreview.tips")}
-            </div>
-            <p className="font-mono text-[11px] font-bold text-white light:text-slate-900 mt-0.5">$2,840</p>
-          </div>
-          <div className="rounded-xl bg-white/5 p-2 light:bg-black/5">
-            <div className="flex items-center justify-center gap-1 text-[9px] font-semibold text-amber-400">
-              <Gavel className="h-2.5 w-2.5" /> {t("home.creatorsPreview.auctions")}
-            </div>
-            <p className="font-mono text-[11px] font-bold text-white light:text-slate-900 mt-0.5">$1,420</p>
-          </div>
-          <div className="rounded-xl bg-white/5 p-2 light:bg-black/5">
-            <div className="flex items-center justify-center gap-1 text-[9px] font-semibold text-pink-400">
-              <Lock className="h-2.5 w-2.5" /> {t("home.creatorsPreview.unlocks")}
-            </div>
-            <p className="font-mono text-[11px] font-bold text-white light:text-slate-900 mt-0.5">$563</p>
-          </div>
-        </div>
-
-        {/* Dynamic Growth Bars */}
-        <div className="mt-4 flex h-20 items-end gap-[3px]">
-          {BARS.map((h, i) => (
-            <span
-              key={i}
-              className={`flex-1 rounded-t-[4px] transition-[height] duration-700 ease-(--kz-ease) ${
-                i === BARS.length - 1
-                  ? "bg-linear-to-t from-pink-500 to-amber-300 shadow-xs shadow-pink-500/50"
-                  : "bg-linear-to-t from-violet-600 to-fuchsia-500"
-              }`}
-              style={{ height: seen ? `${h}%` : "4%", transitionDelay: `${i * 40}ms` }}
-            />
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-violet-300 light:text-violet-700">{t("home.creatorsPreview.title")}</p>
+        <ul className="mt-4 space-y-2.5">
+          {SOURCES.map(([key, Icon, tone], i) => (
+            <li
+              key={key}
+              className={`flex items-center gap-3 rounded-2xl border border-white/10 bg-white/3 p-3 light:border-black/5 light:bg-slate-50 ${seen ? "cp-in" : "opacity-0"}`}
+              style={{ animationDelay: `${i * 140}ms` }}
+            >
+              <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br ${tone} text-white shadow-md`}>
+                <Icon className="h-4 w-4" aria-hidden />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-bold text-white light:text-slate-900">{t(`home.creatorsPreview.${key}.title`)}</span>
+                <span className="block text-xs text-zinc-400 light:text-slate-500">{t(`home.creatorsPreview.${key}.body`)}</span>
+              </span>
+            </li>
           ))}
+        </ul>
+
+        <div className="mt-6">
+          <div className="mb-2 flex items-baseline justify-between text-xs font-semibold">
+            <span className="text-emerald-300 light:text-emerald-700">{t("home.creatorsPreview.creator", { share })}</span>
+            <span className="text-zinc-500">{t("home.creatorsPreview.platform", { fee: 100 - share })}</span>
+          </div>
+          <div className="flex h-3 overflow-hidden rounded-full bg-white/10 light:bg-black/5" role="img" aria-label={t("home.creatorsPreview.split", { share })}>
+            <span className={`h-full rounded-full bg-linear-to-r from-emerald-500 to-teal-400 ${seen ? "cp-grow" : "scale-x-0"}`} style={{ width: `${share}%` }} />
+          </div>
         </div>
 
-        {/* Audience Metrics */}
-        <div className="mt-4 grid grid-cols-2 gap-2.5">
-          {[
-            { icon: Eye, label: t("home.creatorsPreview.views"), value: views.toLocaleString("en-US") },
-            { icon: Users, label: t("home.creatorsPreview.supporters"), value: fans.toLocaleString("en-US") },
-          ].map(({ icon: Icon, label, value }) => (
-            <div key={label} className="rounded-2xl bg-white/4 p-2.5 light:bg-black/3 border border-white/5">
-              <p className="flex items-center gap-1.5 text-[10px] text-zinc-400 light:text-slate-500">
-                <Icon className="h-3 w-3 text-violet-400" /> {label}
-              </p>
-              <p className="font-mono text-sm font-bold tabular-nums text-white light:text-slate-900 mt-0.5">{value}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Payout Security Notice */}
-        <div className="mt-3.5 flex items-center justify-center gap-1.5 text-[10px] font-semibold text-zinc-400 light:text-slate-500">
-          <Sparkles className="h-3 w-3 text-emerald-400" />
-          <span>{t("home.creatorsPreview.payoutBadge")}</span>
-        </div>
+        <ul className="mt-5 space-y-1.5 text-[11px] text-zinc-400 light:text-slate-500">
+          <li className="flex items-center gap-2">
+            <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" aria-hidden /> {t("home.creatorsPreview.confirmed")}
+          </li>
+          <li className="flex items-center gap-2">
+            <Landmark className="h-3.5 w-3.5 text-violet-400" aria-hidden /> {t("home.creatorsPreview.payout")}
+          </li>
+        </ul>
       </div>
-
-      {/* Floating Real-time Tip Alert */}
-      <div
-        className="absolute -right-4 -top-4 flex items-center gap-2 rounded-2xl border border-white/15 bg-zinc-900/95 px-3 py-2 text-xs font-semibold text-white shadow-2xl backdrop-blur-md transition-all duration-700 ease-(--kz-ease) light:border-black/5 light:bg-white light:text-slate-800"
-        style={{ opacity: seen ? 1 : 0, transform: seen ? "none" : "translateY(-12px) scale(.95)", transitionDelay: "800ms" }}
-      >
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white shadow-sm">
-          <Coins className="h-3.5 w-3.5" />
-        </span>
-        {t("home.creatorsPreview.newTip")}
-      </div>
+      <style>{STYLES}</style>
     </div>
   );
 }
+
+const STYLES = `
+        .cp-in { animation: cp-in .6s cubic-bezier(.16,1,.3,1) both; }
+        @keyframes cp-in { from { opacity: 0; transform: translateY(10px); } }
+        .cp-grow { transform-origin: left; animation: cp-grow 1.4s .4s cubic-bezier(.16,1,.3,1) both; }
+        @keyframes cp-grow { from { transform: scaleX(0); } }
+        @media (prefers-reduced-motion: reduce) { .cp-in, .cp-grow { animation: none; opacity: 1; transform: none; } }
+`;

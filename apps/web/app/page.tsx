@@ -13,85 +13,27 @@ import { RelationshipActions } from "@/components/RelationshipActions";
 import { HeroWall } from "@/components/home/HeroWall";
 import { ProductShowcase } from "@/components/home/ProductShowcase";
 import { CreatorsPreview } from "@/components/home/CreatorsPreview";
+import { AuctionsExplainer } from "@/components/home/AuctionsExplainer";
 import { RotatingWord } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 export const metadata = { alternates: { canonical: "/" } };
 export const dynamic = "force-dynamic";
 
+/**
+ * Home. Visitors get the pitch — a moving wall of what is really on the platform, why fans stay, why
+ * creators publish here — then the trending feed. Signed-in people go straight to stories and feed. Everything shown
+ * is read from the database or is one of the product's own rules: an empty platform shows empty states, never
+ * invented creators, auctions or figures (AGENTS.md §3.F).
+ */
 async function loadHome() {
   try {
-    const [videos, featured, stats, auctions] = await Promise.all([listFeed(24), featuredCreator(), platformStats(), listAuctions("live", null, 4)]);
+    const [videos, featured, stats, auctions] = await Promise.all([listFeed(24), featuredCreator(), platformStats(), listAuctions("open", null, 3)]);
     return { videos, featured, stats, auctions };
   } catch (error) {
     console.error("[home] feed unavailable:", error);
     return { videos: [], featured: null, stats: { videos: 0, creators: 0 }, auctions: [] };
   }
-}
-
-/**
- * Home. Visitors get the pitch — a moving wall of what is really on the platform, why fans stay, why
- * creators publish here — then the trending feed. Signed-in people go straight to stories and feed.
- */
-import type { AuctionCard as Card } from "@/components/auctions/types";
-
-function getShowcaseAuctions(): Card[] {
-  return [
-    {
-      id: "showcase-auc-1",
-      videoId: "showcase-1",
-      phase: "LIVE",
-      title: t("home.spotlight.auc1"),
-      startingPriceCents: 50000,
-      highestBidCents: 85000,
-      bidsCount: 14,
-      rights: "DOWNLOAD",
-      settlement: "HIGHEST_BID",
-      startsAt: new Date(Date.now() - 3600000 * 12).toISOString(),
-      endsAt: new Date(Date.now() + 3600000 * 18).toISOString(),
-      creatorName: t("home.showcase.demo.creatorElena"),
-      creatorUsername: "elenavox",
-      creatorAvatar: "/showcase/stream-elena.jpg",
-      thumbnailUrl: "/showcase/auction-velvet.jpg",
-      leading: false,
-    },
-    {
-      id: "showcase-auc-2",
-      videoId: "showcase-2",
-      phase: "LIVE",
-      title: t("home.spotlight.auc2"),
-      startingPriceCents: 30000,
-      highestBidCents: 62000,
-      bidsCount: 9,
-      rights: "WATCH",
-      settlement: "HIGHEST_BID",
-      startsAt: new Date(Date.now() - 3600000 * 8).toISOString(),
-      endsAt: new Date(Date.now() + 3600000 * 24).toISOString(),
-      creatorName: t("home.showcase.demo.creatorMia"),
-      creatorUsername: "miasterling",
-      creatorAvatar: "/showcase/live-tips-mia.jpg",
-      thumbnailUrl: "/showcase/live-tips-mia.jpg",
-      leading: false,
-    },
-    {
-      id: "showcase-auc-3",
-      videoId: "showcase-3",
-      phase: "UPCOMING",
-      title: t("home.spotlight.auc3"),
-      startingPriceCents: 100000,
-      highestBidCents: 0,
-      bidsCount: 0,
-      rights: "DOWNLOAD",
-      settlement: "HIGHEST_BID",
-      startsAt: new Date(Date.now() + 3600000 * 6).toISOString(),
-      endsAt: new Date(Date.now() + 3600000 * 54).toISOString(),
-      creatorName: t("home.showcase.demo.creatorElena"),
-      creatorUsername: "elenavox",
-      creatorAvatar: "/showcase/stream-elena.jpg",
-      thumbnailUrl: "/showcase/unlock-premiere.jpg",
-      leading: false,
-    },
-  ];
 }
 
 export default async function HomePage() {
@@ -106,8 +48,8 @@ export default async function HomePage() {
         <section className="relative mb-10 overflow-hidden rounded-4xl border border-white/10 light:border-black/5 bg-zinc-950 light:bg-linear-to-br light:from-violet-50 light:via-white light:to-pink-50 isolate">
           <HeroWall images={wall} />
           <div className="absolute inset-0 z-0 bg-linear-to-r from-zinc-950 via-zinc-950/85 to-transparent light:from-white light:via-white/85" />
-          <div className="relative z-10 grid items-center gap-10 px-6 py-12 sm:px-12 sm:py-16 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-6 lg:py-20">
-          <div className="max-w-xl">
+          <div className="relative z-10 grid grid-cols-1 items-center gap-10 px-6 py-12 sm:px-12 sm:py-16 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-6 lg:py-20">
+          <div className="min-w-0 max-w-xl">
             <p className="hero-fade inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-3.5 py-1 text-xs font-semibold text-violet-300 light:text-violet-700">
               <Sparkles className="h-3.5 w-3.5" /> {t("home.eyebrow")}
             </p>
@@ -151,8 +93,8 @@ export default async function HomePage() {
               </p>
             )}
           </div>
-          <div className="hero-fade flex justify-center [animation-delay:300ms] lg:pr-6">
-            <ProductShowcase />
+          <div className="hero-fade flex min-w-0 justify-center [animation-delay:300ms] lg:pr-6">
+            <ProductShowcase images={wall} share={share} />
           </div>
           </div>
         </section>
@@ -208,11 +150,15 @@ export default async function HomePage() {
             {t("home.auctionsAll")} <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>
         </div>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {(auctions.length > 0 ? auctions : getShowcaseAuctions()).map((a, i) => (
-            <AuctionCard key={a.id} auction={a} index={i} />
-          ))}
-        </div>
+        {auctions.length > 0 ? (
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {auctions.map((a, i) => (
+              <AuctionCard key={a.id} auction={a} index={i} />
+            ))}
+          </div>
+        ) : (
+          <AuctionsExplainer />
+        )}
       </section>
 
       <section className="mb-12" data-reveal>
@@ -220,16 +166,8 @@ export default async function HomePage() {
         <FeedFilterTabs initialVideos={videos} />
       </section>
 
-      {(() => {
-        const feat = featured || {
-          userId: "elena-showcase",
-          username: "elenavox",
-          displayName: "Elena Vox",
-          avatarUrl: "/showcase/stream-elena.jpg",
-          bio: "Visual artist, nocturnal producer & independent 4K cinema director.",
-          videosCount: 8,
-          totalViews: 38400,
-        };
+      {featured && (() => {
+        const feat = featured;
         return (
           <section data-reveal className={`kz-spotlight mb-12 flex flex-col items-center gap-6 overflow-hidden rounded-3xl p-6 text-center sm:flex-row sm:p-8 sm:text-left ${surface}`}>
             <img src={feat.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-24 w-24 shrink-0 rounded-2xl border-2 border-violet-500/60 object-cover shadow-xl" />
@@ -268,7 +206,7 @@ export default async function HomePage() {
             {t("home.creators.cta")} <ArrowRight className="h-4 w-4" />
           </Link>
           </div>
-          <CreatorsPreview />
+          <CreatorsPreview share={share} />
         </section>
       )}
     </div>

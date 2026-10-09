@@ -1,5 +1,5 @@
 /** The auction as /api/auctions/[id] returns it (lib/auctions.ts AuctionView). */
-export type AuctionPhase = "UPCOMING" | "LIVE" | "ENDING" | "AWAITING_DECISION" | "SOLD" | "DECLINED" | "UNSOLD" | "CANCELLED";
+export type AuctionPhase = "UPCOMING" | "OPEN" | "ENDING" | "AWAITING_DECISION" | "SOLD" | "DECLINED" | "UNSOLD" | "CANCELLED";
 
 export interface AuctionBid {
   id: string;

@@ -8,63 +8,6 @@ import { t } from "@/lib/i18n";
 import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
 import Link from "next/link";
 
-function getShowcaseVideos(): VideoCardProps[] {
-  return [
-    {
-      id: "showcase-vid-1",
-      title: t("home.spotlight.video1"),
-      creatorName: t("home.showcase.demo.creatorElena"),
-      creatorUsername: "elenavox",
-      creatorAvatar: "/showcase/stream-elena.jpg",
-      thumbnailUrl: "/showcase/stream-elena.jpg",
-      durationSeconds: 1420,
-      visibility: "PUBLIC",
-      minTipAmountCents: 0,
-      viewsCount: 8940,
-      tipsCount: 42,
-    },
-    {
-      id: "showcase-vid-2",
-      title: t("home.spotlight.video2"),
-      creatorName: t("home.showcase.demo.creatorElena"),
-      creatorUsername: "elenavox",
-      creatorAvatar: "/showcase/stream-elena.jpg",
-      thumbnailUrl: "/showcase/auction-velvet.jpg",
-      durationSeconds: 2850,
-      visibility: "TIPPED_UNLOCKED",
-      minTipAmountCents: 1000,
-      viewsCount: 3100,
-      tipsCount: 88,
-    },
-    {
-      id: "showcase-vid-3",
-      title: t("home.spotlight.video3"),
-      creatorName: t("home.showcase.demo.creatorMia"),
-      creatorUsername: "miasterling",
-      creatorAvatar: "/showcase/live-tips-mia.jpg",
-      thumbnailUrl: "/showcase/live-tips-mia.jpg",
-      durationSeconds: 1980,
-      visibility: "PUBLIC",
-      minTipAmountCents: 500,
-      viewsCount: 5210,
-      tipsCount: 35,
-    },
-    {
-      id: "showcase-vid-4",
-      title: t("home.spotlight.video4"),
-      creatorName: t("home.showcase.demo.creatorElena"),
-      creatorUsername: "elenavox",
-      creatorAvatar: "/showcase/stream-elena.jpg",
-      thumbnailUrl: "/showcase/unlock-premiere.jpg",
-      durationSeconds: 1120,
-      visibility: "TIPPED_UNLOCKED",
-      minTipAmountCents: 1500,
-      viewsCount: 12400,
-      tipsCount: 112,
-    },
-  ];
-}
-
 interface FeedFilterTabsProps {
   initialVideos: VideoCardProps[];
 }
@@ -180,26 +123,6 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
                 <Link href="/creator/upload" className={buttonClass({ variant: "secondary", size: "md" })}>
                   {t("home.empty.create")}
                 </Link>
-              </div>
-            </div>
-
-            {/* Curated Platform Showcase Reels */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-fuchsia-400" />
-                  <h4 className="font-display text-base font-bold text-white light:text-slate-900">{t("home.spotlightTitle")}</h4>
-                </div>
-                <span className="rounded-full bg-violet-600/20 border border-violet-500/30 px-2.5 py-0.5 text-[10px] font-bold text-violet-300">
-                  {t("home.spotlightBadge")}
-                </span>
-              </div>
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 kz-fade">
-                {getShowcaseVideos().map((video, i) => (
-                  <div key={video.id} data-reveal style={{ ["--kz-delay" as string]: `${i * 70}ms` }}>
-                    <VideoCard {...video} />
-                  </div>
-                ))}
               </div>
             </div>
           </div>

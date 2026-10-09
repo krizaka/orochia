@@ -535,7 +535,7 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("…its audience is locked during the auction", (await elena.call(`/api/videos/${neon.id}`, "PATCH", { visibility: "PUBLIC" })).status === 409);
   check("…it cannot be deleted during the auction", (await elena.call(`/api/videos/${neon.id}`, "DELETE")).status === 409);
   check("a second auction of the same video → 409", (await elena.call("/api/auctions", "POST", auctionBody(neon.id))).status === 409);
-  check("listed among live auctions", (await anon.call("/api/auctions?tab=live")).json.items.some((a) => a.id === id));
+  check("listed among open auctions", (await anon.call("/api/auctions?tab=open")).json.items.some((a) => a.id === id));
   check("the watch page finds it", (await anon.call(`/api/videos/${neon.id}/auction`)).json.auction?.id === id);
   check("the creator cannot bid", (await bid(elena, id, 1000)).status === 403);
   check("a visitor cannot bid", (await fetch(`${B}/api/auctions/${id}/bids`, { method: "POST", headers: { "Content-Type": "application/json" }, body: '{"amountCents":1000}' })).status === 401);

@@ -52,7 +52,7 @@ export function AuctionCard({ auction: a, index = 0 }: { auction: Card; index?: 
             </p>
             <p className="font-display text-xl font-black tabular-nums text-white light:text-slate-900">{usd(price)}</p>
           </div>
-          {a.phase === "LIVE" && <Countdown label={t("auction.endsIn")} target={a.endsAt} units={UNITS()} size="sm" />}
+          {a.phase === "OPEN" && <Countdown label={t("auction.endsIn")} target={a.endsAt} units={UNITS()} size="sm" />}
           {a.phase === "UPCOMING" && <Countdown label={t("auction.startsIn")} target={a.startsAt} units={UNITS()} size="sm" />}
         </div>
         <div className="mt-auto flex items-center gap-2 border-t border-white/5 pt-3 text-xs text-zinc-400 light:border-black/5 light:text-slate-500">

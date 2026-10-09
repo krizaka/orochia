@@ -101,7 +101,7 @@ export const followStatusEnum = pgEnum("follow_status", ["PENDING", "APPROVED"])
 export const walletEntryTypeEnum = pgEnum("wallet_entry_type", ["TOPUP", "SPEND", "REFUND", "ADJUSTMENT", "HOLD", "RELEASE"]);
 
 /**
- * An auction's life. OPEN covers "upcoming" and "live" (told apart by starts_at / ends_at); AWAITING_DECISION is the
+ * An auction's life. OPEN covers "upcoming" and "open" (told apart by starts_at / ends_at); AWAITING_DECISION is the
  * creator's window to accept or decline the best bid; SOLD, DECLINED, UNSOLD (no bid) and CANCELLED are final.
  */
 export const auctionStatusEnum = pgEnum("auction_status", ["OPEN", "AWAITING_DECISION", "SOLD", "DECLINED", "UNSOLD", "CANCELLED"]);
