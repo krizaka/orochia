@@ -123,7 +123,7 @@ export function VideoComments({
 
   const item = (c: Comment, isReply = false) => (
     <div key={c.id} className={cn("flex gap-3", isReply ? "mt-3" : "")}>
-      <img src={c.authorAvatar || AVATAR_PLACEHOLDER} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />
+      <Avatar size="sm" src={c.authorAvatar || AVATAR_PLACEHOLDER} fallback={c.authorName.charAt(0)} />
       <div className="min-w-0 flex-1">
         <p className="text-xs">
           <Link href={`/@${c.authorUsername}`} className="font-semibold text-fg hover:text-accent">
