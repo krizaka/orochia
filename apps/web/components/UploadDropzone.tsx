@@ -1,18 +1,20 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { UPLOAD_LIMITS } from "@orochia/media/limits";
 import { Check, CheckCircle2, Clapperboard, Eye, Film, Lock, Mail, Scissors, ShieldAlert, Upload, UploadCloud, Users, X } from "lucide-react";
-import { VideoEditor } from "./VideoEditor";
-import { DraftsShelf } from "./DraftsShelf";
-import { useObjectUrl } from "./editor/media";
+import Link from "next/link";
+import React, { useEffect, useRef, useState } from "react";
+
 import { Badge, Button, buttonVariants, cn, IconButton, Input, Select, Switch, Textarea } from "@/components/ui";
+import { deleteDraft } from "@/lib/drafts";
+import { type MessageKey,t } from "@/lib/i18n";
 import { money } from "@/lib/money";
 import { useUploadManager } from "@/lib/upload-manager";
-import { UPLOAD_LIMITS } from "@orochia/media/limits";
 import { EDITOR_MAX_BYTES, type VideoEdit } from "@/lib/video-edit";
-import { deleteDraft } from "@/lib/drafts";
-import { t, type MessageKey } from "@/lib/i18n";
+
+import { DraftsShelf } from "./DraftsShelf";
+import { useObjectUrl } from "./editor/media";
+import { VideoEditor } from "./VideoEditor";
 
 const LIMIT = UPLOAD_LIMITS.video;
 const MAX_TAGS = 12;
@@ -64,7 +66,7 @@ const label = "mb-1.5 block text-xs font-semibold text-fg-secondary";
 /** A numbered step of the form; its number turns into a check once the step is complete. */
 function Step({ n, title, done, children }: { n: number; title: string; done: boolean; children: React.ReactNode }) {
   return (
-    <section className="rounded-3xl border border-border-default bg-surface-1/60 p-5 sm:p-6 light:shadow-xs" aria-label={title}>
+    <section className="rounded-3xl border border-border-default bg-surface-1/60 p-5 sm:p-6 shadow-xs" aria-label={title}>
       <h2 className="mb-4 flex items-center gap-3 text-sm font-bold text-fg">
         <span
           className={cn(
@@ -544,7 +546,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
             <p className="text-xs font-semibold text-fg-secondary">{t("publish.preview")}</p>
             <p className="mb-3 text-[11px] text-fg-muted">{t("publish.previewHint")}</p>
             <div className="overflow-hidden rounded-2xl border border-border-default">
-              <div className="relative aspect-video bg-zinc-900">
+              <div className="relative aspect-video bg-media">
                 {previewUrl ? (
                   <video src={`${previewUrl}#t=0.5`} muted playsInline preload="metadata" className={cn("h-full w-full object-cover", isBlurred && "scale-110 blur-xl")} />
                 ) : (

@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import Hls from "hls.js";
 import { ChevronLeft, ChevronRight, Heart, Plus, Trash2, X } from "lucide-react";
-import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
+import Link from "next/link";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+
 import { CreateStoryModal } from "@/components/CreateStoryModal";
+import { Avatar, cn, Dialog, IconButton, Skeleton } from "@/components/ui";
+import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
-import { Avatar, cn, IconButton, Skeleton } from "@/components/ui";
 
 interface StoryItem {
   id: string;
@@ -133,7 +134,6 @@ export function CreatorStoriesBar() {
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
       if (e.key === "ArrowRight") next();
       if (e.key === "ArrowLeft") previous();
     };
@@ -207,16 +207,21 @@ export function CreatorStoriesBar() {
         </div>
       </div>
 
-      {ring && story && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-0 sm:p-6 backdrop-blur-xl kz-overlay" role="dialog" aria-modal="true" aria-label={ring.displayName}>
-          <div className="relative flex h-full w-full flex-col justify-between overflow-hidden bg-black sm:h-[88vh] sm:max-h-[780px] sm:max-w-md sm:rounded-3xl sm:border sm:border-white/15">
-            <div className="absolute inset-0 flex items-center justify-center bg-black">
+      <Dialog.Root open={Boolean(ring && story)} onOpenChange={(o) => !o && close()}>
+        {ring && story && (
+          <Dialog.Content
+            size="md"
+            aria-describedby={undefined}
+            className="theme-dark h-dvh max-h-dvh w-full justify-between rounded-none border-0 bg-media sm:h-[88vh] sm:max-h-[780px] sm:w-full sm:rounded-3xl sm:border sm:border-border-strong [&>button:last-child]:hidden"
+          >
+            <Dialog.Title className="sr-only">{ring.displayName}</Dialog.Title>
+            <div className="absolute inset-0 flex items-center justify-center bg-media">
               {story.type === "video" ? (
                 <StoryVideo key={story.id} src={story.url} poster={story.thumbnailUrl} onEnded={next} onProgress={setProgress} />
               ) : (
                 <img src={story.url} alt="" className="h-full w-full object-contain" />
               )}
-              <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-black/70 via-transparent to-black/80" />
+              <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-scrim-strong via-transparent to-scrim-strong" />
             </div>
 
             {/* Tap zones: left goes back, right goes on (as in every stories viewer). */}
@@ -226,17 +231,17 @@ export function CreatorStoriesBar() {
             <div className="relative z-20 p-4 pt-[max(1rem,env(safe-area-inset-top))]">
               <div className="mb-3 flex gap-1.5">
                 {ring.stories.map((s, i) => (
-                  <div key={s.id} className="h-1 flex-1 overflow-hidden rounded-full bg-white/30">
-                    <div className="h-full bg-white" style={{ width: i < open!.story ? "100%" : i === open!.story ? `${progress}%` : "0%" }} />
+                  <div key={s.id} className="h-1 flex-1 overflow-hidden rounded-full bg-fg-on-media/30">
+                    <div className="h-full bg-fg-on-media" style={{ width: i < open!.story ? "100%" : i === open!.story ? `${progress}%` : "0%" }} />
                   </div>
                 ))}
               </div>
               <div className="flex items-center justify-between">
                 <Link href={`/@${ring.username}`} onClick={close} className="flex items-center gap-2.5">
-                  <Avatar src={ring.avatarUrl || AVATAR_PLACEHOLDER} fallback={ring.displayName.charAt(0)} className="h-9 w-9 rounded-xl border border-white/20" />
+                  <Avatar src={ring.avatarUrl || AVATAR_PLACEHOLDER} fallback={ring.displayName.charAt(0)} className="h-9 w-9 rounded-xl border border-border-strong" />
                   <div>
-                    <span className="block text-xs font-bold text-white">{ring.displayName}</span>
-                    <span className="font-mono text-[10px] text-zinc-300">
+                    <span className="block text-xs font-bold text-fg-on-media">{ring.displayName}</span>
+                    <span className="font-mono text-[10px] text-fg-secondary">
                       {timeAgo(story.createdAt)}
                       {ring.isOwn && ` · ${t("stories.views", { count: story.viewsCount })}`}
                     </span>
@@ -248,7 +253,7 @@ export function CreatorStoriesBar() {
                       onClick={remove}
                       onBlur={() => setArmed(false)}
                       className={cn(
-                        "flex h-8 items-center justify-center gap-1.5 rounded-full text-white transition-all",
+                        "flex h-8 items-center justify-center gap-1.5 rounded-full text-fg-on-media transition-all",
                         armed ? "bg-danger px-3 text-xs font-semibold" : "w-8 bg-scrim hover:bg-danger/60"
                       )}
                       aria-label={armed ? t("stories.removeArmed") : t("stories.remove")}
@@ -257,30 +262,32 @@ export function CreatorStoriesBar() {
                       {armed && t("stories.removeArmed")}
                     </button>
                   )}
-                  <IconButton onClick={close} className="h-8 w-8 bg-scrim text-fg-on-media hover:bg-scrim-strong hover:text-fg-on-media" label={t("common.close")}>
-                    <X className="h-4 w-4" aria-hidden />
-                  </IconButton>
+                  <Dialog.Close asChild>
+                    <IconButton className="h-8 w-8 bg-scrim text-fg-on-media hover:bg-scrim-strong hover:text-fg-on-media" label={t("common.close")}>
+                      <X className="h-4 w-4" aria-hidden />
+                    </IconButton>
+                  </Dialog.Close>
                 </div>
               </div>
             </div>
 
             <div className="relative z-20 hidden items-center justify-between px-2 sm:flex">
-              <IconButton onClick={previous} className="bg-black/40 text-fg-on-media hover:bg-scrim-strong hover:text-fg-on-media" label={t("stories.previous")}>
+              <IconButton onClick={previous} className="bg-scrim text-fg-on-media hover:bg-scrim-strong hover:text-fg-on-media" label={t("stories.previous")}>
                 <ChevronLeft className="h-5 w-5" aria-hidden />
               </IconButton>
-              <IconButton onClick={next} className="bg-black/40 text-fg-on-media hover:bg-scrim-strong hover:text-fg-on-media" label={t("stories.next")}>
+              <IconButton onClick={next} className="bg-scrim text-fg-on-media hover:bg-scrim-strong hover:text-fg-on-media" label={t("stories.next")}>
                 <ChevronRight className="h-5 w-5" aria-hidden />
               </IconButton>
             </div>
 
             <div className="relative z-20 space-y-3 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-              {story.caption && <p className="text-sm leading-relaxed text-white/95 drop-shadow-sm">{story.caption}</p>}
+              {story.caption && <p className="text-sm leading-relaxed text-fg-on-media drop-shadow-sm">{story.caption}</p>}
               <div className="flex items-center gap-2">
                 {!ring.isOwn && (
                   <Link
                     href={`/@${ring.username}`}
                     onClick={close}
-                    className="flex flex-1 items-center justify-center rounded-2xl bg-linear-to-r from-accent via-accent-2 to-accent-2 py-3 text-xs font-bold text-white"
+                    className="flex flex-1 items-center justify-center rounded-2xl bg-linear-to-r from-accent via-accent-2 to-accent-2 py-3 text-xs font-bold text-on-accent"
                   >
                     {t("stories.seeProfile")}
                   </Link>
@@ -291,7 +298,7 @@ export function CreatorStoriesBar() {
                     aria-pressed={story.liked}
                     className={cn(
                       "flex h-11 items-center gap-1.5 rounded-2xl border px-3.5",
-                      story.liked ? "border-danger bg-danger/20 text-danger" : "border-white/20 bg-scrim text-fg-on-media"
+                      story.liked ? "border-danger bg-danger/20 text-danger" : "border-border-strong bg-scrim text-fg-on-media"
                     )}
                   >
                     <Heart className={cn("h-4 w-4", story.liked ? "fill-danger" : "")} />
@@ -300,9 +307,9 @@ export function CreatorStoriesBar() {
                 )}
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          </Dialog.Content>
+        )}
+      </Dialog.Root>
     </>
   );
 }

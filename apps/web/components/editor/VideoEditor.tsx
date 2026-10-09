@@ -1,15 +1,17 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import { Crop, Pause, Play, Save, Scissors, SlidersHorizontal, Sparkles, Volume2, VolumeX } from "lucide-react";
-import { DEFAULT_EDIT, EDITOR_MAX_BYTES, type VideoEdit, exportEditedVideo } from "@/lib/video-edit";
+import React, { useEffect, useState } from "react";
+
+import { AlertDialog, Button, cn,Dialog, IconButton } from "@/components/ui";
 import { type DraftKind, saveDraft } from "@/lib/drafts";
-import { Button, IconButton, cn } from "@/components/ui";
-import { clock, useFilmstrip, useObjectUrl, usePreviewPlayer } from "./media";
-import { Stage, type StageProgress } from "./Stage";
-import { AdjustPanel, FiltersPanel, FormatPanel, PanelHeader, SoundPanel, TrimPanel } from "./panels";
-import { TOOLS, type Tool, useEditState } from "./useEditState";
 import { t } from "@/lib/i18n";
+import { DEFAULT_EDIT, EDITOR_MAX_BYTES, exportEditedVideo,type VideoEdit } from "@/lib/video-edit";
+
+import { clock, useFilmstrip, useObjectUrl, usePreviewPlayer } from "./media";
+import { AdjustPanel, FiltersPanel, FormatPanel, PanelHeader, SoundPanel, TrimPanel } from "./panels";
+import { Stage, type StageProgress } from "./Stage";
+import { type Tool, TOOLS, useEditState } from "./useEditState";
 
 type Details = Record<string, string | number | boolean | string[] | null>;
 
@@ -116,26 +118,18 @@ export function VideoEditor({
 
   const cancel = () => (dirty ? setLeaving(true) : onClose());
 
-  // Keyboard: Space plays / pauses, Escape leaves (outside fields and buttons). Body scroll is locked meanwhile.
+  // Keyboard: Space plays / pauses (outside fields and buttons). Escape leaves and the page stays still: the dialog does both.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (busy || (e.target as HTMLElement).closest("input, textarea, select, button, [role=switch]")) return;
       if (e.key === " ") {
         e.preventDefault();
         togglePlay();
-      } else if (e.key === "Escape") {
-        if (leaving) setLeaving(false);
-        else cancel();
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   });
-  useEffect(() => {
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => void (document.body.style.overflow = previous);
-  }, []);
 
   const changed = changedTools(edit, duration, maxSeconds, story);
   const progress: StageProgress | null = task
@@ -177,7 +171,7 @@ export function VideoEditor({
   );
 
   const toolbar = (
-    <nav aria-label={t("editor.toolsLabel")} className={cn("grid grid-cols-5 gap-1", wide && "lg:border-b lg:border-white/10 lg:pb-2")}>
+    <nav aria-label={t("editor.toolsLabel")} className={cn("grid grid-cols-5 gap-1", wide && "lg:border-b lg:border-border-default lg:pb-2")}>
       {TOOLS.map((id) => {
         const Icon = id === "sound" && edit.volume === 0 && !edit.music ? VolumeX : TOOL_ICONS[id];
         const active = tool === id;
@@ -189,7 +183,7 @@ export function VideoEditor({
             aria-current={active ? "true" : undefined}
             className={cn(
               "relative flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl text-[11px] font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
-              active ? "bg-white/8 text-white" : "text-fg-secondary hover:bg-white/4 hover:text-white",
+              active ? "bg-surface-2 text-fg" : "text-fg-secondary hover:bg-surface-1 hover:text-fg",
             )}
           >
             <Icon className="h-5 w-5" />
@@ -202,10 +196,17 @@ export function VideoEditor({
   );
 
   return (
-    <div className="theme-dark fixed inset-0 z-60 flex items-stretch justify-center bg-scrim-strong backdrop-blur-xl kz-overlay sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-labelledby="editor-title">
-      <div
+    <Dialog.Root open onOpenChange={(open) => !open && !busy && cancel()}>
+      <Dialog.Content
+        size="lg"
+        aria-describedby={undefined}
+        onEscapeKeyDown={(e) => {
+          e.preventDefault();
+          if (!busy) cancel();
+        }}
+        onPointerDownOutside={(e) => e.preventDefault()}
         className={cn(
-          "relative flex h-dvh w-full flex-col overflow-hidden bg-zinc-950 text-white sm:h-[min(94vh,920px)] sm:rounded-4xl sm:border sm:border-white/10 sm:shadow-2xl sm:shadow-black/60",
+          "theme-dark h-dvh max-h-dvh w-full rounded-none border-0 bg-surface-0 shadow-2xl sm:h-[min(94vh,920px)] sm:max-h-none sm:rounded-4xl sm:border sm:border-border-default [&>button:last-child]:hidden",
           wide ? "sm:max-w-2xl lg:max-w-6xl" : "sm:max-w-120",
         )}
       >
@@ -214,9 +215,9 @@ export function VideoEditor({
           <Button variant="ghost" size="sm" onClick={cancel} disabled={busy}>
             {t("editor.cancel")}
           </Button>
-          <h2 id="editor-title" className="min-w-0 flex-1 truncate text-center text-sm font-bold">
+          <Dialog.Title className="min-w-0 flex-1 truncate text-center text-sm font-bold">
             {t(story ? "editor.titleStory" : "editor.title")}
-          </h2>
+          </Dialog.Title>
           <IconButton label={t("editor.saveDraft")} onClick={keepDraft} disabled={busy || tooLarge || duration === 0} className="sm:hidden">
             <Save className="h-4 w-4" />
           </IconButton>
@@ -234,7 +235,7 @@ export function VideoEditor({
         </header>
 
         {tooLarge ? (
-          <p className="m-6 rounded-2xl border border-white/10 p-6 text-sm text-zinc-300">{t("editor.tooLarge")}</p>
+          <p className="m-6 rounded-2xl border border-border-default p-6 text-sm text-fg-secondary">{t("editor.tooLarge")}</p>
         ) : (
           <div className={cn("flex min-h-0 flex-1 flex-col", wide && "lg:flex-row")}>
             {/* The picture and its transport */}
@@ -264,14 +265,14 @@ export function VideoEditor({
                   {playing ? <Pause className="h-4 w-4" fill="currentColor" /> : <Play className="ml-0.5 h-4 w-4" fill="currentColor" />}
                 </IconButton>
                 <span className="font-mono text-xs tabular-nums text-fg-secondary">
-                  <span className="text-white">{clock(Math.max(0, time - edit.startSeconds) / edit.speed)}</span> / {clock(keptSeconds)}
+                  <span className="text-fg">{clock(Math.max(0, time - edit.startSeconds) / edit.speed)}</span> / {clock(keptSeconds)}
                 </span>
               </div>
               {musicUrl && <audio ref={musicRef} src={musicUrl} loop preload="auto" />}
             </section>
 
             {/* The open tool and the tool bar (tool bar at the bottom on phones, on top of the panel on wide screens) */}
-            <aside className={cn("flex shrink-0 flex-col border-t border-white/10 bg-zinc-950", wide && "lg:w-[380px] lg:border-l lg:border-t-0")}>
+            <aside className={cn("flex shrink-0 flex-col border-t border-border-default bg-surface-0", wide && "lg:w-[380px] lg:border-l lg:border-t-0")}>
               <div className={cn("order-2 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1", wide && "lg:order-1 lg:px-4 lg:pb-0 lg:pt-4")}>{toolbar}</div>
               <div className={cn("order-1 max-h-[40dvh] min-h-40 overflow-y-auto overscroll-contain px-4 pb-2 pt-4", wide && "lg:order-2 lg:max-h-none lg:flex-1 lg:pb-6")}>{panel}</div>
             </aside>
@@ -279,31 +280,23 @@ export function VideoEditor({
         )}
 
         {/* Leaving with changes: keep them as a draft, drop them, or stay */}
-        {leaving && (
-          <div className="absolute inset-0 z-20 flex items-end justify-center bg-scrim-strong p-4 backdrop-blur-xs kz-overlay sm:items-center" role="alertdialog" aria-modal="true" aria-labelledby="leave-title" aria-describedby="leave-body">
-            <div className="w-full max-w-sm rounded-3xl border border-white/10 bg-zinc-900 p-6 shadow-2xl">
-              <h3 id="leave-title" className="text-base font-bold">{t("editor.discard.title")}</h3>
-              <p id="leave-body" className="mt-1.5 text-sm text-fg-secondary">{t("editor.discard.body")}</p>
-              <div className="mt-6 grid gap-2">
-                <Button
-                  variant="sensual"
-                  size="lg"
-                  onClick={keepDraft}
-                  loading={task?.kind === "draft"}>
-                  <Save className="h-4 w-4" aria-hidden />
-                  {t("editor.saveDraft")}
-                </Button>
-                <Button variant="danger" size="lg" onClick={() => onClose()} disabled={busy}>
-                  {t("editor.discard.discard")}
-                </Button>
-                <Button variant="ghost" size="lg" onClick={() => setLeaving(false)} disabled={busy} autoFocus>
-                  {t("editor.discard.keep")}
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+        <AlertDialog
+          open={leaving}
+          onOpenChange={(open) => !open && !busy && setLeaving(false)}
+          title={t("editor.discard.title")}
+          description={t("editor.discard.body")}
+          tone="danger"
+          confirmLabel={t("editor.discard.discard")}
+          cancelLabel={t("editor.discard.keep")}
+          onConfirm={() => onClose()}
+          className="theme-dark"
+        >
+          <Button variant="sensual" size="lg" className="w-full" onClick={keepDraft} loading={task?.kind === "draft"}>
+            <Save className="h-4 w-4" aria-hidden />
+            {t("editor.saveDraft")}
+          </Button>
+        </AlertDialog>
+      </Dialog.Content>
+    </Dialog.Root>
   );
 }

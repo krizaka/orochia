@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
 import { Check, Clapperboard, Megaphone, PackageCheck, Play, Undo2, X } from "lucide-react";
-import { Avatar, Button, cn, ConfirmIconButton, Sheet, Skeleton, Textarea } from "@/components/ui";
-import { money } from "@/lib/money";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+
+import { Avatar, Button, cn, ConfirmIconButton, Dialog, Sheet, Skeleton, Textarea } from "@/components/ui";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
-import { t } from "@/lib/i18n";
 import type { ChallengeView } from "@/lib/challenges";
+import { t } from "@/lib/i18n";
+import { money } from "@/lib/money";
+
 import { errorText, postJson } from "./PledgeBox";
 
 type Option = { id: string; title: string; thumbnailUrl: string | null };
@@ -37,12 +39,52 @@ function DeliverSheet({ c, open, onClose, onDone }: { c: ChallengeView; open: bo
     } else setError(errorText(data));
   };
   return (
-    <Sheet
-      open={open}
-      onClose={onClose}
-      title={t("challenge.deliver.title")}
-      footer={
-        <div className="flex justify-end gap-2">
+    <Dialog.Root open={open} onOpenChange={(open) => !open && onClose()}>
+      <Sheet size="md" aria-describedby={undefined}>
+        <Dialog.Header>
+          <Dialog.Title>{t("challenge.deliver.title")}</Dialog.Title>
+        </Dialog.Header>
+        <Dialog.Body>
+          <p className="mb-4 text-xs text-fg-secondary">
+            {t(`challenge.deliver.intro.${c.deliverable}`)} {t(`challenge.deliver.audience.${c.reward}`)}
+          </p>
+          {items === null ? (
+            <Skeleton shape="rect" className="h-24 rounded-2xl" />
+          ) : items.length === 0 ? (
+            <p className="rounded-2xl border border-dashed border-border-default p-6 text-center text-sm text-fg-secondary">
+              {t(`challenge.deliver.none.${c.deliverable}`)}
+            </p>
+          ) : (
+            <div role="radiogroup" aria-label={t("challenge.deliver.title")} className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {items.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={picked === item.id}
+                  onClick={() => setPicked(item.id)}
+                  className={cn(
+                    "overflow-hidden rounded-xl border text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
+                    picked === item.id ? "border-accent ring-2 ring-accent/40" : "border-border-default hover:border-white/30",
+                  )}
+                >
+                  <span className="block aspect-video bg-media">
+                    {item.thumbnailUrl && <img src={item.thumbnailUrl} alt="" className="h-full w-full object-cover" />}
+                  </span>
+                  <span className="line-clamp-1 block px-2 py-1.5 text-[11px] font-semibold text-fg">
+                    {item.title || t("challenge.deliver.untitled")}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+          {error && (
+            <p role="alert" className="mt-3 text-xs text-danger">
+              {error}
+            </p>
+          )}
+        </Dialog.Body>
+        <Dialog.Footer>
           <Button variant="secondary" onClick={onClose}>
             {t("common.cancel")}
           </Button>
@@ -50,48 +92,9 @@ function DeliverSheet({ c, open, onClose, onDone }: { c: ChallengeView; open: bo
             <PackageCheck className="h-4 w-4" aria-hidden />
             {t("challenge.deliver.submit", { amount: money(c.pledgedCents) })}
           </Button>
-        </div>
-      }
-    >
-      <p className="mb-4 text-xs text-fg-secondary">
-        {t(`challenge.deliver.intro.${c.deliverable}`)} {t(`challenge.deliver.audience.${c.reward}`)}
-      </p>
-      {items === null ? (
-        <Skeleton shape="rect" className="h-24 rounded-2xl" />
-      ) : items.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-border-default p-6 text-center text-sm text-fg-secondary">
-          {t(`challenge.deliver.none.${c.deliverable}`)}
-        </p>
-      ) : (
-        <div role="radiogroup" aria-label={t("challenge.deliver.title")} className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {items.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              role="radio"
-              aria-checked={picked === item.id}
-              onClick={() => setPicked(item.id)}
-              className={cn(
-                "overflow-hidden rounded-xl border text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
-                picked === item.id ? "border-accent ring-2 ring-accent/40" : "border-border-default hover:border-white/30",
-              )}
-            >
-              <span className="block aspect-video bg-zinc-900">
-                {item.thumbnailUrl && <img src={item.thumbnailUrl} alt="" className="h-full w-full object-cover" />}
-              </span>
-              <span className="line-clamp-1 block px-2 py-1.5 text-[11px] font-semibold text-fg">
-                {item.title || t("challenge.deliver.untitled")}
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
-      {error && (
-        <p role="alert" className="mt-3 text-xs text-danger">
-          {error}
-        </p>
-      )}
-    </Sheet>
+        </Dialog.Footer>
+      </Sheet>
+    </Dialog.Root>
   );
 }
 

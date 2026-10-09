@@ -4,8 +4,8 @@
     "apps/web/components/**/*.tsx"
   ],
   "counters": {
-    "palette": 79,
-    "light": 26,
+    "palette": 21,
+    "light": 11,
     "arbitraryVar": 0,
     "classNameTemplate": 0
   }

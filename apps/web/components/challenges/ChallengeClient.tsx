@@ -1,14 +1,15 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
 import { ArrowLeft, Clapperboard, Clock, Crown, Lock, Play, Timer, Users } from "lucide-react";
+import Link from "next/link";
+import React from "react";
+
 import { Avatar, buttonVariants, cn, Countdown, orochiaButton, Skeleton } from "@/components/ui";
-import { money } from "@/lib/money";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
+import { money } from "@/lib/money";
+
 import { ChallengeActions } from "./ChallengeActions";
-import { UNITS } from "./ChallengeCard";
 import { ChallengeMeter, ChallengeStageBadge, KIND_ICONS } from "./ChallengeMeter";
 import { PledgeBox } from "./PledgeBox";
 import { useChallengeStream } from "./useChallengeStream";
@@ -138,12 +139,11 @@ export function ChallengeClient({ id }: { id: string }) {
                 label={t(c.kind === "REQUEST" ? "challenge.answerIn" : c.kind === "OPEN_CALL" ? "challenge.pickIn" : "challenge.endsIn")}
                 target={c.deadline}
                 skewMs={skewMs}
-                units={UNITS()}
                 size="md"
               />
             )}
             {c.stage === "IN_PROGRESS" && c.deliveryDeadline && (
-              <Countdown label={t("challenge.deliverIn")} target={c.deliveryDeadline} skewMs={skewMs} units={UNITS()} size="md" />
+              <Countdown label={t("challenge.deliverIn")} target={c.deliveryDeadline} skewMs={skewMs} size="md" />
             )}
             {c.stage === "GOAL_REACHED" && <p className="text-xs font-semibold text-success">{t("challenge.goalReachedHint")}</p>}
             {!ticking && c.stage !== "IN_PROGRESS" && (

@@ -1,21 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
 import { CheckCircle2, Clock, Download, Gavel, Info, Play, ShieldCheck, Sparkles, Timer, Trophy, Wallet, X } from "lucide-react";
-import { Badge, Button, Chip, cn, ConfirmIconButton, Countdown, Input, LiveBadge, orochiaButton, Spinner } from "@/components/ui";
-import { money } from "@/lib/money";
+import Link from "next/link";
+import React, { useState } from "react";
+
 import { timeAgo } from "@/components/notifications/useNotifications";
-import { t, type MessageKey } from "@/lib/i18n";
+import { Badge, Button, Chip, cn, ConfirmIconButton, Countdown, Input, orochiaButton, Spinner } from "@/components/ui";
+import { type MessageKey,t } from "@/lib/i18n";
+import { money } from "@/lib/money";
+
+import { AuctionStatusBadge } from "./AuctionStatusBadge";
 import type { Auction } from "./types";
 
-const UNITS = () => ({ d: t("auction.units.d"), h: t("auction.units.h"), m: t("auction.units.m"), s: t("auction.units.s") });
+/** @deprecated Import it from `./AuctionStatusBadge`. */
+export { AuctionStatusBadge };
 
-/** The status pill of an auction phase. */
-export function AuctionStatusBadge({ phase, className }: { phase: Auction["phase"]; className?: string }) {
-  const tone = phase === "OPEN" ? "live" : phase === "UPCOMING" ? "upcoming" : phase === "SOLD" ? "success" : "muted";
-  return <LiveBadge label={t(`auction.phase.${phase}`)} tone={tone} className={className} />;
-}
 
 const bidderName = (alias: number, mine: boolean) => (mine ? t("auction.you") : t("auction.bidder", { n: alias }));
 
@@ -108,7 +107,7 @@ export function AuctionPanel({
   return (
     <section id="auction" aria-labelledby="auction-title" className="scroll-mt-24 overflow-hidden rounded-3xl border border-accent/25 bg-surface-1/70 shadow-xl shadow-accent/20">
       {/* Head: what is sold, how it ends */}
-      <div className="relative bg-[radial-gradient(120%_140%_at_0%_0%,rgba(139,92,246,0.35),transparent_60%),radial-gradient(100%_120%_at_100%_100%,rgba(236,72,153,0.28),transparent_60%)] px-5 pt-5 pb-4 light:bg-[radial-gradient(120%_140%_at_0%_0%,rgba(139,92,246,0.14),transparent_60%),radial-gradient(100%_120%_at_100%_100%,rgba(236,72,153,0.12),transparent_60%)]">
+      <div className="relative bg-linear-to-br from-accent/25 via-transparent to-accent-2/20 px-5 pt-5 pb-4">
         <div className="flex flex-wrap items-center gap-2">
           <AuctionStatusBadge phase={a.phase} />
           <Badge tone="neutral" className="font-bold">
@@ -135,13 +134,13 @@ export function AuctionPanel({
             {a.phase === "UPCOMING" && (
               <>
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-fg-secondary">{t("auction.startsIn")}</p>
-                <Countdown label={t("auction.startsIn")} target={a.startsAt} skewMs={skewMs} units={UNITS()} />
+                <Countdown label={t("auction.startsIn")} target={a.startsAt} skewMs={skewMs} />
               </>
             )}
             {open && (
               <>
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-fg-secondary">{t("auction.endsIn")}</p>
-                <Countdown label={t("auction.endsIn")} target={a.endsAt} skewMs={skewMs} units={UNITS()} />
+                <Countdown label={t("auction.endsIn")} target={a.endsAt} skewMs={skewMs} />
               </>
             )}
             {a.phase === "ENDING" && (
@@ -152,7 +151,7 @@ export function AuctionPanel({
             {a.phase === "AWAITING_DECISION" && a.decisionDeadline && (
               <>
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-fg-secondary">{t("auction.decisionIn")}</p>
-                <Countdown label={t("auction.decisionIn")} target={a.decisionDeadline} skewMs={skewMs} units={UNITS()} size="sm" urgentBelowMs={3600_000} />
+                <Countdown label={t("auction.decisionIn")} target={a.decisionDeadline} skewMs={skewMs} size="sm" urgentBelowMs={3600_000} />
               </>
             )}
           </div>

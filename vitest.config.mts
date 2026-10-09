@@ -6,7 +6,7 @@ export default defineConfig({
     alias: { "@": path.resolve(__dirname, "apps/web") },
   },
   test: {
-    include: ["packages/*/src/**/*.test.ts", "apps/web/lib/**/*.test.ts", "scripts/**/*.test.mjs"],
+    include: ["packages/*/src/**/*.test.ts", "apps/web/lib/**/*.test.ts", "apps/web/components/**/*.test.ts", "scripts/**/*.test.mjs"],
     environment: "node",
   },
 });

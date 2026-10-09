@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { Search, X, Users, Tv, Hash, Lock, CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
-import { Avatar, Badge, Button, cn, IconButton, Spinner } from "@/components/ui";
+import { ArrowRight, CheckCircle2, Hash, Lock, Search, Sparkles,Tv, Users, X } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useRef,useState } from "react";
+
+import { Avatar, Badge, cn, Dialog, IconButton, Kbd, Spinner } from "@/components/ui";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
@@ -52,29 +53,10 @@ export function GlobalSearchModal({
   const [tags, setTags] = useState<TagResult[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Focus input when opened
+  // A new search each time it opens.
   useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 50);
-    } else {
-      setQuery("");
-    }
+    if (!isOpen) setQuery("");
   }, [isOpen]);
-
-  // Handle global Cmd+K
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        if (isOpen) onClose();
-      }
-      if (e.key === "Escape" && isOpen) {
-        onClose();
-      }
-    }
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
 
   // Fetch search results
   useEffect(() => {
@@ -102,8 +84,6 @@ export function GlobalSearchModal({
     };
   }, [query, isOpen]);
 
-  if (!isOpen) return null;
-
   const formatDuration = (secs: number) => {
     const m = Math.floor(secs / 60);
     const s = Math.floor(secs % 60);
@@ -116,13 +96,19 @@ export function GlobalSearchModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-scrim-strong backdrop-blur-md p-4 pt-16 sm:pt-24 kz-overlay">
-      <div
-        className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-border-default bg-surface-1 shadow-2xl shadow-accent/40 text-fg"
-        onClick={(e) => e.stopPropagation()}
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <Dialog.Content
+        size="lg"
+        aria-describedby={undefined}
+        onOpenAutoFocus={(e) => {
+          e.preventDefault();
+          inputRef.current?.focus();
+        }}
+        className="top-16 max-h-[calc(100dvh-5rem)] max-w-2xl translate-y-0 rounded-3xl shadow-2xl shadow-accent/30 sm:top-24 sm:max-w-2xl"
       >
+        <Dialog.Title className="sr-only">{t("search.title")}</Dialog.Title>
         {/* Search Input Bar */}
-        <div className="flex items-center gap-3 border-b border-border-default px-4 py-3.5">
+        <div className="flex items-center gap-3 border-b border-border-default py-3.5 pl-4 pr-14">
           <Search className="h-5 w-5 text-accent shrink-0" />
           <input
             ref={inputRef}
@@ -139,9 +125,6 @@ export function GlobalSearchModal({
               <X className="h-4 w-4" aria-hidden />
             </IconButton>
           )}
-          <Button variant="outline" size="sm" shape="rounded" onClick={onClose} className="h-7 rounded-xl px-2 font-mono text-[11px] font-normal text-fg-secondary">
-            {t("search.esc")}
-          </Button>
         </div>
 
         {/* Tab Filter Chips */}
@@ -153,7 +136,7 @@ export function GlobalSearchModal({
               className={cn(
                 "rounded-lg px-3 py-1 font-semibold capitalize transition-all",
                 activeTab === tab
-                  ? "bg-accent text-white shadow-xs"
+                  ? "bg-accent text-on-accent shadow-xs"
                   : "text-fg-secondary hover:text-fg"
               )}
             >
@@ -236,7 +219,7 @@ export function GlobalSearchModal({
                     onClick={() => handleSelect(`/watch/${v.id}`)}
                     className="flex w-full items-center gap-3 text-left rounded-2xl border border-border-subtle bg-surface-2/40 p-2.5 hover:border-accent/50 hover:bg-surface-2 cursor-pointer transition-all group"
                   >
-                    <div className="relative aspect-video h-14 shrink-0 overflow-hidden rounded-xl bg-zinc-800">
+                    <div className="relative aspect-video h-14 shrink-0 overflow-hidden rounded-xl bg-media">
                       {v.thumbnailUrl ? (
                         <img
                           src={v.thumbnailUrl}
@@ -244,7 +227,7 @@ export function GlobalSearchModal({
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-accent/15 to-zinc-900 text-accent">
+                        <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-accent/15 to-media text-accent">
                           <Tv className="h-5 w-5" />
                         </div>
                       )}
@@ -282,7 +265,7 @@ export function GlobalSearchModal({
                   <button
                     key={entry.tag}
                     onClick={() => handleSelect(`/explore?tag=${encodeURIComponent(entry.tag)}`)}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-border-default bg-surface-2/60 px-3 py-1.5 text-xs text-fg-secondary hover:border-accent hover:text-white transition-colors"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border-default bg-surface-2/60 px-3 py-1.5 text-xs text-fg-secondary hover:border-accent hover:text-accent transition-colors"
                   >
                     <Hash className="h-3 w-3 text-accent" />
                     <span>{entry.tag}</span>
@@ -304,8 +287,8 @@ export function GlobalSearchModal({
         {/* Footer shortcuts */}
         <div className="flex items-center justify-between border-t border-border-subtle bg-surface-2/60 px-4 py-2.5 text-[11px] text-fg-muted">
           <div className="flex items-center gap-3">
-            <span><kbd className="rounded-sm border border-white/10 px-1 py-0.5">↑↓</kbd> {t("search.navigate")}</span>
-            <span><kbd className="rounded-sm border border-white/10 px-1 py-0.5">↵</kbd> {t("search.select")}</span>
+            <span><Kbd size="sm">↑↓</Kbd> {t("search.navigate")}</span>
+            <span><Kbd size="sm">↵</Kbd> {t("search.select")}</span>
           </div>
           <Link
             href={`/explore?q=${encodeURIComponent(query)}`}
@@ -316,7 +299,7 @@ export function GlobalSearchModal({
             <ArrowRight className="h-3 w-3" />
           </Link>
         </div>
-      </div>
-    </div>
+      </Dialog.Content>
+    </Dialog.Root>
   );
 }

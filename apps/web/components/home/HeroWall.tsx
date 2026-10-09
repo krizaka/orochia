@@ -19,7 +19,7 @@ export function HeroWall({ images }: { images: string[] }) {
   }
   const columns = [0, 1, 2].map((c) => images.filter((_, i) => i % 3 === c));
   const tile = (src: string, key: string) => (
-    <div key={key} className="aspect-3/4 w-full shrink-0 overflow-hidden rounded-2xl bg-zinc-900 border border-white/5">
+    <div key={key} className="aspect-3/4 w-full shrink-0 overflow-hidden rounded-2xl bg-media border border-border-subtle">
       <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" />
     </div>
   );

@@ -315,16 +315,20 @@ orochia/                           npm workspaces
   `shape` pill — the door's default — or rounded; `loading`; `asChild`), `IconButton` (accessible `label` required),
   `buttonVariants` (and the kit's `orochiaButton` for `sensual`) to style a `<Link>`, `Badge`, `Field.*` + `Input` /
   `Textarea` / `Select`, `Avatar` (fallback: an initial or an icon), `Skeleton`, `Spinner`, `EmptyState`, `Countdown`,
-  the theme (`ThemeScript`, `ThemeProvider`, `ThemeToggle`; `kz-theme` in localStorage), `cn`, `OrochiaLogo`,
-  `MotionObserver`, `RotatingWord`. From `@krizaka/orochia-design-system`: `LiveBadge`, `SocialIcon`, and — until their
-  `@krizaka/ui` primitive ships — `ConfirmIconButton`, `Chip`, `Segmented`, `Switch`, `Slider`, `Sheet`. The door is a
+  `Card.*` (every card: `Root/Media/Image/Overlay/Body/Title/Description/Stat/Footer`), `Dialog.*` + `Sheet` (every
+  modal and sheet — Radix: focus trap, Escape, outside click and scroll lock come with it; the door names the close
+  button), `AlertDialog` (confirmations), `Popover`, `Kbd`, `Toaster` (mounted once in `ClientLayoutShell`) + `toast`
+  (`toast.custom` for live events), the theme (`ThemeScript`, `ThemeProvider`, `ThemeToggle`; `kz-theme` in
+  localStorage), `cn`, `OrochiaLogo`, `MotionObserver`, `RotatingWord`. No hand-written overlay: no `createPortal`,
+  `role="dialog"` or `aria-modal` in a component. From `@krizaka/orochia-design-system`: `LiveBadge`, `SocialIcon`,
+  and — until their `@krizaka/ui` primitive ships — `ConfirmIconButton`, `Chip`, `Segmented`, `Switch`, `Slider`. The door is a
   plain module: server components take `buttonVariants`, `orochiaButton` and `cn` from it. New screens use these
   atoms; a missing component is added to the package, not to the app. Money is `money(cents)` from `lib/money.ts`
   (`@krizaka/intl`).
 - **Krizaka motion signature** (`@krizaka/ui/motion.css`, loaded by `@krizaka/tailwind`; shared with krizaka.com): one easing `--kz-ease`; every page enters (`app/template.tsx`); sections and cards rise into
   view with `data-reveal` (stagger with `--kz-delay`; `MotionObserver` in the layout drives it); headline words roll
   (`RotatingWord`); primary actions carry `kz-sheen`; cards `kz-spotlight` / `kz-lift`; bands `kz-marquee`. What opens
-  over the page enters the same way: backdrops `kz-overlay`, dialogs `kz-dialog` (built into `Sheet`), menus and
+  over the page enters the same way: backdrops `kz-overlay`, dialogs `kz-dialog` (built into `Dialog` and `Sheet`), menus and
   popovers `kz-pop`, a view swapped in place `kz-fade`. Every `transition-*` utility uses `--kz-ease` by default
   (Tailwind config): no `ease-*` / `duration-*` per component unless it means something. Motion
   explains (a product showcase, a count-up), it never blocks reading, and **everything stops under

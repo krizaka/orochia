@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { BadgeCheck } from "lucide-react";
-import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+
 import { Avatar, Badge, SocialIcon } from "@/components/ui";
+import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
+import { type MessageKey,t } from "@/lib/i18n";
+
 import { PictureQuickEdit } from "./PictureQuickEdit";
-import { t, type MessageKey } from "@/lib/i18n";
 
 export interface HeroLink {
   network: string;
@@ -54,7 +56,7 @@ export function ProfileHero({
   };
 
   return (
-    <section className="relative mb-8 overflow-visible rounded-3xl border border-border-default bg-surface-1/60 shadow-2xl shadow-black/40 backdrop-blur-sm light:shadow-xl light:shadow-violet-900/5">
+    <section className="relative mb-8 overflow-visible rounded-3xl border border-border-default bg-surface-1/60 shadow-2xl shadow-accent/5 backdrop-blur-sm">
       {/* Cover */}
       <div className="group relative h-36 overflow-hidden rounded-t-3xl sm:h-56">
         {banner ? (
@@ -62,7 +64,7 @@ export function ProfileHero({
         ) : (
           <div className="h-full w-full bg-[radial-gradient(120%_120%_at_0%_0%,rgba(139,92,246,0.55),transparent_55%),radial-gradient(120%_120%_at_100%_100%,rgba(236,72,153,0.45),transparent_55%)] bg-surface-2" />
         )}
-        <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-zinc-950/70 via-transparent to-transparent light:from-white/30" />
+        <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-surface-0/70 via-transparent to-transparent" />
         {editable && (
           <PictureQuickEdit
             kind="banner"

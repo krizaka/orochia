@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Download, Gavel, Play } from "lucide-react";
-import { Button, Input, Segmented, Sheet, Switch, cn } from "@/components/ui";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+
+import { Button, cn,Dialog, Input, Segmented, Sheet, Switch } from "@/components/ui";
+import { type MessageKey,t } from "@/lib/i18n";
 import { money } from "@/lib/money";
-import { t, type MessageKey } from "@/lib/i18n";
 
 const DURATIONS = [
   { id: "1h", ms: 3600_000 },
@@ -66,12 +67,79 @@ export function StartAuctionSheet({ video, open, onClose }: { video: { id: strin
   };
 
   return (
-    <Sheet
-      open={open}
-      onClose={onClose}
-      title={t("auction.start.title")}
-      footer={
-        <div className="flex justify-end gap-2">
+    <Dialog.Root open={open} onOpenChange={(open) => !open && onClose()}>
+      <Sheet size="md" aria-describedby={undefined}>
+        <Dialog.Header>
+          <Dialog.Title>{t("auction.start.title")}</Dialog.Title>
+        </Dialog.Header>
+        <Dialog.Body>
+          <form id="start-auction" onSubmit={submit} className="space-y-5">
+            <p className="text-xs text-fg-secondary">{t("auction.start.intro", { title: video.title })}</p>
+
+            <label className={label}>
+              {t("auction.start.price")}
+              <span className="relative mt-1 block">
+                <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-fg-muted">$</span>
+                <Input value={price} onChange={(e) => setPrice(e.target.value)} type="number" inputMode="decimal" min={1} step={0.5} required className={cn(field, "mt-0 pl-6 font-mono tabular-nums")} />
+              </span>
+              <span className={hint}>{t("auction.start.priceHint")}</span>
+            </label>
+
+            <div className={label}>
+              {t("auction.start.when")}
+              <div className="mt-1">
+                <Segmented label={t("auction.start.when")} value={when} onChange={setWhen} options={[{ value: "now", label: t("auction.start.now") }, { value: "later", label: t("auction.start.later") }]} />
+              </div>
+              {when === "later" && <Input type="datetime-local" value={startAt} onChange={(e) => setStartAt(e.target.value)} required className={field} aria-label={t("auction.start.startAt")} />}
+            </div>
+
+            <div className={label}>
+              {t("auction.start.duration")}
+              <div className="mt-1">
+                <Segmented label={t("auction.start.duration")} value={duration} onChange={setDuration} options={DURATIONS.map((d) => ({ value: d.id, label: t(`auction.start.durations.${d.id}`) }))} />
+              </div>
+              {duration === "custom" && <Input type="datetime-local" value={endAt} onChange={(e) => setEndAt(e.target.value)} required className={field} aria-label={t("auction.start.endAt")} />}
+              <span className={hint}>{t("auction.start.durationHint")}</span>
+            </div>
+
+            <div className={label}>
+              {t("auction.start.rights")}
+              <div className="mt-1">
+                <Segmented
+                  label={t("auction.start.rights")}
+                  value={rights}
+                  onChange={setRights}
+                  options={[
+                    { value: "WATCH", label: <><Play className="h-3.5 w-3.5" aria-hidden /> {t("auction.rights.WATCH")}</> },
+                    { value: "DOWNLOAD", label: <><Download className="h-3.5 w-3.5" aria-hidden /> {t("auction.rights.DOWNLOAD")}</> },
+                  ]}
+                />
+              </div>
+              <span className={hint}>{t("auction.start.exclusive")}</span>
+            </div>
+
+            <div className="flex items-start justify-between gap-4 rounded-2xl border border-border-default p-4">
+              <span>
+                <span className="block text-sm font-semibold text-fg">{t("auction.start.automatic")}</span>
+                <span className={hint}>{t(automatic ? "auction.start.automaticHint.on" : "auction.start.automaticHint.off")}</span>
+              </span>
+              <Switch checked={automatic} onChange={setAutomatic} label={t("auction.start.automatic")} />
+            </div>
+
+            {priceCents >= 100 && (
+              <p className="rounded-2xl border border-accent/20 bg-accent/[0.06] px-4 py-3 text-xs leading-relaxed text-fg-secondary">
+                {t("auction.start.summary", {
+                  price: money(priceCents),
+                  when: when === "now" ? t("auction.start.nowLower") : new Date(startAt).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }),
+                  duration: t(`auction.start.durations.${duration}`),
+                  rights: t(`auction.rights.${rights}`),
+                })}
+              </p>
+            )}
+            {error && <p role="alert" className="text-xs text-danger">{error}</p>}
+          </form>
+        </Dialog.Body>
+        <Dialog.Footer>
           <Button variant="secondary" onClick={onClose}>{t("common.cancel")}</Button>
           <Button
             variant="sensual"
@@ -82,74 +150,8 @@ export function StartAuctionSheet({ video, open, onClose }: { video: { id: strin
             <Gavel className="h-4 w-4" aria-hidden />
             {t("auction.start.submit")}
           </Button>
-        </div>
-      }
-    >
-      <form id="start-auction" onSubmit={submit} className="space-y-5">
-        <p className="text-xs text-fg-secondary">{t("auction.start.intro", { title: video.title })}</p>
-
-        <label className={label}>
-          {t("auction.start.price")}
-          <span className="relative mt-1 block">
-            <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-fg-muted">$</span>
-            <Input value={price} onChange={(e) => setPrice(e.target.value)} type="number" inputMode="decimal" min={1} step={0.5} required className={cn(field, "mt-0 pl-6 font-mono tabular-nums")} />
-          </span>
-          <span className={hint}>{t("auction.start.priceHint")}</span>
-        </label>
-
-        <div className={label}>
-          {t("auction.start.when")}
-          <div className="mt-1">
-            <Segmented label={t("auction.start.when")} value={when} onChange={setWhen} options={[{ value: "now", label: t("auction.start.now") }, { value: "later", label: t("auction.start.later") }]} />
-          </div>
-          {when === "later" && <Input type="datetime-local" value={startAt} onChange={(e) => setStartAt(e.target.value)} required className={field} aria-label={t("auction.start.startAt")} />}
-        </div>
-
-        <div className={label}>
-          {t("auction.start.duration")}
-          <div className="mt-1">
-            <Segmented label={t("auction.start.duration")} value={duration} onChange={setDuration} options={DURATIONS.map((d) => ({ value: d.id, label: t(`auction.start.durations.${d.id}`) }))} />
-          </div>
-          {duration === "custom" && <Input type="datetime-local" value={endAt} onChange={(e) => setEndAt(e.target.value)} required className={field} aria-label={t("auction.start.endAt")} />}
-          <span className={hint}>{t("auction.start.durationHint")}</span>
-        </div>
-
-        <div className={label}>
-          {t("auction.start.rights")}
-          <div className="mt-1">
-            <Segmented
-              label={t("auction.start.rights")}
-              value={rights}
-              onChange={setRights}
-              options={[
-                { value: "WATCH", label: <><Play className="h-3.5 w-3.5" aria-hidden /> {t("auction.rights.WATCH")}</> },
-                { value: "DOWNLOAD", label: <><Download className="h-3.5 w-3.5" aria-hidden /> {t("auction.rights.DOWNLOAD")}</> },
-              ]}
-            />
-          </div>
-          <span className={hint}>{t("auction.start.exclusive")}</span>
-        </div>
-
-        <div className="flex items-start justify-between gap-4 rounded-2xl border border-border-default p-4">
-          <span>
-            <span className="block text-sm font-semibold text-fg">{t("auction.start.automatic")}</span>
-            <span className={hint}>{t(automatic ? "auction.start.automaticHint.on" : "auction.start.automaticHint.off")}</span>
-          </span>
-          <Switch checked={automatic} onChange={setAutomatic} label={t("auction.start.automatic")} />
-        </div>
-
-        {priceCents >= 100 && (
-          <p className="rounded-2xl border border-accent/20 bg-accent/[0.06] px-4 py-3 text-xs leading-relaxed text-fg-secondary">
-            {t("auction.start.summary", {
-              price: money(priceCents),
-              when: when === "now" ? t("auction.start.nowLower") : new Date(startAt).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }),
-              duration: t(`auction.start.durations.${duration}`),
-              rights: t(`auction.rights.${rights}`),
-            })}
-          </p>
-        )}
-        {error && <p role="alert" className="text-xs text-danger">{error}</p>}
-      </form>
-    </Sheet>
+        </Dialog.Footer>
+      </Sheet>
+    </Dialog.Root>
   );
 }

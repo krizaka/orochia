@@ -1,21 +1,23 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
 import { AtSign, Bell, CheckCircle2, Coins, Flame, Gavel, Megaphone, MessageCircle, MessageSquare, PlayCircle, Target, Trophy, Undo2, Unlock, UserPlus } from "lucide-react";
-import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
-import { type NotificationItem, timeAgo } from "./useNotifications";
+import Link from "next/link";
+import React from "react";
+
 import { Avatar, cn } from "@/components/ui";
+import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
+
+import { type NotificationItem, timeAgo } from "./useNotifications";
 
 const ICONS: Record<string, { icon: React.ElementType; tone: string }> = {
   newFollower: { icon: UserPlus, tone: "bg-accent" },
-  contactRequest: { icon: AtSign, tone: "bg-indigo-500" },
-  newComment: { icon: MessageCircle, tone: "bg-sky-500" },
-  commentReply: { icon: MessageCircle, tone: "bg-sky-500" },
+  contactRequest: { icon: AtSign, tone: "bg-accent-2" },
+  newComment: { icon: MessageCircle, tone: "bg-info" },
+  commentReply: { icon: MessageCircle, tone: "bg-info" },
   newMessage: { icon: MessageSquare, tone: "bg-accent" },
   tipReceived: { icon: Coins, tone: "bg-success" },
   videoUnlocked: { icon: Unlock, tone: "bg-success" },
-  videoReady: { icon: CheckCircle2, tone: "bg-teal-500" },
+  videoReady: { icon: CheckCircle2, tone: "bg-success" },
   creatorPublished: { icon: PlayCircle, tone: "bg-accent" },
   auctionAnnounced: { icon: Gavel, tone: "bg-accent" },
   auctionNewBid: { icon: Gavel, tone: "bg-accent" },
@@ -23,23 +25,23 @@ const ICONS: Record<string, { icon: React.ElementType; tone: string }> = {
   auctionWon: { icon: Trophy, tone: "bg-success" },
   auctionDecision: { icon: Gavel, tone: "bg-accent" },
   auctionSold: { icon: Coins, tone: "bg-success" },
-  auctionUnsold: { icon: Gavel, tone: "bg-zinc-500" },
-  auctionDeclined: { icon: Undo2, tone: "bg-sky-500" },
+  auctionUnsold: { icon: Gavel, tone: "bg-fg-muted" },
+  auctionDeclined: { icon: Undo2, tone: "bg-info" },
   challengeAnnounced: { icon: Target, tone: "bg-accent" },
   challengeRequested: { icon: Flame, tone: "bg-accent" },
   challengePledged: { icon: Coins, tone: "bg-accent" },
   challengeFunded: { icon: Target, tone: "bg-success" },
   challengeAccepted: { icon: Flame, tone: "bg-success" },
-  challengeApplied: { icon: Megaphone, tone: "bg-indigo-500" },
+  challengeApplied: { icon: Megaphone, tone: "bg-accent-2" },
   challengeChosen: { icon: Trophy, tone: "bg-success" },
   challengeDelivered: { icon: PlayCircle, tone: "bg-success" },
-  challengeReleased: { icon: Undo2, tone: "bg-sky-500" },
-  challengeClosed: { icon: Flame, tone: "bg-zinc-500" },
+  challengeReleased: { icon: Undo2, tone: "bg-info" },
+  challengeClosed: { icon: Flame, tone: "bg-fg-muted" },
 };
 
 /** One notification: who (avatar + event badge), what, when; unread ones are marked. */
 export function NotificationRow({ n, onOpen, compact = false }: { n: NotificationItem; onOpen?: () => void; compact?: boolean }) {
-  const { icon: Icon, tone } = ICONS[n.event] ?? { icon: Bell, tone: "bg-zinc-500" };
+  const { icon: Icon, tone } = ICONS[n.event] ?? { icon: Bell, tone: "bg-fg-muted" };
   return (
     <Link
       href={n.path}
@@ -63,7 +65,7 @@ export function NotificationRow({ n, onOpen, compact = false }: { n: Notificatio
           tone,
           "ring-2 ring-border-subtle"
         )}>
-          <Icon className="h-2.5 w-2.5 text-white" />
+          <Icon className="h-2.5 w-2.5 text-fg-on-media" aria-hidden />
         </span>
       </span>
       <span className="min-w-0 flex-1">

@@ -1,13 +1,14 @@
 "use client";
 
-import React, { Suspense, useCallback, useEffect, useState } from "react";
+import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Coins, Gavel, Lock, RotateCcw, Sparkles, Undo2, XCircle } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Coins, Gavel, Lock, RotateCcw, Sparkles, Undo2, XCircle } from "lucide-react";
-import { useAuth } from "@/lib/auth-context";
+import React, { Suspense, useCallback, useEffect, useState } from "react";
+
 import { Badge, Button, cn, Skeleton, Spinner } from "@/components/ui";
+import { useAuth } from "@/lib/auth-context";
+import { type MessageKey,t } from "@/lib/i18n";
 import { money } from "@/lib/money";
-import { t, type MessageKey } from "@/lib/i18n";
 
 interface Pack {
   id: string;
@@ -106,12 +107,12 @@ function WalletPage() {
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         {/* Balance + buy */}
-        <section className="overflow-hidden rounded-[1.75rem] border border-border-default bg-surface-1/60 light:shadow-xl light:shadow-violet-900/5">
-          <div className="relative overflow-hidden bg-[radial-gradient(120%_140%_at_0%_0%,rgba(139,92,246,0.45),transparent_60%),radial-gradient(100%_120%_at_100%_100%,rgba(236,72,153,0.35),transparent_60%)] px-6 py-7 light:bg-[radial-gradient(120%_140%_at_0%_0%,rgba(139,92,246,0.18),transparent_60%),radial-gradient(100%_120%_at_100%_100%,rgba(236,72,153,0.14),transparent_60%)]">
+        <section className="overflow-hidden rounded-[1.75rem] border border-border-default bg-surface-1/60 shadow-xl shadow-accent/5">
+          <div className="relative overflow-hidden bg-linear-to-br from-accent/30 via-transparent to-accent-2/25 px-6 py-7">
             <p className="text-xs font-semibold uppercase tracking-wider text-accent">{t("wallet.balance")}</p>
             <p className="mt-1 font-display text-5xl font-black tabular-nums tracking-tight text-fg">{wallet ? money(wallet.balanceCents) : "—"}</p>
             {wallet && wallet.heldCents > 0 && (
-              <Link href="/auctions?tab=bidding" className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-border-strong bg-black/20 px-3 py-1 text-[11px] font-semibold text-accent transition-colors hover:border-border-strong hover:text-white light:bg-white/60">
+              <Link href="/auctions?tab=bidding" className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-border-strong bg-surface-1/60 px-3 py-1 text-[11px] font-semibold text-accent transition-colors hover:border-accent hover:text-fg">
                 <Gavel className="h-3 w-3" aria-hidden /> {t("wallet.held", { amount: money(wallet.heldCents) })}
               </Link>
             )}
@@ -161,7 +162,7 @@ function WalletPage() {
                       gateway === g ? "border-accent bg-accent/10 text-fg" : "border-border-default text-fg-secondary hover:border-border-strong",
                     )}
                   >
-                    <span className={cn("flex h-4 w-4 items-center justify-center rounded-full border-2", gateway === g ? "border-accent" : "border-zinc-500")}>{gateway === g && <span className="h-1.5 w-1.5 rounded-full bg-accent" />}</span>
+                    <span className={cn("flex h-4 w-4 items-center justify-center rounded-full border-2", gateway === g ? "border-accent" : "border-fg-muted")}>{gateway === g && <span className="h-1.5 w-1.5 rounded-full bg-accent" />}</span>
                     {g === "TEST" ? <Sparkles className="h-4 w-4 text-warning" /> : <Lock className="h-4 w-4 text-fg-secondary" />}
                     {t(`wallet.gateways.${g}` as MessageKey)}
                   </button>

@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import { CheckCircle2, Flag } from "lucide-react";
+import React, { useEffect, useState } from "react";
+
+import { Button, cn, Dialog, Input, Sheet, Textarea } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
-import { Button, cn, Input, Sheet, Textarea } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 export interface ReportModalProps {
@@ -57,7 +58,12 @@ export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModa
   };
 
   return (
-    <Sheet open={isOpen} onClose={close} title={sent ? t("report.sent") : t("report.title")}>
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && close()}>
+      <Sheet size="md" aria-describedby={undefined}>
+        <Dialog.Header>
+          <Dialog.Title>{sent ? t("report.sent") : t("report.title")}</Dialog.Title>
+        </Dialog.Header>
+        <Dialog.Body>
       {sent ? (
         <div className="py-6 text-center">
           <CheckCircle2 className="mx-auto h-12 w-12 text-success" />
@@ -119,6 +125,8 @@ export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModa
           </div>
         </form>
       )}
-    </Sheet>
+        </Dialog.Body>
+      </Sheet>
+    </Dialog.Root>
   );
 }
