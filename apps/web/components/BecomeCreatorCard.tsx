@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import { Spinner } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 
@@ -32,7 +33,7 @@ export function BecomeCreatorCard() {
         disabled={state === "working"}
         className="mt-6 inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-accent to-accent-2 px-6 py-3 text-sm font-bold text-white disabled:opacity-60"
       >
-        {state === "working" && <Loader2 className="h-4 w-4 animate-spin" />}
+        {state === "working" && <Spinner size="sm" className="text-current" />}
         {state === "working" ? t("auth.becomeCreator.working") : t("auth.becomeCreator.cta")}
       </button>
       {state === "error" && <p role="alert" className="mt-3 text-xs text-danger">{t("auth.becomeCreator.failed")}</p>}

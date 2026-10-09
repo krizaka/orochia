@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Search, Hash, Compass, Flame, Gavel } from "lucide-react";
 import { VideoCard } from "@/components/VideoCard";
 import { popularTags, searchVideos } from "@/lib/queries";
-import { buttonVariants, orochiaButton } from "@/components/ui";
+import { Button, buttonVariants, Input } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
@@ -55,18 +55,18 @@ export default async function ExplorePage(props: { searchParams: Promise<{ q?: s
 
       <form action="/explore" className="flex gap-3">
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-fg-muted" />
-          <input
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-fg-muted" aria-hidden />
+          <Input
             name="q"
             defaultValue={q}
             maxLength={100}
             placeholder={t("explore.placeholder")}
             aria-label={t("explore.placeholder")}
-            className="w-full rounded-2xl border border-border-default bg-surface-2/80 py-3 pl-11 pr-4 text-sm text-fg placeholder:text-fg-muted focus:border-accent focus:outline-hidden"
+            className="h-12 rounded-2xl bg-surface-2/80 pl-11 pr-4"
           />
         </div>
         {tag && <input type="hidden" name="tag" value={tag} />}
-        <button className={orochiaButton({ variant: "sensual", size: "lg", shape: "rounded", className: "rounded-2xl px-6" })}>{t("explore.search")}</button>
+        <Button type="submit" variant="sensual" size="lg" shape="rounded" className="rounded-2xl px-6">{t("explore.search")}</Button>
       </form>
 
       {tags.length > 0 && (

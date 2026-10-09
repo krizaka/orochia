@@ -6,7 +6,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { AudienceEditor } from "../AudienceEditor";
 import { COLLECTION_AUDIENCES, CollectionAudienceBadge, audienceOf, type CollectionVisibility } from "../CollectionAudience";
 import { t } from "@/lib/i18n";
-import { ConfirmIconButton } from "@/components/ui";
+import { Button, cn, ConfirmIconButton, Input, Select } from "@/components/ui";
 
 interface Collection {
   id: string;
@@ -18,8 +18,7 @@ interface Collection {
   listsCount: number;
 }
 
-const field =
-  "rounded-2xl border border-border-default bg-surface-2/80 px-4 py-3 text-sm text-fg placeholder:text-fg-muted focus:border-accent focus:outline-hidden";
+const field = "h-auto rounded-2xl bg-surface-2/80 px-4 py-3";
 
 /** Your collections — create, choose who opens each, invite accounts, delete — and those shared with you. */
 export function PlaylistsPanel() {
@@ -57,17 +56,19 @@ export function PlaylistsPanel() {
         }}
         className="flex flex-col gap-3 sm:flex-row"
       >
-        <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} placeholder={t("playlistsPanel.titlePlaceholder")} className={`${field} flex-1`} />
-        <select value={visibility} onChange={(e) => setVisibility(e.target.value as CollectionVisibility)} aria-label={t("playlistsPanel.whoOpens")} className={field}>
+        <Input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} placeholder={t("playlistsPanel.titlePlaceholder")} className={cn(field, "flex-1")} />
+        <span className="sm:w-56">
+        <Select value={visibility} onChange={(e) => setVisibility(e.target.value as CollectionVisibility)} aria-label={t("playlistsPanel.whoOpens")} className={cn(field, "pr-9")}>
           {COLLECTION_AUDIENCES.map((a) => (
             <option key={a.value} value={a.value}>
               {a.label}
             </option>
           ))}
-        </select>
-        <button disabled={!title.trim()} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-accent to-accent-2 px-5 py-3 text-xs font-bold text-white disabled:opacity-40">
-          <Plus className="h-4 w-4" /> {t("common.create")}
-        </button>
+        </Select>
+        </span>
+        <Button type="submit" variant="sensual" shape="rounded" disabled={!title.trim()} className="h-auto rounded-2xl px-5 py-3 text-xs font-bold">
+          <Plus className="h-4 w-4" aria-hidden /> {t("common.create")}
+        </Button>
       </form>
       <p className="-mt-3 text-[11px] text-fg-muted">
         {audienceOf(visibility).hint} {t("playlistsPanel.perVideo")}
@@ -93,18 +94,18 @@ export function PlaylistsPanel() {
                   </span>
                 </Link>
                 <div className="flex items-center gap-1">
-                  <select
+                  <Select
                     value={p.visibility}
                     onChange={(e) => void send(`/api/playlists/${p.id}`, "PATCH", { visibility: e.target.value })}
                     aria-label={t("playlistsPanel.whoOpensNamed", { title: p.title })}
-                    className="rounded-lg border border-border-default bg-surface-2 px-2 py-1.5 text-[11px] font-semibold text-fg focus:border-accent focus:outline-hidden"
+                    className="h-8 rounded-lg pl-2 text-[11px] font-semibold"
                   >
                     {COLLECTION_AUDIENCES.map((a) => (
                       <option key={a.value} value={a.value}>
                         {a.label}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                   <ConfirmIconButton
                     label={t("playlistsPanel.delete", { title: p.title })}
                     confirmLabel={t("playlistsPanel.confirmDelete")}

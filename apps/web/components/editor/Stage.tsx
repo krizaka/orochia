@@ -1,7 +1,8 @@
 "use client";
 
 import React, { forwardRef, useRef, useState } from "react";
-import { Hand, Loader2, Play } from "lucide-react";
+import { Hand, Play } from "lucide-react";
+import { Spinner } from "@/components/ui";
 import { previewFilter, type VideoEdit } from "@/lib/video-edit";
 import { useElementSize } from "./media";
 import { t } from "@/lib/i18n";
@@ -121,7 +122,7 @@ export const Stage = forwardRef<
                 </defs>
               </svg>
               <span className="absolute inset-0 flex items-center justify-center font-mono text-sm font-bold">
-                {progress.percent > 0 ? `${progress.percent}%` : <Loader2 className="h-5 w-5 animate-spin" />}
+                {progress.percent > 0 ? `${progress.percent}%` : <Spinner size="md" className="text-current" />}
               </span>
             </div>
             <span className="max-w-[16rem] text-sm font-semibold">{progress.label}</span>

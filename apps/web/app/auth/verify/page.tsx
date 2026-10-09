@@ -2,7 +2,8 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, Loader2, XCircle } from "lucide-react";
+import { CheckCircle2, XCircle } from "lucide-react";
+import { Spinner } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 
@@ -35,7 +36,7 @@ export default function VerifyEmailPage() {
 
   return (
     <div className="mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center px-4 py-16 text-center">
-      {state === "working" && <Loader2 className="h-10 w-10 animate-spin text-accent" aria-label={t("auth.verify.working")} />}
+      {state === "working" && <Spinner size="lg" label={t("auth.verify.working")} />}
       {state === "done" && (
         <>
           <CheckCircle2 className="h-12 w-12 text-success" />

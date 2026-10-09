@@ -3,9 +3,9 @@
 import React, { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Coins, Gavel, Loader2, Lock, RotateCcw, Sparkles, Undo2, XCircle } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Coins, Gavel, Lock, RotateCcw, Sparkles, Undo2, XCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { Button, cn } from "@/components/ui";
+import { Badge, Button, cn, Skeleton, Spinner } from "@/components/ui";
 import { money } from "@/lib/money";
 import { t, type MessageKey } from "@/lib/i18n";
 
@@ -135,13 +135,13 @@ function WalletPage() {
                       active ? "border-accent bg-accent/10 shadow-lg shadow-accent/20" : "border-border-default hover:border-border-strong",
                     )}
                   >
-                    {p.id === POPULAR && <span className="absolute -top-2.5 left-3 rounded-full bg-linear-to-r from-accent to-accent-2 px-2 py-0.5 text-[10px] font-bold text-white">{t("wallet.popular")}</span>}
+                    {p.id === POPULAR && <Badge size="sm" className="absolute -top-2.5 left-3 bg-linear-to-r from-accent to-accent-2 normal-case tracking-normal text-on-accent ring-0">{t("wallet.popular")}</Badge>}
                     <span className="font-display text-xl font-black text-fg">{money(p.priceCents)}</span>
                     <span className="mt-0.5 text-[11px] font-semibold text-success">{bonus > 0 ? t("wallet.bonus", { amount: money(bonus) }) : " "}</span>
                   </button>
                 );
               })}
-              {!wallet && Array.from({ length: 4 }, (_, i) => <span key={i} className="h-20 animate-pulse rounded-2xl bg-white/5" />)}
+              {!wallet && Array.from({ length: 4 }, (_, i) => <Skeleton key={i} shape="rect" className="h-20 rounded-2xl" />)}
             </div>
 
             <h2 className="mb-3 mt-6 text-sm font-bold text-fg">{t("wallet.payWith")}</h2>
@@ -182,7 +182,7 @@ function WalletPage() {
         <section className="rounded-[1.75rem] border border-border-default bg-surface-1/60 p-5">
           <h2 className="mb-3 text-sm font-bold text-fg">{t("wallet.history")}</h2>
           {!wallet ? (
-            <Loader2 className="mx-auto my-8 h-5 w-5 animate-spin text-accent" />
+            <Spinner size="md" className="mx-auto my-8" />
           ) : wallet.history.length === 0 ? (
             <p className="py-8 text-center text-xs text-fg-muted">{t("wallet.empty")}</p>
           ) : (

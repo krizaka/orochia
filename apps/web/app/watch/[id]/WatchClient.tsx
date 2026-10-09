@@ -13,7 +13,7 @@ import { AuctionPanel } from "@/components/auctions/AuctionPanel";
 import { useAuctionStream } from "@/components/auctions/useAuctionStream";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
 import { Sparkles, Eye, ShieldCheck, Share2, Flag, CheckCircle2, Heart, MessageSquare, Gavel } from "lucide-react";
-import { orochiaButton, buttonVariants, cn } from "@/components/ui";
+import { Avatar, Button, buttonVariants, cn, orochiaButton, Skeleton } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 interface StreamAccess {
@@ -203,8 +203,9 @@ export default function WatchClient() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           {isLoading || !details ? (
-            <div className="aspect-video w-full rounded-2xl bg-surface-2 animate-pulse flex items-center justify-center border border-white/5">
-              <span className="font-mono text-xs text-fg-muted">{t("watch.verifying")}</span>
+            <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border-subtle" aria-busy="true">
+              <Skeleton shape="rect" className="absolute inset-0 h-full rounded-2xl" />
+              <span className="absolute inset-0 flex items-center justify-center font-mono text-xs text-fg-muted">{t("watch.verifying")}</span>
             </div>
           ) : (
             <VideoPlayer
@@ -247,22 +248,24 @@ export default function WatchClient() {
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <h1 className="text-xl sm:text-2xl font-bold text-fg">{title}</h1>
                 <div className="flex items-center gap-3">
-                  <button onClick={() => setIsTipModalOpen(true)} className={orochiaButton({ variant: "sensual", size: "sm", shape: "rounded" })}>
-                    <Sparkles className="h-4 w-4" />
+                  <Button variant="sensual" size="sm" shape="rounded" onClick={() => setIsTipModalOpen(true)}>
+                    <Sparkles className="h-4 w-4" aria-hidden />
                     <span>{isPaywalled ? t("watch.unlock") : t("watch.tip")}</span>
-                  </button>
+                  </Button>
                   {stream?.allowed &&
                     (user ? (
-                      <button
+                      <Button
+                        size="sm"
+                        shape="rounded"
                         onClick={toggleLike}
                         disabled={likeBusy}
                         aria-pressed={liked}
                         aria-label={liked ? t("watch.unlike") : t("watch.like")}
-                        className={cn(buttonVariants({ size: "sm", shape: "rounded" }), liked && "border-accent/40! bg-accent/10! text-accent!")}
+                        className={cn(liked && "border-accent/40 bg-accent/10 text-accent hover:bg-accent/15")}
                       >
-                        <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
+                        <Heart className={cn("h-4 w-4", liked && "fill-current")} aria-hidden />
                         <span>{details.likesCount.toLocaleString("en-US")}</span>
-                      </button>
+                      </Button>
                     ) : (
                       <Link href={`/auth/login?next=/watch/${videoId}`} aria-label={t("watch.like")} className={buttonVariants({ size: "sm", shape: "rounded" })}>
                         <Heart className="h-4 w-4" />
@@ -270,14 +273,14 @@ export default function WatchClient() {
                       </Link>
                     ))}
                   <SaveToPlaylist videoId={videoId} />
-                  <button onClick={share} className={buttonVariants({ size: "sm", shape: "rounded" })}>
-                    <Share2 className="h-4 w-4" />
+                  <Button size="sm" shape="rounded" onClick={share}>
+                    <Share2 className="h-4 w-4" aria-hidden />
                     <span>{copied ? t("watch.copied") : t("watch.share")}</span>
-                  </button>
-                  <button onClick={() => setIsReportModalOpen(true)} className={cn(buttonVariants({ size: "sm", shape: "rounded" }), "hover:border-danger/40! hover:bg-danger/10! hover:text-danger!")}>
-                    <Flag className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button size="sm" shape="rounded" onClick={() => setIsReportModalOpen(true)} className="hover:border-danger/40 hover:bg-danger/10 hover:text-danger">
+                    <Flag className="h-3.5 w-3.5" aria-hidden />
                     <span>{t("watch.report")}</span>
-                  </button>
+                  </Button>
                 </div>
               </div>
 
@@ -306,9 +309,7 @@ export default function WatchClient() {
 
               <div className="mt-6 flex items-center justify-between rounded-2xl border border-border-subtle bg-surface-2/60 p-4 shadow-xs">
                 <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 overflow-hidden rounded-full border border-accent/30">
-                    <img src={details.creatorAvatar || AVATAR_PLACEHOLDER} alt={details.creatorName} className="h-full w-full object-cover" />
-                  </div>
+                  <Avatar src={details.creatorAvatar || AVATAR_PLACEHOLDER} alt={details.creatorName} fallback={details.creatorName.charAt(0)} className="h-12 w-12 border border-accent/30" />
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-bold text-fg">{details.creatorName}</span>

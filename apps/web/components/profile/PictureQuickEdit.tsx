@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Camera, ImagePlus, Loader2, Palette, Trash2 } from "lucide-react";
+import { Camera, ImagePlus, Palette, Trash2 } from "lucide-react";
+import { Spinner } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 interface Preset {
@@ -92,7 +93,7 @@ export function PictureQuickEdit({
           open ? "opacity-100!" : ""
         } ${isAvatar ? "h-9 w-9 justify-center" : "px-3.5 py-2 text-xs font-semibold"}`}
       >
-        {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
+        {busy ? <Spinner size="sm" className="text-current" /> : <Camera className="h-4 w-4" />}
         {!isAvatar && <span>{hasPicture ? t("settings.pictures.editBanner") : t("settings.pictures.add")}</span>}
       </button>
 

@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { usePathname } from "next/navigation";
-import { Loader2, LogOut, MailCheck, RefreshCw } from "lucide-react";
+import { LogOut, MailCheck, RefreshCw } from "lucide-react";
+import { Spinner } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 import { Rich } from "@/components/Rich";
@@ -55,7 +56,7 @@ export function EmailVerificationGate({ children }: { children: React.ReactNode 
           disabled={state === "sending" || state === "sent"}
           className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
         >
-          {state === "sending" ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+          {state === "sending" ? <Spinner size="sm" className="text-current" /> : <RefreshCw className="h-4 w-4" />}
           {state === "sent" ? t("verifyGate.sent") : t("verifyGate.resend")}
         </button>
         <button

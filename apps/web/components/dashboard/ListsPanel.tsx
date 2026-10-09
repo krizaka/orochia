@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { ChevronDown, Plus, Trash2, UserPlus, X } from "lucide-react";
 import { t } from "@/lib/i18n";
-import { ConfirmIconButton } from "@/components/ui";
+import { Button, cn, ConfirmIconButton, IconButton, Input } from "@/components/ui";
 
 interface List {
   id: string;
@@ -17,8 +17,7 @@ interface Member {
   displayName: string;
 }
 
-const field =
-  "rounded-2xl border border-border-default bg-surface-2/80 px-4 py-3 text-sm text-fg placeholder:text-fg-muted focus:border-accent focus:outline-hidden";
+const field = "h-auto rounded-2xl bg-surface-2/80 px-4 py-3";
 
 function Members({ list, onChange }: { list: List; onChange: () => void }) {
   const [members, setMembers] = useState<Member[] | null>(null);
@@ -60,17 +59,17 @@ function Members({ list, onChange }: { list: List; onChange: () => void }) {
   return (
     <div className="mt-3 space-y-2 rounded-2xl border border-border-subtle bg-black/20 p-3">
       <form onSubmit={add} className="flex gap-2">
-        <input
+        <Input
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           maxLength={51}
           placeholder={t("lists.usernamePlaceholder")}
           aria-label={t("lists.addTo", { name: list.name })}
-          className={`${field} min-w-0 flex-1 py-2 text-xs`}
+          className={cn(field, "min-w-0 flex-1 py-2 text-xs")}
         />
-        <button disabled={busy || !username.trim()} className="inline-flex items-center gap-1.5 rounded-xl bg-accent px-3 text-xs font-bold text-white disabled:opacity-40">
-          <UserPlus className="h-3.5 w-3.5" /> {t("common.add")}
-        </button>
+        <Button type="submit" variant="primary" size="sm" shape="rounded" disabled={busy || !username.trim()} className="h-auto rounded-xl font-bold">
+          <UserPlus className="h-3.5 w-3.5" aria-hidden /> {t("common.add")}
+        </Button>
       </form>
       {error && <p className="text-[11px] text-danger">{error}</p>}
       {members === null ? (
@@ -82,9 +81,9 @@ function Members({ list, onChange }: { list: List; onChange: () => void }) {
           {members.map((m) => (
             <li key={m.userId} className="inline-flex items-center gap-1 rounded-full bg-surface-2 py-1 pl-3 pr-1 text-[11px] text-fg">
               @{m.username}
-              <button disabled={busy} onClick={() => remove(m.userId)} className="rounded-full p-0.5 text-fg-secondary hover:text-danger" aria-label={t("lists.removeMember", { username: m.username })}>
-                <X className="h-3 w-3" />
-              </button>
+              <IconButton disabled={busy} onClick={() => remove(m.userId)} className="h-5 w-5 hover:bg-transparent hover:text-danger" label={t("lists.removeMember", { username: m.username })}>
+                <X className="h-3 w-3" aria-hidden />
+              </IconButton>
             </li>
           ))}
         </ul>
@@ -129,10 +128,10 @@ export function ListsPanel() {
   return (
     <div className="space-y-6">
       <form onSubmit={create} className="flex flex-col gap-3 sm:flex-row">
-        <input value={name} onChange={(e) => setName(e.target.value)} maxLength={80} placeholder={t("lists.namePlaceholder")} className={`${field} flex-1`} />
-        <button disabled={!name.trim()} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-accent to-accent-2 px-5 py-3 text-xs font-bold text-white disabled:opacity-40">
-          <Plus className="h-4 w-4" /> {t("common.create")}
-        </button>
+        <Input value={name} onChange={(e) => setName(e.target.value)} maxLength={80} placeholder={t("lists.namePlaceholder")} className={cn(field, "flex-1")} />
+        <Button type="submit" variant="sensual" shape="rounded" disabled={!name.trim()} className="h-auto rounded-2xl px-5 py-3 text-xs font-bold">
+          <Plus className="h-4 w-4" aria-hidden /> {t("common.create")}
+        </Button>
       </form>
       <p className="-mt-3 text-[11px] text-fg-muted">
         {t("lists.intro")}

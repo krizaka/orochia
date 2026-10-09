@@ -2,7 +2,8 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as tus from "tus-js-client";
-import { CheckCircle2, Image as ImageIcon, Loader2, Scissors, Sparkles, UploadCloud, X } from "lucide-react";
+import { CheckCircle2, Image as ImageIcon, Scissors, Sparkles, UploadCloud, X } from "lucide-react";
+import { Spinner } from "@/components/ui";
 import { VideoEditor } from "@/components/VideoEditor";
 import { DraftsShelf } from "@/components/DraftsShelf";
 import { UPLOAD_LIMITS } from "@orochia/media/limits";
@@ -369,7 +370,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
               disabled={!file || (!isImage && !edited) || state === "uploading" || (audience === "INVITED_ONLY" && !listId)}
               className="flex w-full items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-accent via-accent-2 to-accent-2 py-3.5 text-sm font-bold text-white disabled:opacity-40"
             >
-              {state === "uploading" ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
+              {state === "uploading" ? <Spinner size="sm" className="text-current" /> : <ImageIcon className="h-4 w-4" />}
               {state === "uploading" ? t("stories.create.uploading", { progress }) : t("stories.create.publish")}
             </button>
           </form>

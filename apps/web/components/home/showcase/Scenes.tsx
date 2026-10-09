@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { BadgeCheck, Clock, Coins, Gavel, Heart, Loader2, Lock, MessageCircle, Play, Send, Share2, Target, Trophy } from "lucide-react";
+import { BadgeCheck, Clock, Coins, Gavel, Heart, Lock, MessageCircle, Play, Send, Share2, Target, Trophy } from "lucide-react";
+import { Spinner } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 /**
@@ -207,7 +208,7 @@ function Unlock({ still }: { still: boolean }) {
           </span>
           <p className="mt-3 text-[13px] font-bold">{t("home.showcase.ui.unlockBadge")}</p>
           <span className={`mt-3 flex items-center justify-center gap-1.5 rounded-xl bg-white py-2.5 text-[12px] font-bold text-zinc-950 transition-transform ${step === 1 ? "scale-95" : ""}`}>
-            {step >= 2 ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5 fill-current" />}
+            {step >= 2 ? <Spinner size="sm" className="text-current" /> : <Play className="h-3.5 w-3.5 fill-current" />}
             {step >= 2 ? t("home.showcase.ui.confirming") : t("home.showcase.ui.unlockCta", { amount: "$15" })}
           </span>
         </div>

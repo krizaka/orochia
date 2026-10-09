@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { CheckCheck, Loader2, Settings } from "lucide-react";
+import { CheckCheck, Settings } from "lucide-react";
+import { Button, buttonVariants, Spinner } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { NotificationRow } from "@/components/notifications/NotificationRow";
 import { type NotificationItem, useNotifications } from "@/components/notifications/useNotifications";
@@ -47,19 +48,19 @@ export default function NotificationsPage() {
         </div>
         <div className="flex items-center gap-2">
           {unread > 0 && (
-            <button type="button" onClick={() => void markRead("all")} className="flex items-center gap-1.5 rounded-xl border border-border-default px-3 py-2 text-xs font-semibold text-fg hover:border-accent/60">
-              <CheckCheck className="h-3.5 w-3.5" /> {t("notifications.markAll")}
-            </button>
+            <Button variant="outline" size="sm" shape="rounded" onClick={() => void markRead("all")} className="rounded-xl">
+              <CheckCheck className="h-3.5 w-3.5" aria-hidden /> {t("notifications.markAll")}
+            </Button>
           )}
-          <Link href="/dashboard?tab=settings#settings-notifications" aria-label={t("notifications.settings")} className="rounded-xl border border-border-default p-2 text-fg-secondary hover:border-accent/60">
-            <Settings className="h-4 w-4" />
+          <Link href="/dashboard?tab=settings#settings-notifications" aria-label={t("notifications.settings")} title={t("notifications.settings")} className={buttonVariants({ variant: "outline", size: "icon", shape: "rounded", className: "h-8 w-8 rounded-xl text-fg-secondary" })}>
+            <Settings className="h-4 w-4" aria-hidden />
           </Link>
         </div>
       </div>
       <div className="glass-panel rounded-3xl p-2">
         {!loaded ? (
           <div className="flex justify-center py-16">
-            <Loader2 className="h-6 w-6 animate-spin text-accent" />
+            <Spinner size="md" />
           </div>
         ) : all.length === 0 ? (
           <p className="px-6 py-16 text-center text-sm text-fg-muted">{t("notifications.empty")}</p>
@@ -68,9 +69,9 @@ export default function NotificationsPage() {
         )}
       </div>
       {loaded && all.length >= 25 && more && (
-        <button type="button" onClick={() => void loadOlder()} disabled={loadingMore} className="mx-auto mt-4 block rounded-xl px-4 py-2 text-xs font-semibold text-accent hover:bg-accent/10">
-          {loadingMore ? <Loader2 className="h-4 w-4 animate-spin" /> : t("notifications.loadMore")}
-        </button>
+        <Button variant="ghost" size="sm" shape="rounded" onClick={() => void loadOlder()} loading={loadingMore} className="mx-auto mt-4 flex rounded-xl text-accent hover:bg-accent/10 hover:text-accent">
+          {t("notifications.loadMore")}
+        </Button>
       )}
     </div>
   );

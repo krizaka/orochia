@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Search, X, Users, Tv, Hash, Lock, CheckCircle2, ArrowRight, Loader2, Sparkles } from "lucide-react";
+import { Search, X, Users, Tv, Hash, Lock, CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
+import { Spinner } from "@/components/ui";
 import Link from "next/link";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
@@ -131,7 +132,7 @@ export function GlobalSearchModal({
             aria-label={t("search.placeholder")}
             className="flex-1 bg-transparent text-sm sm:text-base outline-hidden placeholder:text-fg-muted"
           />
-          {loading && <Loader2 className="h-4 w-4 animate-spin text-accent shrink-0" />}
+          {loading && <Spinner size="sm" className="shrink-0" />}
           {query && (
             <button
               onClick={() => setQuery("")}

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Clapperboard, Loader2, Music2, Trash2 } from "lucide-react";
+import { Clapperboard, Music2, Trash2 } from "lucide-react";
+import { Spinner } from "@/components/ui";
 import { type DraftKind, type DraftSummary, type OpenedDraft, deleteDraft, listDrafts, openDraft } from "@/lib/drafts";
 import { t } from "@/lib/i18n";
 
@@ -77,7 +78,7 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
                 <span className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/85 to-transparent p-2 pt-6 text-[11px] font-semibold text-white">
                   {busy ? (
                     <span className="flex items-center gap-1.5">
-                      <Loader2 className="h-3 w-3 animate-spin" /> {t("editor.drafts.opening", { progress: opening.progress })}
+                      <Spinner size="sm" className="text-current" /> {t("editor.drafts.opening", { progress: opening.progress })}
                     </span>
                   ) : (
                     <>

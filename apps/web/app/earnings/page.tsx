@@ -3,9 +3,9 @@
 import React, { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Download, Eye, Film, Landmark, Loader2, Users, Wallet } from "lucide-react";
+import { Download, Eye, Film, Landmark, Users, Wallet } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { Button, Segmented, orochiaButton, buttonVariants, cn } from "@/components/ui";
+import { Button, Segmented, orochiaButton, buttonVariants, cn, Spinner } from "@/components/ui";
 import { MonthlyChart } from "@/components/money/MonthlyChart";
 import { PayoutAccountSheet } from "@/components/money/PayoutAccountSheet";
 import { WithdrawSheet } from "@/components/money/WithdrawSheet";
@@ -105,7 +105,7 @@ function EarningsPage() {
 
       {!s ? (
         <div className="flex justify-center py-24">
-          <Loader2 className="h-6 w-6 animate-spin text-accent" />
+          <Spinner size="md" />
         </div>
       ) : (
         <div className={cn("space-y-6 transition-opacity", loading && "opacity-60")}>
@@ -148,7 +148,7 @@ function EarningsPage() {
                     <li key={v.id}>
                       <Link href={`/watch/${v.id}`} className="flex items-center gap-3 rounded-xl p-2 transition-colors hover:bg-surface-2">
                         <span className="w-5 text-right font-mono text-[11px] text-fg-muted">{i + 1}</span>
-                        <span className="h-10 w-16 shrink-0 overflow-hidden rounded-lg bg-zinc-800">{v.thumbnailUrl ? <img src={v.thumbnailUrl} alt="" className="h-full w-full object-cover" /> : <Film className="m-auto mt-2.5 h-5 w-5 text-fg-muted" />}</span>
+                        <span className="h-10 w-16 shrink-0 overflow-hidden rounded-lg bg-media">{v.thumbnailUrl ? <img src={v.thumbnailUrl} alt="" className="h-full w-full object-cover" /> : <Film className="m-auto mt-2.5 h-5 w-5 text-fg-muted" />}</span>
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-sm font-medium text-fg">{v.title}</span>
                           <span className="block text-[11px] text-fg-muted">{t("earnings.videoMeta", { views: compact(v.totalViews), payments: v.payments })}</span>

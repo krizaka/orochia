@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, Clock, Download, Gavel, Info, Loader2, Play, ShieldCheck, Sparkles, Timer, Trophy, Wallet, X } from "lucide-react";
-import { Button, Chip, ConfirmIconButton, Countdown, LiveBadge, orochiaButton, cn } from "@/components/ui";
+import { CheckCircle2, Clock, Download, Gavel, Info, Play, ShieldCheck, Sparkles, Timer, Trophy, Wallet, X } from "lucide-react";
+import { Button, Chip, cn, ConfirmIconButton, Countdown, LiveBadge, orochiaButton, Spinner } from "@/components/ui";
 import { money } from "@/lib/money";
 import { timeAgo } from "@/components/notifications/useNotifications";
 import { t, type MessageKey } from "@/lib/i18n";
@@ -146,7 +146,7 @@ export function AuctionPanel({
             )}
             {a.phase === "ENDING" && (
               <p className="inline-flex items-center gap-2 text-sm font-semibold text-fg-secondary">
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> {t("auction.closing")}
+                <Spinner size="sm" className="text-current" label={t("auction.closing")} /> {t("auction.closing")}
               </p>
             )}
             {a.phase === "AWAITING_DECISION" && a.decisionDeadline && (

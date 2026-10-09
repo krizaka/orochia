@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Mail, Copy, Check, Plus, Loader2, Sparkles, UserCheck, Clock } from "lucide-react";
+import { Mail, Copy, Check, Plus, Sparkles, UserCheck, Clock } from "lucide-react";
+import { Badge, Button, Input, Spinner } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { Rich } from "@/components/Rich";
 
@@ -99,23 +100,19 @@ export function InvitationsPanel() {
 
         <form onSubmit={handleCreateInvite} className="mt-4 flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Mail className="absolute left-3.5 top-3 h-4 w-4 text-fg-muted" />
-            <input
+            <Mail className="absolute left-3.5 top-3 h-4 w-4 text-fg-muted" aria-hidden />
+            <Input
               type="email"
               value={emailInput}
               onChange={(e) => setEmailInput(e.target.value)}
               placeholder={t("invites.emailPlaceholder")}
-              className="w-full rounded-2xl border border-border-default bg-surface-2/60 pl-10 pr-4 py-2.5 text-xs text-fg placeholder-zinc-500 focus:border-accent focus:outline-hidden"
+              className="h-10 rounded-2xl bg-surface-2/60 pl-10 pr-4 text-xs"
             />
           </div>
-          <button
-            type="submit"
-            disabled={creating}
-            className="flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-accent to-accent-2 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-accent/20 hover:opacity-90 transition-all disabled:opacity-50"
-          >
-            {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+          <Button type="submit" variant="sensual" shape="rounded" loading={creating} className="rounded-2xl px-6 text-xs font-bold">
+            {!creating && <Plus className="h-4 w-4" aria-hidden />}
             <span>{t("invites.create")}</span>
-          </button>
+          </Button>
         </form>
 
         {error && <p className="mt-3 text-xs text-danger">{error}</p>}
@@ -128,13 +125,15 @@ export function InvitationsPanel() {
                   {t("invites.ready")}
                 </span>
                 <p className="text-xs font-mono text-success mt-0.5 select-all">
-                  <Rich text={t("invites.code")} slots={{ code: <strong className="text-white">{lastCreatedCode}</strong> }} />
+                  <Rich text={t("invites.code")} slots={{ code: <strong className="text-fg">{lastCreatedCode}</strong> }} />
                 </p>
               </div>
-              <button
-                type="button"
+              <Button
+                variant="primary"
+                size="sm"
+                shape="rounded"
                 onClick={() => copyInviteLink(lastCreatedCode)}
-                className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-success hover:bg-success text-white text-xs font-semibold transition-colors"
+                className="rounded-xl bg-success hover:bg-success/90"
               >
                 {copiedCode === lastCreatedCode ? (
                   <>
@@ -147,7 +146,7 @@ export function InvitationsPanel() {
                     <span>{t("invites.copyLink")}</span>
                   </>
                 )}
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -160,8 +159,8 @@ export function InvitationsPanel() {
         </h3>
 
         {loading ? (
-          <div className="py-8 text-center text-fg-muted">
-            <Loader2 className="h-5 w-5 animate-spin mx-auto mb-2" />
+          <div className="flex flex-col items-center gap-2 py-8 text-center text-fg-muted">
+            <Spinner label={t("invites.loading")} />
             <span className="text-xs">{t("invites.loading")}</span>
           </div>
         ) : invitations.length === 0 ? (
@@ -189,17 +188,17 @@ export function InvitationsPanel() {
                     </td>
                     <td className="py-3 pr-4">
                       {inv.status === "ACCEPTED" ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-[10px] font-bold text-success">
-                          <UserCheck className="h-3 w-3" /> {t("invites.status.ACCEPTED")}
-                        </span>
+                        <Badge size="sm" tone="success" className="normal-case tracking-normal">
+                          <UserCheck className="h-3 w-3" aria-hidden /> {t("invites.status.ACCEPTED")}
+                        </Badge>
                       ) : inv.status === "EXPIRED" ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-zinc-800 px-2 py-0.5 text-[10px] font-bold text-fg-secondary">
-                          <Clock className="h-3 w-3" /> {t("invites.status.EXPIRED")}
-                        </span>
+                        <Badge size="sm" tone="neutral" className="normal-case tracking-normal">
+                          <Clock className="h-3 w-3" aria-hidden /> {t("invites.status.EXPIRED")}
+                        </Badge>
                       ) : (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-bold text-warning">
-                          <Clock className="h-3 w-3" /> {t("invites.status.PENDING")}
-                        </span>
+                        <Badge size="sm" tone="warning" className="normal-case tracking-normal">
+                          <Clock className="h-3 w-3" aria-hidden /> {t("invites.status.PENDING")}
+                        </Badge>
                       )}
                     </td>
                     <td className="py-3 pr-4 text-fg-muted font-mono text-[11px]">
@@ -210,10 +209,12 @@ export function InvitationsPanel() {
                       })}
                     </td>
                     <td className="py-3 text-right">
-                      <button
-                        type="button"
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        shape="rounded"
                         onClick={() => copyInviteLink(inv.code)}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zinc-900 border border-white/10 hover:border-accent/40 text-[11px] text-zinc-300 hover:text-white transition-colors"
+                        className="h-7 gap-1 px-2.5 text-[11px]"
                         title={t("invites.copyTitle")}
                       >
                         {copiedCode === inv.code ? (
@@ -227,7 +228,7 @@ export function InvitationsPanel() {
                             <span>{t("common.copy")}</span>
                           </>
                         )}
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                 ))}
