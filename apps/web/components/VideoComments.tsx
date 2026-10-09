@@ -6,7 +6,7 @@ import { MessageSquare, Reply, Trash2 } from "lucide-react";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
 import { Rich } from "@/components/Rich";
 import { t } from "@/lib/i18n";
-import { Button, cn, Textarea } from "@/components/ui";
+import { Avatar, Button, cn, Textarea } from "@/components/ui";
 
 interface Comment {
   id: string;
