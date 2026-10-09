@@ -113,11 +113,18 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
 }
 
 /**
- * The authenticated user, or a 401/403 HttpError. Sessions are stateless tokens, so the account is
+ * The authenticated user, or a 401/403 HttpError. On ADMIN-only routes the operator console may present its service
+ * token instead of a session (lib/operator.ts). Sessions are stateless tokens, so the account is
  * re-read here: a suspension or a role change takes effect on the very next request, not when the
  * cookie expires.
  */
 export async function requireUserWithRole(roles: Role[], options: { allowUnverifiedEmail?: boolean } = {}): Promise<SessionUser> {
+  // The operator console's service token (lib/operator.ts) opens administrator routes only.
+  if (roles.length === 1 && roles[0] === "ADMIN") {
+    const { operatorFromToken } = await import("./operator");
+    const operator = await operatorFromToken();
+    if (operator) return operator;
+  }
   const user = await getSession();
   if (!user) throw new HttpError(401, "Authentication required");
   const { db, users } = await import("@orochia/db");

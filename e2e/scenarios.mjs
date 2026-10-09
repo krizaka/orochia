@@ -644,6 +644,14 @@ check("public watch page carries a VideoObject", (await (await fetch(`${B}/watch
 check("robots.txt keeps accounts out", (await (await fetch(`${B}/robots.txt`)).text()).includes("Disallow: /dashboard"));
 check("llms.txt served", (await fetch(`${B}/llms.txt`)).status === 200);
 
+// The operator console's service token: ADMIN routes only, never a member's.
+if (process.env.OROCHIA_ADMIN_API_TOKEN) {
+  const bearer = (token) => ({ headers: { Authorization: `Bearer ${token}` } });
+  check("the console's token opens the admin API", (await fetch(`${B}/api/admin/auctions`, bearer(process.env.OROCHIA_ADMIN_API_TOKEN))).status === 200);
+  check("…a wrong token is refused", (await fetch(`${B}/api/admin/auctions`, bearer("x".repeat(48)))).status === 401);
+  check("…and it opens no member route", (await fetch(`${B}/api/me/wallet`, bearer(process.env.OROCHIA_ADMIN_API_TOKEN))).status === 401);
+}
+
 // Platform & database, for operators: status, backups, and — last, it wipes everything — the factory reset.
 {
   const status = (await admin.call("/api/admin/platform")).json.platform;
