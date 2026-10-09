@@ -11,6 +11,7 @@ import { CreatorProfileClient } from "@/components/CreatorProfileClient";
 import Link from "next/link";
 import { ProfileHero } from "@/components/profile/ProfileHero";
 import { ShareProfileButton } from "@/components/profile/ShareProfileButton";
+import { StartChallengeButton } from "@/components/challenges/StartChallengeButton";
 import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
@@ -75,7 +76,19 @@ export default async function CreatorPage(props: { params: Promise<{ username: s
                 {t("profile.editProfile")}
               </Link>
             ) : (
-              <RelationshipActions username={creator.username} />
+              <>
+                <RelationshipActions username={creator.username} />
+                {creator.isCreator && creator.isVerified && (
+                  <StartChallengeButton
+                    signedIn={Boolean(viewer)}
+                    isCreator={viewer?.role === "CREATOR"}
+                    kind="REQUEST"
+                    creatorUsername={creator.username}
+                    label={t("challenge.dare")}
+                    variant="secondary"
+                  />
+                )}
+              </>
             )}
             <ShareProfileButton username={creator.username} displayName={creator.displayName} />
           </>

@@ -17,6 +17,8 @@ interface VideoPlayerProps {
   isInvitedOnly?: boolean;
   /** Up for auction (or sold at one): only the winning bidder plays it. */
   isAuction?: boolean;
+  /** Delivered for a challenge's backers. */
+  isChallenge?: boolean;
   /** Rendered in the contacts / followers / auction gate: the action that opens the video (follow, contact). */
   gateAction?: React.ReactNode;
   onUnlockRequested?: () => void;
@@ -36,13 +38,14 @@ export function VideoPlayer({
   isFollowersOnly = false,
   isInvitedOnly = false,
   isAuction = false,
+  isChallenge = false,
   gateAction,
   onUnlockRequested,
   contentRatingId,
   isBlurred = false,
   isAdult = false,
 }: VideoPlayerProps) {
-  const isGated = isContactsOnly || isFollowersOnly || isInvitedOnly || isAuction;
+  const isGated = isContactsOnly || isFollowersOnly || isInvitedOnly || isAuction || isChallenge;
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -246,10 +249,10 @@ export function VideoPlayer({
             {isAuction ? <Gavel className="h-5 w-5 sm:h-8 sm:w-8 text-fuchsia-300" /> : <Users className="h-5 w-5 sm:h-8 sm:w-8 text-zinc-300" />}
           </div>
           <h3 className="text-base sm:text-xl font-bold text-white mb-1">
-            {t(isAuction ? "player.auctionTitle" : isInvitedOnly ? "player.invitedTitle" : isFollowersOnly ? "player.followersTitle" : "player.contactsTitle")}
+            {t(isAuction ? "player.auctionTitle" : isChallenge ? "player.challengeTitle" : isInvitedOnly ? "player.invitedTitle" : isFollowersOnly ? "player.followersTitle" : "player.contactsTitle")}
           </h3>
           <p className="hidden sm:block text-sm text-zinc-400 max-w-md mb-6">
-            {t(isAuction ? "player.auctionBody" : isInvitedOnly ? "player.invitedBody" : isFollowersOnly ? "player.followersBody" : "player.contactsBody")}
+            {t(isAuction ? "player.auctionBody" : isChallenge ? "player.challengeBody" : isInvitedOnly ? "player.invitedBody" : isFollowersOnly ? "player.followersBody" : "player.contactsBody")}
           </p>
           {!isInvitedOnly && gateAction}
         </div>

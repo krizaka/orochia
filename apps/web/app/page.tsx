@@ -1,11 +1,13 @@
 import React from "react";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Clapperboard, Gavel, HeartHandshake, Lock, Sparkles, UserPlus } from "lucide-react";
+import { ArrowRight, CheckCircle2, Clapperboard, Flame, Gavel, HeartHandshake, Lock, Sparkles, UserPlus } from "lucide-react";
 import { platformFeePercent } from "@orochia/payments";
 import { getCurrentUser } from "@/lib/auth";
 import { featuredCreator, listFeed, platformStats } from "@/lib/queries";
 import { listAuctions } from "@/lib/auctions";
 import { AuctionCard } from "@/components/auctions/AuctionCard";
+import { ChallengeCard } from "@/components/challenges/ChallengeCard";
+import { listChallenges } from "@/lib/challenges";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { CreatorStoriesBar } from "@/components/CreatorStoriesBar";
 import { FeedFilterTabs } from "@/components/FeedFilterTabs";
@@ -28,16 +30,16 @@ export const dynamic = "force-dynamic";
  */
 async function loadHome() {
   try {
-    const [videos, featured, stats, auctions] = await Promise.all([listFeed(24), featuredCreator(), platformStats(), listAuctions("open", null, 3)]);
-    return { videos, featured, stats, auctions };
+    const [videos, featured, stats, auctions, challenges] = await Promise.all([listFeed(24), featuredCreator(), platformStats(), listAuctions("open", null, 3), listChallenges("open", null, 3)]);
+    return { videos, featured, stats, auctions, challenges };
   } catch (error) {
     console.error("[home] feed unavailable:", error);
-    return { videos: [], featured: null, stats: { videos: 0, creators: 0 }, auctions: [] };
+    return { videos: [], featured: null, stats: { videos: 0, creators: 0 }, auctions: [], challenges: [] };
   }
 }
 
 export default async function HomePage() {
-  const [viewer, { videos, featured, stats, auctions }] = await Promise.all([getCurrentUser(), loadHome()]);
+  const [viewer, { videos, featured, stats, auctions, challenges }] = await Promise.all([getCurrentUser(), loadHome()]);
   const share = 100 - platformFeePercent();
   const wall = videos.map((v) => v.thumbnailUrl).filter((u): u is string => Boolean(u)).slice(0, 18);
   const surface = "border border-white/10 light:border-black/5 bg-zinc-900/40 light:bg-white";
@@ -105,7 +107,7 @@ export default async function HomePage() {
           <div className="kz-marquee gap-3" style={{ ["--kz-marquee-duration" as string]: "45s" }}>
             {[0, 1].map((copy) => (
               <div key={copy} className="flex gap-3 pr-3">
-                {(["a", "b", "c", "d", "e", "f", "g", "h"] as const).map((k) => (
+                {(["a", "b", "c", "i", "d", "e", "f", "g", "h"] as const).map((k) => (
                   <span key={k} className="flex items-center gap-2 whitespace-nowrap rounded-full border border-white/10 bg-white/3 px-4 py-2 text-sm font-semibold text-zinc-300 light:border-black/5 light:bg-white light:text-slate-600">
                     <Sparkles className="h-3.5 w-3.5 text-fuchsia-400" /> {t(`home.marquee.${k}`, { share })}
                   </span>
@@ -158,6 +160,34 @@ export default async function HomePage() {
           </div>
         ) : (
           <AuctionsExplainer />
+        )}
+      </section>
+
+      <section className="mb-12" aria-labelledby="home-challenges">
+        <div className="mb-4 flex items-end justify-between gap-4" data-reveal>
+          <h2 id="home-challenges" className="flex items-center gap-2 font-display text-xl font-bold text-white light:text-slate-900">
+            <Flame className="h-5 w-5 text-fuchsia-400 light:text-fuchsia-600" aria-hidden /> {t("home.challenges.title")}
+          </h2>
+          <Link href="/challenges" className="inline-flex items-center gap-1 text-sm font-semibold text-violet-300 hover:text-violet-200 light:text-violet-700 hover:light:text-violet-900">
+            {t("home.challenges.all")} <ArrowRight className="h-4 w-4" aria-hidden />
+          </Link>
+        </div>
+        {challenges.length > 0 ? (
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {challenges.map((c, i) => (
+              <ChallengeCard key={c.id} challenge={c} index={i} />
+            ))}
+          </div>
+        ) : (
+          <div data-reveal className={`kz-spotlight flex flex-col items-start justify-between gap-4 rounded-3xl p-6 sm:flex-row sm:items-center sm:p-8 ${surface}`}>
+            <div className="max-w-2xl">
+              <p className="font-display text-lg font-black text-white light:text-slate-900">{t("home.challenges.pitch")}</p>
+              <p className="mt-1 text-sm text-zinc-400 light:text-slate-600">{t("home.challenges.body")}</p>
+            </div>
+            <Link href="/challenges" className="kz-sheen inline-flex shrink-0 items-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-fuchsia-600/30">
+              <Flame className="h-4 w-4" aria-hidden /> {t("home.challenges.cta")}
+            </Link>
+          </div>
         )}
       </section>
 

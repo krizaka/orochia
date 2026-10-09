@@ -1,16 +1,16 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Check, Clapperboard, Clock, Coins, Gavel, Lock, ShieldCheck, Sparkles, Trophy, Undo2, Upload, Users } from "lucide-react";
+import { Check, Clapperboard, Clock, Coins, Flame, Gavel, Lock, ShieldCheck, Sparkles, Target, Trophy, Undo2, Upload, Users } from "lucide-react";
 import { t } from "@/lib/i18n";
 
 /**
  * What Orochia does, one mechanism per scene, on a phone. Nothing in it pretends to be someone: there are no names,
  * no faces, no counters — only the product's own rules (the audiences a video can have, the tip presets, the auction's
- * escrow and soft close, the creator's share) drawn over real thumbnails of the platform, or its default artwork while
+ * escrow and soft close, a challenge's all-or-nothing goal, the creator's share) drawn over real thumbnails of the platform, or its default artwork while
  * it is empty. Pauses off-screen; still under prefers-reduced-motion.
  */
-const SCENES = ["publish", "audience", "stories", "tip", "auction"] as const;
+const SCENES = ["publish", "audience", "stories", "tip", "auction", "challenge"] as const;
 type Scene = (typeof SCENES)[number];
 const SCENE_MS = 5200;
 const FALLBACK = ["/defaults/banners/banner-04.svg", "/defaults/banners/banner-02.svg", "/defaults/banners/banner-06.svg"];
@@ -53,7 +53,11 @@ function Screen({ scene, covers, share }: { scene: Scene; covers: string[]; shar
         <p className="mx-4 mt-4 text-[11px] font-bold text-white">{t("home.showcase.audience.title")}</p>
         <ul className="mx-3 mt-2 space-y-1.5">
           {AUDIENCES.map((key, i) => (
-            <li key={key} className="sc-pick flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-[10px] font-semibold text-zinc-300" style={{ animationDelay: `${i * 0.85}s` }}>
+            <li
+              key={key}
+              className="sc-pick flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-[10px] font-semibold text-zinc-300"
+              style={{ animationDelay: `${i * 0.85}s` }}
+            >
               {key === "paid" ? <Lock className="h-3 w-3 text-fuchsia-400" /> : <Users className="h-3 w-3 text-violet-400" />}
               {t(`home.showcase.audience.${key}`)}
             </li>
@@ -76,7 +80,9 @@ function Screen({ scene, covers, share }: { scene: Scene; covers: string[]; shar
         <span className="absolute left-3 top-12 flex items-center gap-1 rounded-full bg-black/50 px-2 py-0.5 text-[9px] font-semibold text-white backdrop-blur-md">
           <Clock className="h-2.5 w-2.5" /> {t("home.showcase.stories.expires")}
         </span>
-        <span className="absolute inset-x-3 bottom-4 rounded-full border border-white/30 bg-black/30 px-3 py-2 text-[10px] text-white/80 backdrop-blur-md">{t("home.showcase.stories.reply")}</span>
+        <span className="absolute inset-x-3 bottom-4 rounded-full border border-white/30 bg-black/30 px-3 py-2 text-[10px] text-white/80 backdrop-blur-md">
+          {t("home.showcase.stories.reply")}
+        </span>
       </div>
     );
   }
@@ -94,7 +100,10 @@ function Screen({ scene, covers, share }: { scene: Scene; covers: string[]; shar
           <p className="text-[11px] font-bold text-white">{t("home.showcase.tip.title")}</p>
           <div className="flex gap-1.5">
             {TIPS.map((amount, i) => (
-              <span key={amount} className={`flex-1 rounded-xl py-2 text-center text-[10px] font-bold ${i === 1 ? "sc-press bg-linear-to-r from-violet-600 to-pink-600 text-white" : "bg-white/5 text-zinc-300"}`}>
+              <span
+                key={amount}
+                className={`flex-1 rounded-xl py-2 text-center text-[10px] font-bold ${i === 1 ? "sc-press bg-linear-to-r from-violet-600 to-pink-600 text-white" : "bg-white/5 text-zinc-300"}`}
+              >
                 {amount}
               </span>
             ))}
@@ -104,6 +113,52 @@ function Screen({ scene, covers, share }: { scene: Scene; covers: string[]; shar
           </div>
           <p className="text-[9px] font-semibold text-emerald-300">{t("home.showcase.tip.keep", { share })}</p>
         </div>
+      </div>
+    );
+  }
+  if (scene === "challenge") {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center bg-zinc-950 px-4 pt-12">
+        <span className="flex items-center gap-1 rounded-full bg-fuchsia-600/90 px-2 py-0.5 text-[9px] font-bold text-white">
+          <Flame className="h-2.5 w-2.5" /> {t("home.showcase.challenge.badge")}
+        </span>
+        <div className="relative mt-5 h-36 w-36">
+          <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90" aria-hidden>
+            <circle cx="50" cy="50" r="42" fill="none" strokeWidth="8" className="stroke-white/10" />
+            <circle
+              cx="50"
+              cy="50"
+              r="42"
+              fill="none"
+              strokeWidth="8"
+              strokeLinecap="round"
+              pathLength={100}
+              strokeDasharray="100"
+              className="sc-ring stroke-fuchsia-500"
+            />
+          </svg>
+          <span className="absolute inset-0 flex flex-col items-center justify-center text-white">
+            <Target className="h-5 w-5 text-fuchsia-300" />
+            <span className="mt-1 text-[10px] font-bold uppercase tracking-wider">{t("home.showcase.challenge.goal")}</span>
+          </span>
+        </div>
+        <div className="mt-5 flex w-full gap-1.5">
+          {TIPS.map((amount, i) => (
+            <span
+              key={amount}
+              className={`sc-step flex-1 rounded-xl py-2 text-center text-[10px] font-bold ${i === 2 ? "bg-linear-to-r from-violet-600 to-pink-600 text-white" : "bg-white/5 text-zinc-300"}`}
+              style={{ animationDelay: `${0.3 + i * 0.25}s` }}
+            >
+              {amount}
+            </span>
+          ))}
+        </div>
+        <p className="sc-step mt-4 text-center text-[10px] leading-snug text-zinc-300" style={{ animationDelay: "1.6s" }}>
+          {t("home.showcase.challenge.allOrNothing")}
+        </p>
+        <p className="sc-step mt-2 flex items-center gap-1 text-[10px] font-bold text-emerald-300" style={{ animationDelay: "3.4s" }}>
+          <Check className="h-3 w-3" /> {t("home.showcase.challenge.made")}
+        </p>
       </div>
     );
   }
@@ -124,7 +179,11 @@ function Screen({ scene, covers, share }: { scene: Scene; covers: string[]; shar
             ["winner", Trophy, "text-emerald-300"],
           ] as const
         ).map(([key, Icon, tone], i) => (
-          <li key={key} className="sc-step flex items-start gap-2 rounded-xl bg-white/5 px-3 py-2 text-[10px] leading-snug text-zinc-200" style={{ animationDelay: `${0.3 + i * 1.05}s` }}>
+          <li
+            key={key}
+            className="sc-step flex items-start gap-2 rounded-xl bg-white/5 px-3 py-2 text-[10px] leading-snug text-zinc-200"
+            style={{ animationDelay: `${0.3 + i * 1.05}s` }}
+          >
             <Icon className={`mt-px h-3 w-3 shrink-0 ${tone}`} /> {t(`home.showcase.auction.${key}`)}
           </li>
         ))}
@@ -133,7 +192,14 @@ function Screen({ scene, covers, share }: { scene: Scene; covers: string[]; shar
   );
 }
 
-const ICONS: Record<Scene, typeof Upload> = { publish: Clapperboard, audience: Users, stories: Clock, tip: Coins, auction: Gavel };
+const ICONS: Record<Scene, typeof Upload> = {
+  publish: Clapperboard,
+  audience: Users,
+  stories: Clock,
+  tip: Coins,
+  auction: Gavel,
+  challenge: Flame,
+};
 
 export function ProductShowcase({ images, share }: { images: string[]; share: number }) {
   const covers = images.length >= 3 ? images.slice(0, 6) : FALLBACK;
@@ -155,7 +221,10 @@ export function ProductShowcase({ images, share }: { images: string[]; share: nu
   return (
     <div ref={box} className="relative flex w-full min-w-0 flex-col items-center" aria-label={t("home.showcase.label")} role="region">
       <div className="relative">
-        <div aria-hidden className="sc-aura absolute -inset-10 -z-10 rounded-full bg-linear-to-tr from-violet-600/40 via-fuchsia-500/30 to-pink-500/30 blur-3xl light:from-violet-300/50 light:via-fuchsia-200/50 light:to-pink-200/50" />
+        <div
+          aria-hidden
+          className="sc-aura absolute -inset-10 -z-10 rounded-full bg-linear-to-tr from-violet-600/40 via-fuchsia-500/30 to-pink-500/30 blur-3xl light:from-violet-300/50 light:via-fuchsia-200/50 light:to-pink-200/50"
+        />
         <div className="sc-float relative h-[490px] w-[240px] rounded-[2.8rem] border-[3px] border-white/20 bg-zinc-950 p-2 shadow-2xl shadow-black/70 ring-1 ring-white/10 light:border-slate-300 light:shadow-violet-900/25 sm:h-[540px] sm:w-[266px]">
           <div className="theme-dark relative h-full w-full overflow-hidden rounded-[2.3rem] bg-black">
             <div aria-hidden className="absolute left-1/2 top-2.5 z-30 h-4.5 w-20 -translate-x-1/2 rounded-full bg-black" />
@@ -166,7 +235,11 @@ export function ProductShowcase({ images, share }: { images: string[]; share: nu
           </div>
         </div>
       </div>
-      <div role="tablist" aria-label={t("home.showcase.label")} className="mt-6 flex max-w-full gap-1 overflow-x-auto rounded-full border border-white/15 bg-zinc-950/80 p-1 shadow-xl backdrop-blur-xl scrollbar-none light:border-black/10 light:bg-white/90">
+      <div
+        role="tablist"
+        aria-label={t("home.showcase.label")}
+        className="mt-6 flex max-w-full gap-1 overflow-x-auto rounded-full border border-white/15 bg-zinc-950/80 p-1 shadow-xl backdrop-blur-xl scrollbar-none light:border-black/10 light:bg-white/90"
+      >
         {SCENES.map((s, i) => {
           const Icon = ICONS[s];
           return (
@@ -177,12 +250,19 @@ export function ProductShowcase({ images, share }: { images: string[]; share: nu
               aria-selected={i === index}
               onClick={() => setIndex(i)}
               className={`relative flex shrink-0 items-center gap-1.5 overflow-hidden whitespace-nowrap rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors sm:text-xs ${
-                i === index ? "bg-white/15 text-white light:bg-black/10 light:text-slate-900" : "text-zinc-400 hover:text-white light:text-slate-500 hover:light:text-slate-900"
+                i === index
+                  ? "bg-white/15 text-white light:bg-black/10 light:text-slate-900"
+                  : "text-zinc-400 hover:text-white light:text-slate-500 hover:light:text-slate-900"
               }`}
             >
               <Icon className="h-3.5 w-3.5" aria-hidden />
               {t(`home.showcase.scenes.${s}`)}
-              {i === index && running && <span className="sc-tab absolute inset-x-0 bottom-0 h-[2px] bg-linear-to-r from-violet-500 via-fuchsia-500 to-pink-500" style={{ animationDuration: `${SCENE_MS}ms` }} />}
+              {i === index && running && (
+                <span
+                  className="sc-tab absolute inset-x-0 bottom-0 h-[2px] bg-linear-to-r from-violet-500 via-fuchsia-500 to-pink-500"
+                  style={{ animationDuration: `${SCENE_MS}ms` }}
+                />
+              )}
             </button>
           );
         })}
@@ -220,8 +300,11 @@ const STYLES = `
   .sc-share { transform-origin: left; animation: sc-grow 1.6s 1.6s cubic-bezier(.16,1,.3,1) both; }
   @keyframes sc-grow { from { transform: scaleX(0); } }
   .sc-tab { transform-origin: left; animation: sc-grow linear both; }
+  .sc-ring { stroke-dashoffset: 100; animation: sc-ring 3.2s .4s cubic-bezier(.16,1,.3,1) forwards; }
+  @keyframes sc-ring { to { stroke-dashoffset: 0; } }
   @media (prefers-reduced-motion: reduce) {
-    .sc-scene, .sc-float, .sc-aura, .sc-zoom, .sc-develop, .sc-veil, .sc-fill, .sc-step, .sc-tick, .sc-pick, .sc-press, .sc-coin, .sc-share, .sc-tab { animation: none !important; }
+    .sc-scene, .sc-float, .sc-aura, .sc-zoom, .sc-develop, .sc-veil, .sc-fill, .sc-step, .sc-tick, .sc-pick, .sc-press, .sc-coin, .sc-share, .sc-tab, .sc-ring { animation: none !important; }
+    .sc-ring { stroke-dashoffset: 0; }
     .sc-fill { width: 100%; }
   }
 `;

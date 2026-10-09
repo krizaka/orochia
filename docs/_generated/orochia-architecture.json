@@ -71,7 +71,7 @@
       "id": "data",
       "name": "Data persistence",
       "path": "packages/db",
-      "tablesCount": 39,
+      "tablesCount": 42,
       "tables": [
         "auctions",
         "auction_bids",
@@ -82,6 +82,9 @@
         "playlist_audience_lists",
         "auth_identities",
         "auth_tokens",
+        "challenges",
+        "challenge_pledges",
+        "challenge_applications",
         "compliance_reports",
         "contacts",
         "follows",
@@ -377,6 +380,78 @@
       "path": "/api/bunny/analytics",
       "access": "session · ADMIN",
       "summary": "Catalogue statistics for administrators, from the database."
+    },
+    {
+      "method": "GET",
+      "path": "/api/challenges",
+      "access": "public · session-aware",
+      "summary": "Lists challenges by tab: open, calls (open calls), done (delivered), inbox (yours to answer or deliver), mine, backing."
+    },
+    {
+      "method": "POST",
+      "path": "/api/challenges",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Opens a challenge: a creator's goal (pledges until the deadline, all or nothing), a request to one creator (the sender's offer is held at once; the creator has three days to answer) or an open call for any creator (the author's pot is held; creators apply and the author picks one)."
+    },
+    {
+      "method": "GET",
+      "path": "/api/challenges/[id]",
+      "access": "public · session-aware",
+      "summary": "A challenge as the viewer sees it: progress, deadlines, backers (aliases), applications and what the viewer may do."
+    },
+    {
+      "method": "POST",
+      "path": "/api/challenges/[id]/answer",
+      "access": "session · CREATOR",
+      "summary": "The creator a request was sent to accepts it (and must deliver in time) or declines it (every pledge comes back)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/challenges/[id]/applications",
+      "access": "session · CREATOR",
+      "summary": "A verified creator applies to take an open call, with a short note for its author."
+    },
+    {
+      "method": "POST",
+      "path": "/api/challenges/[id]/assign",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "The author of an open call picks one applicant, who now has the delivery window to make it."
+    },
+    {
+      "method": "POST",
+      "path": "/api/challenges/[id]/cancel",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "The author withdraws an open challenge (a goal, a request not answered yet, an open call): every pledge comes back."
+    },
+    {
+      "method": "GET",
+      "path": "/api/challenges/[id]/delivery",
+      "access": "session · CREATOR",
+      "summary": "What the creator can deliver: their ready videos not used elsewhere, or the stories posted since they committed."
+    },
+    {
+      "method": "POST",
+      "path": "/api/challenges/[id]/delivery",
+      "access": "session · CREATOR",
+      "summary": "The creator delivers a video or a story: the backers' pledges are paid and they can watch it."
+    },
+    {
+      "method": "POST",
+      "path": "/api/challenges/[id]/pledges",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Pledges Orochia credits to an open challenge; they are held until it is delivered and come back if it is not."
+    },
+    {
+      "method": "POST",
+      "path": "/api/challenges/[id]/start",
+      "access": "session · CREATOR",
+      "summary": "A goal's creator starts it as soon as the goal is reached (pledging stops; the delivery window begins)."
+    },
+    {
+      "method": "GET",
+      "path": "/api/challenges/[id]/stream",
+      "access": "public",
+      "summary": "Server-Sent Events of a challenge: each pledge (amount, alias, new total) and every change of state."
     },
     {
       "method": "POST",
@@ -688,7 +763,7 @@
       "method": "GET",
       "path": "/api/me/wallet",
       "access": "session · MEMBER / CREATOR / ADMIN",
-      "summary": "Your Orochia credits: balance (and what is held behind your leading bids), the packs you can buy, how you can pay for them, and your history."
+      "summary": "Your Orochia credits: balance (and what is held behind your leading bids and challenge pledges), the packs you can buy, how you can pay for them, and your history."
     },
     {
       "method": "POST",
@@ -844,13 +919,13 @@
       "method": "DELETE",
       "path": "/api/videos/[id]",
       "access": "session · CREATOR",
-      "summary": "The creator deletes their video (refused while it is in an auction)."
+      "summary": "The creator deletes their video (refused while it is in an auction, and for a video its challenge's backers paid for)."
     },
     {
       "method": "PATCH",
       "path": "/api/videos/[id]",
       "access": "session · CREATOR",
-      "summary": "The creator edits their video (an auctioned video keeps its audience): title, description, visibility, unlock price, tags, comments open."
+      "summary": "The creator edits their video (an auctioned or challenge video keeps its audience): title, description, visibility, unlock price, tags, comments open."
     },
     {
       "method": "GET",

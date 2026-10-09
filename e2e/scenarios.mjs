@@ -2,7 +2,7 @@
 /**
  * End-to-end feature scenarios against a running Orochia on a freshly seeded database:
  * approved followers, contacts, invited-only videos and audience lists, collections and their permissions, views, likes, comments, shares, search, creator edits, takedowns, suspensions,
- * role changes, the wallet and auctions — each checked through the HTTP API with real sessions.
+ * role changes, the wallet, auctions and challenges — each checked through the HTTP API with real sessions.
  *
  *   npm run db:reset -- --yes && npm run dev      # in another terminal
  *   npm run test:e2e                              # OROCHIA_URL defaults to http://localhost:3000
@@ -632,6 +632,111 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("…the bid's credits come back", (await wallet(alex)).heldCents === 0);
   check("operators list every auction", ((await admin.call("/api/admin/auctions")).json.auctions ?? []).length >= 4);
   check("members cannot", (await alex.call("/api/admin/auctions")).status === 403);
+  await sqlClient.end();
+}
+
+// Challenges: a creator's all-or-nothing goal, a dare to one creator (accept or decline), an open call creators apply
+// to; pledges in credits held until delivery, paid then, given back when it does not happen. Deadlines are moved in
+// the database (the only SQL here); everything else goes through the API.
+{
+  const { default: pg } = await import("pg");
+  const sqlClient = new pg.Client({ connectionString: process.env.DATABASE_URL || "postgresql://orochia_user:orochia_secret@localhost:5432/orochia_db?sslmode=disable" });
+  await sqlClient.connect();
+  const shift = (id, column, interval) => sqlClient.query(`update challenges set ${column} = now() + $2::interval where id = $1`, [id, interval]);
+  const wallet = async (s) => (await s.call("/api/me/wallet")).json;
+  const view = async (s, id) => (await s.call(`/api/challenges/${id}`)).json.challenge;
+  const pledge = (s, id, amountCents) => s.call(`/api/challenges/${id}/pledges`, "POST", { amountCents });
+  const text = { description: "One take, golden hour, the rooftop of the studio.", deliverable: "VIDEO", deliveryDays: 7 };
+  const inDays = (d) => new Date(Date.now() + d * 86400_000);
+  for (const s of [alex, sam]) await s.call("/api/me/wallet/topups", "POST", { packId: "pro", gateway: "TEST" });
+  const velvet = feed.find((v) => v.title.startsWith("Velvet Lounge"));
+
+  // A goal
+  check("a member cannot set a goal", (await alex.call("/api/challenges", "POST", { kind: "GOAL", title: "Rooftop session", ...text, goalCents: 2000, deadline: inDays(2), reward: "BACKERS" })).status === 403);
+  const goal = await elena.call("/api/challenges", "POST", { kind: "GOAL", title: "Rooftop session", ...text, goalCents: 2000, deadline: inDays(2), reward: "BACKERS" });
+  check("a creator sets a goal", goal.status === 201, JSON.stringify(goal.json));
+  const g = goal.json.challengeId;
+  check("…listed among open challenges", (await anon.call("/api/challenges")).json.items.some((c) => c.id === g && c.stage === "FUNDING"));
+  check("the creator cannot back their own goal", (await pledge(elena, g, 500)).status === 403);
+  const alexBefore = (await wallet(alex)).balanceCents;
+  check("a pledge under $1 is refused", (await pledge(alex, g, 50)).status === 400);
+  const p1 = await pledge(alex, g, 500);
+  check("alex backs it with $5 (Backer 1)", p1.status === 200 && p1.json.alias === 1, JSON.stringify(p1.json));
+  check("…his credits are held", (await wallet(alex)).heldCents >= 500);
+  const p2 = await pledge(sam, g, 1500);
+  check("sam's $15 reaches the goal", p2.json.reachedGoal === true);
+  const seen = await view(alex, g);
+  check("backers are aliases, the stage says the goal is reached", seen.stage === "GOAL_REACHED" && seen.recentPledges[0].alias === 2 && !JSON.stringify(seen).includes("sam_rivers"));
+  check("only its creator starts it", (await alex.call(`/api/challenges/${g}/start`, "POST")).status === 403);
+  check("the creator starts it", (await elena.call(`/api/challenges/${g}/start`, "POST")).json.status === "ACCEPTED");
+  check("…pledging is over", (await pledge(alex, g, 500)).status === 409);
+  const options = (await elena.call(`/api/challenges/${g}/delivery`)).json.items ?? [];
+  check("the creator sees what they can deliver", options.some((o) => o.id === velvet.id));
+  check("a video already sold at auction cannot be delivered", !options.some((o) => o.id === neon.id));
+  const earningsBefore = (await elena.call("/api/creator/earnings?period=all")).json.summary.netCents;
+  const delivered = await elena.call(`/api/challenges/${g}/delivery`, "POST", { videoId: velvet.id });
+  check("the creator delivers", delivered.json.status === "DELIVERED", JSON.stringify(delivered.json));
+  check("…the backers watch it", (await alex.call(`/api/videos/${velvet.id}/stream`)).json.allowed === true && (await sam.call(`/api/videos/${velvet.id}/stream`)).json.allowed === true);
+  check("…nobody else does", (await mia.call(`/api/videos/${velvet.id}/stream`)).json.reason === "CHALLENGE");
+  check("…its audience is locked", (await elena.call(`/api/videos/${velvet.id}`, "PATCH", { visibility: "PUBLIC" })).status === 409);
+  check("…it cannot be deleted", (await elena.call(`/api/videos/${velvet.id}`, "DELETE")).status === 409);
+  const alexAfter = await wallet(alex);
+  check("…alex paid exactly his pledge", alexAfter.balanceCents === alexBefore - 500 && alexAfter.heldCents === 0);
+  check("…the creator is credited through the ledger", (await elena.call("/api/creator/earnings?period=all")).json.summary.netCents > earningsBefore);
+  check("listed among delivered challenges", (await anon.call("/api/challenges?tab=done")).json.items.some((c) => c.id === g));
+  await sleep(500);
+  check("the backers are notified", (await alex.call("/api/me/notifications")).json.items.some((n) => n.event === "challengeDelivered"));
+
+  // A dare
+  check("a member cannot be dared", (await alex.call("/api/challenges", "POST", { kind: "REQUEST", title: "Duet", ...text, creatorUsername: "sam_rivers", offerCents: 2000 })).status === 404);
+  const low = await alex.call("/api/challenges", "POST", { kind: "REQUEST", title: "Duet", ...text, creatorUsername: "miasterling", offerCents: 500 });
+  check("an offer below the creator's minimum → 409 with it", low.status === 409 && low.json.minimum === 1000, JSON.stringify(low.json));
+  const dare = await alex.call("/api/challenges", "POST", { kind: "REQUEST", title: "Duet in the rain", ...text, creatorUsername: "miasterling", offerCents: 1200 });
+  check("alex dares mia with $12", dare.status === 201, JSON.stringify(dare.json));
+  const d = dare.json.challengeId;
+  check("…the dare is held from his credits", (await wallet(alex)).heldCents === 1200);
+  check("sam adds $3 to it", (await pledge(sam, d, 300)).status === 200);
+  check("the creator sees who dared her", (await view(mia, d)).requestedBy?.username === "alex_vance");
+  check("…nobody else does", (await view(sam, d)).requestedBy === null);
+  check("mia finds it in her inbox", (await mia.call("/api/challenges?tab=inbox")).json.items.some((c) => c.id === d));
+  check("only she answers", (await elena.call(`/api/challenges/${d}/answer`, "POST", { accept: true })).status === 404);
+  check("mia declines", (await mia.call(`/api/challenges/${d}/answer`, "POST", { accept: false })).json.status === "DECLINED");
+  check("…every pledge comes back", (await wallet(alex)).heldCents === 0 && (await wallet(sam)).heldCents === 0);
+  check("mia turns dares off", (await mia.call("/api/me/profile", "PUT", { challengeRequestsOff: true })).status === 200);
+  check("…and cannot be dared any more", (await alex.call("/api/challenges", "POST", { kind: "REQUEST", title: "Duet again", ...text, creatorUsername: "miasterling", offerCents: 2000 })).status === 403);
+  await mia.call("/api/me/profile", "PUT", { challengeRequestsOff: false });
+
+  // An open call
+  const call = await sam.call("/api/challenges", "POST", { kind: "OPEN_CALL", title: "Neon city walk", ...text, deliverable: "STORY", offerCents: 1000, deadline: inDays(1) });
+  check("sam posts an open call with a $10 pot", call.status === 201, JSON.stringify(call.json));
+  const o = call.json.challengeId;
+  check("…listed among open calls", (await anon.call("/api/challenges?tab=calls")).json.items.some((c) => c.id === o && c.creator === null));
+  check("a member cannot apply", (await alex.call(`/api/challenges/${o}/applications`, "POST", { note: "me!" })).status === 403);
+  check("elena applies", (await elena.call(`/api/challenges/${o}/applications`, "POST", { note: "I know the spot." })).status === 201);
+  check("…once", (await elena.call(`/api/challenges/${o}/applications`, "POST", {})).status === 409);
+  check("mia applies", (await mia.call(`/api/challenges/${o}/applications`, "POST", {})).status === 201);
+  check("an applicant cannot pledge on it", (await pledge(elena, o, 500)).status === 403);
+  const forAuthor = await view(sam, o);
+  check("its author sees the applicants", forAuthor.applications.length === 2 && forAuthor.viewer.canAssign);
+  check("…others only count them", (await view(alex, o)).applications.length === 0 && (await view(alex, o)).applicationsCount === 2);
+  const elenaApp = forAuthor.applications.find((a) => a.creator.username === "elenavox");
+  check("sam picks elena", (await sam.call(`/api/challenges/${o}/assign`, "POST", { applicationId: elenaApp.id })).json.status === "ACCEPTED");
+  check("…she now makes it", (await view(anon, o)).creator?.username === "elenavox");
+  await shift(o, "delivery_deadline", "-1 second");
+  check("not delivered in time, it fails", (await view(sam, o)).stage === "FAILED");
+  check("…and sam's pot comes back", (await wallet(sam)).heldCents === 0);
+
+  // A goal that is not reached, and a withdrawn call
+  const big = (await elena.call("/api/challenges", "POST", { kind: "GOAL", title: "Feature film", ...text, goalCents: 100000, deadline: inDays(7), reward: "EVERYONE" })).json.challengeId;
+  await pledge(alex, big, 500);
+  await shift(big, "deadline", "-1 second");
+  check("a goal not reached by its deadline expires", (await view(alex, big)).stage === "EXPIRED");
+  check("…and its pledges come back", (await wallet(alex)).heldCents === 0);
+  const withdrawn = (await alex.call("/api/challenges", "POST", { kind: "OPEN_CALL", title: "Changed my mind", ...text, offerCents: 500, deadline: inDays(1) })).json.challengeId;
+  check("only its author withdraws it", (await sam.call(`/api/challenges/${withdrawn}/cancel`, "POST")).status === 404);
+  check("its author withdraws it", (await alex.call(`/api/challenges/${withdrawn}/cancel`, "POST")).json.status === "CANCELLED");
+  check("alex finds his challenges and the ones he backs", (await alex.call("/api/challenges?tab=mine")).json.items.length >= 2 && (await alex.call("/api/challenges?tab=backing")).json.items.some((c) => c.id === g));
+  check("personal tabs need a session", (await anon.call("/api/challenges?tab=mine")).status === 401);
   await sqlClient.end();
 }
 

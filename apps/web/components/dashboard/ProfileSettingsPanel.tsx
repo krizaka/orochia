@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Bell, Check, ExternalLink, Link2, Loader2, Lock, User, UserX, Wallet, KeyRound } from "lucide-react";
+import { Bell, Check, ExternalLink, Flame, Link2, Loader2, Lock, User, UserX, Wallet, KeyRound } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { SocialIcon, Switch } from "@/components/ui";
 import { latestAdultBirthDate } from "@/components/BirthDateField";
@@ -36,6 +36,8 @@ interface Profile {
   emailFrequency: "INSTANT" | "HOURLY" | "NONE";
   directMessagePrivacy: "EVERYONE" | "CONTACTS_ONLY";
   payoutAddressCrypto: string | null;
+  challengeRequestsOff: boolean;
+  challengeMinCents: number;
 }
 
 const EVENTS = [
@@ -56,8 +58,31 @@ const EVENTS = [
   "auctionDecision",
   "auctionSold",
   "auctionUnsold",
+  "challengeAnnounced",
+  "challengeRequested",
+  "challengePledged",
+  "challengeFunded",
+  "challengeAccepted",
+  "challengeApplied",
+  "challengeChosen",
+  "challengeDelivered",
+  "challengeReleased",
+  "challengeClosed",
 ] as const;
-const CREATOR_EVENTS = new Set(["tipReceived", "videoUnlocked", "videoReady", "newFollower", "auctionNewBid", "auctionDecision", "auctionSold", "auctionUnsold"]);
+const CREATOR_EVENTS = new Set([
+  "tipReceived",
+  "videoUnlocked",
+  "videoReady",
+  "newFollower",
+  "auctionNewBid",
+  "auctionDecision",
+  "auctionSold",
+  "auctionUnsold",
+  "challengeRequested",
+  "challengeFunded",
+  "challengeChosen",
+  "challengeClosed",
+]);
 
 const label = "mb-1.5 block text-xs font-semibold text-zinc-300 light:text-slate-700";
 const hint = "mt-1 block text-[11px] leading-relaxed text-zinc-500 light:text-slate-500";
@@ -141,10 +166,12 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
   const [emailsOff, setEmailsOff] = useState<string[]>([]);
   const [inAppOff, setInAppOff] = useState<string[]>([]);
   const [frequency, setFrequency] = useState<Profile["emailFrequency"]>("INSTANT");
+  const [challengeMin, setChallengeMin] = useState("10");
   const identity = useSaver();
   const birth = useSaver();
   const linkSaver = useSaver();
   const prefs = useSaver();
+  const dares = useSaver();
 
   // The open section follows the address (#settings-…), and an address with a section opens there.
   const [hash, setHash] = useState("");
@@ -174,6 +201,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
       setEmailsOff(prof.emailsOff ?? []);
       setInAppOff(prof.inAppOff ?? []);
       setFrequency(prof.emailFrequency ?? "INSTANT");
+      setChallengeMin(String((prof.challengeMinCents ?? 1000) / 100));
     }
     if (b) setBlocked(b.blocked ?? []);
     if (i) setIdentities(i.identities ?? []);
@@ -196,7 +224,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
   };
   const toggle = (list: string[], e: string, on: boolean) => (on ? list.filter((x) => x !== e) : [...list, e]);
 
-  const sections = (["profile", "links", "privacy", "notifications", "payouts", "accounts", "blocked"] as const).filter((s) => isCreator || s !== "payouts");
+  const sections = (["profile", "links", "privacy", "challenges", "notifications", "payouts", "accounts", "blocked"] as const).filter((s) => isCreator || (s !== "payouts" && s !== "challenges"));
 
   return (
     <div className="grid gap-6 lg:grid-cols-[200px_minmax(0,1fr)]">
@@ -336,6 +364,34 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
           ))}
         </div>
       </Section>
+
+      {isCreator && (
+        <Section id="challenges" icon={<Flame className="h-4 w-4" />} title={t("settings.sections.challenges")}>
+          <div className="flex items-start justify-between gap-4 rounded-2xl border border-white/10 p-4 light:border-black/10">
+            <span>
+              <span className="block text-sm font-semibold text-white light:text-slate-900">{t("settings.challenges.accept")}</span>
+              <span className="mt-0.5 block text-[11px] text-zinc-400 light:text-slate-500">{t("settings.challenges.acceptHint")}</span>
+            </span>
+            <Switch
+              checked={!profile.challengeRequestsOff}
+              label={t("settings.challenges.accept")}
+              onChange={(on) => {
+                setProfile({ ...profile, challengeRequestsOff: !on });
+                void dares.run(() => put({ challengeRequestsOff: !on }));
+              }}
+            />
+          </div>
+          <label className="mt-4 block">
+            <span className={label}>{t("settings.challenges.minimum")}</span>
+            <span className="relative block max-w-48">
+              <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-zinc-500">$</span>
+              <input value={challengeMin} onChange={(e) => setChallengeMin(e.target.value)} type="number" min={1} max={10000} inputMode="decimal" className={`${field} pl-6 font-mono`} />
+            </span>
+            <span className="mt-1 block text-[11px] text-zinc-500 light:text-slate-500">{t("settings.challenges.minimumHint")}</span>
+          </label>
+          <SaveRow state={dares.state} error={dares.error} onSave={() => void dares.run(() => put({ challengeMinCents: Math.round(Number(challengeMin) * 100) }))} />
+        </Section>
+      )}
 
       <Section id="notifications" icon={<Bell className="h-4 w-4" />} title={t("settings.sections.notifications")}>
         <p className="-mt-2 mb-4 text-xs text-zinc-400 light:text-slate-500">{t("settings.notifications.intro")}</p>

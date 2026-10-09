@@ -81,6 +81,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
         <nav className="hidden items-center gap-6 md:flex">
           {navLink("/explore", t("nav.explore"))}
           {navLink("/auctions", t("nav.auctions"))}
+          {navLink("/challenges", t("nav.challenges"))}
           {user && navLink("/messages", t("nav.messages"))}
         </nav>
 

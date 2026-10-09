@@ -138,6 +138,16 @@ export const NOTIFICATION_EVENTS = [
   "auctionSold",
   "auctionUnsold",
   "auctionDeclined",
+  "challengeAnnounced",
+  "challengeRequested",
+  "challengePledged",
+  "challengeFunded",
+  "challengeAccepted",
+  "challengeApplied",
+  "challengeChosen",
+  "challengeDelivered",
+  "challengeReleased",
+  "challengeClosed",
 ] as const;
 export type NotificationEvent = (typeof NOTIFICATION_EVENTS)[number];
 

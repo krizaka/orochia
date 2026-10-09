@@ -181,6 +181,7 @@ export default function WatchClient() {
   const isFollowersOnly = stream ? !stream.allowed && stream.reason === "FOLLOWERS_ONLY" : false;
   const isInvitedOnly = stream ? !stream.allowed && stream.reason === "INVITED_ONLY" : false;
   const isAuction = stream ? !stream.allowed && stream.reason === "AUCTION" : false;
+  const isChallenge = stream ? !stream.allowed && stream.reason === "CHALLENGE" : false;
   const auctionPanel = auctionState.auction && (
     <AuctionPanel auction={auctionState.auction} skewMs={auctionState.skewMs} pulse={auctionState.pulse} onChanged={() => void auctionState.reload()} onOwnBid={auctionState.onOwnBid} />
   );
@@ -217,8 +218,13 @@ export default function WatchClient() {
               isFollowersOnly={isFollowersOnly}
               isInvitedOnly={isInvitedOnly}
               isAuction={isAuction}
+              isChallenge={isChallenge}
               gateAction={
-                isAuction ? (
+                isChallenge ? (
+                  <Link href="/challenges" className={buttonClass({ variant: "primary", round: false })}>
+                    {t("player.challengeCta")}
+                  </Link>
+                ) : isAuction ? (
                   <a href="#auction" className={buttonClass({ variant: "primary", round: false })}>
                     <Gavel className="h-4 w-4" /> {t("player.auctionCta")}
                   </a>

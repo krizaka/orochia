@@ -19,14 +19,17 @@ export function CreatorsPreview({ share }: { share: number }) {
   const box = useRef<HTMLDivElement>(null);
   const [seen, setSeen] = useState(false);
   useEffect(() => {
-    const io = new IntersectionObserver(([e]) => e.isIntersecting && setSeen(true), { threshold: 0.35 });
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && setSeen(true), { threshold: 0.15 });
     if (box.current) io.observe(box.current);
     return () => io.disconnect();
   }, []);
 
   return (
     <div ref={box} className="relative mx-auto w-full max-w-sm">
-      <div aria-hidden className="absolute -inset-6 -z-10 rounded-4xl bg-linear-to-tr from-violet-600/35 via-fuchsia-600/25 to-pink-500/25 blur-2xl light:from-violet-300/40 light:to-pink-200/40" />
+      <div
+        aria-hidden
+        className="absolute -inset-6 -z-10 rounded-4xl bg-linear-to-tr from-violet-600/35 via-fuchsia-600/25 to-pink-500/25 blur-2xl light:from-violet-300/40 light:to-pink-200/40"
+      />
       <div className="rounded-[2rem] border border-white/15 bg-zinc-950/85 p-6 shadow-2xl backdrop-blur-2xl light:border-black/5 light:bg-white/95">
         <p className="text-[11px] font-semibold uppercase tracking-wider text-violet-300 light:text-violet-700">{t("home.creatorsPreview.title")}</p>
         <ul className="mt-4 space-y-2.5">
@@ -52,8 +55,15 @@ export function CreatorsPreview({ share }: { share: number }) {
             <span className="text-emerald-300 light:text-emerald-700">{t("home.creatorsPreview.creator", { share })}</span>
             <span className="text-zinc-500">{t("home.creatorsPreview.platform", { fee: 100 - share })}</span>
           </div>
-          <div className="flex h-3 overflow-hidden rounded-full bg-white/10 light:bg-black/5" role="img" aria-label={t("home.creatorsPreview.split", { share })}>
-            <span className={`h-full rounded-full bg-linear-to-r from-emerald-500 to-teal-400 ${seen ? "cp-grow" : "scale-x-0"}`} style={{ width: `${share}%` }} />
+          <div
+            className="flex h-3 overflow-hidden rounded-full bg-white/10 light:bg-black/5"
+            role="img"
+            aria-label={t("home.creatorsPreview.split", { share })}
+          >
+            <span
+              className={`h-full rounded-full bg-linear-to-r from-emerald-500 to-teal-400 ${seen ? "cp-grow" : "scale-x-0"}`}
+              style={{ width: `${share}%` }}
+            />
           </div>
         </div>
 

@@ -10,3 +10,5 @@ export * from "./intents";
 export * from "./credits";
 export * from "./auction-rules";
 export * from "./auctions";
+export * from "./challenge-rules";
+export * from "./challenges";
