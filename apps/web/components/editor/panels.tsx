@@ -3,7 +3,7 @@
 import React from "react";
 import { Check, Lock, Music2, RotateCcw, Trash2, Volume2, VolumeX, Wand2 } from "lucide-react";
 import { SPEEDS, VIDEO_FILTERS, previewFilter, type VideoEdit, type VideoFilter, type VideoFormat } from "@/lib/video-edit";
-import { Chip, IconButton, Segmented, Slider, cn } from "@/components/ui";
+import { Button, Chip, cn, IconButton, Segmented, Slider } from "@/components/ui";
 import { FILMSTRIP_FRAMES } from "./media";
 import { Timeline } from "./Timeline";
 import type { Tool } from "./useEditState";
@@ -20,9 +20,9 @@ export function PanelHeader({ tool, changed, onReset }: { tool: Tool; changed: b
         <p className="mt-0.5 text-xs leading-relaxed text-fg-secondary">{t(`editor.panels.${tool}.hint`)}</p>
       </div>
       {changed && (
-        <button type="button" onClick={onReset} className="flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold text-zinc-300 hover:bg-white/8 hover:text-white">
-          <RotateCcw className="h-3 w-3" /> {t("editor.reset")}
-        </button>
+        <Button variant="ghost" size="sm" onClick={onReset} className="h-7 shrink-0 gap-1 px-2.5 text-[11px]">
+          <RotateCcw className="h-3 w-3" aria-hidden /> {t("editor.reset")}
+        </Button>
       )}
     </div>
   );
@@ -73,7 +73,7 @@ export function FiltersPanel({ edit, set, frames }: { edit: VideoEdit; set: Sett
               {frame ? (
                 <img src={frame} alt="" className="h-full w-full object-cover" style={{ filter: previewFilter({ filter: name, brightness: 0, contrast: 0, saturation: 0 }) }} />
               ) : (
-                <span className="block h-full w-full animate-pulse bg-white/10" />
+                <Skeleton shape="rect" className="h-full rounded-none" />
               )}
               {active && (
                 <span className="absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-white text-zinc-900">

@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X, Users, Tv, Hash, Lock, CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
-import { Spinner, cn } from "@/components/ui";
+import { Avatar, Button, cn, IconButton, Spinner } from "@/components/ui";
 import Link from "next/link";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
@@ -134,20 +134,13 @@ export function GlobalSearchModal({
           />
           {loading && <Spinner size="sm" className="shrink-0" />}
           {query && (
-            <button
-              onClick={() => setQuery("")}
-              aria-label={t("search.clear")}
-              className="text-fg-secondary hover:text-fg p-1 rounded-lg"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <IconButton onClick={() => setQuery("")} shape="rounded" className="h-7 w-7" label={t("search.clear")}>
+              <X className="h-4 w-4" aria-hidden />
+            </IconButton>
           )}
-          <button
-            onClick={onClose}
-            className="rounded-xl border border-border-default px-2 py-1 text-[11px] font-mono text-fg-secondary hover:text-fg transition-colors"
-          >
+          <Button variant="outline" size="sm" shape="rounded" onClick={onClose} className="h-7 rounded-xl px-2 font-mono text-[11px] font-normal text-fg-secondary">
             {t("search.esc")}
-          </button>
+          </Button>
         </div>
 
         {/* Tab Filter Chips */}
@@ -208,13 +201,7 @@ export function GlobalSearchModal({
                     onClick={() => handleSelect(`/@${c.username}`)}
                     className="flex w-full items-center gap-3 text-left rounded-2xl border border-border-subtle bg-surface-2/40 p-2.5 hover:border-accent/50 hover:bg-surface-2 cursor-pointer transition-all group"
                   >
-                    <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl border border-accent/40 bg-zinc-800">
-                      <img
-                        src={c.avatarUrl || AVATAR_PLACEHOLDER}
-                        alt={c.displayName}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
+                    <Avatar src={c.avatarUrl || AVATAR_PLACEHOLDER} alt={c.displayName} fallback={c.displayName.charAt(0)} className="h-10 w-10 rounded-xl border border-accent/40" />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
                         <span className="text-xs font-bold text-fg truncate group-hover:text-accent transition-colors">

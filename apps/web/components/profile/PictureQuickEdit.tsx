@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Camera, ImagePlus, Palette, Trash2 } from "lucide-react";
-import { Spinner, cn } from "@/components/ui";
+import { Button, cn, Skeleton, Spinner } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 interface Preset {
@@ -129,10 +129,7 @@ export function PictureQuickEdit({
               isAvatar ? "grid-cols-4" : "grid-cols-2"
             )}>
               {presets.length === 0
-                ? Array.from({ length: isAvatar ? 8 : 6 }, (_, i) => <span key={i} className={cn(
-                "animate-pulse rounded-2xl bg-white/5",
-                isAvatar ? "aspect-square" : "aspect-3/1"
-              )} />)
+                ? Array.from({ length: isAvatar ? 8 : 6 }, (_, i) => <Skeleton key={i} shape="rect" className={cn("h-auto rounded-2xl", isAvatar ? "aspect-square" : "aspect-3/1")} />)
                 : presets.map((p) => (
                     <button
                       key={p.id}
@@ -145,9 +142,9 @@ export function PictureQuickEdit({
                   ))}
             </div>
             <div className="mt-4 flex justify-end">
-              <button type="button" onClick={() => setChoosing(false)} className="rounded-xl px-4 py-2 text-xs font-semibold text-fg-secondary hover:bg-surface-2">
+              <Button variant="ghost" size="sm" shape="rounded" onClick={() => setChoosing(false)} className="rounded-xl px-4">
                 {t("settings.pictures.close")}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

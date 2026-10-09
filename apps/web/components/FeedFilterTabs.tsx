@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Clapperboard, Flame, Sparkles, Lock, Gift, Users, LayoutGrid, Rows3 } from "lucide-react";
-import { orochiaButton, buttonVariants, cn } from "@/components/ui";
+import { Avatar, buttonVariants, cn, orochiaButton } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
 import Link from "next/link";
@@ -155,13 +155,7 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
                   href={video.creatorUsername ? `/@${video.creatorUsername}` : "#"}
                   className="flex items-center gap-3 group"
                 >
-                  <div className="h-10 w-10 overflow-hidden rounded-xl border border-accent/40">
-                    <img
-                      src={video.creatorAvatar || "/avatar-placeholder.svg"}
-                      alt={video.creatorName}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
+                  <Avatar src={video.creatorAvatar || "/avatar-placeholder.svg"} alt={video.creatorName} fallback={video.creatorName.charAt(0)} className="h-10 w-10 rounded-xl border border-accent/40" />
                   <div>
                     <h4 className="text-xs sm:text-sm font-bold text-fg group-hover:text-accent transition-colors">
                       {video.creatorName}

@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Download, Gavel, Play, Trophy } from "lucide-react";
-import { Countdown } from "@/components/ui";
+import { Avatar, Badge, Countdown } from "@/components/ui";
 import { money } from "@/lib/money";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
@@ -26,16 +26,16 @@ export function AuctionCard({ auction: a, index = 0 }: { auction: Card; index?: 
         {a.thumbnailUrl ? (
           <img src={a.thumbnailUrl} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-accent/15 via-zinc-950 to-accent-2/15 light:via-slate-50">
+          <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-accent/15 via-surface-1 to-accent-2/15">
             <Gavel className="h-10 w-10 text-accent/60" />
           </div>
         )}
         <div className="theme-dark absolute left-2.5 top-2.5 flex gap-1.5">
           <AuctionStatusBadge phase={a.phase} className="bg-scrim" />
           {a.leading && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-success/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+            <Badge size="md" className="bg-success/90 text-white ring-0">
               <Trophy className="h-3 w-3" aria-hidden /> {t(a.phase === "SOLD" ? "auction.phase.SOLD" : "auction.leading")}
-            </span>
+            </Badge>
           )}
         </div>
         <span className="absolute bottom-2.5 right-2.5 inline-flex items-center gap-1 rounded-full bg-scrim px-2 py-0.5 text-[10px] font-semibold text-fg-on-media backdrop-blur-md">
@@ -56,7 +56,7 @@ export function AuctionCard({ auction: a, index = 0 }: { auction: Card; index?: 
           {a.phase === "UPCOMING" && <Countdown label={t("auction.startsIn")} target={a.startsAt} units={UNITS()} size="sm" />}
         </div>
         <div className="mt-auto flex items-center gap-2 border-t border-border-subtle pt-3 text-xs text-fg-secondary">
-          <img src={a.creatorAvatar || AVATAR_PLACEHOLDER} alt="" className="h-5 w-5 rounded-full object-cover" />
+          <Avatar size="xs" src={a.creatorAvatar || AVATAR_PLACEHOLDER} fallback={a.creatorName.charAt(0)} />
           <span className="min-w-0 flex-1 truncate">{a.creatorName}</span>
           <span className="shrink-0 tabular-nums">{t("auction.bids", { count: a.bidsCount })}</span>
         </div>

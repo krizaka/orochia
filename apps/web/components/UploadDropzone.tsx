@@ -6,7 +6,7 @@ import { Check, CheckCircle2, Clapperboard, Eye, Film, Lock, Mail, Scissors, Shi
 import { VideoEditor } from "./VideoEditor";
 import { DraftsShelf } from "./DraftsShelf";
 import { useObjectUrl } from "./editor/media";
-import { Button, buttonVariants, cn, Input, Select, Switch, Textarea } from "@/components/ui";
+import { Button, buttonVariants, cn, IconButton, Input, Select, Switch, Textarea } from "@/components/ui";
 import { money } from "@/lib/money";
 import { useUploadManager } from "@/lib/upload-manager";
 import { UPLOAD_LIMITS } from "@orochia/media/limits";
@@ -389,9 +389,9 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                   {tags.map((tag) => (
                     <span key={tag} className="flex items-center gap-1 rounded-full bg-accent/15 py-0.5 pl-2.5 pr-1 text-xs font-semibold text-accent">
                       #{tag}
-                      <button type="button" aria-label={t("publish.removeTag", { tag })} onClick={() => setTags(tags.filter((x) => x !== tag))} className="rounded-full p-0.5 hover:bg-white/10">
-                        <X className="h-3 w-3" />
-                      </button>
+                      <IconButton label={t("publish.removeTag", { tag })} onClick={() => setTags(tags.filter((x) => x !== tag))} className="h-5 w-5 text-current hover:bg-surface-3">
+                        <X className="h-3 w-3" aria-hidden />
+                      </IconButton>
                     </span>
                   ))}
                   {tags.length < MAX_TAGS && (

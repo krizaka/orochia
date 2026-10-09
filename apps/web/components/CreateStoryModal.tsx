@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as tus from "tus-js-client";
 import { CheckCircle2, Image as ImageIcon, Scissors, Sparkles, UploadCloud, X } from "lucide-react";
-import { Select, Spinner, Textarea, cn } from "@/components/ui";
+import { Button, cn, IconButton, Select, Textarea } from "@/components/ui";
 import { VideoEditor } from "@/components/VideoEditor";
 import { DraftsShelf } from "@/components/DraftsShelf";
 import { UPLOAD_LIMITS } from "@orochia/media/limits";
@@ -222,18 +222,18 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
               <p className="text-xs text-fg-secondary">{t("stories.create.subtitle")}</p>
             </div>
           </div>
-          <button onClick={closeAll} className="rounded-full p-1.5 text-fg-secondary hover:bg-surface-2" aria-label={t("common.close")}>
-            <X className="h-4 w-4" />
-          </button>
+          <IconButton onClick={closeAll} className="h-8 w-8" label={t("common.close")}>
+            <X className="h-4 w-4" aria-hidden />
+          </IconButton>
         </div>
 
         {state === "done" ? (
           <div className="py-10 text-center">
             <CheckCircle2 className="mx-auto h-12 w-12 text-success" />
             <p className="mt-4 text-sm text-fg-secondary">{doneMessage}</p>
-            <button onClick={closeAll} className="mt-6 rounded-xl bg-accent px-6 py-2.5 text-sm font-bold text-white">
+            <Button variant="primary" shape="rounded" onClick={closeAll} className="mt-6 rounded-xl px-6 font-bold">
               {t("common.close")}
-            </button>
+            </Button>
           </div>
         ) : (
           <form onSubmit={publish} className="mt-5 space-y-5">
@@ -245,13 +245,13 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
                 </div>
                 <div className="absolute right-2 top-2 flex gap-1.5">
                   {!isImage && (
-                    <button type="button" onClick={() => setEditing(true)} className="flex items-center gap-1 rounded-lg bg-accent px-2.5 py-1 text-xs font-semibold text-white">
-                      <Scissors className="h-3 w-3" /> {t("stories.create.adjust")}
-                    </button>
+                    <Button variant="primary" size="sm" shape="rounded" onClick={() => setEditing(true)} className="h-7 gap-1 px-2.5">
+                      <Scissors className="h-3 w-3" aria-hidden /> {t("stories.create.adjust")}
+                    </Button>
                   )}
-                  <button type="button" onClick={() => input.current?.click()} className="rounded-lg bg-scrim-strong px-2.5 py-1 text-xs font-semibold text-fg-on-media">
+                  <Button size="sm" shape="rounded" onClick={() => input.current?.click()} className="h-7 border-0 bg-scrim-strong px-2.5 text-fg-on-media hover:bg-scrim-strong">
                     {t("stories.create.change")}
-                  </button>
+                  </Button>
                 </div>
               </div>
             ) : (
@@ -367,13 +367,18 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
 
             {error && <p role="alert" className="text-xs text-danger">{error}</p>}
 
-            <button
-              disabled={!file || (!isImage && !edited) || state === "uploading" || (audience === "INVITED_ONLY" && !listId)}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-accent via-accent-2 to-accent-2 py-3.5 text-sm font-bold text-white disabled:opacity-40"
+            <Button
+              type="submit"
+              variant="sensual"
+              size="lg"
+              shape="rounded"
+              disabled={!file || (!isImage && !edited) || (audience === "INVITED_ONLY" && !listId)}
+              loading={state === "uploading"}
+              className="w-full rounded-2xl font-bold"
             >
-              {state === "uploading" ? <Spinner size="sm" className="text-current" /> : <ImageIcon className="h-4 w-4" />}
+              {state !== "uploading" && <ImageIcon className="h-4 w-4" aria-hidden />}
               {state === "uploading" ? t("stories.create.uploading", { progress }) : t("stories.create.publish")}
-            </button>
+            </Button>
           </form>
         )}
       </div>

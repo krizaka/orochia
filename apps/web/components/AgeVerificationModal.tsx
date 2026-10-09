@@ -3,7 +3,7 @@
 import React, { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { ShieldAlert, CheckCircle, ExternalLink } from "lucide-react";
-import { OrochiaLogo } from "@/components/ui";
+import { Button, OrochiaLogo } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { Rich } from "@/components/Rich";
 
@@ -72,18 +72,12 @@ export function AgeVerificationModal() {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3">
-          <button
-            onClick={handleConfirmAge}
-            className="flex-1 rounded-xl bg-linear-to-r from-accent via-accent-2 to-accent-2 py-3.5 px-6 text-sm font-bold text-white shadow-lg shadow-accent/25 transition-all hover:scale-[1.02] active:scale-95"
-          >
+          <Button variant="sensual" size="lg" shape="rounded" onClick={handleConfirmAge} className="flex-1 rounded-xl px-6 font-bold">
             {t("ageGate.enter")}
-          </button>
-          <button
-            onClick={handleDecline}
-            className="rounded-xl border border-white/10 bg-zinc-900 py-3.5 px-6 text-sm font-semibold text-fg-secondary transition-all hover:bg-white/10 hover:text-white"
-          >
+          </Button>
+          <Button variant="secondary" size="lg" shape="rounded" onClick={handleDecline} className="rounded-xl px-6">
             {t("ageGate.leave")}
-          </button>
+          </Button>
         </div>
 
         {/* Legal Links */}

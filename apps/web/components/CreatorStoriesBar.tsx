@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight, Heart, Plus, Trash2, X } from "lucide-react"
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
 import { CreateStoryModal } from "@/components/CreateStoryModal";
 import { t } from "@/lib/i18n";
-import { cn } from "@/components/ui";
+import { Avatar, cn, IconButton, Skeleton } from "@/components/ui";
 
 interface StoryItem {
   id: string;
@@ -182,7 +182,7 @@ export function CreatorStoriesBar() {
           )}
 
           {rings === null &&
-            Array.from({ length: 5 }, (_, i) => <div key={i} className="h-14 w-14 sm:h-16 sm:w-16 shrink-0 animate-pulse rounded-2xl bg-surface-2" />)}
+            Array.from({ length: 5 }, (_, i) => <Skeleton key={i} shape="rect" className="h-14 w-14 shrink-0 rounded-2xl sm:h-16 sm:w-16" />)}
 
           {rings?.map((r, index) => (
             <button key={r.creatorId} onClick={() => setOpen({ ring: index, story: Math.max(0, r.stories.findIndex((s) => !s.seen)) })} className="flex flex-col items-center gap-1.5 shrink-0 group focus:outline-hidden">
@@ -194,7 +194,7 @@ export function CreatorStoriesBar() {
                   )}
                 />
                 <div className="relative h-14 w-14 sm:h-16 sm:w-16 overflow-hidden rounded-[14px] bg-surface-1 p-0.5">
-                  <img src={r.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-full w-full rounded-[12px] object-cover" />
+                  <Avatar src={r.avatarUrl || AVATAR_PLACEHOLDER} fallback={r.displayName.charAt(0)} className="h-full w-full rounded-[12px]" />
                 </div>
               </div>
               <span className="max-w-[72px] truncate text-[11px] font-medium text-fg group-hover:text-accent">
@@ -233,7 +233,7 @@ export function CreatorStoriesBar() {
               </div>
               <div className="flex items-center justify-between">
                 <Link href={`/@${ring.username}`} onClick={close} className="flex items-center gap-2.5">
-                  <img src={ring.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-9 w-9 rounded-xl border border-white/20 object-cover" />
+                  <Avatar src={ring.avatarUrl || AVATAR_PLACEHOLDER} fallback={ring.displayName.charAt(0)} className="h-9 w-9 rounded-xl border border-white/20" />
                   <div>
                     <span className="block text-xs font-bold text-white">{ring.displayName}</span>
                     <span className="font-mono text-[10px] text-zinc-300">
@@ -257,20 +257,20 @@ export function CreatorStoriesBar() {
                       {armed && t("stories.removeArmed")}
                     </button>
                   )}
-                  <button onClick={close} className="flex h-8 w-8 items-center justify-center rounded-full bg-scrim text-fg-on-media hover:bg-black/80" aria-label={t("common.close")}>
-                    <X className="h-4 w-4" />
-                  </button>
+                  <IconButton onClick={close} className="h-8 w-8 bg-scrim text-fg-on-media hover:bg-scrim-strong hover:text-fg-on-media" label={t("common.close")}>
+                    <X className="h-4 w-4" aria-hidden />
+                  </IconButton>
                 </div>
               </div>
             </div>
 
             <div className="relative z-20 hidden items-center justify-between px-2 sm:flex">
-              <button onClick={previous} className="flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white hover:bg-black/70" aria-label={t("stories.previous")}>
-                <ChevronLeft className="h-5 w-5" />
-              </button>
-              <button onClick={next} className="flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white hover:bg-black/70" aria-label={t("stories.next")}>
-                <ChevronRight className="h-5 w-5" />
-              </button>
+              <IconButton onClick={previous} className="bg-black/40 text-fg-on-media hover:bg-scrim-strong hover:text-fg-on-media" label={t("stories.previous")}>
+                <ChevronLeft className="h-5 w-5" aria-hidden />
+              </IconButton>
+              <IconButton onClick={next} className="bg-black/40 text-fg-on-media hover:bg-scrim-strong hover:text-fg-on-media" label={t("stories.next")}>
+                <ChevronRight className="h-5 w-5" aria-hidden />
+              </IconButton>
             </div>
 
             <div className="relative z-20 space-y-3 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">

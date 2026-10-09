@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowLeft, Clapperboard, Clock, Crown, Lock, Play, Timer, Users } from "lucide-react";
-import { Countdown, buttonVariants, orochiaButton, cn } from "@/components/ui";
+import { Avatar, buttonVariants, cn, Countdown, orochiaButton, Skeleton } from "@/components/ui";
 import { money } from "@/lib/money";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
@@ -22,7 +22,7 @@ const panel = "rounded-2xl border border-border-default bg-surface-1/60 p-5";
  */
 export function ChallengeClient({ id }: { id: string }) {
   const { challenge: c, loaded, skewMs, pulse, reload } = useChallengeStream(id);
-  if (!loaded) return <div className="mx-auto h-96 max-w-6xl animate-pulse rounded-3xl bg-surface-2" />;
+  if (!loaded) return <Skeleton shape="rect" className="mx-auto h-96 max-w-6xl rounded-3xl" />;
   if (!c) {
     return (
       <div className="mx-auto max-w-md rounded-3xl border border-dashed border-border-default p-10 text-center">
@@ -59,7 +59,7 @@ export function ChallengeClient({ id }: { id: string }) {
                 href={`/@${c.creator.username}`}
                 className="inline-flex items-center gap-2 text-sm text-fg-secondary hover:text-fg"
               >
-                <img src={c.creator.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-7 w-7 rounded-full object-cover" />
+                <Avatar src={c.creator.avatarUrl || AVATAR_PLACEHOLDER} fallback={c.creator.name.charAt(0)} className="h-7 w-7" />
                 <span>{t(c.kind === "GOAL" ? "challenge.byCreator" : "challenge.forCreator", { name: c.creator.name })}</span>
               </Link>
             ) : (

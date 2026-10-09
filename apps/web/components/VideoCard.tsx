@@ -6,7 +6,7 @@ import { Bookmark, CheckCircle2, Eye, Flame, Gavel, Heart, Lock, Play, Sparkles,
 import { t } from "@/lib/i18n";
 import { TipModal } from "@/components/TipModal";
 import type { VideoVisibility } from "@/lib/visibility";
-import { cn } from "@/components/ui";
+import { Avatar, Button, cn, IconButton } from "@/components/ui";
 
 export interface VideoCardProps {
   id: string;
@@ -122,17 +122,17 @@ export function VideoCard({
               <span className="text-[10px] font-bold uppercase tracking-wider text-accent mb-1">
                 {t("card.sensitive")}
               </span>
-              <button
-                type="button"
+              <Button
+                size="sm"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   setRevealed(true);
                 }}
-                className="px-3 py-1 rounded-full bg-white/20 hover:bg-white/30 text-[11px] font-semibold text-white transition-colors"
+                className="h-7 border-0 bg-white/20 px-3 text-[11px] text-fg-on-media hover:bg-white/30"
               >
                 {t("card.reveal")}
-              </button>
+              </Button>
             </div>
           )}
 
@@ -198,34 +198,34 @@ export function VideoCard({
 
           {/* Floating Quick Action Buttons on Hover */}
           <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 transition-opacity duration-200 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-within:opacity-100">
-            <button
+            <IconButton
               onClick={handleLike}
-              title={isLiked ? t("card.unlike") : t("card.like")}
-              aria-label={isLiked ? t("card.unlike") : t("card.like")}
+              label={isLiked ? t("card.unlike") : t("card.like")}
               aria-pressed={isLiked}
+              shape="rounded"
               className={cn(
-                "flex h-8 w-8 items-center justify-center rounded-xl backdrop-blur-md transition-all active:scale-90",
+                "h-8 w-8 rounded-xl backdrop-blur-md active:scale-90",
                 isLiked
-                  ? "bg-danger text-white shadow-md shadow-danger/40"
-                  : "bg-scrim text-fg-on-media hover:bg-black/80"
+                  ? "bg-danger text-white shadow-md shadow-danger/40 hover:bg-danger hover:text-white"
+                  : "bg-scrim text-fg-on-media hover:bg-black/80 hover:text-fg-on-media"
               )}
             >
-              <Heart className={cn("h-4 w-4", isLiked ? "fill-white" : "")} />
-            </button>
-            <button
+              <Heart className={cn("h-4 w-4", isLiked ? "fill-white" : "")} aria-hidden />
+            </IconButton>
+            <IconButton
               onClick={handleSave}
-              title={isSaved ? t("card.saved") : t("card.save")}
-              aria-label={isSaved ? t("card.saved") : t("card.save")}
+              label={isSaved ? t("card.saved") : t("card.save")}
               aria-pressed={isSaved}
+              shape="rounded"
               className={cn(
-                "flex h-8 w-8 items-center justify-center rounded-xl backdrop-blur-md transition-all active:scale-90",
+                "h-8 w-8 rounded-xl backdrop-blur-md active:scale-90",
                 isSaved
-                  ? "bg-accent text-white shadow-md shadow-accent/40"
-                  : "bg-scrim text-fg-on-media hover:bg-black/80"
+                  ? "bg-accent text-white shadow-md shadow-accent/40 hover:bg-accent hover:text-white"
+                  : "bg-scrim text-fg-on-media hover:bg-black/80 hover:text-fg-on-media"
               )}
             >
-              <Bookmark className={cn("h-4 w-4", isSaved ? "fill-white" : "")} />
-            </button>
+              <Bookmark className={cn("h-4 w-4", isSaved ? "fill-white" : "")} aria-hidden />
+            </IconButton>
           </div>
         </Link>
 
@@ -235,13 +235,9 @@ export function VideoCard({
             {/* Creator Avatar with link */}
             <Link
               href={creatorUsername ? `/@${creatorUsername}` : "#"}
-              className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl border border-border-default bg-zinc-800 transition-transform hover:scale-105"
+              className="relative h-10 w-10 shrink-0 transition-transform hover:scale-105"
             >
-              <img
-                src={creatorAvatar || "/avatar-placeholder.svg"}
-                alt={creatorName}
-                className="h-full w-full object-cover"
-              />
+              <Avatar src={creatorAvatar || "/avatar-placeholder.svg"} alt={creatorName} fallback={creatorName.charAt(0)} className="h-10 w-10 rounded-xl border border-border-default" />
             </Link>
 
             {/* Video Title & Creator Name */}
@@ -279,13 +275,15 @@ export function VideoCard({
             </div>
 
             {/* Direct Quick Tip Button */}
-            <button
+            <Button
+              size="sm"
+              shape="rounded"
               onClick={handleOpenTip}
-              className="inline-flex items-center gap-1 rounded-lg border border-accent/30 bg-accent/10 hover:bg-accent hover:text-fg px-2 py-0.5 text-[10px] font-semibold text-accent transition-all hover:scale-105 active:scale-95"
+              className="h-6 gap-1 border-accent/30 bg-accent/10 px-2 text-[10px] text-accent hover:border-accent hover:bg-accent hover:text-on-accent"
             >
-              <Sparkles className="h-2.5 w-2.5" />
+              <Sparkles className="h-2.5 w-2.5" aria-hidden />
               <span>{t("card.tip")}</span>
-            </button>
+            </Button>
           </div>
         </div>
       </div>

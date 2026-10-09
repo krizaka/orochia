@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Check, Clapperboard, Megaphone, PackageCheck, Play, Undo2, X } from "lucide-react";
-import { Button, cn, ConfirmIconButton, Sheet, Textarea } from "@/components/ui";
+import { Avatar, Button, cn, ConfirmIconButton, Sheet, Skeleton, Textarea } from "@/components/ui";
 import { money } from "@/lib/money";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
@@ -57,7 +57,7 @@ function DeliverSheet({ c, open, onClose, onDone }: { c: ChallengeView; open: bo
         {t(`challenge.deliver.intro.${c.deliverable}`)} {t(`challenge.deliver.audience.${c.reward}`)}
       </p>
       {items === null ? (
-        <div className="h-24 animate-pulse rounded-2xl bg-surface-2" />
+        <Skeleton shape="rect" className="h-24 rounded-2xl" />
       ) : items.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-border-default p-6 text-center text-sm text-fg-secondary">
           {t(`challenge.deliver.none.${c.deliverable}`)}
@@ -196,7 +196,7 @@ export function ChallengeActions({ c, onChanged }: { c: ChallengeView; onChanged
           <ul className="space-y-2">
             {c.applications.map((a) => (
               <li key={a.id} className="flex items-start gap-3 rounded-xl border border-border-default p-3">
-                <img src={a.creator.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-9 w-9 rounded-full object-cover" />
+                <Avatar src={a.creator.avatarUrl || AVATAR_PLACEHOLDER} fallback={a.creator.name.charAt(0)} className="h-9 w-9" />
                 <div className="min-w-0 flex-1">
                   <Link href={`/@${a.creator.username}`} className="text-sm font-semibold text-fg hover:underline">
                     {a.creator.name}

@@ -4,7 +4,8 @@ import React, { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
 import { Gavel, Lock, Maximize, Pause, Play, Sparkles, Users, Volume2, VolumeX } from "lucide-react";
 import { t } from "@/lib/i18n";
-import { cn } from "@/components/ui";
+import { money } from "@/lib/money";
+import { Button, cn, IconButton } from "@/components/ui";
 
 interface VideoPlayerProps {
   videoId: string;
@@ -176,7 +177,7 @@ export function VideoPlayer({
   return (
     <div
       ref={containerRef}
-      className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-2xl group select-none"
+      className="theme-dark relative aspect-video w-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-2xl group select-none"
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => isPlaying && setShowControls(false)}
     >
@@ -214,13 +215,9 @@ export function VideoPlayer({
           <p className="text-xs text-fg-secondary max-w-sm mb-5">
             {t("player.sensitiveBody")}
           </p>
-          <button
-            type="button"
-            onClick={() => setRevealed(true)}
-            className="px-5 py-2.5 rounded-xl bg-accent hover:bg-accent-hover text-white font-semibold text-xs transition-colors shadow-lg shadow-accent/25"
-          >
+          <Button variant="primary" shape="rounded" onClick={() => setRevealed(true)} className="rounded-xl px-5 text-xs shadow-lg shadow-accent/25">
             {t("player.reveal")}
-          </button>
+          </Button>
         </div>
       )}
 
@@ -234,13 +231,10 @@ export function VideoPlayer({
           <p className="text-sm text-fg-secondary max-w-md mb-6">
             {t("player.paidBody")}
           </p>
-          <button
-            onClick={onUnlockRequested}
-            className="flex items-center gap-2.5 px-6 py-3 rounded-xl bg-linear-to-r from-accent via-accent-2 to-accent-2 hover:from-accent hover:to-accent-2 text-white font-semibold text-sm shadow-lg shadow-accent/30 transition-all hover:scale-105 active:scale-95"
-          >
-            <Sparkles className="h-4 w-4" />
-            <span>{t("player.paidCta", { price: `$${(minTipAmountCents / 100).toFixed(2)}` })}</span>
-          </button>
+          <Button variant="sensual" size="lg" shape="rounded" onClick={onUnlockRequested} className="gap-2.5 rounded-xl px-6">
+            <Sparkles className="h-4 w-4" aria-hidden />
+            <span>{t("player.paidCta", { price: money(minTipAmountCents) })}</span>
+          </Button>
         </div>
       )}
 
@@ -285,27 +279,19 @@ export function VideoPlayer({
           <div className="flex items-center justify-between text-white text-sm">
             <div className="flex items-center gap-4">
               {/* Play / Pause Button */}
-              <button
-                onClick={togglePlay}
-                className="hover:text-accent transition-colors p-1"
-                aria-label={isPlaying ? t("player.pause") : t("player.play")}
-              >
-                {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
-              </button>
+              <IconButton onClick={togglePlay} className="h-8 w-8 text-current hover:bg-white/10 hover:text-accent" label={isPlaying ? t("player.pause") : t("player.play")}>
+                {isPlaying ? <Pause className="h-5 w-5" aria-hidden /> : <Play className="h-5 w-5" aria-hidden />}
+              </IconButton>
 
               {/* Volume Controls */}
               <div className="flex items-center gap-2 group/vol">
-                <button
-                  onClick={toggleMute}
-                  aria-label={isMuted || volume === 0 ? t("player.unmute") : t("player.mute")}
-                  className="hover:text-accent transition-colors p-1"
-                >
+                <IconButton onClick={toggleMute} className="h-8 w-8 text-current hover:bg-white/10 hover:text-accent" label={isMuted || volume === 0 ? t("player.unmute") : t("player.mute")}>
                   {isMuted || volume === 0 ? (
                     <VolumeX className="h-5 w-5" />
                   ) : (
                     <Volume2 className="h-5 w-5" />
                   )}
-                </button>
+                </IconButton>
                 <input
                   type="range"
                   min={0}
@@ -326,13 +312,9 @@ export function VideoPlayer({
 
             <div className="flex items-center gap-3">
               {/* Fullscreen Button */}
-              <button
-                onClick={toggleFullscreen}
-                className="hover:text-accent transition-colors p-1"
-                aria-label={t("player.fullscreen")}
-              >
-                <Maximize className="h-5 w-5" />
-              </button>
+              <IconButton onClick={toggleFullscreen} className="h-8 w-8 text-current hover:bg-white/10 hover:text-accent" label={t("player.fullscreen")}>
+                <Maximize className="h-5 w-5" aria-hidden />
+              </IconButton>
             </div>
           </div>
         </div>

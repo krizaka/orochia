@@ -6,7 +6,7 @@ import { MessageSquare, Reply, Trash2 } from "lucide-react";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
 import { Rich } from "@/components/Rich";
 import { t } from "@/lib/i18n";
-import { Textarea, cn } from "@/components/ui";
+import { Button, cn, Textarea } from "@/components/ui";
 
 interface Comment {
   id: string;
@@ -46,9 +46,9 @@ function Composer({ onSubmit, placeholder, autoFocus }: { onSubmit: (body: strin
         aria-label={placeholder}
         className="min-w-0 flex-1 resize-y rounded-xl px-3 py-2"
       />
-      <button disabled={busy || !body.trim()} className="self-end rounded-xl bg-accent px-4 py-2 text-xs font-bold text-white disabled:opacity-40">
+      <Button type="submit" variant="primary" size="sm" shape="rounded" disabled={busy || !body.trim()} className="self-end rounded-xl px-4 font-bold">
         {busy ? t("comments.posting") : t("comments.post")}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -141,17 +141,17 @@ export function VideoComments({
         </p>
         <div className="mt-1 flex gap-3 text-[11px] text-fg-muted">
           {user && enabled && !isReply && !c.removed && (
-            <button onClick={() => setReplyTo(replyTo === c.id ? null : c.id)} className="inline-flex items-center gap-1 hover:text-accent">
-              <Reply className="h-3 w-3" /> {t("comments.reply")}
-            </button>
+            <Button variant="ghost" size="sm" onClick={() => setReplyTo(replyTo === c.id ? null : c.id)} className="h-auto gap-1 px-0 text-[inherit] font-normal hover:bg-transparent hover:text-accent">
+              <Reply className="h-3 w-3" aria-hidden /> {t("comments.reply")}
+            </Button>
           )}
           {c.canRemove && (
-            <button onClick={() => remove(c.id)} onBlur={() => setConfirming(null)} className={cn(
-              "inline-flex items-center gap-1 hover:text-danger",
-              confirming === c.id ? "font-semibold text-danger" : ""
+            <Button variant="ghost" size="sm" onClick={() => remove(c.id)} onBlur={() => setConfirming(null)} className={cn(
+              "h-auto gap-1 px-0 text-[inherit] font-normal hover:bg-transparent hover:text-danger",
+              confirming === c.id && "font-semibold text-danger"
             )}>
-              <Trash2 className="h-3 w-3" /> {confirming === c.id ? t("comments.removeConfirm") : t("comments.remove")}
-            </button>
+              <Trash2 className="h-3 w-3" aria-hidden /> {confirming === c.id ? t("comments.removeConfirm") : t("comments.remove")}
+            </Button>
           )}
         </div>
         {!isReply && replies(c.id).map((r) => item(r, true))}
@@ -171,9 +171,9 @@ export function VideoComments({
           <MessageSquare className="h-4 w-4 text-accent" /> {t("comments.title")}
         </h2>
         {isCreator && (
-          <button onClick={toggle} className="rounded-lg border border-border-default px-3 py-1.5 text-[11px] font-semibold text-fg-secondary hover:bg-white/5">
+          <Button variant="outline" size="sm" shape="rounded" onClick={toggle} className="h-7 px-3 text-[11px] text-fg-secondary">
             {enabled ? t("comments.close") : t("comments.open")}
-          </button>
+          </Button>
         )}
       </div>
 

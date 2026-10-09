@@ -3,7 +3,7 @@
 import React, { useRef } from "react";
 import { FILMSTRIP_FRAMES, clock } from "./media";
 import { t } from "@/lib/i18n";
-import { cn } from "@/components/ui";
+import { cn, Skeleton } from "@/components/ui";
 
 type Grip = "start" | "end" | "playhead";
 
@@ -75,7 +75,7 @@ export function Timeline({
       >
         <div className="pointer-events-none absolute inset-0 flex overflow-hidden rounded-xl">
           {Array.from({ length: FILMSTRIP_FRAMES }, (_, i) =>
-            frames[i] ? <img key={i} src={frames[i]} alt="" className="h-full min-w-0 flex-1 object-cover" /> : <div key={i} className="flex-1 animate-pulse border-r border-black/30 bg-white/6" />,
+            frames[i] ? <img key={i} src={frames[i]} alt="" className="h-full min-w-0 flex-1 object-cover" /> : <Skeleton key={i} shape="rect" className="h-full flex-1 rounded-none border-r border-black/30" />,
           )}
         </div>
         {/* Outside the kept part is dimmed */}

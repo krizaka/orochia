@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Clapperboard, Clock, Users } from "lucide-react";
-import { Countdown } from "@/components/ui";
+import { Avatar, Countdown } from "@/components/ui";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 import type { ChallengeCardView } from "@/lib/challenges";
@@ -53,7 +53,7 @@ export function ChallengeCard({ challenge: c, index = 0 }: { challenge: Challeng
       <div className="mt-auto flex items-center justify-between gap-3 border-t border-border-subtle pt-3 text-xs text-fg-secondary">
         {c.creator ? (
           <span className="flex min-w-0 items-center gap-2">
-            <img src={c.creator.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-5 w-5 rounded-full object-cover" />
+            <Avatar size="xs" src={c.creator.avatarUrl || AVATAR_PLACEHOLDER} fallback={c.creator.name.charAt(0)} />
             <span className="truncate">{c.creator.name}</span>
           </span>
         ) : (

@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useUploadManager, type UploadItem } from "@/lib/upload-manager";
 import { t } from "@/lib/i18n";
-import { cn } from "@/components/ui";
+import { cn, IconButton, Spinner } from "@/components/ui";
 
 function formatBytes(bytes: number): string {
   if (bytes <= 0) return "0 B";
@@ -71,7 +71,7 @@ export function FloatingUploadBar() {
         >
           <div className="relative flex items-center justify-center">
             {activeCount > 0 ? (
-              <div className="h-4 w-4 rounded-full border-2 border-accent border-t-transparent animate-spin" />
+              <Spinner size="sm" />
             ) : (
               <CheckCircle className="h-4 w-4 text-success" />
             )}
@@ -110,13 +110,9 @@ export function FloatingUploadBar() {
         </div>
 
         <div className="flex items-center gap-1">
-          <button
-            onClick={() => setIsDockMinimized(true)}
-            className="p-1.5 rounded-lg text-fg-secondary hover:text-fg hover:bg-surface-2 transition-colors"
-            title={t("uploads.minimize")} aria-label={t("uploads.minimize")}
-          >
-            <ChevronDown className="h-4 w-4" />
-          </button>
+          <IconButton onClick={() => setIsDockMinimized(true)} shape="rounded" className="h-7 w-7" label={t("uploads.minimize")}>
+            <ChevronDown className="h-4 w-4" aria-hidden />
+          </IconButton>
         </div>
       </div>
 
@@ -142,40 +138,44 @@ export function FloatingUploadBar() {
               {/* Action Buttons */}
               <div className="flex items-center gap-1 shrink-0">
                 {item.status === "uploading" && (
-                  <button
+                  <IconButton
                     onClick={() => pauseUpload(item.id)}
-                    className="p-1 rounded-sm text-fg-secondary hover:text-fg hover:bg-white/10 transition-colors"
-                    title={t("uploads.pause")} aria-label={t("uploads.pause")}
+                    shape="rounded"
+                    className="h-6 w-6"
+                    label={t("uploads.pause")}
                   >
-                    <Pause className="h-3 w-3" />
-                  </button>
+                    <Pause className="h-3 w-3" aria-hidden />
+                  </IconButton>
                 )}
                 {item.status === "paused" && (
-                  <button
+                  <IconButton
                     onClick={() => resumeUpload(item.id)}
-                    className="p-1 rounded-sm text-success hover:bg-success/10 transition-colors"
-                    title={t("uploads.resume")} aria-label={t("uploads.resume")}
+                    shape="rounded"
+                    className="h-6 w-6 text-success hover:bg-success/10 hover:text-success"
+                    label={t("uploads.resume")}
                   >
-                    <Play className="h-3 w-3" />
-                  </button>
+                    <Play className="h-3 w-3" aria-hidden />
+                  </IconButton>
                 )}
                 {item.status !== "completed" && (
-                  <button
+                  <IconButton
                     onClick={() => cancelUpload(item.id)}
-                    className="p-1 rounded-sm text-fg-secondary hover:text-danger hover:bg-danger/10 transition-colors"
-                    title={t("uploads.cancel")} aria-label={t("uploads.cancel")}
+                    shape="rounded"
+                    className="h-6 w-6 hover:bg-danger/10 hover:text-danger"
+                    label={t("uploads.cancel")}
                   >
-                    <X className="h-3 w-3" />
-                  </button>
+                    <X className="h-3 w-3" aria-hidden />
+                  </IconButton>
                 )}
                 {item.status === "completed" && (
-                  <button
+                  <IconButton
                     onClick={() => dismissUpload(item.id)}
-                    className="p-1 rounded-sm text-fg-secondary hover:text-fg hover:bg-white/10 transition-colors"
-                    title={t("uploads.dismiss")} aria-label={t("uploads.dismiss")}
+                    shape="rounded"
+                    className="h-6 w-6"
+                    label={t("uploads.dismiss")}
                   >
-                    <X className="h-3 w-3" />
-                  </button>
+                    <X className="h-3 w-3" aria-hidden />
+                  </IconButton>
                 )}
               </div>
             </div>
