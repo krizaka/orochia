@@ -155,6 +155,8 @@ doctl apps create --spec deploy/digitalocean/app-spec.dev.yaml
 | M4 · Paywall & tips — gateway-confirmed intents, double-entry ledger, payouts | ✅ shipped |
 | M5 · Community — playlists, explore search & tags | ✅ shipped · recommendations next |
 | M6 · Developer experience & delivery — one-command setup, DB tooling, e2e, DigitalOcean | ✅ shipped |
+| M7 · Auctions & challenges — escrowed credits, real-time pots, goals, dares and open calls | ✅ shipped |
+| M8 · Mobile — [orochia-mobile](https://github.com/krizaka/orochia-mobile) for iOS and Android (Expo), native sessions | ✅ preview |
 
 ---
 

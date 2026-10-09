@@ -2,9 +2,10 @@
 
 > **Single source of truth** for architecture, code and agent-behaviour rules across the **Orochia** repositories:
 > [`krizaka/orochia`](https://github.com/krizaka/orochia) (this one — web app, API, packages),
-> [`krizaka/orochia-admin`](https://github.com/krizaka/orochia-admin) (operator console) and
-> [`krizaka/orochia-design-system`](https://github.com/krizaka/orochia-design-system) (tokens & components).
-> Those two carry a short `AGENTS.md` that scopes them and defers here.
+> [`krizaka/orochia-admin`](https://github.com/krizaka/orochia-admin) (operator console),
+> [`krizaka/orochia-design-system`](https://github.com/krizaka/orochia-design-system) (tokens & components) and
+> [`krizaka/orochia-mobile`](https://github.com/krizaka/orochia-mobile) (the iOS and Android app, Expo).
+> Those carry a short `AGENTS.md` that scopes them and defers here.
 > This file is **agent-neutral**: `CLAUDE.md` (and any other agent file) only **imports** it (`@AGENTS.md`).
 > Every generation, review or refactor **must** enforce these rules without exception.
 >
@@ -16,7 +17,7 @@
 
 ## 0. Current phase — **production-ready code, local development, DigitalOcean deployable**
 
-- Three GitHub repositories in the [`krizaka`](https://github.com/krizaka) organisation, cloned side by side
+- Four GitHub repositories in the [`krizaka`](https://github.com/krizaka) organisation, cloned side by side
   (`npm run workspace -- clone`, manifest [`orochia.workspace.json`](orochia.workspace.json)).
 - **Allowed on GitHub**: Actions that lint, type-check, test (unit + end-to-end on PostgreSQL), build, check the
   generated docs; the DigitalOcean App Platform deploy workflow; publishing `@krizaka/orochia-design-system` to

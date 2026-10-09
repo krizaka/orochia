@@ -2,8 +2,25 @@
   "$comment": "Orochia workspace — the repositories of the product, cloned side by side (../<name>). Read by scripts/workspace.mjs.",
   "org": "krizaka",
   "repositories": [
-    { "name": "orochia", "role": "Web app, API, packages (db, media, payments) — this repository", "port": 3000 },
-    { "name": "orochia-admin", "role": "Operator console (2257, moderation, accounts, treasury) over the admin API", "port": 3001 },
-    { "name": "orochia-design-system", "role": "Tokens and React components, published as @krizaka/orochia-design-system", "port": 3002 }
+    {
+      "name": "orochia",
+      "role": "Web app, API, packages (db, media, payments) — this repository",
+      "port": 3000
+    },
+    {
+      "name": "orochia-admin",
+      "role": "Operator console (2257, moderation, accounts, treasury) over the admin API",
+      "port": 3001
+    },
+    {
+      "name": "orochia-design-system",
+      "role": "Tokens and React components, published as @krizaka/orochia-design-system",
+      "port": 3002
+    },
+    {
+      "name": "orochia-mobile",
+      "role": "iOS and Android app (Expo) over the same API — stories, playback, challenges, auctions",
+      "port": 8081
+    }
   ]
 }

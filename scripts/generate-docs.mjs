@@ -127,6 +127,15 @@ const model = {
       stack: ["React 19", "Tailwind CSS", "TypeScript"],
       description: "Component library and tokens shared by the Orochia applications.",
     },
+    {
+      name: "orochia-mobile",
+      repo: "krizaka/orochia-mobile",
+      url: "https://github.com/krizaka/orochia-mobile",
+      port: 8081,
+      role: "iOS and Android app over the same API",
+      stack: ["Expo SDK 57", "React Native", "expo-video (HLS)", "TypeScript"],
+      description: "Stories, protected 4K playback, challenges and auctions on iOS and Android — native sessions in secure storage, the design system's tokens and the animated mark from npm.",
+    },
   ],
   modules: [
     {
