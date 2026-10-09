@@ -43,6 +43,9 @@ export const profiles = pgTable("profiles", {
   lastActivityEmailAt: timestamp("last_activity_email_at", { withTimezone: true }),
   directMessagePrivacy: varchar("direct_message_privacy", { length: 20 }).default("EVERYONE").notNull(),
   minTipAmountCents: integer("min_tip_amount_cents").default(500).notNull(), // default $5.00
+  /** Challenges: whether fans may send this creator requests, and the smallest offer a request may carry. */
+  challengeRequestsOff: boolean("challenge_requests_off").default(false).notNull(),
+  challengeMinCents: integer("challenge_min_cents").default(1000).notNull(), // default $10.00
   payoutAddressCrypto: text("payout_address_crypto"),
   payoutAccountCcbill: varchar("payout_account_ccbill", { length: 100 }),
   totalViews: integer("total_views").default(0).notNull(),

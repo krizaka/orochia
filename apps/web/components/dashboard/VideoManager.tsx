@@ -143,7 +143,7 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
               <td className="py-2.5 text-right">
                 {!v.removedAt && (
                   <div className="inline-flex gap-1">
-                    {v.status === "READY" && v.visibility !== "AUCTION" && (
+                    {v.status === "READY" && v.visibility !== "AUCTION" && v.visibility !== "CHALLENGE" && (
                       <button onClick={() => setAuctioning(v)} className={iconAction} aria-label={t("studio.auctionNamed", { title: v.title })} title={t("studio.auctionNamed", { title: v.title })}>
                         <Gavel className="h-3.5 w-3.5" />
                       </button>
@@ -191,9 +191,9 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
             <div className="grid gap-3 sm:grid-cols-2">
               <label className={label}>
                 {t("studio.visibility")}
-                {visibility === "AUCTION" ? (
+                {visibility === "AUCTION" || visibility === "CHALLENGE" ? (
                   <span className={`${field} flex items-center gap-1.5 text-zinc-400 light:text-slate-500`}>
-                    <Gavel className="h-3.5 w-3.5" aria-hidden /> {t("studio.auctionLocked")}
+                    <Gavel className="h-3.5 w-3.5" aria-hidden /> {t(visibility === "AUCTION" ? "studio.auctionLocked" : "studio.challengeLocked")}
                   </span>
                 ) : (
                   <select name="visibility" value={visibility} onChange={(e) => setVisibility(e.target.value as StudioVideo["visibility"])} className={field}>

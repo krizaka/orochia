@@ -1,7 +1,7 @@
 import { db, stories, storyViews, storyLikes, users, profiles, audienceLists, audienceListMembers } from "@orochia/db";
 import { and, asc, desc, eq, gt, inArray, isNull, sql } from "drizzle-orm";
 import { BunnyStreamClient, generateBunnyStreamToken, signBunnyFileUrl } from "@orochia/media";
-import { areContacts, isApprovedFollower } from "./access";
+import { areContacts, isApprovedFollower, paidForChallengeStory } from "./access";
 import { bunnyStreamConfig, requireBunnyStream } from "./env";
 import { viewerKey } from "./engagement";
 import { HttpError } from "./http";
@@ -25,7 +25,7 @@ const PLAY_TTL_SECONDS = 15 * 60;
 type StoryRow = typeof stories.$inferSelect;
 
 /** Whether a viewer may see a story (the creator always sees their own). */
-export async function canViewStory(story: Pick<StoryRow, "creatorId" | "visibility" | "audienceListId">, viewerId: string | null): Promise<boolean> {
+export async function canViewStory(story: Pick<StoryRow, "id" | "creatorId" | "visibility" | "audienceListId">, viewerId: string | null): Promise<boolean> {
   if (viewerId && viewerId === story.creatorId) return true;
   if (story.visibility === "PUBLIC") return true;
   if (!viewerId) return false;
@@ -39,6 +39,8 @@ export async function canViewStory(story: Pick<StoryRow, "creatorId" | "visibili
       .limit(1);
     return Boolean(member);
   }
+  // Delivered for a challenge: the people whose pledges paid for it.
+  if (story.visibility === "CHALLENGE") return paidForChallengeStory(story.id, viewerId);
   return false;
 }
 

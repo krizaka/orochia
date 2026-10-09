@@ -194,7 +194,8 @@
     "viewProfile": "View profile",
     "wallet": "Wallet",
     "uploadHint": "Publish a video",
-    "auctions": "Auctions"
+    "auctions": "Auctions",
+    "challenges": "Challenges"
   },
   "footer": {
     "tagline": "The video platform independent creators own.",
@@ -268,7 +269,8 @@
         "audience": "Choose who sees it",
         "stories": "24-hour stories",
         "tip": "Tips",
-        "auction": "Auctions"
+        "auction": "Auctions",
+        "challenge": "Challenges"
       },
       "publish": {
         "upload": "Uploaded straight to the video network",
@@ -297,6 +299,13 @@
         "outbid": "Outbid? Your credits come straight back",
         "softClose": "A bid in the last 2 minutes adds 2 minutes",
         "winner": "Only the winner watches it"
+      },
+      "challenge": {
+        "badge": "Challenge",
+        "goal": "Goal",
+        "pledge": "Back it",
+        "allOrNothing": "All or nothing: below the goal, every pledge comes back",
+        "made": "Reached — the creator makes it"
       }
     },
     "marquee": {
@@ -307,7 +316,8 @@
       "e": "In-browser editor",
       "f": "Private messages",
       "g": "Creators keep {share}%",
-      "h": "Open source"
+      "h": "Open source",
+      "i": "Challenges & dares"
     },
     "creatorsPreview": {
       "title": "How you get paid",
@@ -356,6 +366,13 @@
       },
       "none": "No auction is open right now — the next one shows up here the moment it starts.",
       "upcoming": "See upcoming auctions"
+    },
+    "challenges": {
+      "title": "Challenges",
+      "all": "All challenges",
+      "pitch": "Fund it. Dare it. Make it.",
+      "body": "Back a creator's goal, dare one with an offer, or post an open call — credits are held until the video is delivered and come back if it is not.",
+      "cta": "Start a challenge"
     }
   },
   "payments": {
@@ -559,7 +576,8 @@
       "notifications": "Notifications",
       "payouts": "Payouts",
       "accounts": "Sign-in methods",
-      "blocked": "Blocked accounts"
+      "blocked": "Blocked accounts",
+      "challenges": "Challenges"
     },
     "pictures": {
       "avatar": "Profile photo",
@@ -624,7 +642,17 @@
         "auctionNewBid": "A new bid on one of your auctions",
         "auctionDecision": "One of your auctions ends and waits for your decision",
         "auctionSold": "One of your auctions sells",
-        "auctionUnsold": "One of your auctions ends without bids"
+        "auctionUnsold": "One of your auctions ends without bids",
+        "challengeAnnounced": "A creator you follow sets a goal",
+        "challengeRequested": "Someone dares you",
+        "challengePledged": "Someone backs your challenge",
+        "challengeFunded": "Your goal is reached",
+        "challengeAccepted": "A challenge you back is on",
+        "challengeApplied": "A creator applies to your open call",
+        "challengeChosen": "You are picked for an open call",
+        "challengeDelivered": "A challenge you back is delivered",
+        "challengeReleased": "A challenge you back will not happen",
+        "challengeClosed": "A challenge you could make closes"
       },
       "inApp": "In the app",
       "byEmail": "By e-mail",
@@ -650,6 +678,12 @@
       "intro": "Blocked accounts cannot message you, follow you or ask to be your contact.",
       "none": "You have not blocked anyone.",
       "unblock": "Unblock"
+    },
+    "challenges": {
+      "accept": "Accept dares",
+      "acceptHint": "Fans can send you a challenge with an offer. You accept or decline each one; nothing is paid until you deliver.",
+      "minimum": "Smallest offer",
+      "minimumHint": "Dares below this amount are refused before they reach you."
     }
   },
   "notify": {
@@ -724,6 +758,46 @@
     "auctionDeclined": {
       "subject": "Your bid on “{title}” was not kept",
       "body": "Your bid of {amount} on “{title}” was not kept. Your credits are back in your wallet."
+    },
+    "challengeAnnounced": {
+      "subject": "{name} set a goal",
+      "body": "{name} set a goal: “{title}”. Back it to make it happen."
+    },
+    "challengeRequested": {
+      "subject": "New dare: “{title}”",
+      "body": "{amount} is on the table for “{title}”. Accept or decline within 3 days."
+    },
+    "challengePledged": {
+      "subject": "+{amount} on “{title}”",
+      "body": "+{amount} on “{title}” — {total} pledged so far."
+    },
+    "challengeFunded": {
+      "subject": "“{title}” reached its goal",
+      "body": "“{title}” reached its goal with {total}. Once it starts, you have {days} days to deliver."
+    },
+    "challengeAccepted": {
+      "subject": "“{title}” is on",
+      "body": "“{title}” is on: {name} has {days} days to deliver it."
+    },
+    "challengeApplied": {
+      "subject": "{name} applied to “{title}”",
+      "body": "{name} wants to take “{title}”. Pick a creator before the deadline."
+    },
+    "challengeChosen": {
+      "subject": "You were picked for “{title}”",
+      "body": "You were picked for “{title}” — {total} is waiting. Deliver within {days} days."
+    },
+    "challengeDelivered": {
+      "subject": "“{title}” is here",
+      "body": "“{title}” is here. Your pledge paid for it — watch it now."
+    },
+    "challengeReleased": {
+      "subject": "“{title}” will not happen",
+      "body": "“{title}” will not happen: {reason}. Your {amount} in credits is back in your wallet."
+    },
+    "challengeClosed": {
+      "subject": "“{title}” is closed",
+      "body": "“{title}” is closed: {reason}."
     }
   },
   "notifications": {
@@ -766,12 +840,12 @@
       "SPEND": "Payment",
       "REFUND": "Refund",
       "ADJUSTMENT": "Adjustment",
-      "HOLD": "Held for a bid",
+      "HOLD": "Held for a bid or a pledge",
       "RELEASE": "Bid released"
     },
     "failed": "The payment could not start. Try again or choose another method.",
     "short": "Not enough credits (you have {balance}).",
-    "held": "{amount} held in your leading bids"
+    "held": "{amount} held in your leading bids and challenge pledges"
   },
   "earnings": {
     "title": "Earnings",
@@ -945,6 +1019,10 @@
       "AUCTION": {
         "title": "Auction",
         "hint": "Only the winning bidder watches it."
+      },
+      "CHALLENGE": {
+        "title": "Challenge",
+        "hint": "Only the backers of the challenge it was made for watch it."
       }
     },
     "split": {
@@ -993,7 +1071,8 @@
     "previous": "Previous",
     "next": "Next",
     "results": "Results",
-    "auctions": "Auctions"
+    "auctions": "Auctions",
+    "challenges": "Challenges"
   },
   "watch": {
     "metaTitle": "Video",
@@ -1048,7 +1127,10 @@
     "fullscreen": "Full screen",
     "auctionTitle": "Up for auction",
     "auctionBody": "The highest bid wins this video. Bid in credits — if someone outbids you, your credits come straight back.",
-    "auctionCta": "See the auction"
+    "auctionCta": "See the auction",
+    "challengeTitle": "Made for a challenge",
+    "challengeBody": "Its backers paid for it, and only they watch it. Back the next one to be in.",
+    "challengeCta": "See open challenges"
   },
   "comments": {
     "title": "Comments",
@@ -1097,7 +1179,8 @@
     "tip": "Tip",
     "sensitive": "Sensitive content",
     "reveal": "Tap to reveal",
-    "auction": "Auction"
+    "auction": "Auction",
+    "challenge": "Backers only"
   },
   "collections": {
     "save": "Save",
@@ -1437,7 +1520,8 @@
     "tags": "Tags (comma-separated)",
     "uploadFirst": "Upload your first one",
     "auctionNamed": "Put “{title}” up for auction",
-    "auctionLocked": "Auction — the winner watches it"
+    "auctionLocked": "Auction — the winner watches it",
+    "challengeLocked": "Made for a challenge — its backers watch it"
   },
   "inbox": {
     "title": "Messages",
@@ -1791,5 +1875,264 @@
       }
     },
     "seeOpen": "See open auctions"
+  },
+  "challenge": {
+    "kind": {
+      "GOAL": "Goal",
+      "REQUEST": "Dare a creator",
+      "OPEN_CALL": "Open call"
+    },
+    "stage": {
+      "FUNDING": "Funding",
+      "GOAL_REACHED": "Goal reached",
+      "AWAITING_ANSWER": "Awaiting answer",
+      "CASTING": "Taking applications",
+      "CLOSING": "Closing",
+      "IN_PROGRESS": "In the making",
+      "DELIVERED": "Delivered",
+      "DECLINED": "Declined",
+      "EXPIRED": "Expired",
+      "FAILED": "Not delivered",
+      "CANCELLED": "Withdrawn"
+    },
+    "final": {
+      "CLOSING": "Settling now…",
+      "DELIVERED": "Delivered — the backers were paid back in content.",
+      "DECLINED": "Declined — every pledge went back.",
+      "EXPIRED": "Expired — every pledge went back.",
+      "FAILED": "Not delivered in time — every pledge went back.",
+      "CANCELLED": "Withdrawn — every pledge went back."
+    },
+    "deliverable": {
+      "VIDEO": "Video",
+      "STORY": "Story"
+    },
+    "reward": {
+      "BACKERS": "Backers only",
+      "EVERYONE": "Everyone"
+    },
+    "ofGoal": "of {goal} · {percent}%",
+    "backers": "Backers · {count}",
+    "applicants": "Applicants · {count}",
+    "anyCreator": "Any creator",
+    "answerIn": "Answer due in",
+    "pickIn": "Pick due in",
+    "endsIn": "Ends in",
+    "deliverIn": "Delivery due in",
+    "start": "Start a challenge",
+    "backToAll": "All challenges",
+    "byCreator": "A goal by {name}",
+    "forCreator": "A dare for {name}",
+    "openToAll": "Open to any verified creator",
+    "requestedBy": "Sent to you by @{username}",
+    "deliveryDays": "Delivered within {days} days",
+    "delivered": {
+      "watch": "It is here — your pledge paid for it.",
+      "locked": "Delivered to the people who backed it.",
+      "cta": "Watch it",
+      "storyCta": "Open the stories"
+    },
+    "recent": "Latest pledges",
+    "noPledges": "No pledge yet — be the first.",
+    "you": "You",
+    "backer": "Backer {n}",
+    "goalReachedHint": "The goal is reached: pledges still count until the creator starts or the clock runs out.",
+    "leaderboard": "Top backers",
+    "errors": {
+      "NOT_FOUND": "Challenge not found",
+      "BAD_TITLE": "Give it a title of 4 to 120 characters.",
+      "BAD_DESCRIPTION": "Describe it in 10 to 1,000 characters.",
+      "BAD_GOAL": "A goal is between $10 and $1,000,000.",
+      "BAD_DEADLINE": "Pick a deadline between one hour and the longest window allowed.",
+      "BAD_DELIVERY_DAYS": "Delivery is between 1 and 14 days.",
+      "BAD_AMOUNT": "Check the amount: pledges start at $1, an open call's pot at $5.",
+      "NOT_A_CREATOR": "Only verified creators can do this.",
+      "REQUESTS_OFF": "This creator does not take requests right now.",
+      "OFFER_TOO_LOW": "Your offer is below this creator's minimum.",
+      "OFFER_TOO_LOW_AMOUNT": "This creator takes requests from {amount}.",
+      "OWN_CHALLENGE": "You cannot back or take a challenge you would be paid for.",
+      "NOT_OPEN": "This challenge is no longer open.",
+      "INSUFFICIENT_CREDITS": "Not enough credits.",
+      "INSUFFICIENT_CREDITS_BALANCE": "Not enough credits — your balance is {balance}.",
+      "GOAL_NOT_REACHED": "The goal is not reached yet.",
+      "NOT_ALLOWED": "You cannot do this on this challenge.",
+      "ALREADY_APPLIED": "You already applied.",
+      "NOT_IN_PROGRESS": "This challenge is not waiting for a delivery.",
+      "BAD_DELIVERY": "Pick a ready video of yours not used elsewhere, or a story posted since you committed.",
+      "SIGN_IN": "Sign in to see your challenges",
+      "TOO_MANY": "Too many actions. Wait a moment.",
+      "generic": "Something went wrong. Try again."
+    },
+    "release": {
+      "DECLINED": "the creator declined it",
+      "EXPIRED": "it ran out of time",
+      "FAILED": "it was not delivered in time",
+      "CANCELLED": "it was withdrawn",
+      "NOT_CHOSEN": "another creator was picked"
+    },
+    "pledge": {
+      "signIn": "Sign in to back this challenge.",
+      "signInCta": "Sign in",
+      "titleGoal": "Back this goal",
+      "titlePot": "Add to the pot",
+      "custom": "Other",
+      "submit": "Pledge {amount}",
+      "held": "Held in credits until it is delivered — back to you if not.",
+      "balance": "Balance {balance}",
+      "yours": "You put in {amount}",
+      "topUp": "Add credits"
+    },
+    "compose": {
+      "title": "Start a challenge",
+      "kind": "Kind of challenge",
+      "kindHint": {
+        "GOAL": "Set a goal: you make it if fans reach it.",
+        "REQUEST": "Dare one creator with an offer.",
+        "OPEN_CALL": "Any creator can apply; you pick one."
+      },
+      "creator": "Creator",
+      "creatorPlaceholder": "@username",
+      "titleLabel": "Title",
+      "titlePlaceholder": {
+        "GOAL": "What you will make once the goal is reached",
+        "REQUEST": "What you dare them to make",
+        "OPEN_CALL": "What you want a creator to make"
+      },
+      "description": "Details",
+      "descriptionPlaceholder": "Setting, length, what it should show — be precise.",
+      "descriptionHint": "Everything must follow the terms: adults only, consenting, no one who did not agree to appear.",
+      "deliverable": "Delivered as",
+      "delivery": "Time to deliver",
+      "deliveryLabels": {
+        "3": "3 days",
+        "7": "7 days",
+        "14": "14 days"
+      },
+      "windowLabels": {
+        "1d": "24 hours",
+        "3d": "3 days",
+        "7d": "7 days",
+        "14d": "14 days",
+        "30d": "30 days"
+      },
+      "amount": {
+        "GOAL": "Goal",
+        "REQUEST": "Your offer",
+        "OPEN_CALL": "Starting pot"
+      },
+      "amountHint": {
+        "GOAL": "All or nothing: below the goal at the deadline, every pledge goes back.",
+        "REQUEST": "Held in credits now, paid only on delivery. Others can add to it.",
+        "OPEN_CALL": "Held in credits now, paid to the creator you pick on delivery."
+      },
+      "window": {
+        "GOAL": "Funding window",
+        "OPEN_CALL": "Applications close in"
+      },
+      "reward": "Who watches it",
+      "theCreator": "the creator",
+      "summary": {
+        "GOAL": "If fans pledge {amount} within {days} days, you make a {what} and deliver it within {delivery} days. Otherwise every pledge goes back.",
+        "REQUEST": "You offer {amount} to {creator} for a {what}. They have 3 days to accept; accepted, they deliver within {delivery} days. Declined or late, your credits come back.",
+        "OPEN_CALL": "You put {amount} in the pot for a {what}. Creators apply for {days} days; you pick one, who delivers within {delivery} days."
+      },
+      "submit": {
+        "GOAL": "Open the goal",
+        "REQUEST": "Send the dare",
+        "OPEN_CALL": "Post the call"
+      }
+    },
+    "deliver": {
+      "title": "Deliver the challenge",
+      "submit": "Deliver and collect {amount}",
+      "intro": {
+        "VIDEO": "Pick the video you made for it.",
+        "STORY": "Pick the story you posted for it."
+      },
+      "audience": {
+        "BACKERS": "Only its backers will watch it.",
+        "EVERYONE": "It becomes public."
+      },
+      "none": {
+        "VIDEO": "No ready video to deliver yet — upload it first.",
+        "STORY": "No story posted since you committed — post it first."
+      },
+      "untitled": "Untitled"
+    },
+    "actions": {
+      "answerHint": "{amount} is on the table. Accept and you have {days} days to deliver; decline and every pledge goes back.",
+      "accept": "Accept",
+      "decline": "Decline",
+      "startHint": "The goal is reached. Start now — you then have {days} days to deliver.",
+      "start": "Start now",
+      "deliverHint": {
+        "VIDEO": "Upload the video, then deliver it here to be paid.",
+        "STORY": "Post the story, then deliver it here to be paid."
+      },
+      "deliver": "Deliver",
+      "applyNote": "A word for the author (optional)",
+      "apply": "Apply to take it",
+      "pickTitle": "Pick a creator",
+      "applicationsTitle": "Applications",
+      "pick": "Pick",
+      "cancelHint": "Withdraw it: every pledge goes back.",
+      "cancel": "Withdraw",
+      "cancelConfirm": "Tap again to withdraw"
+    },
+    "application": {
+      "PENDING": "Waiting for a pick",
+      "CHOSEN": "Picked",
+      "NOT_CHOSEN": "Not picked",
+      "WITHDRAWN": "Withdrawn"
+    },
+    "dare": "Dare"
+  },
+  "challenges": {
+    "metaTitle": "Challenges",
+    "metaDescription": "Goals, dares and open calls: fans fund custom videos and stories, creators make them — paid only on delivery.",
+    "eyebrow": "Challenges",
+    "title": "Fund it. Dare it. Make it.",
+    "subtitle": "Fans put credits behind what they want to see; creators make it. Nobody pays for nothing: credits are held until delivery and come back if it does not happen.",
+    "how": {
+      "GOAL": "A creator sets a goal and a deadline. Reach it together and they make it — miss it and every pledge comes back.",
+      "REQUEST": "Dare one creator with an offer anyone can add to. They have three days to accept or decline.",
+      "OPEN_CALL": "Post a challenge for any creator. Verified creators apply, you pick one, they deliver."
+    },
+    "tabsLabel": "Challenges",
+    "tabs": {
+      "open": "Open",
+      "calls": "Open calls",
+      "done": "Delivered",
+      "inbox": "To answer",
+      "mine": "Mine",
+      "backing": "Backing"
+    },
+    "empty": {
+      "open": {
+        "title": "No challenge open right now",
+        "body": "Start one: set a goal, dare a creator, or post an open call."
+      },
+      "calls": {
+        "title": "No open call right now",
+        "body": "When fans post a challenge for any creator, it shows up here."
+      },
+      "done": {
+        "title": "Nothing delivered yet",
+        "body": "Delivered challenges show up here."
+      },
+      "inbox": {
+        "title": "Nothing to answer",
+        "body": "Requests sent to you and challenges you must deliver show up here."
+      },
+      "mine": {
+        "title": "You have not started a challenge",
+        "body": "Your goals, dares and open calls show up here."
+      },
+      "backing": {
+        "title": "You back no challenge yet",
+        "body": "Challenges you pledge on show up here."
+      }
+    },
+    "seeOpen": "See open challenges"
   }
 }

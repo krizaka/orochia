@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Search, Hash, Compass, Gavel } from "lucide-react";
+import { Search, Hash, Compass, Flame, Gavel } from "lucide-react";
 import { VideoCard } from "@/components/VideoCard";
 import { popularTags, searchVideos } from "@/lib/queries";
 import { buttonClass } from "@/components/ui";
@@ -42,9 +42,14 @@ export default async function ExplorePage(props: { searchParams: Promise<{ q?: s
           <h1 className="text-2xl sm:text-3xl font-black text-white dark:text-white light:text-slate-900 font-display">
             {t("explore.title")}
           </h1>
-          <Link href="/auctions" className={buttonClass({ size: "sm", round: false })}>
-            <Gavel className="h-4 w-4 text-fuchsia-400 light:text-fuchsia-600" aria-hidden /> {t("explore.auctions")}
-          </Link>
+          <div className="flex gap-2">
+            <Link href="/auctions" className={buttonClass({ size: "sm", round: false })}>
+              <Gavel className="h-4 w-4 text-fuchsia-400 light:text-fuchsia-600" aria-hidden /> {t("explore.auctions")}
+            </Link>
+            <Link href="/challenges" className={buttonClass({ size: "sm", round: false })}>
+              <Flame className="h-4 w-4 text-fuchsia-400 light:text-fuchsia-600" aria-hidden /> {t("explore.challenges")}
+            </Link>
+          </div>
         </div>
       </div>
 

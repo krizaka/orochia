@@ -20,10 +20,16 @@ export function AuctionsExplainer() {
   return (
     <div className="kz-spotlight relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/40 p-6 light:border-black/5 light:bg-white sm:p-8">
       <ol className="relative grid gap-6 sm:grid-cols-4 sm:gap-4">
-        <span aria-hidden className="ae-rail absolute left-5 top-5 hidden h-px w-[calc(100%-2.5rem)] bg-linear-to-r from-violet-500/0 via-fuchsia-500/60 to-emerald-500/0 sm:block" />
+        <span
+          aria-hidden
+          className="ae-rail absolute left-5 top-5 hidden h-px w-[calc(100%-2.5rem)] bg-linear-to-r from-violet-500/0 via-fuchsia-500/60 to-emerald-500/0 sm:block"
+        />
         {STEPS.map(([key, Icon, tone], i) => (
           <li key={key} data-reveal style={{ ["--kz-delay" as string]: `${i * 110}ms` }} className="relative flex gap-4 sm:flex-col sm:gap-3">
-            <span className={`ae-dot relative flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br ${tone} text-white shadow-lg`} style={{ animationDelay: `${i * 0.9}s` }}>
+            <span
+              className={`ae-dot relative flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br ${tone} text-white shadow-lg`}
+              style={{ animationDelay: `${i * 0.9}s` }}
+            >
               <Icon className="h-4.5 w-4.5" aria-hidden />
             </span>
             <span>

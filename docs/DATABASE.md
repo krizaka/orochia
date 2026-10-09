@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 39 tables · 20 enums · 1 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 42 tables · 26 enums · 2 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -26,6 +26,14 @@ erDiagram
     users ||--o{ auth_tokens : "user_id"
     users ||--o{ blocked_users : "blocker_id"
     users ||--o{ blocked_users : "blocked_id"
+    challenges ||--o{ challenge_applications : "challenge_id"
+    users ||--o{ challenge_applications : "creator_id"
+    challenges ||--o{ challenge_pledges : "challenge_id"
+    users ||--o{ challenge_pledges : "backer_id"
+    users ||--o{ challenges : "author_id"
+    users ||--o{ challenges : "creator_id"
+    videos ||--o{ challenges : "delivered_video_id"
+    stories ||--o{ challenges : "delivered_story_id"
     videos ||--o{ compliance_reports : "video_id"
     users ||--o{ compliance_reports : "reporter_id"
     users ||--o{ contacts : "requester_id"
@@ -192,6 +200,64 @@ erDiagram
 | `created_at` | timestamp with time zone | no | `now()` |  |
 
 **Indexes:** `blocked_users_pair_idx` (unique, blocker_id, blocked_id) · `blocked_users_blocker_idx` (blocker_id) · `blocked_users_blocked_idx` (blocked_id)
+
+### `challenge_applications`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `challenge_id` | uuid | no |  | → `challenges.id` (on delete cascade) |
+| `creator_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `note` | varchar(280) | yes |  |  |
+| `status` | challenge_application_status | no | `"PENDING"` |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `challenge_applications_once_idx` (unique, challenge_id, creator_id)
+
+### `challenge_pledges`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `challenge_id` | uuid | no |  | → `challenges.id` (on delete cascade) |
+| `backer_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `amount_cents` | integer | no |  |  |
+| `status` | challenge_pledge_status | no | `"HELD"` |  |
+| `released_at` | timestamp with time zone | yes |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `challenge_pledges_challenge_idx` (challenge_id, created_at) · `challenge_pledges_backer_idx` (backer_id, created_at)
+
+### `challenges`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `kind` | challenge_kind | no |  |  |
+| `status` | challenge_status | no | `"OPEN"` |  |
+| `author_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `creator_id` | uuid | yes |  | → `users.id` (on delete cascade) |
+| `title` | varchar(120) | no |  |  |
+| `description` | text | no |  |  |
+| `deliverable` | challenge_deliverable | no | `"VIDEO"` |  |
+| `reward` | challenge_reward | no | `"BACKERS"` |  |
+| `goal_cents` | integer | yes |  |  |
+| `pledged_cents` | integer | no | `0` |  |
+| `backers_count` | integer | no | `0` |  |
+| `deadline` | timestamp with time zone | no |  |  |
+| `delivery_days` | integer | no |  |  |
+| `delivery_deadline` | timestamp with time zone | yes |  |  |
+| `delivered_video_id` | uuid | yes |  | → `videos.id` (on delete set null) |
+| `delivered_story_id` | uuid | yes |  | → `stories.id` (on delete set null) |
+| `previous_visibility` | video_visibility | yes |  |  |
+| `accepted_at` | timestamp with time zone | yes |  |  |
+| `delivered_at` | timestamp with time zone | yes |  |  |
+| `closed_at` | timestamp with time zone | yes |  |  |
+| `cancel_reason` | text | yes |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+| `updated_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `challenges_status_deadline_idx` (status, deadline) · `challenges_delivery_deadline_idx` (delivery_deadline, partial) · `challenges_author_idx` (author_id, created_at) · `challenges_creator_idx` (creator_id, created_at) · `challenges_delivered_video_idx` (unique, delivered_video_id, partial) · `challenges_delivered_story_idx` (unique, delivered_story_id, partial)
 
 ### `compliance_reports`
 
@@ -428,6 +494,8 @@ erDiagram
 | `last_activity_email_at` | timestamp with time zone | yes |  |  |
 | `direct_message_privacy` | varchar(20) | no | `"EVERYONE"` |  |
 | `min_tip_amount_cents` | integer | no | `500` |  |
+| `challenge_requests_off` | boolean | no | `false` |  |
+| `challenge_min_cents` | integer | no | `1000` |  |
 | `payout_address_crypto` | text | yes |  |  |
 | `payout_account_ccbill` | varchar(100) | yes |  |  |
 | `total_views` | integer | no | `0` |  |
@@ -704,6 +772,12 @@ erDiagram
 | `auction_status` | `OPEN`, `AWAITING_DECISION`, `SOLD`, `DECLINED`, `UNSOLD`, `CANCELLED` |
 | `auth_provider` | `GOOGLE`, `FACEBOOK` |
 | `auth_token_purpose` | `VERIFY_EMAIL`, `RESET_PASSWORD` |
+| `challenge_application_status` | `PENDING`, `CHOSEN`, `NOT_CHOSEN`, `WITHDRAWN` |
+| `challenge_deliverable` | `VIDEO`, `STORY` |
+| `challenge_kind` | `GOAL`, `REQUEST`, `OPEN_CALL` |
+| `challenge_pledge_status` | `HELD`, `PAID`, `RELEASED` |
+| `challenge_reward` | `BACKERS`, `EVERYONE` |
+| `challenge_status` | `OPEN`, `ACCEPTED`, `DELIVERED`, `DECLINED`, `EXPIRED`, `FAILED`, `CANCELLED` |
 | `collection_visibility` | `PUBLIC`, `APPROVED_FOLLOWERS_ONLY`, `CONTACTS_ONLY`, `INVITED_ONLY`, `PRIVATE` |
 | `contact_status` | `PENDING`, `ACCEPTED`, `REJECTED`, `BLOCKED` |
 | `follow_status` | `PENDING`, `APPROVED` |
@@ -716,9 +790,10 @@ erDiagram
 | `share_channel` | `LINK`, `X`, `WHATSAPP`, `TELEGRAM`, `EMAIL`, `OTHER` |
 | `user_role` | `ADMIN`, `CREATOR`, `MEMBER` |
 | `video_status` | `PENDING_UPLOAD`, `PROCESSING`, `READY`, `FAILED` |
-| `video_visibility` | `PUBLIC`, `CONTACTS_ONLY`, `APPROVED_FOLLOWERS_ONLY`, `TIPPED_UNLOCKED`, `INVITED_ONLY`, `AUCTION` |
+| `video_visibility` | `PUBLIC`, `CONTACTS_ONLY`, `APPROVED_FOLLOWERS_ONLY`, `TIPPED_UNLOCKED`, `INVITED_ONLY`, `AUCTION`, `CHALLENGE` |
 | `wallet_entry_type` | `TOPUP`, `SPEND`, `REFUND`, `ADJUSTMENT`, `HOLD`, `RELEASE` |
 
 ## Migrations
 
 - `0000_initial_schema.sql`
+- `0001_challenges.sql`

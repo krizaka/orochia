@@ -27,7 +27,14 @@ export function HeroWall({ images }: { images: string[] }) {
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
       <div className="absolute inset-y-0 right-0 hidden w-[55%] grid-cols-3 gap-3 p-3 opacity-[0.22] blur-[3px] saturate-150 md:grid light:opacity-[0.28] mask-[linear-gradient(to_left,black_55%,transparent)]">
         {columns.map((col, c) => (
-          <div key={c} className="hero-col flex flex-col gap-3" style={{ animationDuration: `${38 + c * 9}s`, animationDirection: c === 1 ? "reverse" : "normal" }}>
+          <div
+            key={c}
+            className="hero-col flex flex-col gap-3"
+            style={{
+              animationDuration: `${38 + c * 9}s`,
+              animationDirection: c === 1 ? "reverse" : "normal",
+            }}
+          >
             {[...col, ...col].map((src, i) => tile(src, `${c}-${i}`))}
           </div>
         ))}

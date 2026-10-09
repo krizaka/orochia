@@ -1,10 +1,10 @@
-import { db, videos, videoAccessGrants, contacts, follows } from "@orochia/db";
+import { db, videos, videoAccessGrants, contacts, follows, challenges, challengePledges } from "@orochia/db";
 import { isInvited } from "./audiences";
 import { eq, and, or } from "drizzle-orm";
 
 export interface AccessEvaluation {
   allowed: boolean;
-  reason?: "PAYWALL_REQUIRED" | "CONTACTS_ONLY" | "FOLLOWERS_ONLY" | "INVITED_ONLY" | "AUCTION" | "AGE_VERIFICATION_REQUIRED" | "NOT_FOUND";
+  reason?: "PAYWALL_REQUIRED" | "CONTACTS_ONLY" | "FOLLOWERS_ONLY" | "INVITED_ONLY" | "AUCTION" | "CHALLENGE" | "AGE_VERIFICATION_REQUIRED" | "NOT_FOUND";
   minTipAmountCents?: number;
   creatorId?: string;
   videoTitle?: string;
@@ -102,6 +102,9 @@ export async function evaluateVideoAccess(
     if (video.visibility === "AUCTION") {
       return { allowed: false, reason: "AUCTION", creatorId: video.creatorId, videoTitle: video.title };
     }
+    if (video.visibility === "CHALLENGE") {
+      return { allowed: false, reason: "CHALLENGE", creatorId: video.creatorId, videoTitle: video.title };
+    }
     return { allowed: false, reason: "CONTACTS_ONLY", creatorId: video.creatorId, videoTitle: video.title };
   }
 
@@ -145,7 +148,19 @@ export async function evaluateVideoAccess(
       : { allowed: false, reason: "AUCTION", creatorId: video.creatorId, videoTitle: video.title };
   }
 
-  // 7. Paywalled / Tipped video check
+  // 7. Delivered for a challenge's backers: a grant written when their pledge was paid.
+  if (video.visibility === "CHALLENGE") {
+    const [grant] = await db
+      .select({ id: videoAccessGrants.id })
+      .from(videoAccessGrants)
+      .where(and(eq(videoAccessGrants.videoId, videoId), eq(videoAccessGrants.userId, viewerId), eq(videoAccessGrants.grantedVia, "CHALLENGE")))
+      .limit(1);
+    return grant
+      ? { allowed: true, creatorId: video.creatorId, videoTitle: video.title }
+      : { allowed: false, reason: "CHALLENGE", creatorId: video.creatorId, videoTitle: video.title };
+  }
+
+  // 8. Paywalled / Tipped video check
   if (video.visibility === "TIPPED_UNLOCKED") {
     const [grant] = await db
       .select()
@@ -185,4 +200,15 @@ export async function canDownloadVideo(videoId: string, userId: string): Promise
     .where(and(eq(videoAccessGrants.videoId, videoId), eq(videoAccessGrants.userId, userId), eq(videoAccessGrants.canDownload, true)))
     .limit(1);
   return Boolean(grant);
+}
+
+/** Whether an account paid for the challenge a story was delivered for (a pledge spent at delivery). */
+export async function paidForChallengeStory(storyId: string, viewerId: string): Promise<boolean> {
+  const [row] = await db
+    .select({ id: challengePledges.id })
+    .from(challengePledges)
+    .innerJoin(challenges, eq(challenges.id, challengePledges.challengeId))
+    .where(and(eq(challenges.deliveredStoryId, storyId), eq(challengePledges.backerId, viewerId), eq(challengePledges.status, "PAID")))
+    .limit(1);
+  return Boolean(row);
 }

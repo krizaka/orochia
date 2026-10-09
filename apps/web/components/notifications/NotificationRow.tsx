@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { AtSign, Bell, CheckCircle2, Coins, Gavel, MessageCircle, MessageSquare, PlayCircle, Trophy, Undo2, Unlock, UserPlus } from "lucide-react";
+import { AtSign, Bell, CheckCircle2, Coins, Flame, Gavel, Megaphone, MessageCircle, MessageSquare, PlayCircle, Target, Trophy, Undo2, Unlock, UserPlus } from "lucide-react";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { type NotificationItem, timeAgo } from "./useNotifications";
 
@@ -24,6 +24,16 @@ const ICONS: Record<string, { icon: React.ElementType; tone: string }> = {
   auctionSold: { icon: Coins, tone: "bg-emerald-500" },
   auctionUnsold: { icon: Gavel, tone: "bg-zinc-500" },
   auctionDeclined: { icon: Undo2, tone: "bg-sky-500" },
+  challengeAnnounced: { icon: Target, tone: "bg-pink-500" },
+  challengeRequested: { icon: Flame, tone: "bg-fuchsia-500" },
+  challengePledged: { icon: Coins, tone: "bg-violet-500" },
+  challengeFunded: { icon: Target, tone: "bg-emerald-500" },
+  challengeAccepted: { icon: Flame, tone: "bg-emerald-500" },
+  challengeApplied: { icon: Megaphone, tone: "bg-indigo-500" },
+  challengeChosen: { icon: Trophy, tone: "bg-emerald-500" },
+  challengeDelivered: { icon: PlayCircle, tone: "bg-emerald-500" },
+  challengeReleased: { icon: Undo2, tone: "bg-sky-500" },
+  challengeClosed: { icon: Flame, tone: "bg-zinc-500" },
 };
 
 /** One notification: who (avatar + event badge), what, when; unread ones are marked. */

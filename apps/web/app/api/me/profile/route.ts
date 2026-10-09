@@ -18,10 +18,13 @@ const ProfileSchema = z.object({
   websiteUrl: z.string().trim().max(200).nullable().optional(),
   socialLinks: z.record(z.string().max(200).nullable()).optional(),
   directMessagePrivacy: z.enum(["EVERYONE", "CONTACTS_ONLY"]).optional(),
-  emailsOff: z.array(z.string().max(40)).max(20).optional(),
-  inAppOff: z.array(z.string().max(40)).max(20).optional(),
+  emailsOff: z.array(z.string().max(40)).max(60).optional(),
+  inAppOff: z.array(z.string().max(40)).max(60).optional(),
   emailFrequency: z.enum(["INSTANT", "HOURLY", "NONE"]).optional(),
   payoutAddressCrypto: z.string().trim().max(200).optional(),
+  /** Creators: whether fans may dare them, and the smallest offer a dare may carry ($1 to $10,000). */
+  challengeRequestsOff: z.boolean().optional(),
+  challengeMinCents: z.number().int().min(100).max(1_000_000).optional(),
 });
 
 async function read(userId: string) {
@@ -45,6 +48,8 @@ async function read(userId: string) {
       emailFrequency: profiles.emailFrequency,
       directMessagePrivacy: profiles.directMessagePrivacy,
       payoutAddressCrypto: profiles.payoutAddressCrypto,
+      challengeRequestsOff: profiles.challengeRequestsOff,
+      challengeMinCents: profiles.challengeMinCents,
       updatedAt: profiles.updatedAt,
     })
     .from(users)
@@ -78,6 +83,8 @@ export async function PUT(req: NextRequest) {
     if (!current) return jsonError(404, "Profile not found");
     const set: Partial<typeof profiles.$inferInsert> = { updatedAt: new Date() };
     if (input.displayName !== undefined) set.displayName = input.displayName;
+    if (input.challengeRequestsOff !== undefined) set.challengeRequestsOff = input.challengeRequestsOff;
+    if (input.challengeMinCents !== undefined) set.challengeMinCents = input.challengeMinCents;
     if (input.bio !== undefined) set.bio = input.bio || null;
     if (input.avatar !== undefined) set.avatarUrl = profileImageUrl("avatar", input.avatar, current.avatarUrl);
     if (input.banner !== undefined) set.bannerUrl = profileImageUrl("banner", input.banner, current.bannerUrl);

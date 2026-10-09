@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { requireUserWithRole } from "@/lib/auth";
 import { errorResponse, jsonError } from "@/lib/http";
 import { cancelAuctionsByOperator } from "@/lib/auctions";
+import { cancelChallengesByOperator } from "@/lib/challenges";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +35,10 @@ export async function PATCH(req: NextRequest, props: { params: Promise<{ id: str
           : { role: input.role };
     const [row] = await db.update(users).set({ ...set, updatedAt: new Date() }).where(eq(users.id, id.data)).returning({ id: users.id });
     if (!row) return jsonError(404, "Account not found");
-    if (input.action === "suspend") after(() => cancelAuctionsByOperator({ creatorId: id.data }, `Creator suspended: ${input.reason}`));
+    if (input.action === "suspend") {
+      after(() => cancelAuctionsByOperator({ creatorId: id.data }, `Creator suspended: ${input.reason}`));
+      after(() => cancelChallengesByOperator(id.data, `Account suspended: ${input.reason}`));
+    }
     return NextResponse.json({ success: true });
   } catch (error) {
     return errorResponse(error, "admin/users/patch");

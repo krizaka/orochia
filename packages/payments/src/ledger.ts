@@ -13,8 +13,11 @@ export interface RecordTipOptions {
   gateway: GatewayType;
   gatewayTransactionRef: string;
   note?: string;
-  /** How the buyer's access grant is recorded: an unlock (default, held to the video's minimum) or a won auction. */
-  grant?: { via: "TIP_PAYMENT" | "AUCTION"; canDownload?: boolean };
+  /**
+   * How the buyer's access grant is recorded: an unlock (default, held to the video's minimum), a won auction, or a
+   * pledge paid when a challenge was delivered.
+   */
+  grant?: { via: "TIP_PAYMENT" | "AUCTION" | "CHALLENGE"; canDownload?: boolean };
 }
 
 export interface TipResult {
@@ -55,8 +58,9 @@ export async function creditTip(tx: LedgerExecutor, options: RecordTipOptions): 
     const [targetVideo] = await tx.select().from(videos).where(eq(videos.id, options.videoId)).limit(1);
     if (!targetVideo) throw new Error("Video not found");
     if (targetVideo.creatorId !== options.creatorId) throw new Error("Video does not belong to creator");
-    // An auction's price is the winning bid, whatever the video's unlock minimum.
-    if (options.grant?.via !== "AUCTION" && targetVideo.minTipAmountCents > options.grossAmountCents) {
+    // An auction's price is the winning bid and a challenge's is each pledge, whatever the video's unlock minimum.
+    const unlock = (options.grant?.via ?? "TIP_PAYMENT") === "TIP_PAYMENT";
+    if (unlock && targetVideo.minTipAmountCents > options.grossAmountCents) {
       throw new Error("Amount is below the video's unlock minimum");
     }
   }
@@ -101,11 +105,13 @@ export async function creditTip(tx: LedgerExecutor, options: RecordTipOptions): 
         amountPaidCents: options.grossAmountCents,
         transactionRef: options.gatewayTransactionRef,
       });
-      // A buyer who unlocked the video earlier and then wins it at auction gains the auction's rights.
-      const [grant] = await (options.grant?.via === "AUCTION"
+      // A buyer who unlocked the video earlier and then wins it at auction gains the auction's rights; one who backed the
+      // challenge it was delivered for keeps watching it under the challenge (its visibility becomes CHALLENGE).
+      const via = options.grant?.via;
+      const [grant] = await (via === "AUCTION" || via === "CHALLENGE"
         ? insert.onConflictDoUpdate({
             target: [videoAccessGrants.videoId, videoAccessGrants.userId],
-            set: { grantedVia: "AUCTION", canDownload: options.grant.canDownload ?? false },
+            set: via === "AUCTION" ? { grantedVia: "AUCTION", canDownload: options.grant?.canDownload ?? false } : { grantedVia: "CHALLENGE" },
           })
         : insert.onConflictDoNothing()
       ).returning();

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Bookmark, CheckCircle2, Eye, Gavel, Heart, Lock, Play, Sparkles, Users } from "lucide-react";
+import { Bookmark, CheckCircle2, Eye, Flame, Gavel, Heart, Lock, Play, Sparkles, Users } from "lucide-react";
 import { t } from "@/lib/i18n";
 import { TipModal } from "@/components/TipModal";
 import type { VideoVisibility } from "@/lib/visibility";
@@ -68,6 +68,7 @@ export function VideoCard({
   const isPaywalled = visibility === "TIPPED_UNLOCKED";
   const isContacts = visibility === "CONTACTS_ONLY";
   const isAuction = visibility === "AUCTION";
+  const isChallenge = visibility === "CHALLENGE";
 
   const handleLike = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -179,7 +180,14 @@ export function VideoCard({
               </div>
             )}
 
-            {!isPaywalled && !isContacts && !isAuction && (
+            {isChallenge && (
+              <div className="flex items-center gap-1.5 rounded-full bg-linear-to-r from-violet-600 to-pink-600 px-3 py-1 text-[11px] font-bold text-white shadow-lg backdrop-blur-md">
+                <Flame className="h-3 w-3" />
+                <span>{t("card.challenge")}</span>
+              </div>
+            )}
+
+            {!isPaywalled && !isContacts && !isAuction && !isChallenge && (
               <div className="flex items-center gap-1 rounded-full bg-emerald-950/80 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-300 backdrop-blur-md">
                 <span>{t("card.free")}</span>
               </div>

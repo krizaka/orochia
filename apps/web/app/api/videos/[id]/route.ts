@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { db, videos, auctions } from "@orochia/db";
+import { db, videos, auctions, challenges } from "@orochia/db";
 import { and, eq, inArray, isNull } from "drizzle-orm";
 import { requireUserWithRole } from "@/lib/auth";
 import { errorResponse, jsonError } from "@/lib/http";
@@ -22,7 +22,7 @@ const Patch = z
     path: ["minTipAmountCents"],
   });
 
-/** The creator edits their video (an auctioned video keeps its audience): title, description, visibility, unlock price, tags, comments open. */
+/** The creator edits their video (an auctioned or challenge video keeps its audience): title, description, visibility, unlock price, tags, comments open. */
 export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   try {
@@ -34,6 +34,7 @@ export async function PATCH(req: NextRequest, props: { params: Promise<{ id: str
       // While a video is in an auction (or sold at one), the auction decides who watches it.
       const [current] = await db.select({ visibility: videos.visibility }).from(videos).where(and(eq(videos.id, id.data), eq(videos.creatorId, user.id))).limit(1);
       if (current?.visibility === "AUCTION") return jsonError(409, "This video is in an auction: its audience is the auction's winner");
+      if (current?.visibility === "CHALLENGE") return jsonError(409, "This video was made for a challenge: its audience is the people who paid for it");
     }
     const [row] = await db
       .update(videos)
@@ -48,7 +49,7 @@ export async function PATCH(req: NextRequest, props: { params: Promise<{ id: str
 }
 
 /**
- * The creator deletes their video (refused while it is in an auction). It is withdrawn everywhere (feed, playlists, playback) but the
+ * The creator deletes their video (refused while it is in an auction, and for a video its challenge's backers paid for). It is withdrawn everywhere (feed, playlists, playback) but the
  * row stays: ledger entries and access grants reference it and financial records are immutable.
  */
 export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
@@ -59,6 +60,9 @@ export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: s
     if (!id.success) return jsonError(404, "Video not found");
     const [auctioned] = await db.select({ id: auctions.id }).from(auctions).where(and(eq(auctions.videoId, id.data), inArray(auctions.status, ["OPEN", "AWAITING_DECISION"]))).limit(1);
     if (auctioned) return jsonError(409, "This video is in an auction: cancel or close the auction first");
+    // A video delivered for a challenge was paid for by its backers: it stays theirs (an operator can still take it down).
+    const [delivered] = await db.select({ id: challenges.id }).from(challenges).where(eq(challenges.deliveredVideoId, id.data)).limit(1);
+    if (delivered) return jsonError(409, "This video was paid for by a challenge's backers: it cannot be deleted");
     const [row] = await db
       .update(videos)
       .set({ removedAt: new Date(), removalReason: CREATOR_DELETED, updatedAt: new Date() })

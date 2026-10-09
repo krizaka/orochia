@@ -69,13 +69,13 @@ orochia/                           npm workspaces
 ├── apps/web/                      Next.js 16 App Router — pages + API route handlers (the only HTTP surface)
 │   ├── app/api/**/route.ts        one handler per endpoint: authenticate → validate (zod) → call lib → respond
 │   ├── lib/                       access.ts (who may play what) · social.ts · playlists.ts · queries.ts (read
-│   │                              models) · auctions.ts · realtime.ts (the event bus, SSE) · auth.ts · env.ts ·
+│   │                              models) · auctions.ts · challenges.ts · realtime.ts (the event bus, SSE) · auth.ts · env.ts ·
 │   │                              http.ts · rate-limit.ts · storage.ts
 │   └── components/                UI (player, modals, dashboard panels, relationship actions…)
 ├── packages/db/                   Drizzle schema (source of truth), migrations, migrator, seed
 ├── packages/media/                Bunny Stream client, Tus signing, signed playback tokens, webhook verifier
 ├── packages/payments/             gateway adapters, payment intents, settlement, double-entry ledger, payouts,
-│                                  credits, auctions (rules + state machine)
+│                                  credits, auctions and challenges (rules + state machine)
 ├── deploy/                        Dockerfile (bundled migrator), compose (dev/prod), Caddy, DigitalOcean spec
 ├── e2e/                           HTTP feature scenarios
 ├── scripts/                       setup, db lifecycle, workspace, docs generation
@@ -109,8 +109,9 @@ orochia/                           npm workspaces
   written by settlement (`video_access_grants`), never below the creator's minimum · `INVITED_ONLY` — an account
   invited directly (`video_viewers`) or a member of one of the creator's audience lists attached to the video
   (`video_audience_lists` → `audience_list_members`, live membership) · `AUCTION` — the winning bidder only (a grant
-  `granted_via = AUCTION` written by the sale); set by starting an auction, never chosen in a form. The author always
-  plays their own video.
+  `granted_via = AUCTION` written by the sale); set by starting an auction, never chosen in a form · `CHALLENGE` — the
+  backers of the challenge it was delivered for (a grant `granted_via = CHALLENGE` written at delivery); set by
+  delivering, never chosen in a form. The author always plays their own video.
 - `INVITED_ONLY` videos are **never listed** (feed, search, tags, profile) and their details answer 404 to anyone not
   invited; inside a collection they are shown only to those who may watch them.
 - Collections (`playlists.visibility`: PUBLIC · APPROVED_FOLLOWERS_ONLY · CONTACTS_ONLY · INVITED_ONLY · PRIVATE)
@@ -165,6 +166,18 @@ orochia/                           npm workspaces
   delete while open); an auction that ends without a sale restores the previous visibility. A sold video is exclusive.
 - Bidders are aliases in public (`Bidder N`); only the creator sees the leader's username.
 - A takedown or a suspension cancels the open auctions and releases their bids.
+
+### C3. Challenges (`docs/CHALLENGES.md`)
+- Rules are pure functions (`packages/payments/src/challenge-rules.ts`); transitions live in
+  `packages/payments/src/challenges.ts`, each in one transaction under the challenge's row lock — never in a route.
+- Pledges are **escrowed credits** like bids: held (`HOLD`) until delivery, then released and spent with one creator
+  credit per pledge through `tips_ledger`; declined, expired, failed or cancelled, every held pledge is released.
+- Nobody is paid with their own credits: a challenge's creator never pledges on it; an open call's backers never apply,
+  its applicants never pledge.
+- Only verified creators set goals, receive dares, apply or deliver; a dare respects the creator's switch and minimum.
+  The member who sent a dare is shown only to the creator it was sent to; backers are aliases.
+- A video delivered to its backers is `CHALLENGE` (locked audience, not deletable by its creator); a delivered story to
+  its backers is `CHALLENGE` too, shown to paid backers. A suspension cancels the account's challenges.
 
 ### D. The ledger is immutable
 - `tips_ledger` is double-entry and append-only. Balances are **computed** from it (`getCreatorAvailableBalanceCents`),
@@ -238,8 +251,8 @@ orochia/                           npm workspaces
 - Ownership is enforced in the **query** (`where id = … and creator_id = me`), so another user's id is a 404.
 - Mutations that can be abused are rate-limited (`checkRateLimit`, in memory per instance — no Redis for now).
 - **Realtime goes through `lib/realtime.ts` only** (`publish` / `subscribe` / `sseResponse`): PostgreSQL `NOTIFY` fans
-  events out to every instance's `LISTEN` connection (`packages/db/src/listen.ts`) — no broker. Topics `user:<id>` and
-  `auction:<id>`; payloads are small facts (≤ 8 KB), never documents. `DATABASE_URL` must be a direct connection (not a
+  events out to every instance's `LISTEN` connection (`packages/db/src/listen.ts`) — no broker. Topics `user:<id>`,
+  `auction:<id>` and `challenge:<id>`; payloads are small facts (≤ 8 KB), never documents. `DATABASE_URL` must be a direct connection (not a
   transaction pooler). Background loops start in `instrumentation.ts` and share work with `FOR UPDATE SKIP LOCKED`.
 - The **first sentence of the JSDoc** above each handler is the endpoint's summary in `docs/API_CONTRACTS.md`;
   the access column is read from the handler's `requireUserWithRole` call. Keep both truthful.
@@ -314,7 +327,7 @@ orochia/                           npm workspaces
 - **Unit** (`npm test`, Vitest): pure logic — sessions, env, gateway signatures, ledger splits.
 - **End-to-end** (`npm run test:e2e`): `e2e/scenarios.mjs` drives the real API with real sessions on a seeded
   PostgreSQL — followers, contacts, playlists, search, creator edits, takedowns, suspensions, role changes, wallet,
-  auctions (time is moved forward in SQL to test closing; everything else goes through HTTP).
+  auctions and challenges (time is moved forward in SQL to test closing; everything else goes through HTTP).
   A new feature adds its scenarios there.
 - **CI** (`.github/workflows/ci.yml`): verify (lint, types, unit, docs check, production build) · database
   (bundled migrator twice, seed) · e2e (Postgres service, dev server, scenarios).

@@ -11,6 +11,7 @@ import { contentRatings } from "./reference-data";
 import { userInvitations } from "./invitations";
 import { conversations, directMessages, blockedUsers } from "./messaging";
 import { auctions, auctionBids } from "./auctions";
+import { challenges, challengePledges, challengeApplications } from "./challenges";
 
 export * from "./enums";
 export * from "./users";
@@ -31,6 +32,7 @@ export * from "./reference-data";
 export * from "./invitations";
 export * from "./messaging";
 export * from "./auctions";
+export * from "./challenges";
 
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -259,4 +261,20 @@ export const auctionsRelations = relations(auctions, ({ one, many }) => ({
 export const auctionBidsRelations = relations(auctionBids, ({ one }) => ({
   auction: one(auctions, { fields: [auctionBids.auctionId], references: [auctions.id] }),
   bidder: one(users, { fields: [auctionBids.bidderId], references: [users.id] }),
+}));
+
+export const challengesRelations = relations(challenges, ({ one, many }) => ({
+  author: one(users, { fields: [challenges.authorId], references: [users.id] }),
+  pledges: many(challengePledges),
+  applications: many(challengeApplications),
+}));
+
+export const challengePledgesRelations = relations(challengePledges, ({ one }) => ({
+  challenge: one(challenges, { fields: [challengePledges.challengeId], references: [challenges.id] }),
+  backer: one(users, { fields: [challengePledges.backerId], references: [users.id] }),
+}));
+
+export const challengeApplicationsRelations = relations(challengeApplications, ({ one }) => ({
+  challenge: one(challenges, { fields: [challengeApplications.challengeId], references: [challenges.id] }),
+  creator: one(users, { fields: [challengeApplications.creatorId], references: [users.id] }),
 }));

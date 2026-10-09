@@ -1,10 +1,11 @@
-import { closeAuction, dueAuctionIds } from "@orochia/payments";
+import { closeAuction, closeChallenge, dueAuctionIds, dueChallengeIds } from "@orochia/payments";
 import { announceClose } from "./auctions";
+import { announceClose as announceChallengeClose } from "./challenges";
 
 /**
- * Closes auctions on time. Every app instance runs this loop (started by instrumentation.ts): it picks the auctions
+ * Closes auctions and challenges on time. Every app instance runs this loop (started by instrumentation.ts): it picks the auctions
  * past their end or their decision deadline and closes each one with SKIP LOCKED, so instances share the queue and an
- * auction is never closed twice. Reading an auction past its end closes it too (lib/auctions.ts), so a stopped loop
+ * auction (or challenge) is never closed twice. Reading one past its end closes it too (lib/auctions.ts, lib/challenges.ts), so a stopped loop
  * delays a notification, never a result.
  */
 
@@ -16,6 +17,9 @@ async function tick() {
   for (const id of await dueAuctionIds(now)) {
     const outcome = await closeAuction(id, now, { skipLocked: true });
     await announceClose(outcome);
+  }
+  for (const id of await dueChallengeIds(now)) {
+    await announceChallengeClose(await closeChallenge(id, now, { skipLocked: true }));
   }
 }
 

@@ -11,6 +11,8 @@ export const videoVisibilityEnum = pgEnum("video_visibility", [
   "INVITED_ONLY",
   /** Put up for auction: listed with its auction, played only by its author and the winning bidder. */
   "AUCTION",
+  /** Delivered for a challenge whose reward is its backers: played only by its author and the people who paid for it. */
+  "CHALLENGE",
 ]);
 
 export const videoStatusEnum = pgEnum("video_status", [
@@ -114,3 +116,30 @@ export const auctionSettlementEnum = pgEnum("auction_settlement", ["CREATOR_DECI
 
 /** A bid: LEADING (its credits are held), OUTBID / RELEASED (credits given back), WON (credits paid). */
 export const auctionBidStatusEnum = pgEnum("auction_bid_status", ["LEADING", "OUTBID", "WON", "RELEASED"]);
+
+/**
+ * Challenges (packages/payments/src/challenges.ts). GOAL — a creator's all-or-nothing goal: fans pledge, and the video
+ * is made only if the goal is reached by the deadline. REQUEST — a fan dares one creator with an offer; the creator
+ * accepts or declines. OPEN_CALL — a fan posts a challenge for any creator; creators apply and the author picks one.
+ */
+export const challengeKindEnum = pgEnum("challenge_kind", ["GOAL", "REQUEST", "OPEN_CALL"]);
+
+/**
+ * A challenge's life. OPEN takes pledges (and, for a request, waits for the creator; for an open call, takes
+ * applications). ACCEPTED means a creator must deliver before `delivery_deadline` (a funded goal, an accepted request, an
+ * assigned open call). DELIVERED is paid. DECLINED, EXPIRED (goal missed, no answer, nobody picked), FAILED (not
+ * delivered in time) and CANCELLED release every pledge.
+ */
+export const challengeStatusEnum = pgEnum("challenge_status", ["OPEN", "ACCEPTED", "DELIVERED", "DECLINED", "EXPIRED", "FAILED", "CANCELLED"]);
+
+/** What the creator delivers: a video (kept) or a story (24 hours). */
+export const challengeDeliverableEnum = pgEnum("challenge_deliverable", ["VIDEO", "STORY"]);
+
+/** Who watches the delivery: the people who paid for it, or everyone (a goal reached for the whole audience). */
+export const challengeRewardEnum = pgEnum("challenge_reward", ["BACKERS", "EVERYONE"]);
+
+/** A pledge: HELD (its credits are held), PAID (spent at delivery), RELEASED (given back). */
+export const challengePledgeStatusEnum = pgEnum("challenge_pledge_status", ["HELD", "PAID", "RELEASED"]);
+
+/** A creator's application to an open call. */
+export const challengeApplicationStatusEnum = pgEnum("challenge_application_status", ["PENDING", "CHOSEN", "NOT_CHOSEN", "WITHDRAWN"]);
