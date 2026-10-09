@@ -40,7 +40,8 @@
 | :--- | :--- |
 | `npm run setup` | Zero to running: env, databases, migrations, seed (idempotent) |
 | `npm run dev` / `build` / `start` | Web app on :3000 |
-| `npm run check` | lint + type-check + unit tests + docs freshness — run before every push |
+| `npm run check` | lint (incl. i18n and the UI debt ratchet) + type-check + unit tests + docs freshness — run before every push |
+| `npm run screenshots` | Dark and light captures of the main pages from a running app (`docs/screenshots/web`) |
 | `npm run test:e2e` | Feature scenarios over HTTP against a running app on a freshly reset database |
 | `npm run db:up` / `db:down` | Start / stop PostgreSQL |
 | `npm run db:generate` | SQL migration from a schema change (review it before committing) |
@@ -271,9 +272,11 @@ orochia/                           npm workspaces
 - Aesthetic: **Obsidian Velvet Noir** — dark-first (`#09090b`), velvet violet → fuchsia → pink accents, glass
   panels, Outfit (display) + Plus Jakarta Sans (body), WCAG AA contrast. The brand mark is the animated
   `OrochiaLogo` (serpent + flame, from `@krizaka/ui`), never a placeholder icon; it stops under `prefers-reduced-motion`.
-- **Tailwind CSS v4, configured in CSS**: `app/globals.css` imports `tailwindcss` and the kit's `theme.css` (the
-  `dark` / `light` variants, tokens, motion signature, the package as a source), then adds the app's own `@theme`
-  and `@source` for the workspace packages — there is no `tailwind.config.js`.
+- **Tailwind CSS v4, configured in CSS**: `app/globals.css` imports, in this order, `tailwindcss`,
+  `@krizaka/tailwind` (the `--kz-*` tokens, the role utilities, the `dark` / `light` variants, the motion signature),
+  `@krizaka/ui/tailwind.css` (the primitives as a source) and the kit's `theme.css` (the Orochia values of the roles),
+  then `@source` for the workspace packages and a documented `--orochia-*` block (glass, ambient glows) — there is no
+  `tailwind.config.js`.
 - Every list has an empty state; every action shows its pending and error states; no `alert()`.
 - **Every user-facing string lives in `apps/web/messages/en.json`** and is read with `t("key", { vars })`
   (`lib/i18n.ts`, keys typed from the file, `<Rich>` for `<b>` and `{slot}` links; `messages("branch")` for long
@@ -285,7 +288,12 @@ orochia/                           npm workspaces
   Data modules keep structure (ids, icons, order) and read their words by id (``t(`collectionAudience.${id}.label`)``).
   A string that is not shown (protocol metadata) carries `// i18n-ignore: <why>`. Destructive actions confirm with
   a second tap (`ConfirmIconButton`), never `window.confirm`.
-- Both themes are first-class: every surface and text colour has its `light:` counterpart.
+- Both themes are first-class, **through tokens**: surfaces, text, borders and accents use the roles of
+  `@krizaka/tailwind` (`bg-surface-1`, `text-fg-secondary`, `border-border-default`, `text-accent`, `text-danger`,
+  `bg-scrim` on media), which change with the theme. No raw palette colour, no `light:`, no `[var(--…)]`, no template
+  string in `className` (`cn(…)`): the four `@krizaka/config` UI rules (warnings for now) and **the ratchet**
+  (`lint-ratchet.json`, `npm run ratchet` inside `npm run lint`) — a count may only go down; after a migration,
+  `npm run ratchet:update` and commit the file. `scripts/codemods/tokens.mjs` (jscodeshift) does the mechanical part.
 - **The address is the state — always.** Every place a person can be is a URL they can copy, share and reload:
   tabs (`/dashboard?tab=settings`, `/@user?tab=ppv`), settings sections (`#settings-notifications`), lists and
   their filters, detail views (`/notifications`, `/watch/<id>`). Tabs are `<Link>`s or `router.replace` — never
@@ -301,15 +309,19 @@ orochia/                           npm workspaces
   skeletons while loading; menus and dialogs close on Escape and outside click and carry ARIA roles; text and tap
   targets work at 360 px. Prefer the shared building blocks (`ProfileHero`, `PictureQuickEdit`, `NotificationBell`,
   `SocialIcon`) over new one-offs.
-- **UI kit** — `@krizaka/orochia-design-system`, imported through `components/ui` (the app's door: it re-exports the
-  kit and gives `Sheet` its translated close label): `Button` / `buttonClass` (primary · secondary · ghost · danger,
-  sm · md · lg, loading), `IconButton` (accessible name required), `ConfirmIconButton` (two-tap destructive action),
-  `Chip`, `Segmented`, `Switch`, `Slider`, `Sheet` (every dialog: phones get a bottom sheet), `SocialIcon`,
-  `Countdown` / `useCountdown` (one shared clock), `LiveBadge`, `cx`,
-  and from `@krizaka/ui` `OrochiaLogo`, `MotionObserver`, `RotatingWord`. `buttonClass` and `cx` come from the
-  package's plain `classes` entry, so server components can call them. New screens use the kit; a screen touched for
-  another reason moves its hand-rolled buttons to it. A missing component is added to the package, not to the app.
-- **Krizaka motion signature** (`@krizaka/ui/motion.css`, loaded by the kit's `theme.css`; shared with krizaka.com): one easing `--kz-ease`; every page enters (`app/template.tsx`); sections and cards rise into
+- **UI kit** — everything is imported through `components/ui` (the app's door: it re-exports the primitives and gives
+  them the app's words — loading label, close label, countdown units, theme toggle label). From `@krizaka/ui`:
+  `Button` (primary · secondary · outline · ghost · danger, plus `sensual`, Orochia's gradient; sm · md · lg · icon;
+  `shape` pill — the door's default — or rounded; `loading`; `asChild`), `IconButton` (accessible `label` required),
+  `buttonVariants` (and the kit's `orochiaButton` for `sensual`) to style a `<Link>`, `Badge`, `Field.*` + `Input` /
+  `Textarea` / `Select`, `Avatar` (fallback: an initial or an icon), `Skeleton`, `Spinner`, `EmptyState`, `Countdown`,
+  the theme (`ThemeScript`, `ThemeProvider`, `ThemeToggle`; `kz-theme` in localStorage), `cn`, `OrochiaLogo`,
+  `MotionObserver`, `RotatingWord`. From `@krizaka/orochia-design-system`: `LiveBadge`, `SocialIcon`, and — until their
+  `@krizaka/ui` primitive ships — `ConfirmIconButton`, `Chip`, `Segmented`, `Switch`, `Slider`, `Sheet`. The door is a
+  plain module: server components take `buttonVariants`, `orochiaButton` and `cn` from it. New screens use these
+  atoms; a missing component is added to the package, not to the app. Money is `money(cents)` from `lib/money.ts`
+  (`@krizaka/intl`).
+- **Krizaka motion signature** (`@krizaka/ui/motion.css`, loaded by `@krizaka/tailwind`; shared with krizaka.com): one easing `--kz-ease`; every page enters (`app/template.tsx`); sections and cards rise into
   view with `data-reveal` (stagger with `--kz-delay`; `MotionObserver` in the layout drives it); headline words roll
   (`RotatingWord`); primary actions carry `kz-sheen`; cards `kz-spotlight` / `kz-lift`; bands `kz-marquee`. What opens
   over the page enters the same way: backdrops `kz-overlay`, dialogs `kz-dialog` (built into `Sheet`), menus and
