@@ -102,6 +102,17 @@ Bunny cannot call `localhost`, so locally a video stays "processing" until its w
 tunnel (`cloudflared tunnel --url http://localhost:3000`, `ngrok http 3000`) and set the library's webhook to
 `<tunnel>/api/webhooks/bunny`. The in-browser editor (ffmpeg.wasm) needs nothing: its engine is fetched once from a CDN.
 
+### E-mail templates
+
+Every e-mail is a template in `apps/web/mail-templates/<id>/<locale>/` (`subject.txt`, `body.html`, `body.txt`), inside
+the shared `_layout/` (rules: AGENTS.md §3.G). Locally they are read from those files (`MAIL_TEMPLATES_SOURCE=local`)
+and the messages go to the log; `MAIL_DELIVERY=on` with a Resend or Mailgun key really sends them.
+
+```bash
+npm run mail:templates:preview   # apps/web/.mail-preview/index.html — every template, en and fr
+npm run mail:templates:push      # dry run against Bunny Storage; -- --apply publishes (production credentials)
+```
+
 ## Troubleshooting
 
 | Symptom | Fix |

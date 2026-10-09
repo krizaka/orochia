@@ -1,0 +1,7 @@
+Bonjour @{username},
+
+{body}
+
+{link}
+
+Vous recevez ce message parce qu’il est activé dans vos réglages de notifications : {settingsLink}

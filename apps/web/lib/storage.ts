@@ -153,11 +153,16 @@ function getMimeType(ext: string): string {
 
 // ── Private objects by key (operator files: database backups) ─────────────────────────────────
 
+/** The Bunny Edge Storage zone (`BUNNY_STORAGE_*`), whatever STORAGE_DRIVER says — null without an access key. */
+export function bunnyStorageCredentials(env: NodeJS.ProcessEnv = process.env): { base: string; key: string } | null {
+  if (!env.BUNNY_STORAGE_API_KEY) return null;
+  const storageZone = env.BUNNY_STORAGE_ZONE || "orochia-media";
+  const regionHost = env.BUNNY_STORAGE_ENDPOINT || "storage.bunnycdn.com";
+  return { base: `https://${regionHost}/${storageZone}`, key: env.BUNNY_STORAGE_API_KEY };
+}
+
 function bunnyStorage(): { base: string; key: string } | null {
-  if (process.env.STORAGE_DRIVER !== "bunny" || !process.env.BUNNY_STORAGE_API_KEY) return null;
-  const storageZone = process.env.BUNNY_STORAGE_ZONE || "orochia-media";
-  const regionHost = process.env.BUNNY_STORAGE_ENDPOINT || "storage.bunnycdn.com";
-  return { base: `https://${regionHost}/${storageZone}`, key: process.env.BUNNY_STORAGE_API_KEY };
+  return process.env.STORAGE_DRIVER === "bunny" ? bunnyStorageCredentials() : null;
 }
 
 const PRIVATE_KEY = /^private\/[a-z]+\/[A-Za-z0-9._-]+$/;
@@ -226,4 +231,35 @@ export async function deletePrivateObject(key: string): Promise<void> {
     return;
   }
   await fs.promises.rm(path.join(LOCAL_PRIVATE_DIR, key.slice("private/".length)), { force: true });
+}
+
+// ── Configuration objects by key (mail templates: `mail-templates/…`) ─────────────────────────
+
+const CONFIG_KEY = /^mail-templates\/[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*\.(?:html|txt|json)$/;
+function checkConfigKey(key: string) {
+  if (!CONFIG_KEY.test(key) || key.includes("..")) throw new Error(`invalid configuration key ${key}`);
+}
+
+/**
+ * Reads a configuration object from the Bunny Edge Storage zone, or null when it does not exist. Throws when the zone
+ * is not configured, refuses the request or cannot be reached (callers decide how to fall back).
+ */
+export async function getBunnyConfigObject(key: string, options: { env?: NodeJS.ProcessEnv; timeoutMs?: number } = {}): Promise<string | null> {
+  checkConfigKey(key);
+  const bunny = bunnyStorageCredentials(options.env);
+  if (!bunny) throw new ConfigurationError("BUNNY_STORAGE_API_KEY", "is required to read from Bunny Storage");
+  const res = await fetch(`${bunny.base}/${key}`, { headers: { AccessKey: bunny.key }, signal: AbortSignal.timeout(options.timeoutMs ?? 3000) });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`Bunny storage read failed: ${res.status}`);
+  return res.text();
+}
+
+/** Writes a configuration object to the Bunny Edge Storage zone (UTF-8 text). */
+export async function putBunnyConfigObject(key: string, body: string, options: { env?: NodeJS.ProcessEnv } = {}): Promise<void> {
+  checkConfigKey(key);
+  const bunny = bunnyStorageCredentials(options.env);
+  if (!bunny) throw new ConfigurationError("BUNNY_STORAGE_API_KEY", "is required to write to Bunny Storage");
+  const contentType = key.endsWith(".html") ? "text/html; charset=utf-8" : key.endsWith(".json") ? "application/json" : "text/plain; charset=utf-8";
+  const res = await fetch(`${bunny.base}/${key}`, { method: "PUT", headers: { AccessKey: bunny.key, "Content-Type": contentType }, body });
+  if (!res.ok) throw new Error(`Bunny storage upload failed: ${res.status}`);
 }

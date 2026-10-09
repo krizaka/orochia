@@ -156,6 +156,11 @@ services:
       - key: MAIL_FROM
         scope: RUN_TIME
         value: "Orochia <no-reply@mg.orochia.com>"
+      # E-mail templates: read from mail-templates/ in the Bunny Storage zone (npm run mail:templates:push), cached
+      # MAIL_TEMPLATES_CACHE_TTL seconds; the templates bundled in the image are the fallback.
+      - key: MAIL_TEMPLATES_SOURCE
+        scope: RUN_TIME
+        value: "bunny"
       - key: COMPLIANCE_ALERT_EMAIL
         scope: RUN_TIME
         type: GENERAL

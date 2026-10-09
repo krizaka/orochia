@@ -47,3 +47,6 @@ packages/db/dist/
 
 # ffmpeg.wasm browser files, copied from node_modules before dev/build
 apps/web/public/ffmpeg/
+
+# Mail template previews (npm run mail:templates:preview)
+apps/web/.mail-preview/

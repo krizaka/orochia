@@ -2,7 +2,7 @@ import crypto from "crypto";
 import { db, authTokens, users } from "@orochia/db";
 import { and, eq, gt, isNull, sql } from "drizzle-orm";
 import { appUrl } from "./env";
-import { sendMail } from "./mail";
+import { sendTemplate } from "./mail";
 
 /**
  * One-time links sent by e-mail: verify the address (48 h) and reset the password (1 h). The raw
@@ -56,21 +56,13 @@ export const resetLink = (token: string) => `${appUrl()}/auth/reset-password?tok
 
 export async function sendVerificationEmail(user: { id: string; email: string; username: string }): Promise<string> {
   const link = verificationLink(await issueToken(user.id, "VERIFY_EMAIL"));
-  await sendMail({
-    to: user.email,
-    subject: "Confirm your e-mail address — Orochia",
-    text: `Hi @${user.username},\n\nConfirm your address to start using Orochia:\n\n${link}\n\nThe link works once, for 48 hours. If you did not create an account, ignore this message.\n\n— Orochia`,
-  });
+  await sendTemplate("email-verification", { to: user.email, vars: { username: user.username, link } });
   return link;
 }
 
 export async function sendPasswordResetEmail(user: { id: string; email: string; username: string }): Promise<string> {
   const link = resetLink(await issueToken(user.id, "RESET_PASSWORD"));
-  await sendMail({
-    to: user.email,
-    subject: "Reset your password — Orochia",
-    text: `Hi @${user.username},\n\nChoose a new password here:\n\n${link}\n\nThe link works once, for one hour. If you did not ask for it, ignore this message: your password stays the same.\n\n— Orochia`,
-  });
+  await sendTemplate("password-reset", { to: user.email, vars: { username: user.username, link } });
   return link;
 }
 

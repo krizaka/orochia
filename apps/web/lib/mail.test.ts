@@ -24,6 +24,16 @@ describe("mail", () => {
     expect((init.body as FormData).get("from")).toBe("Orochia <no-reply@mg.orochia.com>");
   });
 
+  it("adds the HTML part next to the plain text", async () => {
+    const fetch = vi.fn().mockResolvedValue(new Response("{}", { status: 200 }));
+    vi.stubGlobal("fetch", fetch);
+    const env = { NODE_ENV: "production", MAILGUN_API_KEY: "key", MAILGUN_DOMAIN: "mg.orochia.com" } as unknown as NodeJS.ProcessEnv;
+    expect(await sendMail({ to: "a@example.com", subject: "Hi", text: "Body", html: "<p>Body</p>" }, env)).toBe(true);
+    const form = fetch.mock.calls[0][1].body as FormData;
+    expect(form.get("text")).toBe("Body");
+    expect(form.get("html")).toBe("<p>Body</p>");
+  });
+
   it("uses Resend when RESEND_API_KEY is set", async () => {
     const fetch = vi.fn().mockResolvedValue(new Response("{}", { status: 200 }));
     vi.stubGlobal("fetch", fetch);

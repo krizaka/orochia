@@ -1,0 +1,3 @@
+@{owner} invited you to {#isVideo}a video{/isVideo}{^isVideo}a collection{/isVideo}: “{title}”.
+
+{link}

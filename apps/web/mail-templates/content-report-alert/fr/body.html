@@ -1,0 +1,21 @@
+<h1 style="margin:0 0 16px;font-family:'Outfit',Helvetica,Arial,sans-serif;font-size:22px;line-height:1.3;font-weight:700;color:#09090b;">{#urgent}Urgent : {/urgent}signalement de contenu</h1>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px;">
+  <tr>
+    <td style="padding:6px 12px 6px 0;font-size:13px;color:#71717a;vertical-align:top;white-space:nowrap;">Ticket</td>
+    <td style="padding:6px 0;font-size:14px;color:#18181b;vertical-align:top;">{ticket}</td>
+  </tr>
+  <tr>
+    <td style="padding:6px 12px 6px 0;font-size:13px;color:#71717a;vertical-align:top;white-space:nowrap;">Motif</td>
+    <td style="padding:6px 0;font-size:14px;color:#18181b;vertical-align:top;">{reason}{#urgent} — à traiter en premier{/urgent}</td>
+  </tr>
+  <tr>
+    <td style="padding:6px 12px 6px 0;font-size:13px;color:#71717a;vertical-align:top;white-space:nowrap;">Vidéo</td>
+    <td style="padding:6px 0;font-size:14px;color:#18181b;vertical-align:top;">{videoTitle}{#videoLink} — <a href="{videoLink}" style="color:#a21caf;">{videoLink}</a>{/videoLink}{^videoLink} (non retrouvée){/videoLink}</td>
+  </tr>
+  <tr>
+    <td style="padding:6px 12px 6px 0;font-size:13px;color:#71717a;vertical-align:top;white-space:nowrap;">Signalé par</td>
+    <td style="padding:6px 0;font-size:14px;color:#18181b;vertical-align:top;">{reporterEmail}{#reporterUsername} (@{reporterUsername}){/reporterUsername}{^reporterUsername} (anonyme){/reporterUsername}</td>
+  </tr>
+</table>
+<p style="margin:0 0 16px;padding:12px 16px;border-left:3px solid #d946ef;background-color:#fafafa;white-space:pre-wrap;">{details}</p>
+<p style="margin:0 0 16px;">Traitez-le depuis la console d’administration. Répondre à cet e-mail répond à la personne qui a signalé.</p>

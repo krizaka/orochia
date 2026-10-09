@@ -694,8 +694,6 @@
     }
   },
   "notify": {
-    "greeting": "Hi @{username},",
-    "footer": "You receive this because it is turned on in your notification settings: {settings}",
     "newFollower": {
       "subject": "{name} {action}",
       "body": "{name} {action}.",

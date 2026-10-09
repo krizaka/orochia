@@ -1,0 +1,7 @@
+Hi @{username},
+
+Confirm your address to start using Orochia:
+
+{link}
+
+The link works once, for 48 hours. If you did not create an account, ignore this message.

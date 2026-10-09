@@ -1,0 +1,10 @@
+{
+  "ticket": "6f1c2a9e-0000-4000-8000-000000000000",
+  "reason": "NON_CONSENSUAL",
+  "urgent": true,
+  "videoTitle": "Behind the scenes",
+  "videoLink": "https://orochia.com/watch/00000000-0000-0000-0000-000000000000",
+  "reporterEmail": "reporter@example.com",
+  "reporterUsername": "",
+  "details": "The person in this video did not consent to its publication."
+}

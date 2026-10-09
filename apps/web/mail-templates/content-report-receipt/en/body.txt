@@ -1,0 +1,4 @@
+We received your report about “{videoTitle}”.
+
+Ticket: {ticket}
+It will be reviewed by our compliance team{#urgent} with priority{/urgent}.

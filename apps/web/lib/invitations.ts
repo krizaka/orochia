@@ -2,8 +2,11 @@ import crypto from "crypto";
 import { db, userInvitations, users, profiles, contacts } from "@orochia/db";
 import { and, desc, eq, gt, or, sql } from "drizzle-orm";
 import { appUrl } from "./env";
-import { sendMail } from "./mail";
+import { sendTemplate } from "./mail";
 import { HttpError } from "./http";
+
+/** How long an invitation link works. */
+const INVITATION_DAYS = 7;
 
 export interface InvitationView {
   id: string;
@@ -48,7 +51,7 @@ export async function createInvitation(inviterId: string, targetEmail: string): 
     .limit(1);
 
   const code = crypto.randomBytes(24).toString("hex");
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+  const expiresAt = new Date(Date.now() + INVITATION_DAYS * 24 * 60 * 60 * 1000);
 
   const [row] = await db
     .insert(userInvitations)
@@ -64,11 +67,10 @@ export async function createInvitation(inviterId: string, targetEmail: string): 
   const inviteUrl = `${appUrl()}/auth/register?invite=${code}`;
 
   // Send invitation email
-  const inviterName = inviter?.displayName || "A member";
-  await sendMail({
+  const inviterUsername = inviter?.username ?? "";
+  await sendTemplate("invitation", {
     to: email,
-    subject: `${inviterName} invited you to join Orochia`,
-    text: `Hello,\n\n${inviterName} (@${inviter?.username ?? "user"}) invited you to join Orochia, the video platform for independent creators.\n\nClick the link below to accept the invitation and create your account:\n${inviteUrl}\n\nThis invitation link expires in 7 days.\n\n— The Orochia Team`,
+    vars: { inviterName: inviter?.displayName || `@${inviterUsername}`, inviterUsername, link: inviteUrl, expiresInDays: INVITATION_DAYS },
   });
 
   return {
