@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { ChevronDown, Plus, Trash2, UserPlus, X } from "lucide-react";
 import { t } from "@/lib/i18n";
-import { Button, cn, ConfirmIconButton, IconButton, Input } from "@/components/ui";
+import { Button, cn, ConfirmButton, IconButton, Input } from "@/components/ui";
 
 interface List {
   id: string;
@@ -155,9 +155,9 @@ export function ListsPanel() {
                   <span className="truncate text-sm font-semibold text-fg">{l.name}</span>
                   <span className="font-mono text-[11px] text-fg-muted">{t("lists.people", { count: l.membersCount })}</span>
                 </button>
-                <ConfirmIconButton label={t("lists.delete", { name: l.name })} confirmLabel={t("lists.confirmDelete")} onConfirm={() => void remove(l)}>
+                <ConfirmButton size="sm" label={t("lists.delete", { name: l.name })} confirmLabel={t("lists.confirmDelete")} onConfirm={() => void remove(l)}>
                   <Trash2 className="h-3.5 w-3.5" />
-                </ConfirmIconButton>
+                </ConfirmButton>
               </div>
               {open === l.id && <Members list={l} onChange={load} />}
             </li>

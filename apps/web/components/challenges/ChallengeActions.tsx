@@ -4,7 +4,7 @@ import { Check, Clapperboard, Megaphone, PackageCheck, Play, Undo2, X } from "lu
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
-import { Avatar, Button, cn, ConfirmIconButton, Dialog, Sheet, Skeleton, Textarea } from "@/components/ui";
+import { Avatar, Button, cn, ConfirmButton, Dialog, RadioGroup, Sheet, Skeleton, Textarea } from "@/components/ui";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import type { ChallengeView } from "@/lib/challenges";
 import { t } from "@/lib/i18n";
@@ -55,28 +55,18 @@ function DeliverSheet({ c, open, onClose, onDone }: { c: ChallengeView; open: bo
               {t(`challenge.deliver.none.${c.deliverable}`)}
             </p>
           ) : (
-            <div role="radiogroup" aria-label={t("challenge.deliver.title")} className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <RadioGroup.Root label={t("challenge.deliver.title")} value={picked ?? ""} onValueChange={setPicked} className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               {items.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={picked === item.id}
-                  onClick={() => setPicked(item.id)}
-                  className={cn(
-                    "overflow-hidden rounded-xl border text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
-                    picked === item.id ? "border-accent ring-2 ring-accent/40" : "border-border-default hover:border-white/30",
-                  )}
-                >
-                  <span className="block aspect-video bg-media">
+                <RadioGroup.Card key={item.id} value={item.id} className="gap-0 overflow-hidden p-0 data-[state=checked]:ring-2 data-[state=checked]:ring-accent/40">
+                  <span className="block aspect-video w-full bg-media">
                     {item.thumbnailUrl && <img src={item.thumbnailUrl} alt="" className="h-full w-full object-cover" />}
                   </span>
                   <span className="line-clamp-1 block px-2 py-1.5 text-[11px] font-semibold text-fg">
                     {item.title || t("challenge.deliver.untitled")}
                   </span>
-                </button>
+                </RadioGroup.Card>
               ))}
-            </div>
+            </RadioGroup.Root>
           )}
           {error && (
             <p role="alert" className="mt-3 text-xs text-danger">
@@ -222,13 +212,14 @@ export function ChallengeActions({ c, onChanged }: { c: ChallengeView; onChanged
       {v.canCancel && (
         <div className="flex items-center justify-between gap-3 border-t border-border-default pt-3 first:border-t-0 first:pt-0">
           <p className="text-xs text-fg-secondary">{t("challenge.actions.cancelHint")}</p>
-          <ConfirmIconButton
+          <ConfirmButton
+            size="sm"
             label={t("challenge.actions.cancel")}
             confirmLabel={t("challenge.actions.cancelConfirm")}
             onConfirm={() => act("cancel", `${base}/cancel`)}
           >
             <Undo2 className="h-4 w-4" />
-          </ConfirmIconButton>
+          </ConfirmButton>
         </div>
       )}
       {error && (

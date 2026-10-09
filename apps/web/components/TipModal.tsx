@@ -4,7 +4,7 @@ import { Bitcoin, CheckCircle2,CreditCard, ShieldCheck, Sparkles } from "lucide-
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
-import { Button, cn,Dialog, Sheet } from "@/components/ui";
+import { Button, cn, Dialog, RadioGroup, Sheet } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
 
@@ -128,58 +128,35 @@ export function TipModal({
               <span className="text-xs font-semibold text-fg-secondary">{t("payments.amount")}</span>
               {minTipAmountCents > 100 && <span className="text-[11px] text-fg-muted">{t("payments.minimum", { amount: money(minTipAmountCents) })}</span>}
             </div>
-            <div className="grid grid-cols-4 gap-2" role="radiogroup" aria-label={t("payments.amount")}>
-              {presets.map((p) => {
-                const allowed = p.cents >= minTipAmountCents;
-                const selected = selectedAmount === p.cents;
-                return (
-                  <button
-                    key={p.cents}
-                    type="button"
-                    role="radio"
-                    aria-checked={selected}
-                    disabled={!allowed}
-                    onClick={() => setSelectedAmount(p.cents)}
-                    className={cn(
-                      "rounded-xl border py-3 text-sm font-bold transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-30",
-                      selected ? "border-accent bg-accent text-on-accent shadow-md shadow-accent/30" : "border-border-default text-fg hover:border-accent/50",
-                    )}
-                  >
-                    {p.label}
-                  </button>
-                );
-              })}
-            </div>
+            <RadioGroup.Root label={t("payments.amount")} value={String(selectedAmount)} onValueChange={(v) => setSelectedAmount(Number(v))} className="grid grid-cols-4 gap-2">
+              {presets.map((p) => (
+                <RadioGroup.Card
+                  key={p.cents}
+                  value={String(p.cents)}
+                  disabled={p.cents < minTipAmountCents}
+                  className="items-center rounded-xl py-3 text-sm font-bold data-[state=checked]:bg-accent data-[state=checked]:text-on-accent data-[state=checked]:shadow-md data-[state=checked]:shadow-accent/30"
+                >
+                  {p.label}
+                </RadioGroup.Card>
+              ))}
+            </RadioGroup.Root>
           </div>
 
           <span className="mb-2 block text-xs font-semibold text-fg-secondary">{t("payments.method")}</span>
-          <div className="space-y-2" role="radiogroup" aria-label={t("payments.method")}>
-            {METHODS.filter((m) => offers(m.id)).map(({ id, icon: Icon, tone }) => {
-              const selected = selectedGateway === id;
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  role="radio"
-                  aria-checked={selected}
-                  onClick={() => setSelectedGateway(id)}
-                  className={cn(
-                    "flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
-                    selected ? "border-accent bg-accent/10" : "border-border-default hover:border-border-strong",
-                  )}
-                >
-                  <span className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-2", tone)}>
-                    <Icon className="h-5 w-5" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-semibold text-fg">{id === "CREDITS" ? t("payments.credits.title") : t(`payments.gateways.${id}.title`)}</span>
-                    <span className="block text-xs text-fg-secondary">{id === "CREDITS" ? t("payments.credits.hint") : t(`payments.gateways.${id}.hint`)}</span>
-                  </span>
-                  {selected && <CheckCircle2 className="h-5 w-5 shrink-0 text-accent" />}
-                </button>
-              );
-            })}
-          </div>
+          <RadioGroup.Root label={t("payments.method")} value={selectedGateway} onValueChange={(v) => setSelectedGateway(v as Gateway)} className="space-y-2">
+            {METHODS.filter((m) => offers(m.id)).map(({ id, icon: Icon, tone }) => (
+              <RadioGroup.Card key={id} value={id} className="group/method w-full flex-row items-center gap-3 rounded-2xl">
+                <span className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-2", tone)}>
+                  <Icon className="h-5 w-5" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-semibold text-fg">{id === "CREDITS" ? t("payments.credits.title") : t(`payments.gateways.${id}.title`)}</span>
+                  <span className="block text-xs text-fg-secondary">{id === "CREDITS" ? t("payments.credits.hint") : t(`payments.gateways.${id}.hint`)}</span>
+                </span>
+                <CheckCircle2 className="hidden h-5 w-5 shrink-0 text-accent group-data-[state=checked]/method:block" />
+              </RadioGroup.Card>
+            ))}
+          </RadioGroup.Root>
         </Dialog.Body>
         <Dialog.Footer className="flex-col items-stretch gap-0">
           {creditsShort !== null && (

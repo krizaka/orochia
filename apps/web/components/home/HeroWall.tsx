@@ -25,7 +25,7 @@ export function HeroWall({ images }: { images: string[] }) {
   );
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="absolute inset-y-0 right-0 hidden w-[55%] grid-cols-3 gap-3 p-3 opacity-[0.22] blur-[3px] saturate-150 md:grid light:opacity-[0.28] mask-[linear-gradient(to_left,black_55%,transparent)]">
+      <div className="absolute inset-y-0 right-0 hidden w-[55%] grid-cols-3 gap-3 p-3 opacity-25 blur-[3px] saturate-150 md:grid mask-[linear-gradient(to_left,black_55%,transparent)]">
         {columns.map((col, c) => (
           <div
             key={c}

@@ -47,7 +47,7 @@ function Tap({ x, y, show }: { x: string; y: string; show: boolean }) {
 function Toast({ children, show }: { children: React.ReactNode; show: boolean }) {
   if (!show) return null;
   return (
-    <div className="sc-toast absolute inset-x-4 top-12 z-30 flex items-center gap-2 rounded-2xl border border-white/15 bg-zinc-950/85 px-3 py-2.5 text-[11px] font-semibold text-white shadow-2xl backdrop-blur-xl">
+    <div className="sc-toast absolute inset-x-4 top-12 z-30 flex items-center gap-2 rounded-2xl border border-white/15 bg-surface-0/85 px-3 py-2.5 text-[11px] font-semibold text-white shadow-2xl backdrop-blur-xl">
       {children}
     </div>
   );
@@ -168,7 +168,7 @@ function Tip({ still, share }: { still: boolean; share: number }) {
       <CreatorLine caption={t("home.showcase.ui.caption2")} />
       <Rail liked={false} pulseTip={step === 1} />
       <div className={cn(
-        "absolute inset-x-0 bottom-0 z-30 rounded-t-3xl border-t border-white/10 bg-zinc-950/95 p-4 pb-6 backdrop-blur-2xl transition-transform duration-500",
+        "absolute inset-x-0 bottom-0 z-30 rounded-t-3xl border-t border-white/10 bg-surface-0/95 p-4 pb-6 backdrop-blur-2xl transition-transform duration-500",
         open ? "translate-y-0" : "translate-y-full"
       )} style={{ transitionTimingFunction: "cubic-bezier(.16,1,.3,1)" }}>
         <span className="mx-auto mb-3 block h-1 w-10 rounded-full bg-white/25" />
@@ -177,7 +177,7 @@ function Tip({ still, share }: { still: boolean; share: number }) {
           {AMOUNTS.map((a, i) => (
             <span key={a} className={cn(
               "rounded-xl py-2.5 text-center text-[12px] font-bold transition-colors",
-              i === 1 && step >= 3 ? "bg-linear-to-r from-accent to-accent-2 text-white" : "bg-white/8 text-zinc-300"
+              i === 1 && step >= 3 ? "bg-linear-to-r from-accent to-accent-2 text-white" : "bg-white/8 text-fg-secondary"
             )}>
               {a}
             </span>
@@ -230,7 +230,7 @@ function Unlock({ still }: { still: boolean }) {
           </span>
           <p className="mt-3 text-[13px] font-bold">{t("home.showcase.ui.unlockBadge")}</p>
           <span className={cn(
-            "mt-3 flex items-center justify-center gap-1.5 rounded-xl bg-white py-2.5 text-[12px] font-bold text-zinc-950 transition-transform",
+            "mt-3 flex items-center justify-center gap-1.5 rounded-xl bg-fg py-2.5 text-[12px] font-bold text-surface-0 transition-transform",
             step === 1 ? "scale-95" : ""
           )}>
             {step >= 2 ? <Spinner size="sm" className="text-current" /> : <Play className="h-3.5 w-3.5 fill-current" />}
@@ -282,7 +282,7 @@ function Auction({ still }: { still: boolean }) {
     { who: t("home.showcase.ui.bidder", { n: 3 }), amount: 16500, at: 3 },
   ].filter((r) => step >= r.at);
   return (
-    <div className="absolute inset-0 flex flex-col overflow-hidden bg-zinc-950">
+    <div className="absolute inset-0 flex flex-col overflow-hidden bg-surface-0">
       <div className="relative h-[52%] shrink-0 overflow-hidden">
         <Video name="auction" still={still} />
         <div className={shade} />
@@ -335,11 +335,11 @@ function Challenge({ still }: { still: boolean }) {
   return (
     <div className="absolute inset-0 overflow-hidden bg-black">
       <Video name="challenge" still={still} />
-      <div className="absolute inset-0 bg-linear-to-b from-black/40 via-black/30 to-zinc-950" />
+      <div className="absolute inset-0 bg-linear-to-b from-black/40 via-black/30 to-surface-0" />
       <span className="absolute left-4 top-11 z-20 flex items-center gap-1 rounded-full bg-accent px-2.5 py-1 text-[10px] font-bold text-white shadow-lg">
         <Target className="h-3 w-3" /> {t("home.showcase.ui.challengeBadge")}
       </span>
-      <div className="absolute inset-x-3 bottom-5 z-20 rounded-3xl border border-white/10 bg-zinc-950/85 p-4 text-white backdrop-blur-xl">
+      <div className="absolute inset-x-3 bottom-5 z-20 rounded-3xl border border-white/10 bg-surface-0/85 p-4 text-white backdrop-blur-xl">
         <p className="text-[13px] font-bold leading-snug">{t("home.showcase.ui.challengeTitle")}</p>
         <div className="mt-3 flex items-center gap-3">
           <svg viewBox="0 0 100 100" className="h-16 w-16 shrink-0 -rotate-90" aria-hidden>

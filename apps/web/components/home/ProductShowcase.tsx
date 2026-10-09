@@ -37,7 +37,7 @@ export function ProductShowcase({ share }: { share: number }) {
     <div ref={box} className="relative flex w-full min-w-0 flex-col items-center" aria-label={t("home.showcase.label")} role="region">
       <div className="relative">
         <div aria-hidden className="sc-aura absolute -inset-12 -z-10 rounded-full bg-linear-to-tr from-accent/45 via-accent-2/30 to-accent-2/35 blur-3xl" />
-        <div className="sc-float relative h-[560px] w-[264px] rounded-[3rem] bg-linear-to-b from-zinc-600 via-zinc-900 to-zinc-700 p-[3px] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.85)] light:from-slate-300 light:via-slate-200 light:to-slate-300 sm:h-[600px] sm:w-[284px]">
+        <div className="sc-float relative h-[560px] w-[264px] rounded-[3rem] bg-linear-to-b from-device-edge via-device-core to-device-edge p-[3px] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.85)] sm:h-[600px] sm:w-[284px]">
           <div className="theme-dark relative h-full w-full overflow-hidden rounded-[2.85rem] border-[7px] border-black bg-black">
             <div aria-hidden className="absolute inset-x-0 top-0 z-50 flex h-9 items-center justify-between px-6 text-[11px] font-semibold text-white">
               <span className="tabular-nums">{t("home.showcase.ui.clock")}</span>

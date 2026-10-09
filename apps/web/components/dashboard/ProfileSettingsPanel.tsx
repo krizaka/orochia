@@ -8,7 +8,9 @@ import {
   Avatar,
   Button,
   buttonVariants,
+  Chip,
   Input,
+  RadioGroup,
   SocialIcon,
   Spinner,
   Switch,
@@ -240,12 +242,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
               <a
                 href={`#settings-${id}`}
                 aria-current={hash === `#settings-${id}` ? "location" : undefined}
-                className={cn(
-                  "block whitespace-nowrap rounded-xl px-3.5 py-2 text-xs font-semibold transition-colors",
-                  hash === `#settings-${id}`
-                    ? "bg-accent/15 text-accent"
-                    : "text-fg-secondary hover:bg-surface-2 hover:text-fg"
-                )}
+                className="block whitespace-nowrap rounded-xl px-3.5 py-2 text-xs font-semibold text-fg-secondary transition-colors hover:bg-surface-2 hover:text-fg aria-[current=location]:bg-accent/15 aria-[current=location]:text-accent"
               >
                 {t(`settings.sections.${id}`)}
               </a>
@@ -354,26 +351,23 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
 
         <Section id="privacy" icon={<Lock className="h-4 w-4" />} title={t("settings.sections.privacy")}>
           <span className={label}>{t("settings.privacy.messages")}</span>
-          <div className="grid gap-2 sm:grid-cols-2">
+          <RadioGroup.Root
+            label={t("settings.privacy.messages")}
+            value={profile.directMessagePrivacy}
+            onValueChange={(v) => {
+              const value = v as "EVERYONE" | "CONTACTS_ONLY";
+              setProfile({ ...profile, directMessagePrivacy: value });
+              void prefs.run(() => put({ directMessagePrivacy: value }));
+            }}
+            className="grid gap-2 sm:grid-cols-2"
+          >
             {(["EVERYONE", "CONTACTS_ONLY"] as const).map((value) => (
-              <button
-                key={value}
-                type="button"
-                aria-pressed={profile.directMessagePrivacy === value}
-                onClick={() => {
-                  setProfile({ ...profile, directMessagePrivacy: value });
-                  void prefs.run(() => put({ directMessagePrivacy: value }));
-                }}
-                className={cn(
-                  "rounded-2xl border p-3.5 text-left transition-colors",
-                  profile.directMessagePrivacy === value ? "border-accent bg-accent/10" : "border-border-default hover:border-border-strong"
-                )}
-              >
+              <RadioGroup.Card key={value} value={value} className="rounded-2xl p-3.5">
                 <span className="block text-sm font-semibold text-fg">{t(value === "EVERYONE" ? "settings.privacy.everyone" : "settings.privacy.contacts")}</span>
                 <span className="mt-0.5 block text-[11px] text-fg-secondary">{t(value === "EVERYONE" ? "settings.privacy.everyoneHint" : "settings.privacy.contactsHint")}</span>
-              </button>
+              </RadioGroup.Card>
             ))}
-          </div>
+          </RadioGroup.Root>
         </Section>
 
         {isCreator && (
@@ -386,7 +380,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
               <Switch
                 checked={!profile.challengeRequestsOff}
                 label={t("settings.challenges.accept")}
-                onChange={(on) => {
+                onCheckedChange={(on) => {
                   setProfile({ ...profile, challengeRequestsOff: !on });
                   void dares.run(() => put({ challengeRequestsOff: !on }));
                 }}
@@ -426,10 +420,10 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
                 >
                   <span className="text-sm text-fg">{row.label}</span>
                   <span className="flex justify-center">
-                    <Switch checked={inOn} label={`${row.label} — ${t("settings.notifications.inApp")}`} onChange={(on) => setChannel("inApp", all ? (on ? [] : [...EVENTS]) : toggle(inAppOff, row.id, on))} />
+                    <Switch checked={inOn} label={`${row.label} — ${t("settings.notifications.inApp")}`} onCheckedChange={(on) => setChannel("inApp", all ? (on ? [] : [...EVENTS]) : toggle(inAppOff, row.id, on))} />
                   </span>
                   <span className="flex justify-center">
-                    <Switch checked={mailOn} disabled={frequency === "NONE"} label={`${row.label} — ${t("settings.notifications.byEmail")}`} onChange={(on) => setChannel("email", all ? (on ? [] : [...EVENTS]) : toggle(emailsOff, row.id, on))} />
+                    <Switch checked={mailOn} disabled={frequency === "NONE"} label={`${row.label} — ${t("settings.notifications.byEmail")}`} onCheckedChange={(on) => setChannel("email", all ? (on ? [] : [...EVENTS]) : toggle(emailsOff, row.id, on))} />
                   </span>
                 </div>
               );
@@ -437,26 +431,23 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
           </div>
 
           <span className={cn(label, "mt-5")}>{t("settings.notifications.frequency")}</span>
-          <div className="grid grid-cols-3 gap-1 rounded-2xl border border-border-default p-1" role="radiogroup" aria-label={t("settings.notifications.frequency")}>
+          <Chip.Group
+            type="single"
+            required
+            label={t("settings.notifications.frequency")}
+            value={frequency}
+            onValueChange={(v) => {
+              const f = v as Profile["emailFrequency"];
+              setFrequency(f);
+              void prefs.run(() => put({ emailFrequency: f }));
+            }}
+          >
             {(["INSTANT", "HOURLY", "NONE"] as const).map((f) => (
-              <button
-                key={f}
-                type="button"
-                role="radio"
-                aria-checked={frequency === f}
-                onClick={() => {
-                  setFrequency(f);
-                  void prefs.run(() => put({ emailFrequency: f }));
-                }}
-                className={cn(
-                  "rounded-xl px-2 py-2 text-xs font-semibold transition-colors",
-                  frequency === f ? "bg-accent text-white shadow-sm" : "text-fg-secondary hover:bg-surface-2 hover:text-fg"
-                )}
-              >
+              <Chip key={f} value={f}>
                 {t(`settings.notifications.frequencies.${f}`)}
-              </button>
+              </Chip>
             ))}
-          </div>
+          </Chip.Group>
           <span className={hint}>{t("settings.notifications.frequencyHint")}</span>
           {(prefs.state === "saved" || prefs.error) && (
             <p role="status" className={cn("mt-2 text-xs", prefs.error ? "text-danger" : "text-success")}>

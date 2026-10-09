@@ -68,17 +68,17 @@ export function WithdrawSheet({ open, onClose, availableCents, destinationHint, 
                 </span>
                 <span id="withdraw-hint" className="mt-1 block text-[11px] text-fg-muted">{t("earnings.request.min")}</span>
               </label>
-              <div className="flex flex-wrap gap-2">
+              <Chip.Group type="single" label={t("earnings.request.quick")} value={String(cents)} onValueChange={(v) => v && setAmount((Number(v) / 100).toFixed(2))}>
                 {[0.25, 0.5, 1].map((share) => {
                   const value = Math.floor((availableCents * share) / 100) * 100;
                   if (value < MIN) return null;
                   return (
-                    <Chip key={share} active={cents === value} onClick={() => setAmount((value / 100).toFixed(2))}>
+                    <Chip key={share} value={String(value)}>
                       {share === 1 ? t("earnings.request.max", { amount: money(value) }) : money(value)}
                     </Chip>
                   );
                 })}
-              </div>
+              </Chip.Group>
               <p className="rounded-2xl border border-border-default bg-surface-2 px-4 py-3 text-sm text-fg-secondary">{t("earnings.request.to", { hint: destinationHint })}</p>
               {error && <p role="alert" className="text-xs text-danger">{error}</p>}
             </div>

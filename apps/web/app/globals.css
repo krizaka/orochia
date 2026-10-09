@@ -29,6 +29,24 @@
   --orochia-ambient-2: color-mix(in oklab, var(--kz-accent-2) 10%, transparent);
   --orochia-ambient-3: rgb(99 102 241 / 0.08);
 }
+/* --orochia-device-*  the phone frame of the home showcase: a metal edge and core mixed from the roles, so the frame
+                      is graphite in the dark theme and silver in the light one without a variant.
+   --orochia-google-*  Google's sign-in button: white with near-black text in both themes, as Google's brand rules ask
+                      (a third-party mark, the one place a fixed white is right). */
+:root {
+  --orochia-device-edge: color-mix(in oklab, var(--kz-text-muted) 70%, var(--kz-surface-0));
+  --orochia-device-core: color-mix(in oklab, var(--kz-text-muted) 22%, var(--kz-surface-0));
+  --orochia-google: #ffffff;
+  --orochia-google-hover: #f2f2f2;
+  --orochia-on-google: #1f1f1f;
+}
+@theme inline {
+  --color-device-edge: var(--orochia-device-edge);
+  --color-device-core: var(--orochia-device-core);
+  --color-google: var(--orochia-google);
+  --color-google-hover: var(--orochia-google-hover);
+  --color-on-google: var(--orochia-on-google);
+}
 html.light {
   --orochia-glass-bg: color-mix(in oklab, var(--kz-surface-1) 88%, transparent);
   --orochia-ambient-1: color-mix(in oklab, var(--kz-accent) 8%, transparent);

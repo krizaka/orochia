@@ -7,7 +7,7 @@ import { UserPlus } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { Rich } from "@/components/Rich";
 import { t } from "@/lib/i18n";
-import { Avatar, Button, buttonVariants, Field, Input, Spinner } from "@/components/ui";
+import { Avatar, Button, buttonVariants, Checkbox, Field, Input, Spinner } from "@/components/ui";
 import { BirthDateField, isAdultBirthDate } from "@/components/BirthDateField";
 import { UsernameField } from "@/components/UsernameField";
 
@@ -101,12 +101,10 @@ export default function CompleteSignUpPage() {
           <p className="text-xs text-fg-secondary">{pending.email}</p>
         )}
         <BirthDateField value={dateOfBirth} onChange={setDateOfBirth} />
-        <label className="flex cursor-pointer items-start gap-2.5 text-xs text-fg-secondary">
-          <input type="checkbox" checked={isAgeVerified} onChange={(e) => setIsAgeVerified(e.target.checked)} className="mt-0.5 h-4 w-4 accent-accent" />
+        <Checkbox checked={isAgeVerified} onCheckedChange={(on) => setIsAgeVerified(on === true)} className="gap-2.5 text-xs text-fg-secondary">
           <span><Rich text={t("auth.register.ageCertify")} /></span>
-        </label>
-        <label className="flex cursor-pointer items-start gap-2.5 text-xs text-fg-secondary">
-          <input type="checkbox" checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} className="mt-0.5 h-4 w-4 accent-accent" />
+        </Checkbox>
+        <Checkbox checked={acceptTerms} onCheckedChange={(on) => setAcceptTerms(on === true)} className="gap-2.5 text-xs text-fg-secondary">
           <span>
             <Rich
               text={t("auth.register.acceptTerms")}
@@ -116,7 +114,7 @@ export default function CompleteSignUpPage() {
               }}
             />
           </span>
-        </label>
+        </Checkbox>
         <Button type="submit" variant="sensual" size="lg" shape="rounded" loading={busy} className="w-full rounded-xl font-bold">
           {!busy && <UserPlus className="h-4 w-4" aria-hidden />}
           {busy ? t("auth.complete.submitting") : t("auth.complete.submit")}

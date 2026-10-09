@@ -43,7 +43,7 @@ export function SocialSignIn() {
   if (providers.length === 0) return null;
 
   const button =
-    "flex w-full items-center justify-center gap-3 rounded-xl border border-border-default bg-white py-2.5 text-sm font-semibold text-slate-900 transition-colors hover:bg-slate-100";
+    "flex w-full items-center justify-center gap-3 rounded-xl border border-border-default bg-google py-2.5 text-sm font-semibold text-on-google transition-colors hover:bg-google-hover";
   return (
     <div className="space-y-2.5">
       {providers.includes("google") && (

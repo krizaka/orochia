@@ -916,7 +916,8 @@
       "to": "Sent to {hint}",
       "submit": "Request {amount}",
       "done": "Requested. You will be notified when it is sent.",
-      "tooLow": "You need at least $20.00 available to withdraw."
+      "tooLow": "You need at least $20.00 available to withdraw.",
+      "quick": "Quick amounts"
     },
     "account": {
       "title": "Payout method",
@@ -948,7 +949,8 @@
       "secure": "Encrypted and stored securely. Only the last digits are ever shown.",
       "save": "Save payout method",
       "saved": "Payout method saved."
-    }
+    },
+    "period": "Period"
   },
   "feed": {
     "emptyFilter": "Nothing here yet in this category — try another tab.",
@@ -967,7 +969,9 @@
     "noThumbnail": "Orochia",
     "hd": "4K",
     "creatorFallback": "creator",
-    "unlockFor": "Unlock for {price}"
+    "unlockFor": "Unlock for {price}",
+    "label": "Feeds",
+    "view": "View"
   },
   "publish": {
     "title": "Publish a video",
@@ -1291,7 +1295,9 @@
     "navigate": "Navigate",
     "select": "Open",
     "full": "See all results",
-    "title": "Search"
+    "title": "Search",
+    "results": "Results",
+    "filter": "Show"
   },
   "profileTabs": {
     "all": "Videos ({count})",
@@ -1303,7 +1309,8 @@
     "verifiedBody": "Orochia reviewed this creator’s identity and age records, as 18 U.S.C. § 2257 requires, before they could publish.",
     "pendingTitle": "Verification in progress",
     "pendingBody": "This creator’s 18 U.S.C. § 2257 records are being reviewed. They can publish once approved.",
-    "noBio": "No bio yet."
+    "noBio": "No bio yet.",
+    "label": "Profile sections"
   },
   "uploads": {
     "expand": "Show uploads",
@@ -2095,7 +2102,8 @@
       "NOT_CHOSEN": "Not picked",
       "WITHDRAWN": "Withdrawn"
     },
-    "dare": "Dare"
+    "dare": "Dare",
+    "meterLabel": "Raised"
   },
   "challenges": {
     "metaTitle": "Challenges",

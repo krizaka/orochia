@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import React, { Suspense, useCallback, useEffect, useState } from "react";
 
-import { Badge, Button, cn, Skeleton, Spinner } from "@/components/ui";
+import { Badge, Button, cn, RadioGroup, Skeleton, Spinner } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { type MessageKey,t } from "@/lib/i18n";
 import { money } from "@/lib/money";
@@ -120,54 +120,35 @@ function WalletPage() {
 
           <div className="p-6">
             <h2 className="mb-3 text-sm font-bold text-fg">{t("wallet.choosePack")}</h2>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4" role="radiogroup" aria-label={t("wallet.choosePack")}>
+            <RadioGroup.Root label={t("wallet.choosePack")} value={pack} onValueChange={setPack} className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {(wallet?.packs ?? []).map((p) => {
                 const bonus = p.creditsCents - p.priceCents;
-                const active = p.id === pack;
                 return (
-                  <button
-                    key={p.id}
-                    type="button"
-                    role="radio"
-                    aria-checked={active}
-                    onClick={() => setPack(p.id)}
-                    className={cn(
-                      "relative flex flex-col items-start rounded-2xl border p-4 text-left transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
-                      active ? "border-accent bg-accent/10 shadow-lg shadow-accent/20" : "border-border-default hover:border-border-strong",
-                    )}
-                  >
+                  <RadioGroup.Card key={p.id} value={p.id} className="gap-0 rounded-2xl p-4 data-[state=checked]:shadow-lg data-[state=checked]:shadow-accent/20">
                     {p.id === POPULAR && <Badge size="sm" className="absolute -top-2.5 left-3 bg-linear-to-r from-accent to-accent-2 normal-case tracking-normal text-on-accent ring-0">{t("wallet.popular")}</Badge>}
                     <span className="font-display text-xl font-black text-fg">{money(p.priceCents)}</span>
-                    <span className="mt-0.5 text-[11px] font-semibold text-success">{bonus > 0 ? t("wallet.bonus", { amount: money(bonus) }) : " "}</span>
-                  </button>
+                    <span className="mt-0.5 text-[11px] font-semibold text-success">{bonus > 0 ? t("wallet.bonus", { amount: money(bonus) }) : " "}</span>
+                  </RadioGroup.Card>
                 );
               })}
               {!wallet && Array.from({ length: 4 }, (_, i) => <Skeleton key={i} shape="rect" className="h-20 rounded-2xl" />)}
-            </div>
+            </RadioGroup.Root>
 
             <h2 className="mb-3 mt-6 text-sm font-bold text-fg">{t("wallet.payWith")}</h2>
             {wallet && methods.length === 0 ? (
               <p className="rounded-2xl border border-border-default p-4 text-sm text-fg-secondary">{t("wallet.noGateway")}</p>
             ) : (
-              <div className="grid gap-2" role="radiogroup" aria-label={t("wallet.payWith")}>
+              <RadioGroup.Root label={t("wallet.payWith")} value={gateway ?? ""} onValueChange={setGateway} className="grid gap-2">
                 {methods.map((g) => (
-                  <button
-                    key={g}
-                    type="button"
-                    role="radio"
-                    aria-checked={gateway === g}
-                    onClick={() => setGateway(g)}
-                    className={cn(
-                      "flex items-center gap-3 rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
-                      gateway === g ? "border-accent bg-accent/10 text-fg" : "border-border-default text-fg-secondary hover:border-border-strong",
-                    )}
-                  >
-                    <span className={cn("flex h-4 w-4 items-center justify-center rounded-full border-2", gateway === g ? "border-accent" : "border-fg-muted")}>{gateway === g && <span className="h-1.5 w-1.5 rounded-full bg-accent" />}</span>
+                  <RadioGroup.Card key={g} value={g} className="group/pay flex-row items-center gap-3 rounded-2xl px-4 py-3 font-semibold">
+                    <span className="flex h-4 w-4 items-center justify-center rounded-full border-2 border-fg-muted group-data-[state=checked]/pay:border-accent">
+                      <span className="hidden h-1.5 w-1.5 rounded-full bg-accent group-data-[state=checked]/pay:block" />
+                    </span>
                     {g === "TEST" ? <Sparkles className="h-4 w-4 text-warning" /> : <Lock className="h-4 w-4 text-fg-secondary" />}
                     {t(`wallet.gateways.${g}` as MessageKey)}
-                  </button>
+                  </RadioGroup.Card>
                 ))}
-              </div>
+              </RadioGroup.Root>
             )}
 
             <Button variant="sensual" size="lg" shape="rounded" className="mt-6 w-full" disabled={!chosen || !gateway} loading={busy} onClick={() => void buy()}>

@@ -3,7 +3,7 @@
 import { Lock } from "lucide-react";
 import React, { useState } from "react";
 
-import { Button, cn,Dialog, Input, Segmented, Select, Sheet } from "@/components/ui";
+import { Button, Chip, cn, Dialog, Input, Select, Sheet } from "@/components/ui";
 import { type MessageKey,t } from "@/lib/i18n";
 
 const METHODS = ["BANK_IBAN", "BANK_US", "BANK_CA", "PAYPAL", "CRYPTO_USDT_TRC20", "CRYPTO_BTC"] as const;
@@ -97,15 +97,16 @@ export function PayoutAccountSheet({ open, onClose, onSaved }: { open: boolean; 
               </label>
             ))}
             {method === "BANK_US" && (
-              <Segmented
+              <Chip.Group
+                type="single"
+                required
                 label={t("earnings.account.fields.accountType")}
                 value={details.accountType === "savings" ? "savings" : "checking"}
-                onChange={(v) => setDetails({ ...details, accountType: v })}
-                options={[
-                  { value: "checking", label: t("earnings.account.checking") },
-                  { value: "savings", label: t("earnings.account.savings") },
-                ]}
-              />
+                onValueChange={(v) => setDetails({ ...details, accountType: v })}
+              >
+                <Chip value="checking">{t("earnings.account.checking")}</Chip>
+                <Chip value="savings">{t("earnings.account.savings")}</Chip>
+              </Chip.Group>
             )}
             {error && <p role="alert" className="rounded-xl border border-danger/30 bg-danger/10 px-3 py-2 text-xs text-danger">{error}</p>}
           </div>

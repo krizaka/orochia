@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useMemo,useState } from "react";
 
-import { Avatar, Badge, buttonVariants, cn, orochiaButton } from "@/components/ui";
+import { Avatar, Badge, buttonVariants, Chip, orochiaButton, Tabs } from "@/components/ui";
 import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
 import { t } from "@/lib/i18n";
 
@@ -53,70 +53,14 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
     { id: "contacts", label: t("feed.tabs.contacts"), icon: Users },
   ] as const;
 
-  return (
-    <div className="space-y-6">
-      {/* Tab Control & View Mode Switcher Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border-default pb-4 max-w-full overflow-hidden">
-        {/* Feed Selection Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 scrollbar-none overscroll-x-contain touch-pan-x">
-          {tabs.map(({ id, label, icon: Icon }) => {
-            const isActive = activeTab === id;
-            return (
-              <button
-                key={id}
-                onClick={() => setActiveTab(id)}
-                className={cn(
-                  "flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-bold transition-all shrink-0",
-                  isActive
-                    ? "bg-linear-to-r from-accent to-accent-2 text-white shadow-lg shadow-accent/25 scale-105"
-                    : "border border-border-subtle bg-surface-2/50 text-fg-secondary hover:text-fg hover:border-accent/40"
-                )}
-              >
-                <Icon className={cn("h-3.5 w-3.5", isActive ? "text-white" : "text-accent")} />
-                <span>{label}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* View Mode Switcher (Grid vs Cinematic) */}
-        <div className="flex items-center gap-1 rounded-2xl border border-border-default bg-surface-2/60 p-1 self-end sm:self-auto shrink-0">
-          <button
-            onClick={() => setViewMode("grid")}
-            aria-label={t("feed.grid")}
-            title={t("feed.grid")}
-            className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-xl transition-all",
-              viewMode === "grid"
-                ? "bg-accent text-white shadow-xs"
-                : "text-fg-secondary hover:text-white"
-            )}
-          >
-            <LayoutGrid className="h-4 w-4" />
-          </button>
-          <button
-            onClick={() => setViewMode("cinematic")}
-            aria-label={t("feed.cinematic")}
-            title={t("feed.cinematic")}
-            className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-xl transition-all",
-              viewMode === "cinematic"
-                ? "bg-accent text-white shadow-xs"
-                : "text-fg-secondary hover:text-white"
-            )}
-          >
-            <Rows3 className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
-
-      {/* Video Content Render */}
+  const content = (
+    <>
       {filteredVideos.length === 0 ? (
         initialVideos.length === 0 ? (
           <div className="space-y-8">
             <div className="kz-spotlight relative overflow-hidden rounded-3xl border border-border-default bg-surface-2/40 px-6 py-10 text-center">
               <div aria-hidden className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-accent to-accent-2 shadow-lg shadow-accent/30">
-                <Clapperboard className="h-6 w-6 text-white" />
+                <Clapperboard className="h-6 w-6 text-on-accent" aria-hidden />
               </div>
               <h3 className="font-display text-xl font-black text-fg">{t("home.empty.title")}</h3>
               <p className="mx-auto mt-2 max-w-md text-sm text-fg-secondary">{t("home.empty.body")}</p>
@@ -187,7 +131,7 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
                     <span className="font-display text-sm font-bold text-accent">{t("feed.noThumbnail")}</span>
                   </div>
                 )}
-                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
+                <div className="absolute inset-0 bg-linear-to-t from-scrim-strong via-transparent to-transparent flex items-end p-6">
                   <div>
                     <h3 className="text-lg sm:text-xl font-bold text-fg-on-media drop-shadow-md">
                       {video.title}
@@ -205,7 +149,7 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
               <div className="flex items-center justify-between p-4 bg-surface-2/40">
                 <Link
                   href={`/watch/${video.id}`}
-                  className="inline-flex items-center gap-2 rounded-2xl bg-linear-to-r from-accent to-accent-2 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-accent/30 hover:scale-105 transition-all"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-linear-to-r from-accent to-accent-2 px-5 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-accent/30 hover:scale-105 transition-all"
                 >
                   <span>{t("feed.watch")}</span>
                 </Link>
@@ -220,6 +164,46 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
           ))}
         </div>
       )}
-    </div>
+    </>
+  );
+
+  return (
+    <Tabs.Root variant="pills" value={activeTab} onValueChange={(tab) => setActiveTab(tab as FeedTab)} className="gap-6">
+      {/* The feeds (pills, in the address) and the view (grid or cinema) */}
+      <div className="flex max-w-full flex-col items-start justify-between gap-4 overflow-hidden border-b border-border-default pb-4 sm:flex-row sm:items-center">
+        <Tabs.List aria-label={t("feed.label")} className="max-w-full touch-pan-x">
+          {tabs.map(({ id, label, icon: Icon }) => (
+            <Tabs.Trigger key={id} value={id} className="font-bold">
+              <Icon className="h-3.5 w-3.5 text-accent" aria-hidden />
+              <span>{label}</span>
+            </Tabs.Trigger>
+          ))}
+        </Tabs.List>
+
+        <Chip.Group
+          type="single"
+          required
+          size="sm"
+          label={t("feed.view")}
+          value={viewMode}
+          onValueChange={(v) => setViewMode(v as "grid" | "cinematic")}
+          className="shrink-0 gap-1 self-end sm:self-auto"
+        >
+          <Chip value="grid" aria-label={t("feed.grid")} title={t("feed.grid")} className="w-8 px-0">
+            <LayoutGrid className="h-4 w-4" aria-hidden />
+          </Chip>
+          <Chip value="cinematic" aria-label={t("feed.cinematic")} title={t("feed.cinematic")} className="w-8 px-0">
+            <Rows3 className="h-4 w-4" aria-hidden />
+          </Chip>
+        </Chip.Group>
+      </div>
+
+      {/* One panel per feed; the open one holds the videos */}
+      {tabs.map(({ id }) => (
+        <Tabs.Content key={id} value={id}>
+          {activeTab === id && content}
+        </Tabs.Content>
+      ))}
+    </Tabs.Root>
   );
 }
