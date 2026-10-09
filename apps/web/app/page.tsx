@@ -96,7 +96,7 @@ export default async function HomePage() {
             )}
           </div>
           <div className="hero-fade flex min-w-0 justify-center [animation-delay:300ms] lg:pr-6">
-            <ProductShowcase images={wall} share={share} />
+            <ProductShowcase share={share} />
           </div>
           </div>
         </section>

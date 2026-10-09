@@ -5,15 +5,16 @@ import { Check, Clapperboard, Clock, Coins, Flame, Gavel, Lock, ShieldCheck, Spa
 import { t } from "@/lib/i18n";
 
 /**
- * What Orochia does, one mechanism per scene, on a phone. Nothing in it pretends to be someone: there are no names,
- * no faces, no counters — only the product's own rules (the audiences a video can have, the tip presets, the auction's
- * escrow and soft close, a challenge's all-or-nothing goal, the creator's share) drawn over real thumbnails of the platform, or its default artwork while
- * it is empty. Pauses off-screen; still under prefers-reduced-motion.
+ * What Orochia does, one mechanism per scene, on a phone: the product's own rules (the audiences a video can have, the
+ * tip presets, the auction's escrow and soft close, a challenge's all-or-nothing goal, the creator's share) over the
+ * showcase's own illustrative footage (public/showcase — photos and two short reels). Nothing in it pretends to be
+ * someone: no names, no handles, no counters. Pauses off-screen; still under prefers-reduced-motion.
  */
 const SCENES = ["publish", "audience", "stories", "tip", "auction", "challenge"] as const;
 type Scene = (typeof SCENES)[number];
 const SCENE_MS = 5200;
-const FALLBACK = ["/defaults/banners/banner-04.svg", "/defaults/banners/banner-02.svg", "/defaults/banners/banner-06.svg"];
+const COVERS = ["/showcase/scene-1.jpg", "/showcase/scene-2.jpg", "/showcase/scene-3.jpg", "/showcase/scene-4.jpg"];
+const REELS = ["/showcase/reel-1.mp4", "/showcase/reel-2.mp4"];
 const AUDIENCES = ["public", "followers", "contacts", "paid", "invited"] as const;
 const TIPS = ["$5", "$10", "$25", "$50"];
 
@@ -21,13 +22,21 @@ function Cover({ src, className = "" }: { src: string; className?: string }) {
   return <img src={src} alt="" className={`h-full w-full object-cover ${className}`} />;
 }
 
-function Screen({ scene, covers, share }: { scene: Scene; covers: string[]; share: number }) {
-  const [a, b, c] = [covers[0], covers[1 % covers.length], covers[2 % covers.length]];
+/** A short silent reel playing in the phone (its poster shows until it plays, and under reduced motion). */
+function Reel({ src, poster, className = "" }: { src: string; poster: string; className?: string }) {
+  const [still, setStill] = useState(false);
+  useEffect(() => setStill(window.matchMedia("(prefers-reduced-motion: reduce)").matches), []);
+  if (still) return <Cover src={poster} className={className} />;
+  return <video src={src} poster={poster} muted autoPlay loop playsInline preload="metadata" className={`h-full w-full object-cover ${className}`} />;
+}
+
+function Screen({ scene, share }: { scene: Scene; share: number }) {
+  const [a, b, c, d] = COVERS;
   if (scene === "publish") {
     return (
       <div className="absolute inset-0 flex flex-col bg-zinc-950">
         <div className="relative m-3 mt-10 flex-1 overflow-hidden rounded-2xl">
-          <Cover src={a} className="sc-develop" />
+          <Reel src={REELS[0]} poster={a} className="sc-develop" />
           <span className="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-0.5 font-mono text-[9px] font-bold text-white backdrop-blur-md">4K</span>
         </div>
         <ol className="mx-3 mb-4 space-y-2 rounded-2xl bg-white/5 p-3 text-[10px] font-semibold text-white">
@@ -69,7 +78,7 @@ function Screen({ scene, covers, share }: { scene: Scene; covers: string[]; shar
   if (scene === "stories") {
     return (
       <div className="absolute inset-0 bg-black">
-        <Cover src={c} className="sc-zoom" />
+        <Reel src={REELS[1]} poster={c} />
         <div className="absolute inset-x-3 top-9 flex gap-1">
           {[0, 1, 2].map((i) => (
             <span key={i} className="h-[2.5px] flex-1 overflow-hidden rounded-full bg-white/30">
@@ -119,7 +128,9 @@ function Screen({ scene, covers, share }: { scene: Scene; covers: string[]; shar
   if (scene === "challenge") {
     return (
       <div className="absolute inset-0 flex flex-col items-center bg-zinc-950 px-4 pt-12">
-        <span className="flex items-center gap-1 rounded-full bg-fuchsia-600/90 px-2 py-0.5 text-[9px] font-bold text-white">
+        <img src={d} alt="" className="absolute inset-0 h-full w-full object-cover opacity-35 blur-[2px]" />
+        <div className="absolute inset-0 bg-linear-to-b from-zinc-950/40 via-zinc-950/70 to-zinc-950" />
+        <span className="relative flex items-center gap-1 rounded-full bg-fuchsia-600/90 px-2 py-0.5 text-[9px] font-bold text-white">
           <Flame className="h-2.5 w-2.5" /> {t("home.showcase.challenge.badge")}
         </span>
         <div className="relative mt-5 h-36 w-36">
@@ -142,7 +153,7 @@ function Screen({ scene, covers, share }: { scene: Scene; covers: string[]; shar
             <span className="mt-1 text-[10px] font-bold uppercase tracking-wider">{t("home.showcase.challenge.goal")}</span>
           </span>
         </div>
-        <div className="mt-5 flex w-full gap-1.5">
+        <div className="relative mt-5 flex w-full gap-1.5">
           {TIPS.map((amount, i) => (
             <span
               key={amount}
@@ -153,10 +164,10 @@ function Screen({ scene, covers, share }: { scene: Scene; covers: string[]; shar
             </span>
           ))}
         </div>
-        <p className="sc-step mt-4 text-center text-[10px] leading-snug text-zinc-300" style={{ animationDelay: "1.6s" }}>
+        <p className="sc-step relative mt-4 text-center text-[10px] leading-snug text-zinc-300" style={{ animationDelay: "1.6s" }}>
           {t("home.showcase.challenge.allOrNothing")}
         </p>
-        <p className="sc-step mt-2 flex items-center gap-1 text-[10px] font-bold text-emerald-300" style={{ animationDelay: "3.4s" }}>
+        <p className="sc-step relative mt-2 flex items-center gap-1 text-[10px] font-bold text-emerald-300" style={{ animationDelay: "3.4s" }}>
           <Check className="h-3 w-3" /> {t("home.showcase.challenge.made")}
         </p>
       </div>
@@ -201,8 +212,7 @@ const ICONS: Record<Scene, typeof Upload> = {
   challenge: Flame,
 };
 
-export function ProductShowcase({ images, share }: { images: string[]; share: number }) {
-  const covers = images.length >= 3 ? images.slice(0, 6) : FALLBACK;
+export function ProductShowcase({ share }: { share: number }) {
   const [index, setIndex] = useState(0);
   const [running, setRunning] = useState(true);
   const box = useRef<HTMLDivElement>(null);
@@ -229,7 +239,7 @@ export function ProductShowcase({ images, share }: { images: string[]; share: nu
           <div className="theme-dark relative h-full w-full overflow-hidden rounded-[2.3rem] bg-black">
             <div aria-hidden className="absolute left-1/2 top-2.5 z-30 h-4.5 w-20 -translate-x-1/2 rounded-full bg-black" />
             <div key={scene} className="sc-scene absolute inset-0" aria-hidden>
-              <Screen scene={scene} covers={covers} share={share} />
+              <Screen scene={scene} share={share} />
             </div>
             <div aria-hidden className="pointer-events-none absolute inset-0 z-20 bg-linear-to-tr from-transparent via-white/5 to-transparent" />
           </div>
