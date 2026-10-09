@@ -30,7 +30,6 @@ export function AgeVerificationModal() {
     window.location.href = "https://www.google.com";
   };
 
-  const stay = (e: Event) => e.preventDefault();
   const legal = "flex items-center gap-1 transition-colors hover:text-fg";
 
   // Not dismissible: no Escape, no outside click, no close button — the visitor enters or leaves.
@@ -38,10 +37,9 @@ export function AgeVerificationModal() {
     <Dialog.Root open={isOpen}>
       <Dialog.Content
         size="lg"
-        onEscapeKeyDown={stay}
-        onPointerDownOutside={stay}
-        onInteractOutside={stay}
-        className="max-w-lg overflow-y-auto rounded-3xl bg-surface-1 p-6 text-center shadow-2xl shadow-accent/30 sm:max-w-lg sm:p-8 [&>button:last-child]:hidden"
+        hideClose
+        dismissible={false}
+        className="max-w-lg overflow-y-auto rounded-3xl bg-surface-1 p-6 text-center shadow-2xl shadow-accent/30 sm:max-w-lg sm:p-8"
       >
         {/* Ambient top glow */}
         <div className="pointer-events-none absolute -top-24 left-1/2 h-48 w-48 -translate-x-1/2 rounded-full bg-accent/30 blur-3xl" aria-hidden />

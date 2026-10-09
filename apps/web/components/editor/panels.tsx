@@ -3,7 +3,7 @@
 import { Check, Lock, Music2, RotateCcw, Trash2, Volume2, VolumeX, Wand2 } from "lucide-react";
 import React from "react";
 
-import { Button, Chip, cn, IconButton, Segmented, Skeleton, Slider } from "@/components/ui";
+import { Button, Chip, cn, IconButton, Skeleton, Slider } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { previewFilter, SPEEDS, VIDEO_FILTERS, type VideoEdit, type VideoFilter, type VideoFormat } from "@/lib/video-edit";
 
@@ -48,13 +48,13 @@ export function TrimPanel(props: {
       {maxSeconds && <p className="text-[11px] text-fg-muted">{t("editor.maxLength", { seconds: maxSeconds })}</p>}
       <div>
         <span className="mb-2 block text-xs font-semibold text-fg-secondary">{t("editor.speed")}</span>
-        <div className="flex flex-wrap gap-2">
+        <Chip.Group type="single" required label={t("editor.speed")} value={String(edit.speed)} onValueChange={(v) => set("speed", Number(v) as VideoEdit["speed"])}>
           {SPEEDS.map((s) => (
-            <Chip key={s} active={edit.speed === s} onClick={() => set("speed", s)} className="min-w-14">
+            <Chip key={s} value={String(s)} className="min-w-14">
               {s}×
             </Chip>
           ))}
-        </div>
+        </Chip.Group>
       </div>
     </div>
   );
@@ -98,13 +98,15 @@ export function AdjustPanel({ edit, set }: { edit: VideoEdit; set: Setter }) {
         <Slider
           key={key}
           label={t(`editor.adjust.${key}`)}
+          showLabel
           value={edit[key]}
           min={-0.5}
           max={0.5}
           step={0.01}
-          reset={0}
-          display={`${edit[key] > 0 ? "+" : ""}${Math.round(edit[key] * 100)}`}
-          onChange={(v) => set(key, v)}
+          origin={0}
+          formatValue={(v) => `${v > 0 ? "+" : ""}${Math.round(v * 100)}`}
+          onValueChange={(v) => set(key, v)}
+          onDoubleClick={() => set(key, 0)}
         />
       ))}
     </div>
@@ -127,20 +129,14 @@ export function FormatPanel({ edit, onFormat, locked }: { edit: VideoEdit; onFor
     );
   }
   return (
-    <Segmented
-      label={t("editor.panels.format.title")}
-      value={edit.format}
-      onChange={onFormat}
-      options={(["original", "vertical", "square"] as const).map((f) => ({
-        value: f,
-        label: (
-          <span className="flex flex-col items-center gap-2 py-1">
-            <span className={cn("block rounded-[4px] border-2 border-current", FORMAT_SHAPE[f])} />
-            {t(`editor.formats.${f}`)}
-          </span>
-        ),
-      }))}
-    />
+    <Chip.Group type="single" required label={t("editor.panels.format.title")} value={edit.format} onValueChange={(f) => onFormat(f as VideoFormat)} className="grid grid-cols-3 gap-2">
+      {(["original", "vertical", "square"] as const).map((f) => (
+        <Chip key={f} value={f} className="h-auto flex-col gap-2 rounded-2xl py-3">
+          <span className={cn("block rounded-[4px] border-2 border-current", FORMAT_SHAPE[f])} />
+          {t(`editor.formats.${f}`)}
+        </Chip>
+      ))}
+    </Chip.Group>
   );
 }
 
@@ -153,12 +149,22 @@ export function SoundPanel({ edit, set }: { edit: VideoEdit; set: Setter }) {
           {muted ? <VolumeX className="h-4 w-4 text-danger" /> : <Volume2 className="h-4 w-4" />}
         </IconButton>
         <div className="flex-1">
-          <Slider label={t("editor.sound.volume")} value={edit.volume} min={0} max={2} step={0.05} reset={1} display={muted ? t("editor.sound.muted") : `${Math.round(edit.volume * 100)} %`} onChange={(v) => set("volume", v)} />
+          <Slider
+            label={t("editor.sound.volume")}
+            showLabel
+            value={edit.volume}
+            min={0}
+            max={2}
+            step={0.05}
+            formatValue={(v) => (v === 0 ? t("editor.sound.muted") : `${Math.round(v * 100)} %`)}
+            onValueChange={(v) => set("volume", v)}
+            onDoubleClick={() => set("volume", 1)}
+          />
         </div>
       </div>
       <div className="flex flex-wrap gap-2">
         {(["fadeIn", "fadeOut", "denoise"] as const).map((key) => (
-          <Chip key={key} active={edit[key]} onClick={() => set(key, !edit[key])}>
+          <Chip key={key} selected={edit[key]} onSelectedChange={(on) => set(key, on)}>
             {key === "denoise" && <Wand2 className="h-3.5 w-3.5" />}
             {t(`editor.sound.${key}`)}
           </Chip>
@@ -177,7 +183,17 @@ export function SoundPanel({ edit, set }: { edit: VideoEdit; set: Setter }) {
                 <Trash2 className="h-4 w-4" />
               </IconButton>
             </div>
-            <Slider label={t("editor.sound.musicVolume")} value={edit.musicVolume} min={0} max={1} step={0.05} reset={0.6} display={`${Math.round(edit.musicVolume * 100)} %`} onChange={(v) => set("musicVolume", v)} />
+            <Slider
+              label={t("editor.sound.musicVolume")}
+              showLabel
+              value={edit.musicVolume}
+              min={0}
+              max={1}
+              step={0.05}
+              formatValue={(v) => `${Math.round(v * 100)} %`}
+              onValueChange={(v) => set("musicVolume", v)}
+              onDoubleClick={() => set("musicVolume", 0.6)}
+            />
           </div>
         ) : (
           <label className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-white/20 text-sm font-semibold text-accent transition-colors hover:border-accent hover:bg-accent/10 focus-within:ring-2 focus-within:ring-ring">

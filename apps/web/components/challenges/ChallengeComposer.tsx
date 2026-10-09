@@ -4,7 +4,7 @@ import { Clapperboard, Clock, Flame, Lock, Megaphone, Target, Users } from "luci
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-import { Button, cn, Dialog, Input, Segmented, Sheet, Textarea } from "@/components/ui";
+import { Button, Chip, cn, Dialog, Input, RadioGroup, Sheet, Textarea } from "@/components/ui";
 import { type MessageKey,t } from "@/lib/i18n";
 import { money } from "@/lib/money";
 
@@ -131,27 +131,15 @@ export function ChallengeComposer({
         </Dialog.Header>
         <Dialog.Body>
           <form id="compose-challenge" onSubmit={submit} className="space-y-5">
-            <div role="radiogroup" aria-label={t("challenge.compose.kind")} className="grid gap-2 sm:grid-cols-3">
+            <RadioGroup.Root label={t("challenge.compose.kind")} value={kind} onValueChange={(k) => pickKind(k as Kind)} className="grid gap-2 sm:grid-cols-3">
               {KINDS.filter((k) => isCreator || !k.creatorsOnly).map(({ kind: k, icon: Icon }) => (
-                <button
-                  key={k}
-                  type="button"
-                  role="radio"
-                  aria-checked={kind === k}
-                  onClick={() => pickKind(k)}
-                  className={cn(
-                    "flex flex-col items-start gap-1.5 rounded-2xl border p-3 text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
-                    kind === k
-                      ? "border-accent/70 bg-accent/10"
-                      : "border-border-default hover:border-border-strong",
-                  )}
-                >
+                <RadioGroup.Card key={k} value={k} className="gap-1.5 rounded-2xl">
                   <Icon className="h-4 w-4 text-accent" aria-hidden />
                   <span className="text-xs font-bold text-fg">{t(`challenge.kind.${k}`)}</span>
                   <span className="text-[11px] leading-snug text-fg-secondary">{t(`challenge.compose.kindHint.${k}`)}</span>
-                </button>
+                </RadioGroup.Card>
               ))}
-            </div>
+            </RadioGroup.Root>
 
             {kind === "REQUEST" && (
               <label className={label}>
@@ -199,43 +187,26 @@ export function ChallengeComposer({
               <div className={label}>
                 {t("challenge.compose.deliverable")}
                 <div className="mt-1">
-                  <Segmented
-                    label={t("challenge.compose.deliverable")}
-                    value={deliverable}
-                    onChange={setDeliverable}
-                    options={[
-                      {
-                        value: "VIDEO",
-                        label: (
-                          <>
-                            <Clapperboard className="h-3.5 w-3.5" aria-hidden /> {t("challenge.deliverable.VIDEO")}
-                          </>
-                        ),
-                      },
-                      {
-                        value: "STORY",
-                        label: (
-                          <>
-                            <Clock className="h-3.5 w-3.5" aria-hidden /> {t("challenge.deliverable.STORY")}
-                          </>
-                        ),
-                      },
-                    ]}
-                  />
+                  <Chip.Group type="single" required label={t("challenge.compose.deliverable")} value={deliverable} onValueChange={(v) => setDeliverable(v as "VIDEO" | "STORY")}>
+                    <Chip value="VIDEO">
+                      <Clapperboard className="h-3.5 w-3.5" aria-hidden /> {t("challenge.deliverable.VIDEO")}
+                    </Chip>
+                    <Chip value="STORY">
+                      <Clock className="h-3.5 w-3.5" aria-hidden /> {t("challenge.deliverable.STORY")}
+                    </Chip>
+                  </Chip.Group>
                 </div>
               </div>
               <div className={label}>
                 {t("challenge.compose.delivery")}
                 <div className="mt-1">
-                  <Segmented
-                    label={t("challenge.compose.delivery")}
-                    value={delivery}
-                    onChange={setDelivery}
-                    options={DELIVERY.map((d) => ({
-                      value: d,
-                      label: t(`challenge.compose.deliveryLabels.${d}`),
-                    }))}
-                  />
+                  <Chip.Group type="single" required label={t("challenge.compose.delivery")} value={delivery} onValueChange={(v) => setDelivery(v as (typeof DELIVERY)[number])}>
+                    {DELIVERY.map((d) => (
+                      <Chip key={d} value={d}>
+                        {t(`challenge.compose.deliveryLabels.${d}`)}
+                      </Chip>
+                    ))}
+                  </Chip.Group>
                 </div>
               </div>
             </div>
@@ -262,15 +233,13 @@ export function ChallengeComposer({
               <div className={label}>
                 {t(`challenge.compose.window.${kind as "GOAL" | "OPEN_CALL"}`)}
                 <div className="mt-1">
-                  <Segmented
-                    label={t(`challenge.compose.window.${kind as "GOAL" | "OPEN_CALL"}`)}
-                    value={windowId}
-                    onChange={setWindowId}
-                    options={windows.map((w) => ({
-                      value: w,
-                      label: t(`challenge.compose.windowLabels.${w}`),
-                    }))}
-                  />
+                  <Chip.Group type="single" required label={t(`challenge.compose.window.${kind as "GOAL" | "OPEN_CALL"}`)} value={windowId} onValueChange={setWindowId}>
+                    {windows.map((w) => (
+                      <Chip key={w} value={w}>
+                        {t(`challenge.compose.windowLabels.${w}`)}
+                      </Chip>
+                    ))}
+                  </Chip.Group>
                 </div>
               </div>
             )}
@@ -279,29 +248,14 @@ export function ChallengeComposer({
               <div className={label}>
                 {t("challenge.compose.reward")}
                 <div className="mt-1">
-                  <Segmented
-                    label={t("challenge.compose.reward")}
-                    value={reward}
-                    onChange={setReward}
-                    options={[
-                      {
-                        value: "BACKERS",
-                        label: (
-                          <>
-                            <Lock className="h-3.5 w-3.5" aria-hidden /> {t("challenge.reward.BACKERS")}
-                          </>
-                        ),
-                      },
-                      {
-                        value: "EVERYONE",
-                        label: (
-                          <>
-                            <Users className="h-3.5 w-3.5" aria-hidden /> {t("challenge.reward.EVERYONE")}
-                          </>
-                        ),
-                      },
-                    ]}
-                  />
+                  <Chip.Group type="single" required label={t("challenge.compose.reward")} value={reward} onValueChange={(v) => setReward(v as "BACKERS" | "EVERYONE")}>
+                    <Chip value="BACKERS">
+                      <Lock className="h-3.5 w-3.5" aria-hidden /> {t("challenge.reward.BACKERS")}
+                    </Chip>
+                    <Chip value="EVERYONE">
+                      <Users className="h-3.5 w-3.5" aria-hidden /> {t("challenge.reward.EVERYONE")}
+                    </Chip>
+                  </Chip.Group>
                 </div>
               </div>
             )}

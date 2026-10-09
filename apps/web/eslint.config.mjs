@@ -4,8 +4,9 @@ import { krizakaUi } from "@krizaka/config/eslint/krizaka-ui";
 const config = [
   ...krizakaNext,
   // The four UI rules of the Krizaka platform (no raw palette, no `light:`, no `[var(--…)]`, no className template):
-  // warnings while the ratchet (lint-ratchet.json, `npm run ratchet`) brings the debt down; `error` once it is zero.
-  ...krizakaUi({ severity: "warn" }),
+  // errors — the ratchet (lint-ratchet.json, `npm run ratchet`) reached zero. A colour the roles cannot express is a
+  // product token in app/globals.css (--orochia-*, exposed through @theme inline), never a palette step.
+  ...krizakaUi(),
   // public/ffmpeg: ffmpeg.wasm browser files copied from node_modules (scripts/copy-ffmpeg.mjs).
   { ignores: [".next/**", "next-env.d.ts", "public/ffmpeg/**"] },
   {

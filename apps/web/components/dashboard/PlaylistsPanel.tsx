@@ -6,7 +6,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { AudienceEditor } from "../AudienceEditor";
 import { COLLECTION_AUDIENCES, CollectionAudienceBadge, audienceOf, type CollectionVisibility } from "../CollectionAudience";
 import { t } from "@/lib/i18n";
-import { Button, cn, ConfirmIconButton, Input, Select } from "@/components/ui";
+import { Button, cn, ConfirmButton, Input, Select } from "@/components/ui";
 
 interface Collection {
   id: string;
@@ -106,13 +106,14 @@ export function PlaylistsPanel() {
                       </option>
                     ))}
                   </Select>
-                  <ConfirmIconButton
+                  <ConfirmButton
+                    size="sm"
                     label={t("playlistsPanel.delete", { title: p.title })}
                     confirmLabel={t("playlistsPanel.confirmDelete")}
                     onConfirm={() => void send(`/api/playlists/${p.id}`, "DELETE")}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
-                  </ConfirmIconButton>
+                  </ConfirmButton>
                 </div>
               </div>
               {p.visibility === "INVITED_ONLY" && (

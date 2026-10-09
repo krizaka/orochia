@@ -3,7 +3,7 @@
 import { CheckCircle2, Flag } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
-import { Button, cn, Dialog, Input, Sheet, Textarea } from "@/components/ui";
+import { Button, cn, Dialog, Input, RadioGroup, Sheet, Textarea } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 
@@ -81,27 +81,17 @@ export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModa
             </span>
           </p>
 
-          <fieldset>
-            <legend className="mb-2 text-xs font-semibold text-fg-secondary">{t("report.reason")}</legend>
-            <div className="space-y-2" role="radiogroup">
+          <div>
+            <span id="report-reason" className="mb-2 block text-xs font-semibold text-fg-secondary">{t("report.reason")}</span>
+            <RadioGroup.Root aria-labelledby="report-reason" value={reason ?? ""} onValueChange={(v) => setReason(v as Reason)} className="space-y-2">
               {REASONS.map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  role="radio"
-                  aria-checked={reason === r}
-                  onClick={() => setReason(r)}
-                  className={cn(
-                    "w-full rounded-2xl border p-3 text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
-                    reason === r ? "border-danger/60 bg-danger/10" : "border-border-default hover:border-border-strong",
-                  )}
-                >
+                <RadioGroup.Card key={r} value={r} className="w-full gap-0 rounded-2xl data-[state=checked]:border-danger/60 data-[state=checked]:bg-danger/10">
                   <span className="block text-sm font-semibold text-fg">{t(`report.reasons.${r}.title`)}</span>
                   <span className="block text-xs text-fg-secondary">{t(`report.reasons.${r}.hint`)}</span>
-                </button>
+                </RadioGroup.Card>
               ))}
-            </div>
-          </fieldset>
+            </RadioGroup.Root>
+          </div>
 
           <label className="block">
             <span className="mb-1.5 block text-xs font-semibold text-fg-secondary">{t("report.details")}</span>

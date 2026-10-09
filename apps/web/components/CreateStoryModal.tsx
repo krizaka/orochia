@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as tus from "tus-js-client";
 
 import { DraftsShelf } from "@/components/DraftsShelf";
-import { Button, cn, Dialog, Select, Sheet, Textarea } from "@/components/ui";
+import { Button, Checkbox, Chip, cn, Dialog, Select, Sheet, Textarea } from "@/components/ui";
 import { VideoEditor } from "@/components/VideoEditor";
 import { deleteDraft } from "@/lib/drafts";
 import { t } from "@/lib/i18n";
@@ -295,22 +295,13 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
 
             <fieldset>
               <legend className="mb-2 text-xs font-semibold uppercase tracking-wider text-fg-secondary">{t("stories.create.audience")}</legend>
-              <div className="grid grid-cols-2 gap-2">
+              <Chip.Group type="single" required label={t("stories.create.audience")} value={audience} onValueChange={(v) => setAudience(v as typeof audience)} className="grid grid-cols-2 gap-2">
                 {AUDIENCES.map((a) => (
-                  <button
-                    key={a}
-                    type="button"
-                    onClick={() => setAudience(a)}
-                    aria-pressed={audience === a}
-                    className={cn(
-                      "rounded-xl border px-3 py-2.5 text-xs font-semibold",
-                      audience === a ? "border-accent bg-accent/15 text-accent" : "border-border-default text-fg-secondary"
-                    )}
-                  >
+                  <Chip key={a} value={a} className="h-auto rounded-xl py-2.5">
                     {t(`stories.create.audiences.${a}`)}
-                  </button>
+                  </Chip>
                 ))}
-              </div>
+              </Chip.Group>
               {audience === "INVITED_ONLY" &&
                 (lists.length === 0 ? (
                   <p className="mt-2 text-xs text-fg-muted">{t("stories.create.noList")}</p>
@@ -350,15 +341,9 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
                 </Select>
               </label>
 
-              <label className="flex items-center gap-2.5 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isBlurred}
-                  onChange={(e) => setIsBlurred(e.target.checked)}
-                  className="h-3.5 w-3.5 rounded-sm border-border-strong bg-surface-2 text-accent focus:ring-ring"
-                />
-                <span className="text-xs text-fg-secondary">{t("stories.create.blur")}</span>
-              </label>
+              <Checkbox checked={isBlurred} onCheckedChange={(on) => setIsBlurred(on === true)} className="items-center text-xs text-fg-secondary">
+                {t("stories.create.blur")}
+              </Checkbox>
             </div>
 
             {error && <p role="alert" className="text-xs text-danger">{error}</p>}

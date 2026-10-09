@@ -287,13 +287,15 @@ orochia/                           npm workspaces
   `label`), messages given to state setters (`setError("…")`), words in data (`{ label: "…" }`) and browser dialogs.
   Data modules keep structure (ids, icons, order) and read their words by id (``t(`collectionAudience.${id}.label`)``).
   A string that is not shown (protocol metadata) carries `// i18n-ignore: <why>`. Destructive actions confirm with
-  a second tap (`ConfirmIconButton`), never `window.confirm`.
+  a second tap (`ConfirmButton`), never `window.confirm`.
 - Both themes are first-class, **through tokens**: surfaces, text, borders and accents use the roles of
   `@krizaka/tailwind` (`bg-surface-1`, `text-fg-secondary`, `border-border-default`, `text-accent`, `text-danger`,
   `bg-scrim` on media), which change with the theme. No raw palette colour, no `light:`, no `[var(--…)]`, no template
-  string in `className` (`cn(…)`): the four `@krizaka/config` UI rules (warnings for now) and **the ratchet**
-  (`lint-ratchet.json`, `npm run ratchet` inside `npm run lint`) — a count may only go down; after a migration,
-  `npm run ratchet:update` and commit the file. `scripts/codemods/tokens.mjs` (jscodeshift) does the mechanical part.
+  string in `className` (`cn(…)`): the four `@krizaka/config` UI rules are **errors**, and **the ratchet**
+  (`lint-ratchet.json`, `npm run ratchet` inside `npm run lint`) is at **0 / 0 / 0 / 0** and stays there. A colour the
+  roles cannot express is a documented product token in `app/globals.css` (`--orochia-*`, exposed through
+  `@theme inline`: the showcase phone's frame `device-edge` / `device-core`, Google's white sign-in button `google` /
+  `on-google`), never a palette step.
 - **The address is the state — always.** Every place a person can be is a URL they can copy, share and reload:
   tabs (`/dashboard?tab=settings`, `/@user?tab=ppv`), settings sections (`#settings-notifications`), lists and
   their filters, detail views (`/notifications`, `/watch/<id>`). Tabs are `<Link>`s or `router.replace` — never
@@ -317,11 +319,15 @@ orochia/                           npm workspaces
   `Textarea` / `Select`, `Avatar` (fallback: an initial or an icon), `Skeleton`, `Spinner`, `EmptyState`, `Countdown`,
   `Card.*` (every card: `Root/Media/Image/Overlay/Body/Title/Description/Stat/Footer`), `Dialog.*` + `Sheet` (every
   modal and sheet — Radix: focus trap, Escape, outside click and scroll lock come with it; the door names the close
-  button), `AlertDialog` (confirmations), `Popover`, `Kbd`, `Toaster` (mounted once in `ClientLayoutShell`) + `toast`
+  button; `hideClose` / `dismissible={false}` for a gate or a full-screen editor), `AlertDialog` (confirmations),
+  `Tabs.*` (underline · segmented · pills: a view or a page's sections), `Chip` + `Chip.Group` (a filter or a pill
+  choice), `RadioGroup.*` (`Card`: a whole card is the choice — amounts, packs, payment methods), `Checkbox`, `Switch`,
+  `Slider`, `Command.*` + `CommandDialog` (the search palette), `ConfirmButton` (destructive actions, two taps),
+  `Progress` (bar · ring), `Popover`, `Kbd`, `Toaster` (mounted once in `ClientLayoutShell`) + `toast`
   (`toast.custom` for live events), the theme (`ThemeScript`, `ThemeProvider`, `ThemeToggle`; `kz-theme` in
   localStorage), `cn`, `OrochiaLogo`, `MotionObserver`, `RotatingWord`. No hand-written overlay: no `createPortal`,
-  `role="dialog"` or `aria-modal` in a component. From `@krizaka/orochia-design-system`: `LiveBadge`, `SocialIcon`,
-  and — until their `@krizaka/ui` primitive ships — `ConfirmIconButton`, `Chip`, `Segmented`, `Switch`, `Slider`. The door is a
+  `role="dialog"` or `aria-modal` in a component, no `role="radio"` or native checkbox by hand. From
+  `@krizaka/orochia-design-system`: only the identity — `orochiaButton`, `LiveBadge`, `SocialIcon`, the theme. The door is a
   plain module: server components take `buttonVariants`, `orochiaButton` and `cn` from it. New screens use these
   atoms; a missing component is added to the package, not to the app. Money is `money(cents)` from `lib/money.ts`
   (`@krizaka/intl`).

@@ -6,7 +6,7 @@ import { SocialSignIn } from "@/components/SocialSignIn";
 import { useRouter } from "next/navigation";
 import { Lock, Mail, UserPlus } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { Button, Field, Input, OrochiaLogo } from "@/components/ui";
+import { Button, Checkbox, Field, Input, OrochiaLogo } from "@/components/ui";
 import { BirthDateField, isAdultBirthDate } from "@/components/BirthDateField";
 import { UsernameField } from "@/components/UsernameField";
 import { Rich } from "@/components/Rich";
@@ -126,14 +126,12 @@ export default function RegisterPage() {
           <BirthDateField value={dateOfBirth} onChange={setDateOfBirth} />
 
           <div className="space-y-2.5 border-t border-border-subtle pt-3">
-            <label className="flex cursor-pointer items-start gap-2.5 text-xs text-fg-secondary">
-              <input type="checkbox" checked={isAgeVerified} onChange={(e) => setIsAgeVerified(e.target.checked)} className="mt-0.5 h-4 w-4 rounded-sm accent-accent" />
+            <Checkbox checked={isAgeVerified} onCheckedChange={(on) => setIsAgeVerified(on === true)} className="gap-2.5 text-xs text-fg-secondary">
               <span>
                 <Rich text={t("auth.register.ageCertify")} />
               </span>
-            </label>
-            <label className="flex cursor-pointer items-start gap-2.5 text-xs text-fg-secondary">
-              <input type="checkbox" checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} className="mt-0.5 h-4 w-4 rounded-sm accent-accent" />
+            </Checkbox>
+            <Checkbox checked={acceptTerms} onCheckedChange={(on) => setAcceptTerms(on === true)} className="gap-2.5 text-xs text-fg-secondary">
               <span>
                 <Rich
                   text={t("auth.register.acceptTerms")}
@@ -151,7 +149,7 @@ export default function RegisterPage() {
                   }}
                 />
               </span>
-            </label>
+            </Checkbox>
           </div>
 
           <Button type="submit" variant="sensual" size="lg" shape="rounded" loading={isLoading} className="mt-2 w-full rounded-xl font-bold">

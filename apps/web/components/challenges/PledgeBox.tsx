@@ -66,19 +66,22 @@ export function PledgeBox({ c, onPledged }: { c: ChallengeView; onPledged: (bala
     <div className="space-y-3 rounded-2xl border border-border-default p-4">
       <p className="text-sm font-bold text-fg">{t(c.kind === "GOAL" ? "challenge.pledge.titleGoal" : "challenge.pledge.titlePot")}</p>
       <div className="flex flex-wrap gap-2">
-        {c.suggestedPledgesCents.map((s) => (
-          <Chip
-            key={s}
-            type="button"
-            active={!custom && amount === s}
-            onClick={() => {
-              setAmount(s);
-              setCustom("");
-            }}
-          >
-            {money(s)}
-          </Chip>
-        ))}
+        <Chip.Group
+          type="single"
+          label={t(c.kind === "GOAL" ? "challenge.pledge.titleGoal" : "challenge.pledge.titlePot")}
+          value={custom ? "" : String(amount)}
+          onValueChange={(v) => {
+            if (!v) return;
+            setAmount(Number(v));
+            setCustom("");
+          }}
+        >
+          {c.suggestedPledgesCents.map((s) => (
+            <Chip key={s} value={String(s)}>
+              {money(s)}
+            </Chip>
+          ))}
+        </Chip.Group>
         <span className="relative">
           <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-xs font-semibold text-fg-muted">$</span>
           <Input

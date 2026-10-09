@@ -4,7 +4,7 @@ import { Download, Gavel, Play } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-import { Button, cn,Dialog, Input, Segmented, Sheet, Switch } from "@/components/ui";
+import { Button, Chip, cn, Dialog, Input, Sheet, Switch } from "@/components/ui";
 import { type MessageKey,t } from "@/lib/i18n";
 import { money } from "@/lib/money";
 
@@ -88,7 +88,10 @@ export function StartAuctionSheet({ video, open, onClose }: { video: { id: strin
             <div className={label}>
               {t("auction.start.when")}
               <div className="mt-1">
-                <Segmented label={t("auction.start.when")} value={when} onChange={setWhen} options={[{ value: "now", label: t("auction.start.now") }, { value: "later", label: t("auction.start.later") }]} />
+                <Chip.Group type="single" required label={t("auction.start.when")} value={when} onValueChange={(v) => setWhen(v as "now" | "later")}>
+                  <Chip value="now">{t("auction.start.now")}</Chip>
+                  <Chip value="later">{t("auction.start.later")}</Chip>
+                </Chip.Group>
               </div>
               {when === "later" && <Input type="datetime-local" value={startAt} onChange={(e) => setStartAt(e.target.value)} required className={field} aria-label={t("auction.start.startAt")} />}
             </div>
@@ -96,7 +99,13 @@ export function StartAuctionSheet({ video, open, onClose }: { video: { id: strin
             <div className={label}>
               {t("auction.start.duration")}
               <div className="mt-1">
-                <Segmented label={t("auction.start.duration")} value={duration} onChange={setDuration} options={DURATIONS.map((d) => ({ value: d.id, label: t(`auction.start.durations.${d.id}`) }))} />
+                <Chip.Group type="single" required label={t("auction.start.duration")} value={duration} onValueChange={(v) => setDuration(v as DurationId)}>
+                  {DURATIONS.map((d) => (
+                    <Chip key={d.id} value={d.id}>
+                      {t(`auction.start.durations.${d.id}`)}
+                    </Chip>
+                  ))}
+                </Chip.Group>
               </div>
               {duration === "custom" && <Input type="datetime-local" value={endAt} onChange={(e) => setEndAt(e.target.value)} required className={field} aria-label={t("auction.start.endAt")} />}
               <span className={hint}>{t("auction.start.durationHint")}</span>
@@ -105,15 +114,14 @@ export function StartAuctionSheet({ video, open, onClose }: { video: { id: strin
             <div className={label}>
               {t("auction.start.rights")}
               <div className="mt-1">
-                <Segmented
-                  label={t("auction.start.rights")}
-                  value={rights}
-                  onChange={setRights}
-                  options={[
-                    { value: "WATCH", label: <><Play className="h-3.5 w-3.5" aria-hidden /> {t("auction.rights.WATCH")}</> },
-                    { value: "DOWNLOAD", label: <><Download className="h-3.5 w-3.5" aria-hidden /> {t("auction.rights.DOWNLOAD")}</> },
-                  ]}
-                />
+                <Chip.Group type="single" required label={t("auction.start.rights")} value={rights} onValueChange={(v) => setRights(v as "WATCH" | "DOWNLOAD")}>
+                  <Chip value="WATCH">
+                    <Play className="h-3.5 w-3.5" aria-hidden /> {t("auction.rights.WATCH")}
+                  </Chip>
+                  <Chip value="DOWNLOAD">
+                    <Download className="h-3.5 w-3.5" aria-hidden /> {t("auction.rights.DOWNLOAD")}
+                  </Chip>
+                </Chip.Group>
               </div>
               <span className={hint}>{t("auction.start.exclusive")}</span>
             </div>
@@ -123,7 +131,7 @@ export function StartAuctionSheet({ video, open, onClose }: { video: { id: strin
                 <span className="block text-sm font-semibold text-fg">{t("auction.start.automatic")}</span>
                 <span className={hint}>{t(automatic ? "auction.start.automaticHint.on" : "auction.start.automaticHint.off")}</span>
               </span>
-              <Switch checked={automatic} onChange={setAutomatic} label={t("auction.start.automatic")} />
+              <Switch checked={automatic} onCheckedChange={setAutomatic} label={t("auction.start.automatic")} />
             </div>
 
             {priceCents >= 100 && (

@@ -47,9 +47,9 @@ export default async function HomePage() {
   return (
     <div className="mx-auto w-full max-w-7xl overflow-x-hidden px-3 py-4 sm:px-6 sm:py-8">
       {!viewer && (
-        <section className="relative mb-10 overflow-hidden rounded-4xl border border-border-default bg-zinc-950 light:bg-linear-to-br light:from-violet-50 light:via-white light:to-pink-50 isolate">
+        <section className="relative isolate mb-10 overflow-hidden rounded-4xl border border-border-default bg-linear-to-br from-accent/6 via-surface-0 to-accent-2/6">
           <HeroWall images={wall} />
-          <div className="absolute inset-0 z-0 bg-linear-to-r from-zinc-950 via-zinc-950/85 to-transparent light:from-white light:via-white/85" />
+          <div className="absolute inset-0 z-0 bg-linear-to-r from-surface-0 via-surface-0/85 to-transparent" />
           <div className="relative z-10 grid grid-cols-1 items-center gap-10 px-6 py-12 sm:px-12 sm:py-16 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-6 lg:py-20">
           <div className="min-w-0 max-w-xl">
             <p className="hero-fade inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3.5 py-1 text-xs font-semibold text-accent">
@@ -226,7 +226,7 @@ export default async function HomePage() {
       })()}
 
       {!viewer && (
-        <section data-reveal className="relative mb-6 grid items-center gap-10 overflow-hidden rounded-4xl border border-accent/20 bg-linear-to-br from-accent/20 via-zinc-950 to-accent-2/15 p-8 light:via-white sm:p-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
+        <section data-reveal className="relative mb-6 grid items-center gap-10 overflow-hidden rounded-4xl border border-accent/20 bg-linear-to-br from-accent/20 via-surface-0 to-accent-2/15 p-8 sm:p-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
           <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-accent">{t("home.creators.eyebrow")}</p>
           <h2 className="mt-2 max-w-xl font-display text-2xl font-black text-fg sm:text-4xl">{t("home.creators.title")}</h2>

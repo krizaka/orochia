@@ -9,7 +9,7 @@ import {
   Badge,
   Button,
   cn,
-  ConfirmIconButton,
+  ConfirmButton,
   Dialog,
   IconButton,
   Input,
@@ -170,9 +170,9 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
                     <IconButton size="sm" shape="rounded" className="h-8 w-8" onClick={() => edit(v)} label={t("studio.editNamed", { title: v.title })}>
                       <Pencil className="h-3.5 w-3.5" aria-hidden />
                     </IconButton>
-                    <ConfirmIconButton label={t("studio.deleteNamed", { title: v.title })} confirmLabel={t("studio.confirmDelete")} onConfirm={() => void remove(v)}>
+                    <ConfirmButton size="sm" label={t("studio.deleteNamed", { title: v.title })} confirmLabel={t("studio.confirmDelete")} onConfirm={() => void remove(v)}>
                       <Trash2 className="h-3.5 w-3.5" />
-                    </ConfirmIconButton>
+                    </ConfirmButton>
                   </div>
                 )}
               </td>

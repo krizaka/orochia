@@ -5,7 +5,7 @@ import { Check, CheckCircle2, Clapperboard, Eye, Film, Lock, Mail, Scissors, Shi
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 
-import { Badge, Button, buttonVariants, cn, IconButton, Input, Select, Switch, Textarea } from "@/components/ui";
+import { Badge, Button, buttonVariants, Checkbox, cn, IconButton, Input, RadioGroup, Select, Switch, Textarea } from "@/components/ui";
 import { deleteDraft } from "@/lib/drafts";
 import { type MessageKey,t } from "@/lib/i18n";
 import { money } from "@/lib/money";
@@ -419,33 +419,22 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
           </Step>
 
           <Step n={3} title={t("publish.steps.audience")} done={audienceDone}>
-            <div className="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label={t("publish.steps.audience")}>
+            <RadioGroup.Root label={t("publish.steps.audience")} value={visibility} onValueChange={(v) => setVisibility(v as Audience)} className="grid gap-2 sm:grid-cols-2">
               {AUDIENCES.map((a) => {
                 const Icon = AUDIENCE_ICON[a];
-                const active = visibility === a;
                 return (
-                  <button
-                    key={a}
-                    type="button"
-                    role="radio"
-                    aria-checked={active}
-                    onClick={() => setVisibility(a)}
-                    className={cn(
-                      "flex items-start gap-3 rounded-2xl border p-3.5 text-left transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
-                      active ? "border-accent bg-accent/10" : "border-border-default hover:border-border-strong",
-                    )}
-                  >
-                    <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-xl", active ? "bg-accent text-white" : "bg-surface-2 text-fg-secondary")}>
+                  <RadioGroup.Card key={a} value={a} className="group/aud flex-row items-start gap-3 rounded-2xl p-3.5">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-fg-secondary group-data-[state=checked]/aud:bg-accent group-data-[state=checked]/aud:text-on-accent">
                       <Icon className="h-4 w-4" />
                     </span>
                     <span>
                       <span className="block text-sm font-semibold text-fg">{t(`publish.audiences.${a}.title` as MessageKey)}</span>
                       <span className="block text-xs text-fg-secondary">{t(`publish.audiences.${a}.hint` as MessageKey)}</span>
                     </span>
-                  </button>
+                  </RadioGroup.Card>
                 );
               })}
-            </div>
+            </RadioGroup.Root>
 
             {visibility === "TIPPED_UNLOCKED" && (
               <div className="mt-4 rounded-2xl border border-accent/25 bg-accent/6 p-4">
@@ -514,7 +503,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 <span className="block text-sm font-semibold text-fg">{t("publish.rating.blur")}</span>
                 <span className="block text-xs text-fg-secondary">{t("publish.rating.blurHint")}</span>
               </span>
-              <Switch checked={isBlurred} onChange={setIsBlurred} label={t("publish.rating.blur")} />
+              <Switch checked={isBlurred} onCheckedChange={setIsBlurred} label={t("publish.rating.blur")} />
             </div>
           </Step>
 
@@ -524,8 +513,12 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
             </p>
             <div className="space-y-2">
               {(["age", "records", "rights"] as const).map((k) => (
-                <label key={k} className={cn("flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors", certify[k] ? "border-success/40 bg-success/6" : "border-border-default hover:border-white/25")}>
-                  <input type="checkbox" checked={certify[k]} onChange={(e) => setCertify({ ...certify, [k]: e.target.checked })} className="mt-0.5 h-4 w-4 accent-accent" />
+                <Checkbox
+                  key={k}
+                  checked={certify[k]}
+                  onCheckedChange={(on) => setCertify({ ...certify, [k]: on === true })}
+                  className={cn("rounded-xl border p-3 transition-colors", certify[k] ? "border-success/40 bg-success/6" : "border-border-default hover:border-border-strong")}
+                >
                   <span className="text-sm leading-relaxed text-fg">
                     {t(`publish.declarations.${k}`)}
                     {k === "records" && (
@@ -534,7 +527,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                       </Link>
                     )}
                   </span>
-                </label>
+                </Checkbox>
               ))}
             </div>
           </Step>

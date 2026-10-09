@@ -199,14 +199,15 @@ export function VideoEditor({
     <Dialog.Root open onOpenChange={(open) => !open && !busy && cancel()}>
       <Dialog.Content
         size="lg"
+        hideClose
+        dismissible={false}
         aria-describedby={undefined}
-        onEscapeKeyDown={(e) => {
-          e.preventDefault();
+        // Escape asks the editor to cancel (it confirms when there are changes), unless a render is running.
+        onEscapeKeyDown={() => {
           if (!busy) cancel();
         }}
-        onPointerDownOutside={(e) => e.preventDefault()}
         className={cn(
-          "theme-dark h-dvh max-h-dvh w-full rounded-none border-0 bg-surface-0 shadow-2xl sm:h-[min(94vh,920px)] sm:max-h-none sm:rounded-4xl sm:border sm:border-border-default [&>button:last-child]:hidden",
+          "theme-dark h-dvh max-h-dvh w-full rounded-none border-0 bg-surface-0 shadow-2xl sm:h-[min(94vh,920px)] sm:max-h-none sm:rounded-4xl sm:border sm:border-border-default",
           wide ? "sm:max-w-2xl lg:max-w-6xl" : "sm:max-w-120",
         )}
       >

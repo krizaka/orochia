@@ -211,8 +211,9 @@ export function CreatorStoriesBar() {
         {ring && story && (
           <Dialog.Content
             size="md"
+            hideClose
             aria-describedby={undefined}
-            className="theme-dark h-dvh max-h-dvh w-full justify-between rounded-none border-0 bg-media sm:h-[88vh] sm:max-h-[780px] sm:w-full sm:rounded-3xl sm:border sm:border-border-strong [&>button:last-child]:hidden"
+            className="theme-dark h-dvh max-h-dvh w-full justify-between rounded-none border-0 bg-media sm:h-[88vh] sm:max-h-[780px] sm:w-full sm:rounded-3xl sm:border sm:border-border-strong"
           >
             <Dialog.Title className="sr-only">{ring.displayName}</Dialog.Title>
             <div className="absolute inset-0 flex items-center justify-center bg-media">

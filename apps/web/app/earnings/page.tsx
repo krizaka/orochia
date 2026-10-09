@@ -8,7 +8,7 @@ import React, { Suspense, useCallback, useEffect, useState } from "react";
 import { MonthlyChart } from "@/components/money/MonthlyChart";
 import { PayoutAccountSheet } from "@/components/money/PayoutAccountSheet";
 import { WithdrawSheet } from "@/components/money/WithdrawSheet";
-import { Badge, type BadgeProps,Button, buttonVariants, cn, orochiaButton, Segmented, Spinner } from "@/components/ui";
+import { Badge, type BadgeProps, Button, buttonVariants, Chip, cn, orochiaButton, Spinner } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 import { compact, money } from "@/lib/money";
@@ -99,9 +99,13 @@ function EarningsPage() {
           <h1 className="font-display text-3xl font-black tracking-tight text-fg">{t("earnings.title")}</h1>
           <p className="mt-1 text-sm text-fg-secondary">{t("earnings.subtitle")}</p>
         </div>
-        <div className="w-full sm:w-88">
-          <Segmented label={t("earnings.title")} value={period} onChange={(p) => setParam("period", p, "30d")} options={PERIODS.map((p) => ({ value: p, label: t(`earnings.periods.${p}`) }))} />
-        </div>
+        <Chip.Group type="single" required size="sm" label={t("earnings.period")} value={period} onValueChange={(p) => setParam("period", p, "30d")}>
+          {PERIODS.map((p) => (
+            <Chip key={p} value={p}>
+              {t(`earnings.periods.${p}`)}
+            </Chip>
+          ))}
+        </Chip.Group>
       </header>
 
       {!s ? (
@@ -137,9 +141,13 @@ function EarningsPage() {
             <section className={card} aria-labelledby="videos-title">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <h2 id="videos-title" className="text-sm font-bold text-fg">{t("earnings.videos")}</h2>
-                <div className="w-44">
-                  <Segmented label={t("earnings.sortBy")} value={sort} onChange={(v) => setParam("sort", v, "net")} options={(["net", "views"] as const).map((v) => ({ value: v, label: t(`earnings.sort.${v}`) }))} />
-                </div>
+                <Chip.Group type="single" required size="sm" label={t("earnings.sortBy")} value={sort} onValueChange={(v) => setParam("sort", v, "net")}>
+                  {(["net", "views"] as const).map((v) => (
+                    <Chip key={v} value={v}>
+                      {t(`earnings.sort.${v}`)}
+                    </Chip>
+                  ))}
+                </Chip.Group>
               </div>
               {videos.length === 0 ? (
                 <p className="py-8 text-center text-xs text-fg-muted">{t("earnings.noVideos")}</p>

@@ -5,7 +5,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 
 import { timeAgo } from "@/components/notifications/useNotifications";
-import { Badge, Button, Chip, cn, ConfirmIconButton, Countdown, Input, orochiaButton, Spinner } from "@/components/ui";
+import { Badge, Button, Chip, cn, ConfirmButton, Countdown, Input, orochiaButton, Spinner } from "@/components/ui";
 import { type MessageKey,t } from "@/lib/i18n";
 import { money } from "@/lib/money";
 
@@ -165,13 +165,19 @@ export function AuctionPanel({
         {/* Bid form */}
         {open && !viewer.isCreator && viewer.signedIn && (
           <form onSubmit={submit} className="space-y-3" aria-label={t("auction.placeBid")}>
-            <div className="grid grid-cols-3 gap-2" role="group" aria-label={t("auction.quickBids")}>
+            <Chip.Group
+              type="single"
+              label={t("auction.quickBids")}
+              value={String(Math.round(Number(amount) * 100))}
+              onValueChange={(v) => v && setAmount((Number(v) / 100).toFixed(2))}
+              className="grid grid-cols-3 gap-2"
+            >
               {a.suggestedBidsCents.map((cents) => (
-                <Chip key={cents} active={Math.round(Number(amount) * 100) === cents} onClick={() => setAmount((cents / 100).toFixed(2))} className="h-10 w-full font-mono tabular-nums">
+                <Chip key={cents} value={String(cents)} className="h-10 w-full font-mono tabular-nums">
                   {money(cents)}
                 </Chip>
               ))}
-            </div>
+            </Chip.Group>
             <div className="flex gap-2">
               <label className="relative min-w-0 flex-1">
                 <span className="sr-only">{t("auction.yourBid")}</span>
@@ -225,17 +231,17 @@ export function AuctionPanel({
               <CheckCircle2 className="h-4 w-4" aria-hidden />
               {t("auction.accept", { amount: money(a.highestBidCents) })}
             </Button>
-            <ConfirmIconButton label={t("auction.decline")} confirmLabel={t("auction.declineConfirm")} disabled={busy} onConfirm={() => void act("POST", `/api/auctions/${a.id}/decision`, { accept: false })}>
+            <ConfirmButton size="sm" label={t("auction.decline")} confirmLabel={t("auction.declineConfirm")} disabled={busy} onConfirm={() => void act("POST", `/api/auctions/${a.id}/decision`, { accept: false })}>
               <X className="h-4 w-4" />
-            </ConfirmIconButton>
+            </ConfirmButton>
           </div>
         )}
         {viewer.isCreator && a.status === "OPEN" && a.bidsCount === 0 && (
           <div className="flex items-center justify-between gap-3 rounded-2xl border border-border-subtle bg-surface-2 px-4 py-3">
             <span className="text-xs text-fg-secondary">{t("auction.cancelHint")}</span>
-            <ConfirmIconButton label={t("auction.cancel")} confirmLabel={t("auction.cancelConfirm")} disabled={busy} onConfirm={() => void act("DELETE", `/api/auctions/${a.id}`)}>
+            <ConfirmButton size="sm" label={t("auction.cancel")} confirmLabel={t("auction.cancelConfirm")} disabled={busy} onConfirm={() => void act("DELETE", `/api/auctions/${a.id}`)}>
               <X className="h-4 w-4" />
-            </ConfirmIconButton>
+            </ConfirmButton>
           </div>
         )}
 
