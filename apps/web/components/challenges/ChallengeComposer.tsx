@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Clapperboard, Clock, Flame, Lock, Megaphone, Target, Users } from "lucide-react";
 import { Button, Segmented, Sheet, cx } from "@/components/ui";
-import { usd } from "@/components/money/format";
+import { money } from "@/lib/money";
 import { t, type MessageKey } from "@/lib/i18n";
 
 type Kind = "GOAL" | "REQUEST" | "OPEN_CALL";
@@ -115,7 +115,7 @@ export function ChallengeComposer({
     if (data?.code === "OFFER_TOO_LOW" && data.minimum)
       setError(
         t("challenge.errors.OFFER_TOO_LOW_AMOUNT", {
-          amount: usd(data.minimum),
+          amount: money(data.minimum),
         }),
       );
     else if (data?.code) setError(t(`challenge.errors.${data.code}` as MessageKey));
@@ -324,7 +324,7 @@ export function ChallengeComposer({
         {cents >= 100 && (
           <p className="rounded-2xl border border-fuchsia-500/20 bg-fuchsia-500/[0.06] px-4 py-3 text-xs leading-relaxed text-zinc-300 light:text-slate-700">
             {t(`challenge.compose.summary.${kind}`, {
-              amount: usd(cents),
+              amount: money(cents),
               days: windows.length > 0 ? DAYS[windowId] : 3,
               delivery,
               what: t(`challenge.deliverable.${deliverable}`).toLowerCase(),

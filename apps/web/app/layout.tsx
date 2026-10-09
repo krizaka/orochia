@@ -1,10 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { ClientLayoutShell } from "@/components/ClientLayoutShell";
-import { MotionObserver } from "@/components/ui";
+import { MotionObserver, ThemeProvider, ThemeScript } from "@/components/ui";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AuthProvider } from "@/lib/auth-context";
-import { ThemeProvider } from "@/components/ThemeProvider";
 import { JsonLd } from "@/components/JsonLd";
 import { INDEXABLE, NOINDEX, SITE_DESCRIPTION, SITE_NAME, SITE_URL, siteGraph } from "@/lib/seo";
 import "./globals.css";
@@ -59,27 +58,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${outfit.variable} ${jakarta.variable} overflow-x-hidden max-w-full w-full`}>
       <head>
-        {/* Anti-flicker script for instant dark/light hydration */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var match = document.cookie.match(new RegExp('(^| )kz-theme=([^;]+)'));
-                  var theme = match ? match[2] : localStorage.getItem('kz-theme');
-                  if (!theme) {
-                    theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-                  }
-                  document.documentElement.classList.remove('dark', 'light');
-                  document.documentElement.classList.add(theme);
-                  document.documentElement.style.colorScheme = theme;
-                } catch (e) {}
-              })();
-            `,
-          }}
-        />
+        {/* Applies the persisted theme (`kz-theme`: dark · light · system) before the first paint: no flash. */}
+        <ThemeScript />
       </head>
-      <body className="min-h-screen bg-background text-foreground antialiased selection:bg-violet-600 selection:text-white pb-20 md:pb-0 overflow-x-hidden max-w-full w-full relative">
+      <body className="min-h-screen bg-surface-0 text-fg antialiased selection:bg-accent selection:text-on-accent pb-20 md:pb-0 overflow-x-hidden max-w-full w-full relative">
         <JsonLd data={siteGraph()} />
         <ThemeProvider>
           <AuthProvider>

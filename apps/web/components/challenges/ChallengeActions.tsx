@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Check, Clapperboard, Megaphone, PackageCheck, Play, Undo2, X } from "lucide-react";
 import { Button, ConfirmIconButton, Sheet, cx } from "@/components/ui";
-import { usd } from "@/components/money/format";
+import { money } from "@/lib/money";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 import type { ChallengeView } from "@/lib/challenges";
@@ -47,7 +47,7 @@ function DeliverSheet({ c, open, onClose, onDone }: { c: ChallengeView; open: bo
             {t("common.cancel")}
           </Button>
           <Button variant="primary" loading={busy} disabled={!picked} onClick={deliver} icon={<PackageCheck className="h-4 w-4" />}>
-            {t("challenge.deliver.submit", { amount: usd(c.pledgedCents) })}
+            {t("challenge.deliver.submit", { amount: money(c.pledgedCents) })}
           </Button>
         </div>
       }
@@ -122,7 +122,7 @@ export function ChallengeActions({ c, onChanged }: { c: ChallengeView; onChanged
         <>
           <p className="text-sm text-zinc-200 light:text-slate-800">
             {t("challenge.actions.answerHint", {
-              amount: usd(c.pledgedCents),
+              amount: money(c.pledgedCents),
               days: c.deliveryDays,
             })}
           </p>

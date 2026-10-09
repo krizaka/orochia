@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
+import { money } from "@/lib/money";
 import { VideoManager, type StudioVideo } from "@/components/dashboard/VideoManager";
 import { NetworkPanel } from "@/components/dashboard/NetworkPanel";
 import { PlaylistsPanel } from "@/components/dashboard/PlaylistsPanel";
@@ -74,8 +75,6 @@ interface Treasury {
 
 type Tab = "overview" | "library" | "ledger" | "uploads" | "network" | "playlists" | "lists" | "invitations" | "treasury" | "settings";
 
-const money = (cents: number) =>
-  `$${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const duration = (secs: number) => `${Math.floor(secs / 60)}:${String(Math.floor(secs % 60)).padStart(2, "0")}`;
 const day = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 

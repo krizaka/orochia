@@ -9,7 +9,7 @@ import { Button, Segmented, buttonClass, cx } from "@/components/ui";
 import { MonthlyChart } from "@/components/money/MonthlyChart";
 import { PayoutAccountSheet } from "@/components/money/PayoutAccountSheet";
 import { WithdrawSheet } from "@/components/money/WithdrawSheet";
-import { compact, usd } from "@/components/money/format";
+import { compact, money } from "@/lib/money";
 import { t } from "@/lib/i18n";
 
 type Period = "30d" | "90d" | "12m" | "all";
@@ -110,12 +110,12 @@ function EarningsPage() {
       ) : (
         <div className={cx("space-y-6 transition-opacity", loading && "opacity-60")}>
           <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-            <Stat icon={Wallet} label={t("earnings.net")} value={usd(s.netCents)} hint={t("earnings.netHint", { fee: s.feePercent, payments: s.payments })} />
+            <Stat icon={Wallet} label={t("earnings.net")} value={money(s.netCents)} hint={t("earnings.netHint", { fee: s.feePercent, payments: s.payments })} />
             <Stat
               icon={Landmark}
               label={t("earnings.available")}
-              value={usd(s.availableCents)}
-              hint={s.pendingPayoutCents > 0 ? t("earnings.pending", { amount: usd(s.pendingPayoutCents) }) : undefined}
+              value={money(s.availableCents)}
+              hint={s.pendingPayoutCents > 0 ? t("earnings.pending", { amount: money(s.pendingPayoutCents) }) : undefined}
               action={
                 <Button variant="primary" size="sm" onClick={() => (data?.payoutAccount ? setWithdrawOpen(true) : setAccountOpen(true))}>
                   {t("earnings.withdraw")}
@@ -123,7 +123,7 @@ function EarningsPage() {
               }
             />
             <Stat icon={Eye} label={t("earnings.views")} value={compact(s.totalViews)} hint={t("earnings.viewsHint", { count: compact(s.periodViews) })} />
-            <Stat icon={Users} label={t("earnings.supporters")} value={compact(s.supporters)} hint={t("earnings.supportersHint", { amount: usd(s.grossCents) })} />
+            <Stat icon={Users} label={t("earnings.supporters")} value={compact(s.supporters)} hint={t("earnings.supportersHint", { amount: money(s.grossCents) })} />
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
@@ -153,7 +153,7 @@ function EarningsPage() {
                           <span className="block truncate text-sm font-medium text-white light:text-slate-900">{v.title}</span>
                           <span className="block text-[11px] text-zinc-500">{t("earnings.videoMeta", { views: compact(v.totalViews), payments: v.payments })}</span>
                         </span>
-                        <span className="font-mono text-sm font-semibold tabular-nums text-white light:text-slate-900">{usd(v.netCents)}</span>
+                        <span className="font-mono text-sm font-semibold tabular-nums text-white light:text-slate-900">{money(v.netCents)}</span>
                       </Link>
                     </li>
                   ))}
@@ -161,7 +161,7 @@ function EarningsPage() {
               )}
               {low.length > 0 && earning.length > 3 && (
                 <p className="mt-3 border-t border-white/5 pt-3 text-[11px] text-zinc-500 light:border-black/5">
-                  {t("earnings.low")}: {low.map((v) => `${v.title} (${usd(v.netCents)})`).join(" · ")}
+                  {t("earnings.low")}: {low.map((v) => `${v.title} (${money(v.netCents)})`).join(" · ")}
                 </p>
               )}
             </section>
@@ -193,7 +193,7 @@ function EarningsPage() {
                         </td>
                         <td className="max-w-[16rem] truncate px-2 py-2.5 text-zinc-200 light:text-slate-700">{l.videoTitle ?? "—"}</td>
                         <td className="px-2 py-2.5 text-xs text-zinc-400 light:text-slate-500">{l.supporter ?? ""}</td>
-                        <td className="whitespace-nowrap px-5 py-2.5 text-right font-mono font-semibold tabular-nums text-emerald-300 light:text-emerald-700">+{usd(l.netCents)}</td>
+                        <td className="whitespace-nowrap px-5 py-2.5 text-right font-mono font-semibold tabular-nums text-emerald-300 light:text-emerald-700">+{money(l.netCents)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -226,7 +226,7 @@ function EarningsPage() {
                     </Button>
                   </div>
                 )}
-                <p className="mt-2 text-[11px] text-zinc-500">{t("earnings.paidOut", { amount: usd(s.paidOutCents) })}</p>
+                <p className="mt-2 text-[11px] text-zinc-500">{t("earnings.paidOut", { amount: money(s.paidOutCents) })}</p>
               </div>
               <div>
                 <p className="mb-2 text-xs font-semibold text-zinc-400 light:text-slate-500">{t("earnings.history")}</p>
@@ -238,7 +238,7 @@ function EarningsPage() {
                       <li key={p.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
                         <span className="text-xs text-zinc-500">{new Date(p.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
                         <span className={cx("rounded-full px-2 py-0.5 text-[11px] font-semibold", STATUS_TONE[p.status])}>{t(`earnings.statuses.${p.status}`)}</span>
-                        <span className="font-mono font-semibold tabular-nums text-white light:text-slate-900">{usd(p.amountCents)}</span>
+                        <span className="font-mono font-semibold tabular-nums text-white light:text-slate-900">{money(p.amountCents)}</span>
                       </li>
                     ))}
                   </ul>

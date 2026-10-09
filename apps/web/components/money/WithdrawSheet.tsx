@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { Button, Chip, Sheet } from "@/components/ui";
-import { usd } from "./format";
+import { money } from "@/lib/money";
 import { t } from "@/lib/i18n";
 
 const MIN = 2000;
@@ -44,7 +44,7 @@ export function WithdrawSheet({ open, onClose, availableCents, destinationHint, 
       footer={
         !done && (
           <Button variant="primary" size="lg" round={false} className="w-full" disabled={!valid} loading={busy} onClick={() => void submit()}>
-            {t("earnings.request.submit", { amount: usd(cents) })}
+            {t("earnings.request.submit", { amount: money(cents) })}
           </Button>
         )
       }
@@ -79,7 +79,7 @@ export function WithdrawSheet({ open, onClose, availableCents, destinationHint, 
               if (value < MIN) return null;
               return (
                 <Chip key={share} active={cents === value} onClick={() => setAmount((value / 100).toFixed(2))}>
-                  {share === 1 ? t("earnings.request.max", { amount: usd(value) }) : usd(value)}
+                  {share === 1 ? t("earnings.request.max", { amount: money(value) }) : money(value)}
                 </Chip>
               );
             })}

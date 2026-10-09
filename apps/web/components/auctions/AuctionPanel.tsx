@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, Clock, Download, Gavel, Info, Loader2, Play, ShieldCheck, Sparkles, Timer, Trophy, Wallet, X } from "lucide-react";
 import { Button, Chip, ConfirmIconButton, Countdown, LiveBadge, buttonClass, cx } from "@/components/ui";
-import { usd } from "@/components/money/format";
+import { money } from "@/lib/money";
 import { timeAgo } from "@/components/notifications/useNotifications";
 import { t, type MessageKey } from "@/lib/i18n";
 import type { Auction } from "./types";
@@ -63,8 +63,8 @@ export function AuctionPanel({
       return;
     }
     const code = data?.code;
-    if (code === "INSUFFICIENT_CREDITS") setError({ text: t("auction.errors.INSUFFICIENT_CREDITS", { balance: usd(data?.balance ?? 0) }), topUp: true });
-    else if (code === "BID_TOO_LOW") setError({ text: t("auction.errors.BID_TOO_LOW", { minimum: usd(data?.minimum ?? a.minimumNextBidCents) }) });
+    if (code === "INSUFFICIENT_CREDITS") setError({ text: t("auction.errors.INSUFFICIENT_CREDITS", { balance: money(data?.balance ?? 0) }), topUp: true });
+    else if (code === "BID_TOO_LOW") setError({ text: t("auction.errors.BID_TOO_LOW", { minimum: money(data?.minimum ?? a.minimumNextBidCents) }) });
     else if (code) setError({ text: t(`auction.errors.${code}` as MessageKey) });
     else setError({ text: t("auction.errors.generic") });
     if (code === "NOT_OPEN") onChanged();
@@ -74,7 +74,7 @@ export function AuctionPanel({
     e.preventDefault();
     const cents = Math.round(Number(amount) * 100);
     if (!Number.isFinite(cents) || cents < a.minimumNextBidCents) {
-      setError({ text: t("auction.errors.BID_TOO_LOW", { minimum: usd(a.minimumNextBidCents) }) });
+      setError({ text: t("auction.errors.BID_TOO_LOW", { minimum: money(a.minimumNextBidCents) }) });
       return;
     }
     void bid(cents);
@@ -126,7 +126,7 @@ export function AuctionPanel({
         <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-wider text-violet-200 light:text-violet-700">{priceLabel}</p>
-            <p key={pulse} className="kz-fade font-display text-4xl font-black tabular-nums tracking-tight text-white light:text-slate-900">{usd(price)}</p>
+            <p key={pulse} className="kz-fade font-display text-4xl font-black tabular-nums tracking-tight text-white light:text-slate-900">{money(price)}</p>
             <p className="mt-0.5 text-xs text-zinc-400 light:text-slate-500">
               {t("auction.counts", { bids: a.bidsCount, bidders: a.biddersCount })}
             </p>
@@ -169,7 +169,7 @@ export function AuctionPanel({
             <div className="grid grid-cols-3 gap-2" role="group" aria-label={t("auction.quickBids")}>
               {a.suggestedBidsCents.map((cents) => (
                 <Chip key={cents} active={Math.round(Number(amount) * 100) === cents} onClick={() => setAmount((cents / 100).toFixed(2))} className="h-10 w-full font-mono tabular-nums">
-                  {usd(cents)}
+                  {money(cents)}
                 </Chip>
               ))}
             </div>
@@ -192,10 +192,10 @@ export function AuctionPanel({
               </Button>
             </div>
             <p className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-500 light:text-slate-500">
-              <span>{t("auction.minimum", { amount: usd(a.minimumNextBidCents) })}</span>
+              <span>{t("auction.minimum", { amount: money(a.minimumNextBidCents) })}</span>
               {viewer.balanceCents !== null && (
                 <Link href="/wallet" className="inline-flex items-center gap-1 font-semibold text-violet-300 hover:text-violet-200 light:text-violet-700 hover:light:text-violet-900">
-                  <Wallet className="h-3 w-3" aria-hidden /> {t("auction.balance", { amount: usd(viewer.balanceCents) })}
+                  <Wallet className="h-3 w-3" aria-hidden /> {t("auction.balance", { amount: money(viewer.balanceCents) })}
                 </Link>
               )}
             </p>
@@ -212,7 +212,7 @@ export function AuctionPanel({
         {viewer.isCreator && a.phase === "AWAITING_DECISION" && (
           <div className="grid grid-cols-[1fr_auto] items-center gap-2">
             <Button variant="primary" size="lg" round={false} loading={busy} icon={<CheckCircle2 className="h-4 w-4" />} onClick={() => void act("POST", `/api/auctions/${a.id}/decision`, { accept: true })}>
-              {t("auction.accept", { amount: usd(a.highestBidCents) })}
+              {t("auction.accept", { amount: money(a.highestBidCents) })}
             </Button>
             <ConfirmIconButton label={t("auction.decline")} confirmLabel={t("auction.declineConfirm")} disabled={busy} onConfirm={() => void act("POST", `/api/auctions/${a.id}/decision`, { accept: false })}>
               <X className="h-4 w-4" />
@@ -270,7 +270,7 @@ export function AuctionPanel({
                     <span className="block text-[11px] text-zinc-500">{timeAgo(b.createdAt)}</span>
                   </span>
                   {i === 0 && a.status !== "DECLINED" && a.status !== "CANCELLED" && <Trophy className="h-3.5 w-3.5 text-amber-300 light:text-amber-600" aria-label={t("auction.leading")} />}
-                  <span className="font-mono text-sm font-semibold tabular-nums text-white light:text-slate-900">{usd(b.amountCents)}</span>
+                  <span className="font-mono text-sm font-semibold tabular-nums text-white light:text-slate-900">{money(b.amountCents)}</span>
                 </li>
               ))}
             </ol>
@@ -300,14 +300,14 @@ function Standing({ auction: a }: { auction: Auction }) {
   let tone: "ok" | "warn" | "info" = "info";
   let text: string | null = null;
   if (v.isCreator) {
-    if (a.status === "SOLD") [tone, text] = ["ok", t("auction.standing.creatorSold", { amount: usd(a.highestBidCents), username: a.leaderUsername ?? "" })];
-    else if (a.phase === "AWAITING_DECISION") text = t("auction.standing.creatorDecide", { amount: usd(a.highestBidCents), username: a.leaderUsername ?? t("auction.bidder", { n: a.leaderAlias ?? 0 }) });
+    if (a.status === "SOLD") [tone, text] = ["ok", t("auction.standing.creatorSold", { amount: money(a.highestBidCents), username: a.leaderUsername ?? "" })];
+    else if (a.phase === "AWAITING_DECISION") text = t("auction.standing.creatorDecide", { amount: money(a.highestBidCents), username: a.leaderUsername ?? t("auction.bidder", { n: a.leaderAlias ?? 0 }) });
     else if (a.phase === "OPEN" && a.bidsCount > 0) text = t("auction.standing.creatorLeader", { username: a.leaderUsername ?? t("auction.bidder", { n: a.leaderAlias ?? 0 }) });
     else if (a.settlement === "HIGHEST_BID" && (a.phase === "OPEN" || a.phase === "UPCOMING")) text = t("auction.standing.creatorAutomatic");
   } else if (v.won) {
     [tone, text] = ["ok", t(a.rights === "DOWNLOAD" ? "auction.standing.wonDownload" : "auction.standing.won")];
   } else if (a.phase === "AWAITING_DECISION" && v.isLeader) {
-    text = t("auction.standing.underReview", { amount: usd(a.highestBidCents) });
+    text = t("auction.standing.underReview", { amount: money(a.highestBidCents) });
   } else if (a.phase === "OPEN" && v.isLeader) {
     [tone, text] = ["ok", t("auction.standing.leading")];
   } else if (a.phase === "OPEN" && v.alias !== null) {

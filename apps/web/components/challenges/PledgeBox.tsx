@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Coins, Lock, Wallet } from "lucide-react";
 import { Button, Chip, buttonClass } from "@/components/ui";
-import { usd } from "@/components/money/format";
+import { money } from "@/lib/money";
 import { t, type MessageKey } from "@/lib/i18n";
 import type { ChallengeView } from "@/lib/challenges";
 
@@ -22,7 +22,7 @@ export async function postJson(url: string, body?: unknown): Promise<{ ok: boole
 export function errorText(data: Record<string, unknown>): string {
   if (data.code === "INSUFFICIENT_CREDITS")
     return t("challenge.errors.INSUFFICIENT_CREDITS_BALANCE", {
-      balance: usd(Number(data.balance ?? 0)),
+      balance: money(Number(data.balance ?? 0)),
     });
   return data.code ? t(`challenge.errors.${String(data.code)}` as MessageKey) : t("challenge.errors.generic");
 }
@@ -76,7 +76,7 @@ export function PledgeBox({ c, onPledged }: { c: ChallengeView; onPledged: (bala
               setCustom("");
             }}
           >
-            {usd(s)}
+            {money(s)}
           </Chip>
         ))}
         <span className="relative">
@@ -101,7 +101,7 @@ export function PledgeBox({ c, onPledged }: { c: ChallengeView; onPledged: (bala
         onClick={pledge}
         icon={<Coins className="h-4 w-4" />}
       >
-        {t("challenge.pledge.submit", { amount: usd(Math.max(cents || 0, 0)) })}
+        {t("challenge.pledge.submit", { amount: money(Math.max(cents || 0, 0)) })}
       </Button>
       {error && (
         <p role="alert" className="text-xs text-rose-400 light:text-rose-600">
@@ -121,13 +121,13 @@ export function PledgeBox({ c, onPledged }: { c: ChallengeView; onPledged: (bala
           <span className="inline-flex items-center gap-1">
             <Wallet className="h-3 w-3" aria-hidden />{" "}
             {t("challenge.pledge.balance", {
-              balance: usd(c.viewer.balanceCents),
+              balance: money(c.viewer.balanceCents),
             })}
           </span>
         )}
       </p>
       {c.viewer.pledgedCents > 0 && (
-        <p className="text-xs font-semibold text-emerald-300 light:text-emerald-700">{t("challenge.pledge.yours", { amount: usd(c.viewer.pledgedCents) })}</p>
+        <p className="text-xs font-semibold text-emerald-300 light:text-emerald-700">{t("challenge.pledge.yours", { amount: money(c.viewer.pledgedCents) })}</p>
       )}
     </div>
   );

@@ -7,7 +7,7 @@ import { VideoEditor } from "./VideoEditor";
 import { DraftsShelf } from "./DraftsShelf";
 import { useObjectUrl } from "./editor/media";
 import { Button, Switch, buttonClass, cx } from "@/components/ui";
-import { usd } from "@/components/money/format";
+import { money } from "@/lib/money";
 import { useUploadManager } from "@/lib/upload-manager";
 import { UPLOAD_LIMITS } from "@orochia/media/limits";
 import { EDITOR_MAX_BYTES, type VideoEdit } from "@/lib/video-edit";
@@ -456,9 +456,9 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 </label>
                 <div className="mt-3 grid grid-cols-3 gap-2 text-center text-[11px]">
                   {[
-                    { k: t("publish.split.fan"), v: usd(priceCents) },
-                    { k: t("publish.split.fee", { fee: platformFeePercent }), v: usd(feeCents) },
-                    { k: t("publish.split.you"), v: usd(priceCents - feeCents), strong: true },
+                    { k: t("publish.split.fan"), v: money(priceCents) },
+                    { k: t("publish.split.fee", { fee: platformFeePercent }), v: money(feeCents) },
+                    { k: t("publish.split.you"), v: money(priceCents - feeCents), strong: true },
                   ].map((c) => (
                     <div key={c.k} className={cx("rounded-xl p-2.5", c.strong ? "bg-emerald-500/15 ring-1 ring-emerald-500/30" : "bg-white/5 light:bg-black/3")}>
                       <span className="block text-zinc-400 light:text-slate-500">{c.k}</span>
@@ -553,7 +553,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 )}
                 {visibility === "TIPPED_UNLOCKED" && (
                   <span className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-linear-to-r from-violet-600 to-pink-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                    <Lock className="h-3 w-3" /> {usd(priceCents)}
+                    <Lock className="h-3 w-3" /> {money(priceCents)}
                   </span>
                 )}
                 {duration !== null && <span className="absolute bottom-2 right-2 rounded-sm bg-black/70 px-1.5 py-0.5 font-mono text-[10px] text-white">{clockOf(duration)}</span>}

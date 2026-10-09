@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Download, Gavel, Play } from "lucide-react";
 import { Button, Segmented, Sheet, Switch } from "@/components/ui";
-import { usd } from "@/components/money/format";
+import { money } from "@/lib/money";
 import { t, type MessageKey } from "@/lib/i18n";
 
 const DURATIONS = [
@@ -135,7 +135,7 @@ export function StartAuctionSheet({ video, open, onClose }: { video: { id: strin
         {priceCents >= 100 && (
           <p className="rounded-2xl border border-fuchsia-500/20 bg-fuchsia-500/[0.06] px-4 py-3 text-xs leading-relaxed text-zinc-300 light:text-slate-700">
             {t("auction.start.summary", {
-              price: usd(priceCents),
+              price: money(priceCents),
               when: when === "now" ? t("auction.start.nowLower") : new Date(startAt).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }),
               duration: t(`auction.start.durations.${duration}`),
               rights: t(`auction.rights.${rights}`),

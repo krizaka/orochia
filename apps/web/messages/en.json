@@ -1239,7 +1239,8 @@
   },
   "theme": {
     "toLight": "Switch to light mode",
-    "toDark": "Switch to dark mode"
+    "toDark": "Switch to dark mode",
+    "toSystem": "Follow the system theme"
   },
   "collectionPage": {
     "eyebrow": "Collection",

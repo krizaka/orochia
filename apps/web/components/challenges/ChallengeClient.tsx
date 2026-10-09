@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { ArrowLeft, Clapperboard, Clock, Crown, Lock, Play, Timer, Users } from "lucide-react";
 import { Countdown, buttonClass } from "@/components/ui";
-import { usd } from "@/components/money/format";
+import { money } from "@/lib/money";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 import { ChallengeActions } from "./ChallengeActions";
@@ -117,7 +117,7 @@ export function ChallengeClient({ id }: { id: string }) {
                 {c.recentPledges.map((p, i) => (
                   <li key={p.id} className={`flex items-center justify-between py-2 text-sm ${i === 0 && pulse ? "kz-fade" : ""}`}>
                     <span className="text-zinc-300 light:text-slate-700">{p.mine ? t("challenge.you") : t("challenge.backer", { n: p.alias })}</span>
-                    <span className="font-mono font-semibold tabular-nums text-white light:text-slate-900">+{usd(p.amountCents)}</span>
+                    <span className="font-mono font-semibold tabular-nums text-white light:text-slate-900">+{money(p.amountCents)}</span>
                   </li>
                 ))}
               </ol>
@@ -164,7 +164,7 @@ export function ChallengeClient({ id }: { id: string }) {
                       {i + 1}
                     </span>
                     <span className="flex-1 text-zinc-300 light:text-slate-700">{b.mine ? t("challenge.you") : t("challenge.backer", { n: b.alias })}</span>
-                    <span className="font-mono font-semibold tabular-nums text-white light:text-slate-900">{usd(b.totalCents)}</span>
+                    <span className="font-mono font-semibold tabular-nums text-white light:text-slate-900">{money(b.totalCents)}</span>
                   </li>
                 ))}
               </ol>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { usd } from "./format";
+import { money } from "@/lib/money";
 
 /**
  * Net earnings per month — one series, so one hue and no legend (the heading names it). Bars sit on the baseline with
@@ -19,7 +19,7 @@ export function MonthlyChart({ data, label }: { data: { month: string; netCents:
       <div className="mb-2 h-5 text-xs text-zinc-400 light:text-slate-500" aria-live="polite">
         {current && (
           <span>
-            <span className="font-semibold text-white light:text-slate-900">{usd(current.netCents)}</span> · {monthName(current.month, "long")}
+            <span className="font-semibold text-white light:text-slate-900">{money(current.netCents)}</span> · {monthName(current.month, "long")}
           </span>
         )}
       </div>
@@ -30,7 +30,7 @@ export function MonthlyChart({ data, label }: { data: { month: string; netCents:
             <button
               key={d.month}
               type="button"
-              aria-label={`${monthName(d.month, "long")}: ${usd(d.netCents)}`}
+              aria-label={`${monthName(d.month, "long")}: ${money(d.netCents)}`}
               onMouseEnter={() => setActive(i)}
               onFocus={() => setActive(i)}
               onBlur={() => setActive(null)}
@@ -57,7 +57,7 @@ export function MonthlyChart({ data, label }: { data: { month: string; netCents:
           {data.map((d) => (
             <tr key={d.month}>
               <th scope="row">{monthName(d.month, "long")}</th>
-              <td>{usd(d.netCents)}</td>
+              <td>{money(d.netCents)}</td>
             </tr>
           ))}
         </tbody>

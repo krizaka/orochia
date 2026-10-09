@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Coins, Gavel, Loader2, Lock, RotateCcw, Sparkles, Undo2, XCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { Button, cx } from "@/components/ui";
-import { usd } from "@/components/money/format";
+import { money } from "@/lib/money";
 import { t, type MessageKey } from "@/lib/i18n";
 
 interface Pack {
@@ -109,10 +109,10 @@ function WalletPage() {
         <section className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-zinc-950/60 light:border-black/5 light:bg-white light:shadow-xl light:shadow-violet-900/5">
           <div className="relative overflow-hidden bg-[radial-gradient(120%_140%_at_0%_0%,rgba(139,92,246,0.45),transparent_60%),radial-gradient(100%_120%_at_100%_100%,rgba(236,72,153,0.35),transparent_60%)] px-6 py-7 light:bg-[radial-gradient(120%_140%_at_0%_0%,rgba(139,92,246,0.18),transparent_60%),radial-gradient(100%_120%_at_100%_100%,rgba(236,72,153,0.14),transparent_60%)]">
             <p className="text-xs font-semibold uppercase tracking-wider text-violet-200 light:text-violet-700">{t("wallet.balance")}</p>
-            <p className="mt-1 font-display text-5xl font-black tabular-nums tracking-tight text-white light:text-slate-900">{wallet ? usd(wallet.balanceCents) : "—"}</p>
+            <p className="mt-1 font-display text-5xl font-black tabular-nums tracking-tight text-white light:text-slate-900">{wallet ? money(wallet.balanceCents) : "—"}</p>
             {wallet && wallet.heldCents > 0 && (
               <Link href="/auctions?tab=bidding" className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/20 px-3 py-1 text-[11px] font-semibold text-violet-100 transition-colors hover:border-white/30 hover:text-white light:border-violet-900/10 light:bg-white/60 light:text-violet-800 hover:light:border-violet-900/25">
-                <Gavel className="h-3 w-3" aria-hidden /> {t("wallet.held", { amount: usd(wallet.heldCents) })}
+                <Gavel className="h-3 w-3" aria-hidden /> {t("wallet.held", { amount: money(wallet.heldCents) })}
               </Link>
             )}
           </div>
@@ -136,8 +136,8 @@ function WalletPage() {
                     )}
                   >
                     {p.id === POPULAR && <span className="absolute -top-2.5 left-3 rounded-full bg-linear-to-r from-violet-600 to-fuchsia-600 px-2 py-0.5 text-[10px] font-bold text-white">{t("wallet.popular")}</span>}
-                    <span className="font-display text-xl font-black text-white light:text-slate-900">{usd(p.priceCents)}</span>
-                    <span className="mt-0.5 text-[11px] font-semibold text-emerald-300 light:text-emerald-700">{bonus > 0 ? t("wallet.bonus", { amount: usd(bonus) }) : " "}</span>
+                    <span className="font-display text-xl font-black text-white light:text-slate-900">{money(p.priceCents)}</span>
+                    <span className="mt-0.5 text-[11px] font-semibold text-emerald-300 light:text-emerald-700">{bonus > 0 ? t("wallet.bonus", { amount: money(bonus) }) : " "}</span>
                   </button>
                 );
               })}
@@ -170,7 +170,7 @@ function WalletPage() {
             )}
 
             <Button variant="primary" size="lg" round={false} className="mt-6 w-full" disabled={!chosen || !gateway} loading={busy} onClick={() => void buy()}>
-              {busy ? t("wallet.processing") : chosen ? t("wallet.pay", { price: usd(chosen.priceCents) }) : t("wallet.add")}
+              {busy ? t("wallet.processing") : chosen ? t("wallet.pay", { price: money(chosen.priceCents) }) : t("wallet.add")}
             </Button>
             <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[11px] text-zinc-500">
               <Lock className="h-3 w-3" /> {t("wallet.secure")}
@@ -200,7 +200,7 @@ function WalletPage() {
                     </span>
                     <span className={cx("font-mono text-sm font-semibold tabular-nums", h.amountCents >= 0 ? "text-emerald-300 light:text-emerald-700" : "text-zinc-300 light:text-slate-700")}>
                       {h.amountCents >= 0 ? "+" : "−"}
-                      {usd(Math.abs(h.amountCents))}
+                      {money(Math.abs(h.amountCents))}
                     </span>
                   </li>
                 );

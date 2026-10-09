@@ -3,7 +3,7 @@
 import React from "react";
 import { Flame, Gavel, Megaphone, Target } from "lucide-react";
 import { LiveBadge } from "@/components/ui";
-import { usd } from "@/components/money/format";
+import { money } from "@/lib/money";
 import { t } from "@/lib/i18n";
 import type { ChallengeCardView } from "@/lib/challenges";
 
@@ -74,12 +74,12 @@ export function ChallengeMeter({
         <span
           className={`font-display font-black tabular-nums text-white light:text-slate-900 ${size === "lg" ? "text-2xl" : size === "md" ? "text-base" : "text-xs"}`}
         >
-          {usd(c.pledgedCents)}
+          {money(c.pledgedCents)}
         </span>
         {size !== "sm" && c.goalCents !== null && (
           <span className="text-[10px] font-semibold text-zinc-400 light:text-slate-500">
             {t("challenge.ofGoal", {
-              goal: usd(c.goalCents),
+              goal: money(c.goalCents),
               percent: Math.round((c.progress ?? 0) * 100),
             })}
           </span>

@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Download, Gavel, Play, Trophy } from "lucide-react";
 import { Countdown } from "@/components/ui";
-import { usd } from "@/components/money/format";
+import { money } from "@/lib/money";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 import { AuctionStatusBadge } from "./AuctionPanel";
@@ -50,7 +50,7 @@ export function AuctionCard({ auction: a, index = 0 }: { auction: Card; index?: 
             <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 light:text-slate-500">
               {a.bidsCount > 0 ? t(a.phase === "SOLD" ? "auction.soldFor" : "auction.currentBid") : t("auction.startingPrice")}
             </p>
-            <p className="font-display text-xl font-black tabular-nums text-white light:text-slate-900">{usd(price)}</p>
+            <p className="font-display text-xl font-black tabular-nums text-white light:text-slate-900">{money(price)}</p>
           </div>
           {a.phase === "OPEN" && <Countdown label={t("auction.endsIn")} target={a.endsAt} units={UNITS()} size="sm" />}
           {a.phase === "UPCOMING" && <Countdown label={t("auction.startsIn")} target={a.startsAt} units={UNITS()} size="sm" />}
