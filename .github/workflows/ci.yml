@@ -90,6 +90,11 @@ jobs:
       PAYMENTS_CREDITS_MODE: test
       # The scenarios end with a factory reset of the database (development deployments only).
       OROCHIA_ALLOW_DATABASE_RESET: "true"
+      # The operator console's service token (test value), acting as the seeded owner.
+      OROCHIA_ADMIN_API_TOKEN: ci-only-operator-console-token-0123456789abcdef
+      OROCHIA_OWNER_EMAIL: admin@orochia.org
+      OROCHIA_OWNER_USERNAME: orochia_admin
+      OROCHIA_OWNER_NAME: Orochia Operator
       OROCHIA_DEMO_MODE: "true"
       NEXT_PUBLIC_APP_URL: http://localhost:3000
     steps:

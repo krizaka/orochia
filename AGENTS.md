@@ -88,8 +88,10 @@ orochia/                           npm workspaces
   (the seed writes ledger rows the way `packages/payments` settles them, without importing it).
 - Route handlers stay thin: **every rule that decides access lives in `lib/access.ts`, `lib/social.ts`,
   `lib/playlists.ts` or a package** — never inline in a route or a component.
-- `orochia-admin` has **no database**: it is a server-side BFF over `/api/admin/*`, authorised by an ADMIN session
-  kept in an httpOnly cookie. Any new operator capability is an admin endpoint here first.
+- `orochia-admin` never touches Orochia's database: it is a server-side BFF over `/api/admin/*`, calling as a service
+  (`Authorization: Bearer OROCHIA_ADMIN_API_TOKEN`, `lib/operator.ts`: ADMIN routes only, acting as the owner). It has
+  its own small database for its single operator account, sessions and operator log, and lets only `ADMIN_ALLOWED_IPS`
+  in. Any new operator capability is an admin endpoint here first.
 - **Shared UI comes from npm, never from a copy.** `@krizaka/orochia-design-system` (repo `orochia-design-system`) is
   the Orochia kit; `@krizaka/ui` (repo `krizaka-ui`) is the Krizaka brand layer under it — the marks and the motion
   signature, shared with krizaka.com and Orazaka. The apps depend on caret ranges; new shared UI is built in the

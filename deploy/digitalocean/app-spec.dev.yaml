@@ -40,6 +40,10 @@ services:
       - key: OROCHIA_ALLOW_DATABASE_RESET
         scope: RUN_TIME
         value: "true"
+      # Service token of the operator console (orochia-admin-dev: OROCHIA_ADMIN_API_TOKEN, same value).
+      - key: OROCHIA_ADMIN_API_TOKEN
+        scope: RUN_TIME
+        type: SECRET
       # The owner, restored after a factory reset (same values as the migrate job).
       - key: OROCHIA_OWNER_EMAIL
         scope: RUN_TIME
