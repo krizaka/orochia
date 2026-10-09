@@ -15,6 +15,13 @@
       "when": 1791528772838,
       "tag": "0001_challenges",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791556462292,
+      "tag": "0002_push_devices",
+      "breakpoints": true
     }
   ]
 }

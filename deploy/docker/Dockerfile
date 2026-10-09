@@ -13,6 +13,7 @@ COPY apps/web/package.json ./apps/web/
 COPY packages/db/package.json ./packages/db/
 COPY packages/media/package.json ./packages/media/
 COPY packages/payments/package.json ./packages/payments/
+COPY packages/push/package.json ./packages/push/
 COPY packages/config/package.json ./packages/config/
 RUN npm ci
 

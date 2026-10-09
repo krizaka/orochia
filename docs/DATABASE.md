@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 42 tables · 26 enums · 2 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 43 tables · 26 enums · 3 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -61,6 +61,7 @@ erDiagram
     users ||--o{ playlist_members : "user_id"
     users ||--o{ playlists : "creator_id"
     users ||--o{ profiles : "user_id"
+    users ||--o{ push_devices : "user_id"
     users ||--o{ stories : "creator_id"
     audience_lists ||--o{ stories : "audience_list_id"
     content_ratings ||--o{ stories : "content_rating_id"
@@ -502,6 +503,19 @@ erDiagram
 | `total_tips_earned_cents` | integer | no | `0` |  |
 | `updated_at` | timestamp with time zone | no | `now()` |  |
 
+### `push_devices`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `user_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `token` | varchar(255) | no |  |  |
+| `platform` | varchar(10) | no |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+| `last_seen_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `push_devices_token_idx` (unique, token) · `push_devices_user_idx` (user_id)
+
 ### `stories`
 
 | Column | Type | Null | Default | Notes |
@@ -797,3 +811,4 @@ erDiagram
 
 - `0000_initial_schema.sql`
 - `0001_challenges.sql`
+- `0002_push_devices.sql`

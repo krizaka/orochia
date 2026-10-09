@@ -85,7 +85,7 @@
       "id": "data",
       "name": "Data persistence",
       "path": "packages/db",
-      "tablesCount": 42,
+      "tablesCount": 43,
       "tables": [
         "auctions",
         "auction_bids",
@@ -118,6 +118,7 @@
         "playlists",
         "playlist_items",
         "playlist_members",
+        "push_devices",
         "content_ratings",
         "stories",
         "story_views",
@@ -598,6 +599,18 @@
       "path": "/api/me/dashboard",
       "access": "session · ADMIN / CREATOR / MEMBER",
       "summary": ""
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/me/devices",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Forgets one of the account's phones (sign-out, notifications turned off on the device)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/me/devices",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Registers the phone the app runs on for push notifications (an Expo push token, moved if it served another account)."
     },
     {
       "method": "GET",

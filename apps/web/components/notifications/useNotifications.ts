@@ -20,6 +20,8 @@ export function useNotifications(enabled: boolean) {
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [unread, setUnread] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  /** Notifications that arrived live while the page was open — shown as toasts, then dismissed. */
+  const [fresh, setFresh] = useState<NotificationItem[]>([]);
 
   const load = useCallback(async () => {
     const res = await fetch("/api/me/notifications", { cache: "no-store" }).catch(() => null);
@@ -41,6 +43,7 @@ export function useNotifications(enabled: boolean) {
         if (event.type === "notification" && event.notification) {
           setItems((all) => [event.notification!, ...all.filter((n) => n.id !== event.notification!.id)]);
           setUnread((n) => n + 1);
+          setFresh((all) => [event.notification!, ...all.filter((n) => n.id !== event.notification!.id)].slice(0, 3));
         }
       } catch {
         /* heartbeat or malformed */
@@ -59,7 +62,9 @@ export function useNotifications(enabled: boolean) {
     await fetch("/api/me/notifications", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(ids === "all" ? { all: true } : { ids }) }).catch(() => undefined);
   }, []);
 
-  return { items, unread, loaded, markRead, reload: load };
+  const dismiss = useCallback((id: string) => setFresh((all) => all.filter((n) => n.id !== id)), []);
+
+  return { items, unread, loaded, markRead, reload: load, fresh, dismiss };
 }
 
 const rtf = typeof Intl !== "undefined" ? new Intl.RelativeTimeFormat("en", { numeric: "auto", style: "short" }) : null;

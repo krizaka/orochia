@@ -31,6 +31,16 @@ const elena = await session("elena@orochia.org", "elena1234");
 const mia = await session("mia@orochia.org", "mia1234");
 const admin = await session("admin@orochia.org", "admin1234");
 check("five sessions", [alex, sam, elena, mia, admin].every((s) => s.status === 200));
+// Phones for push notifications: a token is registered, moved when the phone changes hands, and forgotten.
+{
+  const token = `ExponentPushToken[e2e${Date.now()}]`;
+  check("a phone is registered for push", (await alex.call("/api/me/devices", "POST", { token, platform: "ios" })).status === 200);
+  check("…something else than a push token is refused", (await alex.call("/api/me/devices", "POST", { token: "not-a-push-token", platform: "ios" })).status === 400);
+  check("…a visitor cannot register one", (await anon.call("/api/me/devices")).status !== 200);
+  check("…the same phone moves to the account signed in on it", (await sam.call("/api/me/devices", "POST", { token, platform: "android" })).status === 200);
+  check("…and is forgotten at sign-out", (await sam.call("/api/me/devices", "DELETE", { token })).status === 200);
+}
+
 // Native apps: the same session as a bearer token, never as a cookie.
 {
   const r = await fetch(B + "/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ identifier: "alex@sanctuary.io", password: "alex1234", client: "native" }) });

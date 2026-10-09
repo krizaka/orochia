@@ -807,7 +807,8 @@
     "seeAll": "See all notifications",
     "settings": "Notification settings",
     "unread": "{count} unread",
-    "loadMore": "Show older"
+    "loadMore": "Show older",
+    "dismiss": "Dismiss"
   },
   "wallet": {
     "title": "Wallet",

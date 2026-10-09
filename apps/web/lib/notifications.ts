@@ -6,9 +6,11 @@ import { sendMail } from "./mail";
 import { checkRateLimit } from "./rate-limit";
 import type { NotificationEvent } from "./profile";
 import { emitUserEvent } from "./messaging";
+import { pushToUser } from "./push";
 
 /**
- * Notifications. Each event is written to the account's notification list (the bell, /notifications) and pushed live,
+ * Notifications. Each event is written to the account's notification list (the bell, /notifications), pushed live to
+ * the open pages (SSE) and to the account's phones (push, lib/push.ts),
  * then e-mailed — every event is on by default, in the app and by e-mail, and each can be turned off on either side
  * (`profiles.in_app_off`, `profiles.notifications_off`). E-mail volume follows `profiles.email_frequency`: INSTANT,
  * HOURLY (at most one activity e-mail an hour; the rest wait in the bell) or NONE. Only verified, active addresses
@@ -67,6 +69,8 @@ export async function notify(input: { userId: string; event: NotificationEvent; 
     if (wants(to.inAppOff, event)) {
       const [row] = await db.insert(notifications).values({ userId, event, actorId: input.actorId ?? null, vars, path }).returning();
       emitUserEvent(userId, { type: "notification", notification: { id: row.id, event, text: notificationText(event, vars), path, createdAt: row.createdAt, readAt: null } });
+      // The same notification on the account's phones (when it has the app), in the background.
+      void pushToUser(userId, { title: t(`notify.${event}.subject` as MessageKey, { ...vars, username: to.username }), body: notificationText(event, vars), path });
     }
     if (!to.verified || !wants(to.emailsOff, event)) return;
     if (input.emailThrottleKey) {
