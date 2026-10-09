@@ -103,8 +103,8 @@ function TabButton({ tab, active, icon: Icon, children }: {
       aria-current={active === tab ? "page" : undefined}
       className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 transition-all ${
         active === tab
-          ? "bg-violet-600 text-white shadow-md shadow-violet-600/25"
-          : "text-zinc-400 hover:bg-white/5 hover:text-white light:text-slate-500 hover:light:bg-black/5 hover:light:text-slate-950"
+          ? "bg-accent text-white shadow-md shadow-accent/25"
+          : "text-fg-secondary hover:bg-surface-2 hover:text-fg"
       }`}
     >
       <Icon className="h-3.5 w-3.5" />
@@ -114,7 +114,7 @@ function TabButton({ tab, active, icon: Icon, children }: {
 }
 
 function Empty({ children }: { children: React.ReactNode }) {
-  return <p className="rounded-2xl border border-white/5 bg-zinc-900/30 p-8 text-center text-xs text-zinc-400 light:bg-slate-50 light:border-black/10 light:text-slate-500">{children}</p>;
+  return <p className="rounded-2xl border border-border-subtle bg-surface-2/30 p-8 text-center text-xs text-fg-secondary">{children}</p>;
 }
 
 function LedgerTable({ lines, isCreator }: { lines: LedgerLine[]; isCreator: boolean }) {
@@ -122,7 +122,7 @@ function LedgerTable({ lines, isCreator }: { lines: LedgerLine[]; isCreator: boo
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-xs">
-        <thead className="text-[10px] uppercase tracking-wider text-zinc-500 light:text-slate-500">
+        <thead className="text-[10px] uppercase tracking-wider text-fg-muted">
           <tr>
             <th className="py-2 pr-4">{t("dashboard.ledger.date")}</th>
             <th className="py-2 pr-4">{t("dashboard.ledger.type")}</th>
@@ -131,14 +131,14 @@ function LedgerTable({ lines, isCreator }: { lines: LedgerLine[]; isCreator: boo
             <th className="py-2 text-right">{t("dashboard.ledger.amount")}</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/5 light:divide-black/5">
+        <tbody className="divide-y divide-border-subtle">
           {lines.map((tx) => (
-            <tr key={tx.id} className="text-zinc-300 light:text-slate-700">
-              <td className="py-2.5 pr-4 font-mono text-zinc-400 light:text-slate-500">{day(tx.createdAt)}</td>
+            <tr key={tx.id} className="text-fg-secondary">
+              <td className="py-2.5 pr-4 font-mono text-fg-secondary">{day(tx.createdAt)}</td>
               <td className="py-2.5 pr-4">{tx.entryType.replace(/_/g, " ").toLowerCase()}</td>
               <td className="py-2.5 pr-4">{tx.counterparty}</td>
-              <td className="py-2.5 pr-4 text-zinc-400 light:text-slate-500">{tx.gateway}</td>
-              <td className={`py-2.5 text-right font-mono font-bold ${tx.amountCents < 0 ? "text-rose-400" : "text-emerald-400"}`}>
+              <td className="py-2.5 pr-4 text-fg-secondary">{tx.gateway}</td>
+              <td className={`py-2.5 text-right font-mono font-bold ${tx.amountCents < 0 ? "text-danger" : "text-success"}`}>
                 {money(tx.amountCents)}
               </td>
             </tr>
@@ -183,9 +183,9 @@ function DashboardContent() {
   if (!user) {
     return (
       <div className="mx-auto max-w-lg px-4 py-24 text-center">
-        <h2 className="text-2xl font-bold text-white font-display light:text-slate-900">{t("dashboard.signedOut.title")}</h2>
-        <p className="mt-2 text-sm text-zinc-400 light:text-slate-500">{t("dashboard.signedOut.body")}</p>
-        <Link href="/auth/login" className="mt-6 inline-block rounded-xl bg-violet-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg">
+        <h2 className="text-2xl font-bold text-fg font-display">{t("dashboard.signedOut.title")}</h2>
+        <p className="mt-2 text-sm text-fg-secondary">{t("dashboard.signedOut.body")}</p>
+        <Link href="/auth/login" className="mt-6 inline-block rounded-xl bg-accent px-6 py-2.5 text-xs font-bold text-white shadow-lg">
           {t("dashboard.signedOut.cta")}
         </Link>
       </div>
@@ -208,21 +208,21 @@ function DashboardContent() {
         actions={
           <>
             {isCreator && (
-              <div className="rounded-2xl border border-white/10 bg-zinc-900/70 px-4 py-2 text-right light:border-black/10 light:bg-slate-50">
-                <span className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500">{t("profile.balance")}</span>
-                <span className="font-mono text-lg font-black text-emerald-400 light:text-emerald-600">{money(user.balanceCents)}</span>
+              <div className="rounded-2xl border border-border-default bg-surface-2/70 px-4 py-2 text-right">
+                <span className="block text-[10px] font-semibold uppercase tracking-wider text-fg-secondary">{t("profile.balance")}</span>
+                <span className="font-mono text-lg font-black text-success">{money(user.balanceCents)}</span>
               </div>
             )}
             <Link
               href={`/@${user.username}`}
-              className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-xs font-semibold text-zinc-200 transition-colors hover:border-violet-500/60 hover:bg-violet-500/10 light:border-black/10 light:text-slate-700 hover:light:bg-violet-50"
+              className="inline-flex items-center gap-2 rounded-xl border border-border-default px-4 py-2.5 text-xs font-semibold text-fg transition-colors hover:border-accent/60 hover:bg-accent/10"
             >
               {t("profile.viewPublic")}
             </Link>
             {isCreator && (
               <Link
                 href="/creator/upload"
-                className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-violet-600 to-fuchsia-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-violet-600/30 transition-transform hover:scale-[1.03] active:scale-95"
+                className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-accent to-accent-2 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-accent/30 transition-transform hover:scale-[1.03] active:scale-95"
               >
                 <Upload className="h-4 w-4" /> {t("profile.upload")}
               </Link>
@@ -231,7 +231,7 @@ function DashboardContent() {
         }
       />
 
-      <div className="flex overflow-x-auto space-x-2 border-b border-white/5 pb-3 mb-8 text-xs font-semibold light:border-black/10">
+      <div className="flex overflow-x-auto space-x-2 border-b border-border-subtle pb-3 mb-8 text-xs font-semibold">
         <TabButton tab="overview" active={activeTab} icon={LayoutDashboard}>{t("dashboard.tabs.overview")}</TabButton>
         <TabButton tab="library" active={activeTab} icon={Film}>
           {t("dashboard.tabs.library", { count: data?.library.length ?? 0 })}
@@ -243,8 +243,8 @@ function DashboardContent() {
           </TabButton>
         )}
         {isCreator && (
-          <Link href="/earnings" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-white/5 transition-all light:text-slate-500 hover:light:bg-black/5 hover:light:text-slate-950">
-            <CreditCard className="h-3.5 w-3.5 text-emerald-400" />
+          <Link href="/earnings" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-fg-secondary hover:text-fg hover:bg-surface-2 transition-all">
+            <CreditCard className="h-3.5 w-3.5 text-success" />
             <span>{t("dashboard.tabs.earnings")}</span>
           </Link>
         )}
@@ -261,17 +261,17 @@ function DashboardContent() {
       {activeTab === "overview" && data && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="glass-panel rounded-2xl p-5">
-            <span className="text-[11px] font-mono uppercase text-zinc-400 light:text-slate-500">{isCreator ? t("dashboard.stats.available") : t("dashboard.stats.spent")}</span>
-            <p className="mt-2 text-2xl font-black text-white font-mono light:text-slate-900">{money(isCreator ? user.balanceCents : spentCents)}</p>
-            <span className="text-[11px] text-zinc-500 mt-1 block light:text-slate-500">{t("dashboard.stats.fromLedger")}</span>
+            <span className="text-[11px] font-mono uppercase text-fg-secondary">{isCreator ? t("dashboard.stats.available") : t("dashboard.stats.spent")}</span>
+            <p className="mt-2 text-2xl font-black text-fg font-mono">{money(isCreator ? user.balanceCents : spentCents)}</p>
+            <span className="text-[11px] text-fg-muted mt-1 block">{t("dashboard.stats.fromLedger")}</span>
           </div>
           <div className="glass-panel rounded-2xl p-5">
-            <span className="text-[11px] font-mono uppercase text-zinc-400 light:text-slate-500">{isCreator ? t("dashboard.stats.published") : t("dashboard.stats.unlocked")}</span>
-            <p className="mt-2 text-2xl font-black text-white font-mono light:text-slate-900">{isCreator ? data.uploads.length : data.library.length}</p>
+            <span className="text-[11px] font-mono uppercase text-fg-secondary">{isCreator ? t("dashboard.stats.published") : t("dashboard.stats.unlocked")}</span>
+            <p className="mt-2 text-2xl font-black text-fg font-mono">{isCreator ? data.uploads.length : data.library.length}</p>
           </div>
           <div className="glass-panel rounded-2xl p-5">
-            <span className="text-[11px] font-mono uppercase text-zinc-400 light:text-slate-500">{isCreator ? t("dashboard.stats.pendingPayouts") : t("dashboard.stats.transactions")}</span>
-            <p className="mt-2 text-2xl font-black text-white font-mono light:text-slate-900">
+            <span className="text-[11px] font-mono uppercase text-fg-secondary">{isCreator ? t("dashboard.stats.pendingPayouts") : t("dashboard.stats.transactions")}</span>
+            <p className="mt-2 text-2xl font-black text-fg font-mono">
               {isCreator ? money(data.pendingPayoutCents) : data.ledger.length}
             </p>
           </div>
@@ -285,15 +285,15 @@ function DashboardContent() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {data.library.map((video) => (
               <Link key={video.id} href={`/watch/${video.id}`} className="glass-panel rounded-2xl overflow-hidden group">
-                <div className="aspect-video bg-zinc-800 overflow-hidden light:bg-slate-100">
+                <div className="aspect-video bg-surface-3 overflow-hidden">
                   {video.thumbnailUrl && (
                     <img src={video.thumbnailUrl} alt="" className="h-full w-full object-cover group-hover:scale-105 transition-transform" />
                   )}
                 </div>
                 <div className="p-4">
-                  <h4 className="text-sm font-bold text-white line-clamp-1 light:text-slate-900">{video.title}</h4>
-                  <p className="text-xs text-zinc-400 light:text-slate-500">{video.creatorName}</p>
-                  <p className="mt-2 text-[11px] font-mono text-zinc-500 light:text-slate-500">
+                  <h4 className="text-sm font-bold text-fg line-clamp-1">{video.title}</h4>
+                  <p className="text-xs text-fg-secondary">{video.creatorName}</p>
+                  <p className="mt-2 text-[11px] font-mono text-fg-muted">
                     {duration(video.durationSeconds)} • {t("dashboard.unlockedOn", { date: day(video.unlockedAt) })} • {money(video.amountPaidCents)}
                   </p>
                 </div>
@@ -328,9 +328,9 @@ function DashboardContent() {
               [t("dashboard.treasury.settled"), money(treasury.payoutsSettledCents), t("dashboard.treasury.settledHint")],
             ].map(([label, value, hint]) => (
               <div key={label} className="glass-panel rounded-2xl p-5">
-                <span className="text-[11px] font-mono uppercase text-zinc-400 light:text-slate-500">{label}</span>
-                <p className="mt-2 text-2xl font-black text-emerald-400 font-mono">{value}</p>
-                <span className="text-[11px] text-zinc-500 light:text-slate-500">{hint}</span>
+                <span className="text-[11px] font-mono uppercase text-fg-secondary">{label}</span>
+                <p className="mt-2 text-2xl font-black text-success font-mono">{value}</p>
+                <span className="text-[11px] text-fg-muted">{hint}</span>
               </div>
             ))}
           </div>
@@ -346,7 +346,7 @@ function DashboardContent() {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-24 text-center text-xs text-zinc-500 font-mono light:text-slate-500">{t("common.loading")}</div>}>
+    <Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-24 text-center text-xs text-fg-muted font-mono">{t("common.loading")}</div>}>
       <DashboardContent />
     </Suspense>
   );

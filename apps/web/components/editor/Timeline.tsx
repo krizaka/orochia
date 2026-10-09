@@ -61,7 +61,7 @@ export function Timeline({
     <div className="select-none">
       <div className="mb-2 flex items-center justify-between font-mono text-[11px] tabular-nums text-zinc-400">
         <span>{clock(start)}</span>
-        <span className="rounded-full bg-violet-500/15 px-2.5 py-0.5 font-sans text-xs font-semibold text-violet-200">{t("editor.kept", { length: (end - start).toFixed(1) })}</span>
+        <span className="rounded-full bg-accent/15 px-2.5 py-0.5 font-sans text-xs font-semibold text-accent">{t("editor.kept", { length: (end - start).toFixed(1) })}</span>
         <span>{clock(end)}</span>
       </div>
       <div
@@ -78,8 +78,8 @@ export function Timeline({
           )}
         </div>
         {/* Outside the kept part is dimmed */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 rounded-l-xl bg-black/70" style={{ width: `${pct(start)}%` }} />
-        <div className="pointer-events-none absolute inset-y-0 right-0 rounded-r-xl bg-black/70" style={{ width: `${100 - pct(end)}%` }} />
+        <div className="pointer-events-none absolute inset-y-0 left-0 rounded-l-xl bg-scrim-strong" style={{ width: `${pct(start)}%` }} />
+        <div className="pointer-events-none absolute inset-y-0 right-0 rounded-r-xl bg-scrim-strong" style={{ width: `${100 - pct(end)}%` }} />
         <div className="pointer-events-none absolute inset-y-0 border-y-[3px] border-white" style={{ left: `${pct(start)}%`, right: `${100 - pct(end)}%` }} />
 
         {/* Playhead */}
@@ -97,7 +97,7 @@ export function Timeline({
             aria-valuetext={clock(which === "start" ? start : end)}
             onPointerDown={(e) => begin(which, e)}
             onKeyDown={(e) => nudge(which, e)}
-            className={`absolute inset-y-0 z-10 flex w-6 cursor-ew-resize items-center justify-center bg-white text-zinc-900 shadow-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400 ${
+            className={`absolute inset-y-0 z-10 flex w-6 cursor-ew-resize items-center justify-center bg-white text-zinc-900 shadow-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring ${
               which === "start" ? "rounded-l-xl" : "-translate-x-full rounded-r-xl"
             }`}
             style={{ left: `${pct(which === "start" ? start : end)}%` }}

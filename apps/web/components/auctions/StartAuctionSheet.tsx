@@ -17,9 +17,9 @@ const DURATIONS = [
 type DurationId = (typeof DURATIONS)[number]["id"];
 
 const field =
-  "mt-1 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-hidden light:border-black/10 light:bg-slate-50 light:text-slate-900";
-const label = "block text-xs font-semibold text-zinc-400 light:text-slate-500";
-const hint = "mt-1 block text-[11px] leading-relaxed text-zinc-500 light:text-slate-500";
+  "mt-1 w-full rounded-xl border border-border-default bg-surface-2 px-3 py-2.5 text-sm text-fg focus:border-accent focus:outline-hidden";
+const label = "block text-xs font-semibold text-fg-secondary";
+const hint = "mt-1 block text-[11px] leading-relaxed text-fg-muted";
 
 /** A `datetime-local` value (local time, minutes) for a date. */
 const toLocalInput = (d: Date) => new Date(d.getTime() - d.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
@@ -73,14 +73,20 @@ export function StartAuctionSheet({ video, open, onClose }: { video: { id: strin
       footer={
         <div className="flex justify-end gap-2">
           <Button variant="secondary" onClick={onClose}>{t("common.cancel")}</Button>
-          <Button variant="primary" type="submit" form="start-auction" loading={busy} disabled={!(priceCents >= 100)} icon={<Gavel className="h-4 w-4" />}>
+          <Button
+            variant="sensual"
+            type="submit"
+            form="start-auction"
+            loading={busy}
+            disabled={!(priceCents >= 100)}>
+            <Gavel className="h-4 w-4" aria-hidden />
             {t("auction.start.submit")}
           </Button>
         </div>
       }
     >
       <form id="start-auction" onSubmit={submit} className="space-y-5">
-        <p className="text-xs text-zinc-400 light:text-slate-500">{t("auction.start.intro", { title: video.title })}</p>
+        <p className="text-xs text-fg-secondary">{t("auction.start.intro", { title: video.title })}</p>
 
         <label className={label}>
           {t("auction.start.price")}
@@ -124,16 +130,16 @@ export function StartAuctionSheet({ video, open, onClose }: { video: { id: strin
           <span className={hint}>{t("auction.start.exclusive")}</span>
         </div>
 
-        <div className="flex items-start justify-between gap-4 rounded-2xl border border-white/10 p-4 light:border-black/10">
+        <div className="flex items-start justify-between gap-4 rounded-2xl border border-border-default p-4">
           <span>
-            <span className="block text-sm font-semibold text-white light:text-slate-900">{t("auction.start.automatic")}</span>
+            <span className="block text-sm font-semibold text-fg">{t("auction.start.automatic")}</span>
             <span className={hint}>{t(automatic ? "auction.start.automaticHint.on" : "auction.start.automaticHint.off")}</span>
           </span>
           <Switch checked={automatic} onChange={setAutomatic} label={t("auction.start.automatic")} />
         </div>
 
         {priceCents >= 100 && (
-          <p className="rounded-2xl border border-fuchsia-500/20 bg-fuchsia-500/[0.06] px-4 py-3 text-xs leading-relaxed text-zinc-300 light:text-slate-700">
+          <p className="rounded-2xl border border-accent/20 bg-accent/[0.06] px-4 py-3 text-xs leading-relaxed text-fg-secondary">
             {t("auction.start.summary", {
               price: money(priceCents),
               when: when === "now" ? t("auction.start.nowLower") : new Date(startAt).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }),
@@ -142,7 +148,7 @@ export function StartAuctionSheet({ video, open, onClose }: { video: { id: strin
             })}
           </p>
         )}
-        {error && <p role="alert" className="text-xs text-rose-400 light:text-rose-600">{error}</p>}
+        {error && <p role="alert" className="text-xs text-danger">{error}</p>}
       </form>
     </Sheet>
   );

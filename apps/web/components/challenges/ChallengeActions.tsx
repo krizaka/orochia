@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Check, Clapperboard, Megaphone, PackageCheck, Play, Undo2, X } from "lucide-react";
-import { Button, ConfirmIconButton, Sheet, cx } from "@/components/ui";
+import { Button, ConfirmIconButton, Sheet, cn } from "@/components/ui";
 import { money } from "@/lib/money";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
@@ -46,19 +46,20 @@ function DeliverSheet({ c, open, onClose, onDone }: { c: ChallengeView; open: bo
           <Button variant="secondary" onClick={onClose}>
             {t("common.cancel")}
           </Button>
-          <Button variant="primary" loading={busy} disabled={!picked} onClick={deliver} icon={<PackageCheck className="h-4 w-4" />}>
+          <Button variant="sensual" loading={busy} disabled={!picked} onClick={deliver}>
+            <PackageCheck className="h-4 w-4" aria-hidden />
             {t("challenge.deliver.submit", { amount: money(c.pledgedCents) })}
           </Button>
         </div>
       }
     >
-      <p className="mb-4 text-xs text-zinc-400 light:text-slate-500">
+      <p className="mb-4 text-xs text-fg-secondary">
         {t(`challenge.deliver.intro.${c.deliverable}`)} {t(`challenge.deliver.audience.${c.reward}`)}
       </p>
       {items === null ? (
-        <div className="h-24 animate-pulse rounded-2xl bg-white/5 light:bg-black/5" />
+        <div className="h-24 animate-pulse rounded-2xl bg-surface-2" />
       ) : items.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-white/10 p-6 text-center text-sm text-zinc-400 light:border-black/10 light:text-slate-500">
+        <p className="rounded-2xl border border-dashed border-border-default p-6 text-center text-sm text-fg-secondary">
           {t(`challenge.deliver.none.${c.deliverable}`)}
         </p>
       ) : (
@@ -70,15 +71,15 @@ function DeliverSheet({ c, open, onClose, onDone }: { c: ChallengeView; open: bo
               role="radio"
               aria-checked={picked === item.id}
               onClick={() => setPicked(item.id)}
-              className={cx(
-                "overflow-hidden rounded-xl border text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400",
-                picked === item.id ? "border-fuchsia-500 ring-2 ring-fuchsia-500/40" : "border-white/10 hover:border-white/30 light:border-black/10",
+              className={cn(
+                "overflow-hidden rounded-xl border text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
+                picked === item.id ? "border-accent ring-2 ring-accent/40" : "border-border-default hover:border-white/30",
               )}
             >
               <span className="block aspect-video bg-zinc-900">
                 {item.thumbnailUrl && <img src={item.thumbnailUrl} alt="" className="h-full w-full object-cover" />}
               </span>
-              <span className="line-clamp-1 block px-2 py-1.5 text-[11px] font-semibold text-white light:text-slate-900">
+              <span className="line-clamp-1 block px-2 py-1.5 text-[11px] font-semibold text-fg">
                 {item.title || t("challenge.deliver.untitled")}
               </span>
             </button>
@@ -86,7 +87,7 @@ function DeliverSheet({ c, open, onClose, onDone }: { c: ChallengeView; open: bo
         </div>
       )}
       {error && (
-        <p role="alert" className="mt-3 text-xs text-rose-400 light:text-rose-600">
+        <p role="alert" className="mt-3 text-xs text-danger">
           {error}
         </p>
       )}
@@ -117,10 +118,10 @@ export function ChallengeActions({ c, onChanged }: { c: ChallengeView; onChanged
   if (!v.canAnswer && !v.canStart && !v.canApply && !v.canAssign && !v.canDeliver && !v.canCancel && c.applications.length === 0) return null;
 
   return (
-    <section className="space-y-3 rounded-2xl border border-fuchsia-500/25 bg-fuchsia-500/[0.05] p-4">
+    <section className="space-y-3 rounded-2xl border border-accent/25 bg-accent/[0.05] p-4">
       {v.canAnswer && (
         <>
-          <p className="text-sm text-zinc-200 light:text-slate-800">
+          <p className="text-sm text-fg">
             {t("challenge.actions.answerHint", {
               amount: money(c.pledgedCents),
               days: c.deliveryDays,
@@ -128,19 +129,17 @@ export function ChallengeActions({ c, onChanged }: { c: ChallengeView; onChanged
           </p>
           <div className="flex gap-2">
             <Button
-              variant="primary"
+              variant="sensual"
               loading={busy === "accept"}
-              onClick={() => act("accept", `${base}/answer`, { accept: true })}
-              icon={<Check className="h-4 w-4" />}
-            >
+              onClick={() => act("accept", `${base}/answer`, { accept: true })}>
+              <Check className="h-4 w-4" aria-hidden />
               {t("challenge.actions.accept")}
             </Button>
             <Button
               variant="secondary"
               loading={busy === "decline"}
-              onClick={() => act("decline", `${base}/answer`, { accept: false })}
-              icon={<X className="h-4 w-4" />}
-            >
+              onClick={() => act("decline", `${base}/answer`, { accept: false })}>
+              <X className="h-4 w-4" aria-hidden />
               {t("challenge.actions.decline")}
             </Button>
           </div>
@@ -148,16 +147,21 @@ export function ChallengeActions({ c, onChanged }: { c: ChallengeView; onChanged
       )}
       {v.canStart && (
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm text-zinc-200 light:text-slate-800">{t("challenge.actions.startHint", { days: c.deliveryDays })}</p>
-          <Button variant="primary" loading={busy === "start"} onClick={() => act("start", `${base}/start`)} icon={<Play className="h-4 w-4" />}>
+          <p className="text-sm text-fg">{t("challenge.actions.startHint", { days: c.deliveryDays })}</p>
+          <Button
+            variant="sensual"
+            loading={busy === "start"}
+            onClick={() => act("start", `${base}/start`)}>
+            <Play className="h-4 w-4" aria-hidden />
             {t("challenge.actions.start")}
           </Button>
         </div>
       )}
       {v.canDeliver && (
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm text-zinc-200 light:text-slate-800">{t(`challenge.actions.deliverHint.${c.deliverable}`)}</p>
-          <Button variant="primary" onClick={() => setDelivering(true)} icon={<Clapperboard className="h-4 w-4" />}>
+          <p className="text-sm text-fg">{t(`challenge.actions.deliverHint.${c.deliverable}`)}</p>
+          <Button variant="sensual" onClick={() => setDelivering(true)}>
+            <Clapperboard className="h-4 w-4" aria-hidden />
             {t("challenge.actions.deliver")}
           </Button>
           <DeliverSheet c={c} open={delivering} onClose={() => setDelivering(false)} onDone={onChanged} />
@@ -165,46 +169,45 @@ export function ChallengeActions({ c, onChanged }: { c: ChallengeView; onChanged
       )}
       {v.canApply && (
         <div className="space-y-2">
-          <label className="block text-xs font-semibold text-zinc-400 light:text-slate-500">
+          <label className="block text-xs font-semibold text-fg-secondary">
             {t("challenge.actions.applyNote")}
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               maxLength={280}
               rows={2}
-              className="mt-1 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-violet-500 focus:outline-hidden light:border-black/10 light:bg-slate-50 light:text-slate-900"
+              className="mt-1 w-full rounded-xl border border-border-default bg-surface-2 px-3 py-2 text-sm text-fg focus:border-accent focus:outline-hidden"
             />
           </label>
           <Button
-            variant="primary"
+            variant="sensual"
             loading={busy === "apply"}
-            onClick={() => act("apply", `${base}/applications`, { note })}
-            icon={<Megaphone className="h-4 w-4" />}
-          >
+            onClick={() => act("apply", `${base}/applications`, { note })}>
+            <Megaphone className="h-4 w-4" aria-hidden />
             {t("challenge.actions.apply")}
           </Button>
         </div>
       )}
       {c.applications.length > 0 && (
         <div>
-          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-zinc-400 light:text-slate-500">
+          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-fg-secondary">
             {t(v.canAssign ? "challenge.actions.pickTitle" : "challenge.actions.applicationsTitle")}
           </p>
           <ul className="space-y-2">
             {c.applications.map((a) => (
-              <li key={a.id} className="flex items-start gap-3 rounded-xl border border-white/10 p-3 light:border-black/10">
+              <li key={a.id} className="flex items-start gap-3 rounded-xl border border-border-default p-3">
                 <img src={a.creator.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-9 w-9 rounded-full object-cover" />
                 <div className="min-w-0 flex-1">
-                  <Link href={`/@${a.creator.username}`} className="text-sm font-semibold text-white hover:underline light:text-slate-900">
+                  <Link href={`/@${a.creator.username}`} className="text-sm font-semibold text-fg hover:underline">
                     {a.creator.name}
                   </Link>
-                  {a.note && <p className="mt-0.5 text-xs text-zinc-400 light:text-slate-500">{a.note}</p>}
-                  <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-fuchsia-300 light:text-fuchsia-700">
+                  {a.note && <p className="mt-0.5 text-xs text-fg-secondary">{a.note}</p>}
+                  <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent">
                     {t(`challenge.application.${a.status as "PENDING"}`)}
                   </p>
                 </div>
                 {v.canAssign && a.status === "PENDING" && (
-                  <Button size="sm" variant="primary" loading={busy === a.id} onClick={() => act(a.id, `${base}/assign`, { applicationId: a.id })}>
+                  <Button size="sm" variant="sensual" loading={busy === a.id} onClick={() => act(a.id, `${base}/assign`, { applicationId: a.id })}>
                     {t("challenge.actions.pick")}
                   </Button>
                 )}
@@ -214,8 +217,8 @@ export function ChallengeActions({ c, onChanged }: { c: ChallengeView; onChanged
         </div>
       )}
       {v.canCancel && (
-        <div className="flex items-center justify-between gap-3 border-t border-white/10 pt-3 first:border-t-0 first:pt-0 light:border-black/10">
-          <p className="text-xs text-zinc-400 light:text-slate-500">{t("challenge.actions.cancelHint")}</p>
+        <div className="flex items-center justify-between gap-3 border-t border-border-default pt-3 first:border-t-0 first:pt-0">
+          <p className="text-xs text-fg-secondary">{t("challenge.actions.cancelHint")}</p>
           <ConfirmIconButton
             label={t("challenge.actions.cancel")}
             confirmLabel={t("challenge.actions.cancelConfirm")}
@@ -226,7 +229,7 @@ export function ChallengeActions({ c, onChanged }: { c: ChallengeView; onChanged
         </div>
       )}
       {error && (
-        <p role="alert" className="text-xs text-rose-400 light:text-rose-600">
+        <p role="alert" className="text-xs text-danger">
           {error}
         </p>
       )}

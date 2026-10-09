@@ -19,9 +19,9 @@ const FIELDS: Record<Method, { key: string; inputMode?: "numeric" | "email" | "t
 };
 const DEFAULT_COUNTRY: Partial<Record<Method, string>> = { BANK_US: "US", BANK_CA: "CA" };
 
-const label = "mb-1.5 block text-xs font-semibold text-zinc-300 light:text-slate-700";
+const label = "mb-1.5 block text-xs font-semibold text-fg-secondary";
 const field =
-  "w-full rounded-xl border border-white/10 bg-zinc-900 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-hidden light:border-black/10 light:bg-slate-50 light:text-slate-900";
+  "w-full rounded-xl border border-border-default bg-surface-2 px-3.5 py-2.5 text-sm text-fg placeholder:text-zinc-600 focus:border-accent focus:outline-hidden";
 
 /** Add or replace where earnings are sent. */
 export function PayoutAccountSheet({ open, onClose, onSaved }: { open: boolean; onClose: () => void; onSaved: () => void }) {
@@ -53,7 +53,7 @@ export function PayoutAccountSheet({ open, onClose, onSaved }: { open: boolean; 
       title={t("earnings.account.title")}
       footer={
         <>
-          <Button variant="primary" size="lg" round={false} className="w-full" loading={busy} onClick={() => void save()}>
+          <Button variant="sensual" size="lg" shape="rounded" className="w-full" loading={busy} onClick={() => void save()}>
             {t("earnings.account.save")}
           </Button>
           <p className="mt-3 flex items-center justify-center gap-1.5 text-[11px] text-zinc-500">
@@ -115,7 +115,7 @@ export function PayoutAccountSheet({ open, onClose, onSaved }: { open: boolean; 
             ]}
           />
         )}
-        {error && <p role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-200 light:text-rose-700">{error}</p>}
+        {error && <p role="alert" className="rounded-xl border border-danger/30 bg-danger/10 px-3 py-2 text-xs text-danger">{error}</p>}
       </div>
     </Sheet>
   );

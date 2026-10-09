@@ -6,7 +6,7 @@ import { Check, CheckCircle2, Clapperboard, Eye, Film, Lock, Mail, Scissors, Shi
 import { VideoEditor } from "./VideoEditor";
 import { DraftsShelf } from "./DraftsShelf";
 import { useObjectUrl } from "./editor/media";
-import { Button, Switch, buttonClass, cx } from "@/components/ui";
+import { Button, Switch, buttonVariants, cn } from "@/components/ui";
 import { money } from "@/lib/money";
 import { useUploadManager } from "@/lib/upload-manager";
 import { UPLOAD_LIMITS } from "@orochia/media/limits";
@@ -58,18 +58,18 @@ interface ContentRating {
 }
 
 const field =
-  "w-full rounded-xl border border-white/10 bg-zinc-900/80 px-4 py-3 text-sm text-white placeholder:text-zinc-600 transition-colors focus:border-violet-500 focus:outline-hidden light:border-black/10 light:bg-slate-50 light:text-slate-900 light:placeholder:text-slate-400";
-const label = "mb-1.5 block text-xs font-semibold text-zinc-300 light:text-slate-700";
+  "w-full rounded-xl border border-border-default bg-surface-2/80 px-4 py-3 text-sm text-fg placeholder:text-fg-muted transition-colors focus:border-accent focus:outline-hidden";
+const label = "mb-1.5 block text-xs font-semibold text-fg-secondary";
 
 /** A numbered step of the form; its number turns into a check once the step is complete. */
 function Step({ n, title, done, children }: { n: number; title: string; done: boolean; children: React.ReactNode }) {
   return (
-    <section className="rounded-3xl border border-white/10 bg-zinc-950/60 p-5 sm:p-6 light:border-black/5 light:bg-white light:shadow-xs" aria-label={title}>
-      <h2 className="mb-4 flex items-center gap-3 text-sm font-bold text-white light:text-slate-900">
+    <section className="rounded-3xl border border-border-default bg-surface-1/60 p-5 sm:p-6 light:shadow-xs" aria-label={title}>
+      <h2 className="mb-4 flex items-center gap-3 text-sm font-bold text-fg">
         <span
-          className={cx(
+          className={cn(
             "flex h-7 w-7 items-center justify-center rounded-full text-xs font-black transition-colors duration-300",
-            done ? "bg-emerald-500 text-white" : "bg-white/10 text-zinc-300 light:bg-black/5 light:text-slate-600",
+            done ? "bg-success text-white" : "bg-surface-3 text-fg-secondary",
           )}
         >
           {done ? <Check className="h-4 w-4" strokeWidth={3} /> : n}
@@ -251,27 +251,27 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
   // Sent: what happens next, and the two next steps.
   if (uploadedVideoId && !errorMessage) {
     return (
-      <div className="mx-auto max-w-xl rounded-4xl border border-white/10 bg-zinc-950/60 p-8 text-center light:border-black/5 light:bg-white sm:p-12">
-        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-violet-600 to-pink-600 shadow-lg shadow-fuchsia-600/30">
+      <div className="mx-auto max-w-xl rounded-4xl border border-border-default bg-surface-1/60 p-8 text-center sm:p-12">
+        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-accent to-accent-2 shadow-lg shadow-accent/30">
           {finished ? <CheckCircle2 className="h-8 w-8 text-white" /> : <Upload className="h-7 w-7 animate-bounce text-white" />}
         </div>
-        <h2 className="font-display text-2xl font-black text-white light:text-slate-900">{t("publish.done.title")}</h2>
-        <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-zinc-400 light:text-slate-600">{t("publish.done.body")}</p>
+        <h2 className="font-display text-2xl font-black text-fg">{t("publish.done.title")}</h2>
+        <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-fg-secondary">{t("publish.done.body")}</p>
         {uploading && (
           <div className="mx-auto mt-6 max-w-sm">
             <div className="mb-1.5 flex justify-between text-xs text-zinc-400">
               <span>{t("publish.uploading", { progress: upload?.progress ?? 0 })}</span>
             </div>
-            <div className="h-2 overflow-hidden rounded-full bg-white/10 light:bg-black/10">
-              <div className="h-full rounded-full bg-linear-to-r from-violet-500 to-pink-500 transition-all duration-300" style={{ width: `${upload?.progress ?? 0}%` }} />
+            <div className="h-2 overflow-hidden rounded-full bg-surface-3">
+              <div className="h-full rounded-full bg-linear-to-r from-accent to-accent-2 transition-all duration-300" style={{ width: `${upload?.progress ?? 0}%` }} />
             </div>
           </div>
         )}
         <div className="mt-8 flex flex-col justify-center gap-2 sm:flex-row">
-          <Link href={`/watch/${uploadedVideoId}`} className={buttonClass({ variant: "secondary", size: "lg" })}>
+          <Link href={`/watch/${uploadedVideoId}`} className={buttonVariants({ variant: "secondary", size: "lg", shape: "pill" })}>
             {t("publish.done.watch")}
           </Link>
-          <Button variant="primary" size="lg" onClick={reset}>
+          <Button variant="sensual" size="lg" onClick={reset}>
             {t("publish.done.another")}
           </Button>
         </div>
@@ -284,14 +284,14 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
   return (
     <form onSubmit={publish} className="mx-auto max-w-6xl pb-24 lg:pb-0">
       <header className="mb-6">
-        <h1 className="font-display text-3xl font-black tracking-tight text-white light:text-slate-900">{t("publish.title")}</h1>
-        <p className="mt-1 text-sm text-zinc-400 light:text-slate-500">{t("publish.subtitle")}</p>
+        <h1 className="font-display text-3xl font-black tracking-tight text-fg">{t("publish.title")}</h1>
+        <p className="mt-1 text-sm text-fg-secondary">{t("publish.subtitle")}</p>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="space-y-4">
           {errorMessage && (
-            <div role="alert" className="flex items-start gap-3 rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200 light:text-rose-700">
+            <div role="alert" className="flex items-start gap-3 rounded-2xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
               <X className="mt-0.5 h-4 w-4 shrink-0" /> {errorMessage}
             </div>
           )}
@@ -317,15 +317,16 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                 <video src={`${previewUrl}#t=0.5`} muted playsInline preload="metadata" className="aspect-video w-full rounded-xl bg-black object-cover sm:w-48" />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-white light:text-slate-900">{file.name}</p>
+                  <p className="truncate text-sm font-semibold text-fg">{file.name}</p>
                   <p className="mt-0.5 text-xs text-zinc-500">
                     {size(file.size)}
                     {duration !== null && ` · ${clockOf(duration)}`}
-                    {lastEdit && <span className="ml-2 rounded-full bg-fuchsia-500/15 px-2 py-0.5 text-[10px] font-semibold text-fuchsia-300 light:text-fuchsia-700">{t("publish.drop.edited")}</span>}
+                    {lastEdit && <span className="ml-2 rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-semibold text-accent">{t("publish.drop.edited")}</span>}
                   </p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {(source?.size ?? 0) <= EDITOR_MAX_BYTES && (
-                      <Button size="sm" variant="primary" icon={<Scissors className="h-3.5 w-3.5" />} onClick={() => setEditing(true)}>
+                      <Button size="sm" variant="sensual" onClick={() => setEditing(true)}>
+                        <Scissors className="h-3.5 w-3.5" aria-hidden />
                         {t("publish.drop.edit")}
                       </Button>
                     )}
@@ -351,18 +352,18 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                   setIsDragging(false);
                   void pick(e.dataTransfer.files?.[0]);
                 }}
-                className={cx(
-                  "group flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-12 text-center transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400",
-                  isDragging ? "scale-[1.01] border-violet-400 bg-violet-500/10" : "border-white/15 hover:border-violet-500/60 hover:bg-violet-500/4 light:border-black/15",
+                className={cn(
+                  "group flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-12 text-center transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
+                  isDragging ? "scale-[1.01] border-accent bg-accent/10" : "border-border-strong hover:border-accent/60 hover:bg-accent/4",
                 )}
               >
-                <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-violet-600 to-pink-600 text-white shadow-lg shadow-fuchsia-600/25 transition-transform group-hover:-translate-y-1">
+                <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-accent to-accent-2 text-white shadow-lg shadow-accent/25 transition-transform group-hover:-translate-y-1">
                   <UploadCloud className="h-7 w-7" />
                 </span>
-                <p className="text-sm font-semibold text-white light:text-slate-900">{isDragging ? t("publish.drop.dragging") : t("publish.drop.title")}</p>
+                <p className="text-sm font-semibold text-fg">{isDragging ? t("publish.drop.dragging") : t("publish.drop.title")}</p>
                 {!isDragging && (
-                  <p className="mt-1 text-sm text-zinc-400 light:text-slate-500">
-                    {t("publish.drop.or")} <span className="font-semibold text-violet-300 underline-offset-4 group-hover:underline light:text-violet-700">{t("publish.drop.browse")}</span>
+                  <p className="mt-1 text-sm text-fg-secondary">
+                    {t("publish.drop.or")} <span className="font-semibold text-accent underline-offset-4 group-hover:underline">{t("publish.drop.browse")}</span>
                   </p>
                 )}
                 <p className="mt-3 text-[11px] text-zinc-500">{t("upload.limits", { size: size(LIMIT.maxBytes), duration: hours(LIMIT.maxSeconds) })}</p>
@@ -386,7 +387,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 <span className={label}>{t("publish.fields.tags")}</span>
                 <div className={`${field} flex flex-wrap items-center gap-1.5 py-2`} onClick={(e) => (e.currentTarget.querySelector("input") as HTMLInputElement | null)?.focus()}>
                   {tags.map((tag) => (
-                    <span key={tag} className="flex items-center gap-1 rounded-full bg-violet-500/15 py-0.5 pl-2.5 pr-1 text-xs font-semibold text-violet-200 light:text-violet-800">
+                    <span key={tag} className="flex items-center gap-1 rounded-full bg-accent/15 py-0.5 pl-2.5 pr-1 text-xs font-semibold text-accent">
                       #{tag}
                       <button type="button" aria-label={t("publish.removeTag", { tag })} onClick={() => setTags(tags.filter((x) => x !== tag))} className="rounded-full p-0.5 hover:bg-white/10">
                         <X className="h-3 w-3" />
@@ -406,7 +407,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                       onBlur={() => tagDraft && addTag(tagDraft)}
                       placeholder={tags.length ? "" : t("publish.fields.tagsPlaceholder")}
                       aria-label={t("publish.fields.tags")}
-                      className="min-w-32 flex-1 bg-transparent py-1 text-sm outline-hidden placeholder:text-zinc-600 light:placeholder:text-slate-400"
+                      className="min-w-32 flex-1 bg-transparent py-1 text-sm outline-hidden placeholder:text-fg-muted"
                     />
                   )}
                 </div>
@@ -427,17 +428,17 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                     role="radio"
                     aria-checked={active}
                     onClick={() => setVisibility(a)}
-                    className={cx(
-                      "flex items-start gap-3 rounded-2xl border p-3.5 text-left transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400",
-                      active ? "border-violet-500 bg-violet-500/10" : "border-white/10 hover:border-white/25 light:border-black/10 hover:light:border-black/25",
+                    className={cn(
+                      "flex items-start gap-3 rounded-2xl border p-3.5 text-left transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
+                      active ? "border-accent bg-accent/10" : "border-border-default hover:border-border-strong",
                     )}
                   >
-                    <span className={cx("flex h-9 w-9 shrink-0 items-center justify-center rounded-xl", active ? "bg-violet-600 text-white" : "bg-white/5 text-zinc-400 light:bg-black/5 light:text-slate-500")}>
+                    <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-xl", active ? "bg-accent text-white" : "bg-surface-2 text-fg-secondary")}>
                       <Icon className="h-4 w-4" />
                     </span>
                     <span>
-                      <span className="block text-sm font-semibold text-white light:text-slate-900">{t(`publish.audiences.${a}.title` as MessageKey)}</span>
-                      <span className="block text-xs text-zinc-400 light:text-slate-500">{t(`publish.audiences.${a}.hint` as MessageKey)}</span>
+                      <span className="block text-sm font-semibold text-fg">{t(`publish.audiences.${a}.title` as MessageKey)}</span>
+                      <span className="block text-xs text-fg-secondary">{t(`publish.audiences.${a}.hint` as MessageKey)}</span>
                     </span>
                   </button>
                 );
@@ -445,12 +446,12 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
             </div>
 
             {visibility === "TIPPED_UNLOCKED" && (
-              <div className="mt-4 rounded-2xl border border-violet-500/25 bg-violet-500/6 p-4">
+              <div className="mt-4 rounded-2xl border border-accent/25 bg-accent/6 p-4">
                 <label className="block">
                   <span className={label}>{t("publish.fields.price")}</span>
-                  <span className="flex items-center rounded-xl border border-white/10 bg-zinc-900/80 px-3 focus-within:border-violet-500 light:border-black/10 light:bg-white">
+                  <span className="flex items-center rounded-xl border border-border-default bg-surface-2/80 px-3 focus-within:border-accent">
                     <span className="font-semibold text-zinc-500">$</span>
-                    <input type="number" step="0.50" min="1" value={minTipAmountDollars} onChange={(e) => setMinTipAmountDollars(e.target.value)} className="w-full bg-transparent px-2 py-3 text-sm font-semibold text-white outline-hidden light:text-slate-900" />
+                    <input type="number" step="0.50" min="1" value={minTipAmountDollars} onChange={(e) => setMinTipAmountDollars(e.target.value)} className="w-full bg-transparent px-2 py-3 text-sm font-semibold text-fg outline-hidden" />
                   </span>
                   <span className="mt-1 block text-[11px] text-zinc-500">{t("publish.fields.priceHint")}</span>
                 </label>
@@ -460,9 +461,9 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                     { k: t("publish.split.fee", { fee: platformFeePercent }), v: money(feeCents) },
                     { k: t("publish.split.you"), v: money(priceCents - feeCents), strong: true },
                   ].map((c) => (
-                    <div key={c.k} className={cx("rounded-xl p-2.5", c.strong ? "bg-emerald-500/15 ring-1 ring-emerald-500/30" : "bg-white/5 light:bg-black/3")}>
-                      <span className="block text-zinc-400 light:text-slate-500">{c.k}</span>
-                      <span className={cx("font-mono text-sm font-bold", c.strong ? "text-emerald-300 light:text-emerald-700" : "text-white light:text-slate-900")}>{c.v}</span>
+                    <div key={c.k} className={cn("rounded-xl p-2.5", c.strong ? "bg-success/15 ring-1 ring-success/30" : "bg-surface-2")}>
+                      <span className="block text-fg-secondary">{c.k}</span>
+                      <span className={cn("font-mono text-sm font-bold", c.strong ? "text-success" : "text-fg")}>{c.v}</span>
                     </div>
                   ))}
                 </div>
@@ -506,27 +507,27 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 <span className="mt-1 block text-[11px] text-zinc-500">{contentRatings.find((r) => r.id === selectedRating)?.description}</span>
               )}
             </label>
-            <div className="mt-4 flex items-center justify-between gap-4 rounded-2xl border border-white/10 p-3.5 light:border-black/10">
+            <div className="mt-4 flex items-center justify-between gap-4 rounded-2xl border border-border-default p-3.5">
               <span>
-                <span className="block text-sm font-semibold text-white light:text-slate-900">{t("publish.rating.blur")}</span>
-                <span className="block text-xs text-zinc-400 light:text-slate-500">{t("publish.rating.blurHint")}</span>
+                <span className="block text-sm font-semibold text-fg">{t("publish.rating.blur")}</span>
+                <span className="block text-xs text-fg-secondary">{t("publish.rating.blurHint")}</span>
               </span>
               <Switch checked={isBlurred} onChange={setIsBlurred} label={t("publish.rating.blur")} />
             </div>
           </Step>
 
           <Step n={5} title={t("publish.steps.declarations")} done={certified}>
-            <p className="-mt-2 mb-3 flex items-center gap-2 text-xs text-zinc-400 light:text-slate-500">
-              <ShieldAlert className="h-3.5 w-3.5 text-fuchsia-400" /> {t("publish.declarations.intro")}
+            <p className="-mt-2 mb-3 flex items-center gap-2 text-xs text-fg-secondary">
+              <ShieldAlert className="h-3.5 w-3.5 text-accent" /> {t("publish.declarations.intro")}
             </p>
             <div className="space-y-2">
               {(["age", "records", "rights"] as const).map((k) => (
-                <label key={k} className={cx("flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors", certify[k] ? "border-emerald-500/40 bg-emerald-500/6" : "border-white/10 hover:border-white/25 light:border-black/10")}>
-                  <input type="checkbox" checked={certify[k]} onChange={(e) => setCertify({ ...certify, [k]: e.target.checked })} className="mt-0.5 h-4 w-4 accent-violet-600" />
-                  <span className="text-sm leading-relaxed text-zinc-200 light:text-slate-700">
+                <label key={k} className={cn("flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors", certify[k] ? "border-success/40 bg-success/6" : "border-border-default hover:border-white/25")}>
+                  <input type="checkbox" checked={certify[k]} onChange={(e) => setCertify({ ...certify, [k]: e.target.checked })} className="mt-0.5 h-4 w-4 accent-accent" />
+                  <span className="text-sm leading-relaxed text-fg">
                     {t(`publish.declarations.${k}`)}
                     {k === "records" && (
-                      <Link href="/legal/2257" target="_blank" className="ml-1 text-violet-300 underline light:text-violet-700">
+                      <Link href="/legal/2257" target="_blank" className="ml-1 text-accent underline">
                         2257
                       </Link>
                     )}
@@ -539,33 +540,33 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
 
         {/* Live preview + publish (sticky on wide screens; the button is pinned to the bottom on phones) */}
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-3xl border border-white/10 bg-zinc-950/60 p-4 light:border-black/5 light:bg-white">
-            <p className="text-xs font-semibold text-zinc-400 light:text-slate-500">{t("publish.preview")}</p>
+          <div className="rounded-3xl border border-border-default bg-surface-1/60 p-4">
+            <p className="text-xs font-semibold text-fg-secondary">{t("publish.preview")}</p>
             <p className="mb-3 text-[11px] text-zinc-500">{t("publish.previewHint")}</p>
-            <div className="overflow-hidden rounded-2xl border border-white/10 light:border-black/5">
+            <div className="overflow-hidden rounded-2xl border border-border-default">
               <div className="relative aspect-video bg-zinc-900">
                 {previewUrl ? (
-                  <video src={`${previewUrl}#t=0.5`} muted playsInline preload="metadata" className={cx("h-full w-full object-cover", isBlurred && "scale-110 blur-xl")} />
+                  <video src={`${previewUrl}#t=0.5`} muted playsInline preload="metadata" className={cn("h-full w-full object-cover", isBlurred && "scale-110 blur-xl")} />
                 ) : (
                   <span className="flex h-full items-center justify-center text-zinc-600">
                     <Film className="h-8 w-8" />
                   </span>
                 )}
                 {visibility === "TIPPED_UNLOCKED" && (
-                  <span className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-linear-to-r from-violet-600 to-pink-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                  <span className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-linear-to-r from-accent to-accent-2 px-2 py-0.5 text-[10px] font-bold text-white">
                     <Lock className="h-3 w-3" /> {money(priceCents)}
                   </span>
                 )}
-                {duration !== null && <span className="absolute bottom-2 right-2 rounded-sm bg-black/70 px-1.5 py-0.5 font-mono text-[10px] text-white">{clockOf(duration)}</span>}
+                {duration !== null && <span className="absolute bottom-2 right-2 rounded-sm bg-scrim-strong px-1.5 py-0.5 font-mono text-[10px] text-fg-on-media">{clockOf(duration)}</span>}
               </div>
               <div className="p-3">
-                <p className="line-clamp-2 text-sm font-semibold text-white light:text-slate-900">{title.trim() || t("publish.untitled")}</p>
+                <p className="line-clamp-2 text-sm font-semibold text-fg">{title.trim() || t("publish.untitled")}</p>
                 <p className="mt-1 text-[11px] text-zinc-500">{t(`publish.audiences.${visibility}.title` as MessageKey)}{tags.length > 0 && ` · ${tags.slice(0, 3).map((x) => `#${x}`).join(" ")}`}</p>
               </div>
             </div>
           </div>
-          <div className="fixed inset-x-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-30 border-t border-white/10 bg-zinc-950/90 p-3 backdrop-blur-xl light:border-black/5 light:bg-white/90 md:bottom-0 lg:static lg:mt-4 lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
-            <Button type="submit" variant="primary" size="lg" round={false} className="w-full" disabled={Boolean(missing) || uploading} loading={starting}>
+          <div className="fixed inset-x-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-30 border-t border-border-default bg-surface-1/90 p-3 backdrop-blur-xl md:bottom-0 lg:static lg:mt-4 lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
+            <Button type="submit" variant="sensual" size="lg" shape="rounded" className="w-full" disabled={Boolean(missing) || uploading} loading={starting}>
               {uploading ? t("publish.uploading", { progress: upload?.progress ?? 0 }) : missing ? t("publish.missing", { what: missing.toLowerCase() }) : t("publish.submit")}
             </Button>
           </div>

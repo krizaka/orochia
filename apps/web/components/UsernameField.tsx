@@ -45,17 +45,17 @@ export function UsernameField({ value, onChange, labelClass, fieldClass }: { val
           className={`${fieldClass} pl-9 pr-9 normal-case tracking-normal`}
         />
         <span className="absolute right-3 top-3">
-          {checking ? <Loader2 className="h-4 w-4 animate-spin text-zinc-500" /> : status?.available ? <Check className="h-4 w-4 text-emerald-400" /> : null}
+          {checking ? <Loader2 className="h-4 w-4 animate-spin text-zinc-500" /> : status?.available ? <Check className="h-4 w-4 text-success" /> : null}
         </span>
       </div>
       <span className="mt-1 block min-h-4 text-[11px] font-normal normal-case tracking-normal">
         {status && !status.available && status.suggestion ? (
-          <span className="text-amber-300 light:text-amber-700">
+          <span className="text-warning">
             {status.reason === "format"
               ? t("auth.register.usernameFormat")
               : t(status.reason === "reserved" ? "auth.register.usernameReserved" : "auth.register.usernameTaken", { suggestion: `@${status.suggestion}` })}{" "}
             {status.reason !== "format" && (
-              <button type="button" onClick={() => onChange(status.suggestion!)} className="font-semibold text-violet-300 underline light:text-violet-700">
+              <button type="button" onClick={() => onChange(status.suggestion!)} className="font-semibold text-accent underline">
                 {t("auth.register.useSuggestion")}
               </button>
             )}

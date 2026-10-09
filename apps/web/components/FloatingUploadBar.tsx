@@ -65,23 +65,23 @@ export function FloatingUploadBar() {
       <div className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-50">
         <button
           onClick={() => setIsDockMinimized(false)}
-          className="flex items-center gap-3 px-4 py-2.5 rounded-full bg-zinc-950/95 border border-violet-500/30 text-white shadow-2xl backdrop-blur-xl hover:border-violet-500/60 transition-all light:bg-white light:border-violet-500/30 light:text-slate-900 group"
+          className="flex items-center gap-3 px-4 py-2.5 rounded-full bg-surface-1/95 border border-accent/30 text-fg shadow-2xl backdrop-blur-xl hover:border-accent/60 transition-all group"
           title={t("uploads.expand")}
         >
           <div className="relative flex items-center justify-center">
             {activeCount > 0 ? (
-              <div className="h-4 w-4 rounded-full border-2 border-violet-500 border-t-transparent animate-spin" />
+              <div className="h-4 w-4 rounded-full border-2 border-accent border-t-transparent animate-spin" />
             ) : (
-              <CheckCircle className="h-4 w-4 text-emerald-400" />
+              <CheckCircle className="h-4 w-4 text-success" />
             )}
           </div>
           <span className="text-xs font-semibold">
             {activeCount > 0 ? t("uploads.uploading", { progress: totalProgress }) : t("uploads.complete")}
           </span>
-          <span className="text-[10px] bg-violet-600/30 text-violet-300 font-mono px-2 py-0.5 rounded-full">
+          <span className="text-[10px] bg-accent/30 text-accent font-mono px-2 py-0.5 rounded-full">
             {uploads.length}
           </span>
-          <ChevronUp className="h-3.5 w-3.5 text-zinc-400 group-hover:text-white group-hover:light:text-slate-900 transition-colors" />
+          <ChevronUp className="h-3.5 w-3.5 text-zinc-400 group-hover:text-fg transition-colors" />
         </button>
       </div>
     );
@@ -90,19 +90,19 @@ export function FloatingUploadBar() {
   return (
     <aside
       aria-label={t("uploads.label")}
-      className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-96 rounded-2xl border border-white/10 bg-zinc-950/95 p-4 shadow-2xl backdrop-blur-2xl light:bg-white/95 light:border-black/10 light:text-slate-900"
+      className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-96 rounded-2xl border border-border-default bg-surface-1/95 p-4 shadow-2xl backdrop-blur-2xl light:text-slate-900"
     >
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-white/10 light:border-black/10">
+      <div className="flex items-center justify-between pb-3 border-b border-border-default">
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-linear-to-tr from-violet-600 to-fuchsia-600 text-white shadow-xs">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-linear-to-tr from-accent to-accent-2 text-white shadow-xs">
             <UploadCloud className="h-4 w-4" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider light:text-slate-900">
+            <h4 className="text-xs font-bold text-fg uppercase tracking-wider">
               {t("uploads.title")}
             </h4>
-            <p className="text-[10px] text-zinc-400 light:text-slate-500">
+            <p className="text-[10px] text-fg-secondary">
               {activeCount > 0 ? t("uploads.running", { count: activeCount }) : t("uploads.finished")}
             </p>
           </div>
@@ -111,7 +111,7 @@ export function FloatingUploadBar() {
         <div className="flex items-center gap-1">
           <button
             onClick={() => setIsDockMinimized(true)}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 transition-colors hover:light:text-slate-900 hover:light:bg-black/5"
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-fg hover:bg-surface-2 transition-colors"
             title={t("uploads.minimize")} aria-label={t("uploads.minimize")}
           >
             <ChevronDown className="h-4 w-4" />
@@ -124,16 +124,16 @@ export function FloatingUploadBar() {
         {uploads.map((item) => (
           <div
             key={item.id}
-            className="rounded-xl border border-white/5 bg-zinc-900/60 p-3 light:bg-slate-50 light:border-black/5"
+            className="rounded-xl border border-border-subtle bg-surface-2/60 p-3"
           >
             <div className="flex items-start justify-between gap-2 mb-1.5">
               <div className="flex items-center gap-2 min-w-0">
                 {item.type === "story" ? (
-                  <Sparkles className="h-3.5 w-3.5 text-fuchsia-400 shrink-0" />
+                  <Sparkles className="h-3.5 w-3.5 text-accent shrink-0" />
                 ) : (
-                  <Film className="h-3.5 w-3.5 text-violet-400 shrink-0" />
+                  <Film className="h-3.5 w-3.5 text-accent shrink-0" />
                 )}
-                <span className="text-xs font-semibold text-white truncate light:text-slate-900">
+                <span className="text-xs font-semibold text-fg truncate">
                   {item.title}
                 </span>
               </div>
@@ -143,7 +143,7 @@ export function FloatingUploadBar() {
                 {item.status === "uploading" && (
                   <button
                     onClick={() => pauseUpload(item.id)}
-                    className="p-1 rounded-sm text-zinc-400 hover:text-white hover:bg-white/10 transition-colors hover:light:text-slate-900"
+                    className="p-1 rounded-sm text-zinc-400 hover:text-fg hover:bg-white/10 transition-colors"
                     title={t("uploads.pause")} aria-label={t("uploads.pause")}
                   >
                     <Pause className="h-3 w-3" />
@@ -152,7 +152,7 @@ export function FloatingUploadBar() {
                 {item.status === "paused" && (
                   <button
                     onClick={() => resumeUpload(item.id)}
-                    className="p-1 rounded-sm text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                    className="p-1 rounded-sm text-success hover:bg-success/10 transition-colors"
                     title={t("uploads.resume")} aria-label={t("uploads.resume")}
                   >
                     <Play className="h-3 w-3" />
@@ -161,7 +161,7 @@ export function FloatingUploadBar() {
                 {item.status !== "completed" && (
                   <button
                     onClick={() => cancelUpload(item.id)}
-                    className="p-1 rounded-sm text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                    className="p-1 rounded-sm text-zinc-400 hover:text-danger hover:bg-danger/10 transition-colors"
                     title={t("uploads.cancel")} aria-label={t("uploads.cancel")}
                   >
                     <X className="h-3 w-3" />
@@ -170,7 +170,7 @@ export function FloatingUploadBar() {
                 {item.status === "completed" && (
                   <button
                     onClick={() => dismissUpload(item.id)}
-                    className="p-1 rounded-sm text-zinc-400 hover:text-white hover:bg-white/10 transition-colors hover:light:text-slate-900"
+                    className="p-1 rounded-sm text-zinc-400 hover:text-fg hover:bg-white/10 transition-colors"
                     title={t("uploads.dismiss")} aria-label={t("uploads.dismiss")}
                   >
                     <X className="h-3 w-3" />
@@ -180,27 +180,27 @@ export function FloatingUploadBar() {
             </div>
 
             {/* Progress Bar */}
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-800 light:bg-slate-200 mb-2">
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-3 mb-2">
               <div
                 className={`h-full transition-all duration-300 ${
                   item.status === "completed"
-                    ? "bg-emerald-500"
+                    ? "bg-success"
                     : item.status === "error"
-                    ? "bg-rose-500"
+                    ? "bg-danger"
                     : item.status === "paused"
-                    ? "bg-amber-500"
-                    : "bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600"
+                    ? "bg-warning"
+                    : "bg-linear-to-r from-accent via-accent-2 to-accent-2"
                 }`}
                 style={{ width: `${item.progress}%` }}
               />
             </div>
 
             {/* Stats / Status Row */}
-            <div className="flex items-center justify-between text-[11px] text-zinc-400 light:text-slate-500">
+            <div className="flex items-center justify-between text-[11px] text-fg-secondary">
               <span>
                 {item.status === "uploading" && (
                   <>
-                    <span className="font-mono text-violet-400 font-semibold">{item.progress}%</span>
+                    <span className="font-mono text-accent font-semibold">{item.progress}%</span>
                     {" • "}
                     <span>{formatSpeed(item.speedBytesPerSec)}</span>
                     {item.timeRemainingSec && (
@@ -212,15 +212,15 @@ export function FloatingUploadBar() {
                   </>
                 )}
                 {item.status === "paused" && (
-                  <span className="text-amber-400 font-medium">{t("uploads.paused", { progress: item.progress })}</span>
+                  <span className="text-warning font-medium">{t("uploads.paused", { progress: item.progress })}</span>
                 )}
                 {item.status === "completed" && (
-                  <span className="text-emerald-400 font-medium flex items-center gap-1">
+                  <span className="text-success font-medium flex items-center gap-1">
                     <CheckCircle className="h-3 w-3 inline" /> {t("uploads.processing")}
                   </span>
                 )}
                 {item.status === "error" && (
-                  <span className="text-rose-400 font-medium flex items-center gap-1 truncate max-w-[200px]">
+                  <span className="text-danger font-medium flex items-center gap-1 truncate max-w-[200px]">
                     <AlertCircle className="h-3 w-3 inline shrink-0" />{" "}
                     {item.errorMessage || t("uploads.failed")}
                   </span>
@@ -236,7 +236,7 @@ export function FloatingUploadBar() {
               <div className="mt-2 pt-2 border-t border-white/5 flex justify-end">
                 <Link
                   href={`/watch/${item.videoId}`}
-                  className="text-[11px] text-violet-400 hover:text-violet-300 font-semibold transition-colors"
+                  className="text-[11px] text-accent hover:text-accent font-semibold transition-colors"
                 >
                   {t("uploads.view")}
                 </Link>

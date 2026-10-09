@@ -13,7 +13,7 @@ import { AuctionPanel } from "@/components/auctions/AuctionPanel";
 import { useAuctionStream } from "@/components/auctions/useAuctionStream";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
 import { Sparkles, Eye, ShieldCheck, Share2, Flag, CheckCircle2, Heart, MessageSquare, Gavel } from "lucide-react";
-import { buttonClass, cx } from "@/components/ui";
+import { orochiaButton, buttonVariants, cn } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 interface StreamAccess {
@@ -165,9 +165,9 @@ export default function WatchClient() {
   if (notFound) {
     return (
       <div className="mx-auto max-w-lg px-4 py-24 text-center">
-        <h1 className="font-display text-2xl font-bold text-white light:text-slate-900">{t("watch.notFound")}</h1>
-        <p className="mt-2 text-sm text-zinc-400 light:text-slate-600">{t("watch.notFoundBody")}</p>
-        <Link href="/" className={buttonClass({ variant: "primary", className: "mt-6" })}>
+        <h1 className="font-display text-2xl font-bold text-fg">{t("watch.notFound")}</h1>
+        <p className="mt-2 text-sm text-fg-secondary">{t("watch.notFoundBody")}</p>
+        <Link href="/" className={orochiaButton({ variant: "sensual", shape: "pill", className: "mt-6" })}>
           {t("watch.backToFeed")}
         </Link>
       </div>
@@ -189,13 +189,13 @@ export default function WatchClient() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       {paymentState === "success" && !stream?.allowed && (
-        <div className="mb-6 flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-950/30 px-4 py-3 text-xs text-emerald-300">
+        <div className="mb-6 flex items-center gap-2 rounded-2xl border border-success/30 bg-success/10 px-4 py-3 text-xs text-success">
           <CheckCircle2 className="h-4 w-4" />
           {t("watch.paymentReceived")}
         </div>
       )}
       {paymentState === "cancelled" && (
-        <div className="mb-6 rounded-2xl border border-white/10 dark:border-white/10 light:border-black/10 bg-zinc-900/60 dark:bg-zinc-900/60 light:bg-slate-100 px-4 py-3 text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-600">
+        <div className="mb-6 rounded-2xl border border-border-default bg-surface-2/60 px-4 py-3 text-xs text-fg-secondary">
           {t("watch.paymentCancelled")}
         </div>
       )}
@@ -203,8 +203,8 @@ export default function WatchClient() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           {isLoading || !details ? (
-            <div className="aspect-video w-full rounded-2xl bg-zinc-900 dark:bg-zinc-900 light:bg-slate-200 animate-pulse flex items-center justify-center border border-white/5">
-              <span className="font-mono text-xs text-zinc-500 light:text-slate-500">{t("watch.verifying")}</span>
+            <div className="aspect-video w-full rounded-2xl bg-surface-2 animate-pulse flex items-center justify-center border border-white/5">
+              <span className="font-mono text-xs text-fg-muted">{t("watch.verifying")}</span>
             </div>
           ) : (
             <VideoPlayer
@@ -221,11 +221,11 @@ export default function WatchClient() {
               isChallenge={isChallenge}
               gateAction={
                 isChallenge ? (
-                  <Link href="/challenges" className={buttonClass({ variant: "primary", round: false })}>
+                  <Link href="/challenges" className={orochiaButton({ variant: "sensual", shape: "rounded" })}>
                     {t("player.challengeCta")}
                   </Link>
                 ) : isAuction ? (
-                  <a href="#auction" className={buttonClass({ variant: "primary", round: false })}>
+                  <a href="#auction" className={orochiaButton({ variant: "sensual", shape: "rounded" })}>
                     <Gavel className="h-4 w-4" /> {t("player.auctionCta")}
                   </a>
                 ) : (
@@ -245,9 +245,9 @@ export default function WatchClient() {
           {details && (
             <div className="mt-6">
               <div className="flex flex-wrap items-center justify-between gap-4">
-                <h1 className="text-xl sm:text-2xl font-bold text-white dark:text-white light:text-slate-900">{title}</h1>
+                <h1 className="text-xl sm:text-2xl font-bold text-fg">{title}</h1>
                 <div className="flex items-center gap-3">
-                  <button onClick={() => setIsTipModalOpen(true)} className={buttonClass({ variant: "primary", size: "sm", round: false })}>
+                  <button onClick={() => setIsTipModalOpen(true)} className={orochiaButton({ variant: "sensual", size: "sm", shape: "rounded" })}>
                     <Sparkles className="h-4 w-4" />
                     <span>{isPaywalled ? t("watch.unlock") : t("watch.tip")}</span>
                   </button>
@@ -258,42 +258,42 @@ export default function WatchClient() {
                         disabled={likeBusy}
                         aria-pressed={liked}
                         aria-label={liked ? t("watch.unlike") : t("watch.like")}
-                        className={cx(buttonClass({ size: "sm", round: false }), liked && "border-fuchsia-500/40! bg-fuchsia-500/10! text-fuchsia-400!")}
+                        className={cn(buttonVariants({ size: "sm", shape: "rounded" }), liked && "border-accent/40! bg-accent/10! text-accent!")}
                       >
                         <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
                         <span>{details.likesCount.toLocaleString("en-US")}</span>
                       </button>
                     ) : (
-                      <Link href={`/auth/login?next=/watch/${videoId}`} aria-label={t("watch.like")} className={buttonClass({ size: "sm", round: false })}>
+                      <Link href={`/auth/login?next=/watch/${videoId}`} aria-label={t("watch.like")} className={buttonVariants({ size: "sm", shape: "rounded" })}>
                         <Heart className="h-4 w-4" />
                         <span>{details.likesCount.toLocaleString("en-US")}</span>
                       </Link>
                     ))}
                   <SaveToPlaylist videoId={videoId} />
-                  <button onClick={share} className={buttonClass({ size: "sm", round: false })}>
+                  <button onClick={share} className={buttonVariants({ size: "sm", shape: "rounded" })}>
                     <Share2 className="h-4 w-4" />
                     <span>{copied ? t("watch.copied") : t("watch.share")}</span>
                   </button>
-                  <button onClick={() => setIsReportModalOpen(true)} className={cx(buttonClass({ size: "sm", round: false }), "hover:border-rose-500/40! hover:bg-rose-500/10! hover:text-rose-400!")}>
+                  <button onClick={() => setIsReportModalOpen(true)} className={cn(buttonVariants({ size: "sm", shape: "rounded" }), "hover:border-danger/40! hover:bg-danger/10! hover:text-danger!")}>
                     <Flag className="h-3.5 w-3.5" />
                     <span>{t("watch.report")}</span>
                   </button>
                 </div>
               </div>
 
-              <div className="mt-3 flex items-center gap-4 text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 font-mono">
+              <div className="mt-3 flex items-center gap-4 text-xs text-fg-secondary font-mono">
                 <span className="flex items-center gap-1">
-                  <Eye className="h-3.5 w-3.5 text-zinc-500 light:text-slate-500" />
+                  <Eye className="h-3.5 w-3.5 text-fg-muted" />
                   {t("watch.views", { count: details.viewsCount.toLocaleString("en-US") })}
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1">
-                  <MessageSquare className="h-3.5 w-3.5 text-zinc-500 light:text-slate-500" aria-hidden />
+                  <MessageSquare className="h-3.5 w-3.5 text-fg-muted" aria-hidden />
                   <span aria-label={t("watch.comments", { count: details.commentsCount })}>{details.commentsCount.toLocaleString("en-US")}</span>
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1">
-                  <Share2 className="h-3.5 w-3.5 text-zinc-500 light:text-slate-500" aria-hidden />
+                  <Share2 className="h-3.5 w-3.5 text-fg-muted" aria-hidden />
                   <span aria-label={t("watch.shares", { count: details.sharesCount })}>{details.sharesCount.toLocaleString("en-US")}</span>
                 </span>
                 <span>•</span>
@@ -304,29 +304,29 @@ export default function WatchClient() {
                 </span>
               </div>
 
-              <div className="mt-6 flex items-center justify-between rounded-2xl border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/60 dark:bg-zinc-900/60 light:bg-white p-4 shadow-xs">
+              <div className="mt-6 flex items-center justify-between rounded-2xl border border-border-subtle bg-surface-2/60 p-4 shadow-xs">
                 <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 overflow-hidden rounded-full border border-violet-500/30">
+                  <div className="h-12 w-12 overflow-hidden rounded-full border border-accent/30">
                     <img src={details.creatorAvatar || AVATAR_PLACEHOLDER} alt={details.creatorName} className="h-full w-full object-cover" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-white dark:text-white light:text-slate-900">{details.creatorName}</span>
-                      <ShieldCheck className="h-4 w-4 text-violet-400" aria-label={t("watch.verified")} />
+                      <span className="text-sm font-bold text-fg">{details.creatorName}</span>
+                      <ShieldCheck className="h-4 w-4 text-accent" aria-label={t("watch.verified")} />
                     </div>
-                    <span className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500">@{details.creatorUsername}</span>
+                    <span className="text-xs text-fg-secondary">@{details.creatorUsername}</span>
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center justify-end gap-2">
                   <RelationshipActions username={details.creatorUsername} show={["follow"]} size="sm" onChange={() => void fetchStreamAccess()} />
-                  <Link href={`/@${details.creatorUsername}`} className={buttonClass({ size: "sm", round: false })}>
+                  <Link href={`/@${details.creatorUsername}`} className={buttonVariants({ size: "sm", shape: "rounded" })}>
                     {t("watch.viewProfile")}
                   </Link>
                 </div>
               </div>
 
               {(details.description || details.creatorBio) && (
-                <p className="mt-4 text-sm text-zinc-300 dark:text-zinc-300 light:text-slate-700 leading-relaxed bg-zinc-900/30 dark:bg-zinc-900/30 light:bg-white rounded-2xl p-4 border border-white/5 dark:border-white/5 light:border-black/5 whitespace-pre-line shadow-xs">
+                <p className="mt-4 text-sm text-fg-secondary leading-relaxed bg-surface-2/30 rounded-2xl p-4 border border-border-subtle whitespace-pre-line shadow-xs">
                   {details.description || details.creatorBio}
                 </p>
               )}
@@ -345,38 +345,38 @@ export default function WatchClient() {
 
         <div className="space-y-6">
           {large && auctionPanel}
-          <div className="rounded-2xl border border-white/10 dark:border-white/10 light:border-black/5 bg-zinc-900/50 dark:bg-zinc-900/50 light:bg-white p-5 shadow-xs">
-            <h3 className="text-sm font-bold text-white dark:text-white light:text-slate-900 mb-3">{t("watch.protection.title")}</h3>
-            <ul className="space-y-2.5 text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-600">
+          <div className="rounded-2xl border border-border-default bg-surface-2/50 p-5 shadow-xs">
+            <h3 className="text-sm font-bold text-fg mb-3">{t("watch.protection.title")}</h3>
+            <ul className="space-y-2.5 text-xs text-fg-secondary">
               <li className="flex items-start gap-2">
-                <div className="h-1.5 w-1.5 rounded-full bg-violet-400 mt-1.5 shrink-0" />
+                <div className="h-1.5 w-1.5 rounded-full bg-accent mt-1.5 shrink-0" />
                 <span>{t("watch.protection.signed")}</span>
               </li>
               <li className="flex items-start gap-2">
-                <div className="h-1.5 w-1.5 rounded-full bg-fuchsia-400 mt-1.5 shrink-0" />
+                <div className="h-1.5 w-1.5 rounded-full bg-accent mt-1.5 shrink-0" />
                 <span>{t("watch.protection.checked")}</span>
               </li>
               <li className="flex items-start gap-2">
-                <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0" />
+                <div className="h-1.5 w-1.5 rounded-full bg-success mt-1.5 shrink-0" />
                 <span>{t("watch.protection.confirmed")}</span>
               </li>
             </ul>
           </div>
 
           {details && details.moreFromCreator.length > 0 && (
-            <div className="rounded-2xl border border-white/5 dark:border-white/5 light:border-black/5 bg-zinc-900/30 dark:bg-zinc-900/30 light:bg-white p-5 shadow-xs">
-              <h3 className="text-sm font-bold text-white dark:text-white light:text-slate-900 mb-3">{t("watch.more", { name: details.creatorName })}</h3>
+            <div className="rounded-2xl border border-border-subtle bg-surface-2/30 p-5 shadow-xs">
+              <h3 className="text-sm font-bold text-fg mb-3">{t("watch.more", { name: details.creatorName })}</h3>
               <div className="space-y-3">
                 {details.moreFromCreator.map((video) => (
                   <Link key={video.id} href={`/watch/${video.id}`} className="flex gap-3 items-center group">
-                    <div className="h-16 w-24 rounded-lg bg-zinc-800 dark:bg-zinc-800 light:bg-slate-200 overflow-hidden shrink-0">
+                    <div className="h-16 w-24 rounded-lg bg-surface-3 overflow-hidden shrink-0">
                       {video.thumbnailUrl && (
                         <img src={video.thumbnailUrl} alt="" className="h-full w-full object-cover group-hover:scale-105 transition-transform" />
                       )}
                     </div>
                     <div>
-                      <h4 className="text-xs font-semibold text-white dark:text-white light:text-slate-900 group-hover:text-violet-400 line-clamp-1">{video.title}</h4>
-                      <span className="block text-[10px] text-zinc-500 font-mono light:text-slate-500">
+                      <h4 className="text-xs font-semibold text-fg group-hover:text-accent line-clamp-1">{video.title}</h4>
+                      <span className="block text-[10px] text-fg-muted font-mono">
                         {formatDuration(video.durationSeconds)} • {video.visibility === "PUBLIC" ? t("watch.free") : t("watch.members")}
                       </span>
                     </div>

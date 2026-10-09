@@ -29,20 +29,20 @@ export interface StudioVideo {
 const visibilityLabel = (v: StudioVideo["visibility"]) => t(`publish.audiences.${v}.title`);
 
 const field =
-  "mt-1 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-hidden light:border-black/10 light:bg-slate-50 light:text-slate-900";
-const label = "block text-xs font-semibold text-zinc-400 light:text-slate-500";
-const iconAction = "rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400 light:text-slate-500 hover:light:bg-black/5 hover:light:text-slate-950";
+  "mt-1 w-full rounded-xl border border-border-default bg-surface-2 px-3 py-2.5 text-sm text-fg focus:border-accent focus:outline-hidden";
+const label = "block text-xs font-semibold text-fg-secondary";
+const iconAction = "rounded-lg p-2 text-fg-secondary transition-colors hover:bg-surface-2 hover:text-fg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring";
 
 const duration = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
 function StatusBadge({ v }: { v: StudioVideo }) {
   const [label, cls] = v.removedAt
-    ? [t("studio.status.removed"), "border-rose-500/30 bg-rose-500/10 text-rose-300"]
+    ? [t("studio.status.removed"), "border-danger/30 bg-danger/10 text-danger"]
     : v.status === "READY"
-      ? [t("studio.status.published"), "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"]
+      ? [t("studio.status.published"), "border-success/30 bg-success/10 text-success"]
       : v.status === "FAILED"
-        ? [t("studio.status.failed"), "border-rose-500/30 bg-rose-500/10 text-rose-300"]
-        : [t("studio.status.encoding"), "border-amber-500/30 bg-amber-500/10 text-amber-300"];
+        ? [t("studio.status.failed"), "border-danger/30 bg-danger/10 text-danger"]
+        : [t("studio.status.encoding"), "border-warning/30 bg-warning/10 text-warning"];
   return <span className={`rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${cls}`}>{label}</span>;
 }
 
@@ -95,8 +95,8 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
 
   if (videos.length === 0) {
     return (
-      <div className="rounded-3xl border border-white/10 bg-zinc-900/40 p-12 text-center text-sm text-zinc-400 light:bg-slate-50 light:border-black/10 light:text-slate-500">
-        <Rich text={t("studio.empty")} slots={{ link: <Link href="/creator/upload" className="font-semibold text-violet-400 underline-offset-2 hover:underline">{t("studio.uploadFirst")}</Link> }} />
+      <div className="rounded-3xl border border-border-default bg-surface-2/40 p-12 text-center text-sm text-fg-secondary">
+        <Rich text={t("studio.empty")} slots={{ link: <Link href="/creator/upload" className="font-semibold text-accent underline-offset-2 hover:underline">{t("studio.uploadFirst")}</Link> }} />
       </div>
     );
   }
@@ -104,7 +104,7 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
   return (
     <div className="glass-panel rounded-3xl p-6 overflow-x-auto">
       <table className="w-full text-left text-xs">
-        <thead className="text-[10px] uppercase tracking-wider text-zinc-500 light:text-slate-500">
+        <thead className="text-[10px] uppercase tracking-wider text-fg-muted">
           <tr>
             <th className="py-2 pr-4">{t("studio.cols.title")}</th>
             <th className="py-2 pr-4">{t("studio.cols.state")}</th>
@@ -115,27 +115,27 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
             <th className="py-2 text-right">{t("studio.cols.actions")}</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/5 text-zinc-300 light:divide-black/5 light:text-slate-700">
+        <tbody className="divide-y divide-border-subtle text-fg-secondary">
           {videos.map((v) => (
             <tr key={v.id}>
               <td className="py-2.5 pr-4">
-                <Link href={`/watch/${v.id}`} className="hover:text-violet-400">{v.title}</Link>
+                <Link href={`/watch/${v.id}`} className="hover:text-accent">{v.title}</Link>
                 {v.removedAt && v.removalReason && (
-                  <p className="mt-1 flex items-center gap-1 text-[11px] text-rose-300">
+                  <p className="mt-1 flex items-center gap-1 text-[11px] text-danger">
                     <AlertTriangle className="h-3 w-3" /> {v.removalReason}
                   </p>
                 )}
               </td>
               <td className="py-2.5 pr-4"><StatusBadge v={v} /></td>
-              <td className="py-2.5 pr-4 text-zinc-400 light:text-slate-500">
+              <td className="py-2.5 pr-4 text-fg-secondary">
                 {v.visibility === "AUCTION" ? (
-                  <Link href={`/watch/${v.id}#auction`} className="inline-flex items-center gap-1 font-semibold text-fuchsia-300 hover:text-fuchsia-200 light:text-fuchsia-700 hover:light:text-fuchsia-900">
+                  <Link href={`/watch/${v.id}#auction`} className="inline-flex items-center gap-1 font-semibold text-accent hover:text-accent">
                     <Gavel className="h-3 w-3" aria-hidden /> {visibilityLabel(v.visibility)}
                   </Link>
                 ) : (
                   visibilityLabel(v.visibility)
                 )}
-                {v.visibility === "TIPPED_UNLOCKED" && <span className="ml-1 font-mono text-violet-300">${(v.minTipAmountCents / 100).toFixed(2)}</span>}
+                {v.visibility === "TIPPED_UNLOCKED" && <span className="ml-1 font-mono text-accent">${(v.minTipAmountCents / 100).toFixed(2)}</span>}
               </td>
               <td className="py-2.5 pr-4 font-mono">{duration(v.durationSeconds)}</td>
               <td className="py-2.5 pr-4 text-right font-mono">{v.viewsCount.toLocaleString("en-US")}</td>
@@ -174,7 +174,7 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
         footer={
           <div className="flex justify-end gap-2">
             <Button variant="secondary" onClick={() => setEditing(null)}>{t("common.cancel")}</Button>
-            <Button variant="primary" type="submit" form="studio-edit" loading={busy}>{t("common.save")}</Button>
+            <Button variant="sensual" type="submit" form="studio-edit" loading={busy}>{t("common.save")}</Button>
           </div>
         }
       >
@@ -192,7 +192,7 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
               <label className={label}>
                 {t("studio.visibility")}
                 {visibility === "AUCTION" || visibility === "CHALLENGE" ? (
-                  <span className={`${field} flex items-center gap-1.5 text-zinc-400 light:text-slate-500`}>
+                  <span className={`${field} flex items-center gap-1.5 text-fg-secondary`}>
                     <Gavel className="h-3.5 w-3.5" aria-hidden /> {t(visibility === "AUCTION" ? "studio.auctionLocked" : "studio.challengeLocked")}
                   </span>
                 ) : (
@@ -212,7 +212,7 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
               {t("studio.tags")}
               <input name="tags" defaultValue={editing.tags.join(", ")} maxLength={500} className={field} />
             </label>
-            {error && <p role="alert" className="text-xs text-rose-400">{error}</p>}
+            {error && <p role="alert" className="text-xs text-danger">{error}</p>}
           </form>
         )}
         {/* Outside the form: the audience editor saves on its own (and has its own form). */}

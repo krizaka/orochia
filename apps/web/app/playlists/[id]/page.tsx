@@ -48,18 +48,18 @@ export default async function PlaylistPage(props: { params: Promise<{ id: string
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <div className="rounded-3xl border border-white/10 bg-linear-to-r from-violet-950/60 via-zinc-950 to-fuchsia-950/50 p-6 sm:p-10 light:border-black/10">
-        <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-violet-300">
+      <div className="rounded-3xl border border-border-default bg-linear-to-r from-accent/20 via-zinc-950 to-accent-2/15 p-6 sm:p-10">
+        <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-accent">
           <ListVideo className="h-3.5 w-3.5" /> {t("collectionPage.eyebrow")} · <CollectionAudienceBadge visibility={playlist.visibility} />
         </p>
-        <h1 className="mt-2 text-2xl sm:text-3xl font-black text-white font-display light:text-slate-900">{playlist.title}</h1>
-        {playlist.description && <p className="mt-2 max-w-2xl text-sm text-zinc-300 light:text-slate-700">{playlist.description}</p>}
-        <p className="mt-3 text-xs text-zinc-400 light:text-slate-500">
+        <h1 className="mt-2 text-2xl sm:text-3xl font-black text-fg font-display">{playlist.title}</h1>
+        {playlist.description && <p className="mt-2 max-w-2xl text-sm text-fg-secondary">{playlist.description}</p>}
+        <p className="mt-3 text-xs text-fg-secondary">
           <Rich
             text={t("collectionPage.by", { name: "{owner}" })}
             slots={{
               owner: (
-                <Link href={`/@${playlist.ownerUsername}`} className="text-violet-300 hover:underline">
+                <Link href={`/@${playlist.ownerUsername}`} className="text-accent hover:underline">
                   {playlist.ownerName}
                 </Link>
               ),
@@ -70,7 +70,7 @@ export default async function PlaylistPage(props: { params: Promise<{ id: string
       </div>
 
       {playlist.items.length === 0 ? (
-        <div className="mt-8 rounded-3xl border border-white/10 bg-zinc-900/40 p-12 text-center text-sm text-zinc-400 light:bg-slate-50 light:border-black/10 light:text-slate-500">
+        <div className="mt-8 rounded-3xl border border-border-default bg-surface-2/40 p-12 text-center text-sm text-fg-secondary">
           {t("collectionPage.empty")}
         </div>
       ) : (

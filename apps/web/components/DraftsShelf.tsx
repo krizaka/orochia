@@ -50,8 +50,8 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
   };
 
   return (
-    <section aria-labelledby={`drafts-${kind}`} className="rounded-2xl border border-violet-500/25 bg-violet-600/6 p-3">
-      <h3 id={`drafts-${kind}`} className="mb-2 px-1 text-xs font-bold uppercase tracking-wider text-violet-300 light:text-violet-700">
+    <section aria-labelledby={`drafts-${kind}`} className="rounded-2xl border border-accent/25 bg-accent/6 p-3">
+      <h3 id={`drafts-${kind}`} className="mb-2 px-1 text-xs font-bold uppercase tracking-wider text-accent">
         {t("editor.drafts.title")} · {drafts.length}
       </h3>
       <ul className="flex gap-2.5 overflow-x-auto pb-1">
@@ -64,7 +64,7 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
                 type="button"
                 onClick={() => void open(d)}
                 disabled={Boolean(opening)}
-                className="group relative block aspect-9/16 max-h-48 w-full overflow-hidden rounded-xl bg-zinc-900 text-left light:bg-slate-200"
+                className="group relative block aspect-9/16 max-h-48 w-full overflow-hidden rounded-xl bg-surface-2 text-left"
                 aria-label={`${t("editor.drafts.resume")}: ${title}`}
               >
                 {d.thumbnailUrl ? (
@@ -87,7 +87,7 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
                   )}
                 </span>
                 {d.hasMusic && (
-                  <span className="absolute left-1.5 top-1.5 rounded-full bg-black/60 p-1 text-white">
+                  <span className="absolute left-1.5 top-1.5 rounded-full bg-scrim p-1 text-fg-on-media">
                     <Music2 className="h-3 w-3" />
                   </span>
                 )}
@@ -97,7 +97,7 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
                 onClick={() => void remove(d.id)}
                 onBlur={() => setConfirming(null)}
                 className={`mt-1.5 flex w-full items-center justify-center gap-1 rounded-lg py-1 text-[11px] font-semibold ${
-                  confirming === d.id ? "bg-rose-600 text-white" : "text-zinc-400 hover:text-rose-300 light:text-slate-500"
+                  confirming === d.id ? "bg-danger text-white" : "text-fg-secondary hover:text-danger"
                 }`}
               >
                 <Trash2 className="h-3 w-3" /> {confirming === d.id ? t("editor.drafts.deleteConfirm") : t("editor.drafts.delete")}
@@ -106,7 +106,7 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
           );
         })}
       </ul>
-      {error && <p role="alert" className="mt-2 px-1 text-xs text-rose-300 light:text-rose-600">{error}</p>}
+      {error && <p role="alert" className="mt-2 px-1 text-xs text-danger">{error}</p>}
     </section>
   );
 }

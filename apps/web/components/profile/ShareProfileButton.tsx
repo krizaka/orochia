@@ -21,9 +21,9 @@ export function ShareProfileButton({ username, displayName }: { username: string
     <button
       type="button"
       onClick={() => void share()}
-      className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-3.5 py-2.5 text-xs font-semibold text-zinc-200 transition-colors hover:border-violet-500/60 hover:bg-violet-500/10 light:border-black/10 light:text-slate-700 hover:light:bg-violet-50"
+      className="inline-flex items-center gap-2 rounded-xl border border-border-default px-3.5 py-2.5 text-xs font-semibold text-fg transition-colors hover:border-accent/60 hover:bg-accent/10"
     >
-      {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Share2 className="h-4 w-4" />}
+      {copied ? <Check className="h-4 w-4 text-success" /> : <Share2 className="h-4 w-4" />}
       {copied ? t("profile.copied") : t("profile.share")}
     </button>
   );

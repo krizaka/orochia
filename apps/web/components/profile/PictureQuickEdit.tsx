@@ -77,7 +77,7 @@ export function PictureQuickEdit({
     await save(data.data.ref, data.data.url ?? URL.createObjectURL(file));
   };
 
-  const item = "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-zinc-200 hover:bg-white/10 light:text-slate-700 hover:light:bg-black/5";
+  const item = "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-fg hover:bg-surface-3";
 
   return (
     <div ref={menu} className={`z-20 ${className}`}>
@@ -88,7 +88,7 @@ export function PictureQuickEdit({
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={t(isAvatar ? "settings.pictures.editAvatar" : "settings.pictures.editBanner")}
-        className={`flex items-center gap-1.5 rounded-full bg-black/60 text-white shadow-lg ring-1 ring-white/20 backdrop-blur-md transition-all hover:bg-black/80 focus-visible:opacity-100 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-violet-400 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 ${
+        className={`flex items-center gap-1.5 rounded-full bg-scrim text-fg-on-media shadow-lg ring-1 ring-white/20 backdrop-blur-md transition-all hover:bg-black/80 focus-visible:opacity-100 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 ${
           open ? "opacity-100!" : ""
         } ${isAvatar ? "h-9 w-9 justify-center" : "px-3.5 py-2 text-xs font-semibold"}`}
       >
@@ -97,27 +97,27 @@ export function PictureQuickEdit({
       </button>
 
       {open && (
-        <div role="menu" className={`kz-pop absolute mt-2 w-56 rounded-2xl border border-white/10 bg-zinc-900/95 p-1.5 shadow-2xl backdrop-blur-xl light:border-black/10 light:bg-white/95 ${isAvatar ? "left-0" : "right-0"}`}>
+        <div role="menu" className={`kz-pop absolute mt-2 w-56 rounded-2xl border border-border-default bg-surface-2/95 p-1.5 shadow-2xl backdrop-blur-xl ${isAvatar ? "left-0" : "right-0"}`}>
           <button role="menuitem" type="button" className={item} onClick={() => { setOpen(false); input.current?.click(); }}>
-            <ImagePlus className="h-4 w-4 text-violet-400" /> {t("settings.pictures.upload")}
+            <ImagePlus className="h-4 w-4 text-accent" /> {t("settings.pictures.upload")}
           </button>
           <button role="menuitem" type="button" className={item} onClick={() => { setOpen(false); setChoosing(true); void loadPresets().then((p) => setPresets(isAvatar ? p.avatars : p.banners)); }}>
-            <Palette className="h-4 w-4 text-fuchsia-400" /> {t("settings.pictures.choose")}
+            <Palette className="h-4 w-4 text-accent" /> {t("settings.pictures.choose")}
           </button>
           {hasPicture && (
-            <button role="menuitem" type="button" className={`${item} text-rose-300 light:text-rose-600`} onClick={() => { setOpen(false); void save(null, null); }}>
+            <button role="menuitem" type="button" className={`${item} text-danger`} onClick={() => { setOpen(false); void save(null, null); }}>
               <Trash2 className="h-4 w-4" /> {t("settings.pictures.remove")}
             </button>
           )}
         </div>
       )}
       <input ref={input} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => void upload(e.target.files?.[0])} />
-      {error && <p role="alert" className="absolute mt-2 w-64 rounded-lg bg-rose-600 px-3 py-2 text-xs text-white shadow-lg">{error}</p>}
+      {error && <p role="alert" className="absolute mt-2 w-64 rounded-lg bg-danger px-3 py-2 text-xs text-white shadow-lg">{error}</p>}
 
       {choosing && (
-        <div className="fixed inset-0 z-70 flex items-end justify-center bg-black/70 backdrop-blur-xs kz-overlay sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label={t("settings.pictures.presetsTitle")} onClick={() => setChoosing(false)}>
-          <div className="w-full max-w-lg rounded-t-3xl border border-white/10 bg-zinc-950 p-5 shadow-2xl light:border-black/10 light:bg-white sm:rounded-3xl" onClick={(e) => e.stopPropagation()}>
-            <h4 className="mb-4 text-sm font-bold text-white light:text-slate-900">{t("settings.pictures.presetsTitle")}</h4>
+        <div className="fixed inset-0 z-70 flex items-end justify-center bg-scrim-strong backdrop-blur-xs kz-overlay sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label={t("settings.pictures.presetsTitle")} onClick={() => setChoosing(false)}>
+          <div className="w-full max-w-lg rounded-t-3xl border border-border-default bg-surface-1 p-5 shadow-2xl sm:rounded-3xl" onClick={(e) => e.stopPropagation()}>
+            <h4 className="mb-4 text-sm font-bold text-fg">{t("settings.pictures.presetsTitle")}</h4>
             <div className={`grid max-h-[60vh] gap-3 overflow-y-auto p-1 ${isAvatar ? "grid-cols-4" : "grid-cols-2"}`}>
               {presets.length === 0
                 ? Array.from({ length: isAvatar ? 8 : 6 }, (_, i) => <span key={i} className={`animate-pulse rounded-2xl bg-white/5 ${isAvatar ? "aspect-square" : "aspect-3/1"}`} />)
@@ -126,14 +126,14 @@ export function PictureQuickEdit({
                       key={p.id}
                       type="button"
                       onClick={() => { setChoosing(false); void save(p.id, p.url); }}
-                      className="overflow-hidden rounded-2xl ring-2 ring-transparent transition-all hover:scale-[1.03] hover:ring-violet-500"
+                      className="overflow-hidden rounded-2xl ring-2 ring-transparent transition-all hover:scale-[1.03] hover:ring-ring"
                     >
                       <img src={p.url} alt={p.name} className={`w-full object-cover ${isAvatar ? "aspect-square" : "aspect-3/1"}`} />
                     </button>
                   ))}
             </div>
             <div className="mt-4 flex justify-end">
-              <button type="button" onClick={() => setChoosing(false)} className="rounded-xl px-4 py-2 text-xs font-semibold text-zinc-300 hover:bg-white/5 light:text-slate-600 hover:light:bg-black/5">
+              <button type="button" onClick={() => setChoosing(false)} className="rounded-xl px-4 py-2 text-xs font-semibold text-fg-secondary hover:bg-surface-2">
                 {t("settings.pictures.close")}
               </button>
             </div>

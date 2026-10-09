@@ -14,12 +14,12 @@ function Toast({ n, onDismiss, onOpen }: { n: NotificationItem; onDismiss: () =>
     return () => clearTimeout(timer);
   }, [onDismiss]);
   return (
-    <div role="status" className="kz-pop pointer-events-auto relative w-[340px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/95 pr-8 shadow-2xl shadow-black/50 backdrop-blur-2xl light:border-black/10 light:bg-white/95">
+    <div role="status" className="kz-pop pointer-events-auto relative w-[340px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-border-default bg-surface-1/95 pr-8 shadow-2xl shadow-black/50 backdrop-blur-2xl">
       <NotificationRow n={n} compact onOpen={onOpen} />
-      <button type="button" onClick={onDismiss} aria-label={t("notifications.dismiss")} className="absolute right-2 top-2 rounded-lg p-1 text-zinc-400 hover:bg-white/5 hover:text-white light:text-slate-500 hover:light:bg-black/5 hover:light:text-slate-900">
+      <button type="button" onClick={onDismiss} aria-label={t("notifications.dismiss")} className="absolute right-2 top-2 rounded-lg p-1 text-fg-secondary hover:bg-surface-2 hover:text-fg">
         <X className="h-3.5 w-3.5" />
       </button>
-      <span aria-hidden className="nt-bar absolute inset-x-0 bottom-0 h-0.5 origin-left bg-linear-to-r from-violet-500 via-fuchsia-500 to-pink-500" />
+      <span aria-hidden className="nt-bar absolute inset-x-0 bottom-0 h-0.5 origin-left bg-linear-to-r from-accent via-accent-2 to-accent-2" />
       <style>{STYLES}</style>
     </div>
   );

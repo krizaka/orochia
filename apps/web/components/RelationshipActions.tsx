@@ -63,8 +63,8 @@ export function RelationshipActions({
     size === "sm"
       ? "inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all disabled:opacity-50"
       : "inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-xs font-bold transition-all disabled:opacity-50";
-  const primary = `${base} bg-linear-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-600/30 hover:scale-105`;
-  const ghost = `${base} border border-white/10 bg-zinc-900/90 text-zinc-300 hover:text-white hover:bg-white/10 light:bg-slate-50 light:border-black/10 light:text-slate-700 hover:light:bg-slate-200 hover:light:text-slate-950`;
+  const primary = `${base} bg-linear-to-r from-accent to-accent-2 text-white shadow-lg shadow-accent/30 hover:scale-105`;
+  const ghost = `${base} border border-border-default bg-surface-2/90 text-fg-secondary hover:text-fg hover:bg-surface-3`;
 
   if (!user) {
     return (
@@ -89,7 +89,7 @@ export function RelationshipActions({
             title={t("relationship.unfollow")}
             onClick={() => call(`/api/creators/${username}/follow`, { method: "DELETE" })}
           >
-            {follow === "APPROVED" ? <UserCheck className="h-4 w-4 text-emerald-400" /> : <Clock className="h-4 w-4 text-amber-400" />}
+            {follow === "APPROVED" ? <UserCheck className="h-4 w-4 text-success" /> : <Clock className="h-4 w-4 text-warning" />}
             {follow === "APPROVED" ? t("relationship.following") : t("relationship.requested")}
           </button>
         ))}
@@ -101,7 +101,7 @@ export function RelationshipActions({
           </button>
         ) : contact.status === "ACCEPTED" ? (
           <span className={`${ghost} cursor-default`}>
-            <Check className="h-4 w-4 text-emerald-400" /> {t("relationship.contact")}
+            <Check className="h-4 w-4 text-success" /> {t("relationship.contact")}
           </span>
         ) : contact.status === "PENDING" && contact.direction === "incoming" ? (
           <button
@@ -118,7 +118,7 @@ export function RelationshipActions({
             title={t("relationship.withdraw")}
             onClick={() => call(`/api/contacts/${contact.id}`, { method: "DELETE" })}
           >
-            <Clock className="h-4 w-4 text-amber-400" /> {t("relationship.requestSent")}
+            <Clock className="h-4 w-4 text-warning" /> {t("relationship.requestSent")}
           </button>
         ) : null)}
 
@@ -128,11 +128,11 @@ export function RelationshipActions({
           className={ghost}
           title={t("relationship.message")}
         >
-          <MessageSquare className="h-4 w-4 text-violet-400" /> {t("relationship.message")}
+          <MessageSquare className="h-4 w-4 text-accent" /> {t("relationship.message")}
         </Link>
       )}
 
-      {error && <span className="text-[11px] text-rose-400">{error}</span>}
+      {error && <span className="text-[11px] text-danger">{error}</span>}
     </div>
   );
 }

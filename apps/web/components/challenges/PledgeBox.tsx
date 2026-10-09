@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Coins, Lock, Wallet } from "lucide-react";
-import { Button, Chip, buttonClass } from "@/components/ui";
+import { Button, Chip, orochiaButton } from "@/components/ui";
 import { money } from "@/lib/money";
 import { t, type MessageKey } from "@/lib/i18n";
 import type { ChallengeView } from "@/lib/challenges";
@@ -40,9 +40,9 @@ export function PledgeBox({ c, onPledged }: { c: ChallengeView; onPledged: (bala
 
   if (!c.viewer.signedIn) {
     return (
-      <div className="rounded-2xl border border-white/10 p-4 text-center light:border-black/10">
-        <p className="text-sm text-zinc-300 light:text-slate-700">{t("challenge.pledge.signIn")}</p>
-        <Link href={`/auth/login?next=/challenges/${c.id}`} className={buttonClass({ variant: "primary", className: "mt-3" })}>
+      <div className="rounded-2xl border border-border-default p-4 text-center">
+        <p className="text-sm text-fg-secondary">{t("challenge.pledge.signIn")}</p>
+        <Link href={`/auth/login?next=/challenges/${c.id}`} className={orochiaButton({ variant: "sensual", shape: "pill", className: "mt-3" })}>
           {t("challenge.pledge.signInCta")}
         </Link>
       </div>
@@ -63,8 +63,8 @@ export function PledgeBox({ c, onPledged }: { c: ChallengeView; onPledged: (bala
   };
 
   return (
-    <div className="space-y-3 rounded-2xl border border-white/10 p-4 light:border-black/10">
-      <p className="text-sm font-bold text-white light:text-slate-900">{t(c.kind === "GOAL" ? "challenge.pledge.titleGoal" : "challenge.pledge.titlePot")}</p>
+    <div className="space-y-3 rounded-2xl border border-border-default p-4">
+      <p className="text-sm font-bold text-fg">{t(c.kind === "GOAL" ? "challenge.pledge.titleGoal" : "challenge.pledge.titlePot")}</p>
       <div className="flex flex-wrap gap-2">
         {c.suggestedPledgesCents.map((s) => (
           <Chip
@@ -89,22 +89,21 @@ export function PledgeBox({ c, onPledged }: { c: ChallengeView; onPledged: (bala
             min={1}
             aria-label={t("challenge.pledge.custom")}
             placeholder={t("challenge.pledge.custom")}
-            className="w-28 rounded-full border border-white/10 bg-transparent py-1.5 pl-6 pr-3 font-mono text-xs text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-hidden light:border-black/10 light:text-slate-900"
+            className="w-28 rounded-full border border-border-default bg-transparent py-1.5 pl-6 pr-3 font-mono text-xs text-fg placeholder:text-zinc-500 focus:border-accent focus:outline-hidden"
           />
         </span>
       </div>
       <Button
-        variant="primary"
+        variant="sensual"
         className="w-full"
         loading={busy}
         disabled={!(cents >= c.minimumPledgeCents)}
-        onClick={pledge}
-        icon={<Coins className="h-4 w-4" />}
-      >
+        onClick={pledge}>
+        <Coins className="h-4 w-4" aria-hidden />
         {t("challenge.pledge.submit", { amount: money(Math.max(cents || 0, 0)) })}
       </Button>
       {error && (
-        <p role="alert" className="text-xs text-rose-400 light:text-rose-600">
+        <p role="alert" className="text-xs text-danger">
           {error}{" "}
           {error && c.viewer.balanceCents !== null && (
             <Link href="/wallet" className="font-semibold underline">
@@ -113,7 +112,7 @@ export function PledgeBox({ c, onPledged }: { c: ChallengeView; onPledged: (bala
           )}
         </p>
       )}
-      <p className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-500 light:text-slate-500">
+      <p className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-fg-muted">
         <span className="inline-flex items-center gap-1">
           <Lock className="h-3 w-3" aria-hidden /> {t("challenge.pledge.held")}
         </span>
@@ -127,7 +126,7 @@ export function PledgeBox({ c, onPledged }: { c: ChallengeView; onPledged: (bala
         )}
       </p>
       {c.viewer.pledgedCents > 0 && (
-        <p className="text-xs font-semibold text-emerald-300 light:text-emerald-700">{t("challenge.pledge.yours", { amount: money(c.viewer.pledgedCents) })}</p>
+        <p className="text-xs font-semibold text-success">{t("challenge.pledge.yours", { amount: money(c.viewer.pledgedCents) })}</p>
       )}
     </div>
   );

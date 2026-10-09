@@ -19,7 +19,7 @@ interface Collection {
 }
 
 const field =
-  "rounded-2xl border border-white/10 bg-zinc-900/80 px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-hidden light:bg-slate-50 light:border-black/10 light:placeholder:text-slate-400 light:text-slate-900";
+  "rounded-2xl border border-border-default bg-surface-2/80 px-4 py-3 text-sm text-fg placeholder:text-fg-muted focus:border-accent focus:outline-hidden";
 
 /** Your collections — create, choose who opens each, invite accounts, delete — and those shared with you. */
 export function PlaylistsPanel() {
@@ -65,29 +65,29 @@ export function PlaylistsPanel() {
             </option>
           ))}
         </select>
-        <button disabled={!title.trim()} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-xs font-bold text-white disabled:opacity-40">
+        <button disabled={!title.trim()} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-accent to-accent-2 px-5 py-3 text-xs font-bold text-white disabled:opacity-40">
           <Plus className="h-4 w-4" /> {t("common.create")}
         </button>
       </form>
-      <p className="-mt-3 text-[11px] text-zinc-500 light:text-slate-500">
+      <p className="-mt-3 text-[11px] text-fg-muted">
         {audienceOf(visibility).hint} {t("playlistsPanel.perVideo")}
       </p>
-      {error && <p className="text-xs text-rose-300">{error}</p>}
+      {error && <p className="text-xs text-danger">{error}</p>}
 
       {lists === null ? (
-        <p className="text-xs text-zinc-500 light:text-slate-500">{t("playlistsPanel.loading")}</p>
+        <p className="text-xs text-fg-muted">{t("playlistsPanel.loading")}</p>
       ) : lists.length === 0 ? (
-        <div className="rounded-3xl border border-white/10 bg-zinc-900/40 p-12 text-center text-sm text-zinc-400 light:bg-slate-50 light:border-black/10 light:text-slate-500">
+        <div className="rounded-3xl border border-border-default bg-surface-2/40 p-12 text-center text-sm text-fg-secondary">
           {t("playlistsPanel.empty")}
         </div>
       ) : (
-        <ul className="glass-panel divide-y divide-white/5 rounded-3xl px-5 light:divide-black/5">
+        <ul className="glass-panel divide-y divide-border-subtle rounded-3xl px-5">
           {lists.map((p) => (
             <li key={p.id} className="py-3.5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Link href={`/playlists/${p.id}`} className="min-w-0">
-                  <span className="block truncate text-sm font-semibold text-white hover:text-violet-300 light:text-slate-900">{p.title}</span>
-                  <span className="text-[11px] font-mono text-zinc-500 light:text-slate-500">
+                  <span className="block truncate text-sm font-semibold text-fg hover:text-accent">{p.title}</span>
+                  <span className="text-[11px] font-mono text-fg-muted">
                     {t("playlistsPanel.videos", { count: p.itemsCount })}
                     {p.visibility === "INVITED_ONLY" && t("playlistsPanel.invitedMeta", { members: p.membersCount, lists: p.listsCount })}
                   </span>
@@ -97,7 +97,7 @@ export function PlaylistsPanel() {
                     value={p.visibility}
                     onChange={(e) => void send(`/api/playlists/${p.id}`, "PATCH", { visibility: e.target.value })}
                     aria-label={t("playlistsPanel.whoOpensNamed", { title: p.title })}
-                    className="rounded-lg border border-white/10 bg-zinc-900 px-2 py-1.5 text-[11px] font-semibold text-zinc-200 focus:border-violet-500 focus:outline-hidden light:bg-slate-50 light:border-black/10 light:text-slate-700"
+                    className="rounded-lg border border-border-default bg-surface-2 px-2 py-1.5 text-[11px] font-semibold text-fg focus:border-accent focus:outline-hidden"
                   >
                     {COLLECTION_AUDIENCES.map((a) => (
                       <option key={a.value} value={a.value}>
@@ -126,17 +126,17 @@ export function PlaylistsPanel() {
 
       {shared && shared.length > 0 && (
         <section>
-          <h3 className="mb-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500 light:text-slate-500">{t("playlistsPanel.shared")}</h3>
-          <ul className="glass-panel divide-y divide-white/5 rounded-3xl px-5 light:divide-black/5">
+          <h3 className="mb-2 text-[10px] font-bold uppercase tracking-widest text-fg-muted">{t("playlistsPanel.shared")}</h3>
+          <ul className="glass-panel divide-y divide-border-subtle rounded-3xl px-5">
             {shared.map((p) => (
               <li key={p.id} className="flex items-center justify-between gap-3 py-3.5">
                 <Link href={`/playlists/${p.id}`} className="min-w-0">
-                  <span className="block truncate text-sm font-semibold text-white hover:text-violet-300 light:text-slate-900">{p.title}</span>
-                  <span className="text-[11px] font-mono text-zinc-500 light:text-slate-500">
+                  <span className="block truncate text-sm font-semibold text-fg hover:text-accent">{p.title}</span>
+                  <span className="text-[11px] font-mono text-fg-muted">
                     {t("playlistsPanel.sharedMeta", { owner: p.ownerUsername, count: p.itemsCount })}
                   </span>
                 </Link>
-                <CollectionAudienceBadge visibility={p.visibility} className="text-[11px] text-zinc-400 light:text-slate-500" />
+                <CollectionAudienceBadge visibility={p.visibility} className="text-[11px] text-fg-secondary" />
               </li>
             ))}
           </ul>

@@ -43,7 +43,7 @@ export function SocialSignIn() {
   if (providers.length === 0) return null;
 
   const button =
-    "flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 light:border-black/10 bg-white py-2.5 text-sm font-semibold text-slate-900 transition-colors hover:bg-slate-100";
+    "flex w-full items-center justify-center gap-3 rounded-xl border border-border-default bg-white py-2.5 text-sm font-semibold text-slate-900 transition-colors hover:bg-slate-100";
   return (
     <div className="space-y-2.5">
       {providers.includes("google") && (
@@ -56,8 +56,8 @@ export function SocialSignIn() {
           <FacebookMark /> {t("auth.social.facebook")}
         </a>
       )}
-      <div className="flex items-center gap-3 py-1 text-[11px] uppercase tracking-wider text-zinc-500 light:text-slate-400">
-        <span className="h-px flex-1 bg-white/10 light:bg-black/10" /> {t("auth.social.or")} <span className="h-px flex-1 bg-white/10 light:bg-black/10" />
+      <div className="flex items-center gap-3 py-1 text-[11px] uppercase tracking-wider text-fg-muted">
+        <span className="h-px flex-1 bg-surface-3" /> {t("auth.social.or")} <span className="h-px flex-1 bg-surface-3" />
       </div>
     </div>
   );

@@ -27,10 +27,10 @@ function Row({ p, children }: { p: Person; children?: React.ReactNode }) {
   return (
     <li className="flex items-center justify-between gap-3 py-2.5">
       <Link href={`/@${p.username}`} className="flex min-w-0 items-center gap-3">
-        <img src={p.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-9 w-9 shrink-0 rounded-full border border-white/10 object-cover light:border-black/10" />
+        <img src={p.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-9 w-9 shrink-0 rounded-full border border-border-default object-cover" />
         <span className="min-w-0">
-          <span className="block truncate text-sm font-semibold text-white light:text-slate-900">{p.displayName}</span>
-          <span className="block text-[11px] font-mono text-zinc-500 light:text-slate-500">@{p.username}</span>
+          <span className="block truncate text-sm font-semibold text-fg">{p.displayName}</span>
+          <span className="block text-[11px] font-mono text-fg-muted">@{p.username}</span>
         </span>
       </Link>
       <div className="flex shrink-0 items-center gap-1">{children}</div>
@@ -41,15 +41,15 @@ function Row({ p, children }: { p: Person; children?: React.ReactNode }) {
 function Section({ title, empty, people, render }: { title: string; empty: string; people: Person[]; render: (p: Person) => React.ReactNode }) {
   return (
     <div className="glass-panel rounded-3xl p-5">
-      <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400 light:text-slate-500">
-        {title} <span className="ml-1 font-mono text-zinc-500 light:text-slate-500">{people.length}</span>
+      <h3 className="text-xs font-bold uppercase tracking-widest text-fg-secondary">
+        {title} <span className="ml-1 font-mono text-fg-muted">{people.length}</span>
       </h3>
-      {people.length === 0 ? <p className="mt-3 text-xs text-zinc-500 light:text-slate-500">{empty}</p> : <ul className="mt-2 divide-y divide-white/5 light:divide-black/5">{people.map(render)}</ul>}
+      {people.length === 0 ? <p className="mt-3 text-xs text-fg-muted">{empty}</p> : <ul className="mt-2 divide-y divide-border-subtle">{people.map(render)}</ul>}
     </div>
   );
 }
 
-const iconBtn = "rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white light:text-slate-500 hover:light:text-slate-950";
+const iconBtn = "rounded-lg p-2 text-fg-secondary transition-colors hover:bg-white/5 hover:text-fg";
 
 /** Followers to approve (creators), contact requests to answer, and everyone you follow or know. */
 export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
@@ -66,7 +66,7 @@ export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
     await load();
   };
 
-  if (!data) return <p className="text-xs text-zinc-500 light:text-slate-500">{t("network.loading")}</p>;
+  if (!data) return <p className="text-xs text-fg-muted">{t("network.loading")}</p>;
   const pendingFollowers = data.followers.filter((p) => p.status === "PENDING");
   const approvedFollowers = data.followers.filter((p) => p.status === "APPROVED");
 
@@ -79,7 +79,7 @@ export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
           people={pendingFollowers}
           render={(p) => (
             <Row key={p.id} p={p}>
-              <button className={iconBtn} aria-label={t("network.approve")} onClick={() => act(`/api/me/followers/${p.id}`, "PATCH", { action: "approve" })}><Check className="h-4 w-4 text-emerald-400" /></button>
+              <button className={iconBtn} aria-label={t("network.approve")} onClick={() => act(`/api/me/followers/${p.id}`, "PATCH", { action: "approve" })}><Check className="h-4 w-4 text-success" /></button>
               <button className={iconBtn} aria-label={t("network.decline")} onClick={() => act(`/api/me/followers/${p.id}`, "PATCH", { action: "remove" })}><X className="h-4 w-4" /></button>
             </Row>
           )}
@@ -91,9 +91,9 @@ export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
         people={data.incoming}
         render={(p) => (
           <Row key={p.id} p={p}>
-            <button className={iconBtn} aria-label={t("network.accept")} onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "accept" })}><Check className="h-4 w-4 text-emerald-400" /></button>
+            <button className={iconBtn} aria-label={t("network.accept")} onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "accept" })}><Check className="h-4 w-4 text-success" /></button>
             <button className={iconBtn} aria-label={t("network.reject")} onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "reject" })}><X className="h-4 w-4" /></button>
-            <button className={iconBtn} aria-label={t("network.block")} onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "block" })}><Ban className="h-4 w-4 text-rose-400" /></button>
+            <button className={iconBtn} aria-label={t("network.block")} onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "block" })}><Ban className="h-4 w-4 text-danger" /></button>
           </Row>
         )}
       />
@@ -125,7 +125,7 @@ export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
         people={data.following}
         render={(p) => (
           <Row key={p.id} p={p}>
-            <span className={`text-[10px] font-bold uppercase ${p.status === "APPROVED" ? "text-emerald-400" : "text-amber-400"}`}>{p.status === "APPROVED" ? t("network.approved") : t("network.pending")}</span>
+            <span className={`text-[10px] font-bold uppercase ${p.status === "APPROVED" ? "text-success" : "text-warning"}`}>{p.status === "APPROVED" ? t("network.approved") : t("network.pending")}</span>
             <button className={iconBtn} aria-label={t("network.unfollow")} onClick={() => act(`/api/creators/${p.username}/follow`, "DELETE")}><UserMinus className="h-4 w-4" /></button>
           </Row>
         )}

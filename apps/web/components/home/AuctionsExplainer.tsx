@@ -1,14 +1,14 @@
 import React from "react";
 import Link from "next/link";
 import { Clock, Gavel, Lock, Trophy } from "lucide-react";
-import { buttonClass } from "@/components/ui";
+import { buttonVariants } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 const STEPS = [
-  ["window", Gavel, "from-violet-600 to-fuchsia-600"],
-  ["held", Lock, "from-fuchsia-600 to-pink-600"],
-  ["softClose", Clock, "from-amber-500 to-orange-500"],
-  ["winner", Trophy, "from-emerald-500 to-teal-500"],
+  ["window", Gavel, "from-accent to-accent-2"],
+  ["held", Lock, "from-accent-2 to-accent-2"],
+  ["softClose", Clock, "from-warning to-orange-500"],
+  ["winner", Trophy, "from-success to-teal-500"],
 ] as const;
 
 /**
@@ -18,11 +18,11 @@ const STEPS = [
  */
 export function AuctionsExplainer() {
   return (
-    <div className="kz-spotlight relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/40 p-6 light:border-black/5 light:bg-white sm:p-8">
+    <div className="kz-spotlight relative overflow-hidden rounded-3xl border border-border-default bg-surface-2/40 p-6 sm:p-8">
       <ol className="relative grid gap-6 sm:grid-cols-4 sm:gap-4">
         <span
           aria-hidden
-          className="ae-rail absolute left-5 top-5 hidden h-px w-[calc(100%-2.5rem)] bg-linear-to-r from-violet-500/0 via-fuchsia-500/60 to-emerald-500/0 sm:block"
+          className="ae-rail absolute left-5 top-5 hidden h-px w-[calc(100%-2.5rem)] bg-linear-to-r from-accent/0 via-accent-2/60 to-success/0 sm:block"
         />
         {STEPS.map(([key, Icon, tone], i) => (
           <li key={key} data-reveal style={{ ["--kz-delay" as string]: `${i * 110}ms` }} className="relative flex gap-4 sm:flex-col sm:gap-3">
@@ -33,15 +33,15 @@ export function AuctionsExplainer() {
               <Icon className="h-4.5 w-4.5" aria-hidden />
             </span>
             <span>
-              <span className="block text-sm font-bold text-white light:text-slate-900">{t(`home.auctionsHow.${key}.title`)}</span>
-              <span className="mt-1 block text-xs leading-relaxed text-zinc-400 light:text-slate-600">{t(`home.auctionsHow.${key}.body`)}</span>
+              <span className="block text-sm font-bold text-fg">{t(`home.auctionsHow.${key}.title`)}</span>
+              <span className="mt-1 block text-xs leading-relaxed text-fg-secondary">{t(`home.auctionsHow.${key}.body`)}</span>
             </span>
           </li>
         ))}
       </ol>
-      <div className="mt-6 flex flex-col items-start justify-between gap-3 border-t border-white/10 pt-5 light:border-black/5 sm:flex-row sm:items-center">
-        <p className="text-sm text-zinc-400 light:text-slate-600">{t("home.auctionsHow.none")}</p>
-        <Link href="/auctions?tab=upcoming" className={buttonClass({ variant: "secondary", size: "sm" })}>
+      <div className="mt-6 flex flex-col items-start justify-between gap-3 border-t border-border-default pt-5 sm:flex-row sm:items-center">
+        <p className="text-sm text-fg-secondary">{t("home.auctionsHow.none")}</p>
+        <Link href="/auctions?tab=upcoming" className={buttonVariants({ variant: "secondary", size: "sm", shape: "pill" })}>
           {t("home.auctionsHow.upcoming")}
         </Link>
       </div>

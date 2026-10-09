@@ -28,38 +28,38 @@ export default function ResetPasswordPage() {
     setState("done");
   };
 
-  const field = "w-full rounded-xl border border-white/10 bg-zinc-900 py-2.5 pl-10 pr-4 text-sm text-white focus:border-violet-500 focus:outline-hidden light:bg-slate-50 light:border-black/10 light:text-slate-900";
+  const field = "w-full rounded-xl border border-border-default bg-surface-2 py-2.5 pl-10 pr-4 text-sm text-fg focus:border-accent focus:outline-hidden";
 
   return (
     <div className="mx-auto max-w-md px-4 py-16">
-      <div className="rounded-3xl border border-white/10 bg-zinc-950 p-6 sm:p-8 light:bg-white light:border-black/10">
+      <div className="rounded-3xl border border-border-default bg-surface-1 p-6 sm:p-8">
         {state === "done" ? (
           <div className="text-center">
-            <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-400" />
-            <h1 className="mt-4 text-2xl font-black text-white font-display light:text-slate-900">{t("auth.reset.done")}</h1>
-            <p className="mt-2 text-sm text-zinc-400 light:text-slate-500">{t("auth.reset.doneBody")}</p>
-            <Link href="/auth/login" className="mt-6 inline-block rounded-xl bg-violet-600 px-6 py-2.5 text-sm font-bold text-white">
+            <CheckCircle2 className="mx-auto h-12 w-12 text-success" />
+            <h1 className="mt-4 text-2xl font-black text-fg font-display">{t("auth.reset.done")}</h1>
+            <p className="mt-2 text-sm text-fg-secondary">{t("auth.reset.doneBody")}</p>
+            <Link href="/auth/login" className="mt-6 inline-block rounded-xl bg-accent px-6 py-2.5 text-sm font-bold text-white">
               {t("auth.reset.signIn")}
             </Link>
           </div>
         ) : (
           <>
-            <h1 className="text-2xl font-black text-white font-display light:text-slate-900">{t("auth.reset.title")}</h1>
+            <h1 className="text-2xl font-black text-fg font-display">{t("auth.reset.title")}</h1>
             <form onSubmit={submit} className="mt-5 space-y-4">
               {[
                 { value: password, set: setPassword, label: t("auth.reset.password") },
                 { value: confirm, set: setConfirm, label: t("auth.reset.confirm") },
               ].map((f) => (
-                <label key={f.label} className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 light:text-slate-500">
+                <label key={f.label} className="block text-xs font-semibold uppercase tracking-wider text-fg-secondary">
                   {f.label}
                   <div className="relative mt-1.5">
-                    <Lock className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500 light:text-slate-500" />
+                    <Lock className="absolute left-3.5 top-3 h-4 w-4 text-fg-muted" />
                     <input type="password" required minLength={10} autoComplete="new-password" value={f.value} onChange={(e) => f.set(e.target.value)} className={field} />
                   </div>
                 </label>
               ))}
-              {error && <p role="alert" className="text-xs text-rose-300">{error}</p>}
-              <button disabled={state === "saving"} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 py-3 text-sm font-bold text-white disabled:opacity-60">
+              {error && <p role="alert" className="text-xs text-danger">{error}</p>}
+              <button disabled={state === "saving"} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3 text-sm font-bold text-white disabled:opacity-60">
                 {state === "saving" && <Loader2 className="h-4 w-4 animate-spin" />} {t("auth.reset.submit")}
               </button>
             </form>

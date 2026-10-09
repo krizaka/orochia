@@ -16,14 +16,14 @@ export function MonthlyChart({ data, label }: { data: { month: string; netCents:
 
   return (
     <figure className="relative">
-      <div className="mb-2 h-5 text-xs text-zinc-400 light:text-slate-500" aria-live="polite">
+      <div className="mb-2 h-5 text-xs text-fg-secondary" aria-live="polite">
         {current && (
           <span>
-            <span className="font-semibold text-white light:text-slate-900">{money(current.netCents)}</span> · {monthName(current.month, "long")}
+            <span className="font-semibold text-fg">{money(current.netCents)}</span> · {monthName(current.month, "long")}
           </span>
         )}
       </div>
-      <div className="flex h-40 items-end gap-[2px] border-b border-white/10 light:border-black/10" onMouseLeave={() => setActive(null)}>
+      <div className="flex h-40 items-end gap-[2px] border-b border-border-default" onMouseLeave={() => setActive(null)}>
         {data.map((d, i) => {
           const h = d.netCents > 0 ? Math.max(3, (d.netCents / max) * 100) : 0;
           return (
@@ -37,7 +37,7 @@ export function MonthlyChart({ data, label }: { data: { month: string; netCents:
               className="group relative flex h-full flex-1 items-end justify-center focus-visible:outline-hidden"
             >
               <span
-                className={`block w-full max-w-[28px] rounded-t-[4px] bg-violet-500 transition-opacity light:bg-violet-600 ${active === null || active === i ? "opacity-100" : "opacity-40"} group-focus-visible:ring-2 group-focus-visible:ring-violet-300`}
+                className={`block w-full max-w-[28px] rounded-t-[4px] bg-accent transition-opacity ${active === null || active === i ? "opacity-100" : "opacity-40"} group-focus-visible:ring-2 group-focus-visible:ring-ring`}
                 style={{ height: `${h}%` }}
               />
             </button>

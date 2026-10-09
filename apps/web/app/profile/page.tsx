@@ -17,7 +17,5 @@ export default function ProfilePage() {
     else router.replace("/dashboard");
   }, [user, isLoading, router]);
 
-  return (
-    <div className="mx-auto max-w-lg px-4 py-24 text-center text-xs text-zinc-500 font-mono light:text-slate-500">{t("profile.loading")}</div>
-  );
+  return (<div className="mx-auto max-w-lg px-4 py-24 text-center text-xs text-fg-muted font-mono">{t("profile.loading")}</div>);
 }

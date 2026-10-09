@@ -24,12 +24,12 @@ export default async function CreatorUploadPage() {
   if (!account?.isVerified) {
     return (
       <div className="mx-auto max-w-lg px-4 py-24 text-center">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-600/15 text-violet-400">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/15 text-accent">
           <ShieldCheck className="h-7 w-7" />
         </div>
-        <h1 className="font-display text-2xl font-bold text-white light:text-slate-900">{t("auth.becomeCreator.pendingTitle")}</h1>
-        <p className="mt-2 text-sm text-zinc-400 light:text-slate-600">{t("auth.becomeCreator.pendingBody")}</p>
-        <Link href="/legal/2257" className="mt-6 inline-block rounded-xl bg-violet-600 px-6 py-2.5 text-xs font-bold text-white">
+        <h1 className="font-display text-2xl font-bold text-fg">{t("auth.becomeCreator.pendingTitle")}</h1>
+        <p className="mt-2 text-sm text-fg-secondary">{t("auth.becomeCreator.pendingBody")}</p>
+        <Link href="/legal/2257" className="mt-6 inline-block rounded-xl bg-accent px-6 py-2.5 text-xs font-bold text-white">
           {t("auth.becomeCreator.pendingCta")}
         </Link>
       </div>

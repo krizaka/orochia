@@ -55,7 +55,7 @@ export function ChallengeMeter({
             <stop offset="100%" style={{ stopColor: "var(--color-pink-500)" }} />
           </linearGradient>
         </defs>
-        <circle cx={px / 2} cy={px / 2} r={r} fill="none" strokeWidth={stroke} className="stroke-white/10 light:stroke-black/5" />
+        <circle cx={px / 2} cy={px / 2} r={r} fill="none" strokeWidth={stroke} className="stroke-fg" />
         <circle
           cx={px / 2}
           cy={px / 2}
@@ -70,14 +70,14 @@ export function ChallengeMeter({
         />
       </svg>
       <div key={pulse} className={`absolute inset-0 flex flex-col items-center justify-center text-center ${pulse ? "cm-pop" : ""}`}>
-        {size !== "sm" && <Icon className="mb-0.5 h-4 w-4 text-fuchsia-400 light:text-fuchsia-600" aria-hidden />}
+        {size !== "sm" && <Icon className="mb-0.5 h-4 w-4 text-accent" aria-hidden />}
         <span
-          className={`font-display font-black tabular-nums text-white light:text-slate-900 ${size === "lg" ? "text-2xl" : size === "md" ? "text-base" : "text-xs"}`}
+          className={`font-display font-black tabular-nums text-fg ${size === "lg" ? "text-2xl" : size === "md" ? "text-base" : "text-xs"}`}
         >
           {money(c.pledgedCents)}
         </span>
         {size !== "sm" && c.goalCents !== null && (
-          <span className="text-[10px] font-semibold text-zinc-400 light:text-slate-500">
+          <span className="text-[10px] font-semibold text-fg-secondary">
             {t("challenge.ofGoal", {
               goal: money(c.goalCents),
               percent: Math.round((c.progress ?? 0) * 100),

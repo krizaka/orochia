@@ -169,33 +169,33 @@ export function CreatorStoriesBar() {
     <>
       <CreateStoryModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} onSuccess={load} />
 
-      <div className="relative mb-8 overflow-hidden rounded-2xl border border-white/10 light:border-black/5 bg-zinc-950/60 light:bg-white p-3 sm:p-4 backdrop-blur-xl max-w-full">
+      <div className="relative mb-8 overflow-hidden rounded-2xl border border-border-default bg-surface-1/60 p-3 sm:p-4 backdrop-blur-xl max-w-full">
         <div className="flex items-center gap-3.5 sm:gap-5 overflow-x-auto scrollbar-none py-1 px-1 overscroll-x-contain touch-pan-x">
           {isCreator && (
             <button onClick={() => setIsCreateOpen(true)} className="flex flex-col items-center gap-1.5 shrink-0 group">
-              <div className="relative flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border-2 border-dashed border-violet-500/60 bg-violet-600/10 transition-transform group-hover:scale-105">
-                <Plus className="h-5 w-5 sm:h-6 sm:w-6 text-violet-400 transition-transform duration-300 group-hover:rotate-90" />
+              <div className="relative flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border-2 border-dashed border-accent/60 bg-accent/10 transition-transform group-hover:scale-105">
+                <Plus className="h-5 w-5 sm:h-6 sm:w-6 text-accent transition-transform duration-300 group-hover:rotate-90" />
               </div>
-              <span className="text-[11px] font-semibold text-zinc-300 light:text-slate-700">{t("stories.add")}</span>
+              <span className="text-[11px] font-semibold text-fg-secondary">{t("stories.add")}</span>
             </button>
           )}
 
           {rings === null &&
-            Array.from({ length: 5 }, (_, i) => <div key={i} className="h-14 w-14 sm:h-16 sm:w-16 shrink-0 animate-pulse rounded-2xl bg-white/5 light:bg-slate-100" />)}
+            Array.from({ length: 5 }, (_, i) => <div key={i} className="h-14 w-14 sm:h-16 sm:w-16 shrink-0 animate-pulse rounded-2xl bg-surface-2" />)}
 
           {rings?.map((r, index) => (
             <button key={r.creatorId} onClick={() => setOpen({ ring: index, story: Math.max(0, r.stories.findIndex((s) => !s.seen)) })} className="flex flex-col items-center gap-1.5 shrink-0 group focus:outline-hidden">
               <div className="relative p-0.5 rounded-2xl transition-transform group-hover:scale-105 active:scale-95">
                 <div
                   className={`absolute inset-0 rounded-2xl ${
-                    r.allSeen ? "bg-zinc-700 light:bg-slate-300" : "bg-linear-to-tr from-violet-600 via-fuchsia-500 to-pink-500 shadow-xs shadow-violet-500/20"
+                    r.allSeen ? "bg-surface-3" : "bg-linear-to-tr from-accent via-accent-2 to-accent-2 shadow-xs shadow-accent/20"
                   }`}
                 />
-                <div className="relative h-14 w-14 sm:h-16 sm:w-16 overflow-hidden rounded-[14px] bg-zinc-950 light:bg-white p-0.5">
+                <div className="relative h-14 w-14 sm:h-16 sm:w-16 overflow-hidden rounded-[14px] bg-surface-1 p-0.5">
                   <img src={r.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-full w-full rounded-[12px] object-cover" />
                 </div>
               </div>
-              <span className="max-w-[72px] truncate text-[11px] font-medium text-zinc-200 light:text-slate-800 group-hover:text-violet-400">
+              <span className="max-w-[72px] truncate text-[11px] font-medium text-fg group-hover:text-accent">
                 {r.isOwn ? t("stories.yours") : r.displayName}
               </span>
             </button>
@@ -245,14 +245,14 @@ export function CreatorStoriesBar() {
                     <button
                       onClick={remove}
                       onBlur={() => setArmed(false)}
-                      className={`flex h-8 items-center justify-center gap-1.5 rounded-full text-white transition-all ${armed ? "bg-rose-600 px-3 text-xs font-semibold" : "w-8 bg-black/50 hover:bg-rose-600/60"}`}
+                      className={`flex h-8 items-center justify-center gap-1.5 rounded-full text-white transition-all ${armed ? "bg-danger px-3 text-xs font-semibold" : "w-8 bg-scrim hover:bg-danger/60"}`}
                       aria-label={armed ? t("stories.removeArmed") : t("stories.remove")}
                     >
                       <Trash2 className="h-4 w-4" />
                       {armed && t("stories.removeArmed")}
                     </button>
                   )}
-                  <button onClick={close} className="flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/80" aria-label={t("common.close")}>
+                  <button onClick={close} className="flex h-8 w-8 items-center justify-center rounded-full bg-scrim text-fg-on-media hover:bg-black/80" aria-label={t("common.close")}>
                     <X className="h-4 w-4" />
                   </button>
                 </div>
@@ -275,7 +275,7 @@ export function CreatorStoriesBar() {
                   <Link
                     href={`/@${ring.username}`}
                     onClick={close}
-                    className="flex flex-1 items-center justify-center rounded-2xl bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 py-3 text-xs font-bold text-white"
+                    className="flex flex-1 items-center justify-center rounded-2xl bg-linear-to-r from-accent via-accent-2 to-accent-2 py-3 text-xs font-bold text-white"
                   >
                     {t("stories.seeProfile")}
                   </Link>
@@ -284,9 +284,9 @@ export function CreatorStoriesBar() {
                   <button
                     onClick={toggleLike}
                     aria-pressed={story.liked}
-                    className={`flex h-11 items-center gap-1.5 rounded-2xl border px-3.5 ${story.liked ? "border-rose-500 bg-rose-500/20 text-rose-300" : "border-white/20 bg-black/50 text-white"}`}
+                    className={`flex h-11 items-center gap-1.5 rounded-2xl border px-3.5 ${story.liked ? "border-danger bg-danger/20 text-danger" : "border-white/20 bg-scrim text-fg-on-media"}`}
                   >
-                    <Heart className={`h-4 w-4 ${story.liked ? "fill-rose-500" : ""}`} />
+                    <Heart className={`h-4 w-4 ${story.liked ? "fill-danger" : ""}`} />
                     <span className="font-mono text-xs">{story.likesCount}</span>
                   </button>
                 )}
