@@ -31,6 +31,15 @@ const elena = await session("elena@orochia.org", "elena1234");
 const mia = await session("mia@orochia.org", "mia1234");
 const admin = await session("admin@orochia.org", "admin1234");
 check("five sessions", [alex, sam, elena, mia, admin].every((s) => s.status === 200));
+// Native apps: the same session as a bearer token, never as a cookie.
+{
+  const r = await fetch(B + "/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ identifier: "alex@sanctuary.io", password: "alex1234", client: "native" }) });
+  const body = await r.json();
+  check("a native sign-in answers a token and sets no cookie", r.status === 200 && typeof body.token === "string" && !r.headers.get("set-cookie"));
+  const me = await fetch(B + "/api/me/wallet", { headers: { Authorization: `Bearer ${body.token}` } });
+  check("…which opens the account as a bearer token", me.status === 200);
+  check("a forged bearer token is refused", (await fetch(B + "/api/me/wallet", { headers: { Authorization: `Bearer ${body.token}x` } })).status === 401);
+}
 
 const feed = (await anon.call("/api/feed?limit=60")).json.videos;
 const byTitle = (t) => feed.find((v) => v.title.startsWith(t));

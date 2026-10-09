@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { signSessionToken, verifySessionToken, SESSION_TTL_SECONDS } from "./auth";
+import { bearerToken, signSessionToken, verifySessionToken, SESSION_TTL_SECONDS } from "./auth";
 
 const SECRET = "test-secret-that-is-long-enough-0123456789";
 const user = { id: "u1", username: "ada", email: "ada@example.com", role: "MEMBER" as const, isAgeVerified: true, emailVerified: true };
@@ -26,5 +26,15 @@ describe("session tokens", () => {
     const token = signSessionToken(user, SECRET, issued);
     expect(verifySessionToken(token, SECRET, issued + (SESSION_TTL_SECONDS - 1) * 1000)).not.toBeNull();
     expect(verifySessionToken(token, SECRET, issued + (SESSION_TTL_SECONDS + 1) * 1000)).toBeNull();
+  });
+});
+
+describe("bearer tokens (native apps)", () => {
+  it("reads the token of an Authorization header and nothing else", () => {
+    const token = signSessionToken(user, SECRET);
+    expect(bearerToken(`Bearer ${token}`)).toBe(token);
+    expect(bearerToken(`Basic ${token}`)).toBeUndefined();
+    expect(bearerToken("Bearer not-a-session")).toBeUndefined();
+    expect(bearerToken(null)).toBeUndefined();
   });
 });

@@ -301,7 +301,7 @@
       "method": "POST",
       "path": "/api/auth/login",
       "access": "public",
-      "summary": "Password login."
+      "summary": "Password login — a session cookie for the browser, a bearer token for a native app."
     },
     {
       "method": "POST",

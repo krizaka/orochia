@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db, users, verifyPassword } from "@orochia/db";
 import { eq, or } from "drizzle-orm";
-import { setSessionCookie } from "@/lib/auth";
+import { SESSION_TTL_SECONDS, setSessionCookie, signSessionToken } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { errorResponse, jsonError } from "@/lib/http";
 
@@ -11,12 +11,14 @@ export const dynamic = "force-dynamic";
 const LoginSchema = z.object({
   identifier: z.string().trim().min(1).max(255),
   password: z.string().min(1).max(256),
+  /** A native app asks for its session token in the answer: it sends it back as `Authorization: Bearer`. */
+  client: z.enum(["web", "native"]).default("web"),
 });
 
-/** Password login. The role comes from the account, never from the request. */
+/** Password login — a session cookie for the browser, a bearer token for a native app. The role comes from the account, never from the request. */
 export async function POST(req: NextRequest) {
   try {
-    const { identifier, password } = LoginSchema.parse(await req.json());
+    const { identifier, password, client } = LoginSchema.parse(await req.json());
     const key = identifier.toLowerCase();
 
     const limit = await checkRateLimit(`login:${key}`, 10, 15 * 60);
@@ -33,15 +35,20 @@ export async function POST(req: NextRequest) {
     }
     if (account.suspendedAt) return jsonError(403, "This account is suspended. Contact the platform operator.");
 
-    const response = NextResponse.json({ success: true, emailVerified: Boolean(account.emailVerifiedAt) });
-    setSessionCookie(response, {
+    const session = {
       id: account.id,
       username: account.username,
       email: account.email,
       role: account.role,
       isAgeVerified: account.isAgeVerified,
       emailVerified: Boolean(account.emailVerifiedAt),
-    });
+    };
+    // A native app keeps the token in the device's secure storage; a browser gets it only as an httpOnly cookie.
+    if (client === "native") {
+      return NextResponse.json({ success: true, emailVerified: session.emailVerified, token: signSessionToken(session), expiresIn: SESSION_TTL_SECONDS });
+    }
+    const response = NextResponse.json({ success: true, emailVerified: session.emailVerified });
+    setSessionCookie(response, session);
     return response;
   } catch (error) {
     return errorResponse(error, "auth/login");
