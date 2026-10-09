@@ -17,6 +17,7 @@
 | `METRICS_AUTH_TOKEN` | ✓ | Bearer token for `/api/metrics`. |
 | `DATABASE_CA_CERT` | managed DB | CA of a managed PostgreSQL (`${<db>.CA_CERT}` on App Platform): TLS verified against it. |
 | `RESEND_API_KEY` or `MAILGUN_API_KEY` + `MAILGUN_DOMAIN` (+ `MAILGUN_API_URL`), `MAIL_FROM` | — | Transactional e-mail from `mg.orochia.com`: Resend when its key is set, Mailgun otherwise. Without either nothing is sent. |
+| `MAIL_TEMPLATES_SOURCE` (`bunny` in production), `MAIL_TEMPLATES_CACHE_TTL` (300) | — | E-mail templates from `mail-templates/` in the Bunny Storage zone (same `BUNNY_STORAGE_*` credentials), bundled ones as fallback — see *E-mail*. |
 | `COMPLIANCE_ALERT_EMAIL` | — | Receives every content report (`[URGENT]` for underage / non-consensual). |
 | `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET`, `FACEBOOK_APP_ID` + `FACEBOOK_APP_SECRET` | — | Sign in with Google / Facebook — see *Sign-in providers*. A provider without both values is not offered. |
 | `SEARCH_INDEXING=off` | dev / preview | Every page noindex, robots.txt disallows all: only production is indexed (build time). |
@@ -146,6 +147,18 @@ The sending domain `mg.orochia.com` is declared in Resend; its records live at P
 `TXT resend._domainkey.mg`, and `CNAME send.mg` / `CNAME rsend.mg` (as Resend lists them). Once Resend shows the domain
 verified, set `RESEND_API_KEY` (SECRET) and `COMPLIANCE_ALERT_EMAIL` in the app. Mailgun (`MAILGUN_API_KEY` +
 `MAILGUN_DOMAIN`) remains supported when no Resend key is set.
+
+Every message is a template (`apps/web/mail-templates/`, AGENTS.md §3.G). In production they are read from
+`mail-templates/` in the Bunny Storage zone and fall back to the copy bundled in the image. After a release that changes
+a template — or to correct wording without a release — publish the repository's tree with the production
+`BUNNY_STORAGE_API_KEY`, `BUNNY_STORAGE_ZONE` and `BUNNY_STORAGE_ENDPOINT` in the environment:
+
+```bash
+npm run mail:templates:push              # dry run: new / changed / unchanged per file
+npm run mail:templates:push -- --apply   # writes them; instances pick them up within MAIL_TEMPLATES_CACHE_TTL
+```
+
+The storage pull zone serves the zone publicly: templates hold no secret, but keep them that way.
 
 ## Backups and factory reset
 

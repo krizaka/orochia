@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { errorResponse, jsonError } from "@/lib/http";
-import { sendMail } from "@/lib/mail";
+import { sendTemplate } from "@/lib/mail";
 import { appUrl } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
@@ -52,24 +52,24 @@ export async function POST(req: NextRequest) {
     const urgent = input.reason === "UNDERAGE" || input.reason === "NON_CONSENSUAL";
     const alertTo = process.env.COMPLIANCE_ALERT_EMAIL;
     if (alertTo) {
-      void sendMail({
+      void sendTemplate("content-report-alert", {
         to: alertTo,
         replyTo: input.reporterEmail,
-        subject: `${urgent ? "[URGENT] " : ""}Content report ${input.reason} — ${input.videoTitle}`,
-        text: [
-          `Ticket: ${report.id}`,
-          `Reason: ${input.reason}${urgent ? " (triage first)" : ""}`,
-          `Video: ${input.videoTitle}${video ? ` — ${appUrl()}/watch/${video.id}` : " (not matched)"}`,
-          `Reporter: ${input.reporterEmail}${reporter ? ` (@${reporter.username})` : " (anonymous)"}`,
-          "",
-          input.details,
-        ].join("\n"),
+        vars: {
+          ticket: report.id,
+          reason: input.reason,
+          urgent,
+          videoTitle: input.videoTitle,
+          videoLink: video ? `${appUrl()}/watch/${video.id}` : "",
+          reporterEmail: input.reporterEmail,
+          reporterUsername: reporter?.username ?? "",
+          details: input.details,
+        },
       });
     }
-    void sendMail({
+    void sendTemplate("content-report-receipt", {
       to: input.reporterEmail,
-      subject: `Orochia — report received (${report.id.slice(0, 8)})`,
-      text: `We received your report about "${input.videoTitle}".\n\nTicket: ${report.id}\nIt will be reviewed by our compliance team${urgent ? " with priority" : ""}.\n\n— Orochia`,
+      vars: { ticket: report.id, ticketShort: report.id.slice(0, 8), videoTitle: input.videoTitle, urgent },
     });
 
     return NextResponse.json(

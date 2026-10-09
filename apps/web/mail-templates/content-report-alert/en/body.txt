@@ -1,0 +1,6 @@
+Ticket: {ticket}
+Reason: {reason}{#urgent} (triage first){/urgent}
+Video: {videoTitle}{#videoLink} — {videoLink}{/videoLink}{^videoLink} (not matched){/videoLink}
+Reporter: {reporterEmail}{#reporterUsername} (@{reporterUsername}){/reporterUsername}{^reporterUsername} (anonymous){/reporterUsername}
+
+{details}

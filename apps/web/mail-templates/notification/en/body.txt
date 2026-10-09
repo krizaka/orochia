@@ -1,0 +1,7 @@
+Hi @{username},
+
+{body}
+
+{link}
+
+You receive this because it is turned on in your notification settings: {settingsLink}

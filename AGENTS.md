@@ -54,6 +54,8 @@
 | `npm run db:check` | drizzle-kit consistency check of the migration history |
 | `npm run docs:generate [-- --check]` | API + database references (and the krizaka.com sync) |
 | `npm run workspace -- clone\|status\|pull` | The three repositories, side by side |
+| `npm run mail:templates:preview` | Every e-mail template and locale rendered to `apps/web/.mail-preview/` |
+| `npm run mail:templates:push [-- --apply]` | Compare the e-mail templates with Bunny Storage; `--apply` publishes them |
 
 - Destructive commands are **local-only by construction**: they refuse `NODE_ENV=production` and any
   `DATABASE_URL` whose host is not this machine or the dev container.
@@ -72,7 +74,8 @@ orochia/                           npm workspaces
 │   ├── app/api/**/route.ts        one handler per endpoint: authenticate → validate (zod) → call lib → respond
 │   ├── lib/                       access.ts (who may play what) · social.ts · playlists.ts · queries.ts (read
 │   │                              models) · auctions.ts · challenges.ts · realtime.ts (the event bus, SSE) · auth.ts · env.ts ·
-│   │                              http.ts · rate-limit.ts · storage.ts
+│   │                              http.ts · rate-limit.ts · storage.ts · mail.ts + mail-templates.ts
+│   ├── mail-templates/            e-mail templates: <id>/<locale>/subject.txt · body.html · body.txt, _layout/
 │   └── components/                UI (player, modals, dashboard panels, relationship actions…)
 ├── packages/db/                   Drizzle schema (source of truth), migrations, migrator, seed
 ├── packages/media/                Bunny Stream client, Tus signing, signed playback tokens, webhook verifier
@@ -225,6 +228,27 @@ orochia/                           npm workspaces
   it replays the app's real flows (watch, stories, tip, unlock, auction, challenge) over licensed stock footage
   (`public/showcase`, Mixkit free licence, vertical 540×960 clips) and never shows a name, a handle, a profile or a figure
   that could be taken for a real account.
+
+### G. E-mails are templates
+- Every e-mail goes through `sendTemplate(id, { to, locale?, vars, replyTo? })` (`lib/mail.ts`) — never `sendMail` with
+  a body written in code (a unit test refuses any other `sendMail` call). Delivery rules stay those of `lib/mail.ts`:
+  Resend or Mailgun, nothing leaves outside production unless `MAIL_DELIVERY=on`, never throws.
+- A template is a folder `apps/web/mail-templates/<id>/`: per locale (`en`, `fr`; English when the locale is missing)
+  `subject.txt`, `body.html` (tables and inline styles only — mail clients) and `body.txt`, plus `preview.json` (sample
+  variables). All share `_layout/layout.html` / `layout.txt` (Orochia header and footer) and `_layout/<locale>/footer.txt`.
+  `{name}` inserts a variable (HTML-escaped in `.html`), `{#name}…{/name}` / `{^name}…{/name}` show text when a
+  variable is set / not set. Plain HTML files, no React Email: the same files are served from Bunny at run time, so they
+  must be data, not code.
+- **The registry** `MAIL_TEMPLATES` (`lib/mail-templates.ts`) declares each id and its variables (`text` or `flag`): a
+  call with a missing or misspelt variable does not compile; a template using an undeclared one is refused.
+- **Source**: `MAIL_TEMPLATES_SOURCE=local` (the repository, default outside production) or `bunny` (default in
+  production: `mail-templates/` in the Bunny Storage zone, cached `MAIL_TEMPLATES_CACHE_TTL` seconds). Missing,
+  unreachable or invalid on Bunny → the templates bundled in the image, with a warning. The repository is the
+  reference; Bunny lets an operator correct wording without a release.
+- **Add or change one**: edit the files (and the registry and `preview.json` for a new id or variable) →
+  `npm run mail:templates:preview` (renders every template and locale to `apps/web/.mail-preview/`) → `npm test` →
+  merge → `npm run mail:templates:push` (dry run: what differs on Bunny) then `npm run mail:templates:push -- --apply`
+  with the production `BUNNY_STORAGE_*` values. An edit made only on Bunny is overwritten by the next push.
 
 ---
 

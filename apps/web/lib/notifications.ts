@@ -2,7 +2,7 @@ import { db, follows, notifications, paymentIntents, profiles, users, videos } f
 import { and, count, desc, eq, inArray, isNull, lt, sql } from "drizzle-orm";
 import { appUrl } from "./env";
 import { t, type MessageKey } from "./i18n";
-import { sendMail } from "./mail";
+import { sendTemplate } from "./mail";
 import { checkRateLimit } from "./rate-limit";
 import type { NotificationEvent } from "./profile";
 import { emitUserEvent } from "./messaging";
@@ -79,18 +79,15 @@ export async function notify(input: { userId: string; event: NotificationEvent; 
     }
     if (!(await claimEmail(userId, to.frequency))) return;
     const all = { ...vars, username: to.username };
-    await sendMail({
+    await sendTemplate("notification", {
       to: to.email,
-      subject: `${t(`notify.${event}.subject` as MessageKey, all)} — Orochia`,
-      text: [
-        t("notify.greeting", all),
-        "",
-        t(`notify.${event}.body` as MessageKey, all),
-        "",
-        `${appUrl()}${path}`,
-        "",
-        t("notify.footer", { settings: `${appUrl()}/dashboard?tab=settings#settings-notifications` }),
-      ].join("\n"),
+      vars: {
+        username: to.username,
+        subject: t(`notify.${event}.subject` as MessageKey, all),
+        body: t(`notify.${event}.body` as MessageKey, all),
+        link: `${appUrl()}${path}`,
+        settingsLink: `${appUrl()}/dashboard?tab=settings#settings-notifications`,
+      },
     });
   } catch (error) {
     console.error(`notify: ${event} to ${userId} failed`, error);

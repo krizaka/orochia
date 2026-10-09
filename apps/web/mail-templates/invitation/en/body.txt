@@ -1,0 +1,8 @@
+Hello,
+
+{inviterName} (@{inviterUsername}) invited you to join Orochia, the video platform for independent creators.
+
+Accept the invitation and create your account:
+{link}
+
+This invitation expires in {expiresInDays} days.

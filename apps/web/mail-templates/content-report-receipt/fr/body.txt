@@ -1,0 +1,4 @@
+Nous avons bien reçu votre signalement concernant « {videoTitle} ».
+
+Ticket : {ticket}
+Il sera examiné par notre équipe conformité{#urgent} en priorité{/urgent}.

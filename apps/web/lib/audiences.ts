@@ -14,7 +14,7 @@ import {
 import { and, asc, eq, isNull, sql } from "drizzle-orm";
 import { HttpError, isUniqueViolation } from "./http";
 import { appUrl } from "./env";
-import { sendMail } from "./mail";
+import { sendTemplate } from "./mail";
 
 /**
  * Who an INVITED_ONLY video or collection is open to: accounts invited one by one, and the owner's
@@ -187,12 +187,10 @@ export async function invitePerson(kind: AudienceTarget, ownerId: string, id: st
       : await db.insert(playlistMembers).values({ playlistId: id, userId: account.id }).onConflictDoNothing().returning({ id: playlistMembers.id });
   if (added.length > 0) {
     const [owner] = await db.select({ username: users.username }).from(users).where(eq(users.id, ownerId)).limit(1);
-    const what = kind === "video" ? "a video" : "a collection";
     const link = `${appUrl()}/${kind === "video" ? "watch" : "playlists"}/${id}`;
-    void sendMail({
+    void sendTemplate("audience-invitation", {
       to: account.email,
-      subject: `@${owner.username} shared ${what} with you on Orochia`,
-      text: `@${owner.username} invited you to ${what}: "${target.title}".\n\n${link}\n\n— Orochia`,
+      vars: { owner: owner.username, title: target.title, link, isVideo: kind === "video" },
     });
   }
   return { userId: account.id };

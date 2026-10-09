@@ -1,0 +1,7 @@
+Bonjour @{username},
+
+Choisissez un nouveau mot de passe ici :
+
+{link}
+
+Le lien fonctionne une seule fois, pendant une heure. Si vous n’avez rien demandé, ignorez ce message : votre mot de passe ne change pas.

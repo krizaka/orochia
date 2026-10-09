@@ -35,7 +35,9 @@
     "db:restore": "node scripts/db.mjs restore",
     "docs:generate": "node scripts/generate-docs.mjs",
     "workspace": "node scripts/workspace.mjs",
-    "screenshots": "node scripts/screenshots.mjs"
+    "screenshots": "node scripts/screenshots.mjs",
+    "mail:templates:preview": "tsx apps/web/scripts/mail-templates.ts preview",
+    "mail:templates:push": "tsx apps/web/scripts/mail-templates.ts push"
   },
   "keywords": [
     "video-streaming",

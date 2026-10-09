@@ -1,0 +1,6 @@
+Ticket : {ticket}
+Motif : {reason}{#urgent} (à traiter en premier){/urgent}
+Vidéo : {videoTitle}{#videoLink} — {videoLink}{/videoLink}{^videoLink} (non retrouvée){/videoLink}
+Signalé par : {reporterEmail}{#reporterUsername} (@{reporterUsername}){/reporterUsername}{^reporterUsername} (anonyme){/reporterUsername}
+
+{details}

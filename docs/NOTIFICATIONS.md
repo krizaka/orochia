@@ -79,6 +79,7 @@ notify() ──▶ lib/push.ts ──▶ packages/push ──▶ Expo Push Servi
 
 ```
 apps/web/lib/notifications.ts            notify(): write, publish, push, e-mail — and every event's helper
+apps/web/mail-templates/notification/    the e-mail around a notification (subject and text come from messages/en.json)
 apps/web/lib/realtime.ts                 the bus (PostgreSQL LISTEN/NOTIFY) and sseResponse()
 apps/web/lib/push.ts                     pushToUser, registerDevice, unregisterDevice, the delivery gate
 apps/web/app/api/me/devices/route.ts     register / forget a phone

@@ -1,0 +1,7 @@
+Hi @{username},
+
+Choose a new password here:
+
+{link}
+
+The link works once, for one hour. If you did not ask for it, ignore this message: your password stays the same.

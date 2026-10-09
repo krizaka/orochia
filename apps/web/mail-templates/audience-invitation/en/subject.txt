@@ -1,0 +1,1 @@
+@{owner} shared {#isVideo}a video{/isVideo}{^isVideo}a collection{/isVideo} with you on Orochia
