@@ -24,7 +24,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { ReportModal } from "@/components/ReportModal";
 import { TipModal } from "@/components/TipModal";
-import { AlertDialog, Avatar, cn, Dialog, DropdownMenu, IconButton, toast } from "@/components/ui";
+import { AlertDialog, Avatar, Badge, cn, Dialog, DropdownMenu, IconButton, toast } from "@/components/ui";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 import {
@@ -74,15 +74,15 @@ function useReducedMotion() {
   return reduced;
 }
 
-/** Who a story is for, as a small badge (a list's name only for its author). */
+/** Who a story is for, as a small badge on the media (@krizaka/ui's scrim Badge; a list's name only for its author). */
 function AudienceBadge({ story }: { story: StoryItem }) {
   const Icon = AUDIENCE_ICON[story.audience] ?? LockIcon;
   const label = story.audience === "INVITED_ONLY" && story.audienceListName ? story.audienceListName : t(`stories.viewer.audience.${story.audience in AUDIENCE_ICON ? story.audience : "INVITED_ONLY"}` as "stories.viewer.audience.PUBLIC");
   return (
-    <span className="inline-flex max-w-[11rem] items-center gap-1 truncate rounded-full bg-scrim px-2 py-0.5 text-[10px] font-semibold text-fg-on-media">
-      <Icon size={11} aria-hidden />
-      <span className="truncate">{label}</span>
-    </span>
+    <Badge tone="scrim" className="max-w-[11rem] overflow-hidden normal-case tracking-normal">
+      <Icon size={11} aria-hidden className="shrink-0" />
+      <span className="min-w-0 truncate">{label}</span>
+    </Badge>
   );
 }
 

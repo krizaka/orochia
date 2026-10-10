@@ -30,7 +30,7 @@ export function PlaylistCard({ id, title, description, visibility, itemsCount, c
         </Card.Media>
         <Card.Body className="gap-1">
           <Card.Title className="truncate font-bold">{title}</Card.Title>
-          {visibility !== "PUBLIC" && <CollectionAudienceBadge visibility={visibility} className="text-[10px] font-semibold uppercase tracking-wider text-fg-muted" />}
+          {visibility !== "PUBLIC" && <CollectionAudienceBadge visibility={visibility} className="self-start" />}
           {description && <Card.Description>{description}</Card.Description>}
         </Card.Body>
       </Link>

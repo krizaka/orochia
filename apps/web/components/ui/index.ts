@@ -12,7 +12,8 @@ export { Badge, type BadgeProps,badgeVariants } from "@krizaka/ui/badge";
 export { type ButtonVariants,buttonVariants } from "@krizaka/ui/button";
 export { Card } from "@krizaka/ui/card";
 export { Checkbox } from "@krizaka/ui/checkbox";
-export { Chip } from "@krizaka/ui/chip";
+// `chipVariants` styles a link as a chip (a filter that is an address); a client module, like `Chip`.
+export { Chip, chip as chipVariants } from "@krizaka/ui/chip";
 export { cn } from "@krizaka/ui/cn";
 export { Command, CommandDialog } from "@krizaka/ui/command";
 export { ConfirmButton } from "@krizaka/ui/confirm-button";

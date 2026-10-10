@@ -3,7 +3,7 @@
 import { AuctionIcon, ChallengeIcon, type Icon,PlayIcon, Story24hIcon, TipIcon, UnlockIcon } from "@krizaka/icons";
 import React, { useEffect, useRef, useState } from "react";
 
-import { cn } from "@/components/ui";
+import { Tabs } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 import { type Scene,SCENE_MS, SCENE_STYLES, SCENES, Screen } from "./showcase/Scenes";
@@ -12,7 +12,8 @@ const ICONS: Record<Scene, Icon> = { feed: PlayIcon, stories: Story24hIcon, tip:
 
 /**
  * How Orochia works, on a phone: six real flows (watch, stories, tip, unlock, auctions, challenges) played one after
- * the other on vertical footage — a finger taps, sheets slide, prices move — with the tabs under it to jump to one.
+ * the other on vertical footage — a finger taps, sheets slide, prices move — with the tabs under it to jump to one
+ * (@krizaka/ui's Tabs: arrows, Home and End move between them; the phone is their panel).
  * Pauses off-screen; under prefers-reduced-motion every screen shows its final state, still.
  */
 export function ProductShowcase({ share }: { share: number }) {
@@ -36,8 +37,16 @@ export function ProductShowcase({ share }: { share: number }) {
   const scene = SCENES[index];
 
   return (
-    <div ref={box} className="relative flex w-full min-w-0 flex-col items-center" aria-label={t("home.showcase.label")} role="region">
-      <div className="relative">
+    <Tabs.Root
+      ref={box}
+      variant="pills"
+      value={scene}
+      onValueChange={(s) => setIndex(Math.max(0, SCENES.indexOf(s as Scene)))}
+      className="relative flex w-full min-w-0 flex-col items-center gap-0"
+      aria-label={t("home.showcase.label")}
+      role="region"
+    >
+      <Tabs.Content value={scene} tabIndex={-1} className="relative flex-none rounded-none">
         <div aria-hidden className="sc-aura absolute -inset-12 -z-10 rounded-full bg-linear-to-tr from-accent/45 via-accent-2/30 to-accent-2/35 blur-3xl" />
         <div className="sc-float relative h-[560px] w-[264px] rounded-[3rem] bg-linear-to-b from-device-edge via-device-core to-device-edge p-[3px] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.85)] sm:h-[600px] sm:w-[284px]">
           <div className="theme-dark relative h-full w-full overflow-hidden rounded-[2.85rem] border-[7px] border-black bg-black">
@@ -54,37 +63,31 @@ export function ProductShowcase({ share }: { share: number }) {
             <div aria-hidden className="absolute bottom-1.5 left-1/2 z-50 h-1 w-24 -translate-x-1/2 rounded-full bg-white/70" />
           </div>
         </div>
-      </div>
+      </Tabs.Content>
 
-      <div role="tablist" aria-label={t("home.showcase.label")} className="mt-7 grid w-full max-w-[420px] grid-cols-3 gap-1.5 sm:max-w-none sm:grid-cols-6">
-        {SCENES.map((s, i) => {
+      <Tabs.List
+        aria-label={t("home.showcase.label")}
+        className="mt-7 grid w-full max-w-[420px] grid-cols-3 gap-1.5 overflow-visible data-[orientation=horizontal]:pb-0 sm:max-w-none sm:grid-cols-6"
+      >
+        {SCENES.map((s) => {
           const Icon = ICONS[s];
-          const active = i === index;
           return (
-            <button
+            <Tabs.Trigger
               key={s}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => setIndex(i)}
-              className={cn(
-                "relative flex items-center justify-center gap-1.5 overflow-hidden rounded-xl border px-2.5 py-2 text-[11px] font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring sm:text-xs",
-                active
-                  ? "border-border-strong bg-surface-3 text-fg"
-                  : "border-border-default bg-surface-1/40 text-fg-secondary hover:text-fg"
-              )}
+              value={s}
+              className="relative h-auto gap-1.5 overflow-hidden rounded-xl bg-surface-1/40 px-2.5 py-2 text-[11px] data-[state=active]:border-border-strong data-[state=active]:bg-surface-3 sm:text-xs"
             >
               <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
               <span className="truncate">{t(`home.showcase.scenes.${s}`)}</span>
-              {active && running && (
+              {s === scene && running && (
                 <span className="sc-tab absolute inset-x-0 bottom-0 h-[2px] origin-left bg-linear-to-r from-accent via-accent-2 to-accent-2" style={{ animationDuration: `${SCENE_MS}ms` }} />
               )}
-            </button>
+            </Tabs.Trigger>
           );
         })}
-      </div>
+      </Tabs.List>
       <style>{SCENE_STYLES + STYLES}</style>
-    </div>
+    </Tabs.Root>
   );
 }
 

@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { Plus, Trash2 } from "lucide-react";
-import { AudienceEditor } from "../AudienceEditor";
-import { COLLECTION_AUDIENCES, CollectionAudienceBadge, audienceOf, type CollectionVisibility } from "../CollectionAudience";
-import { t } from "@/lib/i18n";
+import Link from "next/link";
+import React, { useCallback, useEffect, useState } from "react";
+
 import { Button, cn, ConfirmButton, Input, Select } from "@/components/ui";
+import { t } from "@/lib/i18n";
+
+import { AudienceEditor } from "../AudienceEditor";
+import { audienceOf, COLLECTION_AUDIENCES, CollectionAudienceBadge, type CollectionVisibility } from "../CollectionAudience";
 
 interface Collection {
   id: string;
@@ -138,7 +140,7 @@ export function PlaylistsPanel() {
                     {t("playlistsPanel.sharedMeta", { owner: p.ownerUsername, count: p.itemsCount })}
                   </span>
                 </Link>
-                <CollectionAudienceBadge visibility={p.visibility} className="text-[11px] text-fg-secondary" />
+                <CollectionAudienceBadge visibility={p.visibility} />
               </li>
             ))}
           </ul>
