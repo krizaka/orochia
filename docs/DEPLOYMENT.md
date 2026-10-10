@@ -111,7 +111,7 @@ On every release `migrate.cjs` applies the migrations, then creates or reactivat
 | CDN token authentication | **on** — `BUNNY_STREAM_TOKEN_AUTH_KEY` is its key; every playback URL is signed for 300 s |
 | Block direct url file access | on, with **Allowed domains** `orochia.com`, `*.orochia.com` (and `localhost` while developing) |
 | Embed view token authentication | off — the app plays HLS itself, not Bunny's embedded player |
-| Webhook | `https://<domain>/api/webhooks/bunny`. Bunny signs it (v1, HMAC-SHA256) with the library's **Read-Only API key**: that key is `BUNNY_WEBHOOK_SECRET` |
+| Webhook | `https://<domain>/api/webhooks/bunny`. Bunny signs it (v1, HMAC-SHA256) with the library's **Read-Only API key**: that key is `BUNNY_WEBHOOK_SECRET`. **Required**: without it uploads never leave "processing" (video stories alone catch up by asking the Stream API). One URL per library: give each environment its own library |
 | Keep original files (library → Encoding) | **on** — an editor draft is reopened from its original (`/<guid>/original`, signed for its owner) |
 
 Thumbnails and preview animations are on the same CDN, so they are signed too — one file per token

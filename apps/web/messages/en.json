@@ -53,7 +53,11 @@
       "rating": "Content rating",
       "blur": "Blur the preview"
     },
-    "removeArmed": "Tap again to delete"
+    "removeArmed": "Tap again to delete",
+    "processing": "Processing",
+    "processingHint": "Your story is being encoded. It goes live for 24 hours as soon as it is ready — this page updates by itself.",
+    "failed": "Not published",
+    "failedHint": "This video could not be processed (too long, or the upload did not finish). Remove it and share it again."
   },
   "auth": {
     "register": {

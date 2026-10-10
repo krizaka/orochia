@@ -445,6 +445,10 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("seen by the viewer", (await ringOf(alex, "elenavox")).stories.find((s) => s.id === storyId).seen === true);
   check("like", (await alex.call(`/api/stories/${storyId}/like`, "POST")).json.likesCount === 1);
   check("own ring comes first", (await elena.call("/api/stories")).json.rings[0]?.isOwn === true);
+  // ?pending=1 adds the author's own video stories while they encode (state "processing"); a viewer only ever gets ready ones.
+  const ownWithPending = (await elena.call("/api/stories?pending=1")).json.rings?.find((r) => r.isOwn);
+  check("the author's rail carries each story's state", ownWithPending?.stories.some((s) => s.id === storyId && s.state === "ready"));
+  check("others never receive a story that is not ready", !(await alex.call("/api/stories?pending=1")).json.rings?.some((r) => r.stories.some((s) => s.state !== "ready")));
   check("another creator cannot remove it", (await mia.call(`/api/stories/${storyId}`, "DELETE")).status === 404);
   check("its creator removes it", (await elena.call(`/api/stories/${storyId}`, "DELETE")).status === 200);
   check("removed → gone from the rail", !(await ringOf(alex, "elenavox"))?.stories.some((s) => s.id === storyId));

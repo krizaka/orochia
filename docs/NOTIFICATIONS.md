@@ -46,6 +46,11 @@ monthly bill to carry what the database the app already pays for carries well be
 file whose body changes; its callers do not. The push client is already a package of its own (`packages/push`), ready
 to move to a shared Krizaka repository when a second product needs it.
 
+**Inbound webhooks are not this bus.** Bunny's encoding webhook (`/api/webhooks/bunny`) only changes rows; it cannot
+reach `localhost`, and a library notifies a single URL. A story the author is waiting for is therefore not pushed over
+SSE: the rail polls every 10 s while one of their stories is processing, and each poll reconciles it with the Stream API
+(docs/MEDIA_PIPELINE.md, *When the webhook never comes*), so it appears with or without the webhook.
+
 ## 4. Mobile push
 
 ```

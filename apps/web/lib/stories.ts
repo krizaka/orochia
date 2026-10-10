@@ -1,6 +1,6 @@
 import { db, stories, storyViews, storyLikes, users, profiles, audienceLists, audienceListMembers } from "@orochia/db";
-import { and, asc, desc, eq, gt, inArray, isNull, sql } from "drizzle-orm";
-import { BunnyStreamClient, generateBunnyStreamToken, signBunnyFileUrl } from "@orochia/media";
+import { and, asc, desc, eq, gt, inArray, isNotNull, isNull, lt, or, sql } from "drizzle-orm";
+import { BunnyApiError, BunnyStreamClient, exceedsLength, generateBunnyStreamToken, mapBunnyApiStatusToOrochia, signBunnyFileUrl } from "@orochia/media";
 import { areContacts, isApprovedFollower, paidForChallengeStory } from "./access";
 import { bunnyStreamConfig, requireBunnyStream } from "./env";
 import { viewerKey } from "./engagement";
@@ -44,9 +44,22 @@ export async function canViewStory(story: Pick<StoryRow, "id" | "creatorId" | "v
   return false;
 }
 
+/**
+ * Where a story stands for whoever sees it. Others only ever receive "ready" stories; the author also
+ * sees their own video stories while Bunny encodes them ("processing") or when encoding failed.
+ */
+export type StoryState = "ready" | "processing" | "failed";
+
+export function storyState(status: StoryRow["status"]): StoryState {
+  if (status === "READY") return "ready";
+  if (status === "FAILED") return "failed";
+  return "processing";
+}
+
 export interface StoryItem {
   id: string;
   type: "image" | "video";
+  state: StoryState;
   /** Image URL, or the signed HLS playlist of a video story. */
   url: string;
   thumbnailUrl: string | null;
@@ -90,8 +103,14 @@ function playable(story: StoryRow): { url: string; thumbnailUrl: string | null }
 /**
  * The stories rail for a viewer: one ring per creator with live stories the viewer may see — own
  * ring first, then unseen rings, then seen ones; inside a ring, oldest first (the order to watch).
+ * With `includeOwnPending`, the viewer's own video stories are there from the upload on, marked
+ * "processing" until Bunny has encoded them (or "failed"): an author always finds what they just shared.
+ * Opt-in, because a client that predates `state` would try to play them (the mobile app, for now).
  */
-export async function storyRail(viewerId: string | null): Promise<StoryRing[]> {
+export async function storyRail(viewerId: string | null, options: { includeOwnPending?: boolean } = {}): Promise<StoryRing[]> {
+  const shown = viewerId && options.includeOwnPending
+    ? or(eq(stories.status, "READY"), and(eq(stories.creatorId, viewerId), eq(stories.mediaType, "VIDEO")))
+    : eq(stories.status, "READY");
   const rows = await db
     .select({
       story: stories,
@@ -102,7 +121,7 @@ export async function storyRail(viewerId: string | null): Promise<StoryRing[]> {
     .from(stories)
     .innerJoin(users, eq(users.id, stories.creatorId))
     .leftJoin(profiles, eq(profiles.userId, stories.creatorId))
-    .where(and(eq(stories.status, "READY"), gt(stories.expiresAt, sql`now()`), isNull(stories.removedAt), isNull(users.suspendedAt)))
+    .where(and(shown, gt(stories.expiresAt, sql`now()`), isNull(stories.removedAt), isNull(users.suspendedAt)))
     .orderBy(asc(stories.createdAt))
     .limit(500);
 
@@ -135,10 +154,13 @@ export async function storyRail(viewerId: string | null): Promise<StoryRing[]> {
       };
       rings.set(r.story.creatorId, ring);
     }
-    const media = playable(r.story);
+    const state = storyState(r.story.status);
+    // Nothing is signed before the video is playable.
+    const media = state === "ready" ? playable(r.story) : { url: "", thumbnailUrl: null };
     const item: StoryItem = {
       id: r.story.id,
       type: r.story.mediaType === "VIDEO" ? "video" : "image",
+      state,
       url: media.url,
       thumbnailUrl: media.thumbnailUrl,
       caption: r.story.caption ?? "",
@@ -242,7 +264,8 @@ export async function openVideoStoryUpload(creatorId: string, input: NewStory) {
 export async function applyStoryEncoding(bunnyVideoId: string, target: "PROCESSING" | "READY" | "FAILED", details?: { durationSeconds?: number }) {
   const [story] = await db.select().from(stories).where(eq(stories.bunnyVideoId, bunnyVideoId)).limit(1);
   if (!story) return null;
-  if (story.status === "READY" && target === "PROCESSING") return story.id;
+  // Late, repeated or out-of-order events (and a webhook racing the reconciliation) change nothing.
+  if (story.status === target || (story.status === "READY" && target === "PROCESSING")) return story.id;
   await db
     .update(stories)
     .set({
@@ -254,6 +277,112 @@ export async function applyStoryEncoding(bunnyVideoId: string, target: "PROCESSI
     })
     .where(eq(stories.id, story.id));
   return story.id;
+}
+
+/**
+ * Settles a story video Bunny reports finished: reads its length, refuses (FAILED, deleted at Bunny)
+ * one longer than a story may be — the browser checks, but a client can lie — else makes it READY.
+ * Shared by the webhook and the reconciliation below.
+ */
+export async function settleStoryVideo(
+  bunnyVideoId: string,
+  target: "PROCESSING" | "READY" | "FAILED",
+  client: Pick<BunnyStreamClient, "getVideo" | "deleteVideo">,
+  knownDurationSeconds?: number,
+) {
+  let durationSeconds = knownDurationSeconds;
+  if (target === "READY" && durationSeconds === undefined) {
+    durationSeconds = await client
+      .getVideo(bunnyVideoId)
+      .then((d) => d.length)
+      .catch(() => undefined);
+  }
+  const tooLong = target === "READY" && durationSeconds !== undefined && exceedsLength("story", durationSeconds);
+  const storyId = await applyStoryEncoding(bunnyVideoId, tooLong ? "FAILED" : target, { durationSeconds });
+  if (storyId && tooLong) await client.deleteVideo(bunnyVideoId).catch(() => undefined);
+  return storyId ? { storyId, status: tooLong ? ("FAILED" as const) : target, durationSeconds } : null;
+}
+
+/** A story video unsettled for this long is asked about at Bunny (its webhook may never come). */
+export const STORY_RECHECK_AFTER_MS = 20_000;
+/** A Tus session lives 2 hours: a video Bunny still holds no bytes for after that was abandoned. */
+export const STORY_UPLOAD_WINDOW_MS = 2 * 3600 * 1000;
+
+/** What Bunny's answer about an unsettled story video means (pure: decided here, applied below). */
+export function reconcileDecision(
+  story: { status: StoryRow["status"]; createdAt: Date },
+  bunny: { missing: true } | { status: number },
+  now = new Date(),
+): "PROCESSING" | "READY" | "FAILED" | null {
+  if ("missing" in bunny) return "FAILED";
+  const target = mapBunnyApiStatusToOrochia(bunny.status);
+  if (target === null) return now.getTime() - story.createdAt.getTime() > STORY_UPLOAD_WINDOW_MS ? "FAILED" : null;
+  return target === story.status ? null : target;
+}
+
+/**
+ * Catch-up for lost webhooks. Bunny reports encoding through its webhook only; when that never
+ * arrives — a library without a webhook URL, an app Bunny cannot reach (localhost), a delivery lost —
+ * a story stayed PENDING_UPLOAD forever and its author never saw it. This asks the Stream API about
+ * video stories still unsettled after STORY_RECHECK_AFTER_MS and applies what it says, exactly as the
+ * webhook would. Each story is claimed (its updated_at moved) before the call, so concurrent requests
+ * and instances never ask twice, and a story is asked about at most once per STORY_RECHECK_AFTER_MS.
+ * Never throws: an unreachable Bunny leaves the stories for the next pass.
+ */
+export async function reconcileStoryVideos(
+  options: { creatorId?: string; limit?: number; client?: Pick<BunnyStreamClient, "getVideo" | "deleteVideo"> } = {},
+): Promise<{ checked: number; settled: number }> {
+  if (!process.env.BUNNY_STREAM_API_KEY?.trim()) return { checked: 0, settled: 0 };
+  const stale = new Date(Date.now() - STORY_RECHECK_AFTER_MS);
+  const candidates = await db
+    .select({ id: stories.id, bunnyVideoId: stories.bunnyVideoId, status: stories.status, createdAt: stories.createdAt })
+    .from(stories)
+    .where(
+      and(
+        eq(stories.mediaType, "VIDEO"),
+        inArray(stories.status, ["PENDING_UPLOAD", "PROCESSING"]),
+        isNotNull(stories.bunnyVideoId),
+        isNull(stories.removedAt),
+        gt(stories.expiresAt, sql`now()`),
+        lt(stories.updatedAt, stale),
+        options.creatorId ? eq(stories.creatorId, options.creatorId) : undefined,
+      ),
+    )
+    .orderBy(asc(stories.updatedAt))
+    .limit(options.limit ?? 10);
+  if (candidates.length === 0) return { checked: 0, settled: 0 };
+  const client = options.client ?? new BunnyStreamClient(bunnyStreamConfig());
+
+  const results = await Promise.all(
+    candidates.map(async (story) => {
+      const guid = story.bunnyVideoId!;
+      const [claimed] = await db
+        .update(stories)
+        .set({ updatedAt: new Date() })
+        // Still unsettled and not asked about since (compared in SQL: updated_at keeps microseconds a JS Date drops).
+        .where(and(eq(stories.id, story.id), inArray(stories.status, ["PENDING_UPLOAD", "PROCESSING"]), lt(stories.updatedAt, stale)))
+        .returning({ id: stories.id });
+      if (!claimed) return false;
+      try {
+        const video = await client.getVideo(guid).then(
+          (v) => ({ status: v.status, length: v.length }),
+          (error: unknown) => {
+            if (error instanceof BunnyApiError && error.status === 404) return { missing: true as const };
+            throw error;
+          },
+        );
+        const target = reconcileDecision(story, video);
+        if (!target) return false;
+        const settled = await settleStoryVideo(guid, target, client, "length" in video ? video.length : undefined);
+        if (settled) console.info(`stories: ${story.id} reconciled with Bunny → ${settled.status} (webhook missing)`);
+        return Boolean(settled);
+      } catch (error) {
+        console.warn(`stories: could not reconcile ${story.id} with Bunny`, error instanceof Error ? error.message : error);
+        return false;
+      }
+    }),
+  );
+  return { checked: candidates.length, settled: results.filter(Boolean).length };
 }
 
 async function visibleStory(storyId: string, viewerId: string | null) {
