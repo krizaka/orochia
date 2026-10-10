@@ -369,7 +369,7 @@ orochia/                           npm workspaces
   modal and sheet — Radix: focus trap, Escape, outside click and scroll lock come with it; the door names the close
   button; `hideClose` / `dismissible={false}` for a gate or a full-screen editor), `AlertDialog` (confirmations),
   `Tabs.*` (underline · segmented · pills: a view or a page's sections), `Chip` + `Chip.Group` (a filter or a pill
-  choice), `RadioGroup.*` (`Card`: a whole card is the choice — amounts, packs, payment methods), `Checkbox`, `Switch`,
+  choice; `chipVariants`, client, for a filter that is a link — `TagChip`), `RadioGroup.*` (`Card`: a whole card is the choice — amounts, packs, payment methods), `Checkbox`, `Switch`,
   `Slider`, `Command.*` + `CommandDialog` (the search palette), `ConfirmButton` (destructive actions, two taps),
   `Progress` (bar · ring), `Popover`, `Kbd`, `SectionBackdrop` (a page section in the brand's visual language: section
   gradient alternating `down` / `up`, dome, perspective grid, blurred media — the home's sections), `Toaster` (mounted once in `ClientLayoutShell`) + `toast`
