@@ -886,7 +886,7 @@
       "method": "GET",
       "path": "/api/stories",
       "access": "public · session-aware",
-      "summary": "The stories rail: one ring per creator with current stories you may see (yours first, then unseen), signed for you."
+      "summary": "The stories rail: one ring per creator with current stories you may see (yours first, then unseen), signed for you — with `?pending=1`, your own video stories too while they are processing (`state`)."
     },
     {
       "method": "POST",

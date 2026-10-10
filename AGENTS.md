@@ -126,7 +126,8 @@ orochia/                           npm workspaces
   justifies them; a view counts once per viewer and day and never for the author (`lib/engagement.ts`).
 - **Stories** (`lib/stories.ts`) live 24 hours from the moment they are playable. Video stories are Bunny videos filed
   in the stories collection (`BUNNY_STREAM_STORIES_COLLECTION_ID`), uploaded over Tus and moved to READY by the
-  webhook; image stories use a stored image whose URL the server derives from its reference — a client never
+  webhook — or, when it never comes, by the rail's reconciliation with the Stream API (`reconcileStoryVideos`); the
+  author sees their own story while it is processing; image stories use a stored image whose URL the server derives from its reference — a client never
   chooses a story's media. Audience: PUBLIC · APPROVED_FOLLOWERS_ONLY · CONTACTS_ONLY · INVITED_ONLY (one of the
   creator's lists); only allowed viewers receive a story, signed for them. A view counts once per viewer.
 - A video taken down (`removed_at` set) does not exist — feed, search, profile, playlists, details and playback

@@ -4,7 +4,7 @@ import { db, videos } from "@orochia/db";
 import { eq } from "drizzle-orm";
 import { bunnyStreamConfig, bunnyWebhookSecret } from "@/lib/env";
 import { errorResponse, jsonError } from "@/lib/http";
-import { applyStoryEncoding } from "@/lib/stories";
+import { settleStoryVideo } from "@/lib/stories";
 import { applyDraftEncoding } from "@/lib/video-drafts";
 import { notifyVideoReady } from "@/lib/notifications";
 
@@ -34,19 +34,17 @@ export async function POST(req: NextRequest) {
 
     const [video] = await db.select().from(videos).where(eq(videos.bunnyVideoId, payload.VideoGuid)).limit(1);
     if (!video) {
-      // Not a video: maybe a story video (stories collection; READY starts its 24 hours) or a draft's original.
+      // Not a video: maybe a story video (stories collection; READY starts its 24 hours, too long is refused).
+      const client = new BunnyStreamClient(config);
       let durationSeconds: number | undefined;
       if (target === "READY") {
-        durationSeconds = await new BunnyStreamClient(config)
+        durationSeconds = await client
           .getVideo(payload.VideoGuid)
           .then((d) => d.length)
           .catch(() => undefined);
       }
-      // Longer than a story may be (the browser checks, but a client can lie): refused and deleted.
-      const tooLong = durationSeconds !== undefined && exceedsLength("story", durationSeconds);
-      const storyId = await applyStoryEncoding(payload.VideoGuid, tooLong ? "FAILED" : target, { durationSeconds });
-      if (storyId && tooLong) await new BunnyStreamClient(config).deleteVideo(payload.VideoGuid).catch(() => undefined);
-      if (storyId) return NextResponse.json({ success: true, storyId, status: target });
+      const story = await settleStoryVideo(payload.VideoGuid, target, client, durationSeconds);
+      if (story) return NextResponse.json({ success: true, storyId: story.storyId, status: story.status });
       // Or the original clip of an editor draft.
       const draftId = await applyDraftEncoding(payload.VideoGuid, target, durationSeconds);
       if (draftId) return NextResponse.json({ success: true, draftId, status: target });

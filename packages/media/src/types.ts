@@ -37,7 +37,8 @@ export interface BunnyVideoResponse {
   views: number;
   isPublic: boolean;
   length: number;
-  status: number; // 0 = Created, 1 = Uploaded, 2 = Processing, 3 = Transcoding, 4 = Finished, 5 = Error
+  /** API states (not the webhook's): 0 created · 1 uploaded · 2 processing · 3 transcoding · 4 finished · 5 error · 6 upload failed · 7/8 JIT. */
+  status: number;
   framerate: number;
   width: number;
   height: number;

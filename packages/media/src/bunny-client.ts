@@ -7,6 +7,17 @@ import {
 } from "./types";
 import { generateBunnyStreamToken } from "./token-auth";
 
+/** A Bunny Stream API answer other than 2xx; `status` tells a missing video (404) from an outage. */
+export class BunnyApiError extends Error {
+  constructor(
+    readonly status: number,
+    message: string
+  ) {
+    super(message);
+    this.name = "BunnyApiError";
+  }
+}
+
 export class BunnyStreamClient {
   private apiKey: string;
   private libraryId: number;
@@ -66,7 +77,7 @@ export class BunnyStreamClient {
 
     if (!response.ok) {
       const errText = await response.text();
-      throw new Error(`Bunny Stream Get Video Error (${response.status}): ${errText}`);
+      throw new BunnyApiError(response.status, `Bunny Stream Get Video Error (${response.status}): ${errText}`);
     }
 
     return (await response.json()) as BunnyVideoResponse;

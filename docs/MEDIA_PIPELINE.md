@@ -68,8 +68,23 @@ collections.
 | 5 failed · 8 presigned upload failed | `FAILED` |
 | 9–10 captions / title generated | ignored |
 
-Events can arrive late or out of order: a READY video never goes back to PROCESSING. The GUID finds a video, else a
-story (its 24 hours start at READY), else a draft.
+Events can arrive late, twice or out of order: a READY video never goes back to PROCESSING, and an event that changes
+nothing is ignored. The GUID finds a video, else a story (its 24 hours start at READY), else a draft.
+
+### When the webhook never comes (stories)
+
+A library without a webhook URL, an app Bunny cannot reach (`localhost`, a second environment on the same library) or a
+lost delivery used to leave a story PENDING_UPLOAD forever — invisible, even to its author. Now:
+
+- **The author always sees their story.** The web rail asks `/api/stories?pending=1`: the author's own video stories
+  come with `state: "processing"` (badge, no playback, no view counted) or `"failed"`, and the rail refreshes every
+  10 s until the story is playable. Other viewers only ever receive READY stories.
+- **Reconciliation** (`reconcileStoryVideos`, `lib/stories.ts`): each rail request asks the Stream API
+  (`GET /videos/{guid}`) about video stories unsettled for more than 20 s — the viewer's own before answering, everyone
+  else's after the response — and applies the answer through the same `settleStoryVideo` as the webhook (length check,
+  READY, 24 hours from then). A story is claimed before the call (its `updated_at` moves), so instances never ask twice.
+  The API numbers states differently from the webhook: 0 created · 1–3, 7, 8 processing · 4 finished · 5–6 failed
+  (`mapBunnyApiStatusToOrochia`); a video Bunny no longer has, or holds no bytes for after the 2-hour Tus window, fails.
 
 ## 5. Signed playback
 

@@ -1,7 +1,7 @@
 "use client";
 
 import Hls from "hls.js";
-import { ChevronLeft, ChevronRight, Heart, Plus, Trash2, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Heart, Loader2, Plus, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
@@ -13,6 +13,8 @@ import { t } from "@/lib/i18n";
 interface StoryItem {
   id: string;
   type: "image" | "video";
+  /** Your own video stories arrive "processing" while Bunny encodes them (or "failed"); others' are always "ready". */
+  state: "ready" | "processing" | "failed";
   url: string;
   thumbnailUrl: string | null;
   caption: string;
@@ -35,6 +37,8 @@ interface StoryRing {
 }
 
 const IMAGE_SECONDS = 6;
+/** While one of your stories is processing, the rail asks again this often (each ask also checks Bunny). */
+const PROCESSING_POLL_MS = 10_000;
 
 function timeAgo(iso: string) {
   const minutes = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
@@ -87,10 +91,18 @@ export function CreatorStoriesBar() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const load = useCallback(async () => {
-    const res = await fetch("/api/stories", { cache: "no-store" }).catch(() => null);
+    const res = await fetch("/api/stories?pending=1", { cache: "no-store" }).catch(() => null);
     setRings(res?.ok ? ((await res.json()) as { rings: StoryRing[] }).rings : []);
   }, []);
   useEffect(() => void load(), [load, user?.id]);
+
+  // A story you just shared shows at once as "processing"; the rail refreshes until it is playable.
+  const processing = Boolean(rings?.some((r) => r.isOwn && r.stories.some((s) => s.state === "processing")));
+  useEffect(() => {
+    if (!processing || open) return;
+    const timer = setInterval(() => void load(), PROCESSING_POLL_MS);
+    return () => clearInterval(timer);
+  }, [processing, open, load]);
 
   const ring = open ? rings?.[open.ring] : null;
   const story = open && ring ? ring.stories[open.story] : null;
@@ -118,8 +130,8 @@ export function CreatorStoriesBar() {
   useEffect(() => {
     if (!story) return;
     setProgress(0);
-    if (!story.seen) void fetch(`/api/stories/${story.id}/view`, { method: "POST" }).catch(() => undefined);
-    if (story.type !== "image") return;
+    if (!story.seen && story.state === "ready") void fetch(`/api/stories/${story.id}/view`, { method: "POST" }).catch(() => undefined);
+    if (story.type !== "image" && story.state === "ready") return;
     const started = Date.now();
     const timer = setInterval(() => {
       const p = ((Date.now() - started) / (IMAGE_SECONDS * 1000)) * 100;
@@ -196,6 +208,11 @@ export function CreatorStoriesBar() {
                 <div className="relative h-14 w-14 sm:h-16 sm:w-16 overflow-hidden rounded-[14px] bg-surface-1 p-0.5">
                   <Avatar src={r.avatarUrl || AVATAR_PLACEHOLDER} fallback={r.displayName.charAt(0)} className="h-full w-full rounded-[12px]" />
                 </div>
+                {r.isOwn && r.stories.some((s) => s.state === "processing") && (
+                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-surface-3 px-1.5 py-px text-[9px] font-semibold text-fg-secondary">
+                    {t("stories.processing")}
+                  </span>
+                )}
               </div>
               <span className="max-w-[72px] truncate text-[11px] font-medium text-fg group-hover:text-accent">
                 {r.isOwn ? t("stories.yours") : r.displayName}
@@ -217,7 +234,13 @@ export function CreatorStoriesBar() {
           >
             <Dialog.Title className="sr-only">{ring.displayName}</Dialog.Title>
             <div className="absolute inset-0 flex items-center justify-center bg-media">
-              {story.type === "video" ? (
+              {story.state !== "ready" ? (
+                <div className="flex max-w-xs flex-col items-center gap-2 px-6 text-center">
+                  {story.state === "processing" && <Loader2 className="h-6 w-6 animate-spin text-fg-on-media motion-reduce:animate-none" aria-hidden />}
+                  <p className="text-sm font-semibold text-fg-on-media">{t(story.state === "processing" ? "stories.processing" : "stories.failed")}</p>
+                  <p className="text-xs text-fg-secondary">{t(story.state === "processing" ? "stories.processingHint" : "stories.failedHint")}</p>
+                </div>
+              ) : story.type === "video" ? (
                 <StoryVideo key={story.id} src={story.url} poster={story.thumbnailUrl} onEnded={next} onProgress={setProgress} />
               ) : (
                 <img src={story.url} alt="" className="h-full w-full object-contain" />

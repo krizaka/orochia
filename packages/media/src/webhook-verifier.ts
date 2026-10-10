@@ -58,3 +58,23 @@ export function mapBunnyStatusToOrochia(statusCode: number): "PROCESSING" | "REA
       return null;
   }
 }
+
+/**
+ * What a video's status read from the Stream API (`GET /videos/{guid}`) means for Orochia — the
+ * catch-up path when a webhook never arrived. The API numbers its states differently from the
+ * webhook: 0 created (nothing received yet) · 1 uploaded · 2 processing · 3 transcoding · 4 finished ·
+ * 5 error · 6 upload failed · 7/8 JIT segmenting / playlists created. Null: nothing uploaded yet.
+ */
+export function mapBunnyApiStatusToOrochia(statusCode: number): "PROCESSING" | "READY" | "FAILED" | null {
+  switch (statusCode) {
+    case 0:
+      return null;
+    case 4:
+      return "READY";
+    case 5:
+    case 6:
+      return "FAILED";
+    default:
+      return "PROCESSING";
+  }
+}
