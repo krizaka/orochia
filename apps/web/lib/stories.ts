@@ -1,10 +1,11 @@
-import { db, stories, storyViews, storyLikes, users, profiles, audienceLists, audienceListMembers } from "@orochia/db";
+import { db, stories, storyViews, storyLikes, users, profiles, audienceLists, audienceListMembers, tipsLedger } from "@orochia/db";
 import { and, asc, desc, eq, gt, inArray, isNotNull, isNull, lt, or, sql } from "drizzle-orm";
 import { BunnyApiError, BunnyStreamClient, exceedsLength, generateBunnyStreamToken, mapBunnyApiStatusToOrochia, signBunnyFileUrl } from "@orochia/media";
 import { areContacts, isApprovedFollower, paidForChallengeStory } from "./access";
 import { bunnyStreamConfig, requireBunnyStream } from "./env";
 import { viewerKey } from "./engagement";
 import { HttpError } from "./http";
+import { sendMessage } from "./messaging";
 import { signMediaUrl } from "./media-urls";
 import { publicUrlForRef } from "./storage";
 
@@ -71,6 +72,13 @@ export interface StoryItem {
   likesCount: number;
   seen: boolean;
   liked: boolean;
+  /** Who it is shown to — a badge for everyone (the list's name only for its author). */
+  audience: StoryRow["visibility"];
+  audienceListName: string | null;
+  /** The creator asked for a blurred preview: the viewer reveals it with a tap. */
+  isBlurred: boolean;
+  /** Its author only (0 for everyone else): tips received from this story. */
+  tipsCount: number;
 }
 
 export interface StoryRing {
@@ -81,6 +89,8 @@ export interface StoryRing {
   isOwn: boolean;
   /** Every story of the ring was already seen by this viewer. */
   allSeen: boolean;
+  /** The creator's tip minimum (a story tip is a creator tip). */
+  minTipCents: number;
   stories: StoryItem[];
 }
 
@@ -107,7 +117,7 @@ function playable(story: StoryRow): { url: string; thumbnailUrl: string | null }
  * "processing" until Bunny has encoded them (or "failed"): an author always finds what they just shared.
  * Opt-in, because a client that predates `state` would try to play them (the mobile app, for now).
  */
-export async function storyRail(viewerId: string | null, options: { includeOwnPending?: boolean } = {}): Promise<StoryRing[]> {
+export async function storyRail(viewerId: string | null, options: { includeOwnPending?: boolean; creatorId?: string } = {}): Promise<StoryRing[]> {
   const shown = viewerId && options.includeOwnPending
     ? or(eq(stories.status, "READY"), and(eq(stories.creatorId, viewerId), eq(stories.mediaType, "VIDEO")))
     : eq(stories.status, "READY");
@@ -117,11 +127,22 @@ export async function storyRail(viewerId: string | null, options: { includeOwnPe
       username: users.username,
       displayName: sql<string>`coalesce(${profiles.displayName}, ${users.username})`,
       avatarUrl: profiles.avatarUrl,
+      minTipCents: profiles.minTipAmountCents,
+      listName: audienceLists.name,
     })
     .from(stories)
     .innerJoin(users, eq(users.id, stories.creatorId))
     .leftJoin(profiles, eq(profiles.userId, stories.creatorId))
-    .where(and(shown, gt(stories.expiresAt, sql`now()`), isNull(stories.removedAt), isNull(users.suspendedAt)))
+    .leftJoin(audienceLists, eq(audienceLists.id, stories.audienceListId))
+    .where(
+      and(
+        shown,
+        gt(stories.expiresAt, sql`now()`),
+        isNull(stories.removedAt),
+        isNull(users.suspendedAt),
+        options.creatorId ? eq(stories.creatorId, options.creatorId) : undefined,
+      ),
+    )
     .orderBy(asc(stories.createdAt))
     .limit(500);
 
@@ -150,6 +171,7 @@ export async function storyRail(viewerId: string | null, options: { includeOwnPe
         avatarUrl: signMediaUrl(r.avatarUrl),
         isOwn: r.story.creatorId === viewerId,
         allSeen: true,
+        minTipCents: r.minTipCents ?? 500,
         stories: [],
       };
       rings.set(r.story.creatorId, ring);
@@ -171,6 +193,10 @@ export async function storyRail(viewerId: string | null, options: { includeOwnPe
       likesCount: r.story.likesCount,
       seen: seen.has(r.story.id),
       liked: liked.has(r.story.id),
+      audience: r.story.visibility,
+      audienceListName: ring.isOwn ? (r.listName ?? null) : null,
+      isBlurred: r.story.isBlurred,
+      tipsCount: ring.isOwn ? r.story.tipsCount : 0,
     };
     ring.stories.push(item);
     if (!item.seen && !ring.isOwn) ring.allSeen = false;
@@ -450,4 +476,107 @@ export async function myStories(creatorId: string) {
     .where(and(eq(stories.creatorId, creatorId), isNull(stories.removedAt), gt(stories.createdAt, sql`now() - interval '30 days'`)))
     .orderBy(desc(stories.createdAt))
     .limit(100);
+}
+
+/**
+ * A story a viewer acts on (tip, reply, report): live, visible to them and not their own. The creator never
+ * tips or answers their own story; for anyone who may not see it, it does not exist (404).
+ */
+export async function storyForViewerAction(storyId: string, viewerId: string) {
+  const story = await visibleStory(storyId, viewerId);
+  if (story.creatorId === viewerId) throw new HttpError(400, "This is your own story");
+  return story;
+}
+
+/** A private reply to a story: a direct message to its creator, linked to the story (the messaging rules apply). */
+export async function replyToStory(storyId: string, viewerId: string, content: string) {
+  const story = await storyForViewerAction(storyId, viewerId);
+  return sendMessage(viewerId, story.creatorId, content, { storyId });
+}
+
+/**
+ * Changes who sees a live story (its author only). A story delivered for a challenge keeps its backers:
+ * its audience was paid for, so it is locked (409).
+ */
+export async function updateStoryAudience(storyId: string, ownerId: string, audience: StoryAudience, audienceListId?: string | null) {
+  const [story] = await db
+    .select({ id: stories.id, visibility: stories.visibility })
+    .from(stories)
+    .where(and(eq(stories.id, storyId), eq(stories.creatorId, ownerId), isNull(stories.removedAt), gt(stories.expiresAt, sql`now()`)))
+    .limit(1);
+  if (!story) throw new HttpError(404, "Story not found");
+  if (story.visibility === "CHALLENGE") throw new HttpError(409, "A story delivered for a challenge keeps its backers");
+  const listId = await checkAudience(ownerId, audience, audienceListId);
+  await db.update(stories).set({ visibility: audience, audienceListId: listId, updatedAt: new Date() }).where(eq(stories.id, storyId));
+  return { audience, audienceListId: listId };
+}
+
+export interface StoryPerson {
+  username: string;
+  displayName: string;
+  avatarUrl: string | null;
+}
+
+export interface StoryInsights {
+  viewsCount: number;
+  likesCount: number;
+  tipsCount: number;
+  tipsTotalCents: number;
+  /** Views by people who were not signed in: counted, never named. */
+  guestViews: number;
+  viewers: (StoryPerson & { viewedAt: Date; liked: boolean })[];
+  tips: (StoryPerson & { amountCents: number; at: Date })[];
+}
+
+const INSIGHTS_LIMIT = 200;
+
+/**
+ * What a story did, for its author only (anyone else: 404): views, likes, the accounts that watched it (an
+ * account's view is visible to the creator, as on every stories app; a visitor is only a number), and the
+ * tips it brought with who sent them — the same names the creator's tip notifications already carry.
+ */
+export async function storyInsights(storyId: string, ownerId: string): Promise<StoryInsights> {
+  const [story] = await db
+    .select({ id: stories.id, viewsCount: stories.viewsCount, likesCount: stories.likesCount, tipsCount: stories.tipsCount })
+    .from(stories)
+    .where(and(eq(stories.id, storyId), eq(stories.creatorId, ownerId), isNull(stories.removedAt)))
+    .limit(1);
+  if (!story) throw new HttpError(404, "Story not found");
+
+  const person = {
+    username: users.username,
+    displayName: sql<string>`coalesce(${profiles.displayName}, ${users.username})`,
+    avatarUrl: profiles.avatarUrl,
+  };
+  const [viewers, likers, tips, accountViews] = await Promise.all([
+    db
+      .select({ ...person, viewedAt: storyViews.viewedAt, userId: users.id })
+      .from(storyViews)
+      .innerJoin(users, eq(users.id, storyViews.viewerId))
+      .leftJoin(profiles, eq(profiles.userId, users.id))
+      .where(eq(storyViews.storyId, storyId))
+      .orderBy(desc(storyViews.viewedAt))
+      .limit(INSIGHTS_LIMIT),
+    db.select({ userId: storyLikes.userId }).from(storyLikes).where(eq(storyLikes.storyId, storyId)),
+    db
+      .select({ ...person, amountCents: tipsLedger.grossAmountCents, at: tipsLedger.createdAt })
+      .from(tipsLedger)
+      .leftJoin(users, eq(users.id, tipsLedger.senderId))
+      .leftJoin(profiles, eq(profiles.userId, tipsLedger.senderId))
+      .where(and(eq(tipsLedger.storyId, storyId), eq(tipsLedger.creatorId, ownerId), eq(tipsLedger.entryType, "CREATOR_CREDIT")))
+      .orderBy(desc(tipsLedger.createdAt))
+      .limit(INSIGHTS_LIMIT),
+    db.select({ n: sql<number>`count(*)::int` }).from(storyViews).where(and(eq(storyViews.storyId, storyId), isNotNull(storyViews.viewerId))),
+  ]);
+  const liked = new Set(likers.map((l) => l.userId));
+  return {
+    viewsCount: story.viewsCount,
+    likesCount: story.likesCount,
+    tipsCount: story.tipsCount,
+    tipsTotalCents: tips.reduce((sum, tip) => sum + tip.amountCents, 0),
+    guestViews: Math.max(0, story.viewsCount - (accountViews[0]?.n ?? 0)),
+    viewers: viewers.map(({ userId, avatarUrl, ...v }) => ({ ...v, avatarUrl: signMediaUrl(avatarUrl), liked: liked.has(userId) })),
+    // A deleted sender's tip stays in the ledger; it shows without a name.
+    tips: tips.map((tip) => ({ ...tip, username: tip.username ?? "", displayName: tip.displayName ?? "", avatarUrl: signMediaUrl(tip.avatarUrl) })),
+  };
 }

@@ -21,7 +21,9 @@ const METHODS: { id: Gateway; icon: React.ElementType; tone: string }[] = [
 interface TipModalProps {
   isOpen: boolean;
   onClose: () => void;
-  videoId: string;
+  /** What the payment is for: a video (an unlock) — or a story (a tip from it, `storyId`, no video). */
+  videoId?: string;
+  storyId?: string;
   creatorName: string;
   minTipAmountCents: number;
   onUnlockedSuccess: () => void;
@@ -31,12 +33,13 @@ export function TipModal({
   isOpen,
   onClose,
   videoId,
+  storyId,
   creatorName,
   minTipAmountCents,
   onUnlockedSuccess,
 }: TipModalProps) {
   const [selectedAmount, setSelectedAmount] = useState<number>(
-    Math.max(1000, minTipAmountCents)
+    storyId ? Math.max(500, minTipAmountCents) : Math.max(1000, minTipAmountCents)
   );
   const [selectedGateway, setSelectedGateway] = useState<Gateway>("CREDITS");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -80,11 +83,17 @@ export function TipModal({
     try {
       // The server records a payment intent and answers with the gateway's checkout page; access
       // is granted when the gateway's signed webhook confirms the payment.
-      const res = await fetch("/api/videos/unlock-video", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ videoId, amountCents: selectedAmount, gateway: selectedGateway }),
-      });
+      const res = storyId
+        ? await fetch(`/api/stories/${storyId}/tip`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ amountCents: selectedAmount, gateway: selectedGateway }),
+          })
+        : await fetch("/api/videos/unlock-video", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ videoId, amountCents: selectedAmount, gateway: selectedGateway }),
+          });
 
       const data = (await res.json()) as { error?: string; checkoutUrl?: string; settled?: boolean; balanceCents?: number };
       if (res.status === 402) {
@@ -114,7 +123,7 @@ export function TipModal({
       <Sheet size="md">
         <Dialog.Header>
           <Dialog.Title>{t("payments.title", { name: creatorName })}</Dialog.Title>
-          <Dialog.Description>{t("payments.subtitle")}</Dialog.Description>
+          <Dialog.Description>{storyId ? t("payments.subtitleStory") : t("payments.subtitle")}</Dialog.Description>
         </Dialog.Header>
         <Dialog.Body className="pt-3">
           {errorMsg && (

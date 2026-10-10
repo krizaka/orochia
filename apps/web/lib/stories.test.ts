@@ -52,7 +52,7 @@ const fakeDb = {
 vi.mock("@orochia/db", async (original) => ({ ...(await original<typeof import("@orochia/db")>()), db: fakeDb }));
 
 const { BunnyApiError, mapBunnyApiStatusToOrochia } = await import("@orochia/media");
-const { reconcileDecision, reconcileStoryVideos, settleStoryVideo, storyState, STORY_UPLOAD_WINDOW_MS } = await import("./stories");
+const { reconcileDecision, reconcileStoryVideos, settleStoryVideo, storyForViewerAction, storyInsights, storyState, STORY_UPLOAD_WINDOW_MS, updateStoryAudience } = await import("./stories");
 
 const GUID = "9858b4b7-1d10-4ed0-83b1-1f31f527ccbe";
 const minutesAgo = (m: number) => new Date(Date.now() - m * 60_000);
@@ -174,5 +174,65 @@ describe("settleStoryVideo — shared with the webhook", () => {
   it("answers null for a video that is no story (a draft, an unknown upload)", async () => {
     selects.push([]);
     await expect(settleStoryVideo(GUID, "PROCESSING", bunny({ status: 2, length: 0 }))).resolves.toBeNull();
+  });
+});
+
+describe("story actions", () => {
+  const live = (over: Record<string, unknown> = {}) => ({
+    id: "story-1",
+    creatorId: "creator",
+    visibility: "PUBLIC",
+    audienceListId: null,
+    status: "READY",
+    expiresAt: new Date(Date.now() + 3600_000),
+    ...over,
+  });
+
+  it("a viewer tips, answers or reports a live story they may see — never their own", async () => {
+    selects.push([live()]);
+    await expect(storyForViewerAction("story-1", "viewer")).resolves.toMatchObject({ creatorId: "creator" });
+    selects.push([live()]);
+    await expect(storyForViewerAction("story-1", "creator")).rejects.toMatchObject({ status: 400 });
+  });
+
+  it("an expired, unfinished or unknown story does not exist for actions (404)", async () => {
+    selects.push([live({ expiresAt: new Date(Date.now() - 1000) })]);
+    await expect(storyForViewerAction("story-1", "viewer")).rejects.toMatchObject({ status: 404 });
+    selects.push([live({ status: "PROCESSING" })]);
+    await expect(storyForViewerAction("story-1", "viewer")).rejects.toMatchObject({ status: 404 });
+    selects.push([]);
+    await expect(storyForViewerAction("story-1", "viewer")).rejects.toMatchObject({ status: 404 });
+  });
+
+  it("a story's audience changes for its author; one delivered for a challenge keeps its backers", async () => {
+    selects.push([{ id: "story-1", visibility: "PUBLIC" }]);
+    await expect(updateStoryAudience("story-1", "creator", "CONTACTS_ONLY")).resolves.toEqual({ audience: "CONTACTS_ONLY", audienceListId: null });
+    expect(updates.at(-1)?.set).toMatchObject({ visibility: "CONTACTS_ONLY", audienceListId: null });
+    selects.push([{ id: "story-1", visibility: "CHALLENGE" }]);
+    await expect(updateStoryAudience("story-1", "creator", "PUBLIC")).rejects.toMatchObject({ status: 409 });
+    // Someone else's story (the query is scoped to the author): 404.
+    selects.push([]);
+    await expect(updateStoryAudience("story-1", "intruder", "PUBLIC")).rejects.toMatchObject({ status: 404 });
+  });
+
+  it("close friends needs one of the author's lists", async () => {
+    selects.push([{ id: "story-1", visibility: "PUBLIC" }]);
+    await expect(updateStoryAudience("story-1", "creator", "INVITED_ONLY", null)).rejects.toMatchObject({ status: 400 });
+  });
+
+  it("insights answer the author only, and name accounts but only count visitors", async () => {
+    selects.push([]);
+    await expect(storyInsights("story-1", "intruder")).rejects.toMatchObject({ status: 404 });
+    selects.push(
+      [{ id: "story-1", viewsCount: 5, likesCount: 1, tipsCount: 1 }],
+      [{ username: "alex", displayName: "Alex", avatarUrl: null, viewedAt: new Date(), userId: "u-alex" }],
+      [{ userId: "u-alex" }],
+      [{ username: "alex", displayName: "Alex", avatarUrl: null, amountCents: 500, at: new Date() }],
+      [{ n: 1 }],
+    );
+    const insights = await storyInsights("story-1", "creator");
+    expect(insights.guestViews).toBe(4);
+    expect(insights.viewers[0]).toMatchObject({ username: "alex", liked: true });
+    expect(insights.tipsTotalCents).toBe(500);
   });
 });

@@ -21,7 +21,10 @@
     "next": "Next story",
     "remove": "Remove this story",
     "removeConfirm": "Remove this story? It disappears for everyone.",
-    "views": "{count} views",
+    "views": {
+      "one": "{count} view",
+      "other": "{count} views"
+    },
     "seeProfile": "View profile",
     "create": {
       "title": "New story",
@@ -57,7 +60,105 @@
     "processing": "Processing",
     "processingHint": "Your story is being encoded. It goes live for 24 hours as soon as it is ready — this page updates by itself.",
     "failed": "Not published",
-    "failedHint": "This video could not be processed (too long, or the upload did not finish). Remove it and share it again."
+    "failedHint": "This video could not be processed (too long, or the upload did not finish). Remove it and share it again.",
+    "viewer": {
+      "title": "Stories of {name}",
+      "position": "Story {current} of {total}, {name}",
+      "age": {
+        "m": "{value} min",
+        "h": "{value} h"
+      },
+      "audience": {
+        "PUBLIC": "Public",
+        "APPROVED_FOLLOWERS_ONLY": "Followers",
+        "CONTACTS_ONLY": "Contacts",
+        "INVITED_ONLY": "Close friends",
+        "CHALLENGE": "Backers"
+      },
+      "soundOn": "Turn sound on (M)",
+      "soundOff": "Mute (M)",
+      "tapForSound": "Tap for sound",
+      "pause": "Pause (Space)",
+      "play": "Play (Space)",
+      "more": "More",
+      "copyLink": "Copy link",
+      "linkCopied": "Link copied.",
+      "linkFailed": "The link could not be copied.",
+      "report": "Report",
+      "reportTitle": "Story by @{username}",
+      "activity": "Activity",
+      "like": "Like",
+      "unlike": "Unlike",
+      "likeFailed": "Your like could not be saved.",
+      "replyLabel": "Reply privately to {name}",
+      "replyPlaceholder": "Reply to {name}…",
+      "send": "Send",
+      "sending": "Sending…",
+      "replySent": "Sent to {name} — in your messages.",
+      "replyFailed": "Your reply could not be sent.",
+      "openConversation": "Open",
+      "tip": "Send a tip to {name}",
+      "tipShort": "Tip",
+      "tipSent": "Tip sent to {name}. Thank you!",
+      "signInToReact": "Sign in to like, reply or tip",
+      "sensitive": "Sensitive content",
+      "sensitiveHint": "The creator asked for this story to be blurred until you choose to see it.",
+      "reveal": "Show the story",
+      "removeTitle": "Remove this story?",
+      "removeConfirm": "Remove",
+      "removed": "Story removed.",
+      "removeFailed": "The story could not be removed.",
+      "unavailable": "This story is no longer available.",
+      "errors": {
+        "denied": {
+          "title": "The video host refused this story",
+          "hint": "The video server (Bunny CDN) did not accept the playback link. It is a server setting, not your connection — try again later."
+        },
+        "missing": {
+          "title": "This story is not there any more",
+          "hint": "Its media could not be found. It may have been removed."
+        },
+        "network": {
+          "title": "The story could not load",
+          "hint": "Check your connection and try again."
+        },
+        "media": {
+          "title": "This story cannot be played here",
+          "hint": "Your browser could not play this video."
+        },
+        "status": "HTTP {status}",
+        "retry": "Try again"
+      }
+    },
+    "insights": {
+      "title": "Story activity",
+      "subtitle": "Only you see this: who watched, liked and tipped.",
+      "figures": {
+        "views": "Views",
+        "likes": "Likes",
+        "tips": "Tips"
+      },
+      "viewers": "Viewers",
+      "tips": "Tips",
+      "liked": "Liked it",
+      "guests": "+ {count} views from visitors who were not signed in",
+      "noViewers": "No viewer yet",
+      "noTips": "No tip yet",
+      "noTipsHint": "Tips sent from this story show here with who sent them.",
+      "failed": "The activity could not be loaded.",
+      "formerAccount": "Former account",
+      "audienceLocked": "Delivered for a challenge: only its backers see it, and that cannot change.",
+      "audienceHint": "Takes effect at once for everyone.",
+      "saveAudience": "Save",
+      "audienceSaved": "Audience updated.",
+      "audienceFailed": "The audience could not be changed."
+    },
+    "profile": {
+      "title": "Stories",
+      "story": "Story",
+      "open": "Watch stories ({count})",
+      "openOf": "Stories of {name}"
+    }
   },
   "auth": {
     "register": {
@@ -419,7 +520,8 @@
     "unavailable": "Payments are not available on this server yet.",
     "discreet": "Discreet billing. Your card details never reach Orochia.",
     "failed": "The payment could not start. Try again or choose another method.",
-    "startFailed": "Could not start the payment for {name}."
+    "startFailed": "Could not start the payment for {name}.",
+    "subtitleStory": "A tip from this story goes straight to the creator."
   },
   "editor": {
     "title": "Edit video",
@@ -1243,7 +1345,8 @@
     "sent": "Report sent",
     "sentBody": "Thank you. Our team reviews every report; suspected minors and non-consensual content come first.",
     "close": "Close",
-    "failed": "The report could not be sent. Try again."
+    "failed": "The report could not be sent. Try again.",
+    "titleStory": "Report this story"
   },
   "theme": {
     "toLight": "Switch to light mode",
@@ -1567,7 +1670,8 @@
     "loadFailed": "Messages could not be loaded.",
     "network": "No connection. Try again.",
     "startFailed": "The conversation could not be started.",
-    "sendFailed": "The message could not be sent."
+    "sendFailed": "The message could not be sent.",
+    "storyReply": "Replied to a story"
   },
   "legal": {
     "back": "Back to Orochia",

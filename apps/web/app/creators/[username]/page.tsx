@@ -10,6 +10,7 @@ import { profileSchema } from "@/lib/seo";
 import { CreatorProfileClient } from "@/components/CreatorProfileClient";
 import Link from "next/link";
 import { ProfileHero } from "@/components/profile/ProfileHero";
+import { ProfileStories } from "@/components/stories/ProfileStories";
 import { ShareProfileButton } from "@/components/profile/ShareProfileButton";
 import { StartChallengeButton } from "@/components/challenges/StartChallengeButton";
 import { t } from "@/lib/i18n";
@@ -55,45 +56,47 @@ export default async function CreatorPage(props: { params: Promise<{ username: s
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <JsonLd data={profileSchema(creator)} />
 
-      <ProfileHero
-        editable={viewer?.id === creator.id}
-        displayName={creator.displayName}
-        username={creator.username}
-        avatarUrl={creator.avatarUrl}
-        bannerUrl={creator.bannerUrl}
-        verified={creator.isCreator && creator.isVerified}
-        roleLabel={creator.isCreator ? t("profile.creator") : undefined}
-        bio={creator.bio}
-        links={links}
-        stats={stats.map((s) => ({ label: s.label, value: s.value.toLocaleString("en-US") }))}
-        actions={
-          <>
-            {viewer?.id === creator.id ? (
-              <Link
-                href="/dashboard?tab=settings#settings-profile"
-                className="inline-flex items-center gap-2 rounded-xl border border-border-default px-4 py-2.5 text-xs font-semibold text-fg transition-colors hover:border-accent/60 hover:bg-accent/10"
-              >
-                {t("profile.editProfile")}
-              </Link>
-            ) : (
-              <>
-                <RelationshipActions username={creator.username} />
-                {creator.isCreator && creator.isVerified && (
-                  <StartChallengeButton
-                    signedIn={Boolean(viewer)}
-                    isCreator={viewer?.role === "CREATOR"}
-                    kind="REQUEST"
-                    creatorUsername={creator.username}
-                    label={t("challenge.dare")}
-                    variant="secondary"
-                  />
-                )}
-              </>
-            )}
-            <ShareProfileButton username={creator.username} displayName={creator.displayName} />
-          </>
-        }
-      />
+      <ProfileStories username={creator.username} canAdd={viewer?.id === creator.id && creator.isCreator}>
+        <ProfileHero
+          editable={viewer?.id === creator.id}
+          displayName={creator.displayName}
+          username={creator.username}
+          avatarUrl={creator.avatarUrl}
+          bannerUrl={creator.bannerUrl}
+          verified={creator.isCreator && creator.isVerified}
+          roleLabel={creator.isCreator ? t("profile.creator") : undefined}
+          bio={creator.bio}
+          links={links}
+          stats={stats.map((s) => ({ label: s.label, value: s.value.toLocaleString("en-US") }))}
+          actions={
+            <>
+              {viewer?.id === creator.id ? (
+                <Link
+                  href="/dashboard?tab=settings#settings-profile"
+                  className="inline-flex items-center gap-2 rounded-xl border border-border-default px-4 py-2.5 text-xs font-semibold text-fg transition-colors hover:border-accent/60 hover:bg-accent/10"
+                >
+                  {t("profile.editProfile")}
+                </Link>
+              ) : (
+                <>
+                  <RelationshipActions username={creator.username} />
+                  {creator.isCreator && creator.isVerified && (
+                    <StartChallengeButton
+                      signedIn={Boolean(viewer)}
+                      isCreator={viewer?.role === "CREATOR"}
+                      kind="REQUEST"
+                      creatorUsername={creator.username}
+                      label={t("challenge.dare")}
+                      variant="secondary"
+                    />
+                  )}
+                </>
+              )}
+              <ShareProfileButton username={creator.username} displayName={creator.displayName} />
+            </>
+          }
+        />
+      </ProfileStories>
 
       {/* Interactive Client Sections (Goal, Tiers, Categorized Media Tabs) */}
       <CreatorProfileClient

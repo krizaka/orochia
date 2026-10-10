@@ -1,4 +1,4 @@
-import { db, tipsLedger, videoAccessGrants, profiles, videos, payoutRequests } from "@orochia/db";
+import { db, tipsLedger, videoAccessGrants, profiles, videos, payoutRequests, stories } from "@orochia/db";
 import { and, eq, ne, sql } from "drizzle-orm";
 import { GatewayType } from "./types";
 
@@ -9,6 +9,8 @@ export interface RecordTipOptions {
   senderId?: string | null;
   creatorId: string;
   videoId?: string | null;
+  /** A tip sent from a story: counted on the story (`tips_count`), no access grant. */
+  storyId?: string | null;
   grossAmountCents: number;
   gateway: GatewayType;
   gatewayTransactionRef: string;
@@ -65,6 +67,13 @@ export async function creditTip(tx: LedgerExecutor, options: RecordTipOptions): 
     }
   }
 
+  if (options.storyId) {
+    if (options.videoId) throw new Error("A tip is for a video or a story, not both");
+    const [story] = await tx.select({ creatorId: stories.creatorId }).from(stories).where(eq(stories.id, options.storyId)).limit(1);
+    if (!story) throw new Error("Story not found");
+    if (story.creatorId !== options.creatorId) throw new Error("Story does not belong to creator");
+  }
+
   const [ledgerEntry] = await tx
     .insert(tipsLedger)
     .values({
@@ -72,6 +81,7 @@ export async function creditTip(tx: LedgerExecutor, options: RecordTipOptions): 
       senderId: options.senderId || null,
       creatorId: options.creatorId,
       videoId: options.videoId || null,
+      storyId: options.storyId || null,
       grossAmountCents: options.grossAmountCents,
       platformFeeCents,
       netAmountCents,
@@ -88,6 +98,10 @@ export async function creditTip(tx: LedgerExecutor, options: RecordTipOptions): 
       updatedAt: new Date(),
     })
     .where(eq(profiles.userId, options.creatorId));
+
+  if (options.storyId) {
+    await tx.update(stories).set({ tipsCount: sql`${stories.tipsCount} + 1`, updatedAt: new Date() }).where(eq(stories.id, options.storyId));
+  }
 
   let grantId: string | undefined;
   if (options.videoId) {

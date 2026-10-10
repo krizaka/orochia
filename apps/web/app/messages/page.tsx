@@ -45,6 +45,8 @@ interface Message {
   conversationId: string;
   senderId: string;
   content: string;
+  /** A private reply to a story (lib/stories.ts → replyToStory). */
+  storyId?: string | null;
   isRead: boolean;
   createdAt: string;
   sender: {
@@ -532,6 +534,7 @@ function MessagesContent() {
                             ? "bg-linear-to-tr from-accent to-accent-2 text-white rounded-br-sm shadow-md"
                             : "bg-surface-2 border border-border-default text-fg rounded-bl-sm")}
                         >
+                          {msg.storyId && <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider opacity-75">{t("inbox.storyReply")}</p>}
                           <p className="leading-relaxed whitespace-pre-wrap wrap-break-word">{msg.content}</p>
                         </div>
                         <div className="flex items-center gap-1.5 mt-1 px-1 text-[10px] text-fg-muted">

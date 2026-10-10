@@ -37,6 +37,8 @@ export interface MessageView {
   senderId: string;
   recipientId: string;
   content: string;
+  /** A private reply to a story: the story it answers (null once that story is gone, or for a plain message). */
+  storyId: string | null;
   isRead: boolean;
   readAt: Date | null;
   createdAt: Date;
@@ -101,7 +103,7 @@ export async function checkBlockStatus(userAId: string, userBId: string): Promis
  * Sends a direct message from sender to recipient.
  * Validates blocking rules, privacy preferences, and triggers realtime delivery.
  */
-export async function sendMessage(senderId: string, recipientId: string, text: string): Promise<MessageView> {
+export async function sendMessage(senderId: string, recipientId: string, text: string, options: { storyId?: string } = {}): Promise<MessageView> {
   const content = text.trim();
   if (!content) {
     throw new HttpError(400, "Message cannot be empty");
@@ -167,6 +169,7 @@ export async function sendMessage(senderId: string, recipientId: string, text: s
       senderId,
       recipientId,
       content,
+      storyId: options.storyId ?? null,
       isRead: false,
     })
     .returning();
@@ -185,6 +188,7 @@ export async function sendMessage(senderId: string, recipientId: string, text: s
     senderId: message.senderId,
     recipientId: message.recipientId,
     content: message.content,
+    storyId: message.storyId,
     isRead: message.isRead,
     readAt: message.readAt,
     createdAt: message.createdAt,
@@ -325,6 +329,7 @@ export async function getConversationMessages(
     senderId: r.senderId,
     recipientId: r.recipientId,
     content: r.content,
+    storyId: r.storyId,
     isRead: r.isRead,
     readAt: r.readAt,
     createdAt: r.createdAt,

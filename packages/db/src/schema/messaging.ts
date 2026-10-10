@@ -1,5 +1,6 @@
 import { pgTable, text, timestamp, boolean, uuid, index, uniqueIndex } from "drizzle-orm/pg-core";
 import { users } from "./users";
+import { stories } from "./stories";
 
 /**
  * Direct messaging conversation thread between two users.
@@ -42,6 +43,8 @@ export const directMessages = pgTable(
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
     content: text("content").notNull(),
+    /** A private reply to a story: the story it answers (the message stays when the story is gone). */
+    storyId: uuid("story_id").references(() => stories.id, { onDelete: "set null" }),
     isRead: boolean("is_read").default(false).notNull(),
     readAt: timestamp("read_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),

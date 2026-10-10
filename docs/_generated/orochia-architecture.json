@@ -886,7 +886,7 @@
       "method": "GET",
       "path": "/api/stories",
       "access": "public · session-aware",
-      "summary": "The stories rail: one ring per creator with current stories you may see (yours first, then unseen), signed for you — with `?pending=1`, your own video stories too while they are processing (`state`)."
+      "summary": "The stories rail: one ring per creator with current stories you may see (yours first, then unseen), signed for you — `?creator=<username>` keeps that creator's ring only (a profile's story ring); with `?pending=1`, your own video stories too while they are processing (`state`)."
     },
     {
       "method": "POST",
@@ -901,6 +901,18 @@
       "summary": "Withdraws a story: its creator or an operator."
     },
     {
+      "method": "PATCH",
+      "path": "/api/stories/[id]",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "Changes who sees a live story (its creator only; a story delivered for a challenge keeps its backers)."
+    },
+    {
+      "method": "GET",
+      "path": "/api/stories/[id]/insights",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "A story's activity for its creator: views (accounts named, visitors counted), likes, tips and who sent them."
+    },
+    {
       "method": "DELETE",
       "path": "/api/stories/[id]/like",
       "access": "session · MEMBER / CREATOR / ADMIN",
@@ -911,6 +923,18 @@
       "path": "/api/stories/[id]/like",
       "access": "session · MEMBER / CREATOR / ADMIN",
       "summary": "Likes a story you may see (idempotent)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/stories/[id]/reply",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Answers a story privately: a direct message to its creator, linked to the story (blocks and message privacy apply)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/stories/[id]/tip",
+      "access": "session · MEMBER / CREATOR / ADMIN",
+      "summary": "Tips a creator from one of their stories."
     },
     {
       "method": "POST",

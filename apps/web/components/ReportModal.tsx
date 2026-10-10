@@ -8,7 +8,9 @@ import { useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 
 export interface ReportModalProps {
+  /** The reported video — or, for a story, empty with `storyId` set. */
   videoId: string;
+  storyId?: string;
   videoTitle: string;
   isOpen: boolean;
   onClose: () => void;
@@ -22,7 +24,7 @@ const field =
   "w-full rounded-xl border border-border-default bg-surface-2 px-3.5 py-2.5 text-sm text-fg placeholder:text-fg-muted focus:border-accent focus:outline-hidden";
 
 /** Report a video: a reason, details and a contact address; persisted before it is acknowledged (compliance_reports). */
-export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModalProps) {
+export function ReportModal({ videoId, storyId, videoTitle, isOpen, onClose }: ReportModalProps) {
   const { user } = useAuth();
   const [reason, setReason] = useState<Reason | null>(null);
   const [details, setDetails] = useState("");
@@ -50,7 +52,7 @@ export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModa
     const res = await fetch("/api/legal/report", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ videoId, videoTitle, reason, details, reporterEmail: email }),
+      body: JSON.stringify({ videoId, ...(storyId ? { storyId } : {}), videoTitle, reason, details, reporterEmail: email }),
     }).catch(() => null);
     setBusy(false);
     if (!res?.ok) return setError(t("report.failed"));
@@ -61,7 +63,7 @@ export function ReportModal({ videoId, videoTitle, isOpen, onClose }: ReportModa
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && close()}>
       <Sheet size="md" aria-describedby={undefined}>
         <Dialog.Header>
-          <Dialog.Title>{sent ? t("report.sent") : t("report.title")}</Dialog.Title>
+          <Dialog.Title>{sent ? t("report.sent") : storyId ? t("report.titleStory") : t("report.title")}</Dialog.Title>
         </Dialog.Header>
         <Dialog.Body>
       {sent ? (

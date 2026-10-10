@@ -8,6 +8,8 @@ import { Avatar, Badge, SocialIcon } from "@/components/ui";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
 import { type MessageKey,t } from "@/lib/i18n";
 
+import { ProfileStoriesRow, StoryAvatarRing } from "@/components/stories/ProfileStories";
+
 import { PictureQuickEdit } from "./PictureQuickEdit";
 
 export interface HeroLink {
@@ -83,9 +85,12 @@ export function ProfileHero({
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-end sm:gap-5">
             {/* Avatar, overlapping the cover */}
             <div className="group relative -mt-14 shrink-0 sm:-mt-20">
-              <div className="h-28 w-28 overflow-hidden rounded-4xl bg-surface-3 ring-4 ring-border-subtle shadow-2xl shadow-accent/30 sm:h-36 sm:w-36">
-                <Avatar src={avatar || AVATAR_PLACEHOLDER} alt={displayName} fallback={displayName.charAt(0)} className="h-full w-full rounded-none text-3xl" />
-              </div>
+              {/* Inside a ProfileStories (the public page), the picture carries the story ring and opens the stories. */}
+              <StoryAvatarRing>
+                <div className="h-28 w-28 overflow-hidden rounded-4xl bg-surface-3 ring-4 ring-border-subtle shadow-2xl shadow-accent/30 sm:h-36 sm:w-36">
+                  <Avatar src={avatar || AVATAR_PLACEHOLDER} alt={displayName} fallback={displayName.charAt(0)} className="h-full w-full rounded-none text-3xl" />
+                </div>
+              </StoryAvatarRing>
               {editable && (
                 <PictureQuickEdit
                   kind="avatar"
@@ -144,6 +149,7 @@ export function ProfileHero({
             )}
           </div>
         )}
+        <ProfileStoriesRow />
       </div>
     </section>
   );

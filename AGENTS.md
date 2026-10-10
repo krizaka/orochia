@@ -130,6 +130,14 @@ orochia/                           npm workspaces
   author sees their own story while it is processing; image stories use a stored image whose URL the server derives from its reference — a client never
   chooses a story's media. Audience: PUBLIC · APPROVED_FOLLOWERS_ONLY · CONTACTS_ONLY · INVITED_ONLY (one of the
   creator's lists); only allowed viewers receive a story, signed for them. A view counts once per viewer.
+  Viewers like, **reply privately** (a direct message linked to the story, `direct_messages.story_id`, the messaging
+  rules apply), **tip** (a creator tip through the payment intent → settlement path, `payment_intents.story_id` /
+  `tips_ledger.story_id`, counted on the story, the creator's minimum applies) and **report** (`compliance_reports.story_id`).
+  Only the author reads a story's activity (`storyInsights`: accounts that watched — visitors are only counted —, likes,
+  tips with who sent them) and changes its audience (a `CHALLENGE` story keeps its backers). The viewer
+  (`components/stories/`, rules in `lib/story-player.ts`) plays the signed HLS with hls.js — not Bunny's iframe — with
+  sound by default (muted is a visible session choice; a browser that refuses sound without a gesture says so), and the
+  open story is the address (`?story=<id>`, on the home rail and on profiles, whose picture carries the story ring).
 - A video taken down (`removed_at` set) does not exist — feed, search, profile, playlists, details and playback
   answer as if it were absent, **for its author too**. Suspended creators' videos are not listed.
 
