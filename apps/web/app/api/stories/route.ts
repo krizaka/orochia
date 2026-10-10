@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse, after } from "next/server";
 import { z } from "zod";
+import { db, users } from "@orochia/db";
+import { eq, sql } from "drizzle-orm";
 import { getCurrentUser, requireUserWithRole } from "@/lib/auth";
 import { STORY_AUDIENCES, createImageStory, reconcileStoryVideos, storyRail } from "@/lib/stories";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -18,7 +20,7 @@ const ImageStory = z.object({
 
 /**
  * The stories rail: one ring per creator with current stories you may see (yours first, then unseen), signed for you —
- * with `?pending=1`, your own video stories too while they are processing (`state`). Video stories whose Bunny webhook never came are caught
+ * `?creator=<username>` keeps that creator's ring only (a profile's story ring); with `?pending=1`, your own video stories too while they are processing (`state`). Video stories whose Bunny webhook never came are caught
  * up here: yours before answering (so a finished story shows at once), everyone else's after the response.
  */
 export async function GET(req: NextRequest) {
@@ -26,7 +28,15 @@ export async function GET(req: NextRequest) {
     const viewer = await getCurrentUser();
     if (viewer) await reconcileStoryVideos({ creatorId: viewer.id, limit: 5 }).catch(() => undefined);
     after(() => reconcileStoryVideos({ limit: 10 }).catch(() => undefined));
-    return NextResponse.json({ success: true, rings: await storyRail(viewer?.id ?? null, { includeOwnPending: req.nextUrl.searchParams.get("pending") === "1" }) });
+    const username = req.nextUrl.searchParams.get("creator")?.trim().toLowerCase().slice(0, 64);
+    let creatorId: string | undefined;
+    if (username) {
+      const [creator] = await db.select({ id: users.id }).from(users).where(eq(sql`lower(${users.username})`, username)).limit(1);
+      if (!creator) return NextResponse.json({ success: true, rings: [] });
+      creatorId = creator.id;
+    }
+    const includeOwnPending = req.nextUrl.searchParams.get("pending") === "1";
+    return NextResponse.json({ success: true, rings: await storyRail(viewer?.id ?? null, { includeOwnPending, creatorId }) });
   } catch (error) {
     return errorResponse(error, "stories/rail");
   }

@@ -449,6 +449,23 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   const ownWithPending = (await elena.call("/api/stories?pending=1")).json.rings?.find((r) => r.isOwn);
   check("the author's rail carries each story's state", ownWithPending?.stories.some((s) => s.id === storyId && s.state === "ready"));
   check("others never receive a story that is not ready", !(await alex.call("/api/stories?pending=1")).json.rings?.some((r) => r.stories.some((s) => s.state !== "ready")));
+  // The viewer's actions: a private reply (a message linked to the story), the author's activity, the audience, a report.
+  const reply = await alex.call(`/api/stories/${storyId}/reply`, "POST", { content: "Lovely light." });
+  check("a viewer replies privately to a story", reply.status === 201 && reply.json.message?.storyId === storyId, JSON.stringify(reply.json));
+  const thread = (await elena.call(`/api/conversations/${reply.json.conversationId}/messages`)).json.messages ?? [];
+  check("…the creator receives it in messages, linked to the story", thread.some((m) => m.content === "Lovely light." && m.storyId === storyId));
+  check("a stranger cannot reply to a story they cannot see", (await mia.call(`/api/stories/${storyId}/reply`, "POST", { content: "hi" })).status === 404);
+  check("the author cannot reply to their own story", (await elena.call(`/api/stories/${storyId}/reply`, "POST", { content: "hi" })).status === 400);
+  const insights = await elena.call(`/api/stories/${storyId}/insights`);
+  check("the author sees who watched and liked", insights.status === 200 && insights.json.insights.viewers.some((v) => v.username === "alex_vance" && v.liked === true), JSON.stringify(insights.json));
+  check("nobody else sees a story's activity", (await mia.call(`/api/stories/${storyId}/insights`)).status === 404 && (await alex.call(`/api/stories/${storyId}/insights`)).status === 403);
+  check("the author opens the story to everyone", (await elena.call(`/api/stories/${storyId}`, "PATCH", { audience: "PUBLIC" })).status === 200);
+  check("…a stranger sees it now", (await ringOf(mia, "elenavox"))?.stories.some((s) => s.id === storyId && s.audience === "PUBLIC"));
+  check("…and a profile's ring carries it", (await anon.call(`/api/stories?creator=elenavox`)).json.rings?.[0]?.stories.some((s) => s.id === storyId));
+  check("another creator cannot change its audience", (await mia.call(`/api/stories/${storyId}`, "PATCH", { audience: "CONTACTS_ONLY" })).status === 404);
+  const report = await fetch(`${B}/api/legal/report`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ storyId, videoTitle: "Story by @elenavox", reason: "TERMS_VIOLATION", details: "Testing a story report.", reporterEmail: "reporter@example.com" }) });
+  const reported = (await admin.call("/api/admin/reports")).json.reports ?? [];
+  check("a story can be reported; the operator sees which story", report?.status === 201 && reported.some((r) => r.storyId === storyId));
   check("another creator cannot remove it", (await mia.call(`/api/stories/${storyId}`, "DELETE")).status === 404);
   check("its creator removes it", (await elena.call(`/api/stories/${storyId}`, "DELETE")).status === 200);
   check("removed → gone from the rail", !(await ringOf(alex, "elenavox"))?.stories.some((s) => s.id === storyId));
@@ -475,6 +492,28 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("…spends exactly the price", (await mia.call("/api/me/wallet")).json.balanceCents === topped.balanceCents - paid.minTipAmountCents);
   check("…and opens the video", (await mia.call(`/api/videos/${paid.id}/stream`)).json.allowed === true);
   check("nobody can post a credits webhook", (await fetch(`${B}/api/webhooks/payments/credits`, { method: "POST", body: "{}" })).status === 404);
+}
+
+// A tip from a story: a creator tip paid with credits, counted on the story, shown to its author with who sent it
+{
+  const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64");
+  const form = new FormData();
+  form.append("category", "stories");
+  form.append("file", new Blob([png], { type: "image/png" }), "story.png");
+  const stored = (await (await fetch(`${B}/api/uploads`, { method: "POST", headers: { Cookie: elena.cookie }, body: form })).json()).data;
+  const story = (await elena.call("/api/stories", "POST", { imageRef: stored.ref, audience: "PUBLIC" })).json.story;
+  const before = (await mia.call("/api/me/wallet")).json.balanceCents;
+  check("a tip below the creator's minimum is refused", (await mia.call(`/api/stories/${story.id}/tip`, "POST", { amountCents: 100, gateway: "CREDITS" })).status === 400);
+  check("the author cannot tip their own story", (await elena.call(`/api/stories/${story.id}/tip`, "POST", { amountCents: 5000, gateway: "CREDITS" })).status === 400);
+  const minimum = (await mia.call("/api/stories?creator=elenavox")).json.rings?.[0]?.minTipCents ?? 500;
+  const tip = await mia.call(`/api/stories/${story.id}/tip`, "POST", { amountCents: minimum, gateway: "CREDITS" });
+  check("a story tip with credits settles at once", tip.json.settled === true, JSON.stringify(tip.json));
+  check("…spends exactly the tip", (await mia.call("/api/me/wallet")).json.balanceCents === before - minimum);
+  const own = (await elena.call("/api/stories?pending=1")).json.rings?.find((r) => r.isOwn)?.stories.find((s) => s.id === story.id);
+  check("…the story counts it (for its author only)", own?.tipsCount === 1 && (await mia.call("/api/stories")).json.rings?.find((r) => r.username === "elenavox")?.stories.find((s) => s.id === story.id)?.tipsCount === 0);
+  const activity = (await elena.call(`/api/stories/${story.id}/insights`)).json.insights;
+  check("…and its author sees who tipped and how much", activity?.tips.some((t) => t.username === "miasterling" && t.amountCents === minimum) && activity.tipsTotalCents === minimum, JSON.stringify(activity));
+  await elena.call(`/api/stories/${story.id}`, "DELETE");
 }
 
 // Earnings, exports, payout account

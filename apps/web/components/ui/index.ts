@@ -17,6 +17,7 @@ export { cn } from "@krizaka/ui/cn";
 export { Command, CommandDialog } from "@krizaka/ui/command";
 export { ConfirmButton } from "@krizaka/ui/confirm-button";
 export { useCountdown } from "@krizaka/ui/countdown";
+export { DropdownMenu } from "@krizaka/ui/dropdown-menu";
 export { EmptyState } from "@krizaka/ui/empty-state";
 export { Field, Input, Select, Textarea } from "@krizaka/ui/field";
 export { Kbd } from "@krizaka/ui/kbd";

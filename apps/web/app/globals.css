@@ -142,3 +142,17 @@ h1, h2, h3, h4, .font-display {
 
 /* The Krizaka motion signature (kz-page, data-reveal, kz-word, kz-sheen, kz-spotlight, kz-lift, kz-marquee,
    kz-overlay / kz-dialog / kz-pop / kz-fade, --kz-ease) comes from @krizaka/tailwind (@krizaka/ui/motion.css). */
+
+/* A like on a story: the heart pops once (the only motion of the action). Stops under reduced motion. */
+.orochia-like-pop {
+  animation: orochia-like-pop 0.42s var(--kz-ease) both;
+}
+@keyframes orochia-like-pop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.35); }
+  70% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .orochia-like-pop { animation: none; }
+}

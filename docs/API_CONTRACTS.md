@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (149)
+## Endpoints (153)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -134,11 +134,15 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/reference/content-ratings` | public | Reference content classifications and age ratings (Kids Safe, General, Teens, Mature, Adult). |
 | `GET` | `/api/reference/presets` | public | Default avatar and banner presets users can choose without uploading custom files. |
 | `GET` | `/api/search` | public | — |
-| `GET` | `/api/stories` | public · session-aware | The stories rail: one ring per creator with current stories you may see (yours first, then unseen), signed for you — with `?pending=1`, your own video stories too while they are processing (`state`). |
+| `GET` | `/api/stories` | public · session-aware | The stories rail: one ring per creator with current stories you may see (yours first, then unseen), signed for you — `?creator=&lt;username&gt;` keeps that creator's ring only (a profile's story ring); with `?pending=1`, your own video stories too while they are processing (`state`). |
 | `POST` | `/api/stories` | session · CREATOR / ADMIN | Publishes an image story (24 h) from an image stored by /api/uploads (category "stories"); verified creators only. |
 | `DELETE` | `/api/stories/[id]` | session · CREATOR / ADMIN | Withdraws a story: its creator or an operator. |
+| `PATCH` | `/api/stories/[id]` | session · CREATOR / ADMIN | Changes who sees a live story (its creator only; a story delivered for a challenge keeps its backers). |
+| `GET` | `/api/stories/[id]/insights` | session · CREATOR / ADMIN | A story's activity for its creator: views (accounts named, visitors counted), likes, tips and who sent them. |
 | `DELETE` | `/api/stories/[id]/like` | session · MEMBER / CREATOR / ADMIN | Removes your like (idempotent). |
 | `POST` | `/api/stories/[id]/like` | session · MEMBER / CREATOR / ADMIN | Likes a story you may see (idempotent). |
+| `POST` | `/api/stories/[id]/reply` | session · MEMBER / CREATOR / ADMIN | Answers a story privately: a direct message to its creator, linked to the story (blocks and message privacy apply). |
+| `POST` | `/api/stories/[id]/tip` | session · MEMBER / CREATOR / ADMIN | Tips a creator from one of their stories. |
 | `POST` | `/api/stories/[id]/view` | public · session-aware | Counts a view of a story you may see — once per viewer, never the creator's own. |
 | `POST` | `/api/stories/upload-session` | session · CREATOR / ADMIN | Starts a video story: records it and returns a Tus session straight to Bunny (stories collection). |
 | `POST` | `/api/uploads` | session · role depends on the request | Stores an avatar or a profile banner (any account), a thumbnail, a story image or a 2257 document (creators); size and type checked per kind. |

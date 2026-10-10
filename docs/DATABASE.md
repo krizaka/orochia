@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 43 tables · 26 enums · 3 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 43 tables · 26 enums · 4 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -35,6 +35,7 @@ erDiagram
     videos ||--o{ challenges : "delivered_video_id"
     stories ||--o{ challenges : "delivered_story_id"
     videos ||--o{ compliance_reports : "video_id"
+    stories ||--o{ compliance_reports : "story_id"
     users ||--o{ compliance_reports : "reporter_id"
     users ||--o{ contacts : "requester_id"
     users ||--o{ contacts : "addressee_id"
@@ -44,6 +45,7 @@ erDiagram
     conversations ||--o{ direct_messages : "conversation_id"
     users ||--o{ direct_messages : "sender_id"
     users ||--o{ direct_messages : "recipient_id"
+    stories ||--o{ direct_messages : "story_id"
     users ||--o{ follows : "follower_id"
     users ||--o{ follows : "creator_id"
     users ||--o{ notifications : "user_id"
@@ -51,6 +53,7 @@ erDiagram
     users ||--o{ payment_intents : "sender_id"
     users ||--o{ payment_intents : "creator_id"
     videos ||--o{ payment_intents : "video_id"
+    stories ||--o{ payment_intents : "story_id"
     users ||--o{ payout_accounts : "user_id"
     users ||--o{ payout_requests : "creator_id"
     playlists ||--o{ playlist_audience_lists : "playlist_id"
@@ -72,6 +75,7 @@ erDiagram
     users ||--o{ tips_ledger : "sender_id"
     users ||--o{ tips_ledger : "creator_id"
     videos ||--o{ tips_ledger : "video_id"
+    stories ||--o{ tips_ledger : "story_id"
     users ||--o{ user_invitations : "inviter_id"
     videos ||--o{ video_access_grants : "video_id"
     users ||--o{ video_access_grants : "user_id"
@@ -266,6 +270,7 @@ erDiagram
 | :--- | :--- | :--- | :--- | :--- |
 | `id` | uuid | no | `gen_random_uuid()` | primary key |
 | `video_id` | uuid | yes |  | → `videos.id` (on delete set null) |
+| `story_id` | uuid | yes |  | → `stories.id` (on delete set null) |
 | `video_title` | varchar(255) | no |  |  |
 | `reason` | report_reason | no |  |  |
 | `details` | text | no |  |  |
@@ -343,6 +348,7 @@ erDiagram
 | `sender_id` | uuid | no |  | → `users.id` (on delete cascade) |
 | `recipient_id` | uuid | no |  | → `users.id` (on delete cascade) |
 | `content` | text | no |  |  |
+| `story_id` | uuid | yes |  | → `stories.id` (on delete set null) |
 | `is_read` | boolean | no | `false` |  |
 | `read_at` | timestamp with time zone | yes |  |  |
 | `created_at` | timestamp with time zone | no | `now()` |  |
@@ -387,6 +393,7 @@ erDiagram
 | `sender_id` | uuid | yes |  | → `users.id` (on delete set null) |
 | `creator_id` | uuid | no |  | → `users.id` (on delete cascade) |
 | `video_id` | uuid | yes |  | → `videos.id` (on delete set null) |
+| `story_id` | uuid | yes |  | → `stories.id` (on delete set null) |
 | `amount_cents` | integer | no |  |  |
 | `currency` | varchar(3) | no | `"USD"` |  |
 | `status` | payment_intent_status | no | `"PENDING"` |  |
@@ -575,6 +582,7 @@ erDiagram
 | `sender_id` | uuid | yes |  | → `users.id` (on delete set null) |
 | `creator_id` | uuid | no |  | → `users.id` (on delete cascade) |
 | `video_id` | uuid | yes |  | → `videos.id` (on delete set null) |
+| `story_id` | uuid | yes |  | → `stories.id` (on delete set null) |
 | `gross_amount_cents` | integer | no |  |  |
 | `platform_fee_cents` | integer | no | `0` |  |
 | `net_amount_cents` | integer | no |  |  |
@@ -583,7 +591,7 @@ erDiagram
 | `note` | text | yes |  |  |
 | `created_at` | timestamp with time zone | no | `now()` |  |
 
-**Indexes:** `tips_ledger_creator_idx` (creator_id) · `tips_ledger_sender_idx` (sender_id) · `tips_ledger_video_idx` (video_id) · `tips_ledger_created_at_idx` (created_at) · `tips_ledger_credit_once_idx` (unique, gateway, gateway_transaction_ref, partial)
+**Indexes:** `tips_ledger_creator_idx` (creator_id) · `tips_ledger_sender_idx` (sender_id) · `tips_ledger_video_idx` (video_id) · `tips_ledger_story_idx` (story_id) · `tips_ledger_created_at_idx` (created_at) · `tips_ledger_credit_once_idx` (unique, gateway, gateway_transaction_ref, partial)
 
 ### `user_invitations`
 
@@ -812,3 +820,4 @@ erDiagram
 - `0000_initial_schema.sql`
 - `0001_challenges.sql`
 - `0002_push_devices.sql`
+- `0003_story_engagement.sql`

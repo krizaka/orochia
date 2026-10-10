@@ -11,6 +11,7 @@ import {
 import { sql } from "drizzle-orm";
 import { users } from "./users";
 import { videos } from "./videos";
+import { stories } from "./stories";
 import {
   ledgerEntryTypeEnum,
   paymentGatewayEnum,
@@ -30,6 +31,8 @@ export const tipsLedger = pgTable(
       .notNull(),
     videoId: uuid("video_id")
       .references(() => videos.id, { onDelete: "set null" }),
+    /** A tip sent from a story (the story it was sent from; the creator is credited like any tip). */
+    storyId: uuid("story_id").references(() => stories.id, { onDelete: "set null" }),
     grossAmountCents: integer("gross_amount_cents").notNull(),
     platformFeeCents: integer("platform_fee_cents").default(0).notNull(),
     netAmountCents: integer("net_amount_cents").notNull(),
@@ -42,6 +45,7 @@ export const tipsLedger = pgTable(
     creatorIdx: index("tips_ledger_creator_idx").on(table.creatorId),
     senderIdx: index("tips_ledger_sender_idx").on(table.senderId),
     videoIdx: index("tips_ledger_video_idx").on(table.videoId),
+    storyIdx: index("tips_ledger_story_idx").on(table.storyId),
     createdAtIdx: index("tips_ledger_created_at_idx").on(table.createdAt),
     // A gateway transaction credits a creator once, however many times its webhook is delivered.
     creditOnceIdx: uniqueIndex("tips_ledger_credit_once_idx")
@@ -69,6 +73,8 @@ export const paymentIntents = pgTable(
       .notNull(),
     videoId: uuid("video_id")
       .references(() => videos.id, { onDelete: "set null" }),
+    /** A tip sent from a story: settled as a creator tip, counted on the story. */
+    storyId: uuid("story_id").references(() => stories.id, { onDelete: "set null" }),
     amountCents: integer("amount_cents").notNull(),
     currency: varchar("currency", { length: 3 }).default("USD").notNull(),
     status: paymentIntentStatusEnum("status").default("PENDING").notNull(),

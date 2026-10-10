@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { db, complianceReports, videos } from "@orochia/db";
+import { db, complianceReports, stories, videos } from "@orochia/db";
 import { eq } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -11,7 +11,9 @@ import { appUrl } from "@/lib/env";
 export const dynamic = "force-dynamic";
 
 const ReportSchema = z.object({
-  videoId: z.string().max(64),
+  videoId: z.string().max(64).optional().default(""),
+  /** A report about a story names it (a story the reporter can no longer see is still recorded by id). */
+  storyId: z.string().uuid().optional(),
   videoTitle: z.string().trim().min(1).max(255),
   reason: z.enum(["NON_CONSENSUAL", "UNDERAGE", "DMCA_COPYRIGHT", "TERMS_VIOLATION", "FRAUD_SCAM"]),
   details: z.string().trim().min(5).max(5000),
@@ -34,12 +36,14 @@ export async function POST(req: NextRequest) {
     const [video] = videoId.success
       ? await db.select({ id: videos.id }).from(videos).where(eq(videos.id, videoId.data)).limit(1)
       : [];
+    const [story] = input.storyId ? await db.select({ id: stories.id }).from(stories).where(eq(stories.id, input.storyId)).limit(1) : [];
     const reporter = await getCurrentUser();
 
     const [report] = await db
       .insert(complianceReports)
       .values({
         videoId: video?.id ?? null,
+        storyId: story?.id ?? null,
         videoTitle: input.videoTitle,
         reason: input.reason,
         details: input.details,

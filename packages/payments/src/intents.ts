@@ -10,6 +10,8 @@ export interface CreateIntentOptions {
   senderId: string;
   creatorId: string;
   videoId?: string | null;
+  /** A tip sent from a story (never with a video). */
+  storyId?: string | null;
   amountCents: number;
   currency?: string;
 }
@@ -23,6 +25,7 @@ export async function createPaymentIntent(options: CreateIntentOptions) {
       senderId: options.senderId,
       creatorId: options.creatorId,
       videoId: options.videoId ?? null,
+      storyId: options.storyId ?? null,
       amountCents: options.amountCents,
       currency: options.currency ?? "USD",
     })
@@ -88,10 +91,11 @@ export async function settlePaymentIntent(
       senderId: intent.senderId,
       creatorId: intent.creatorId,
       videoId: intent.videoId,
+      storyId: intent.storyId,
       grossAmountCents: intent.amountCents,
       gateway,
       gatewayTransactionRef: event.gatewayTransactionRef,
-      note: intent.videoId ? "Video unlock" : "Creator tip",
+      note: intent.videoId ? "Video unlock" : intent.storyId ? "Story tip" : "Creator tip",
     });
 
     await tx
