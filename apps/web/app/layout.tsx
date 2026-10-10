@@ -16,7 +16,6 @@ const jakarta = localFont({ src: "./fonts/plus-jakarta-sans-latin-wght.woff2", w
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
   viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f8fafc" },

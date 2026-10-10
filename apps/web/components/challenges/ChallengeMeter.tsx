@@ -1,6 +1,6 @@
 "use client";
 
-import { Flame, Gavel, Megaphone, Target } from "lucide-react";
+import { AuctionIcon as Gavel, ChallengeIcon as Flame, GoalIcon as Target, UsersIcon as Megaphone } from "@krizaka/icons";
 import React from "react";
 
 import { cn, LiveBadge, Progress } from "@/components/ui";
@@ -52,7 +52,7 @@ export function ChallengeMeter({
   return (
     <Progress variant="ring" size={size} value={ratio * 100} label={t("challenge.meterLabel")} valueText={`${money(c.pledgedCents)} · ${valueText}`} className={RING[size]}>
       <span key={pulse} className={cn("flex flex-col items-center", pulse ? "cm-pop" : "")}>
-        {size !== "sm" && <Icon className="mb-0.5 h-4 w-4 text-accent" aria-hidden />}
+        {size !== "sm" && <Icon className="mb-0.5 h-4 w-4 text-fg-accent" aria-hidden />}
         <span className={cn("font-display font-black tabular-nums text-fg", size === "lg" ? "text-2xl" : size === "md" ? "text-base" : "text-xs")}>
           {money(c.pledgedCents)}
         </span>

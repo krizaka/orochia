@@ -24,6 +24,7 @@ export { Kbd } from "@krizaka/ui/kbd";
 export { Popover } from "@krizaka/ui/popover";
 export { Progress } from "@krizaka/ui/progress";
 export { RadioGroup } from "@krizaka/ui/radio-group";
+export { SectionBackdrop } from "@krizaka/ui/section-backdrop";
 export { Skeleton } from "@krizaka/ui/skeleton";
 export { Slider } from "@krizaka/ui/slider";
 export { Switch } from "@krizaka/ui/switch";

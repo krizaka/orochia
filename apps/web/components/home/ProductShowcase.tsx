@@ -1,12 +1,14 @@
 "use client";
 
+import { AuctionIcon, ChallengeIcon, type Icon,PlayIcon, Story24hIcon, TipIcon, UnlockIcon } from "@krizaka/icons";
 import React, { useEffect, useRef, useState } from "react";
-import { BatteryFull, Clock, Coins, Flame, Gavel, PlayCircle, SignalHigh, Unlock, Wifi } from "lucide-react";
-import { t } from "@/lib/i18n";
-import { SCENES, SCENE_MS, SCENE_STYLES, Screen, type Scene } from "./showcase/Scenes";
-import { cn } from "@/components/ui";
 
-const ICONS: Record<Scene, typeof Coins> = { feed: PlayCircle, stories: Clock, tip: Coins, unlock: Unlock, auction: Gavel, challenge: Flame };
+import { cn } from "@/components/ui";
+import { t } from "@/lib/i18n";
+
+import { type Scene,SCENE_MS, SCENE_STYLES, SCENES, Screen } from "./showcase/Scenes";
+
+const ICONS: Record<Scene, Icon> = { feed: PlayIcon, stories: Story24hIcon, tip: TipIcon, unlock: UnlockIcon, auction: AuctionIcon, challenge: ChallengeIcon };
 
 /**
  * How Orochia works, on a phone: six real flows (watch, stories, tip, unlock, auctions, challenges) played one after
@@ -42,9 +44,7 @@ export function ProductShowcase({ share }: { share: number }) {
             <div aria-hidden className="absolute inset-x-0 top-0 z-50 flex h-9 items-center justify-between px-6 text-[11px] font-semibold text-white">
               <span className="tabular-nums">{t("home.showcase.ui.clock")}</span>
               <span className="flex items-center gap-1">
-                <SignalHigh className="h-3.5 w-3.5" />
-                <Wifi className="h-3.5 w-3.5" />
-                <BatteryFull className="h-4 w-4" />
+                <StatusGlyphs />
               </span>
             </div>
             <div aria-hidden className="absolute left-1/2 top-2 z-50 h-[22px] w-[84px] -translate-x-1/2 rounded-full bg-black" />
@@ -85,6 +85,22 @@ export function ProductShowcase({ share }: { share: number }) {
       </div>
       <style>{SCENE_STYLES + STYLES}</style>
     </div>
+  );
+}
+
+/** The phone's status bar — signal, Wi-Fi, battery — drawn plainly: device chrome, not product icons. */
+function StatusGlyphs() {
+  return (
+    <svg viewBox="0 0 52 12" className="h-3 w-[52px]" fill="currentColor">
+      <rect x="0" y="8" width="2.6" height="4" rx=".6" />
+      <rect x="4" y="5.5" width="2.6" height="6.5" rx=".6" />
+      <rect x="8" y="3" width="2.6" height="9" rx=".6" />
+      <rect x="12" y="0.5" width="2.6" height="11.5" rx=".6" />
+      <path d="M24.5 11.2 22.3 9a3.2 3.2 0 0 1 4.4 0Zm-3.6-3.6-1.4-1.4a7 7 0 0 1 9.9 0l-1.4 1.4a5 5 0 0 0-7.1 0Zm-2.8-2.8-1.4-1.4a11 11 0 0 1 15.6 0l-1.4 1.4a9 9 0 0 0-12.8 0Z" />
+      <rect x="35.5" y="1.5" width="13" height="9" rx="2.2" fill="none" stroke="currentColor" strokeWidth="1.1" />
+      <rect x="37.2" y="3.2" width="9.6" height="5.6" rx="1.2" />
+      <rect x="49.4" y="4.3" width="1.6" height="3.4" rx=".7" />
+    </svg>
   );
 }
 

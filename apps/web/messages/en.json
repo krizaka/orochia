@@ -317,7 +317,7 @@
     "eyebrow": "18+ · Independent creators",
     "title": "The creators you love.",
     "titleAccent": "Closer than ever.",
-    "body": "Watch their videos and 24-hour stories, follow them and support them directly. Creators decide who sees what — and keep {share}% of every tip.",
+    "body": "Watch their videos and 24-hour stories, follow them and support them directly — a tip, an unlock, a winning bid or a challenge they make for you. Creators decide who sees what, and keep {share}% of every payment.",
     "ctaJoin": "Create your free account",
     "ctaExplore": "Explore creators",
     "stats": "{videos} videos · {creators} creators",
@@ -339,7 +339,9 @@
       "support": {
         "title": "Support that reaches them",
         "body": "Tips and unlocks go to the creator — {share}% of every payment, confirmed by the payment provider."
-      }
+      },
+      "eyebrow": "For fans",
+      "body": "Every day something new from the people you follow — and a direct line to them."
     },
     "creators": {
       "eyebrow": "For creators",
@@ -431,26 +433,6 @@
       "h": "Open source",
       "i": "Challenges & dares"
     },
-    "creatorsPreview": {
-      "title": "How you get paid",
-      "tips": {
-        "title": "Tips",
-        "body": "On any video, from fans who want to say thanks."
-      },
-      "unlocks": {
-        "title": "Paid unlocks",
-        "body": "Your price, never below the minimum you set."
-      },
-      "auctions": {
-        "title": "Auctions",
-        "body": "One video, one winner, bids held in credits."
-      },
-      "creator": "You keep {share}%",
-      "platform": "Platform {fee}%",
-      "split": "Of every payment, the creator keeps {share}%",
-      "confirmed": "Every payment confirmed by the payment provider",
-      "payout": "Paid out to your bank, PayPal or crypto wallet from $20"
-    },
     "empty": {
       "title": "The first videos are on their way",
       "body": "Creators are setting up their spaces. Create your account to follow them first — or open your own.",
@@ -470,11 +452,11 @@
       },
       "softClose": {
         "title": "A fair last word",
-        "body": "A bid in the last 2 minutes adds 2 minutes to the clock."
+        "body": "A bid in the last {minutes} minutes adds {minutes} minutes to the clock."
       },
       "winner": {
         "title": "One winner",
-        "body": "Only the winner watches the video. If the creator reviews the best bid, they have 48 hours."
+        "body": "Only the winner watches the video. If the creator reviews the best bid, they have {hours} hours."
       },
       "none": "No auction is open right now — the next one shows up here the moment it starts.",
       "upcoming": "See upcoming auctions"
@@ -483,8 +465,94 @@
       "title": "Challenges",
       "all": "All challenges",
       "pitch": "Fund it. Dare it. Make it.",
-      "body": "Back a creator's goal, dare one with an offer, or post an open call — credits are held until the video is delivered and come back if it is not.",
-      "cta": "Start a challenge"
+      "body": "Pledges are held in credits until the video is delivered — within {days} days — and come back if it is not.",
+      "cta": "Start a challenge",
+      "lead": "Fund a goal, dare a creator, answer an open call."
+    },
+    "ways": {
+      "title": "Four ways to support them",
+      "tip": "Tip",
+      "unlock": "Unlock",
+      "auction": "Bid",
+      "challenge": "Back a challenge"
+    },
+    "paid": {
+      "eyebrow": "Get paid",
+      "titleLead": "Four ways in.",
+      "titleAccent": "{share}% stays with you.",
+      "body": "Tips, paid unlocks, auctions and challenges. Every payment is confirmed by the payment provider, split the same way and written to a ledger nobody rewrites.",
+      "split": {
+        "percent": "{value}%",
+        "you": "to the creator, on every payment",
+        "platform": "to Orochia",
+        "label": "Of every payment, the creator keeps {share}% and Orochia {fee}%",
+        "example": "A {amount} tip: {net} for the creator, {fee} for Orochia. Same split for unlocks, winning bids and pledges."
+      },
+      "forYou": "{amount} for you",
+      "ways": {
+        "tips": {
+          "title": "Tips",
+          "body": "On any video, from fans who simply want to say thanks.",
+          "example": "A {amount} tip"
+        },
+        "unlocks": {
+          "title": "Paid unlocks",
+          "body": "Your price for a video, never below the minimum you set. Paid once, theirs to watch.",
+          "example": "A {amount} unlock"
+        },
+        "auctions": {
+          "title": "Auctions",
+          "body": "One video, one winner. Bids are held in credits while they lead; a last-minute bid extends the clock.",
+          "example": "e.g. a {amount} winning bid"
+        },
+        "challenges": {
+          "title": "Challenges",
+          "body": "Fans fund your goal or dare you with an offer. Pledges are held until you deliver the video.",
+          "example": "A {amount} pledge"
+        }
+      },
+      "proofs": {
+        "confirmed": {
+          "title": "Confirmed by the provider",
+          "body": "A payment counts only when the provider's signed notice arrives — never on a browser's word."
+        },
+        "escrow": {
+          "title": "Held, then paid",
+          "body": "Bids and pledges stay held in credits and go straight back if the video never comes."
+        },
+        "payouts": {
+          "title": "Payouts from {minimum}",
+          "body": "To your bank (IBAN, US or Canadian account), PayPal, USDT or BTC — details encrypted at rest."
+        },
+        "open": {
+          "title": "Open source",
+          "body": "The code that splits every payment is public (Apache-2.0).",
+          "link": "Read it on GitHub"
+        }
+      },
+      "cta": "Start earning",
+      "ctaChallenges": "See the challenges"
+    },
+    "auctionsLead": "One video, one winner — bids held in credits.",
+    "challengesHow": {
+      "goal": {
+        "title": "A goal",
+        "body": "A creator sets a target, from {goal}. Fans pledge; when it is reached, the creator makes it."
+      },
+      "dare": {
+        "title": "A dare",
+        "body": "You send one creator an idea and an offer. They answer within {hours} hours — or your credits come back."
+      },
+      "openCall": {
+        "title": "An open call",
+        "body": "Post an idea with a reward, from {openCall}, and pick the creator who makes it from those who apply."
+      }
+    },
+    "trendingAll": "Explore",
+    "market": "Auctions and challenges",
+    "member": {
+      "title": "Welcome back, @{name}",
+      "body": "Today's stories, what is up for auction and what fans are funding."
     }
   },
   "payments": {

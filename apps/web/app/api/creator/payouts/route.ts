@@ -1,12 +1,13 @@
+import { db, payoutRequests, tipsLedger } from "@orochia/db";
+import { getCreatorAvailableBalanceCents, PAYOUT_MINIMUM_CENTS, platformFeePercent, requestPayout } from "@orochia/payments";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { db, payoutRequests, tipsLedger } from "@orochia/db";
-import { and, desc, eq, sql } from "drizzle-orm";
-import { getCreatorAvailableBalanceCents, platformFeePercent, requestPayout } from "@orochia/payments";
+
 import { requireUserWithRole } from "@/lib/auth";
-import { checkRateLimit } from "@/lib/rate-limit";
 import { errorResponse, jsonError } from "@/lib/http";
 import { payoutDestinationOf } from "@/lib/payout-account";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -39,7 +40,7 @@ export async function GET() {
   }
 }
 
-const PayoutSchema = z.object({ amountCents: z.number().int().min(2000, "The minimum payout is $20.00") });
+const PayoutSchema = z.object({ amountCents: z.number().int().min(PAYOUT_MINIMUM_CENTS, `The minimum payout is $${(PAYOUT_MINIMUM_CENTS / 100).toFixed(2)}`) });
 
 /** Requests a payout to your saved payout account (an encrypted snapshot is kept); balance checked and reserved atomically. */
 export async function POST(req: NextRequest) {

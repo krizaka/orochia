@@ -1,8 +1,22 @@
 "use client";
 
+import {
+  AuctionIcon as Gavel,
+  CheckIcon as BadgeCheck,
+  CheckIcon as Trophy,
+  ClockIcon as Clock,
+  ForwardIcon as Send,
+  GoalIcon as Target,
+  HeartIcon as Heart,
+  LinkIcon as Share2,
+  LockIcon as Lock,
+  MessageIcon as MessageCircle,
+  PlayIcon as Play,
+  TipIcon as Coins,
+} from "@krizaka/icons";
 import React, { useEffect, useState } from "react";
-import { BadgeCheck, Clock, Coins, Gavel, Heart, Lock, MessageCircle, Play, Send, Share2, Target, Trophy } from "lucide-react";
-import { Spinner, cn } from "@/components/ui";
+
+import { cn,Spinner } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 /**
@@ -28,9 +42,26 @@ function useSteps(count: number, ms: number, still: boolean): number {
   return still ? count - 1 : step;
 }
 
+/** True once the page has loaded and settled: the phone's clips wait for it, so they never compete with the first paint. */
+function useAfterLoad(): boolean {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const go = () => (timer = setTimeout(() => setReady(true), 1500));
+    if (document.readyState === "complete") go();
+    else window.addEventListener("load", go, { once: true });
+    return () => {
+      window.removeEventListener("load", go);
+      if (timer) clearTimeout(timer);
+    };
+  }, []);
+  return ready;
+}
+
 function Video({ name, className = "", still }: { name: string; className?: string; still: boolean }) {
   const { src, poster } = clip(name);
-  if (still) return <img src={poster} alt="" className={cn("absolute inset-0 h-full w-full object-cover", className)} />;
+  const ready = useAfterLoad();
+  if (still || !ready) return <img src={poster} alt="" className={cn("absolute inset-0 h-full w-full object-cover", className)} />;
   return <video src={src} poster={poster} muted autoPlay loop playsInline preload="auto" className={cn("absolute inset-0 h-full w-full object-cover", className)} />;
 }
 

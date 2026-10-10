@@ -1,12 +1,24 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import {
+  ChevronDownIcon as ChevronDown,
+  ChevronRightIcon as ChevronRight,
+  CreatorIcon as LayoutDashboard,
+  CreditsIcon as Coins,
+  LogoutIcon as LogOut,
+  MessageIcon as MessageSquare,
+  SearchIcon as Search,
+  SettingsIcon as Settings,
+  UploadIcon as Upload,
+  WalletIcon as Wallet,
+} from "@krizaka/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, ChevronRight, Coins, LayoutDashboard, LogOut, MessageSquare, Search, Settings, Upload, Wallet } from "lucide-react";
-import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
-import { Avatar, IconButton, OrochiaLogo, ThemeToggle, cn } from "@/components/ui";
+import React, { useEffect, useRef, useState } from "react";
+
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { Avatar, cn,IconButton, OrochiaLogo, ThemeToggle } from "@/components/ui";
+import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 
 /**
@@ -38,7 +50,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
       href={href}
       className={cn(
         "text-xs font-semibold uppercase tracking-wider transition-colors",
-        pathname.startsWith(href) ? "text-accent" : "text-fg-secondary hover:text-fg"
+        pathname.startsWith(href) ? "text-fg-accent" : "text-fg-secondary hover:text-fg"
       )}
     >
       {label}
@@ -66,7 +78,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
         <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Orochia">
           <OrochiaLogo size={30} />
           <span className="font-display text-base font-black tracking-wider text-fg sm:text-lg">
-            OROCHIA<span className="text-accent">.</span>
+            OROCHIA<span className="text-fg-accent">.</span>
           </span>
         </Link>
 
@@ -98,7 +110,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
               {isCreator && (
                 <Link
                   href="/creator/upload"
-                  className="hidden items-center gap-1.5 rounded-full bg-linear-to-r from-accent via-accent-2 to-accent-2 px-4 py-2 text-xs font-bold text-white shadow-xs shadow-accent/25 md:flex"
+                  className="hidden items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-xs font-bold text-on-accent shadow-xs transition-colors hover:bg-accent-hover focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring md:flex"
                 >
                   <Upload className="h-3.5 w-3.5" /> {t("nav.upload")}
                 </Link>
@@ -125,7 +137,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                       <Avatar src={user.avatarUrl || AVATAR_PLACEHOLDER} fallback={user.displayName.charAt(0)} className="h-11 w-11 rounded-2xl ring-2 ring-accent/30" />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-bold text-fg">{user.displayName}</span>
-                        <span className="block truncate text-[11px] text-fg-secondary group-hover:text-accent">
+                        <span className="block truncate text-[11px] text-fg-secondary group-hover:text-fg-accent">
                           @{user.username} · {t("nav.viewProfile")}
                         </span>
                       </span>
@@ -164,23 +176,23 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
             <>
               <Link
                 href="/creator/upload"
-                className="hidden lg:flex items-center gap-1.5 rounded-full border border-accent/25 bg-accent/5 hover:border-accent/40 hover:bg-accent/10 px-3.5 py-1.5 text-xs font-semibold text-accent transition-all"
+                className="hidden lg:flex items-center gap-1.5 rounded-full border border-border-default bg-accent-soft px-3.5 py-1.5 text-xs font-semibold text-fg-accent transition-colors hover:border-border-strong focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
                 title={t("nav.uploadHint")}
               >
-                <Upload className="h-3.5 w-3.5 text-accent" />
+                <Upload className="h-3.5 w-3.5" />
                 <span>{t("nav.upload")}</span>
               </Link>
               {/* Desktop only: on a phone, signing in lives in the bottom tab bar (one entry per action). */}
               <div className="hidden items-center gap-1 rounded-full border border-border-default bg-surface-2/70 p-0.5 sm:p-1 shadow-xs md:flex">
                 <Link
                   href="/auth/login"
-                  className="rounded-full px-2.5 sm:px-4 py-1 sm:py-1.5 text-xs font-semibold text-fg hover:text-fg transition-colors"
+                  className="whitespace-nowrap rounded-full px-2.5 sm:px-4 py-1 sm:py-1.5 text-xs font-semibold text-fg hover:text-fg-accent transition-colors"
                 >
                   {t("nav.signIn")}
                 </Link>
                 <Link
                   href="/auth/register"
-                  className="rounded-full bg-linear-to-r from-accent via-accent-2 to-accent-2 px-3 sm:px-4 py-1 sm:py-1.5 text-xs font-bold text-white shadow-xs shadow-accent/25 transition-transform active:scale-95"
+                  className="whitespace-nowrap rounded-full bg-accent px-3 sm:px-4 py-1 sm:py-1.5 text-xs font-bold text-on-accent shadow-xs transition-colors hover:bg-accent-hover active:scale-95 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {t("nav.join")}
                 </Link>

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import { usePathname } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
 
 import { AgeVerificationModal } from "@/components/AgeVerificationModal";
 import { EmailVerificationGate } from "@/components/EmailVerificationGate";
@@ -13,6 +14,13 @@ import { UploadManagerProvider } from "@/lib/upload-manager";
 
 export function ClientLayoutShell({ children }: { children: React.ReactNode }) {
   const [searchModalOpen, setSearchModalOpen] = useState(false);
+  // Pages enter with kz-page on navigation, not on the first load: the first paint is never held back by an
+  // animation (largest contentful paint). globals.css stills .kz-page until this flag is set.
+  const pathname = usePathname();
+  const firstPath = useRef(pathname);
+  useEffect(() => {
+    if (pathname !== firstPath.current) document.documentElement.dataset.navigated = "true";
+  }, [pathname]);
 
   return (
     <UploadManagerProvider>
