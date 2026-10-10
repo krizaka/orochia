@@ -1,5 +1,6 @@
-import React from "react";
 import Link from "next/link";
+import React from "react";
+
 import { t } from "@/lib/i18n";
 
 /** A quiet footer: brand line, the few links people look for, and the 18+ statement. */
@@ -10,7 +11,7 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 px-4 sm:px-6 md:flex-row">
         <div className="text-center md:text-left">
           <span className="font-display text-sm font-black tracking-wider text-fg">
-            OROCHIA<span className="text-accent">.</span>
+            OROCHIA<span className="text-fg-accent">.</span>
           </span>
           <p className="mt-1 text-fg-secondary">{t("footer.tagline")}</p>
         </div>

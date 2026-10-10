@@ -8,6 +8,9 @@
 @import "@krizaka/tailwind";
 @import "@krizaka/ui/tailwind.css";
 @import "@krizaka/orochia-design-system/theme.css";
+/* 5. The Orochia brand of @krizaka/tokens (BRAND.md): accent-text, on-accent, ring and the section gradient of
+      SectionBackdrop (--kz-brand-gradient-*), in both themes. */
+@import "@krizaka/tokens/brands/orochia.css";
 
 /* The workspace packages live outside this app. */
 @source "../../../packages";
@@ -47,6 +50,24 @@
   --color-google-hover: var(--orochia-google-hover);
   --color-on-google: var(--orochia-on-google);
 }
+/* --orochia-backdrop-*  the footage behind the home's sections (components/home/BackdropMedia): how far it is blurred
+                        (depth of field: something moves, nobody is recognisable) and how much of it shows. On the light
+                        theme it is screened onto the section: only its coloured light shows, its shadows vanish — dark
+                        footage would otherwise muddy the page. */
+:root {
+  --orochia-backdrop-blur: 28px;
+  --orochia-backdrop-veil: 0.7;
+}
+html.light {
+  --orochia-backdrop-veil: 1;
+}
+.orochia-depth { --kz-backdrop-blur: var(--orochia-backdrop-blur); }
+.orochia-backdrop-veil { opacity: var(--orochia-backdrop-veil); }
+html.light .orochia-depth > .kz-backdrop-media { mix-blend-mode: screen; }
+/* Section backdrops end exactly on the page surface (the Orochia brand's last stop is a shade off surface-0, which
+   left a visible seam under each section). */
+.kz-backdrop { --kz-brand-gradient-to: var(--kz-surface-0); }
+
 html.light {
   --orochia-glass-bg: color-mix(in oklab, var(--kz-surface-1) 88%, transparent);
   --orochia-ambient-1: color-mix(in oklab, var(--kz-accent) 8%, transparent);
@@ -139,6 +160,9 @@ h1, h2, h3, h4, .font-display {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--kz-accent);
 }
+
+/* The first load paints at once; pages enter with kz-page from the first navigation on (ClientLayoutShell). */
+html:not([data-navigated]) .kz-page { animation: none; }
 
 /* The Krizaka motion signature (kz-page, data-reveal, kz-word, kz-sheen, kz-spotlight, kz-lift, kz-marquee,
    kz-overlay / kz-dialog / kz-pop / kz-fade, --kz-ease) comes from @krizaka/tailwind (@krizaka/ui/motion.css). */

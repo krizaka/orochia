@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import { BookmarkIcon, GlobeIcon, HomeIcon, PlusIcon, UserIcon } from "@krizaka/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bookmark, Compass, Flame, LogIn, Plus } from "lucide-react";
+import React from "react";
+
+import { Avatar, cn } from "@/components/ui";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
-import { Avatar, cn } from "@/components/ui";
 
 /**
  * The phone navigation, five equal tabs with Create in the middle: Home · Explore · Create · Saved ·
@@ -18,7 +19,7 @@ export function MobileBottomNav() {
   const { user } = useAuth();
   const tab = (active: boolean) =>
     `flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors ${
-      active ? "text-accent" : "text-fg-secondary"
+      active ? "text-fg-accent" : "text-fg-secondary"
     }`;
   const accountActive = pathname.startsWith("/dashboard") || pathname.startsWith("/auth");
 
@@ -26,19 +27,19 @@ export function MobileBottomNav() {
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border-default bg-surface-1/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-2xl md:hidden">
       <div className="grid h-16 grid-cols-5 items-center px-1">
         <Link href="/" className={tab(pathname === "/")}>
-          <Flame className="h-5 w-5" /> {t("nav.home")}
+          <HomeIcon size={22} nodeColor={pathname === "/" ? "var(--kz-accent-2)" : undefined} /> {t("nav.home")}
         </Link>
         <Link href="/explore" className={tab(pathname.startsWith("/explore"))}>
-          <Compass className="h-5 w-5" /> {t("nav.explore")}
+          <GlobeIcon size={22} /> {t("nav.explore")}
         </Link>
         <Link href={user ? "/creator/upload" : "/auth/register"} className="-mt-5 flex flex-col items-center justify-self-center" aria-label={t("nav.create")}>
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-tr from-accent via-accent-2 to-accent-2 shadow-lg shadow-accent/40 active:scale-95">
-            <Plus className="h-6 w-6 text-white" strokeWidth={2.5} />
+            <PlusIcon size={24} className="text-on-accent" strokeWidth={2.25} />
           </span>
-          <span className="mt-1 text-[10px] font-semibold text-accent">{t("nav.create")}</span>
+          <span className="mt-1 text-[10px] font-semibold text-fg-accent">{t("nav.create")}</span>
         </Link>
         <Link href={user ? "/dashboard?tab=playlists" : "/auth/login?next=/dashboard?tab=playlists"} className={tab(false)}>
-          <Bookmark className="h-5 w-5" /> {t("nav.saved")}
+          <BookmarkIcon size={22} /> {t("nav.saved")}
         </Link>
         {user ? (
           <Link href="/dashboard" className={tab(accountActive)}>
@@ -47,7 +48,7 @@ export function MobileBottomNav() {
           </Link>
         ) : (
           <Link href="/auth/login" className={tab(accountActive)}>
-            <LogIn className="h-5 w-5" /> {t("nav.signIn")}
+            <UserIcon size={22} /> {t("nav.signIn")}
           </Link>
         )}
       </div>

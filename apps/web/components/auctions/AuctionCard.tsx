@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, Gavel, Play, Trophy } from "lucide-react";
+import { AuctionIcon as Gavel, CheckIcon as Trophy, DownloadIcon as Download, PlayIcon as Play } from "@krizaka/icons";
 import Link from "next/link";
 
 import { Avatar, Badge, Card, Countdown } from "@/components/ui";

@@ -237,6 +237,9 @@ orochia/                           npm workspaces
   it replays the app's real flows (watch, stories, tip, unlock, auction, challenge) over licensed stock footage
   (`public/showcase`, Mixkit free licence, vertical 540×960 clips) and never shows a name, a handle, a profile or a figure
   that could be taken for a real account.
+  Behind the home's sections, the same licensed clips play blurred and dimmed (`public/backdrops`, `BackdropMedia`:
+  poster first, fetched near the screen, paused off it, still under reduced motion and on phones). Every media file in
+  `public/` is listed with its source and licence in `public/CREDITS.md`; nothing ships without a line there.
 
 ### G. E-mails are templates
 - Every e-mail goes through `sendTemplate(id, { to, locale?, vars, replyTo? })` (`lib/mail.ts`) — never `sendMail` with
@@ -307,7 +310,9 @@ orochia/                           npm workspaces
   `OrochiaLogo` (serpent + flame, from `@krizaka/ui`), never a placeholder icon; it stops under `prefers-reduced-motion`.
 - **Tailwind CSS v4, configured in CSS**: `app/globals.css` imports, in this order, `tailwindcss`,
   `@krizaka/tailwind` (the `--kz-*` tokens, the role utilities, the `dark` / `light` variants, the motion signature),
-  `@krizaka/ui/tailwind.css` (the primitives as a source) and the kit's `theme.css` (the Orochia values of the roles),
+  `@krizaka/ui/tailwind.css` (the primitives as a source), the kit's `theme.css` (the Orochia values of the roles) and
+  `@krizaka/tokens/brands/orochia.css` (the brand: `text-fg-accent` for coloured words, `text-on-accent` on the accent,
+  the section gradient of `SectionBackdrop`),
   then `@source` for the workspace packages and a documented `--orochia-*` block (glass, ambient glows) — there is no
   `tailwind.config.js`.
 - Every list has an empty state; every action shows its pending and error states; no `alert()`.
@@ -359,15 +364,18 @@ orochia/                           npm workspaces
   `Tabs.*` (underline · segmented · pills: a view or a page's sections), `Chip` + `Chip.Group` (a filter or a pill
   choice), `RadioGroup.*` (`Card`: a whole card is the choice — amounts, packs, payment methods), `Checkbox`, `Switch`,
   `Slider`, `Command.*` + `CommandDialog` (the search palette), `ConfirmButton` (destructive actions, two taps),
-  `Progress` (bar · ring), `Popover`, `Kbd`, `Toaster` (mounted once in `ClientLayoutShell`) + `toast`
+  `Progress` (bar · ring), `Popover`, `Kbd`, `SectionBackdrop` (a page section in the brand's visual language: section
+  gradient alternating `down` / `up`, dome, perspective grid, blurred media — the home's sections), `Toaster` (mounted once in `ClientLayoutShell`) + `toast`
   (`toast.custom` for live events), the theme (`ThemeScript`, `ThemeProvider`, `ThemeToggle`; `kz-theme` in
   localStorage), `cn`, `OrochiaLogo`, `MotionObserver`, `RotatingWord`. No hand-written overlay: no `createPortal`,
   `role="dialog"` or `aria-modal` in a component, no `role="radio"` or native checkbox by hand. From
   `@krizaka/orochia-design-system`: only the identity — `orochiaButton`, `LiveBadge`, `SocialIcon`, the theme. The door is a
   plain module: server components take `buttonVariants`, `orochiaButton` and `cn` from it. New screens use these
-  atoms; a missing component is added to the package, not to the app. Money is `money(cents)` from `lib/money.ts`
+  atoms; a missing component is added to the package, not to the app. Icons are `@krizaka/icons` (`<Name>Icon`, the Krizaka
+  signature; `nodeColor` lights a product icon's node) — the home and the navigation use them; `lucide-react` is being
+  retired screen by screen. Money is `money(cents)` from `lib/money.ts`
   (`@krizaka/intl`).
-- **Krizaka motion signature** (`@krizaka/ui/motion.css`, loaded by `@krizaka/tailwind`; shared with krizaka.com): one easing `--kz-ease`; every page enters (`app/template.tsx`); sections and cards rise into
+- **Krizaka motion signature** (`@krizaka/ui/motion.css`, loaded by `@krizaka/tailwind`; shared with krizaka.com): one easing `--kz-ease`; every page enters on navigation (`app/template.tsx`; the first load paints at once — `data-navigated`, `ClientLayoutShell`); sections and cards rise into
   view with `data-reveal` (stagger with `--kz-delay`; `MotionObserver` in the layout drives it); headline words roll
   (`RotatingWord`); primary actions carry `kz-sheen`; cards `kz-spotlight` / `kz-lift`; bands `kz-marquee`. What opens
   over the page enters the same way: backdrops `kz-overlay`, dialogs `kz-dialog` (built into `Dialog` and `Sheet`), menus and

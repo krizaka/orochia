@@ -46,7 +46,7 @@ export function AgeVerificationModal() {
 
         <OrochiaLogo size={88} className="mx-auto mb-3" />
 
-        <div className="mx-auto mb-3 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+        <div className="mx-auto mb-3 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold text-fg-accent">
           <ShieldAlert className="h-3.5 w-3.5" aria-hidden />
           <span>{t("ageGate.badge")}</span>
         </div>
@@ -77,7 +77,7 @@ export function AgeVerificationModal() {
           </Button>
         </div>
 
-        <nav className="mt-6 flex items-center justify-center gap-4 text-[11px] text-fg-muted">
+        <nav className="mt-6 flex items-center justify-center gap-4 text-[11px] text-fg-secondary">
           <Link href="/legal/terms" className={legal}>
             <span>{t("ageGate.termsLink")}</span>
             <ExternalLink className="h-2.5 w-2.5" aria-hidden />

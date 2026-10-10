@@ -16,3 +16,6 @@ a project, no attribution required; not redistributed as stand-alone files).
 | `unlock` | 42816 |
 | `auction` | 46893 |
 | `challenge` | 50433 |
+
+Every media file in `public/` and its licence: [`../CREDITS.md`](../CREDITS.md). The blurred section backgrounds of the
+home (`public/backdrops`) are derived from these clips.
