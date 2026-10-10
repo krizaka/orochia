@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (153)
+## Endpoints (155)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -80,6 +80,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/creators/[username]` | public · session-aware | A creator's public page: profile, videos, the collections you may open and, signed in, how you relate to them. |
 | `DELETE` | `/api/creators/[username]/follow` | session · MEMBER / CREATOR / ADMIN | Unfollows a creator. |
 | `POST` | `/api/creators/[username]/follow` | session · MEMBER / CREATOR / ADMIN | Follows a creator; the follow stays PENDING until the creator approves it. |
+| `GET` | `/api/explore` | public · session-aware | Explore: without a search, the discovery sections (trending this week, new, stories, creators to follow, open auctions, open challenges, tags); with `q` and/or `tag` (or `view=all`), videos (paged), creators and stories. |
 | `GET` | `/api/feed` | public | The public feed and the explore search (`?q=`, `?tag=`, paginated); with the featured creator and popular tags. |
 | `GET` | `/api/health` | public | — |
 | `POST` | `/api/legal/report` | public · session-aware | Content reports. |
@@ -118,6 +119,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/me/profile` | session · ADMIN / CREATOR / MEMBER | Reads the signed-in user's own profile and settings (private fields included: e-mail, date of birth). |
 | `PUT` | `/api/me/profile` | session · ADMIN / CREATOR / MEMBER | Updates the signed-in user's own profile and preferences (only the fields sent). |
 | `GET` | `/api/me/stories` | session · CREATOR / ADMIN | Your stories of the last 30 days — up, encoding or expired — with their figures. |
+| `GET` | `/api/me/tags` | session · CREATOR / ADMIN | The creator's tag suggestions for the publish form: the tags they used before (most used first) and the curated list. |
 | `GET` | `/api/me/wallet` | session · MEMBER / CREATOR / ADMIN | Your Orochia credits: balance (and what is held behind your leading bids and challenge pledges), the packs you can buy, how you can pay for them, and your history. |
 | `POST` | `/api/me/wallet/topups` | session · MEMBER / CREATOR / ADMIN | Buys credits: returns the gateway's hosted checkout (card, Apple Pay, Google Pay — card details never reach Orochia); the gateway's signed webhook adds the credits. |
 | `GET` | `/api/metrics` | bearer token | Prometheus metrics, behind a bearer token (METRICS_AUTH_TOKEN). |
@@ -133,7 +135,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/playlists/shared` | session · MEMBER / CREATOR / ADMIN | Collections other accounts invited you to. |
 | `GET` | `/api/reference/content-ratings` | public | Reference content classifications and age ratings (Kids Safe, General, Teens, Mature, Adult). |
 | `GET` | `/api/reference/presets` | public | Default avatar and banner presets users can choose without uploading custom files. |
-| `GET` | `/api/search` | public | — |
+| `GET` | `/api/search` | public · session-aware | The search palette: creators, videos, stories and tags matching what is typed (full-text, accents ignored, word prefixes); with nothing typed, the newest videos and the popular tags. |
 | `GET` | `/api/stories` | public · session-aware | The stories rail: one ring per creator with current stories you may see (yours first, then unseen), signed for you — `?creator=&lt;username&gt;` keeps that creator's ring only (a profile's story ring); with `?pending=1`, your own video stories too while they are processing (`state`). |
 | `POST` | `/api/stories` | session · CREATOR / ADMIN | Publishes an image story (24 h) from an image stored by /api/uploads (category "stories"); verified creators only. |
 | `DELETE` | `/api/stories/[id]` | session · CREATOR / ADMIN | Withdraws a story: its creator or an operator. |

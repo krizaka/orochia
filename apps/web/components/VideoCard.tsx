@@ -27,6 +27,8 @@ export interface VideoCardProps {
   contentRatingId?: string | null;
   isBlurred?: boolean;
   isAdult?: boolean;
+  /** Shown as chips that open `/explore?tag=…` (Explore passes them; at most three are shown). */
+  tags?: string[];
 }
 
 /** `m:ss` — the length shown on the picture. */
@@ -44,7 +46,7 @@ const only = (fn: () => void) => (e: React.MouseEvent) => {
 
 /** A video in a grid: picture (animated preview on hover), who may watch it, quick like / save, creator, counts and a tip. */
 export function VideoCard(props: VideoCardProps) {
-  const { id, title, creatorName, creatorUsername, creatorAvatar, viewsCount, tipsCount, minTipAmountCents } = props;
+  const { id, title, creatorName, creatorUsername, creatorAvatar, viewsCount, tipsCount, minTipAmountCents, tags = [] } = props;
   const [hovered, setHovered] = useState(false);
   const [tipping, setTipping] = useState(false);
   const profile = creatorUsername ? `/@${creatorUsername}` : "#";
@@ -72,6 +74,19 @@ export function VideoCard(props: VideoCardProps) {
               </div>
             </div>
           </div>
+          {tags.length > 0 && (
+            <div className="mt-2.5 flex flex-wrap gap-1.5">
+              {tags.slice(0, 3).map((tag) => (
+                <Link
+                  key={tag}
+                  href={`/explore?tag=${encodeURIComponent(tag)}`}
+                  className="inline-flex h-6 items-center rounded-full border border-border-default bg-surface-1 px-2.5 text-[11px] font-semibold text-fg-secondary transition-colors hover:border-accent/60 hover:text-fg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  #{tag}
+                </Link>
+              ))}
+            </div>
+          )}
           <Card.Footer className="mt-3 justify-between pt-2.5 font-mono text-[11px] text-fg-muted">
             <VideoCardCounts viewsCount={viewsCount} tipsCount={tipsCount} />
             <Button size="sm" shape="rounded" onClick={only(() => setTipping(true))} className="h-6 gap-1 border-accent/30 bg-accent/10 px-2 text-[10px] text-accent hover:border-accent hover:bg-accent hover:text-on-accent">

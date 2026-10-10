@@ -30,6 +30,17 @@ interface VideoResult {
   visibility: string;
   minTipAmountCents: number;
   viewsCount: number;
+  /** The 18+ veil: no picture in the palette. */
+  isBlurred?: boolean;
+}
+
+interface StoryResult {
+  id: string;
+  creatorUsername: string;
+  creatorName: string;
+  posterUrl: string | null;
+  caption: string;
+  isBlurred: boolean;
 }
 
 interface TagResult {
@@ -51,6 +62,7 @@ export function GlobalSearchModal({
   const [creators, setCreators] = useState<CreatorResult[]>([]);
   const [videos, setVideos] = useState<VideoResult[]>([]);
   const [tags, setTags] = useState<TagResult[]>([]);
+  const [stories, setStories] = useState<StoryResult[]>([]);
 
   // A new search each time it opens.
   useEffect(() => {
@@ -70,6 +82,7 @@ export function GlobalSearchModal({
           setCreators(data.creators || []);
           setVideos(data.videos || []);
           setTags(data.tags || []);
+          setStories(data.stories || []);
           setLoading(false);
         })
         .catch((err) => {
@@ -200,7 +213,7 @@ export function GlobalSearchModal({
             {videos.map((v) => (
               <Command.Item key={v.id} value={`video-${v.id}`} onSelect={() => handleSelect(`/watch/${v.id}`)}>
                 <span className="relative aspect-video h-14 shrink-0 overflow-hidden rounded-xl bg-media">
-                  {v.thumbnailUrl ? (
+                  {v.thumbnailUrl && !v.isBlurred ? (
                     <img src={v.thumbnailUrl} alt="" className="h-full w-full object-cover" />
                   ) : (
                     <span className="flex h-full w-full items-center justify-center bg-linear-to-br from-accent/15 to-media text-accent">
@@ -219,6 +232,22 @@ export function GlobalSearchModal({
                     {money(v.minTipAmountCents)}
                   </Badge>
                 )}
+              </Command.Item>
+            ))}
+          </Command.Group>
+        )}
+
+        {activeTab === "all" && stories.length > 0 && (
+          <Command.Group heading={heading(Sparkles, t("search.stories", { count: stories.length }))}>
+            {stories.map((s) => (
+              <Command.Item key={s.id} value={`story-${s.id}`} onSelect={() => handleSelect(`/@${s.creatorUsername}?story=${s.id}`)}>
+                <span className="relative h-12 w-9 shrink-0 overflow-hidden rounded-lg bg-media">
+                  {s.posterUrl && !s.isBlurred && <img src={s.posterUrl} alt="" className="h-full w-full object-cover" />}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-xs font-semibold text-fg">{s.caption || s.creatorName}</span>
+                  <span className="mt-0.5 block text-[11px] text-fg-secondary">@{s.creatorUsername}</span>
+                </span>
               </Command.Item>
             ))}
           </Command.Group>

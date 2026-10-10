@@ -1,65 +1,38 @@
-import { NextResponse } from "next/server";
-import { db, users, profiles, videos } from "@orochia/db";
-import { and, eq, ilike, isNull, or, sql } from "drizzle-orm";
-import { searchVideos, popularTags } from "@/lib/queries";
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
+import { getCurrentUser } from "@/lib/auth";
+import { discoverableTags, exploreResults, newVideos } from "@/lib/explore";
+import { errorResponse } from "@/lib/http";
+import { normalizeTag } from "@/lib/tags";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: Request) {
+const Query = z.object({ q: z.string().trim().max(80).default("") });
+
+/**
+ * The search palette: creators, videos, stories and tags matching what is typed (full-text, accents ignored, word
+ * prefixes); with nothing typed, the newest videos and the popular tags. Public content only (lib/discoverable.ts).
+ */
+export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const q = (searchParams.get("q") ?? "").trim().slice(0, 80);
-
+    const { q } = Query.parse(Object.fromEntries(req.nextUrl.searchParams));
+    const viewer = await getCurrentUser();
     if (!q) {
-      // If query is empty, return top recommendations & popular tags
-      const [topVideos, topTags] = await Promise.all([
-        searchVideos({ limit: 6 }),
-        popularTags(8),
-      ]);
-      return NextResponse.json({
-        creators: [],
-        videos: topVideos,
-        tags: topTags,
-      });
+      const [videos, tags] = await Promise.all([newVideos(viewer, 6), discoverableTags(8)]);
+      return NextResponse.json({ success: true, creators: [], videos, stories: [], tags });
     }
-
-    const like = `%${q.replace(/[%_\\]/g, (c) => `\\${c}`)}%`;
-
-    // 1. Search creators
-    const creators = await db
-      .select({
-        id: users.id,
-        username: users.username,
-        displayName: sql<string>`coalesce(${profiles.displayName}, ${users.username})`,
-        avatarUrl: profiles.avatarUrl,
-        bio: profiles.bio,
-        isVerified: users.isVerified,
-      })
-      .from(users)
-      .leftJoin(profiles, eq(profiles.userId, users.id))
-      .where(
-        and(
-          eq(users.role, "CREATOR"),
-          isNull(users.suspendedAt),
-          or(ilike(users.username, like), ilike(profiles.displayName, like), ilike(profiles.bio, like))
-        )
-      )
-      .limit(6);
-
-    // 2. Search videos
-    const matchingVideos = await searchVideos({ q, limit: 10 });
-
-    // 3. Search tags
-    const allTags = await popularTags(20);
-    const matchingTags = allTags.filter((t) => t.tag.toLowerCase().includes(q.toLowerCase()));
-
+    const [results, allTags] = await Promise.all([exploreResults(viewer, { q }), discoverableTags(60)]);
+    const wanted = normalizeTag(q);
+    const tags = allTags.filter((entry) => entry.tag.includes(q.toLowerCase().replace(/^#/, "")) || (wanted !== null && entry.tag.includes(wanted)));
     return NextResponse.json({
-      creators,
-      videos: matchingVideos,
-      tags: matchingTags,
+      success: true,
+      creators: results.creators.slice(0, 6),
+      videos: results.videos.slice(0, 10),
+      stories: results.stories.slice(0, 6),
+      tags: tags.slice(0, 8),
     });
   } catch (error) {
-    console.error("[search] query error:", error);
-    return NextResponse.json({ creators: [], videos: [], tags: [] }, { status: 500 });
+    return errorResponse(error, "search");
   }
 }

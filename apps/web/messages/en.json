@@ -1178,7 +1178,8 @@
       "collection": "Add to a collection",
       "noCollection": "No collection",
       "price": "Price to unlock",
-      "priceHint": "Fans pay at least this to watch."
+      "priceHint": "Fans pay at least this to watch.",
+      "tagsSuggested": "Suggested"
     },
     "audiences": {
       "PUBLIC": {
@@ -1240,24 +1241,109 @@
       "another": "Publish another"
     },
     "removeTag": "Remove {tag}",
-    "generalAudience": "General audience"
+    "generalAudience": "General audience",
+    "addTag": "Add #{tag}"
   },
   "explore": {
-    "metaTitle": "Explore creators and videos",
-    "metaDescription": "Search Orochia: independent creators, their videos, collections and tags.",
+    "metaTitle": "Explore creators, videos and stories",
+    "metaDescription": "Discover Orochia: what is trending this week, new videos, live stories, creators to follow, open auctions and challenges.",
     "eyebrow": "Explore",
     "title": "Find your next obsession.",
-    "placeholder": "Search videos and creators",
+    "subtitle": "What people watch, like and tip this week — new videos, live stories, creators to follow, open auctions and challenges.",
+    "placeholder": "Search videos, creators, stories",
     "search": "Search",
     "all": "All",
+    "tags": "Tags",
+    "seeAll": "See all",
+    "pages": "Pages",
     "noMatchQuery": "Nothing matches “{q}” yet.",
     "noMatchFilter": "Nothing matches this filter yet.",
     "noMatchHint": "Try another word or tag — new videos arrive every day.",
     "previous": "Previous",
     "next": "Next",
-    "results": "Results",
-    "auctions": "Auctions",
-    "challenges": "Challenges"
+    "results": {
+      "query": "Results for “{q}”",
+      "tag": "#{tag}",
+      "both": "“{q}” in #{tag}",
+      "all": "All videos",
+      "clear": "Clear",
+      "creators": {
+        "one": "{count} creator",
+        "other": "{count} creators"
+      },
+      "stories": {
+        "one": "{count} live story",
+        "other": "{count} live stories"
+      },
+      "videos": "Videos",
+      "noVideos": "No video matches yet."
+    },
+    "sections": {
+      "trending": {
+        "title": "Trending this week",
+        "description": "Most watched, liked and tipped lately — fresh activity counts most.",
+        "emptyTitle": "Nothing is trending yet",
+        "emptyBody": "Views, likes and tips from the last seven days decide what rises here."
+      },
+      "stories": {
+        "title": "Stories",
+        "description": "Public stories, live for 24 hours.",
+        "emptyTitle": "No live story right now",
+        "emptyBody": "Stories last 24 hours. Public ones show up here the moment they are shared."
+      },
+      "new": {
+        "title": "New",
+        "description": "The latest public videos.",
+        "emptyTitle": "No video yet",
+        "emptyBody": "Public videos appear here as soon as they finish processing."
+      },
+      "creators": {
+        "title": "Creators to follow",
+        "description": "Verified creators whose work people engage with this week.",
+        "emptyTitle": "No creator to suggest yet",
+        "emptyBody": "Verified creators with public videos or stories are suggested here — those you already follow are left out."
+      },
+      "auctions": {
+        "title": "Open auctions",
+        "description": "Bid for exclusive videos. Ending soonest first.",
+        "emptyTitle": "No auction is open",
+        "emptyBody": "Creators auction exclusive videos to the highest bidder; bids are held in credits until the end."
+      },
+      "challenges": {
+        "title": "Open challenges",
+        "description": "Goals, dares and open calls taking pledges.",
+        "emptyTitle": "No challenge is open",
+        "emptyBody": "Fans pledge credits on goals and dares; creators are paid only when they deliver."
+      }
+    },
+    "cta": {
+      "publish": "Publish a video",
+      "becomeCreator": "Open your creator space",
+      "join": "Join Orochia",
+      "shareStory": "Share a story",
+      "seeNew": "See the newest videos",
+      "startAuction": "Auction a video",
+      "howAuctions": "How auctions work",
+      "setGoal": "Set a goal",
+      "dare": "Dare a creator",
+      "backToExplore": "Back to Explore"
+    },
+    "story": {
+      "open": "Open {name}’s story",
+      "left": "{hours} h left"
+    },
+    "creator": {
+      "verified": "Verified creator",
+      "followers": {
+        "one": "{count} follower",
+        "other": "{count} followers"
+      },
+      "items": {
+        "one": "{count} public post",
+        "other": "{count} public posts"
+      },
+      "open": "View profile"
+    }
   },
   "watch": {
     "metaTitle": "Video",
@@ -1472,7 +1558,8 @@
     "full": "See all results",
     "title": "Search",
     "results": "Results",
-    "filter": "Show"
+    "filter": "Show",
+    "stories": "Stories ({count})"
   },
   "profileTabs": {
     "all": "Videos ({count})",

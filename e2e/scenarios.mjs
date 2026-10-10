@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * End-to-end feature scenarios against a running Orochia on a freshly seeded database:
- * approved followers, contacts, invited-only videos and audience lists, collections and their permissions, views, likes, comments, shares, search, creator edits, takedowns, suspensions,
+ * approved followers, contacts, invited-only videos and audience lists, collections and their permissions, views, likes, comments, shares, search, explore (sections, tags, no leak), creator edits, takedowns, suspensions,
  * role changes, the wallet, auctions and challenges — each checked through the HTTP API with real sessions.
  *
  *   npm run db:reset -- --yes && npm run dev      # in another terminal
@@ -211,6 +211,73 @@ check("search by creator", (await anon.call("/api/feed?q=mia")).json.videos.leng
 check("filter by tag", (await anon.call("/api/feed?tag=acoustic")).json.videos.every((v) => v.title.match(/Noir|Rehearsal/)));
 check("popular tags", (await anon.call("/api/feed")).json.tags.length > 3);
 check("LIKE wildcards are literal", (await anon.call("/api/feed?q=%25")).json.videos.length === 0);
+
+// Explore (#54, phase 0): sections never empty on the seed, full-text search, tags across videos / stories / creators,
+// and public only — followers, contacts, close friends (lists) and paid content never leak, not even to those allowed.
+{
+  const titles = (list) => (list ?? []).map((v) => v.title);
+  const sections = (await anon.call("/api/explore")).json.sections;
+  check("explore: trending this week ranks this week's engagement", sections?.trending.length >= 1 && titles(sections.trending).every((t) => /^(Midnight Noir|Tokyo Neon)/.test(t)), JSON.stringify(titles(sections?.trending)));
+  check("explore: new lists the public videos only", titles(sections.fresh).length === 2 && titles(sections.fresh).every((t) => /^(Midnight Noir|Tokyo Neon)/.test(t)), JSON.stringify(titles(sections.fresh)));
+  const allVideos = [...sections.trending, ...sections.fresh];
+  check("explore: no section carries a non-public video", allVideos.every((v) => v.visibility === "PUBLIC"));
+  check("explore: public live stories only (the followers-only one is not there)", sections.stories.length >= 1 && !sections.stories.some((s) => /Rough cut/.test(s.caption)), JSON.stringify(sections.stories.map((s) => s.caption)));
+  const suggested = sections.creators.map((c) => c.username);
+  check("explore: creators to follow are verified creators with public work", suggested.includes("elenavox") && suggested.includes("miasterling") && !suggested.includes("novaray") && !suggested.some((u) => u === "alex_vance" || u === "sam_rivers"), JSON.stringify(suggested));
+  check("explore: a creator you already follow is not suggested to you", !(await alex.call("/api/explore")).json.sections.creators.some((c) => c.username === "elenavox"));
+  check("explore: open auctions and challenges are sections too (empty states on the seed)", Array.isArray(sections.auctions) && Array.isArray(sections.challenges));
+  check("explore: popular tags come from public videos only", !sections.tags.some((t) => ["exclusive", "directors-cut", "studio", "rehearsal", "behind-the-scenes"].includes(t.tag)), JSON.stringify(sections.tags));
+
+  // Full-text search: stems in English and French, word prefixes, accents and case ignored.
+  const search = async (who, qs) => (await who.call(`/api/explore?${qs}`)).json;
+  check("search: stems (concerts → the concert tag)", titles((await search(anon, "q=concerts")).videos).some((t) => t.startsWith("Midnight Noir")));
+  check("search: prefixes while typing (tok neo)", titles((await search(anon, "q=tok%20neo")).videos).some((t) => t.startsWith("Tokyo Neon")));
+  check("search: accents and case do not matter (MÌDNIGHT)", titles((await search(anon, "q=M%C3%8CDNIGHT")).videos).some((t) => t.startsWith("Midnight Noir")));
+  check("search: by creator, with the creator first", (await search(anon, "q=elena")).creators[0]?.username === "elenavox");
+  check("search: wildcards are literal", (await search(anon, "q=%25")).videos.length === 0);
+  // Leaks: a paid video's title, a followers-only story's caption, an invited-only video's tag.
+  const velvet = await search(anon, "q=velvet");
+  check("leak: a paid video never appears in search (only the public one does)", titles(velvet.videos).length === 1 && titles(velvet.videos)[0].startsWith("Tokyo Neon"), JSON.stringify(titles(velvet.videos)));
+  check("leak: a followers-only story never appears in search", (await search(anon, "q=rough")).stories.length === 0 && (await search(alex, "q=rough")).stories.length === 0);
+  for (const who of [anon, alex, elena]) {
+    const bts = await search(who, "tag=behind-the-scenes");
+    check(`leak: followers-only and invited-only videos never appear under their tag (${who === anon ? "visitor" : who === alex ? "approved follower" : "their creator"})`, bts.videos.length === 0, JSON.stringify(titles(bts.videos)));
+  }
+  check("leak: a paid video never appears under its tag", JSON.stringify(titles((await search(alex, "tag=4k")).videos)) === JSON.stringify(titles((await search(anon, "tag=4k")).videos)) && titles((await search(anon, "tag=4k")).videos).every((t) => t.startsWith("Tokyo Neon")));
+  check("leak: a contacts-only video never appears under its tag", titles((await search(alex, "tag=acoustic")).videos).every((t) => t.startsWith("Midnight Noir")));
+  check("leak: the search palette is public only too", (await alex.call("/api/search?q=velvet")).json.videos?.every((v) => v.visibility === "PUBLIC"));
+
+  // Tags: normalised in the address and when stored; /explore?tag= covers videos, creators and stories.
+  check("tags: the address is normalised (BTS → behind-the-scenes)", (await search(anon, "tag=BTS")).tag === "behind-the-scenes");
+  const page = await fetch(`${B}/explore?tag=BTS`, { redirect: "manual" });
+  check("tags: the page redirects to the one address of the tag", page.status === 307 && (page.headers.get("location") ?? "").endsWith("/explore?tag=behind-the-scenes"), `${page.status} ${page.headers.get("location")}`);
+  check("tags: a creator is found by the tags of their public videos", (await search(anon, "tag=acoustic")).creators.some((c) => c.username === "miasterling"));
+  const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64");
+  const storyImage = async () => {
+    const form = new FormData();
+    form.append("category", "stories");
+    form.append("file", new Blob([png], { type: "image/png" }), "story.png");
+    return (await (await fetch(`${B}/api/uploads`, { method: "POST", headers: { Cookie: mia.cookie }, body: form })).json()).data.ref;
+  };
+  const tagged = await mia.call("/api/stories", "POST", { imageRef: await storyImage(), caption: "Rooftop take #Unplugged", audience: "PUBLIC" });
+  const hidden = await mia.call("/api/stories", "POST", { imageRef: await storyImage(), caption: "Contacts only #acoustic", audience: "CONTACTS_ONLY" });
+  const acousticStories = (await search(anon, "tag=acoustic")).stories.map((s) => s.id);
+  check("tags: a public story is found by its #hashtag, synonyms included (#Unplugged → acoustic)", tagged.status === 201 && acousticStories.includes(tagged.json.story.id));
+  check("leak: a contacts-only story never appears under its #hashtag", hidden.status === 201 && !acousticStories.includes(hidden.json.story.id) && !(await search(sam, "tag=acoustic")).stories.some((s) => s.id === hidden.json.story.id));
+  await mia.call(`/api/stories/${tagged.json.story.id}`, "DELETE");
+  await mia.call(`/api/stories/${hidden.json.story.id}`, "DELETE");
+  check("tags: a removed story leaves Explore", !(await search(anon, "tag=acoustic")).stories.some((s) => s.id === tagged.json.story.id));
+  check("tags: stored normalised — lower case, synonyms folded, no duplicate", (await elena.call(`/api/videos/${neon.id}`, "PATCH", { tags: ["Tokyo", "NEON", "neon", "UHD", "#Cinematic"] })).status === 200);
+  check("…as the studio shows them", JSON.stringify((await elena.call("/api/me/dashboard")).json.data.uploads.find((v) => v.id === neon.id)?.tags) === JSON.stringify(["tokyo", "neon", "4k", "cinematic"]));
+  const suggestions = await elena.call("/api/me/tags");
+  check("tags: a creator's upload suggestions hold their previous tags and the curated list", suggestions.status === 200 && suggestions.json.previous.some((p) => p.tag === "tokyo") && suggestions.json.curated.length > 5);
+  check("…members have none", (await alex.call("/api/me/tags")).status === 403);
+
+  // Moderation: a suspected minor or non-consensual report takes the video out of discovery until it is resolved.
+  const report = await sam.call("/api/legal/report", "POST", { videoId: neon.id, videoTitle: "Tokyo Neon", reason: "UNDERAGE", details: "E2E: held for review", reporterEmail: "e2e-explore@example.com" });
+  check("moderation: an UNDERAGE report holds the video out of Explore", report.status === 201 && !titles((await anon.call("/api/explore")).json.sections.fresh).some((t) => t.startsWith("Tokyo Neon")) && (await search(anon, "q=tokyo")).videos.length === 0);
+  check("…resolved by an operator, it comes back", (await admin.call(`/api/admin/reports/${report.json.ticketId}`, "PATCH", { status: "RESOLVED" })).status === 200 && (await search(anon, "q=tokyo")).videos.length === 1);
+}
 
 // Creator edits / deletes
 check("other creator cannot edit", (await mia.call(`/api/videos/${neon.id}`, "PATCH", { title: "Hijack" })).status === 404);

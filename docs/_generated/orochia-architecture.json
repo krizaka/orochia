@@ -560,6 +560,12 @@
     },
     {
       "method": "GET",
+      "path": "/api/explore",
+      "access": "public · session-aware",
+      "summary": "Explore: without a search, the discovery sections (trending this week, new, stories, creators to follow, open auctions, open challenges, tags); with `q` and/or `tag` (or `view=all`), videos (paged), creators and stories."
+    },
+    {
+      "method": "GET",
       "path": "/api/feed",
       "access": "public",
       "summary": "The public feed and the explore search (`?q=`, `?tag=`, paginated); with the featured creator and popular tags."
@@ -788,6 +794,12 @@
     },
     {
       "method": "GET",
+      "path": "/api/me/tags",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "The creator's tag suggestions for the publish form: the tags they used before (most used first) and the curated list."
+    },
+    {
+      "method": "GET",
       "path": "/api/me/wallet",
       "access": "session · MEMBER / CREATOR / ADMIN",
       "summary": "Your Orochia credits: balance (and what is held behind your leading bids and challenge pledges), the packs you can buy, how you can pay for them, and your history."
@@ -879,8 +891,8 @@
     {
       "method": "GET",
       "path": "/api/search",
-      "access": "public",
-      "summary": ""
+      "access": "public · session-aware",
+      "summary": "The search palette: creators, videos, stories and tags matching what is typed (full-text, accents ignored, word prefixes); with nothing typed, the newest videos and the popular tags."
     },
     {
       "method": "GET",

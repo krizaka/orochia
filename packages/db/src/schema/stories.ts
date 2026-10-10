@@ -4,6 +4,7 @@ import { users } from "./users";
 import { audienceLists } from "./audiences";
 import { contentRatings } from "./reference-data";
 import { videoStatusEnum, videoVisibilityEnum } from "./enums";
+import { searchVectorOf, tsvector } from "./search";
 
 /**
  * Stories: short images or videos that live 24 hours. A video story is a Bunny Stream video filed in
@@ -37,6 +38,8 @@ export const stories = pgTable(
     tipsCount: integer("tips_count").default(0).notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     removedAt: timestamp("removed_at", { withTimezone: true }),
+    /** Full-text search over the caption (its #hashtags included), generated (see search.ts). */
+    searchVector: tsvector("search_vector").generatedAlwaysAs(searchVectorOf(sql`"caption"`, null, null)),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
@@ -44,6 +47,7 @@ export const stories = pgTable(
     creatorIdx: index("stories_creator_idx").on(table.creatorId),
     expiresAtIdx: index("stories_expires_at_idx").on(table.expiresAt),
     createdAtIdx: index("stories_created_at_idx").on(table.createdAt),
+    searchIdx: index("stories_search_idx").using("gin", table.searchVector),
     bunnyVideoIdx: uniqueIndex("stories_bunny_video_idx").on(table.bunnyVideoId).where(sql`bunny_video_id is not null`),
   })
 );
