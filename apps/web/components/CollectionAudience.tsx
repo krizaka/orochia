@@ -1,7 +1,8 @@
+import { Globe, Lock, type LucideIcon,UserCheck, UserPlus, Users } from "lucide-react";
 import React from "react";
-import { Globe, Lock, UserCheck, UserPlus, Users, type LucideIcon } from "lucide-react";
+
+import { Badge } from "@/components/ui";
 import { t } from "@/lib/i18n";
-import { cn } from "@/components/ui";
 
 export type CollectionVisibility = "PUBLIC" | "APPROVED_FOLLOWERS_ONLY" | "CONTACTS_ONLY" | "INVITED_ONLY" | "PRIVATE";
 
@@ -23,12 +24,12 @@ export function audienceOf(value: CollectionVisibility) {
   return COLLECTION_AUDIENCES.find((a) => a.value === value) ?? COLLECTION_AUDIENCES[0];
 }
 
-/** A compact badge naming who opens a collection. Each video in it keeps its own access rule. */
-export function CollectionAudienceBadge({ visibility, className = "" }: { visibility: CollectionVisibility; className?: string }) {
+/** A compact badge naming who opens a collection (@krizaka/ui's Badge). Each video in it keeps its own access rule. */
+export function CollectionAudienceBadge({ visibility, className }: { visibility: CollectionVisibility; className?: string }) {
   const { label, icon: Icon } = audienceOf(visibility);
   return (
-    <span className={cn("inline-flex items-center gap-1", className)}>
+    <Badge className={className}>
       <Icon className="h-3 w-3 shrink-0" aria-hidden /> {label}
-    </span>
+    </Badge>
   );
 }

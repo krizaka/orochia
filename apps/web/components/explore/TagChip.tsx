@@ -1,11 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import React from "react";
 
-import { cn } from "@/components/ui";
+import { chipVariants, cn } from "@/components/ui";
 
 /**
- * A tag as a link (`/explore?tag=…`): the look of the kit's `Chip` (pill, token borders, the accent when it is the
- * current filter), as an anchor so the filter is an address. Server-safe.
+ * A tag as a link (`/explore?tag=…`): @krizaka/ui's chip, as an anchor so the filter is an address — the current
+ * filter is the chip's "on" state (accent). `sm` is the compact chip of a card. A client component only because
+ * `chip` comes from a client module: back to the server with `Chip asChild` (krizaka/krizaka-ui#45).
  */
 export function TagChip({
   href,
@@ -24,14 +27,8 @@ export function TagChip({
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className={cn(
-        "inline-flex shrink-0 select-none items-center gap-1 whitespace-nowrap rounded-full border font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
-        size === "sm" ? "h-6 px-2.5 text-[11px]" : "h-8 px-3 text-xs",
-        active
-          ? "border-accent bg-accent-soft text-fg"
-          : "border-border-default bg-surface-1 text-fg-secondary hover:border-border-strong hover:text-fg",
-        className,
-      )}
+      data-state={active ? "on" : "off"}
+      className={chipVariants({ size: "sm" }).base({ className: cn("gap-1", size === "sm" ? "h-6 px-2.5 text-[11px]" : "h-8 px-3", className) })}
     >
       {children}
     </Link>

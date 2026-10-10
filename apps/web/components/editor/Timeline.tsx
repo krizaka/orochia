@@ -12,6 +12,8 @@ type Grip = "start" | "end" | "playhead";
 /**
  * The trim timeline: the clip as a filmstrip, the kept part framed between two handles (dragged, or moved with the
  * arrow keys — Shift for whole seconds), the playhead you can scrub, and the times of the selection.
+ * The handles are a hand-written `role="slider"` until @krizaka/ui's Slider has composable parts (a filmstrip track,
+ * edge handles): krizaka/krizaka-ui#44.
  */
 export function Timeline({
   frames,

@@ -4,7 +4,7 @@ import Hls from "hls.js";
 import { Gavel, Lock, Maximize, Pause, Play, Sparkles, Users, Volume2, VolumeX } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
-import { Badge, Button, cn, IconButton } from "@/components/ui";
+import { Badge, Button, cn, IconButton, Slider } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
 
@@ -135,16 +135,14 @@ export function VideoPlayer({
     setDuration(videoRef.current.duration);
   };
 
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const time = parseFloat(e.target.value);
+  const handleSeek = (time: number) => {
     if (videoRef.current) {
       videoRef.current.currentTime = time;
       setCurrentTime(time);
     }
   };
 
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = parseFloat(e.target.value);
+  const handleVolumeChange = (val: number) => {
     setVolume(val);
     if (videoRef.current) {
       videoRef.current.volume = val;
@@ -265,15 +263,15 @@ export function VideoPlayer({
         >
           {/* Progress Timeline Slider */}
           <div className="mb-3">
-            <input
-              type="range"
+            <Slider
               min={0}
               max={duration || 100}
               step={0.1}
               value={currentTime}
-              onChange={handleSeek}
-              aria-label={t("player.seek")}
-              className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-accent hover:h-1.5 transition-all"
+              onValueChange={handleSeek}
+              label={t("player.seek")}
+              formatValue={formatTime}
+              className="cursor-pointer"
             />
           </div>
 
@@ -293,15 +291,15 @@ export function VideoPlayer({
                     <Volume2 className="h-5 w-5" />
                   )}
                 </IconButton>
-                <input
-                  type="range"
+                <Slider
                   min={0}
                   max={1}
                   step={0.05}
                   value={isMuted ? 0 : volume}
-                  onChange={handleVolumeChange}
-                  aria-label={t("player.volume")}
-                  className="w-16 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-accent opacity-80 group-hover/vol:opacity-100"
+                  onValueChange={handleVolumeChange}
+                  label={t("player.volume")}
+                  formatValue={(v) => t("player.volumeValue", { percent: Math.round(v * 100) })}
+                  className="w-16 opacity-80 group-hover/vol:opacity-100"
                 />
               </div>
 

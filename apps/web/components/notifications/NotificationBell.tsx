@@ -4,11 +4,11 @@ import { Bell, CheckCheck, Settings } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 
-import { Button, buttonVariants, cn, IconButton, Popover, Skeleton, toast } from "@/components/ui";
+import { Button, buttonVariants, cn, IconButton, Popover, Skeleton } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 import { NotificationRow } from "./NotificationRow";
-import { NotificationToast } from "./NotificationToast";
+import { showNotificationToast } from "./NotificationToast";
 import { useNotifications } from "./useNotifications";
 
 /**
@@ -19,20 +19,7 @@ import { useNotifications } from "./useNotifications";
 export function NotificationBell() {
   const { items, unread, loaded, markRead } = useNotifications(true, {
     // What just happened, as it happens: a toast for each notification that arrives while the page is open.
-    onLive: (n) =>
-      toast.custom(
-        (id) => (
-          <NotificationToast
-            n={n}
-            onOpen={() => {
-              toast.dismiss(id);
-              void markRead([n.id]);
-            }}
-            onDismiss={() => toast.dismiss(id)}
-          />
-        ),
-        { id: n.id, duration: 7000 },
-      ),
+    onLive: (n) => showNotificationToast(n, () => void markRead([n.id])),
   });
   const [open, setOpen] = useState(false);
 

@@ -1394,6 +1394,7 @@
     "mute": "Mute",
     "unmute": "Unmute",
     "volume": "Volume",
+    "volumeValue": "{percent}%",
     "seek": "Seek",
     "fullscreen": "Full screen",
     "auctionTitle": "Up for auction",
@@ -1624,6 +1625,7 @@
       "cta": "Sign in"
     },
     "tabs": {
+      "label": "Dashboard sections",
       "overview": "Overview",
       "library": "Library ({count})",
       "ledger": "Transactions",
