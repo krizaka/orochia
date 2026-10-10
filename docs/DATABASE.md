@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 43 tables · 26 enums · 4 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 43 tables · 26 enums · 5 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -508,7 +508,10 @@ erDiagram
 | `payout_account_ccbill` | varchar(100) | yes |  |  |
 | `total_views` | integer | no | `0` |  |
 | `total_tips_earned_cents` | integer | no | `0` |  |
+| `search_vector` | tsvector | yes |  |  |
 | `updated_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `profiles_search_idx` (search_vector)
 
 ### `push_devices`
 
@@ -545,10 +548,11 @@ erDiagram
 | `tips_count` | integer | no | `0` |  |
 | `expires_at` | timestamp with time zone | no |  |  |
 | `removed_at` | timestamp with time zone | yes |  |  |
+| `search_vector` | tsvector | yes |  |  |
 | `created_at` | timestamp with time zone | no | `now()` |  |
 | `updated_at` | timestamp with time zone | no | `now()` |  |
 
-**Indexes:** `stories_creator_idx` (creator_id) · `stories_expires_at_idx` (expires_at) · `stories_created_at_idx` (created_at) · `stories_bunny_video_idx` (unique, bunny_video_id, partial)
+**Indexes:** `stories_creator_idx` (creator_id) · `stories_expires_at_idx` (expires_at) · `stories_created_at_idx` (created_at) · `stories_search_idx` (search_vector) · `stories_bunny_video_idx` (unique, bunny_video_id, partial)
 
 ### `story_likes`
 
@@ -765,10 +769,11 @@ erDiagram
 | `tags` | text[] | yes |  |  |
 | `removed_at` | timestamp with time zone | yes |  |  |
 | `removal_reason` | text | yes |  |  |
+| `search_vector` | tsvector | yes |  |  |
 | `created_at` | timestamp with time zone | no | `now()` |  |
 | `updated_at` | timestamp with time zone | no | `now()` |  |
 
-**Indexes:** `videos_creator_idx` (creator_id) · `videos_visibility_idx` (visibility) · `videos_status_idx` (status) · `videos_created_at_idx` (created_at)
+**Indexes:** `videos_creator_idx` (creator_id) · `videos_visibility_idx` (visibility) · `videos_status_idx` (status) · `videos_created_at_idx` (created_at) · `videos_search_idx` (search_vector) · `videos_tags_idx` (tags)
 
 ### `wallet_ledger`
 
@@ -821,3 +826,4 @@ erDiagram
 - `0001_challenges.sql`
 - `0002_push_devices.sql`
 - `0003_story_engagement.sql`
+- `0004_explore_search.sql`

@@ -1,11 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { db, users,videos } from "@orochia/db";
 import { BunnyStreamClient, CreateUploadSessionSchema } from "@orochia/media";
-import { db, videos, users } from "@orochia/db";
 import { eq } from "drizzle-orm";
+import { NextRequest, NextResponse } from "next/server";
+
+import { getCurrentUser } from "@/lib/auth";
 import { requireBunnyStream } from "@/lib/env";
 import { errorResponse } from "@/lib/http";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { normalizeTags } from "@/lib/tags";
 
 export const dynamic = "force-dynamic";
 
@@ -67,7 +69,8 @@ export async function POST(req: NextRequest) {
         visibility: input.visibility,
         status: "PENDING_UPLOAD",
         minTipAmountCents: input.minTipAmountCents,
-        tags: input.tags,
+        // One spelling per idea (lower case, no accent, synonyms folded, no duplicate): /explore?tag= finds it.
+        tags: normalizeTags(input.tags),
         contentRatingId: input.contentRatingId || null,
         isBlurred: input.isBlurred || false,
       })

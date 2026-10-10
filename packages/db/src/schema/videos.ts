@@ -12,6 +12,8 @@ import {
 import { users } from "./users";
 import { contentRatings } from "./reference-data";
 import { videoVisibilityEnum, videoStatusEnum } from "./enums";
+import { sql } from "drizzle-orm";
+import { searchVectorOf, tsvector } from "./search";
 
 export const videos = pgTable(
   "videos",
@@ -44,6 +46,8 @@ export const videos = pgTable(
     /** Taken down by an operator (DMCA, terms): hidden everywhere and never signed for playback. */
     removedAt: timestamp("removed_at", { withTimezone: true }),
     removalReason: text("removal_reason"),
+    /** Full-text search over the title and tags (weight A) and the description (B), generated (see search.ts). */
+    searchVector: tsvector("search_vector").generatedAlwaysAs(searchVectorOf(sql`"title"`, sql`"tags"`, sql`"description"`)),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
@@ -52,6 +56,8 @@ export const videos = pgTable(
     visibilityIdx: index("videos_visibility_idx").on(table.visibility),
     statusIdx: index("videos_status_idx").on(table.status),
     createdAtIdx: index("videos_created_at_idx").on(table.createdAt),
+    searchIdx: index("videos_search_idx").using("gin", table.searchVector),
+    tagsIdx: index("videos_tags_idx").using("gin", table.tags),
   })
 );
 

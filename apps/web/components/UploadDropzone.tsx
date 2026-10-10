@@ -5,10 +5,11 @@ import { Check, CheckCircle2, Clapperboard, Eye, Film, Lock, Mail, Scissors, Shi
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 
-import { Badge, Button, buttonVariants, Checkbox, cn, IconButton, Input, RadioGroup, Select, Switch, Textarea } from "@/components/ui";
+import { Badge, Button, buttonVariants, Checkbox, Chip, cn, IconButton, Input, RadioGroup, Select, Switch, Textarea } from "@/components/ui";
 import { deleteDraft } from "@/lib/drafts";
 import { type MessageKey,t } from "@/lib/i18n";
 import { money } from "@/lib/money";
+import { MAX_TAGS, normalizeTags, suggestTags } from "@/lib/tags";
 import { useUploadManager } from "@/lib/upload-manager";
 import { EDITOR_MAX_BYTES, type VideoEdit } from "@/lib/video-edit";
 
@@ -17,7 +18,6 @@ import { useObjectUrl } from "./editor/media";
 import { VideoEditor } from "./VideoEditor";
 
 const LIMIT = UPLOAD_LIMITS.video;
-const MAX_TAGS = 12;
 const AUDIENCES = ["PUBLIC", "APPROVED_FOLLOWERS_ONLY", "CONTACTS_ONLY", "TIPPED_UNLOCKED", "INVITED_ONLY"] as const;
 type Audience = (typeof AUDIENCES)[number];
 const AUDIENCE_ICON: Record<Audience, React.ElementType> = { PUBLIC: Eye, APPROVED_FOLLOWERS_ONLY: Users, CONTACTS_ONLY: Mail, TIPPED_UNLOCKED: Lock, INVITED_ONLY: Clapperboard };
@@ -97,6 +97,8 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [tagDraft, setTagDraft] = useState("");
+  // Suggestions: the creator's own tags (most used first) and the curated list, ranked as they type (lib/tags.ts).
+  const [tagHistory, setTagHistory] = useState<{ tag: string; count: number }[]>([]);
   const [visibility, setVisibility] = useState<Audience>("PUBLIC");
   const [minTipAmountDollars, setMinTipAmountDollars] = useState("5.00");
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -127,6 +129,10 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
       .then((r) => (r.ok ? r.json() : { ratings: [] }))
       .then((d: { ratings?: ContentRating[] }) => d.ratings?.length && setContentRatings(d.ratings))
       .catch(() => setContentRatings([]));
+    fetch("/api/me/tags", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : { previous: [] }))
+      .then((d: { previous?: { tag: string; count: number }[] }) => setTagHistory(d.previous ?? []))
+      .catch(() => setTagHistory([]));
   }, []);
 
   // Progress comes from the upload dock, which drives the upload (and keeps it going across pages).
@@ -150,14 +156,12 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
     if (!title) setTitle(selected.name.replace(/\.[^/.]+$/, "").replace(/[_-]+/g, " "));
   };
 
+  // Tags are normalised as they are added — lower case, no accent, synonyms folded, no duplicate — as the API stores them.
   const addTag = (raw: string) => {
-    const next = raw
-      .split(",")
-      .map((s) => s.trim().toLowerCase().replace(/^#/, ""))
-      .filter(Boolean);
-    if (next.length) setTags((all) => [...new Set([...all, ...next])].slice(0, MAX_TAGS));
+    setTags((all) => normalizeTags([...all, ...raw.split(",")]));
     setTagDraft("");
   };
+  const suggestedTags = tags.length < MAX_TAGS ? suggestTags({ previous: tagHistory, title, description, chosen: tags, limit: 8 }) : [];
 
   const priceCents = Math.round(parseFloat(minTipAmountDollars || "0") * 100) || 0;
   const feeCents = Math.round((priceCents * platformFeePercent) / 100);
@@ -306,7 +310,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
             setLastEdit(draft.edit);
             setTitle(typeof d.title === "string" && d.title ? d.title : draft.file.name.replace(/\.[^/.]+$/, ""));
             if (typeof d.description === "string") setDescription(d.description);
-            if (typeof d.tags === "string") setTags(d.tags.split(",").map((s) => s.trim()).filter(Boolean));
+            if (typeof d.tags === "string") setTags(normalizeTags(d.tags));
             if (typeof d.visibility === "string" && (AUDIENCES as readonly string[]).includes(d.visibility)) setVisibility(d.visibility as Audience);
             if (typeof d.minTipAmountDollars === "string") setMinTipAmountDollars(d.minTipAmountDollars);
             if (typeof d.collectionId === "string") setSelectedCollection(d.collectionId);
@@ -414,6 +418,18 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                   )}
                 </div>
                 <span className="mt-1 block text-[11px] text-fg-muted">{t("publish.fields.tagsHint")}</span>
+                {suggestedTags.length > 0 && (
+                  <div className="mt-2.5">
+                    <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-fg-muted">{t("publish.fields.tagsSuggested")}</span>
+                    <div className="flex flex-wrap gap-1.5" role="group" aria-label={t("publish.fields.tagsSuggested")}>
+                      {suggestedTags.map((tag) => (
+                        <Chip key={tag} size="sm" selected={false} onSelectedChange={() => addTag(tag)} aria-label={t("publish.addTag", { tag })}>
+                          #{tag}
+                        </Chip>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </Step>

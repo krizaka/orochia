@@ -34,6 +34,7 @@ export * from "./messaging";
 export * from "./auctions";
 export * from "./challenges";
 export * from "./push";
+export * from "./search";
 
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({

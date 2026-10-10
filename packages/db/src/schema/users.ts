@@ -1,6 +1,7 @@
-import { pgTable, text, timestamp, boolean, uuid, varchar, integer, date, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, uuid, varchar, integer, date, jsonb, index } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { userRoleEnum } from "./enums";
+import { searchVectorOf, tsvector } from "./search";
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -50,5 +51,9 @@ export const profiles = pgTable("profiles", {
   payoutAccountCcbill: varchar("payout_account_ccbill", { length: 100 }),
   totalViews: integer("total_views").default(0).notNull(),
   totalTipsEarnedCents: integer("total_tips_earned_cents").default(0).notNull(),
+  /** Full-text search over the display name (weight A) and the bio (B), generated (see search.ts). */
+  searchVector: tsvector("search_vector").generatedAlwaysAs(searchVectorOf(sql`"display_name"`, null, sql`"bio"`)),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-});
+}, (table) => ({
+  searchIdx: index("profiles_search_idx").using("gin", table.searchVector),
+}));

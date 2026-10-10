@@ -1,10 +1,12 @@
+import { auctions, challenges,db, videos } from "@orochia/db";
+import { and, eq, inArray, isNull } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { db, videos, auctions, challenges } from "@orochia/db";
-import { and, eq, inArray, isNull } from "drizzle-orm";
+
 import { requireUserWithRole } from "@/lib/auth";
 import { errorResponse, jsonError } from "@/lib/http";
 import { CREATOR_DELETED } from "@/lib/queries";
+import { normalizeTags } from "@/lib/tags";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +16,7 @@ const Patch = z
     description: z.string().trim().max(5000).nullish(),
     visibility: z.enum(["PUBLIC", "CONTACTS_ONLY", "APPROVED_FOLLOWERS_ONLY", "TIPPED_UNLOCKED", "INVITED_ONLY"]).optional(),
     minTipAmountCents: z.number().int().min(0).max(100_000).optional(),
-    tags: z.array(z.string().trim().toLowerCase().min(1).max(40)).max(12).optional(),
+    tags: z.array(z.string().trim().min(1).max(40)).max(24).transform((tags) => normalizeTags(tags)).optional(),
     commentsEnabled: z.boolean().optional(),
   })
   .refine((p) => p.visibility !== "TIPPED_UNLOCKED" || p.minTipAmountCents === undefined || p.minTipAmountCents >= 100, {

@@ -138,6 +138,12 @@ orochia/                           npm workspaces
   (`components/stories/`, rules in `lib/story-player.ts`) plays the signed HLS with hls.js — not Bunny's iframe — with
   sound by default (muted is a visible session choice; a browser that refuses sound without a gesture says so), and the
   open story is the address (`?story=<id>`, on the home rail and on profiles, whose picture carries the story ring).
+- **Explore is public only** (`lib/discoverable.ts`, SQL in `lib/explore.ts`): its sections, search, tags and the search
+  palette show `PUBLIC`, ready, live content of active accounts, never held by an unresolved UNDERAGE / NON_CONSENSUAL
+  report — followers, contacts, close friends, paid, auctioned and challenge content never appear there, even to those
+  allowed to watch it. Adult ratings are veiled for visitors whose age the server has not checked. Search is PostgreSQL
+  full-text (`search_vector`, GIN, `orochia_unaccent`, simple + English + French); tags are normalised by `lib/tags.ts`
+  on every write and in the address (`/explore?tag=`); ranking is pure (`lib/ranking.ts`).
 - A video taken down (`removed_at` set) does not exist — feed, search, profile, playlists, details and playback
   answer as if it were absent, **for its author too**. Suspended creators' videos are not listed.
 
