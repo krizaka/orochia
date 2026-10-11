@@ -37,7 +37,7 @@ export function StartChallengeButton({
   }
   return (
     <>
-      <Button variant={variant} className="kz-sheen" onClick={() => setOpen(true)}>
+      <Button variant={variant} shimmer onClick={() => setOpen(true)}>
         <Flame className="h-4 w-4" aria-hidden />
         {text}
       </Button>

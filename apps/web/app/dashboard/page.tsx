@@ -286,7 +286,7 @@ function DashboardContent() {
 
         <Tabs.Content value="library">{data && (
           data.library.length === 0 ? (
-            <EmptyState title={t("dashboard.libraryEmpty")} />
+            <EmptyState bird="owl" title={t("dashboard.libraryEmpty")} />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {data.library.map((video) => (

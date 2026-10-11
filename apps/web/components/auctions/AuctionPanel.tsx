@@ -2,10 +2,10 @@
 
 import { CheckCircle2, Clock, Download, Gavel, Info, Play, ShieldCheck, Sparkles, Timer, Trophy, Wallet, X } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { timeAgo } from "@/components/notifications/useNotifications";
-import { Badge, Button, Chip, cn, ConfirmButton, Countdown, Input, orochiaButton, Spinner } from "@/components/ui";
+import { Badge, Button, Chip, cn, ConfirmButton, Countdown, Input, MoneyTicker, orochiaButton, Spinner } from "@/components/ui";
 import { type MessageKey,t } from "@/lib/i18n";
 import { money } from "@/lib/money";
 
@@ -46,6 +46,13 @@ export function AuctionPanel({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<{ text: string; topUp?: boolean } | null>(null);
   const [placed, setPlaced] = useState(false);
+  // How the last bid ended, on the button (a check or a cross), for a moment.
+  const [ended, setEnded] = useState<"success" | "error" | null>(null);
+  useEffect(() => {
+    if (!ended) return;
+    const id = window.setTimeout(() => setEnded(null), 1800);
+    return () => window.clearTimeout(id);
+  }, [ended]);
   const [downloading, setDownloading] = useState(false);
   const extended = new Date(a.endsAt) > new Date(a.scheduledEndsAt);
 
@@ -59,9 +66,11 @@ export function AuctionPanel({
     if (res?.ok && data?.alias !== undefined) {
       onOwnBid(data.alias, data.balanceCents ?? 0);
       setPlaced(true);
+      setEnded("success");
       return;
     }
     const code = data?.code;
+    setEnded("error");
     if (code === "INSUFFICIENT_CREDITS") setError({ text: t("auction.errors.INSUFFICIENT_CREDITS", { balance: money(data?.balance ?? 0) }), topUp: true });
     else if (code === "BID_TOO_LOW") setError({ text: t("auction.errors.BID_TOO_LOW", { minimum: money(data?.minimum ?? a.minimumNextBidCents) }) });
     else if (code) setError({ text: t(`auction.errors.${code}` as MessageKey) });
@@ -125,7 +134,10 @@ export function AuctionPanel({
         <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-wider text-accent">{priceLabel}</p>
-            <p key={pulse} className="kz-fade font-display text-4xl font-black tabular-nums tracking-tight text-fg">{money(price)}</p>
+            {/* The current bid rolls digit by digit to each new bid (SSE), and is announced once; still under reduced motion. */}
+            <p data-pulse={pulse} className="font-display text-4xl font-black tabular-nums tracking-tight text-fg">
+              <MoneyTicker cents={price} trigger="change" announce={open} align="start" />
+            </p>
             <p className="mt-0.5 text-xs text-fg-secondary">
               {t("auction.counts", { bids: a.bidsCount, bidders: a.biddersCount })}
             </p>
@@ -198,7 +210,11 @@ export function AuctionPanel({
                 size="lg"
                 shape="rounded"
                 loading={busy}
-                className="kz-sheen shrink-0"><Gavel className="h-4 w-4" />
+                status={ended}
+                announce={ended === "success" ? t("auction.placed") : undefined}
+                shimmer
+                magnetic
+                className="shrink-0"><Gavel className="h-4 w-4" />
                 {t("auction.placeBid")}
               </Button>
             </div>

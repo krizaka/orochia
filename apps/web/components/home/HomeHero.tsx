@@ -4,7 +4,7 @@ import React from "react";
 
 import { BackdropMedia } from "@/components/home/BackdropMedia";
 import { ProductShowcase } from "@/components/home/ProductShowcase";
-import { buttonVariants, cn, RotatingWord, SectionBackdrop } from "@/components/ui";
+import { Button, buttonVariants, cn, RotatingWord, SectionBackdrop } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 const WAYS = [
@@ -62,9 +62,10 @@ export function HomeHero({ share, stats }: { share: number; stats: { videos: num
           </div>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link href="/auth/register" className={cn(buttonVariants({ variant: "primary", size: "lg", shape: "pill" }), "kz-sheen gap-2 shadow-lg")}>
-              {t("home.ctaJoin")}
-            </Link>
+            {/* The one action the page is about: the sheen and the lean toward the pointer, here only. */}
+            <Button asChild variant="primary" size="lg" shimmer magnetic className="gap-2 shadow-lg">
+              <Link href="/auth/register">{t("home.ctaJoin")}</Link>
+            </Button>
             <Link href="/explore" className={cn(buttonVariants({ variant: "outline", size: "lg", shape: "pill" }), "gap-2 bg-surface-1/60 backdrop-blur-md")}>
               {t("home.ctaExplore")} <ForwardIcon size={18} />
             </Link>

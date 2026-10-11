@@ -3,7 +3,7 @@ import Link from "next/link";
 import React from "react";
 
 import { BackdropMedia } from "@/components/home/BackdropMedia";
-import { buttonVariants, cn, OrochiaLogo, SectionBackdrop } from "@/components/ui";
+import { Button, buttonVariants, cn, OrochiaLogo, SectionBackdrop } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 /** The closing call to action for creators: the promise in one line, three facts, the way in. Ends tinted (`up`). */
@@ -30,9 +30,11 @@ export function CreatorsCallToAction({ share }: { share: number }) {
           ))}
         </ul>
         <div className="mt-9 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row">
-          <Link href="/auth/register" className={cn(buttonVariants({ variant: "primary", size: "lg", shape: "pill" }), "kz-sheen gap-2 shadow-lg")}>
-            <UploadIcon size={18} /> {t("home.creators.cta")}
-          </Link>
+          <Button asChild variant="primary" size="lg" shimmer className="gap-2 shadow-lg">
+            <Link href="/auth/register">
+              <UploadIcon size={18} /> {t("home.creators.cta")}
+            </Link>
+          </Button>
           <Link href="/explore" className={cn(buttonVariants({ variant: "outline", size: "lg", shape: "pill" }), "gap-2 bg-surface-1/60 backdrop-blur-md")}>
             {t("home.ctaExplore")} <ForwardIcon size={18} />
           </Link>

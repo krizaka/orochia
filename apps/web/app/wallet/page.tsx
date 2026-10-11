@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import React, { Suspense, useCallback, useEffect, useState } from "react";
 
-import { Badge, Button, cn, RadioGroup, Skeleton, Spinner } from "@/components/ui";
+import { Badge, Button, cn, EmptyState, RadioGroup, Skeleton, Spinner } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { type MessageKey,t } from "@/lib/i18n";
 import { money } from "@/lib/money";
@@ -166,7 +166,7 @@ function WalletPage() {
           {!wallet ? (
             <Spinner size="md" className="mx-auto my-8" />
           ) : wallet.history.length === 0 ? (
-            <p className="py-8 text-center text-xs text-fg-muted">{t("wallet.empty")}</p>
+            <EmptyState bird="flamingo" title={t("wallet.empty")} className="border-0" />
           ) : (
             <ul className="divide-y divide-border-subtle">
               {wallet.history.map((h) => {

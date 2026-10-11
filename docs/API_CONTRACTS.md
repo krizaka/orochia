@@ -16,7 +16,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/admin/creators` | session · ADMIN | Creator accounts with their verification state; `?verified=false` lists the review queue. |
 | `PATCH` | `/api/admin/creators/[id]` | session · ADMIN | Records the outcome of a creator's 18 U.S.C. § 2257 review. |
 | `GET` | `/api/admin/documents` | session · ADMIN | A creator's 2257 document (`?ref=private/documents/&lt;uuid&gt;.&lt;ext&gt;`), for operators only; never cached. |
-| `GET` | `/api/admin/overview` | session · ADMIN | Operator overview: money, catalogue and the three queues that need a human. |
+| `GET` | `/api/admin/overview` | session · ADMIN | Operator overview: money, catalogue, the three queues that need a human, and 12 months of revenue and reports. |
 | `GET` | `/api/admin/payouts` | session · ADMIN | Payout requests with their creator; `?status=` filters. |
 | `PATCH` | `/api/admin/payouts/[id]` | session · ADMIN | Advances a payout. |
 | `GET` | `/api/admin/platform` | session · ADMIN | The platform for operators: environment, database (size, rows per table), migration history, whether a reset is allowed. |
@@ -78,7 +78,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/conversations/[id]/messages` | session · ADMIN / CREATOR / MEMBER | Lists messages in a conversation and marks unread messages as read. |
 | `POST` | `/api/conversations/[id]/messages` | session · ADMIN / CREATOR / MEMBER | Sends a direct message in a conversation. |
 | `GET` | `/api/conversations/stream` | public | Realtime Server-Sent Events (SSE) stream for instant direct messages and notifications. |
-| `GET` | `/api/creator/earnings` | session · CREATOR / ADMIN | Your earnings for a period (?period=30d|90d|12m|all): totals, views, each video's revenue, the trend, payments and payouts. |
+| `GET` | `/api/creator/earnings` | session · CREATOR / ADMIN | Your earnings for a period (?period=30d|90d|12m|all): totals, views, each video's revenue, the trend by kind, the last 30 days of tips, payments and payouts. |
 | `GET` | `/api/creator/earnings/export` | session · CREATOR / ADMIN | Downloads your earnings as CSV (?kind=transactions|videos&period=…), for your accounting. |
 | `GET` | `/api/creator/payouts` | session · CREATOR / ADMIN | The signed-in creator's balance, lifetime earnings and payout history — from the ledger. |
 | `POST` | `/api/creator/payouts` | session · CREATOR / ADMIN | Requests a payout to your saved payout account (an encrypted snapshot is kept); balance checked and reserved atomically. |

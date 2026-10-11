@@ -4,13 +4,14 @@ import { ArrowLeft, Clapperboard, Clock, Crown, Lock, Play, Timer, Users } from 
 import Link from "next/link";
 import React from "react";
 
-import { Avatar, buttonVariants, cn, Countdown, orochiaButton, Skeleton } from "@/components/ui";
+import { Avatar, buttonVariants, cn, Countdown, orochiaButton, Skeleton, Stepper } from "@/components/ui";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
 
 import { ChallengeActions } from "./ChallengeActions";
 import { ChallengeMeter, ChallengeStageBadge, KIND_ICONS } from "./ChallengeMeter";
+import { challengeJourney } from "./journey";
 import { PledgeBox } from "./PledgeBox";
 import { useChallengeStream } from "./useChallengeStream";
 
@@ -153,6 +154,12 @@ export function ChallengeClient({ id }: { id: string }) {
             )}
           </div>
           {c.viewer.canPledge && <PledgeBox c={c} onPledged={() => void reload()} />}
+          <section className={panel} aria-labelledby="challenge-journey">
+            <h2 id="challenge-journey" className="mb-3 text-xs font-bold uppercase tracking-wider text-fg-secondary">
+              {t("challenge.journey")}
+            </h2>
+            <Stepper steps={challengeJourney(c.kind, c.stage).map((step) => ({ title: t(`challenge.stage.${step.stage}`), status: step.status }))} />
+          </section>
           {c.topBackers.length > 0 && (
             <section className={panel}>
               <h2 className="mb-3 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-fg-secondary">
