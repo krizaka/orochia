@@ -1554,7 +1554,7 @@
         "repository": "krizaka-ui",
         "path": "node_modules/@krizaka/tailwind",
         "runtime": "library",
-        "version": "2.3.0",
+        "version": "2.4.0",
         "published": true,
         "description": "The Krizaka Tailwind CSS v4 preset: the semantic --kz-* tokens as utilities (bg-surface-1, text-fg-secondary, border-border-default, text-accent, rounded-xl…), illustration-only light/dark variants and the Krizaka easing."
       },
@@ -1566,7 +1566,7 @@
         "repository": "krizaka-ui",
         "path": "node_modules/@krizaka/tokens",
         "runtime": "library",
-        "version": "2.3.0",
+        "version": "2.4.0",
         "published": true,
         "description": "The Krizaka semantic design tokens (--kz-*) and the brand themes (Krizaka, Orazaka, Orochia): one DTCG source compiled to CSS (dark, light, media invariants), typed constants and React Native themes."
       },
@@ -1578,7 +1578,7 @@
         "repository": "krizaka-ui",
         "path": "node_modules/@krizaka/ui",
         "runtime": "library",
-        "version": "2.3.0",
+        "version": "2.4.0",
         "published": true,
         "description": "The Krizaka front-end platform's components: the primitives (button, card, dialog, toast, menu, field, tabs, chip, switch, slider, command palette, theme, countdown…) on the semantic --kz-* tokens, the animated marks (Krizaka, Orazaka, Orochia) and the motion signature — web and /native."
       },
@@ -1825,17 +1825,17 @@
       {
         "from": "orochia-web",
         "to": "krizaka-tailwind",
-        "version": "2.3.0"
+        "version": "2.4.0"
       },
       {
         "from": "orochia-web",
         "to": "krizaka-tokens",
-        "version": "2.3.0"
+        "version": "2.4.0"
       },
       {
         "from": "orochia-web",
         "to": "krizaka-ui",
-        "version": "2.3.0"
+        "version": "2.4.0"
       },
       {
         "from": "orochia-web",
