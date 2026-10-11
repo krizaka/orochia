@@ -1,604 +1,154 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback, Suspense } from "react";
-import Link from "next/link";
-import {
-  MessageSquare,
-  Send,
-  User,
-  ShieldAlert,
-  Search,
-  MoreVertical,
-  Check,
-  CheckCheck,
-  UserX,
-  Plus,
-  ArrowLeft,
-  ExternalLink,
-} from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { MessageIcon, PlusIcon, SearchIcon } from "@krizaka/icons";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import React, { Suspense, useCallback, useEffect, useState } from "react";
+
+import { ConversationList } from "@/components/messages/ConversationList";
+import { OnlineNow } from "@/components/messages/OnlineNow";
+import { Thread } from "@/components/messages/Thread";
+import { useChat } from "@/components/messages/useChat";
+import { cn, IconButton, Input, Spinner } from "@/components/ui";
+import { responseErrorMessage } from "@/lib/api-errors";
+import { useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
-import { Avatar, Button, IconButton, Input, Spinner, cn } from "@/components/ui";
+import { useLiveStatus } from "@/lib/realtime-client";
 
-interface OtherUser {
-  id: string;
-  username: string;
-  displayName: string | null;
-  avatarUrl: string | null;
-}
-
-interface ConversationItem {
-  id: string;
-  otherUser: OtherUser;
-  lastMessage: {
-    id: string;
-    content: string;
-    senderId: string;
-    createdAt: string;
-    isRead: boolean;
-  } | null;
-  updatedAt: string;
-}
-
-interface Message {
-  id: string;
-  conversationId: string;
-  senderId: string;
-  content: string;
-  /** A private reply to a story (lib/stories.ts → replyToStory). */
-  storyId?: string | null;
-  isRead: boolean;
-  createdAt: string;
-  sender: {
-    id: string;
-    username: string;
-    displayName: string | null;
-    avatarUrl: string | null;
-  };
-}
-
+/**
+ * Messages, Messenger-style: conversations with presence on the left, the open conversation on the right (one at a
+ * time on a phone). The address is the state: `/messages?c=<conversation>`; `/messages?user=<username>` opens (or
+ * starts) the conversation with that account.
+ */
 function MessagesContent() {
-  const searchParams = useSearchParams();
-  const initialTargetUser = searchParams?.get("user");
+  const params = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { user, isLoading } = useAuth();
+  const myId = user?.id ?? null;
+  const activeId = params.get("c");
+  const targetUser = params.get("user");
 
-  const [conversations, setConversations] = useState<ConversationItem[]>([]);
-  const [activeConversation, setActiveConversation] = useState<ConversationItem | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [loadingConversations, setLoadingConversations] = useState(true);
-  const [loadingMessages, setLoadingMessages] = useState(false);
-  const [inputContent, setInputContent] = useState("");
-  const [sending, setSending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const chat = useChat(myId, activeId);
+  const live = useLiveStatus();
+  const [newChat, setNewChat] = useState(targetUser ?? "");
+  const [starting, setStarting] = useState(false);
+  const [startError, setStartError] = useState<string | null>(null);
 
-  // New conversation modal / state
-  const [newChatUsername, setNewChatUsername] = useState(initialTargetUser || "");
-  const [startingChat, setStartingChat] = useState(false);
-  const [showOptionsModal, setShowOptionsModal] = useState(false);
-  const [blocking, setBlocking] = useState(false);
+  const open = useCallback((conversationId: string | null) => router.replace(conversationId ? `${pathname}?c=${conversationId}` : pathname, { scroll: false }), [router, pathname]);
 
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const start = useCallback(
+    async (username: string) => {
+      const name = username.trim().replace(/^@/, "");
+      if (!name) return;
+      setStarting(true);
+      setStartError(null);
+      const res = await fetch("/api/conversations", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ recipientUsername: name }) }).catch(() => null);
+      setStarting(false);
+      if (!res?.ok) return setStartError(res ? await responseErrorMessage(res, t("inbox.startFailed")) : t("inbox.network"));
+      const data = (await res.json()) as { conversationId: string };
+      setNewChat("");
+      await chat.reload();
+      open(data.conversationId);
+    },
+    [chat, open],
+  );
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
+  // `?user=` (a "Message" button elsewhere): open that conversation, then the address names it.
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (targetUser && myId) void start(targetUser);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetUser, myId]);
 
-  // Load current user profile
+  const conversation = chat.conversations.find((c) => c.id === activeId) ?? null;
+
+  // Signed out: sign in, then come back to the same address.
   useEffect(() => {
-    fetch("/api/me/profile", { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (data?.user?.id) {
-          setCurrentUserId(data.user.id);
-        }
-      })
-      .catch(() => undefined);
-  }, []);
-
-  // Fetch conversations list
-  const loadConversations = useCallback(async () => {
-    try {
-      setLoadingConversations(true);
-      const res = await fetch("/api/conversations", { cache: "no-store" });
-      if (res.ok) {
-        const data = await res.json();
-        setConversations(data.conversations || []);
-        if (data.currentUserId) {
-          setCurrentUserId(data.currentUserId);
-        }
-      }
-    } catch (e) {
-      console.error("Failed to load conversations", e);
-    } finally {
-      setLoadingConversations(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void loadConversations();
-  }, [loadConversations]);
-
-  // If a target user was passed in query parameter (e.g. ?user=miasterling)
-  useEffect(() => {
-    if (initialTargetUser && conversations.length > 0) {
-      const match = conversations.find((c) => c.otherUser.username.toLowerCase() === initialTargetUser.toLowerCase());
-      if (match) {
-        setActiveConversation(match);
-      }
-    }
-  }, [initialTargetUser, conversations]);
-
-  // Load messages for the active conversation
-  const loadMessages = useCallback(async (convId: string) => {
-    try {
-      setLoadingMessages(true);
-      setError(null);
-      const res = await fetch(`/api/conversations/${convId}/messages`, { cache: "no-store" });
-      if (res.ok) {
-        const data = await res.json();
-        setMessages(data.messages || []);
-      } else {
-        const err = await res.json();
-        setError(err.error || t("inbox.loadFailed"));
-      }
-    } catch (e) {
-      setError(t("inbox.network"));
-    } finally {
-      setLoadingMessages(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (activeConversation) {
-      void loadMessages(activeConversation.id);
-    } else {
-      setMessages([]);
-    }
-  }, [activeConversation, loadMessages]);
-
-  // Connect to SSE stream for real-time messages
-  useEffect(() => {
-    const eventSource = new EventSource("/api/conversations/stream");
-
-    eventSource.onmessage = (event) => {
-      try {
-        const payload = JSON.parse(event.data);
-        if (payload.type === "new_message") {
-          const newMsg = payload.message as Message;
-
-          // If the message belongs to active thread, append it
-          if (activeConversation && newMsg.conversationId === activeConversation.id) {
-            setMessages((prev) => {
-              if (prev.some((m) => m.id === newMsg.id)) return prev;
-              return [...prev, newMsg];
-            });
-          }
-
-          // Update conversation list preview
-          setConversations((prev) =>
-            prev.map((conv) => {
-              if (conv.id === newMsg.conversationId) {
-                return {
-                  ...conv,
-                  lastMessage: {
-                    id: newMsg.id,
-                    content: newMsg.content,
-                    senderId: newMsg.senderId,
-                    createdAt: newMsg.createdAt,
-                    isRead: newMsg.senderId === currentUserId,
-                  },
-                  updatedAt: newMsg.createdAt,
-                };
-              }
-              return conv;
-            })
-          );
-        }
-      } catch (err) {
-        console.error("Failed to parse SSE event", err);
-      }
-    };
-
-    return () => {
-      eventSource.close();
-    };
-  }, [activeConversation, currentUserId]);
-
-  // Start new conversation by username
-  const handleStartConversation = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newChatUsername.trim()) return;
-
-    setStartingChat(true);
-    setError(null);
-
-    try {
-      const res = await fetch("/api/conversations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ recipientUsername: newChatUsername.trim() }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || t("inbox.startFailed"));
-        return;
-      }
-
-      await loadConversations();
-      setActiveConversation({
-        id: data.conversationId,
-        otherUser: data.otherUser,
-        lastMessage: null,
-        updatedAt: new Date().toISOString(),
-      });
-      setNewChatUsername("");
-    } catch (e) {
-      setError((e instanceof Error && e.message) || t("inbox.startFailed"));
-    } finally {
-      setStartingChat(false);
-    }
-  };
-
-  // Send a message in active conversation
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!activeConversation || !inputContent.trim() || sending) return;
-
-    setSending(true);
-    setError(null);
-    const content = inputContent.trim();
-    setInputContent("");
-
-    try {
-      const res = await fetch(`/api/conversations/${activeConversation.id}/messages`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || t("inbox.sendFailed"));
-        setInputContent(content); // restore input
-        return;
-      }
-
-      if (data.message) {
-        setMessages((prev) => {
-          if (prev.some((m) => m.id === data.message.id)) return prev;
-          return [...prev, data.message];
-        });
-      }
-    } catch (e) {
-      setError((e instanceof Error && e.message) || t("inbox.network"));
-      setInputContent(content);
-    } finally {
-      setSending(false);
-    }
-  };
-
-  // Block active user
-  const handleBlockUser = async () => {
-    if (!activeConversation) return;
-    setBlocking(true);
-
-    try {
-      const res = await fetch(`/api/users/${activeConversation.otherUser.username}/block`, {
-        method: "POST",
-      });
-
-      if (res.ok) {
-        setShowOptionsModal(false);
-        setActiveConversation(null);
-        await loadConversations();
-      }
-    } catch (e) {
-      console.error("Failed to block user", e);
-    } finally {
-      setBlocking(false);
-    }
-  };
+    if (!isLoading && !user) router.replace(`/auth/login?next=${encodeURIComponent(`${pathname}?${params.toString()}`)}`);
+  }, [isLoading, user, router, pathname, params]);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Header */}
-      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="mx-auto max-w-7xl px-0 py-0 sm:px-6 sm:py-6 lg:px-8">
+      <div className="mb-4 hidden items-end justify-between gap-4 sm:flex">
         <div>
-          <h1 className="text-2xl font-bold text-fg font-display flex items-center gap-2.5">
-            <MessageSquare className="h-6 w-6 text-accent" />
-            <span>{t("inbox.title")}</span>
+          <h1 className="flex items-center gap-2.5 font-display text-2xl font-bold text-fg">
+            <MessageIcon size={24} className="text-accent" />
+            {t("inbox.title")}
           </h1>
-          <p className="text-xs text-fg-secondary mt-1">
-            {t("inbox.intro")}
-          </p>
+          <p className="mt-1 text-xs text-fg-secondary">{t("inbox.intro")}</p>
         </div>
       </div>
 
-      {/* Main Messaging Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[720px] rounded-3xl border border-border-default bg-surface-1/80 backdrop-blur-xl shadow-2xl overflow-hidden">
-        {/* Left Column: Conversations Sidebar */}
-        <aside
-          className={cn(
-            "lg:col-span-4 border-r border-border-default flex flex-col h-full",
-            activeConversation ? "hidden lg:flex" : "flex"
-          )}
-        >
-          {/* Search / Start New Chat */}
-          <div className="p-4 border-b border-border-default">
-            <form onSubmit={handleStartConversation} className="flex gap-2">
+      {live === "reconnecting" && (
+        <p role="status" className="mb-3 flex items-center gap-2 rounded-xl border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-fg">
+          <Spinner size="sm" className="text-current" />
+          {t("inbox.reconnecting")}
+        </p>
+      )}
+
+      <div className="grid h-[calc(100dvh-8rem-env(safe-area-inset-bottom))] grid-cols-1 overflow-hidden border-border-default bg-surface-1/80 backdrop-blur-xl sm:h-[calc(100dvh-12rem)] sm:min-h-[520px] sm:rounded-3xl sm:border sm:shadow-2xl lg:grid-cols-12">
+        <aside className={cn("flex min-h-0 flex-col border-border-default lg:col-span-4 lg:border-r", activeId ? "hidden lg:flex" : "flex")}>
+          <div className="border-b border-border-default p-3 sm:p-4">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                void start(newChat);
+              }}
+              className="flex gap-2"
+            >
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-fg-secondary" aria-hidden />
+                <SearchIcon size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-fg-secondary" />
                 <Input
                   type="text"
+                  aria-label={t("inbox.start")}
                   placeholder={t("inbox.newPlaceholder")}
-                  value={newChatUsername}
-                  onChange={(e) => setNewChatUsername(e.target.value)}
-                  className="h-10 rounded-xl bg-surface-2/60 pl-9 pr-3 text-xs"
+                  value={newChat}
+                  onChange={(e) => setNewChat(e.target.value)}
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  className="h-10 rounded-xl bg-surface-2/60 pl-9 pr-3 text-sm"
                 />
               </div>
-              <IconButton
-                type="submit"
-                variant="primary"
-                shape="rounded"
-                disabled={!newChatUsername.trim()}
-                loading={startingChat}
-                className="rounded-xl"
-                label={t("inbox.start")}
-              >
-                {startingChat ? <Spinner size="sm" className="text-current" /> : <Plus className="h-3.5 w-3.5" aria-hidden />}
+              <IconButton type="submit" variant="primary" shape="rounded" disabled={!newChat.trim()} loading={starting} className="h-10 w-10 rounded-xl" label={t("inbox.start")}>
+                <PlusIcon size={16} />
               </IconButton>
             </form>
-          </div>
-
-          {/* Conversations List */}
-          <div className="flex-1 overflow-y-auto divide-y divide-border-subtle">
-            {loadingConversations ? (
-              <div className="flex flex-col items-center justify-center p-8 text-fg-secondary">
-                <Spinner size="md" className="mb-2 text-current" />
-                <span className="text-xs">{t("inbox.loadingConversations")}</span>
-              </div>
-            ) : conversations.length === 0 ? (
-              <div className="p-8 text-center text-fg-muted">
-                <MessageSquare className="h-8 w-8 mx-auto mb-2 text-fg-muted" />
-                <p className="text-xs font-semibold text-fg-secondary">{t("inbox.none")}</p>
-                <p className="text-[11px] mt-1 text-fg-muted">
-                  {t("inbox.noneHint")}
-                </p>
-              </div>
-            ) : (
-              conversations.map((conv) => {
-                const isSelected = activeConversation?.id === conv.id;
-                const other = conv.otherUser;
-                const hasUnread = conv.lastMessage && !conv.lastMessage.isRead && conv.lastMessage.senderId !== currentUserId;
-
-                return (
-                  <button
-                    key={conv.id}
-                    onClick={() => setActiveConversation(conv)}
-                    className={cn(
-                      "w-full text-left p-4 flex items-center gap-3 transition-colors",
-                      isSelected
-                        ? "bg-accent/15 border-l-2 border-accent"
-                        : "hover:bg-surface-2/50"
-                    )}
-                  >
-                    <div className="relative shrink-0">
-                      <Avatar
-                        src={other.avatarUrl}
-                        alt={other.displayName || other.username}
-                        fallback={<User className="h-5 w-5" aria-hidden />}
-                        className="h-11 w-11 border border-border-default"
-                      />
-                      {hasUnread && (
-                        <span className="absolute top-0 right-0 h-3 w-3 rounded-full bg-accent border-2 border-surface-1" />
-                      )}
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-bold text-fg truncate">
-                          {other.displayName || other.username}
-                        </span>
-                        {conv.lastMessage && (
-                          <span className="text-[10px] text-fg-muted shrink-0">
-                            {new Date(conv.lastMessage.createdAt).toLocaleDateString([], {
-                              month: "short",
-                              day: "numeric",
-                            })}
-                          </span>
-                        )}
-                      </div>
-                      <p
-                        className={cn("text-[11px] truncate", hasUnread
-                          ? "text-fg font-semibold"
-                          : "text-fg-secondary")}
-                      >
-                        {conv.lastMessage?.content || t("inbox.noMessages")}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })
+            {startError && (
+              <p role="alert" className="mt-2 text-xs text-danger">
+                {startError}
+              </p>
             )}
+          </div>
+          <OnlineNow people={chat.online} onOpen={(username) => void start(username)} />
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            <ConversationList conversations={chat.conversations} loaded={chat.listLoaded} activeId={activeId} myId={myId} presence={chat.presence} typing={chat.typing} />
           </div>
         </aside>
 
-        {/* Right Column: Chat Thread */}
-        <section
-          aria-label={t("inbox.thread")}
-          className={cn(
-            "lg:col-span-8 flex flex-col h-full",
-            !activeConversation ? "hidden lg:flex" : "flex"
-          )}
-        >
-          {activeConversation ? (
-            <>
-              {/* Active Header */}
-              <div className="p-4 border-b border-border-default flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <IconButton
-                    onClick={() => setActiveConversation(null)}
-                    shape="rounded"
-                    className="h-8 w-8 lg:hidden"
-                    label={t("inbox.back")}
-                  >
-                    <ArrowLeft className="h-5 w-5" aria-hidden />
-                  </IconButton>
-
-                  <div className="flex items-center gap-3">
-                    <Avatar
-                      src={activeConversation.otherUser.avatarUrl}
-                      fallback={<User className="h-5 w-5" aria-hidden />}
-                      className="border border-border-default"
-                    />
-                    <div>
-                      <h3 className="text-sm font-bold text-fg">
-                        {activeConversation.otherUser.displayName || activeConversation.otherUser.username}
-                      </h3>
-                      <Link
-                        href={`/users/${activeConversation.otherUser.username}`}
-                        className="text-[11px] text-accent hover:underline flex items-center gap-1"
-                        target="_blank"
-                      >
-                        @{activeConversation.otherUser.username}
-                        <ExternalLink className="h-3 w-3 inline" />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <IconButton
-                    onClick={() => setShowOptionsModal(!showOptionsModal)}
-                    shape="rounded"
-                    className="h-9 w-9 rounded-xl"
-                    aria-expanded={showOptionsModal}
-                    label={t("inbox.options")}
-                  >
-                    <MoreVertical className="h-4 w-4" aria-hidden />
-                  </IconButton>
-
-                  {showOptionsModal && (
-                    <div className="absolute right-0 top-10 w-44 rounded-xl border border-border-default bg-surface-2 p-1.5 shadow-2xl z-20">
-                      <button
-                        onClick={handleBlockUser}
-                        disabled={blocking}
-                        className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold text-danger hover:bg-danger/10 flex items-center gap-2 transition-colors"
-                      >
-                        <UserX className="h-3.5 w-3.5" />
-                        <span>{t("inbox.block")}</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Error banner */}
-              {error && (
-                <div className="m-4 p-3 rounded-xl border border-danger/30 bg-danger/10 text-xs text-danger flex items-center gap-2">
-                  <ShieldAlert className="h-4 w-4 shrink-0" />
-                  <span>{error}</span>
-                </div>
-              )}
-
-              {/* Messages Bubble Area */}
-              <div className="flex-1 p-4 overflow-y-auto space-y-3">
-                {loadingMessages ? (
-                  <div className="flex items-center justify-center h-full text-fg-muted">
-                    <Spinner size="md" className="text-current" />
-                  </div>
-                ) : messages.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full text-center text-fg-muted">
-                    <MessageSquare className="h-8 w-8 mb-2 opacity-50" />
-                    <p className="text-xs font-semibold">{t("inbox.startTitle")}</p>
-                    <p className="text-[11px] mt-1 max-w-xs">
-                      {t("inbox.sayHello", { username: activeConversation.otherUser.username })}
-                    </p>
-                  </div>
-                ) : (
-                  messages.map((msg) => {
-                    const isMine = msg.senderId === currentUserId;
-
-                    return (
-                      <div
-                        key={msg.id}
-                        className={cn("flex flex-col", isMine ? "items-end" : "items-start")}
-                      >
-                        <div
-                          className={cn("max-w-[75%] px-4 py-2.5 text-xs rounded-2xl", isMine
-                            ? "bg-linear-to-tr from-accent to-accent-2 text-white rounded-br-sm shadow-md"
-                            : "bg-surface-2 border border-border-default text-fg rounded-bl-sm")}
-                        >
-                          {msg.storyId && <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider opacity-75">{t("inbox.storyReply")}</p>}
-                          <p className="leading-relaxed whitespace-pre-wrap wrap-break-word">{msg.content}</p>
-                        </div>
-                        <div className="flex items-center gap-1.5 mt-1 px-1 text-[10px] text-fg-muted">
-                          <span>
-                            {new Date(msg.createdAt).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </span>
-                          {isMine && (
-                            <span>
-                              {msg.isRead ? (
-                                <CheckCheck className="h-3 w-3 text-accent" />
-                              ) : (
-                                <Check className="h-3 w-3 text-fg-muted" />
-                              )}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-
-              {/* Message Composer */}
-              <div className="p-4 border-t border-border-default">
-                <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-                  <Input
-                    type="text"
-                    value={inputContent}
-                    onChange={(e) => setInputContent(e.target.value)}
-                    placeholder={t("inbox.messagePlaceholder")}
-                    maxLength={2000}
-                    className="flex-1 rounded-xl px-4 text-xs"
-                  />
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    shape="rounded"
-                    disabled={!inputContent.trim()}
-                    loading={sending}
-                    className="h-11 rounded-xl text-xs shadow-md shadow-accent/20"
-                  >
-                    {!sending && <Send className="h-3.5 w-3.5" aria-hidden />}
-                    <span className="hidden sm:inline">{t("inbox.send")}</span>
-                  </Button>
-                </form>
-              </div>
-            </>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center p-8 text-fg-muted">
-              <div className="h-16 w-16 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center text-accent mb-4">
-                <MessageSquare className="h-8 w-8" />
-              </div>
-              <h3 className="text-base font-bold text-fg">{t("inbox.emptyTitle")}</h3>
-              <p className="text-xs text-fg-secondary max-w-sm mt-1">
-                {t("inbox.emptyHint")}
-              </p>
-            </div>
+        <section aria-label={t("inbox.thread")} className={cn("min-h-0 lg:col-span-8", activeId ? "flex flex-col" : "hidden lg:flex lg:flex-col")}>
+          {myId && (
+            <Thread
+              conversation={conversation}
+              myId={myId}
+              presence={conversation ? chat.presence[conversation.otherUser.id] : undefined}
+              messages={chat.messages}
+              state={chat.thread}
+              typing={Boolean(conversation && chat.typing[conversation.id])}
+              onBack={() => open(null)}
+              onSend={chat.send}
+              onRetry={chat.retry}
+              onDiscard={chat.discard}
+              onTyping={chat.onTyping}
+              onLoadOlder={() => void chat.loadOlder()}
+              onBlock={(block) => (conversation ? chat.setBlocked(conversation, block) : Promise.resolve(false))}
+            />
           )}
         </section>
       </div>
+
+      {/* New messages in other conversations, said once to screen readers (the open one is a live log). */}
+      <p className="sr-only" aria-live="polite" role="status">
+        {chat.announcement}
+      </p>
     </div>
   );
 }
@@ -607,8 +157,9 @@ export default function MessagesPage() {
   return (
     <Suspense
       fallback={
-        <div className="mx-auto max-w-7xl px-4 py-24 text-center text-xs text-fg-muted font-mono">
-          {t("inbox.loading")}
+        <div className="flex justify-center py-24 text-fg-muted">
+          <Spinner size="md" className="text-current" />
+          <span className="sr-only">{t("inbox.loading")}</span>
         </div>
       }
     >

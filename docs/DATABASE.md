@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 46 tables · 26 enums · 6 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 46 tables · 26 enums · 7 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -26,12 +26,12 @@ Every foreign key, read from the schema: what each table points to (through whic
 | `challenge_applications` | `challenges` (`challenge_id`) · `users` (`creator_id`) | — |
 | `challenge_pledges` | `challenges` (`challenge_id`) · `users` (`backer_id`) | — |
 | `challenges` | `users` (`author_id`) · `users` (`creator_id`) · `videos` (`delivered_video_id`) · `stories` (`delivered_story_id`) | `challenge_applications` · `challenge_pledges` |
-| `compliance_reports` | `videos` (`video_id`) · `stories` (`story_id`) · `users` (`reporter_id`) | — |
+| `compliance_reports` | `videos` (`video_id`) · `stories` (`story_id`) · `direct_messages` (`message_id`) · `users` (`reporter_id`) | — |
 | `contacts` | `users` (`requester_id`) · `users` (`addressee_id`) | — |
 | `content_ratings` | — | `stories` · `videos` |
 | `conversations` | `users` (`participant1_id`) · `users` (`participant2_id`) | `direct_messages` |
 | `credit_topups` | `users` (`user_id`) | — |
-| `direct_messages` | `conversations` (`conversation_id`) · `users` (`sender_id`) · `users` (`recipient_id`) · `stories` (`story_id`) | — |
+| `direct_messages` | `conversations` (`conversation_id`) · `users` (`sender_id`) · `users` (`recipient_id`) · `stories` (`story_id`) | `compliance_reports` |
 | `follows` | `users` (`follower_id`) · `users` (`creator_id`) | — |
 | `notifications` | `users` (`user_id`) · `users` (`actor_id`) | — |
 | `payment_intents` | `users` (`sender_id`) · `users` (`creator_id`) · `videos` (`video_id`) · `stories` (`story_id`) | — |
@@ -232,6 +232,7 @@ Every foreign key, read from the schema: what each table points to (through whic
 | `id` | uuid | no | `gen_random_uuid()` | primary key |
 | `video_id` | uuid | yes |  | → `videos.id` (on delete set null) |
 | `story_id` | uuid | yes |  | → `stories.id` (on delete set null) |
+| `message_id` | uuid | yes |  | → `direct_messages.id` (on delete set null) |
 | `video_title` | varchar(255) | no |  |  |
 | `reason` | report_reason | no |  |  |
 | `details` | text | no |  |  |
@@ -305,16 +306,19 @@ Every foreign key, read from the schema: what each table points to (through whic
 | Column | Type | Null | Default | Notes |
 | :--- | :--- | :--- | :--- | :--- |
 | `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `seq` | bigserial | no | `undefined` |  |
 | `conversation_id` | uuid | no |  | → `conversations.id` (on delete cascade) |
+| `client_id` | uuid | yes |  |  |
 | `sender_id` | uuid | no |  | → `users.id` (on delete cascade) |
 | `recipient_id` | uuid | no |  | → `users.id` (on delete cascade) |
 | `content` | text | no |  |  |
 | `story_id` | uuid | yes |  | → `stories.id` (on delete set null) |
+| `delivered_at` | timestamp with time zone | yes |  |  |
 | `is_read` | boolean | no | `false` |  |
 | `read_at` | timestamp with time zone | yes |  |  |
 | `created_at` | timestamp with time zone | no | `now()` |  |
 
-**Indexes:** `direct_messages_conversation_idx` (conversation_id) · `direct_messages_sender_idx` (sender_id) · `direct_messages_recipient_idx` (recipient_id) · `direct_messages_created_at_idx` (created_at)
+**Indexes:** `direct_messages_conversation_idx` (conversation_id) · `direct_messages_sender_idx` (sender_id) · `direct_messages_recipient_idx` (recipient_id) · `direct_messages_created_at_idx` (created_at) · `direct_messages_seq_idx` (unique, seq) · `direct_messages_conversation_seq_idx` (conversation_id, seq) · `direct_messages_sender_client_idx` (unique, sender_id, client_id) · `direct_messages_unread_idx` (recipient_id, partial)
 
 ### `follows`
 
@@ -462,6 +466,7 @@ Every foreign key, read from the schema: what each table points to (through whic
 | `email_frequency` | varchar(10) | no | `"INSTANT"` |  |
 | `last_activity_email_at` | timestamp with time zone | yes |  |  |
 | `direct_message_privacy` | varchar(20) | no | `"EVERYONE"` |  |
+| `show_presence` | boolean | no | `true` |  |
 | `min_tip_amount_cents` | integer | no | `500` |  |
 | `challenge_requests_off` | boolean | no | `false` |  |
 | `challenge_min_cents` | integer | no | `1000` |  |
@@ -629,6 +634,7 @@ Every foreign key, read from the schema: what each table points to (through whic
 | `suspended_at` | timestamp with time zone | yes |  |  |
 | `suspension_reason` | text | yes |  |  |
 | `storage_plan` | varchar(40) | yes |  |  |
+| `last_seen_at` | timestamp with time zone | yes |  |  |
 | `created_at` | timestamp with time zone | no | `now()` |  |
 | `updated_at` | timestamp with time zone | no | `now()` |  |
 
@@ -832,3 +838,4 @@ Every foreign key, read from the schema: what each table points to (through whic
 - `0003_story_engagement.sql`
 - `0004_explore_search.sql`
 - `0005_storage_quotas_abuse.sql`
+- `0006_realtime_chat_presence.sql`

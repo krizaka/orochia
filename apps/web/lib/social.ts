@@ -3,6 +3,7 @@ import { and, desc, eq, isNull, or, sql } from "drizzle-orm";
 import { HttpError } from "./http";
 import { after } from "next/server";
 import { notifyContactRequest, notifyFollow } from "./notifications";
+import { circleChanged } from "./presence";
 
 /**
  * The social graph: follows (a creator approves who follows them — APPROVED_FOLLOWERS_ONLY videos)
@@ -72,6 +73,7 @@ export async function follow(viewerId: string, creatorUsername: string): Promise
 export async function unfollow(viewerId: string, creatorUsername: string): Promise<void> {
   const creator = await activeAccount(creatorUsername);
   await db.delete(follows).where(and(eq(follows.followerId, viewerId), eq(follows.creatorId, creator.id)));
+  circleChanged(viewerId, creator.id);
 }
 
 /** The creator approves or removes one of their followers. */
@@ -79,9 +81,10 @@ export async function decideFollower(creatorId: string, followId: string, action
   const where = and(eq(follows.id, followId), eq(follows.creatorId, creatorId));
   const rows =
     action === "approve"
-      ? await db.update(follows).set({ status: "APPROVED", decidedAt: new Date() }).where(where).returning({ id: follows.id })
-      : await db.delete(follows).where(where).returning({ id: follows.id });
+      ? await db.update(follows).set({ status: "APPROVED", decidedAt: new Date() }).where(where).returning({ followerId: follows.followerId })
+      : await db.delete(follows).where(where).returning({ followerId: follows.followerId });
   if (rows.length === 0) throw new HttpError(404, "Follower not found");
+  circleChanged(creatorId, rows[0].followerId);
 }
 
 /**
@@ -95,6 +98,7 @@ export async function requestContact(viewerId: string, username: string): Promis
   if (existing?.status === "BLOCKED") throw new HttpError(403, "This contact is not available");
   if (existing?.direction === "incoming" && existing.status === "PENDING") {
     await db.update(contacts).set({ status: "ACCEPTED", updatedAt: new Date() }).where(eq(contacts.id, existing.id));
+    circleChanged(viewerId, other.id);
     return { ...existing, status: "ACCEPTED" };
   }
   if (existing && existing.status !== "REJECTED") return existing;
@@ -112,6 +116,7 @@ export async function decideContact(viewerId: string, contactId: string, action:
   if (action !== "block" && row.status !== "PENDING") throw new HttpError(409, "This request was already answered");
   const status = action === "accept" ? "ACCEPTED" : action === "reject" ? "REJECTED" : "BLOCKED";
   await db.update(contacts).set({ status, updatedAt: new Date() }).where(eq(contacts.id, contactId));
+  circleChanged(row.requesterId, row.addresseeId);
 }
 
 /** Either side removes a contact (or withdraws a request). A block can only be lifted by deleting it. */
@@ -119,8 +124,9 @@ export async function removeContact(viewerId: string, contactId: string): Promis
   const rows = await db
     .delete(contacts)
     .where(and(eq(contacts.id, contactId), or(eq(contacts.requesterId, viewerId), eq(contacts.addresseeId, viewerId))))
-    .returning({ id: contacts.id });
+    .returning({ requesterId: contacts.requesterId, addresseeId: contacts.addresseeId });
   if (rows.length === 0) throw new HttpError(404, "Contact not found");
+  circleChanged(rows[0].requesterId, rows[0].addresseeId);
 }
 
 export interface NetworkPerson {

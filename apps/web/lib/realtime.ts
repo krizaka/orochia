@@ -1,95 +1,68 @@
-import { EventEmitter } from "events";
-import { listenChannel, notifyChannel, type ChannelListener } from "@orochia/db";
+import { listenChannel, notifyChannel } from "@orochia/db";
+import { createBus, eventStream, type RealtimeBus, type SseFrame } from "@orochia/realtime";
+
+import { realtimeConfig } from "./env";
 
 /**
- * The realtime bus. Every event goes through PostgreSQL NOTIFY on one channel, and each app instance LISTENs and hands
- * it to the subscribers it holds (SSE streams) — so a bid, a message or a notification reaches its viewers whichever
- * instance served the action. No broker: the database the app already pays for does the fan-out.
- * Topics: `user:<id>` (one account's messages and notifications), `auction:<id>` (an auction's public feed).
- * While the LISTEN connection is down, events are delivered to this instance's subscribers directly.
+ * The realtime door: everything that is pushed live goes through here. The transport is `@orochia/realtime`'s
+ * `RealtimeBus` — PostgreSQL LISTEN/NOTIFY by default, Redis / Valkey with `REALTIME_BUS=redis` — chosen by
+ * configuration; the code that publishes and subscribes never knows which.
+ *
+ * Topics: `user:<id>` (one account's messages, receipts, typing, notifications), `presence:<id>` (one account's
+ * presence, delivered only to those allowed to see it — lib/presence.ts), `auction:<id>`, `challenge:<id>`.
+ * Payloads are small facts (≤ 8 KB), never documents: what must not be lost lives in the database and is replayed
+ * from it (lib/chat-stream.ts).
  */
 
-const CHANNEL = "orochia_events";
-
-interface Bus {
-  emitter: EventEmitter;
-  listener: ChannelListener | null;
-}
-
 // One bus per process, kept across hot reloads in development.
-const holder = globalThis as unknown as { __orochiaRealtime?: Bus };
-function bus(): Bus {
-  if (!holder.__orochiaRealtime) {
-    const emitter = new EventEmitter();
-    emitter.setMaxListeners(0);
-    holder.__orochiaRealtime = { emitter, listener: null };
-  }
-  return holder.__orochiaRealtime;
-}
+const holder = globalThis as unknown as { __orochiaBus?: RealtimeBus };
 
-function ensureListening(b: Bus) {
-  if (b.listener) return;
-  b.listener = listenChannel(CHANNEL, (payload) => {
-    try {
-      const { topic, event } = JSON.parse(payload) as { topic: string; event: unknown };
-      b.emitter.emit(topic, event);
-    } catch {
-      /* not ours */
-    }
-  });
+export function realtimeBus(): RealtimeBus {
+  if (!holder.__orochiaBus) {
+    const config = realtimeConfig();
+    holder.__orochiaBus = createBus({
+      kind: config.kind,
+      postgres: { listen: listenChannel, notify: notifyChannel },
+      redisUrl: config.redisUrl,
+      prefix: config.prefix,
+    });
+  }
+  return holder.__orochiaBus;
 }
 
 /** Subscribes to a topic on this instance; returns the unsubscribe function. */
 export function subscribe<T = unknown>(topic: string, callback: (event: T) => void): () => void {
-  const b = bus();
-  ensureListening(b);
-  b.emitter.on(topic, callback);
-  return () => {
-    b.emitter.off(topic, callback);
-  };
+  return realtimeBus().subscribe(topic, callback as (event: unknown) => void);
 }
 
 /** Publishes an event to every instance's subscribers of the topic. Never throws: realtime is best-effort. */
 export async function publish(topic: string, event: unknown): Promise<void> {
-  const b = bus();
-  if (!b.listener?.connected) {
-    b.emitter.emit(topic, event);
-    return;
-  }
   try {
-    await notifyChannel(CHANNEL, JSON.stringify({ topic, event }));
+    await realtimeBus().publish(topic, event);
   } catch (error) {
-    console.warn(`[realtime] publish ${topic} failed, delivered locally`, (error as Error).message);
-    b.emitter.emit(topic, event);
+    console.warn(`[realtime] publish ${topic} failed`, (error as Error).message);
   }
 }
 
+/** Shared by every stream: reconnect after 2 s, end after REALTIME_STREAM_MAX_SECONDS (the client comes back at once). */
+export function streamTimings() {
+  const { streamMaxSeconds } = realtimeConfig();
+  return { retryMs: 2000, heartbeatMs: 15_000, maxLifetimeMs: streamMaxSeconds * 1000 };
+}
+
 /**
- * A Server-Sent Events response fed by one or more topics: a `connected` event, then each event as a `data:` line,
- * a heartbeat every 15 s (proxies keep the connection), and the subscriptions dropped when the client goes away.
+ * A Server-Sent Events response fed by one or more topics (auctions, challenges): a `connected` event, then each event
+ * as a `data:` line, a heartbeat every 15 s, and the subscriptions dropped when the client goes away.
  */
 export function sseResponse(topics: string[], initial?: unknown): Response {
-  const encoder = new TextEncoder();
-  const cleanups: (() => void)[] = [];
-  const stream = new ReadableStream({
-    start(controller) {
-      const send = (chunk: string) => {
-        try {
-          controller.enqueue(encoder.encode(chunk));
-        } catch {
-          /* closed by the client */
-        }
-      };
-      send(`event: connected\ndata: ${JSON.stringify(initial ?? { status: "connected" })}\n\n`);
-      for (const topic of topics) cleanups.push(subscribe(topic, (event) => send(`data: ${JSON.stringify(event)}\n\n`)));
-      const heartbeat = setInterval(() => send(`: heartbeat\n\n`), 15_000);
-      cleanups.push(() => clearInterval(heartbeat));
+  return eventStream({
+    ...streamTimings(),
+    start: ({ send }) => {
+      send({ event: "connected", data: initial ?? { status: "connected" } });
+      const offs = topics.map((topic) => subscribe(topic, (event) => send({ data: event })));
+      return () => offs.forEach((off) => off());
     },
-    cancel() {
-      for (const cleanup of cleanups) cleanup();
-    },
-  });
-  return new Response(stream, {
-    headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache, no-transform", Connection: "keep-alive", "X-Accel-Buffering": "no" },
   });
 }
+
+export type { SseFrame };

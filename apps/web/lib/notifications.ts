@@ -61,7 +61,7 @@ async function claimEmail(userId: string, frequency: string | null): Promise<boo
 }
 
 /** Records one notification (if wanted in the app), pushes it live, and e-mails it (if wanted, at the chosen pace). */
-export async function notify(input: { userId: string; event: NotificationEvent; vars: Vars; path: string; actorId?: string | null; emailThrottleKey?: string }): Promise<void> {
+export async function notify(input: { userId: string; event: NotificationEvent; vars: Vars; path: string; actorId?: string | null; emailThrottleKey?: string; push?: boolean }): Promise<void> {
   const { userId, event, vars, path } = input;
   try {
     const to = await recipient(userId);
@@ -70,7 +70,7 @@ export async function notify(input: { userId: string; event: NotificationEvent; 
       const [row] = await db.insert(notifications).values({ userId, event, actorId: input.actorId ?? null, vars, path }).returning();
       emitUserEvent(userId, { type: "notification", notification: { id: row.id, event, text: notificationText(event, vars), path, createdAt: row.createdAt, readAt: null } });
       // The same notification on the account's phones (when it has the app), in the background.
-      void pushToUser(userId, { title: t(`notify.${event}.subject` as MessageKey, { ...vars, username: to.username }), body: notificationText(event, vars), path });
+      if (input.push !== false) void pushToUser(userId, { title: t(`notify.${event}.subject` as MessageKey, { ...vars, username: to.username }), body: notificationText(event, vars), path });
     }
     if (!to.verified || !wants(to.emailsOff, event)) return;
     if (input.emailThrottleKey) {
@@ -129,9 +129,15 @@ export async function notifyComment(input: { videoId: string; authorId: string; 
   }
 }
 
+/**
+ * A message arrived. The phone rings only when no Orochia screen of the recipient is in front of them (presence
+ * `online`): an open page or app already shows it live.
+ */
 export async function notifyMessage(recipientId: string, senderId: string, conversationId: string) {
   const who = await nameOf(senderId);
-  await notify({ userId: recipientId, actorId: senderId, event: "newMessage", vars: { name: who.name }, path: "/messages", emailThrottleKey: conversationId });
+  const { isOnline } = await import("./presence");
+  const onScreen = await isOnline(recipientId).catch(() => false);
+  await notify({ userId: recipientId, actorId: senderId, event: "newMessage", vars: { name: who.name }, path: `/messages?c=${conversationId}`, emailThrottleKey: conversationId, push: !onScreen });
 }
 
 /** After a settlement: the creator hears about the tip or the unlock (never about their own payments). */

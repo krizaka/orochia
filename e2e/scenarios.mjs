@@ -2,7 +2,8 @@
 /**
  * End-to-end feature scenarios against a running Orochia on a freshly seeded database:
  * approved followers, contacts, invited-only videos and audience lists, collections and their permissions, views, likes, comments, shares, search, explore (sections, tags, no leak), creator edits, takedowns, suspensions,
- * role changes, the wallet, auctions and challenges — each checked through the HTTP API with real sessions.
+ * role changes, the wallet, auctions and challenges, realtime chat and presence (live streams, receipts, typing, resume) —
+ * each checked through the HTTP API with real sessions.
  *
  *   npm run db:reset -- --yes && npm run dev      # in another terminal
  *   npm run test:e2e                              # OROCHIA_URL defaults to http://localhost:3000
@@ -658,6 +659,163 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("list blocked users", Array.isArray(myBlocks) && myBlocks.some((b) => b.blockedUsername === "alex_vance"));
   const unblockRes = await sam.call("/api/users/alex_vance/block", "POST");
   check("unblock user", unblockRes.status === 200 && unblockRes.json.blocked === false);
+}
+
+// Realtime chat and presence (Messenger): two live streams, a message in under a second, typing, delivered and read,
+// a cut stream that resumes without loss or duplicate, an idempotent retry, presence only where the rules allow it,
+// and a block that closes it all.
+{
+  /** One account's live stream, parsed as it arrives (fetch, like a native app). */
+  const openStream = (s, { lastEventId } = {}) => {
+    const ctrl = new AbortController();
+    const events = [];
+    let lastId = null;
+    const headers = { Cookie: s.cookie, Accept: "text/event-stream", ...(lastEventId ? { "Last-Event-ID": lastEventId } : {}) };
+    const opened = fetch(B + "/api/conversations/stream", { headers, signal: ctrl.signal }).then((res) => {
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      (async () => {
+        try {
+          for (;;) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            let cut;
+            while ((cut = buffer.indexOf("\n\n")) >= 0) {
+              const frame = {};
+              for (const line of buffer.slice(0, cut).split("\n")) {
+                const m = line.match(/^(\w+): ?(.*)$/);
+                if (m) frame[m[1]] = m[2];
+              }
+              buffer = buffer.slice(cut + 2);
+              if (frame.id) lastId = frame.id;
+              if (frame.data) events.push({ event: frame.event ?? "message", id: frame.id, data: JSON.parse(frame.data), at: Date.now() });
+            }
+          }
+        } catch {
+          /* closed */
+        }
+      })();
+      return res.status;
+    });
+    const next = async (pred, ms = 3000) => {
+      const start = Date.now();
+      while (Date.now() - start < ms) {
+        const found = events.find(pred);
+        if (found) return found;
+        await sleep(20);
+      }
+      return null;
+    };
+    return { opened, events, next, close: () => ctrl.abort(), get lastId() { return lastId; } };
+  };
+  const isType = (type, extra = () => true) => (e) => e.data?.type === type && extra(e.data);
+
+  const conv = (await elena.call("/api/conversations", "POST", { recipientUsername: "miasterling" })).json.conversationId;
+  const elenaId = (await elena.call("/api/me/profile")).json.profile.id;
+  const miaId = (await mia.call("/api/me/profile")).json.profile.id;
+
+  check("a visitor gets no stream", (await fetch(B + "/api/conversations/stream")).status === 401);
+  const miaStream = openStream(mia);
+  const elenaStream = openStream(elena);
+  check("two live streams open", (await miaStream.opened) === 200 && (await elenaStream.opened) === 200);
+  const hello = await miaStream.next((e) => e.event === "connected");
+  check("…each says it is connected, with its connection id", typeof hello?.data.connectionId === "string");
+  await elenaStream.next((e) => e.event === "connected");
+
+  // A message in under a second, with its cursor; the sender's other apps get it too.
+  const clientId = crypto.randomUUID();
+  const sentAt = Date.now();
+  const sent = await elena.call(`/api/conversations/${conv}/messages`, "POST", { content: "Live from the studio", clientId });
+  check("a message is sent with the app's id", sent.status === 201 && sent.json.message?.clientId === clientId && typeof sent.json.message?.seq === "number");
+  const arrived = await miaStream.next(isType("new_message", (d) => d.message.id === sent.json.message.id), 1000);
+  check("…and reaches the recipient's stream in under a second", Boolean(arrived) && arrived.at - sentAt < 1000, arrived ? `${arrived.at - sentAt} ms` : "never");
+  check("…with its cursor as the event id", arrived?.id === `m${sent.json.message.seq}`);
+  check("…and the sender's own stream hears it (other tabs, other phones)", Boolean(await elenaStream.next(isType("message_sent", (d) => d.message.id === sent.json.message.id))));
+  check("the badge moves on the recipient's stream", Boolean(await miaStream.next(isType("unread", (d) => d.total >= 1))));
+
+  // The same send again (a retry after a lost answer): the same message, not a second one.
+  const retry = await elena.call(`/api/conversations/${conv}/messages`, "POST", { content: "Live from the studio", clientId });
+  check("a retried send answers the stored message (200, duplicate)", retry.status === 200 && retry.json.duplicate === true && retry.json.message.id === sent.json.message.id);
+  const page = (await mia.call(`/api/conversations/${conv}/messages`)).json.messages;
+  check("…and the conversation holds it once", page.filter((m) => m.clientId === clientId).length === 1);
+
+  // Receipts: delivered when it reached Mia's stream, read when she opens the conversation (the GET above).
+  check("the sender sees it delivered", Boolean(await elenaStream.next(isType("receipt", (d) => d.state === "delivered" && d.conversationId === conv && d.upTo >= sent.json.message.seq))));
+  check("…then read", Boolean(await elenaStream.next(isType("receipt", (d) => d.state === "read" && d.upTo >= sent.json.message.seq))));
+  check("…and the reader's badge goes back down", Boolean(await miaStream.next(isType("unread", (d) => d.total === 0))));
+
+  // Typing: live only, to the other participant only.
+  check("typing is signalled", (await mia.call(`/api/conversations/${conv}/typing`, "POST", { typing: true })).status === 200);
+  check("…and seen live by the other participant", Boolean(await elenaStream.next(isType("typing", (d) => d.userId === miaId && d.typing === true && d.conversationId === conv))));
+  check("a stranger cannot signal typing in a conversation that is not theirs", (await sam.call(`/api/conversations/${conv}/typing`, "POST", { typing: true })).status === 404);
+  check("…nor read its messages", (await sam.call(`/api/conversations/${conv}/messages`)).status === 404);
+  check("a malformed conversation id is a 404, not a 500", (await mia.call("/api/conversations/not-a-uuid/messages")).status === 404);
+
+  // Presence: Mia answered, so they have talked — each sees the other online; a stranger sees nothing.
+  await mia.call(`/api/conversations/${conv}/messages`, "POST", { content: "Count me in", clientId: crypto.randomUUID() });
+  const both = (await elena.call(`/api/presence?ids=${miaId}`)).json.presence;
+  check("after an exchange, presence is visible both ways: online", both?.[miaId]?.state === "online", JSON.stringify(both));
+  check("…the conversation list carries it", (await elena.call("/api/conversations")).json.conversations.find((c) => c.id === conv)?.presence?.state === "online");
+  check("…and Online now lists her", (await elena.call("/api/presence/online")).json.online.some((p) => p.id === miaId));
+  // The operator has no relationship with them: a stranger, administrator or not.
+  const stranger = (await admin.call(`/api/presence?ids=${miaId},${elenaId}`)).json.presence;
+  check("a stranger (even an administrator) sees no one's presence", stranger && Object.keys(stranger).length === 0, JSON.stringify(stranger));
+  const empty = await admin.call("/api/conversations", "POST", { recipientUsername: "elenavox" });
+  await admin.call(`/api/conversations/${empty.json.conversationId}/messages`, "POST", { content: "hi?", clientId: crypto.randomUUID() });
+  check("…nor by writing into the void (no answer, no presence)", Object.keys((await admin.call(`/api/presence?ids=${elenaId}`)).json.presence).length === 0);
+
+  // Away, then hidden: the circle hears it live.
+  await mia.call("/api/presence", "POST", { connectionId: hello.data.connectionId, state: "away" });
+  check("away (page hidden) reaches the circle live", Boolean(await elenaStream.next(isType("presence", (d) => d.userId === miaId && d.state === "away"))));
+  check("hiding one's presence is a setting", (await mia.call("/api/me/profile", "PUT", { showPresence: false })).status === 200);
+  check("…the circle sees offline at once, with no time", Boolean(await elenaStream.next(isType("presence", (d) => d.userId === miaId && d.state === "offline" && d.lastSeenAt === null))));
+  check("…and no longer reads it", !(await elena.call(`/api/presence?ids=${miaId}`)).json.presence[miaId]);
+  check("…and Mia sees nobody's either (nobody watches unseen)", Object.keys((await mia.call(`/api/presence?ids=${elenaId}`)).json.presence).length === 0);
+  await mia.call("/api/me/profile", "PUT", { showPresence: true });
+
+  // A cut stream resumes from its cursor: what was missed arrives once, nothing twice.
+  const cursor = miaStream.lastId;
+  miaStream.close();
+  const missed = [];
+  for (const text of ["While you were away 1", "While you were away 2"]) missed.push((await elena.call(`/api/conversations/${conv}/messages`, "POST", { content: text, clientId: crypto.randomUUID() })).json.message);
+  const resumed = openStream(mia, { lastEventId: cursor });
+  await resumed.opened;
+  check("a stream reopened with Last-Event-ID says it resumed", Boolean(await resumed.next((e) => e.event === "connected" && e.data.resumed === true)));
+  const got = await resumed.next(() => missed.every((m) => resumed.events.some((e) => e.data?.message?.id === m.id)), 3000);
+  check("…and replays the messages it missed", Boolean(got));
+  const ids = resumed.events.filter((e) => e.data?.type === "new_message").map((e) => e.data.message.id);
+  check("…each once, in order", missed.every((m) => ids.filter((id) => id === m.id).length === 1) && ids.indexOf(missed[0].id) < ids.indexOf(missed[1].id));
+  const later = await elena.call(`/api/conversations/${conv}/messages`, "POST", { content: "Back live", clientId: crypto.randomUUID() });
+  check("…then goes on live", Boolean(await resumed.next(isType("new_message", (d) => d.message.id === later.json.message.id), 1000)));
+  check("a malformed cursor is ignored, not an error", (await openStream(mia, { lastEventId: "garbage" }).opened) === 200);
+
+  // Older messages page by cursor.
+  const latest = (await mia.call(`/api/conversations/${conv}/messages?limit=2`)).json;
+  const older = (await mia.call(`/api/conversations/${conv}/messages?limit=2&before=${latest.messages[0].seq}`)).json;
+  check("history pages backwards by seq", latest.hasMore === true && older.messages.every((m) => m.seq < latest.messages[0].seq));
+
+  // Reports: the recipient reports a message they received, never one they sent.
+  check("the recipient reports a message", (await mia.call(`/api/conversations/${conv}/messages/${later.json.message.id}/report`, "POST", { reason: "TERMS_VIOLATION", details: "spam" })).status === 201);
+  check("…the sender cannot report their own", (await elena.call(`/api/conversations/${conv}/messages/${later.json.message.id}/report`, "POST", { reason: "TERMS_VIOLATION" })).status === 404);
+  check("…it reaches the operators with the message", ((await admin.call("/api/admin/reports")).json.reports ?? []).some((r) => r.messageId === later.json.message.id && r.details.includes("Back live")));
+
+  // A block: no typing, no presence, no message — and the circles update live.
+  check("mia blocks elena", (await mia.call("/api/users/elenavox/block", "POST")).json.blocked === true);
+  check("…the blocked account's stream hears its circle changed", Boolean(await elenaStream.next(isType("circle_changed"))));
+  check("…presence is gone both ways", Object.keys((await elena.call(`/api/presence?ids=${miaId}`)).json.presence).length === 0);
+  const refused = await elena.call(`/api/conversations/${conv}/messages`, "POST", { content: "still there?", clientId: crypto.randomUUID() });
+  check("…a message is refused with a stable code", refused.status === 403 && refused.json.code === "MESSAGE_BLOCKED");
+  const typingSeen = () => resumed.events.filter((e) => e.data?.type === "typing").length;
+  const typingBefore = typingSeen();
+  await elena.call(`/api/conversations/${conv}/typing`, "POST", { typing: true });
+  await sleep(300);
+  check("…typing is not relayed", typingSeen() === typingBefore);
+  await mia.call("/api/users/elenavox/block", "POST");
+
+  resumed.close();
+  elenaStream.close();
 }
 
 // Auctions: bids in credits held while they lead and released when outbid, a soft close, aliases for bidders,

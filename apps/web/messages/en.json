@@ -830,7 +830,9 @@
       "everyone": "Everyone",
       "everyoneHint": "Any member with a verified account.",
       "contacts": "Contacts only",
-      "contactsHint": "Only people you have accepted as contacts."
+      "contactsHint": "Only people you have accepted as contacts.",
+      "presence": "Show when I'm online",
+      "presenceHint": "Your contacts, the people you talk with and your approved followers see when you are online or last seen. Turn it off and you will not see theirs either."
     },
     "notifications": {
       "intro": "Choose what reaches you, in the app (the bell) and by e-mail. Everything is on by default.",
@@ -1876,7 +1878,7 @@
   },
   "inbox": {
     "title": "Messages",
-    "intro": "Private conversations with creators and your contacts.",
+    "intro": "Private conversations with creators and your contacts, as they happen.",
     "newPlaceholder": "New chat: @username",
     "start": "Start a conversation",
     "loadingConversations": "Loading conversations…",
@@ -1898,7 +1900,57 @@
     "network": "No connection. Try again.",
     "startFailed": "The conversation could not be started.",
     "sendFailed": "The message could not be sent.",
-    "storyReply": "Replied to a story"
+    "storyReply": "Replied to a story",
+    "onlineNow": "Online now",
+    "presence": {
+      "online": "Online",
+      "away": "Away",
+      "seen": "Seen {when}",
+      "offline": "Offline"
+    },
+    "typing": "typing…",
+    "typingLabel": "{name} is typing",
+    "status": {
+      "sending": "Sending…",
+      "sent": "Sent",
+      "delivered": "Delivered",
+      "read": "Seen",
+      "failed": "Not sent"
+    },
+    "retry": "Retry",
+    "discard": "Remove",
+    "you": "You: {text}",
+    "unreadCount": "{count} unread",
+    "newFrom": "New message from {name}: {text}",
+    "reconnecting": "Reconnecting… new messages will arrive as soon as you are back online.",
+    "loadOlder": "Show earlier messages",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "viewProfile": "View profile",
+    "unblock": "Unblock",
+    "blockedBanner": "You blocked @{username}. Unblock them to write again.",
+    "blockTitle": "Block @{username}?",
+    "blockBody": "They will no longer be able to write to you or see when you are online, and you will not see theirs. You can unblock them in Settings.",
+    "blockConfirm": "Block",
+    "blocked": "@{username} is blocked.",
+    "unblocked": "@{username} is unblocked.",
+    "messageActions": "Message actions",
+    "reportMessage": "Report",
+    "composerLabel": "Message to {name}",
+    "sendHint": "Enter to send · Shift + Enter for a new line",
+    "log": "Messages with {name}",
+    "list": "Conversations",
+    "report": {
+      "title": "Report this message",
+      "subtitle": "Reports are reviewed by people, the most serious first. The sender is not told who reported them.",
+      "reason": "What is wrong?",
+      "details": "Details (optional)",
+      "detailsPlaceholder": "Anything that helps us act quickly…",
+      "submit": "Send report",
+      "sent": "Report sent",
+      "sentBody": "Thank you. Our team reviews every report; suspected minors and non-consensual content come first. You can also block this account.",
+      "failed": "The report could not be sent. Try again."
+    }
   },
   "legal": {
     "back": "Back to Orochia",
@@ -2542,7 +2594,10 @@
       "seconds": "{count} s",
       "minutes": "{count} min",
       "hours": "{count} h"
-    }
+    },
+    "MESSAGE_BLOCKED": "You can't send messages to this account.",
+    "MESSAGE_YOU_BLOCKED": "You blocked this account. Unblock it to write again.",
+    "MESSAGE_CONTACTS_ONLY": "This account only accepts messages from its contacts."
   },
   "charts": {
     "showData": "Show data",

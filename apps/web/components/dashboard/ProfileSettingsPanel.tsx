@@ -47,6 +47,8 @@ interface Profile {
   inAppOff: string[];
   emailFrequency: "INSTANT" | "HOURLY" | "NONE";
   directMessagePrivacy: "EVERYONE" | "CONTACTS_ONLY";
+  /** Absent on an older answer: shown (the default). */
+  showPresence?: boolean;
   payoutAddressCrypto: string | null;
   challengeRequestsOff: boolean;
   challengeMinCents: number;
@@ -368,6 +370,20 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
               </RadioGroup.Card>
             ))}
           </RadioGroup.Root>
+          <div id="settings-presence" className="mt-4 flex items-start justify-between gap-4 rounded-2xl border border-border-default p-4">
+            <span>
+              <span className="block text-sm font-semibold text-fg">{t("settings.privacy.presence")}</span>
+              <span className="mt-0.5 block text-[11px] text-fg-secondary">{t("settings.privacy.presenceHint")}</span>
+            </span>
+            <Switch
+              checked={profile.showPresence !== false}
+              label={t("settings.privacy.presence")}
+              onCheckedChange={(on) => {
+                setProfile({ ...profile, showPresence: on });
+                void prefs.run(() => put({ showPresence: on }));
+              }}
+            />
+          </div>
         </Section>
 
         {isCreator && (

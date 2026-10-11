@@ -85,6 +85,8 @@ orochia/                           npm workspaces
 ├── packages/db/                   Drizzle schema (source of truth), migrations, migrator, seed
 ├── packages/media/                Bunny Stream client, Tus signing, signed playback tokens, webhook verifier
 ├── packages/push/                 the mobile push client (Expo Push Service → FCM / APNs), pure and tested
+├── packages/realtime/             the realtime bus behind one interface (memory · PostgreSQL LISTEN/NOTIFY · Redis/Valkey),
+│                                  presence (heartbeat + TTL), SSE framing — knows nothing of Orochia
 ├── packages/payments/             gateway adapters, payment intents, settlement, double-entry ledger, payouts,
 │                                  credits, auctions and challenges (rules + state machine)
 ├── deploy/                        Dockerfile (bundled migrator), compose (dev/prod), Caddy, DigitalOcean spec
@@ -247,7 +249,8 @@ orochia/                           npm workspaces
   are never on it.
 - **Notifications** (`lib/notifications.ts`, `docs/NOTIFICATIONS.md`): each event is written to `notifications` (the bell,
   `/notifications`), pushed live to open pages over SSE (a toast + the bell), pushed to the account's phones
-  (`lib/push.ts` → `packages/push`, Expo Push → FCM / APNs, only in production or with `PUSH_DELIVERY=on`) and e-mailed; both channels are on by default and each event can be turned off on either
+  (`lib/push.ts` → `packages/push`, Expo Push → FCM / APNs, only in production or with `PUSH_DELIVERY=on`; a message is
+  not pushed to someone whose presence is `online` — it is on their screen already) and e-mailed; both channels are on by default and each event can be turned off on either
   (`profiles.in_app_off`, `profiles.notifications_off`). E-mail pace: `profiles.email_frequency` INSTANT · HOURLY
   (one an hour at most, claimed atomically) · NONE. E-mail only to verified active addresses; sent after the action
   (`after()`), never throws; bursts capped (messages: once per conversation and hour).
@@ -317,10 +320,19 @@ orochia/                           npm workspaces
   (`RATE_LIMIT_STORE=postgres`, required before a second instance; Redis / Valkey later behind the same interface, #40).
 - Refusals a client acts on carry a stable `code` (`HttpError(status, message, { code }, headers)`); the UI words them
   through `lib/api-errors.ts` (`apiErrors.<code>` in `en.json`), never by parsing the English message.
-- **Realtime goes through `lib/realtime.ts` only** (`publish` / `subscribe` / `sseResponse`): PostgreSQL `NOTIFY` fans
-  events out to every instance's `LISTEN` connection (`packages/db/src/listen.ts`) — no broker. Topics `user:<id>`,
-  `auction:<id>` and `challenge:<id>`; payloads are small facts (≤ 8 KB), never documents. `DATABASE_URL` must be a direct connection (not a
-  transaction pooler). Background loops start in `instrumentation.ts` and share work with `FOR UPDATE SKIP LOCKED`.
+- **Realtime goes through `lib/realtime.ts` only** (`publish` / `subscribe` / `sseResponse`), over the `RealtimeBus` of
+  `packages/realtime` chosen by `REALTIME_BUS`: `postgres` (default — `NOTIFY` to every instance's `LISTEN`
+  connection, `packages/db/src/listen.ts`, no broker) or `redis` (Redis / Valkey, `REDIS_URL`); business code never
+  knows which ([ADR 0001](docs/adr/0001-realtime-transport.md)). Topics `user:<id>`, `presence:<id>`, `auction:<id>`
+  and `challenge:<id>`; payloads are small facts (≤ 8 KB), never documents — what must not be lost is in the database
+  and replayed from it. `DATABASE_URL` must be a direct connection (not a transaction pooler). Background loops start
+  in `instrumentation.ts` and share work with `FOR UPDATE SKIP LOCKED`.
+- **Chat and presence** (`docs/NOTIFICATIONS.md` §5): one stream per tab or app (`/api/conversations/stream`,
+  resumable with `Last-Event-ID: m<seq>`); a message is ordered by `seq` (assigned under the conversation's row lock)
+  and idempotent per sender `clientId`; receipts sent → delivered → read; typing is never stored. Presence is a
+  heartbeat with a TTL (never a database write per beat) and is shown only where `lib/presence-rules.ts` allows it —
+  an accepted contact, an exchange (both wrote) or an approved follow of a creator, no block, both showing it; never
+  an exception for administrators.
 - The **first sentence of the JSDoc** above each handler is the endpoint's summary in `docs/API_CONTRACTS.md`;
   the access column is read from the handler's `requireUserWithRole` call. Keep both truthful.
 
@@ -434,7 +446,10 @@ orochia/                           npm workspaces
   auctions and challenges (time is moved forward in SQL to test closing; everything else goes through HTTP).
   A new feature adds its scenarios there.
 - **CI** (`.github/workflows/ci.yml`): verify (lint, types, unit, docs check, production build) · database
-  (bundled migrator twice, seed) · e2e (Postgres service, dev server, scenarios).
+  (bundled migrator twice, seed) · e2e (Postgres and Valkey services: the realtime bus contract against both —
+  two buses standing for two instances, `REALTIME_IT=1` — then the dev server and the scenarios).
+- **Load** (`node scripts/realtime-load.mjs`): N live streams and the time each message takes to reach them all, on
+  one or two instances — run it when the realtime layer changes; results in ADR 0001.
 
 ---
 

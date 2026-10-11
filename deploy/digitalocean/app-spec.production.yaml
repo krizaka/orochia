@@ -196,6 +196,11 @@ services:
         scope: RUN_TIME
         type: SECRET
       # Abuse defences (SECURITY.md): shared rate limits, the client address App Platform sets, the bot challenge.
+      # Realtime bus (docs/NOTIFICATIONS.md §3): PostgreSQL LISTEN/NOTIFY up to ~3 instances; beyond, REALTIME_BUS=redis
+      # and REDIS_URL (SECRET) of a Managed Caching (Valkey) cluster. Streams end every 5 minutes and resume.
+      - key: REALTIME_BUS
+        scope: RUN_TIME
+        value: "postgres"
       - key: RATE_LIMIT_STORE
         scope: RUN_TIME
         value: "postgres"

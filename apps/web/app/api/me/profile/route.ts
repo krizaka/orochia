@@ -4,6 +4,7 @@ import { db, profiles, users } from "@orochia/db";
 import { eq } from "drizzle-orm";
 import { requireUserWithRole } from "@/lib/auth";
 import { errorResponse, jsonError } from "@/lib/http";
+import { presenceSettingChanged } from "@/lib/presence";
 import { SOCIAL_NETWORK_IDS, normalizeWebsite, parseNotificationsOff, parseSocialLinks, profileImageUrl, socialLinksView } from "@/lib/profile";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,8 @@ const ProfileSchema = z.object({
   websiteUrl: z.string().trim().max(200).nullable().optional(),
   socialLinks: z.record(z.string().max(200).nullable()).optional(),
   directMessagePrivacy: z.enum(["EVERYONE", "CONTACTS_ONLY"]).optional(),
+  /** Whether the account's circle sees it online (lib/presence-rules.ts); off, it sees nobody's presence either. */
+  showPresence: z.boolean().optional(),
   emailsOff: z.array(z.string().max(40)).max(60).optional(),
   inAppOff: z.array(z.string().max(40)).max(60).optional(),
   emailFrequency: z.enum(["INSTANT", "HOURLY", "NONE"]).optional(),
@@ -47,6 +50,7 @@ async function read(userId: string) {
       inAppOff: profiles.inAppOff,
       emailFrequency: profiles.emailFrequency,
       directMessagePrivacy: profiles.directMessagePrivacy,
+      showPresence: profiles.showPresence,
       payoutAddressCrypto: profiles.payoutAddressCrypto,
       challengeRequestsOff: profiles.challengeRequestsOff,
       challengeMinCents: profiles.challengeMinCents,
@@ -91,11 +95,13 @@ export async function PUT(req: NextRequest) {
     if (input.websiteUrl !== undefined) set.websiteUrl = normalizeWebsite(input.websiteUrl);
     if (input.socialLinks !== undefined) set.socialLinks = parseSocialLinks(input.socialLinks);
     if (input.directMessagePrivacy !== undefined) set.directMessagePrivacy = input.directMessagePrivacy;
+    if (input.showPresence !== undefined) set.showPresence = input.showPresence;
     if (input.emailsOff !== undefined) set.emailsOff = parseNotificationsOff(input.emailsOff);
     if (input.inAppOff !== undefined) set.inAppOff = parseNotificationsOff(input.inAppOff);
     if (input.emailFrequency !== undefined) set.emailFrequency = input.emailFrequency;
     if (input.payoutAddressCrypto !== undefined && user.role === "CREATOR") set.payoutAddressCrypto = input.payoutAddressCrypto || null;
     await db.update(profiles).set(set).where(eq(profiles.userId, user.id));
+    if (input.showPresence !== undefined && input.showPresence !== (current.showPresence ?? true)) await presenceSettingChanged(user.id, input.showPresence);
     return NextResponse.json({ success: true });
   } catch (error) {
     return errorResponse(error, "me/profile");

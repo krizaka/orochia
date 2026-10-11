@@ -20,6 +20,8 @@ export const users = pgTable("users", {
   suspensionReason: text("suspension_reason"),
   /** Storage plan set by an operator (a name of QUOTA_PLANS, e.g. "pro" or "unlimited"); null = the role's default plan. */
   storagePlan: varchar("storage_plan", { length: 40 }),
+  /** When the account's last app closed (written once per visit, never per heartbeat) — the "seen 5 min ago". */
+  lastSeenAt: timestamp("last_seen_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
@@ -45,6 +47,8 @@ export const profiles = pgTable("profiles", {
   emailFrequency: varchar("email_frequency", { length: 10 }).default("INSTANT").notNull(),
   lastActivityEmailAt: timestamp("last_activity_email_at", { withTimezone: true }),
   directMessagePrivacy: varchar("direct_message_privacy", { length: 20 }).default("EVERYONE").notNull(),
+  /** Whether people close to the account see it online and when it was last seen (off: it sees nobody's either). */
+  showPresence: boolean("show_presence").default(true).notNull(),
   minTipAmountCents: integer("min_tip_amount_cents").default(500).notNull(), // default $5.00
   /** Challenges: whether fans may send this creator requests, and the smallest offer a request may carry. */
   challengeRequestsOff: boolean("challenge_requests_off").default(false).notNull(),

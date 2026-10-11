@@ -51,7 +51,9 @@ const nextConfig = {
   output: "standalone",
   reactStrictMode: true,
   poweredByHeader: false,
-  transpilePackages: ["@orochia/db", "@orochia/media", "@orochia/payments", "@orochia/config"],
+  transpilePackages: ["@orochia/db", "@orochia/media", "@orochia/payments", "@orochia/config", "@orochia/realtime"],
+  // The Redis client (@orochia/realtime) stays a Node module, required at run time — it connects only with REALTIME_BUS=redis.
+  serverExternalPackages: ["ioredis"],
   experimental: {
     serverActions: {
       bodySizeLimit: "10mb",

@@ -81,6 +81,12 @@ jobs:
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+      # The realtime bus's Redis adapter is checked against a real server (REALTIME_BUS=redis in production).
+      valkey:
+        image: valkey/valkey:8-alpine
+        ports:
+          - 6379:6379
+        options: --health-cmd "valkey-cli ping" --health-interval 5s --health-timeout 5s --health-retries 10
     env:
       DATABASE_URL: postgresql://orochia_user:orochia_secret@localhost:5432/orochia_db
       SESSION_SECRET: ci-only-session-secret-0123456789abcdef0123456789
@@ -108,6 +114,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run db:migrate
+      - name: Realtime bus contract — PostgreSQL and Valkey, two instances each
+        run: npx vitest run packages/realtime
+        env:
+          REALTIME_IT: "1"
+          REDIS_URL: redis://localhost:6379
       - run: npm run db:seed
       - name: Start the app (development server)
         run: |

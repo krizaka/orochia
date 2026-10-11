@@ -1,13 +1,21 @@
-import { getSession } from "@/lib/auth";
-import { sseResponse } from "@/lib/realtime";
+import { NextRequest } from "next/server";
+
+import { requireUserWithRole } from "@/lib/auth";
+import { parseCursor, userStream } from "@/lib/chat-stream";
+import { errorResponse } from "@/lib/http";
 
 export const dynamic = "force-dynamic";
 
-/** Realtime Server-Sent Events (SSE) stream for instant direct messages and notifications. */
-export async function GET() {
-  const session = await getSession();
-  if (!session) {
-    return new Response("Unauthorized", { status: 401 });
+/**
+ * The account's live stream (Server-Sent Events): messages, receipts, typing, unread count, notifications and the
+ * presence of its circle; resumes after `Last-Event-ID` (or `?after=<seq>`) without loss.
+ */
+export async function GET(req: NextRequest) {
+  try {
+    const user = await requireUserWithRole(["ADMIN", "CREATOR", "MEMBER"]);
+    const cursor = parseCursor(req.headers.get("last-event-id") ?? req.nextUrl.searchParams.get("after"));
+    return userStream(user.id, { cursor });
+  } catch (error) {
+    return errorResponse(error, "conversations/stream");
   }
-  return sseResponse([`user:${session.id}`]);
 }
