@@ -1882,7 +1882,8 @@
     "auctionNamed": "Put “{title}” up for auction",
     "auctionLocked": "Auction — the winner watches it",
     "challengeLocked": "Made for a challenge — its backers watch it",
-    "withdrawn": "“{title}” withdrawn"
+    "withdrawn": "“{title}” withdrawn",
+    "caption": "Your videos"
   },
   "inbox": {
     "title": "Messages",

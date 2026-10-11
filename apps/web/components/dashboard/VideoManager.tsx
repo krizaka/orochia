@@ -2,6 +2,7 @@
 
 import { AlertTriangle, Gavel, Pencil, Trash2, Users } from "lucide-react";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 
 import { Rich } from "@/components/Rich";
@@ -10,6 +11,7 @@ import {
   Button,
   cn,
   ConfirmButton,
+  DataTable,
   Dialog,
   EmptyState,
   IconButton,
@@ -20,7 +22,7 @@ import {
   undoToast,
 } from "@/components/ui";
 import { t } from "@/lib/i18n";
-import { money } from "@/lib/money";
+import { compact, money } from "@/lib/money";
 import type { VideoVisibility } from "@/lib/visibility";
 import { CHOOSABLE_VISIBILITIES } from "@/lib/visibility";
 
@@ -41,6 +43,8 @@ export interface StudioVideo {
   viewsCount: number;
   tipsCount: number;
 }
+
+const SORTABLE = ["title", "durationSeconds", "viewsCount", "tipsCount"];
 
 const visibilityLabel = (v: StudioVideo["visibility"]) => t(`publish.audiences.${v}.title`);
 
@@ -64,7 +68,7 @@ function StatusBadge({ v }: { v: StudioVideo }) {
   return <Badge size="sm" tone={tone} dot>{label}</Badge>;
 }
 
-/** The creator's videos: state, figures, and editing (title, description, visibility, audience, price, tags) or deletion. */
+/** The creator's videos on `DataTable` (sortable title, duration, views, tips — the sort in the address; cards on a phone): state, figures, and editing (title, description, visibility, audience, price, tags) or deletion. */
 export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onChange: () => void }) {
   const [editing, setEditing] = useState<StudioVideo | null>(null);
   const [auctioning, setAuctioning] = useState<StudioVideo | null>(null);
@@ -117,6 +121,19 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
   };
   const shown = videos.filter((v) => !leaving.has(v.id));
 
+  // The sort is the address (`?tab=uploads&vsort=viewsCount-desc`), like every view of the app.
+  const router = useRouter();
+  const pathname = usePathname();
+  const params = useSearchParams();
+  const [sortColumn, sortDirection] = (params.get("vsort") ?? "").split("-");
+  const sort = SORTABLE.includes(sortColumn) ? { column: sortColumn, direction: sortDirection === "asc" ? ("ascending" as const) : ("descending" as const) } : null;
+  const setSort = (next: { column: string; direction: "ascending" | "descending" } | null) => {
+    const query = new URLSearchParams(params.toString());
+    if (next) query.set("vsort", `${next.column}-${next.direction === "ascending" ? "asc" : "desc"}`);
+    else query.delete("vsort");
+    router.replace(`${pathname}?${query}`, { scroll: false });
+  };
+
   if (shown.length === 0) {
     return (
       <EmptyState
@@ -129,70 +146,79 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
   }
 
   return (
-    <div className="glass-panel rounded-3xl p-6 overflow-x-auto">
-      <table className="w-full text-left text-xs">
-        <thead className="text-[10px] uppercase tracking-wider text-fg-muted">
-          <tr>
-            <th className="py-2 pr-4">{t("studio.cols.title")}</th>
-            <th className="py-2 pr-4">{t("studio.cols.state")}</th>
-            <th className="py-2 pr-4">{t("studio.cols.visibility")}</th>
-            <th className="py-2 pr-4">{t("studio.cols.duration")}</th>
-            <th className="py-2 pr-4 text-right">{t("studio.cols.views")}</th>
-            <th className="py-2 pr-4 text-right">{t("studio.cols.tips")}</th>
-            <th className="py-2 text-right">{t("studio.cols.actions")}</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border-subtle text-fg-secondary">
-          {shown.map((v) => (
-            <tr key={v.id}>
-              <td className="py-2.5 pr-4">
-                <Link href={`/watch/${v.id}`} className="hover:text-accent">{v.title}</Link>
+    <div className="glass-panel rounded-3xl p-4 sm:p-6">
+      <DataTable
+        caption={t("studio.caption")}
+        rows={shown}
+        getRowId={(v) => v.id}
+        density="compact"
+        sort={sort}
+        onSortChange={setSort}
+        columns={[
+          {
+            id: "title",
+            header: t("studio.cols.title"),
+            card: "title",
+            sortable: true,
+            cell: (v) => (
+              <>
+                <Link href={`/watch/${v.id}`} className="text-fg hover:text-fg-accent">{v.title}</Link>
                 {v.removedAt && v.removalReason && (
-                  <p className="mt-1 flex items-center gap-1 text-[11px] text-danger">
+                  <span className="mt-1 flex items-center gap-1 text-[11px] text-danger">
                     <AlertTriangle className="h-3 w-3" /> {v.removalReason}
-                  </p>
+                  </span>
                 )}
-              </td>
-              <td className="py-2.5 pr-4"><StatusBadge v={v} /></td>
-              <td className="py-2.5 pr-4 text-fg-secondary">
+              </>
+            ),
+          },
+          { id: "status", header: t("studio.cols.state"), cell: (v) => <StatusBadge v={v} /> },
+          {
+            id: "visibility",
+            header: t("studio.cols.visibility"),
+            cell: (v) => (
+              <span className="text-xs text-fg-secondary">
                 {v.visibility === "AUCTION" ? (
-                  <Link href={`/watch/${v.id}#auction`} className="inline-flex items-center gap-1 font-semibold text-accent hover:text-accent">
+                  <Link href={`/watch/${v.id}#auction`} className="inline-flex items-center gap-1 font-semibold text-fg-accent">
                     <Gavel className="h-3 w-3" aria-hidden /> {visibilityLabel(v.visibility)}
                   </Link>
                 ) : (
                   visibilityLabel(v.visibility)
                 )}
-                {v.visibility === "TIPPED_UNLOCKED" && <span className="ml-1 font-mono text-accent">{money(v.minTipAmountCents)}</span>}
-              </td>
-              <td className="py-2.5 pr-4 font-mono">{duration(v.durationSeconds)}</td>
-              <td className="py-2.5 pr-4 text-right font-mono">{v.viewsCount.toLocaleString("en-US")}</td>
-              <td className="py-2.5 pr-4 text-right font-mono">{v.tipsCount}</td>
-              <td className="py-2.5 text-right">
-                {!v.removedAt && (
-                  <div className="inline-flex gap-1">
-                    {v.status === "READY" && v.visibility !== "AUCTION" && v.visibility !== "CHALLENGE" && (
-                      <IconButton size="sm" shape="rounded" className="h-8 w-8" onClick={() => setAuctioning(v)} label={t("studio.auctionNamed", { title: v.title })}>
-                        <Gavel className="h-3.5 w-3.5" aria-hidden />
-                      </IconButton>
-                    )}
-                    {v.visibility === "INVITED_ONLY" && (
-                      <IconButton size="sm" shape="rounded" className="h-8 w-8" onClick={() => edit(v)} label={t("studio.whoCanWatchNamed", { title: v.title })}>
-                        <Users className="h-3.5 w-3.5" aria-hidden />
-                      </IconButton>
-                    )}
-                    <IconButton size="sm" shape="rounded" className="h-8 w-8" onClick={() => edit(v)} label={t("studio.editNamed", { title: v.title })}>
-                      <Pencil className="h-3.5 w-3.5" aria-hidden />
+                {v.visibility === "TIPPED_UNLOCKED" && <span className="ml-1 font-mono text-fg-accent">{money(v.minTipAmountCents)}</span>}
+              </span>
+            ),
+          },
+          { id: "durationSeconds", header: t("studio.cols.duration"), sortable: true, cell: (v) => <span className="font-mono text-xs">{duration(v.durationSeconds)}</span> },
+          { id: "viewsCount", header: t("studio.cols.views"), sortable: true, align: "end", cell: (v) => <span className="font-mono text-xs">{compact(v.viewsCount)}</span> },
+          { id: "tipsCount", header: t("studio.cols.tips"), sortable: true, align: "end", cell: (v) => <span className="font-mono text-xs">{v.tipsCount}</span> },
+          {
+            id: "actions",
+            header: t("studio.cols.actions"),
+            align: "end",
+            cell: (v) =>
+              !v.removedAt && (
+                <div className="inline-flex gap-1">
+                  {v.status === "READY" && v.visibility !== "AUCTION" && v.visibility !== "CHALLENGE" && (
+                    <IconButton size="sm" shape="rounded" className="h-8 w-8" onClick={() => setAuctioning(v)} label={t("studio.auctionNamed", { title: v.title })}>
+                      <Gavel className="h-3.5 w-3.5" aria-hidden />
                     </IconButton>
-                    <ConfirmButton size="sm" label={t("studio.deleteNamed", { title: v.title })} confirmLabel={t("studio.confirmDelete")} onConfirm={() => remove(v)}>
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </ConfirmButton>
-                  </div>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                  )}
+                  {v.visibility === "INVITED_ONLY" && (
+                    <IconButton size="sm" shape="rounded" className="h-8 w-8" onClick={() => edit(v)} label={t("studio.whoCanWatchNamed", { title: v.title })}>
+                      <Users className="h-3.5 w-3.5" aria-hidden />
+                    </IconButton>
+                  )}
+                  <IconButton size="sm" shape="rounded" className="h-8 w-8" onClick={() => edit(v)} label={t("studio.editNamed", { title: v.title })}>
+                    <Pencil className="h-3.5 w-3.5" aria-hidden />
+                  </IconButton>
+                  <ConfirmButton size="sm" label={t("studio.deleteNamed", { title: v.title })} confirmLabel={t("studio.confirmDelete")} onConfirm={() => remove(v)}>
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </ConfirmButton>
+                </div>
+              ),
+          },
+        ]}
+      />
 
       <Dialog.Root open={editing !== null} onOpenChange={(open) => !open && setEditing(null)}>
         <Sheet size="md" aria-describedby={undefined}>
