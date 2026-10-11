@@ -41,7 +41,7 @@
 | `npm run setup` | Zero to running: env, databases, migrations, seed (idempotent) |
 | `npm run dev` / `build` / `start` | Web app on :3000 |
 | `npm run check` | lint (incl. i18n and the UI debt ratchet) + type-check + unit tests + docs freshness — run before every push |
-| `npm run screenshots` | Dark and light captures of the main pages from a running app (`docs/screenshots/web`) |
+| `npm run screenshots` | Dark and light captures of the main pages from a running app (`docs/screenshots/web`, git-ignored — publish them with krizaka-com's `scripts/pr-assets.mjs`, §11) |
 | `npm run record:tour [-- prepare]` | The krizaka.com video tour, recorded on a running production build as the seed's Alex and Elena (`scripts/record-tour.mjs`) |
 | `npm run test:e2e` | Feature scenarios over HTTP against a running app on a freshly reset database |
 | `npm run db:up` / `db:down` | Start / stop PostgreSQL |
@@ -450,4 +450,5 @@ orochia/                           npm workspaces
   change spans repositories.
 - Prefer the domain modules (`lib/*`, `packages/*`) over new logic in routes or components.
 - Never weaken an invariant to make a test pass; never commit secrets, dumps or `.env`.
+- PR captures (screenshots, recordings, metrics) are never committed: they go to Bunny Storage under `pr-assets/<repo>/<pr-or-topic>/` with [`scripts/pr-assets.mjs`](https://github.com/krizaka/krizaka-com/blob/main/scripts/pr-assets.mjs) of krizaka-com (its AGENTS.md §5.1), and the PR body links their CDN URLs. `docs/screenshots/` is git-ignored.
 - Run `npm run check` (and the e2e suite for behaviour changes) before declaring a task complete.
