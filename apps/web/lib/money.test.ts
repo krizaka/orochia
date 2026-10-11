@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { compact, money, usd } from "@/lib/money";
+import { amountChoices, compact, money, usd } from "@/lib/money";
 
 describe("money", () => {
   it("formats US cents in the reader's locale", () => {
@@ -19,5 +19,11 @@ describe("money", () => {
 
   it("shortens counts", () => {
     expect(compact(12345)).toBe("12.3K");
+  });
+
+  it("offers the creator's price first, then the usual steps above it", () => {
+    expect(amountChoices(800).map((c) => c.cents)).toEqual([800, 1000, 2500, 5000]);
+    expect(amountChoices(100).map((c) => c.cents)).toEqual([500, 1000, 2500, 5000]);
+    expect(amountChoices(2500).map((c) => c.cents)).toEqual([2500, 5000, 10000, 20000]);
   });
 });
