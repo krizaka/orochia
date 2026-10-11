@@ -1190,7 +1190,15 @@
       "toGo": "{amount} more and you can withdraw."
     },
     "loading": "Loading your earnings",
-    "month": "Month"
+    "month": "Month",
+    "cols": {
+      "date": "Date",
+      "kind": "Kind",
+      "video": "Video",
+      "supporter": "Supporter",
+      "net": "Your share"
+    },
+    "shown": "{from}–{to} of {total}"
   },
   "feed": {
     "emptyFilter": "Nothing here yet in this category — try another tab.",
@@ -2609,5 +2617,16 @@
     "exportCsv": "Download CSV",
     "exportPng": "Download PNG",
     "exportSvg": "Download SVG"
+  },
+  "table": {
+    "selectAll": "Select all rows",
+    "selectRow": "Select {name}",
+    "empty": "Nothing to show",
+    "pages": "Pages",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {page}",
+    "pageOf": "Page {page} of {count}",
+    "pageSize": "Rows per page"
   }
 }

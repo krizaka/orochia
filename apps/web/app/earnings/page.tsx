@@ -8,6 +8,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { Suspense, useCallback, useEffect, useState } from "react";
 
+import { PaymentsTable } from "@/components/money/PaymentsTable";
 import { PayoutAccountSheet } from "@/components/money/PayoutAccountSheet";
 import { WithdrawSheet } from "@/components/money/WithdrawSheet";
 import { Badge, type BadgeProps, Button, buttonVariants, Chip, cn, EmptyState, Loader, Meter, MoneyTicker, NumberTicker, orochiaButton } from "@/components/ui";
@@ -175,7 +176,7 @@ function EarningsPage() {
                 empty={<EmptyState bird="flamingo" title={t("earnings.noTransactions")} />}
               />
             </section>
-            <div className="grid gap-6">
+            <div className="grid grid-cols-1 gap-6">
               <section className={card} aria-labelledby="goal-title">
                 <h2 id="goal-title" className="sr-only">{t("earnings.goal.title")}</h2>
                 <Gauge
@@ -214,7 +215,7 @@ function EarningsPage() {
             </div>
           </div>
 
-          <div className="grid gap-6">
+          <div className="grid grid-cols-1 gap-6">
             <section className={card} aria-labelledby="videos-title">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <h2 id="videos-title" className="text-sm font-bold text-fg">{t("earnings.videos")}</h2>
@@ -265,27 +266,7 @@ function EarningsPage() {
                 </a>
               </div>
             </div>
-            {data!.lines.length === 0 ? (
-              <EmptyState bird="flamingo" title={t("earnings.noTransactions")} className="border-0" />
-            ) : (
-              <div className="-mx-5 overflow-x-auto">
-                <table className="w-full min-w-[520px] text-left text-sm">
-                  <tbody className="divide-y divide-border-subtle">
-                    {data!.lines.map((l) => (
-                      <tr key={l.id}>
-                        <td className="whitespace-nowrap px-5 py-2.5 text-xs text-fg-muted">{new Date(l.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</td>
-                        <td className="px-2 py-2.5">
-                          <Badge tone="accent" className="normal-case tracking-normal">{t(`earnings.kinds.${l.kind}`)}</Badge>
-                        </td>
-                        <td className="max-w-[16rem] truncate px-2 py-2.5 text-fg">{l.videoTitle ?? "—"}</td>
-                        <td className="px-2 py-2.5 text-xs text-fg-secondary">{l.supporter ?? ""}</td>
-                        <td className="whitespace-nowrap px-5 py-2.5 text-right font-mono font-semibold tabular-nums text-success">+{money(l.netCents)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+            <PaymentsTable lines={data!.lines} />
           </section>
 
           <section id="payouts" className={cn(card, "scroll-mt-24")} aria-labelledby="payouts-title">

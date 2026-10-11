@@ -2,6 +2,7 @@
 
 import { ChartsProvider } from "@krizaka/charts/provider";
 import { Countdown as UiCountdown, type CountdownProps } from "@krizaka/ui/countdown";
+import { DataTable as UiDataTable, type DataTableProps } from "@krizaka/ui/data-table";
 import {
   AlertDialog as UiAlertDialog,
   type AlertDialogProps,
@@ -13,6 +14,7 @@ import {
 } from "@krizaka/ui/dialog";
 import { Marquee as UiMarquee, type MarqueeProps } from "@krizaka/ui/marquee";
 import { NumberTicker as UiNumberTicker, type NumberTickerProps } from "@krizaka/ui/number-ticker";
+import { Pagination as UiPagination, type PaginationProps } from "@krizaka/ui/pagination";
 import { Stepper as UiStepper, type StepperProps } from "@krizaka/ui/stepper";
 import { ThemeToggle as UiThemeToggle, type ThemeToggleProps } from "@krizaka/ui/theme";
 import {
@@ -84,6 +86,40 @@ export function NumberTicker(props: Omit<NumberTickerProps, "locale">) {
 /** An amount of US cents that rolls to each new value (a current bid, a pot): the digits move, the reader hears it once. */
 export function MoneyTicker({ cents, ...props }: Omit<NumberTickerProps, "locale" | "value" | "format"> & { cents: number }) {
   return <UiNumberTicker locale={currentLocale()} value={cents / 100} format={{ style: "currency", currency: "USD" }} {...props} />;
+}
+
+/** A table of records (sort, cards on a phone, loading / empty states) with the app's words. */
+export function DataTable<T>(props: DataTableProps<T>) {
+  return (
+    <UiDataTable
+      {...props}
+      labels={{
+        selectAll: t("table.selectAll"),
+        selectRow: (name) => t("table.selectRow", { name }),
+        loading: t("common.loading"),
+        empty: t("table.empty"),
+        ...props.labels,
+      }}
+    />
+  );
+}
+
+/** Pages of a list, named in the app's language; the page lives in the address (`getHref`) or the screen's state. */
+export function Pagination(props: PaginationProps) {
+  return (
+    <UiPagination
+      {...props}
+      labels={{
+        nav: t("table.pages"),
+        previous: t("table.previous"),
+        next: t("table.next"),
+        page: (page) => t("table.page", { page }),
+        compact: (page, count) => t("table.pageOf", { page, count }),
+        pageSize: t("table.pageSize"),
+        ...props.labels,
+      }}
+    />
+  );
 }
 
 /** The steps of a task, each state said in the app's words. */
