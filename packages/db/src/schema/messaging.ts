@@ -1,4 +1,5 @@
-import { pgTable, text, timestamp, boolean, uuid, index, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, uuid, index, uniqueIndex, bigserial } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { users } from "./users";
 import { stories } from "./stories";
 
@@ -27,15 +28,21 @@ export const conversations = pgTable(
 );
 
 /**
- * Direct messages sent within a conversation.
+ * Direct messages sent within a conversation. `seq` is the delivery order (assigned under the conversation's row lock,
+ * so a conversation's messages commit in that order) and the replay cursor of the realtime stream; `client_id` is the
+ * sender's idempotency key (a retried send never makes a second message). Receipts: sent (the row) → delivered
+ * (`delivered_at`: one of the recipient's apps received it) → read (`is_read` / `read_at`).
  */
 export const directMessages = pgTable(
   "direct_messages",
   {
     id: uuid("id").defaultRandom().primaryKey(),
+    seq: bigserial("seq", { mode: "number" }).notNull(),
     conversationId: uuid("conversation_id")
       .references(() => conversations.id, { onDelete: "cascade" })
       .notNull(),
+    /** Chosen by the sender's app for this message: a retry with the same id answers the message already stored. */
+    clientId: uuid("client_id"),
     senderId: uuid("sender_id")
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
@@ -45,6 +52,8 @@ export const directMessages = pgTable(
     content: text("content").notNull(),
     /** A private reply to a story: the story it answers (the message stays when the story is gone). */
     storyId: uuid("story_id").references(() => stories.id, { onDelete: "set null" }),
+    /** When one of the recipient's apps received it (the second tick). */
+    deliveredAt: timestamp("delivered_at", { withTimezone: true }),
     isRead: boolean("is_read").default(false).notNull(),
     readAt: timestamp("read_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
@@ -54,6 +63,10 @@ export const directMessages = pgTable(
     senderIdx: index("direct_messages_sender_idx").on(table.senderId),
     recipientIdx: index("direct_messages_recipient_idx").on(table.recipientId),
     createdAtIdx: index("direct_messages_created_at_idx").on(table.createdAt),
+    seqIdx: uniqueIndex("direct_messages_seq_idx").on(table.seq),
+    conversationSeqIdx: index("direct_messages_conversation_seq_idx").on(table.conversationId, table.seq),
+    clientIdIdx: uniqueIndex("direct_messages_sender_client_idx").on(table.senderId, table.clientId),
+    unreadIdx: index("direct_messages_unread_idx").on(table.recipientId).where(sql`${table.isRead} = false`),
   })
 );
 

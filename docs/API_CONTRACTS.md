@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (161)
+## Endpoints (168)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -73,11 +73,15 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/contacts` | session · MEMBER / CREATOR / ADMIN | Sends a contact request (accepted at once when the other person already asked). |
 | `DELETE` | `/api/contacts/[id]` | session · MEMBER / CREATOR / ADMIN | Removes a contact or withdraws a request (either side). |
 | `PATCH` | `/api/contacts/[id]` | session · MEMBER / CREATOR / ADMIN | Accepts or rejects a request addressed to you, or blocks the other person. |
-| `GET` | `/api/conversations` | session · ADMIN / CREATOR / MEMBER | Lists the signed-in user's active direct conversations. |
+| `GET` | `/api/conversations` | session · ADMIN / CREATOR / MEMBER | Lists the signed-in user's conversations: the other participant, last message, unread count and visible presence. |
 | `POST` | `/api/conversations` | session · ADMIN / CREATOR / MEMBER | Starts or retrieves a conversation with a specified user. |
-| `GET` | `/api/conversations/[id]/messages` | session · ADMIN / CREATOR / MEMBER | Lists messages in a conversation and marks unread messages as read. |
-| `POST` | `/api/conversations/[id]/messages` | session · ADMIN / CREATOR / MEMBER | Sends a direct message in a conversation. |
-| `GET` | `/api/conversations/stream` | public | Realtime Server-Sent Events (SSE) stream for instant direct messages and notifications. |
+| `GET` | `/api/conversations/[id]/messages` | session · ADMIN / CREATOR / MEMBER | Lists messages in a conversation (latest page, or `?before=&lt;seq&gt;` to scroll back) and marks the latest as read. |
+| `POST` | `/api/conversations/[id]/messages` | session · ADMIN / CREATOR / MEMBER | Sends a direct message in a conversation (idempotent per `clientId`: a retry answers the stored message). |
+| `POST` | `/api/conversations/[id]/messages/[messageId]/report` | session · ADMIN / CREATOR / MEMBER | Reports a message the account received: a compliance report naming it, with its text, triaged by operators. |
+| `POST` | `/api/conversations/[id]/read` | session · ADMIN / CREATOR / MEMBER | Marks a conversation read up to a message (`upTo`, its `seq`; everything when absent): the sender sees "read". |
+| `POST` | `/api/conversations/[id]/typing` | session · ADMIN / CREATOR / MEMBER | Tells the other participant that the account is typing (or stopped) — live only, never stored. |
+| `GET` | `/api/conversations/stream` | session · ADMIN / CREATOR / MEMBER | The account's live stream (Server-Sent Events): messages, receipts, typing, unread count, notifications and the presence of its circle; resumes after `Last-Event-ID` (or `?after=&lt;seq&gt;`) without loss. |
+| `GET` | `/api/conversations/unread` | session · ADMIN / CREATOR / MEMBER | The account's unread messages, all conversations (the badge; kept live by the `unread` event of the stream). |
 | `GET` | `/api/creator/earnings` | session · CREATOR / ADMIN | Your earnings for a period (?period=30d|90d|12m|all): totals, views, each video's revenue, the trend by kind, the last 30 days of tips, payments and payouts. |
 | `GET` | `/api/creator/earnings/export` | session · CREATOR / ADMIN | Downloads your earnings as CSV (?kind=transactions|videos&period=…), for your accounting. |
 | `GET` | `/api/creator/payouts` | session · CREATOR / ADMIN | The signed-in creator's balance, lifetime earnings and payout history — from the ledger. |
@@ -139,6 +143,9 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `DELETE` | `/api/playlists/[id]/items` | session · MEMBER / CREATOR / ADMIN | Removes a video from a playlist (owner only). |
 | `POST` | `/api/playlists/[id]/items` | session · MEMBER / CREATOR / ADMIN | Adds a video at the end of a playlist (owner only, idempotent). |
 | `GET` | `/api/playlists/shared` | session · MEMBER / CREATOR / ADMIN | Collections other accounts invited you to. |
+| `GET` | `/api/presence` | session · ADMIN / CREATOR / MEMBER | The presence (online · away · offline with the time last seen) of up to 100 accounts — only those the rules let the account see (lib/presence-rules.ts); the others are absent from the answer. |
+| `POST` | `/api/presence` | session · ADMIN / CREATOR / MEMBER | The app's activity on one of its streams: `away` when the page is hidden or idle, `online` when the person is back. |
+| `GET` | `/api/presence/online` | session · ADMIN / CREATOR / MEMBER | The people of the account's circle who are online or away right now ("Online now" in Messages). |
 | `GET` | `/api/reference/content-ratings` | public | Reference content classifications and age ratings (Kids Safe, General, Teens, Mature, Adult). |
 | `GET` | `/api/reference/presets` | public | Default avatar and banner presets users can choose without uploading custom files. |
 | `GET` | `/api/search` | public · session-aware | The search palette: creators, videos, stories and tags matching what is typed (full-text, accents ignored, word prefixes); with nothing typed, the newest videos and the popular tags. |

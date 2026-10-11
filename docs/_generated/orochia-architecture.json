@@ -523,7 +523,7 @@
       "method": "GET",
       "path": "/api/conversations",
       "access": "session · ADMIN / CREATOR / MEMBER",
-      "summary": "Lists the signed-in user's active direct conversations."
+      "summary": "Lists the signed-in user's conversations: the other participant, last message, unread count and visible presence."
     },
     {
       "method": "POST",
@@ -535,19 +535,43 @@
       "method": "GET",
       "path": "/api/conversations/[id]/messages",
       "access": "session · ADMIN / CREATOR / MEMBER",
-      "summary": "Lists messages in a conversation and marks unread messages as read."
+      "summary": "Lists messages in a conversation (latest page, or `?before=<seq>` to scroll back) and marks the latest as read."
     },
     {
       "method": "POST",
       "path": "/api/conversations/[id]/messages",
       "access": "session · ADMIN / CREATOR / MEMBER",
-      "summary": "Sends a direct message in a conversation."
+      "summary": "Sends a direct message in a conversation (idempotent per `clientId`: a retry answers the stored message)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/conversations/[id]/messages/[messageId]/report",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "Reports a message the account received: a compliance report naming it, with its text, triaged by operators."
+    },
+    {
+      "method": "POST",
+      "path": "/api/conversations/[id]/read",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "Marks a conversation read up to a message (`upTo`, its `seq`; everything when absent): the sender sees \"read\"."
+    },
+    {
+      "method": "POST",
+      "path": "/api/conversations/[id]/typing",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "Tells the other participant that the account is typing (or stopped) — live only, never stored."
     },
     {
       "method": "GET",
       "path": "/api/conversations/stream",
-      "access": "public",
-      "summary": "Realtime Server-Sent Events (SSE) stream for instant direct messages and notifications."
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "The account's live stream (Server-Sent Events): messages, receipts, typing, unread count, notifications and the presence of its circle; resumes after `Last-Event-ID` (or `?after=<seq>`) without loss."
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/unread",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "The account's unread messages, all conversations (the badge; kept live by the `unread` event of the stream)."
     },
     {
       "method": "GET",
@@ -914,6 +938,24 @@
       "path": "/api/playlists/shared",
       "access": "session · MEMBER / CREATOR / ADMIN",
       "summary": "Collections other accounts invited you to."
+    },
+    {
+      "method": "GET",
+      "path": "/api/presence",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "The presence (online · away · offline with the time last seen) of up to 100 accounts — only those the rules let the account see (lib/presence-rules.ts); the others are absent from the answer."
+    },
+    {
+      "method": "POST",
+      "path": "/api/presence",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "The app's activity on one of its streams: `away` when the page is hidden or idle, `online` when the person is back."
+    },
+    {
+      "method": "GET",
+      "path": "/api/presence/online",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "The people of the account's circle who are online or away right now (\"Online now\" in Messages)."
     },
     {
       "method": "GET",
@@ -1370,7 +1412,7 @@
         "runtime": "node",
         "version": "1.0.0",
         "published": false,
-        "description": "The API: 125 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
+        "description": "The API: 131 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
       },
       {
         "id": "orochia-config",
@@ -1431,6 +1473,18 @@
         "version": "1.0.0",
         "published": false,
         "description": "Mobile push, without an SDK: the Expo Push Service (https://exp.host/--/api/v2/push/send) relays to Firebase Cloud Messaging on Android and to the Apple Push Notification service on iOS, from one HTTP call and one kind of token (`ExponentPushToken[…]`)."
+      },
+      {
+        "id": "orochia-realtime",
+        "name": "@orochia/realtime",
+        "role": "library",
+        "owner": "orochia",
+        "repository": "orochia",
+        "path": "packages/realtime",
+        "runtime": "node",
+        "version": "1.0.0",
+        "published": false,
+        "description": "The realtime layer behind one interface: a bus (publish / subscribe by channel) and presence (who is connected), with a memory, a PostgreSQL LISTEN/NOTIFY and a Redis / Valkey adapter, plus Server-Sent Events framing. Knows nothing of Orochia: the candidate @krizaka/realtime brick."
       },
       {
         "id": "orochia-design-system",
@@ -1711,6 +1765,10 @@
         "to": "orochia-push"
       },
       {
+        "from": "orochia-api",
+        "to": "orochia-realtime"
+      },
+      {
         "from": "orochia-design-system",
         "to": "krizaka-tailwind",
         "version": "2.2.0"
@@ -1907,12 +1965,6 @@
         "via": "hosted checkout page"
       },
       {
-        "from": "postgresql",
-        "to": "orochia-api",
-        "kind": "notify",
-        "via": "LISTEN/NOTIFY orochia_events"
-      },
-      {
         "from": "expo-push",
         "to": "orochia-mobile",
         "kind": "push",
@@ -1932,12 +1984,6 @@
       },
       {
         "from": "orochia-api",
-        "to": "orochia-mobile",
-        "kind": "sse",
-        "via": "/api/conversations/stream"
-      },
-      {
-        "from": "orochia-api",
         "to": "orochia-web",
         "kind": "sse",
         "via": "/api/auctions/[id]/stream"
@@ -1947,12 +1993,6 @@
         "to": "orochia-web",
         "kind": "sse",
         "via": "/api/challenges/[id]/stream"
-      },
-      {
-        "from": "orochia-api",
-        "to": "orochia-web",
-        "kind": "sse",
-        "via": "/api/conversations/stream"
       },
       {
         "from": "bunny-stream",

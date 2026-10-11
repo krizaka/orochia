@@ -1,11 +1,9 @@
-import { conversations,db } from "@orochia/db";
-import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { requireUserWithRole } from "@/lib/auth";
-import { errorResponse, HttpError } from "@/lib/http";
-import { getConversationMessages, sendMessage } from "@/lib/messaging";
+import { errorResponse, jsonError } from "@/lib/http";
+import { conversationFor, getConversationMessages, MESSAGE_MAX_LENGTH, sendMessage } from "@/lib/messaging";
 import { limitAction } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -15,47 +13,45 @@ interface RouteParams {
 }
 
 const SendMessageSchema = z.object({
-  content: z.string().trim().min(1).max(4000),
+  content: z.string().trim().min(1).max(MESSAGE_MAX_LENGTH),
+  /** The app's id for this message: sending it again (a retry after a lost answer) never makes a second message. */
+  clientId: z.string().uuid().optional(),
 });
 
-/** Lists messages in a conversation and marks unread messages as read. */
+const Page = z.object({
+  before: z.coerce.number().int().positive().optional(),
+  limit: z.coerce.number().int().min(1).max(100).optional(),
+});
+
+/** Lists messages in a conversation (latest page, or `?before=<seq>` to scroll back) and marks the latest as read. */
 export async function GET(req: NextRequest, { params }: RouteParams) {
   try {
     const user = await requireUserWithRole(["ADMIN", "CREATOR", "MEMBER"]);
-    const { id } = await params;
-
-    const messages = await getConversationMessages(id, user.id);
-    return NextResponse.json({ success: true, messages });
+    const id = z.string().uuid().safeParse((await params).id);
+    if (!id.success) return jsonError(404, "Conversation not found");
+    const page = Page.parse(Object.fromEntries(req.nextUrl.searchParams));
+    const { messages, hasMore } = await getConversationMessages(id.data, user.id, page);
+    return NextResponse.json({ success: true, messages, hasMore });
   } catch (error) {
     return errorResponse(error, "conversations/[id]/messages");
   }
 }
 
-/** Sends a direct message in a conversation. */
+/** Sends a direct message in a conversation (idempotent per `clientId`: a retry answers the stored message). */
 export async function POST(req: NextRequest, { params }: RouteParams) {
   try {
     const user = await requireUserWithRole(["ADMIN", "CREATOR", "MEMBER"]);
     // Bursts (a message a second for a minute) and volume (per hour), per account and per IP.
     await limitAction("message-burst", req, user.id, { perUser: [20, 60] });
     await limitAction("message", req, user.id, { perUser: [300, 60 * 60], perIp: [600, 60 * 60] }, "Too many messages. Slow down.");
-    const { id: conversationId } = await params;
+    const id = z.string().uuid().safeParse((await params).id);
+    if (!id.success) return jsonError(404, "Conversation not found");
     const body = SendMessageSchema.parse(await req.json());
 
-    // Verify conversation exists and user is participant
-    const [conv] = await db
-      .select()
-      .from(conversations)
-      .where(eq(conversations.id, conversationId))
-      .limit(1);
+    const { otherId } = await conversationFor(id.data, user.id);
+    const { duplicate, ...message } = await sendMessage(user.id, otherId, body.content, { clientId: body.clientId });
 
-    if (!conv || (conv.participant1Id !== user.id && conv.participant2Id !== user.id)) {
-      throw new HttpError(404, "Conversation not found");
-    }
-
-    const recipientId = conv.participant1Id === user.id ? conv.participant2Id : conv.participant1Id;
-    const message = await sendMessage(user.id, recipientId, body.content);
-
-    return NextResponse.json({ success: true, message }, { status: 201 });
+    return NextResponse.json({ success: true, message, duplicate: Boolean(duplicate) }, { status: duplicate ? 200 : 201 });
   } catch (error) {
     return errorResponse(error, "conversations/[id]/messages");
   }

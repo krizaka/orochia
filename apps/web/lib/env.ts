@@ -135,3 +135,30 @@ export function metricsToken(): string | null {
 
 /** Signed stream URLs expire after this many seconds (AGENTS.md §2.A). */
 export const STREAM_TOKEN_TTL_SECONDS = 300;
+
+export interface RealtimeConfig {
+  kind: "memory" | "postgres" | "redis";
+  redisUrl?: string;
+  prefix: string;
+  /** A stream ends after this long and the client reconnects (seconds, 0: never). */
+  streamMaxSeconds: number;
+}
+
+/**
+ * The realtime bus (`REALTIME_BUS`): `postgres` (default — LISTEN/NOTIFY, no extra service), `redis` (Redis / Valkey
+ * at `REDIS_URL`, for several instances and many streams) or `memory` (one process: tests). Fail-closed: `redis`
+ * without a URL is a configuration error, never a silent fallback.
+ */
+export function realtimeConfig(env: Record<string, string | undefined> = process.env): RealtimeConfig {
+  const kind = (env.REALTIME_BUS?.trim().toLowerCase() || "postgres") as RealtimeConfig["kind"];
+  if (kind !== "memory" && kind !== "postgres" && kind !== "redis") throw new ConfigurationError("REALTIME_BUS", "must be memory, postgres or redis");
+  const redisUrl = env.REDIS_URL?.trim() || undefined;
+  if (kind === "redis" && !redisUrl) throw new ConfigurationError("REDIS_URL", "is required when REALTIME_BUS=redis");
+  const max = Number(env.REALTIME_STREAM_MAX_SECONDS ?? 300);
+  return {
+    kind,
+    redisUrl,
+    prefix: env.REALTIME_PREFIX?.trim() || "orochia:rt:",
+    streamMaxSeconds: Number.isFinite(max) && max >= 0 ? max : 300,
+  };
+}

@@ -2,6 +2,7 @@
 
 import { Bell, CheckCheck, Settings } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 
 import { Button, buttonVariants, cn, IconButton, Popover, Skeleton } from "@/components/ui";
@@ -17,9 +18,14 @@ import { useNotifications } from "./useNotifications";
  * link to /notifications (a page, so its address can be shared and reloaded).
  */
 export function NotificationBell() {
+  const pathname = usePathname();
   const { items, unread, loaded, markRead } = useNotifications(true, {
-    // What just happened, as it happens: a toast for each notification that arrives while the page is open.
-    onLive: (n) => showNotificationToast(n, () => void markRead([n.id])),
+    // What just happened, as it happens: a toast for each notification that arrives while the page is open — except a
+    // message while Messages is on screen (it is already there, live).
+    onLive: (n) => {
+      if (n.event === "newMessage" && pathname.startsWith("/messages")) return;
+      showNotificationToast(n, () => void markRead([n.id]));
+    },
   });
   const [open, setOpen] = useState(false);
 

@@ -15,6 +15,7 @@
 | `DRAFT_RETENTION_DAYS` (30), `DRAFTS_MAX_PER_USER` (20) | — | How long an editor draft is kept, and how many an account may keep. |
 | `QUOTA_PLATFORM_GB`, `QUOTA_CREATOR_DEFAULT_GB`, `QUOTA_PLANS`… | recommended | Storage quotas — see *Storage quotas*. `STORAGE_LIMITS=off` is refused in production without `STORAGE_LIMITS_OFF_CONFIRMED=true`. |
 | `BUNNY_ACCOUNT_API_KEY` | — | Bunny account key: the reconciliation also records the library's and storage zone's billed totals. |
+| `REALTIME_BUS` (`postgres`), `REDIS_URL`, `REALTIME_STREAM_MAX_SECONDS` (300) | `redis` past ~3 instances | The realtime bus — see *Realtime*. `REALTIME_BUS=redis` without `REDIS_URL` is refused. |
 | `RATE_LIMIT_STORE=postgres` | ✓ with 2+ instances | Rate-limit counters shared by every instance — see *Abuse defences*. |
 | `CLIENT_IP_HEADER=do-connecting-ip` | App Platform | The visitor's address as App Platform sets it (else the right-most `X-Forwarded-For` entry). |
 | `BOT_CHALLENGE=required`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` | production | Cloudflare Turnstile on sign-up and password reset — see *Abuse defences*. |
@@ -63,8 +64,26 @@ them (`deploy_on_push`). A spec file is only for creating the app or changing it
 database, the list of variables): `doctl apps update <APP_ID> --spec …` replaces the whole spec, and the
 `SECRET` entries have no value in the file — check them in the app afterwards.
 
-The spec has no Redis: rate limits are kept in memory per instance (`apps/web/lib/rate-limit.ts`), which holds for
-a single instance. A shared store comes back before scaling out.
+The spec has no Redis: rate limits are shared through PostgreSQL (`RATE_LIMIT_STORE=postgres`) and the realtime bus
+is PostgreSQL LISTEN/NOTIFY (`REALTIME_BUS=postgres`). Both hold for a few instances; see *Realtime* for when to add
+a Valkey cache.
+
+### Realtime (chat, presence, notifications, auctions)
+
+- **Streams are plain HTTP** (Server-Sent Events, `/api/conversations/stream`, `/api/auctions/:id/stream`,
+  `/api/challenges/:id/stream`): App Platform passes them unbuffered. Its edge closes a request **idle for 100 s** and
+  has **no session affinity**: the streams send a heartbeat every 15 s, end themselves after
+  `REALTIME_STREAM_MAX_SECONDS` (default 300 — the browser reconnects at once with `Last-Event-ID` and the missed
+  messages are replayed from the database), and any instance serves any stream.
+- `DATABASE_URL` must be a **direct** connection (LISTEN needs a session; not a transaction pooler). Each instance
+  holds one extra connection for LISTEN.
+- **Scaling out**: up to ~3 instances, keep `REALTIME_BUS=postgres` (every instance receives every event; presence is
+  replicated between instances over the same channel). Beyond, or past ~10 k concurrent streams, create a
+  DigitalOcean **Managed Caching (Valkey)** cluster in the same region, add it to the app's trusted sources, and set
+  `REALTIME_BUS=redis` + `REDIS_URL=rediss://default:<password>@<host>:25061` (SECRET). Nothing else changes; the switch
+  takes a redeploy and drops nothing durable (messages live in PostgreSQL).
+- Measured locally: 2 000 streams on one instance, p95 under 70 ms, ≈ 90–105 KB of memory per stream
+  ([ADR 0001](adr/0001-realtime-transport.md)). Repeat with `node scripts/realtime-load.mjs` before a launch.
 
 ### Domain (orochia.com, DNS at Porkbun)
 

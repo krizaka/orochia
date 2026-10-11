@@ -16,6 +16,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
+import { MessagesButton } from "@/components/messages/MessagesButton";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { Avatar, cn,IconButton, OrochiaLogo, ThemeToggle } from "@/components/ui";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
@@ -95,7 +96,6 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
           {navLink("/explore", t("nav.explore"))}
           {navLink("/auctions", t("nav.auctions"))}
           {navLink("/challenges", t("nav.challenges"))}
-          {user && navLink("/messages", t("nav.messages"))}
         </nav>
 
         <div className="flex items-center gap-2">
@@ -106,6 +106,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
 
           {user ? (
             <>
+              <MessagesButton />
               <NotificationBell />
               {isCreator && (
                 <Link

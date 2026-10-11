@@ -15,7 +15,7 @@ const CreateConversationSchema = z.object({
   recipientUsername: z.string().trim().optional(),
 });
 
-/** Lists the signed-in user's active direct conversations. */
+/** Lists the signed-in user's conversations: the other participant, last message, unread count and visible presence. */
 export async function GET() {
   try {
     const user = await requireUserWithRole(["ADMIN", "CREATOR", "MEMBER"]);
@@ -51,7 +51,8 @@ export async function POST(req: NextRequest) {
     }
 
     const conversationId = await getOrCreateConversation(user.id, targetUserId);
-    return NextResponse.json({ success: true, conversationId }, { status: 201 });
+    const conversation = (await listConversations(user.id)).find((c) => c.id === conversationId) ?? null;
+    return NextResponse.json({ success: true, conversationId, conversation }, { status: 201 });
   } catch (error) {
     return errorResponse(error, "conversations");
   }

@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useLiveEvents } from "@/lib/realtime-client";
+
 export interface NotificationItem {
   id: string;
   event: string;
@@ -13,8 +15,8 @@ export interface NotificationItem {
 }
 
 /**
- * The signed-in account's notifications: loaded once, kept live by the realtime stream (new ones arrive at once),
- * refreshed every minute as a fallback (several app instances do not share the stream).
+ * The signed-in account's notifications: loaded once, kept live by the account's stream (lib/realtime-client.ts — one
+ * connection per tab, shared with Messages), reloaded after a reconnection and every minute as a fallback.
  */
 export function useNotifications(enabled: boolean, { onLive }: { onLive?: (n: NotificationItem) => void } = {}) {
   const [items, setItems] = useState<NotificationItem[]>([]);
@@ -39,24 +41,17 @@ export function useNotifications(enabled: boolean, { onLive }: { onLive?: (n: No
     if (!enabled) return;
     void load();
     const poll = setInterval(() => void load(), 60_000);
-    const stream = new EventSource("/api/conversations/stream");
-    stream.onmessage = (e) => {
-      try {
-        const event = JSON.parse(e.data) as { type?: string; notification?: NotificationItem };
-        if (event.type === "notification" && event.notification) {
-          setItems((all) => [event.notification!, ...all.filter((n) => n.id !== event.notification!.id)]);
-          setUnread((n) => n + 1);
-          live.current?.(event.notification);
-        }
-      } catch {
-        /* heartbeat or malformed */
-      }
-    };
-    return () => {
-      clearInterval(poll);
-      stream.close();
-    };
+    return () => clearInterval(poll);
   }, [enabled, load]);
+
+  useLiveEvents(enabled, (event) => {
+    if (event.type === "connected" && event.reconnect) void load();
+    const notification = event.type === "notification" ? (event.notification as NotificationItem | undefined) : undefined;
+    if (!notification) return;
+    setItems((all) => [notification, ...all.filter((n) => n.id !== notification.id)]);
+    setUnread((n) => n + 1);
+    live.current?.(notification);
+  });
 
   const markRead = useCallback(async (ids: string[] | "all") => {
     const now = new Date().toISOString();

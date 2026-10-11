@@ -2,6 +2,7 @@ import { pgTable, text, timestamp, uuid, varchar, index } from "drizzle-orm/pg-c
 import { users } from "./users";
 import { videos } from "./videos";
 import { stories } from "./stories";
+import { directMessages } from "./messaging";
 import { reportReasonEnum, reportStatusEnum } from "./enums";
 
 /**
@@ -16,6 +17,8 @@ export const complianceReports = pgTable(
     videoId: uuid("video_id").references(() => videos.id, { onDelete: "set null" }),
     /** A reported story (a report about a story names it here; video_id stays empty). */
     storyId: uuid("story_id").references(() => stories.id, { onDelete: "set null" }),
+    /** A reported direct message (its text is copied into `details`: the evidence outlives the conversation). */
+    messageId: uuid("message_id").references(() => directMessages.id, { onDelete: "set null" }),
     videoTitle: varchar("video_title", { length: 255 }).notNull(),
     reason: reportReasonEnum("reason").notNull(),
     details: text("details").notNull(),
