@@ -1,7 +1,10 @@
 <!-- krizaka-header -->
 <div align="center">
 
-<img src=".github/assets/orochia-logo.svg" alt="Orochia" width="132">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/krizaka/.github/main/profile/assets/orochia-dark.svg">
+  <img src="https://raw.githubusercontent.com/krizaka/.github/main/profile/assets/orochia-light.svg" alt="Orochia" width="96">
+</picture>
 
 # Orochia
 
@@ -11,8 +14,8 @@ The creator video platform: direct-to-CDN 4K streaming, server-side access contr
 
 [![CI](https://github.com/krizaka/orochia/actions/workflows/ci.yml/badge.svg)](https://github.com/krizaka/orochia/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Orochia](https://img.shields.io/badge/part%20of-Orochia-d946ef)](https://www.krizaka.com/en/products/orochia#guarantees)
-[![Docs](https://img.shields.io/badge/docs-krizaka.com-6366f1)](https://www.krizaka.com/en/products/orochia/docs)
+[![Orochia](https://img.shields.io/badge/part%20of-Orochia-7c3aed)](https://www.krizaka.com/en/products/orochia#guarantees)
+[![Docs](https://img.shields.io/badge/docs-krizaka.com-7c3aed)](https://www.krizaka.com/en/products/orochia/docs)
 
 [Documentation](https://www.krizaka.com/en/products/orochia/docs) · [Website](https://www.krizaka.com) · [Krizaka on GitHub](https://github.com/krizaka)
 
