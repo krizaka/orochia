@@ -3,7 +3,7 @@ import { CHALLENGE_MAX_DELIVERY_DAYS, CHALLENGE_MIN_GOAL_CENTS, CHALLENGE_MIN_OP
 import Link from "next/link";
 import React from "react";
 
-import { buttonVariants, cn } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
 
@@ -48,9 +48,11 @@ export function ChallengesExplainer() {
           <p className="font-display text-lg font-bold text-fg">{t("home.challenges.pitch")}</p>
           <p className="mt-1 text-sm text-fg-secondary">{t("home.challenges.body", vars)}</p>
         </div>
-        <Link href="/challenges" className={cn(buttonVariants({ variant: "primary", size: "md", shape: "pill" }), "kz-sheen shrink-0 gap-2")}>
-          <ChallengeIcon size={18} /> {t("home.challenges.cta")}
-        </Link>
+        <Button asChild variant="primary" shimmer className="shrink-0 gap-2">
+          <Link href="/challenges">
+            <ChallengeIcon size={18} /> {t("home.challenges.cta")}
+          </Link>
+        </Button>
       </div>
     </div>
   );

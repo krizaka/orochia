@@ -4,7 +4,7 @@ import { ServerIcon, WarningIcon } from "@krizaka/icons";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
-import { cn, Progress, Skeleton } from "@/components/ui";
+import { cn, Meter, Skeleton } from "@/components/ui";
 import { formatBytes } from "@/lib/api-errors";
 import { type MessageKey,t } from "@/lib/i18n";
 
@@ -31,6 +31,9 @@ const TONE: Record<StorageView["level"], string> = {
   full: "text-danger",
 };
 
+/** The meter turns amber from 80 %, red from 95 % — the same steps as the messages (`storage-usage.ts` levels). */
+const STORAGE_THRESHOLDS = { low: 0.8, high: 0.95 } as const;
+
 const planName = (plan: string) => {
   const key = `quota.plans.${plan}` as MessageKey;
   const label = t(key);
@@ -38,7 +41,7 @@ const planName = (plan: string) => {
 };
 
 /**
- * The creator's storage gauge: space used against their plan (a @krizaka/ui Progress bar), video time, today's uploads,
+ * The creator's storage gauge: space used against their plan (a @krizaka/ui `Meter`, amber from 80 %, red from 95 %), video time, today's uploads,
  * uploads on hold and a clear message before the limit is reached (80 %, 95 %, full). Reads GET /api/me/storage unless
  * the page already has the figures (`initial`, server-rendered). `compact` for the upload page.
  */
@@ -94,13 +97,14 @@ export function StorageMeter({ initial, compact = false, className }: { initial?
 
       <p className="mt-2 font-mono text-lg font-black text-fg">{usedLine}</p>
       {limited && (
-        <Progress
+        <Meter
           className="mt-2"
           size="sm"
           value={Math.min(storage.used.bytes, storage.limit.bytes ?? 0)}
           max={storage.limit.bytes ?? 1}
           label={t("quota.label")}
           valueText={usedLine}
+          thresholds={STORAGE_THRESHOLDS}
         />
       )}
 

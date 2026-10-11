@@ -9,7 +9,7 @@ import { FloatingUploadBar } from "@/components/FloatingUploadBar";
 import { GlobalSearchModal } from "@/components/GlobalSearchModal";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { Navbar } from "@/components/Navbar";
-import { Toaster } from "@/components/ui";
+import { Charts, Toaster } from "@/components/ui";
 import { UploadManagerProvider } from "@/lib/upload-manager";
 
 export function ClientLayoutShell({ children }: { children: React.ReactNode }) {
@@ -28,7 +28,10 @@ export function ClientLayoutShell({ children }: { children: React.ReactNode }) {
       <Navbar onOpenSearch={() => setSearchModalOpen(true)} />
       {/* Room for the bottom tab bar on phones. */}
       <main className="min-h-[calc(100vh-4rem)] pb-20 md:pb-0">
-        <EmailVerificationGate>{children}</EmailVerificationGate>
+        {/* Every chart in the app speaks its words and wears the Orochia palette. */}
+        <Charts>
+          <EmailVerificationGate>{children}</EmailVerificationGate>
+        </Charts>
       </main>
       <MobileBottomNav />
       <GlobalSearchBarOrDock />

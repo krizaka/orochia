@@ -11,11 +11,13 @@ import {
   cn,
   ConfirmButton,
   Dialog,
+  EmptyState,
   IconButton,
   Input,
   Select,
   Sheet,
   Textarea,
+  undoToast,
 } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
@@ -104,16 +106,25 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
     onChange();
   };
 
-  const remove = async (v: StudioVideo) => {
-    await fetch(`/api/videos/${v.id}`, { method: "DELETE" });
-    onChange();
+  // Withdrawn after the undo window: the row leaves at once, the DELETE goes when the toast does.
+  const [leaving, setLeaving] = useState<ReadonlySet<string>>(new Set());
+  const remove = (v: StudioVideo) => {
+    setLeaving((s) => new Set(s).add(v.id));
+    undoToast(t("studio.withdrawn", { title: v.title }), {
+      onUndo: () => setLeaving((s) => { const next = new Set(s); next.delete(v.id); return next; }),
+      onCommit: () => void fetch(`/api/videos/${v.id}`, { method: "DELETE" }).finally(onChange),
+    });
   };
+  const shown = videos.filter((v) => !leaving.has(v.id));
 
-  if (videos.length === 0) {
+  if (shown.length === 0) {
     return (
-      <div className="rounded-3xl border border-border-default bg-surface-2/40 p-12 text-center text-sm text-fg-secondary">
-        <Rich text={t("studio.empty")} slots={{ link: <Link href="/creator/upload" className="font-semibold text-accent underline-offset-2 hover:underline">{t("studio.uploadFirst")}</Link> }} />
-      </div>
+      <EmptyState
+        bird="duck"
+        mood="welcome"
+        className="rounded-3xl bg-surface-2/40"
+        title={<Rich text={t("studio.empty")} slots={{ link: <Link href="/creator/upload" className="font-semibold text-fg-accent underline-offset-2 hover:underline">{t("studio.uploadFirst")}</Link> }} />}
+      />
     );
   }
 
@@ -132,7 +143,7 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
           </tr>
         </thead>
         <tbody className="divide-y divide-border-subtle text-fg-secondary">
-          {videos.map((v) => (
+          {shown.map((v) => (
             <tr key={v.id}>
               <td className="py-2.5 pr-4">
                 <Link href={`/watch/${v.id}`} className="hover:text-accent">{v.title}</Link>
@@ -172,7 +183,7 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
                     <IconButton size="sm" shape="rounded" className="h-8 w-8" onClick={() => edit(v)} label={t("studio.editNamed", { title: v.title })}>
                       <Pencil className="h-3.5 w-3.5" aria-hidden />
                     </IconButton>
-                    <ConfirmButton size="sm" label={t("studio.deleteNamed", { title: v.title })} confirmLabel={t("studio.confirmDelete")} onConfirm={() => void remove(v)}>
+                    <ConfirmButton size="sm" label={t("studio.deleteNamed", { title: v.title })} confirmLabel={t("studio.confirmDelete")} onConfirm={() => remove(v)}>
                       <Trash2 className="h-3.5 w-3.5" />
                     </ConfirmButton>
                   </div>

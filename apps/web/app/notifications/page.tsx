@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { CheckCheck, Settings } from "lucide-react";
-import { Button, buttonVariants, Spinner } from "@/components/ui";
+import { Button, buttonVariants, EmptyState, Loader } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { NotificationRow } from "@/components/notifications/NotificationRow";
 import { type NotificationItem, useNotifications } from "@/components/notifications/useNotifications";
@@ -60,10 +60,10 @@ export default function NotificationsPage() {
       <div className="glass-panel rounded-3xl p-2">
         {!loaded ? (
           <div className="flex justify-center py-16">
-            <Spinner size="md" />
+            <Loader variant="block" label={t("notifications.loading")} />
           </div>
         ) : all.length === 0 ? (
-          <p className="px-6 py-16 text-center text-sm text-fg-muted">{t("notifications.empty")}</p>
+          <EmptyState bird="pigeon" title={t("notifications.empty")} className="m-2 border-0" />
         ) : (
           all.map((n) => <NotificationRow key={n.id} n={n} onOpen={() => !n.readAt && void markRead([n.id])} />)
         )}

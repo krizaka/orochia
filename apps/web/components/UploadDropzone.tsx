@@ -5,12 +5,13 @@ import { Check, CheckCircle2, Clapperboard, Eye, Film, Lock, Mail, Scissors, Shi
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 
-import { Badge, Button, buttonVariants, Checkbox, Chip, cn, IconButton, Input, RadioGroup, Select, Switch, Textarea } from "@/components/ui";
+import { Badge, Button, buttonVariants, Checkbox, Chip, cn, IconButton, Input, Progress, RadioGroup, Select, Switch, Textarea } from "@/components/ui";
 import { apiErrorMessage } from "@/lib/api-errors";
 import { deleteDraft } from "@/lib/drafts";
 import { type MessageKey,t } from "@/lib/i18n";
 import { money } from "@/lib/money";
 import { MAX_TAGS, normalizeTags, suggestTags } from "@/lib/tags";
+import { duration as timeLeft } from "@/lib/units";
 import { useUploadManager } from "@/lib/upload-manager";
 import { EDITOR_MAX_BYTES, type VideoEdit } from "@/lib/video-edit";
 
@@ -268,14 +269,14 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
         <h2 className="font-display text-2xl font-black text-fg">{t("publish.done.title")}</h2>
         <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-fg-secondary">{t("publish.done.body")}</p>
         {uploading && (
-          <div className="mx-auto mt-6 max-w-sm">
-            <div className="mb-1.5 flex justify-between text-xs text-fg-secondary">
-              <span>{t("publish.uploading", { progress: upload?.progress ?? 0 })}</span>
-            </div>
-            <div className="h-2 overflow-hidden rounded-full bg-surface-3">
-              <div className="h-full rounded-full bg-linear-to-r from-accent to-accent-2 transition-all duration-300" style={{ width: `${upload?.progress ?? 0}%` }} />
-            </div>
-          </div>
+          <Progress
+            className="mx-auto mt-6 max-w-sm text-left"
+            value={upload?.progress ?? 0}
+            label={t("publish.sending")}
+            showLabel
+            status={upload?.status === "paused" ? "paused" : upload?.status === "error" ? "error" : "active"}
+            eta={upload?.timeRemainingSec ? t("uploads.eta", { time: timeLeft(upload.timeRemainingSec) ?? "" }) : undefined}
+          />
         )}
         <div className="mt-8 flex flex-col justify-center gap-2 sm:flex-row">
           <Link href={`/watch/${uploadedVideoId}`} className={buttonVariants({ variant: "secondary", size: "lg", shape: "pill" })}>
@@ -581,7 +582,18 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
             </div>
           </div>
           <div className="fixed inset-x-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-30 border-t border-border-default bg-surface-1/90 p-3 backdrop-blur-xl md:bottom-0 lg:static lg:mt-4 lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
-            <Button type="submit" variant="sensual" size="lg" shape="rounded" className="w-full" disabled={Boolean(missing) || uploading} loading={starting}>
+            <Button
+              type="submit"
+              variant="sensual"
+              size="lg"
+              shape="rounded"
+              className="w-full"
+              disabled={Boolean(missing)}
+              loading={starting || uploading}
+              progress={uploading ? (upload?.progress ?? 0) / 100 : null}
+              shimmer={!missing && !uploading}
+              magnetic
+            >
               {uploading ? t("publish.uploading", { progress: upload?.progress ?? 0 }) : missing ? t("publish.missing", { what: missing.toLowerCase() }) : t("publish.submit")}
             </Button>
           </div>

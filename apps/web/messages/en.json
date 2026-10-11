@@ -11,7 +11,16 @@
     "create": "Create",
     "add": "Add",
     "copy": "Copy",
-    "copied": "Copied"
+    "copied": "Copied",
+    "undo": "Undo",
+    "steps": {
+      "done": "Done",
+      "current": "In progress",
+      "upcoming": "Upcoming",
+      "error": "Failed"
+    },
+    "pauseBand": "Pause the band",
+    "playBand": "Play the band"
   },
   "stories": {
     "add": "Add story",
@@ -536,7 +545,22 @@
         }
       },
       "cta": "Start earning",
-      "ctaChallenges": "See the challenges"
+      "ctaChallenges": "See the challenges",
+      "hub": {
+        "label": "Every support flows to the creator",
+        "description": "A creator at the centre receives tips, unlocks, winning bids and challenge pledges; {share}% of each goes to them.",
+        "community": "Supporters",
+        "creator": "Creator",
+        "payouts": "Payouts",
+        "toCreator": "to the creator",
+        "value": "+ {amount}",
+        "ways": {
+          "tips": "Tips",
+          "unlocks": "Unlocks",
+          "auctions": "Auctions",
+          "challenges": "Challenges"
+        }
+      }
     },
     "auctionsLead": "One video, one winner — bids held in credits.",
     "challengesHow": {
@@ -1007,7 +1031,8 @@
     "unread": "{count} unread",
     "loadMore": "Show older",
     "dismiss": "Dismiss",
-    "region": "Live notifications"
+    "region": "Live notifications",
+    "loading": "Loading your notifications"
   },
   "wallet": {
     "title": "Wallet",
@@ -1066,7 +1091,7 @@
     "supportersHint": "Gross {amount}",
     "withdraw": "Withdraw",
     "trend": "Last 12 months",
-    "trendLabel": "Net earnings by month",
+    "trendLabel": "Your share by month, by what paid for it",
     "videos": "Your videos",
     "top": "Earning the most",
     "low": "Earning the least",
@@ -1084,7 +1109,9 @@
     "exportVideos": "Videos (CSV)",
     "kinds": {
       "tip": "Tip",
-      "unlock": "Unlock"
+      "unlock": "Unlock",
+      "auction": "Auction",
+      "challenge": "Challenge"
     },
     "payouts": "Payouts",
     "payoutAccount": "Where we send your money",
@@ -1143,7 +1170,25 @@
       "save": "Save payout method",
       "saved": "Payout method saved."
     },
-    "period": "Period"
+    "period": "Period",
+    "tipsPulse": "Tips, last 30 days",
+    "split": {
+      "title": "Where every payment goes",
+      "label": "Split of what your supporters paid",
+      "you": "To you",
+      "platform": "To Orochia",
+      "hint": "{percent}% of every tip, unlock, auction and challenge is yours — read from the ledger, never estimated.",
+      "none": "Your first payment will show the split here."
+    },
+    "goal": {
+      "title": "Your next payout",
+      "caption": "available",
+      "target": "Minimum payout",
+      "ready": "Ready to withdraw — it goes to your payout method.",
+      "toGo": "{amount} more and you can withdraw."
+    },
+    "loading": "Loading your earnings",
+    "month": "Month"
   },
   "feed": {
     "emptyFilter": "Nothing here yet in this category — try another tab.",
@@ -1261,7 +1306,8 @@
     },
     "removeTag": "Remove {tag}",
     "generalAudience": "General audience",
-    "addTag": "Add #{tag}"
+    "addTag": "Add #{tag}",
+    "sending": "Sending your video"
   },
   "explore": {
     "metaTitle": "Explore creators, videos and stories",
@@ -1610,7 +1656,8 @@
     "paused": "Paused ({progress}%)",
     "processing": "Uploaded — processing",
     "failed": "Upload failed",
-    "view": "Open the video →"
+    "view": "Open the video →",
+    "eta": "About {time} left"
   },
   "audience": {
     "usernamePlaceholder": "@username",
@@ -1746,7 +1793,8 @@
     "none": "No list yet.",
     "people": "{count} people",
     "delete": "Delete {name}",
-    "confirmDelete": "Delete? Members lose access"
+    "confirmDelete": "Delete? Members lose access",
+    "deleted": "List “{name}” deleted"
   },
   "network": {
     "loading": "Loading your network…",
@@ -1787,7 +1835,8 @@
     "delete": "Delete {title}",
     "confirmDelete": "Delete?",
     "shared": "Shared with you",
-    "sharedMeta": "@{owner} · {count} videos"
+    "sharedMeta": "@{owner} · {count} videos",
+    "deleted": "Collection “{title}” deleted"
   },
   "studio": {
     "status": {
@@ -1822,7 +1871,8 @@
     "uploadFirst": "Upload your first one",
     "auctionNamed": "Put “{title}” up for auction",
     "auctionLocked": "Auction — the winner watches it",
-    "challengeLocked": "Made for a challenge — its backers watch it"
+    "challengeLocked": "Made for a challenge — its backers watch it",
+    "withdrawn": "“{title}” withdrawn"
   },
   "inbox": {
     "title": "Messages",
@@ -2388,7 +2438,8 @@
       "WITHDRAWN": "Withdrawn"
     },
     "dare": "Dare",
-    "meterLabel": "Raised"
+    "meterLabel": "Raised",
+    "journey": "Where it stands"
   },
   "challenges": {
     "metaTitle": "Challenges",
@@ -2492,5 +2543,16 @@
       "minutes": "{count} min",
       "hours": "{count} h"
     }
+  },
+  "charts": {
+    "showData": "Show data",
+    "hideData": "Hide data",
+    "tableCaption": "{title} — data",
+    "loading": "Loading the chart…",
+    "empty": "Nothing to show for this period yet.",
+    "error": "The chart could not be loaded.",
+    "exportCsv": "Download CSV",
+    "exportPng": "Download PNG",
+    "exportSvg": "Download SVG"
   }
 }

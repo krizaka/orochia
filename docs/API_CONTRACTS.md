@@ -78,7 +78,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/conversations/[id]/messages` | session · ADMIN / CREATOR / MEMBER | Lists messages in a conversation and marks unread messages as read. |
 | `POST` | `/api/conversations/[id]/messages` | session · ADMIN / CREATOR / MEMBER | Sends a direct message in a conversation. |
 | `GET` | `/api/conversations/stream` | public | Realtime Server-Sent Events (SSE) stream for instant direct messages and notifications. |
-| `GET` | `/api/creator/earnings` | session · CREATOR / ADMIN | Your earnings for a period (?period=30d|90d|12m|all): totals, views, each video's revenue, the trend, payments and payouts. |
+| `GET` | `/api/creator/earnings` | session · CREATOR / ADMIN | Your earnings for a period (?period=30d|90d|12m|all): totals, views, each video's revenue, the trend by kind, the last 30 days of tips, payments and payouts. |
 | `GET` | `/api/creator/earnings/export` | session · CREATOR / ADMIN | Downloads your earnings as CSV (?kind=transactions|videos&period=…), for your accounting. |
 | `GET` | `/api/creator/payouts` | session · CREATOR / ADMIN | The signed-in creator's balance, lifetime earnings and payout history — from the ledger. |
 | `POST` | `/api/creator/payouts` | session · CREATOR / ADMIN | Requests a payout to your saved payout account (an encrypted snapshot is kept); balance checked and reserved atomically. |

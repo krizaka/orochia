@@ -1,6 +1,8 @@
-import { db, payoutRequests, profiles, tipsLedger, users, videoViews, videos } from "@orochia/db";
+import { db, payoutRequests, profiles, tipsLedger, users, videos,videoViews } from "@orochia/db";
+import { getCreatorAvailableBalanceCents, PAYOUT_MINIMUM_CENTS, platformFeePercent } from "@orochia/payments";
 import { and, desc, eq, gte, isNull, ne, sql } from "drizzle-orm";
-import { getCreatorAvailableBalanceCents, platformFeePercent } from "@orochia/payments";
+
+import { type EarningKind, earningKind } from "./earning-kinds";
 import { withSignedMedia } from "./media-urls";
 
 /**
@@ -10,6 +12,8 @@ import { withSignedMedia } from "./media-urls";
  */
 
 export const PERIODS = ["30d", "90d", "12m", "all"] as const;
+
+export { EARNING_KINDS, type EarningKind, earningKind } from "./earning-kinds";
 export type Period = (typeof PERIODS)[number];
 
 export function periodStart(period: Period, now = new Date()): Date | null {
@@ -36,6 +40,7 @@ export interface EarningsSummary {
   pendingPayoutCents: number;
   paidOutCents: number;
   feePercent: number;
+  payoutMinimumCents: number;
 }
 
 export async function earningsSummary(creatorId: string, period: Period): Promise<EarningsSummary> {
@@ -78,6 +83,7 @@ export async function earningsSummary(creatorId: string, period: Period): Promis
     pendingPayoutCents: Number(payouts?.pending ?? 0),
     paidOutCents: Number(payouts?.paid ?? 0),
     feePercent: platformFeePercent(),
+    payoutMinimumCents: PAYOUT_MINIMUM_CENTS,
   };
 }
 
@@ -119,26 +125,57 @@ export async function videoEarnings(creatorId: string, period: Period): Promise<
   return rows.map((r) => withSignedMedia({ ...r, payments: Number(r.payments), netCents: Number(r.netCents), grossCents: Number(r.grossCents) }));
 }
 
-/** Net earnings per month over the last 12 months (empty months included). */
-export async function monthlyNet(creatorId: string, now = new Date()): Promise<{ month: string; netCents: number }[]> {
+export type MonthlyEarnings = { month: string; netCents: number } & Record<EarningKind, number>;
+
+/** Net earnings per month over the last 12 months (empty months included), split by what paid for them. */
+export async function monthlyNet(creatorId: string, now = new Date()): Promise<MonthlyEarnings[]> {
   const from = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 11, 1));
   const rows = await db
-    .select({ month: sql<string>`to_char(date_trunc('month', ${tipsLedger.createdAt} at time zone 'UTC'), 'YYYY-MM')`, net: sql<string>`sum(${tipsLedger.netAmountCents})` })
+    .select({
+      month: sql<string>`to_char(date_trunc('month', ${tipsLedger.createdAt} at time zone 'UTC'), 'YYYY-MM')`,
+      note: tipsLedger.note,
+      net: sql<string>`sum(${tipsLedger.netAmountCents})`,
+    })
     .from(tipsLedger)
     .where(credits(creatorId, from))
-    .groupBy(sql`1`);
-  const byMonth = new Map(rows.map((r) => [r.month, Number(r.net)]));
+    .groupBy(sql`1`, tipsLedger.note);
   return Array.from({ length: 12 }, (_, i) => {
     const d = new Date(Date.UTC(from.getUTCFullYear(), from.getUTCMonth() + i, 1));
     const month = d.toISOString().slice(0, 7);
-    return { month, netCents: byMonth.get(month) ?? 0 };
+    const row: MonthlyEarnings = { month, netCents: 0, tip: 0, unlock: 0, auction: 0, challenge: 0 };
+    for (const r of rows) {
+      if (r.month !== month) continue;
+      row[earningKind(r.note)] += Number(r.net);
+      row.netCents += Number(r.net);
+    }
+    return row;
+  });
+}
+
+/** Net tips per day over the last `days` days, oldest first (empty days included): the pulse of the support. */
+export async function dailyTips(creatorId: string, days = 30, now = new Date()): Promise<{ day: string; netCents: number }[]> {
+  const from = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - (days - 1)));
+  const rows = await db
+    .select({
+      day: sql<string>`to_char(date_trunc('day', ${tipsLedger.createdAt} at time zone 'UTC'), 'YYYY-MM-DD')`,
+      note: tipsLedger.note,
+      net: sql<string>`sum(${tipsLedger.netAmountCents})`,
+    })
+    .from(tipsLedger)
+    .where(credits(creatorId, from))
+    .groupBy(sql`1`, tipsLedger.note);
+  const byDay = new Map<string, number>();
+  for (const r of rows) if (earningKind(r.note) === "tip") byDay.set(r.day, (byDay.get(r.day) ?? 0) + Number(r.net));
+  return Array.from({ length: days }, (_, i) => {
+    const day = new Date(from.getTime() + i * 86_400_000).toISOString().slice(0, 10);
+    return { day, netCents: byDay.get(day) ?? 0 };
   });
 }
 
 export interface EarningLine {
   id: string;
   createdAt: Date;
-  kind: "unlock" | "tip";
+  kind: EarningKind;
   videoTitle: string | null;
   supporter: string | null;
   grossCents: number;
@@ -173,7 +210,7 @@ export async function earningLines(creatorId: string, period: Period, limit?: nu
   return rows.map((r) => ({
     id: r.id,
     createdAt: r.createdAt,
-    kind: /unlock/i.test(r.note ?? "") ? "unlock" : "tip",
+    kind: earningKind(r.note),
     videoTitle: r.videoTitle,
     supporter: r.supporter ? `@${r.supporter}` : null,
     grossCents: r.grossCents,

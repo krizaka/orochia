@@ -103,7 +103,7 @@ export default async function ExplorePage(props: { searchParams: Promise<Params>
               />
             </div>
             {tag && <input type="hidden" name="tag" value={tag} />}
-            <Button type="submit" variant="sensual" size="lg" shape="rounded" className="kz-sheen rounded-2xl px-5 sm:px-6">
+            <Button type="submit" variant="sensual" size="lg" shape="rounded" className="rounded-2xl px-5 sm:px-6">
               {t("explore.search")}
             </Button>
           </form>

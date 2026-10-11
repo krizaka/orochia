@@ -553,7 +553,7 @@
       "method": "GET",
       "path": "/api/creator/earnings",
       "access": "session · CREATOR / ADMIN",
-      "summary": "Your earnings for a period (?period=30d|90d|12m|all): totals, views, each video's revenue, the trend, payments and payouts."
+      "summary": "Your earnings for a period (?period=30d|90d|12m|all): totals, views, each video's revenue, the trend by kind, the last 30 days of tips, payments and payouts."
     },
     {
       "method": "GET",
@@ -1440,9 +1440,21 @@
         "repository": "orochia-design-system",
         "path": ".",
         "runtime": "library",
-        "version": "4.1.0",
+        "version": "4.1.1",
         "published": true,
         "description": "The Orochia identity on the Krizaka platform: the Obsidian Velvet Noir theme as --kz-* token overrides and the product composites (StatusBadge, SocialIcon, orochiaButton), with their documentation registry (krizaka.com/docs/orochia/ui). The primitives come from @krizaka/ui."
+      },
+      {
+        "id": "krizaka-charts",
+        "name": "@krizaka/charts",
+        "role": "design",
+        "owner": "krizaka",
+        "repository": "charts",
+        "path": "node_modules/@krizaka/charts",
+        "runtime": "library",
+        "version": "0.1.0",
+        "published": true,
+        "description": "Krizaka's data visualisation: typed, declarative React charts (line, area, bar, pie, radar, heatmap, calendar, sankey, funnel, gauge, sparkline, candlestick, treemap, scatter, geo map, 3D globe) on the --kz-* tokens and the brand palettes — an accessible data table, a written summary and keyboard navigation in every chart, SSR without layout shift, and React Native for the simple types."
       },
       {
         "id": "krizaka-i18n",
@@ -1488,7 +1500,7 @@
         "repository": "krizaka-ui",
         "path": "node_modules/@krizaka/tailwind",
         "runtime": "library",
-        "version": "2.0.0",
+        "version": "2.3.0",
         "published": true,
         "description": "The Krizaka Tailwind CSS v4 preset: the semantic --kz-* tokens as utilities (bg-surface-1, text-fg-secondary, border-border-default, text-accent, rounded-xl…), illustration-only light/dark variants and the Krizaka easing."
       },
@@ -1500,7 +1512,7 @@
         "repository": "krizaka-ui",
         "path": "node_modules/@krizaka/tokens",
         "runtime": "library",
-        "version": "2.0.0",
+        "version": "2.3.0",
         "published": true,
         "description": "The Krizaka semantic design tokens (--kz-*) and the brand themes (Krizaka, Orazaka, Orochia): one DTCG source compiled to CSS (dark, light, media invariants), typed constants and React Native themes."
       },
@@ -1512,7 +1524,7 @@
         "repository": "krizaka-ui",
         "path": "node_modules/@krizaka/ui",
         "runtime": "library",
-        "version": "2.0.0",
+        "version": "2.3.0",
         "published": true,
         "description": "The Krizaka front-end platform's components: the primitives (button, card, dialog, toast, menu, field, tabs, chip, switch, slider, command palette, theme, countdown…) on the semantic --kz-* tokens, the animated marks (Krizaka, Orazaka, Orochia) and the motion signature — web and /native."
       },
@@ -1706,7 +1718,7 @@
       {
         "from": "orochia-design-system",
         "to": "krizaka-tokens",
-        "version": "2.2.0"
+        "version": "2.3.0"
       },
       {
         "from": "orochia-design-system",
@@ -1734,6 +1746,11 @@
       },
       {
         "from": "orochia-web",
+        "to": "krizaka-charts",
+        "version": "0.1.0"
+      },
+      {
+        "from": "orochia-web",
         "to": "krizaka-i18n",
         "version": "0.1.0"
       },
@@ -1750,22 +1767,22 @@
       {
         "from": "orochia-web",
         "to": "krizaka-tailwind",
-        "version": "2.0.0"
+        "version": "2.3.0"
       },
       {
         "from": "orochia-web",
         "to": "krizaka-tokens",
-        "version": "2.0.0"
+        "version": "2.3.0"
       },
       {
         "from": "orochia-web",
         "to": "krizaka-ui",
-        "version": "2.0.0"
+        "version": "2.3.0"
       },
       {
         "from": "orochia-web",
         "to": "orochia-design-system",
-        "version": "4.0.0"
+        "version": "4.1.1"
       }
     ],
     "flows": [

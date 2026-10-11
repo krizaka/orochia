@@ -4,7 +4,7 @@ import { Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 
-import { Button, cn, ConfirmButton, Input, Select } from "@/components/ui";
+import { Button, cn, ConfirmButton, EmptyState, Input, Select, undoToast } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 import { AudienceEditor } from "../AudienceEditor";
@@ -39,6 +39,17 @@ export function PlaylistsPanel() {
     if (invited.ok) setShared(((await invited.json()) as { playlists: (Collection & { ownerUsername: string })[] }).playlists);
   }, []);
   useEffect(() => void load(), [load]);
+
+  // Deleted after the undo window: the collection leaves at once, the DELETE goes when the toast does.
+  const [leaving, setLeaving] = useState<ReadonlySet<string>>(new Set());
+  const removeCollection = (p: Collection) => {
+    setLeaving((s) => new Set(s).add(p.id));
+    undoToast(t("playlistsPanel.deleted", { title: p.title }), {
+      onUndo: () => setLeaving((s) => { const next = new Set(s); next.delete(p.id); return next; }),
+      onCommit: () => void send(`/api/playlists/${p.id}`, "DELETE"),
+    });
+  };
+  const shown = lists?.filter((p) => !leaving.has(p.id)) ?? null;
 
   const send = async (url: string, method: string, body?: object) => {
     setError(null);
@@ -77,15 +88,13 @@ export function PlaylistsPanel() {
       </p>
       {error && <p className="text-xs text-danger">{error}</p>}
 
-      {lists === null ? (
+      {shown === null ? (
         <p className="text-xs text-fg-muted">{t("playlistsPanel.loading")}</p>
-      ) : lists.length === 0 ? (
-        <div className="rounded-3xl border border-border-default bg-surface-2/40 p-12 text-center text-sm text-fg-secondary">
-          {t("playlistsPanel.empty")}
-        </div>
+      ) : shown.length === 0 ? (
+        <EmptyState bird="owl" title={t("playlistsPanel.empty")} className="rounded-3xl bg-surface-2/40" />
       ) : (
         <ul className="glass-panel divide-y divide-border-subtle rounded-3xl px-5">
-          {lists.map((p) => (
+          {shown.map((p) => (
             <li key={p.id} className="py-3.5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Link href={`/playlists/${p.id}`} className="min-w-0">
@@ -112,7 +121,7 @@ export function PlaylistsPanel() {
                     size="sm"
                     label={t("playlistsPanel.delete", { title: p.title })}
                     confirmLabel={t("playlistsPanel.confirmDelete")}
-                    onConfirm={() => void send(`/api/playlists/${p.id}`, "DELETE")}
+                    onConfirm={() => removeCollection(p)}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </ConfirmButton>

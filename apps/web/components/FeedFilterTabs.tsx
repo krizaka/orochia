@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useMemo,useState } from "react";
 
-import { Avatar, Badge, buttonVariants, Chip, orochiaButton, Tabs } from "@/components/ui";
+import { Avatar, Badge, buttonVariants, Chip, EmptyState, orochiaButton, Tabs } from "@/components/ui";
 import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
 import { t } from "@/lib/i18n";
 
@@ -75,7 +75,7 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
             </div>
           </div>
         ) : (
-          <p className="rounded-3xl border border-border-default bg-surface-2/40 p-10 text-center text-sm text-fg-secondary">{t("feed.emptyFilter")}</p>
+          <EmptyState bird="owl" title={t("feed.emptyFilter")} className="rounded-3xl bg-surface-2/40" />
         )
       ) : viewMode === "grid" ? (
         /* Grid Layout */

@@ -380,20 +380,28 @@ orochia/                           npm workspaces
   them the app's words — loading label, close label, countdown units, theme toggle label). From `@krizaka/ui`:
   `Button` (primary · secondary · outline · ghost · danger, plus `sensual`, Orochia's gradient; sm · md · lg · icon;
   `shape` pill — the door's default — or rounded; `loading`; `asChild`), `IconButton` (accessible `label` required),
-  `buttonVariants` (and the kit's `orochiaButton` for `sensual`) to style a `<Link>`, `Badge`, `Field.*` + `Input` /
-  `Textarea` / `Select`, `Avatar` (fallback: an initial or an icon), `Skeleton`, `Spinner`, `EmptyState`, `Countdown`,
+  `buttonVariants` (and the kit's `orochiaButton` for `sensual`) to style a `<Link>`; the button's own `loading` (with
+  `progress` for an upload), `status` (a check or a cross when it ends, `announce`d), and `shimmer` / `magnetic` for
+  the one action a page is about, sparingly; `Badge`, `Field.*` + `Input` / `Textarea` / `Select`, `Avatar` (fallback:
+  an initial or an icon), `Skeleton` / `SkeletonText` / `SkeletonShape`, `Loader` / `LoadingRegion` (a wait in words),
+  `Spinner`, `EmptyState` (the door's: a `bird` of `@krizaka/ui/mascots` above the words — flamingo gets paid, pigeon
+  delivers, owl reads, duck builds, falcon watches), `Countdown`, `NumberTicker` / `MoneyTicker` (`trigger="change"`
+  for a live figure: the current bid, a pot), `Meter` (a quota with thresholds, a split with `parts` — the 90 / 10),
+  `Stepper` (a challenge's journey), `IsoHub` (the Get paid scene),
   `Card.*` (every card: `Root/Media/Image/Overlay/Body/Title/Description/Stat/Footer`), `Dialog.*` + `Sheet` (every
   modal and sheet — Radix: focus trap, Escape, outside click and scroll lock come with it; the door names the close
   button; `hideClose` / `dismissible={false}` for a gate or a full-screen editor), `AlertDialog` (confirmations),
   `Tabs.*` (underline · segmented · pills: a view or a page's sections), `Chip` + `Chip.Group` (a filter or a pill
-  choice; `chipVariants`, client, for a filter that is a link — `TagChip`), `RadioGroup.*` (`Card`: a whole card is the choice — amounts, packs, payment methods), `Checkbox`, `Switch`,
+  choice), `ChipLink` (a filter that is a link, server-safe — `TagChip`), `RadioGroup.*` (`Card`: a whole card is the choice — amounts, packs, payment methods), `Checkbox`, `Switch`,
   `Slider`, `Command.*` + `CommandDialog` (the search palette), `ConfirmButton` (destructive actions, two taps),
-  `Progress` (bar · ring), `Popover`, `Kbd`, `SectionBackdrop` (a page section in the brand's visual language: section
+  `Progress` (bar · ring, `eta` and `status` paused / error — uploads), `Popover`, `Kbd`, `SectionBackdrop` (a page section in the brand's visual language: section
   gradient alternating `down` / `up`, dome, perspective grid, blurred media — the home's sections), `Toaster` (mounted once in `ClientLayoutShell`) + `toast`
-  (`toast.custom` for live events), the theme (`ThemeScript`, `ThemeProvider`, `ThemeToggle`; `kz-theme` in
+  (`toast.custom` for live events), `undoToast` (a deletion waits 6 s and can be undone — after the `ConfirmButton`),
+  `progressToast` (the minimized upload dock), `groupedToast`; charts come from `@krizaka/charts` (`/line`, `/gauge`,
+  `/sparkline`…) under the door's `Charts` provider (the app's words, the Orochia palette), mounted once in the layout, the theme (`ThemeScript`, `ThemeProvider`, `ThemeToggle`; `kz-theme` in
   localStorage), `cn`, `OrochiaLogo`, `MotionObserver`, `RotatingWord`. No hand-written overlay: no `createPortal`,
   `role="dialog"` or `aria-modal` in a component, no `role="radio"` or native checkbox by hand. From
-  `@krizaka/orochia-design-system`: only the identity — `orochiaButton`, `LiveBadge`, `SocialIcon`, the theme. The door is a
+  `@krizaka/orochia-design-system`: only the identity — `orochiaButton`, `StatusBadge` (`active` pulses; never "live"), `SocialIcon`, the theme. The door is a
   plain module: server components take `buttonVariants`, `orochiaButton` and `cn` from it. New screens use these
   atoms; a missing component is added to the package, not to the app. Icons are `@krizaka/icons` (`<Name>Icon`, the Krizaka
   signature; `nodeColor` lights a product icon's node) — the home and the navigation use them; `lucide-react` is being

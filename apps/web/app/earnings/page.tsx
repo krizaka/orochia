@@ -1,25 +1,29 @@
 "use client";
 
+import { Gauge } from "@krizaka/charts/gauge";
+import { AreaChart } from "@krizaka/charts/line";
+import { Sparkline } from "@krizaka/charts/sparkline";
 import { Download, Eye, Film, Landmark, Users, Wallet } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { Suspense, useCallback, useEffect, useState } from "react";
 
-import { MonthlyChart } from "@/components/money/MonthlyChart";
 import { PayoutAccountSheet } from "@/components/money/PayoutAccountSheet";
 import { WithdrawSheet } from "@/components/money/WithdrawSheet";
-import { Badge, type BadgeProps, Button, buttonVariants, Chip, cn, orochiaButton, Spinner } from "@/components/ui";
+import { Badge, type BadgeProps, Button, buttonVariants, Chip, cn, EmptyState, Loader, Meter, MoneyTicker, NumberTicker, orochiaButton } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
+import { EARNING_KINDS, type EarningKind } from "@/lib/earning-kinds";
 import { t } from "@/lib/i18n";
 import { compact, money } from "@/lib/money";
 
 type Period = "30d" | "90d" | "12m" | "all";
 type Sort = "net" | "views";
 interface Earnings {
-  summary: { grossCents: number; netCents: number; payments: number; supporters: number; periodViews: number; totalViews: number; availableCents: number; pendingPayoutCents: number; paidOutCents: number; feePercent: number };
+  summary: { grossCents: number; feeCents: number; netCents: number; payments: number; supporters: number; periodViews: number; totalViews: number; availableCents: number; pendingPayoutCents: number; paidOutCents: number; feePercent: number; payoutMinimumCents: number };
   videos: { id: string; title: string; thumbnailUrl: string | null; totalViews: number; payments: number; netCents: number }[];
-  monthly: { month: string; netCents: number }[];
-  lines: { id: string; createdAt: string; kind: "tip" | "unlock"; videoTitle: string | null; supporter: string | null; netCents: number }[];
+  monthly: ({ month: string; netCents: number } & Record<EarningKind, number>)[];
+  tips: { day: string; netCents: number }[];
+  lines: { id: string; createdAt: string; kind: EarningKind; videoTitle: string | null; supporter: string | null; netCents: number }[];
   payouts: { id: string; amountCents: number; status: "REQUESTED" | "UNDER_REVIEW" | "PROCESSING" | "SETTLED" | "FAILED"; createdAt: string }[];
   payoutAccount: { method: string; hint: string; holderName: string } | null;
 }
@@ -34,7 +38,7 @@ const STATUS_TONE: Record<string, BadgeProps["tone"]> = {
   PROCESSING: "accent",
 };
 
-function Stat({ icon: Icon, label, value, hint, action }: { icon: React.ElementType; label: string; value: string; hint?: string; action?: React.ReactNode }) {
+function Stat({ icon: Icon, label, value, hint, action, extra }: { icon: React.ElementType; label: string; value: React.ReactNode; hint?: string; action?: React.ReactNode; extra?: React.ReactNode }) {
   return (
     <div className={card}>
       <div className="flex items-center gap-2 text-xs font-semibold text-fg-secondary">
@@ -42,10 +46,14 @@ function Stat({ icon: Icon, label, value, hint, action }: { icon: React.ElementT
       </div>
       <p className="mt-2 font-display text-2xl font-black tabular-nums tracking-tight text-fg sm:text-3xl">{value}</p>
       {hint && <p className="mt-1 text-[11px] text-fg-muted">{hint}</p>}
+      {extra}
       {action && <div className="mt-3">{action}</div>}
     </div>
   );
 }
+
+const compactFormat: Intl.NumberFormatOptions = { notation: "compact", maximumFractionDigits: 1 };
+const USD = { style: "money", currency: "USD" } as const;
 
 /** A creator's earnings and payouts. Period and sort live in the address (?period=…&sort=…); payouts at #payouts. */
 function EarningsPage() {
@@ -110,34 +118,103 @@ function EarningsPage() {
 
       {!s ? (
         <div className="flex justify-center py-24">
-          <Spinner size="md" />
+          <Loader variant="block" label={t("earnings.loading")} />
         </div>
       ) : (
-        <div className={cn("space-y-6 transition-opacity", loading && "opacity-60")}>
+        <div className={cn("space-y-6 transition-opacity", loading && "opacity-60")} aria-busy={loading}>
           <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-            <Stat icon={Wallet} label={t("earnings.net")} value={money(s.netCents)} hint={t("earnings.netHint", { fee: s.feePercent, payments: s.payments })} />
+            <Stat
+              icon={Wallet}
+              label={t("earnings.net")}
+              value={<MoneyTicker cents={s.netCents} trigger="change" align="start" />}
+              hint={t("earnings.netHint", { fee: s.feePercent, payments: s.payments })}
+              extra={
+                data!.tips.some((d) => d.netCents > 0) && (
+                  <Sparkline
+                    title={t("earnings.tipsPulse")}
+                    data={data!.tips.map((d) => d.netCents)}
+                    categories={data!.tips.map((d) => d.day)}
+                    variant="area"
+                    format={USD}
+                    height={32}
+                    className="mt-2"
+                  />
+                )
+              }
+            />
             <Stat
               icon={Landmark}
               label={t("earnings.available")}
-              value={money(s.availableCents)}
+              value={<MoneyTicker cents={s.availableCents} trigger="change" align="start" />}
               hint={s.pendingPayoutCents > 0 ? t("earnings.pending", { amount: money(s.pendingPayoutCents) }) : undefined}
               action={
-                <Button variant="sensual" size="sm" onClick={() => (data?.payoutAccount ? setWithdrawOpen(true) : setAccountOpen(true))}>
+                <Button variant="sensual" size="sm" shimmer={s.availableCents >= s.payoutMinimumCents} onClick={() => (data?.payoutAccount ? setWithdrawOpen(true) : setAccountOpen(true))}>
                   {t("earnings.withdraw")}
                 </Button>
               }
             />
-            <Stat icon={Eye} label={t("earnings.views")} value={compact(s.totalViews)} hint={t("earnings.viewsHint", { count: compact(s.periodViews) })} />
-            <Stat icon={Users} label={t("earnings.supporters")} value={compact(s.supporters)} hint={t("earnings.supportersHint", { amount: money(s.grossCents) })} />
+            <Stat icon={Eye} label={t("earnings.views")} value={<NumberTicker value={s.totalViews} format={compactFormat} trigger="change" align="start" />} hint={t("earnings.viewsHint", { count: compact(s.periodViews) })} />
+            <Stat icon={Users} label={t("earnings.supporters")} value={<NumberTicker value={s.supporters} format={compactFormat} trigger="change" align="start" />} hint={t("earnings.supportersHint", { amount: money(s.grossCents) })} />
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-            <section className={card} aria-labelledby="trend-title">
+          <div className="grid gap-6 lg:grid-cols-3">
+            <section className={cn(card, "lg:col-span-2")} aria-labelledby="trend-title">
               <h2 id="trend-title" className="text-sm font-bold text-fg">{t("earnings.trend")}</h2>
-              <p className="mb-3 text-[11px] text-fg-muted">{t("earnings.trendLabel")}</p>
-              <MonthlyChart data={data!.monthly} label={t("earnings.trendLabel")} />
+              <AreaChart
+                title={t("earnings.trendLabel")}
+                hideTitle
+                description={t("earnings.trendLabel")}
+                data={data!.monthly.some((m) => m.netCents > 0) ? data!.monthly : []}
+                x="month"
+                xFormat="month"
+                xLabel={t("earnings.month")}
+                series={EARNING_KINDS.map((k) => ({ key: k, label: t(`earnings.kinds.${k}`) }))}
+                stacked
+                format={USD}
+                height={300}
+                empty={<EmptyState bird="flamingo" title={t("earnings.noTransactions")} />}
+              />
             </section>
+            <div className="grid gap-6">
+              <section className={card} aria-labelledby="goal-title">
+                <h2 id="goal-title" className="sr-only">{t("earnings.goal.title")}</h2>
+                <Gauge
+                  title={t("earnings.goal.title")}
+                  value={s.availableCents}
+                  max={Math.max(s.payoutMinimumCents, s.availableCents)}
+                  format={USD}
+                  caption={t("earnings.goal.caption")}
+                  target={{ value: s.payoutMinimumCents, label: t("earnings.goal.target"), tone: "success" }}
+                  tone={s.availableCents >= s.payoutMinimumCents ? "success" : "accent"}
+                  height={150}
+                  description={
+                    s.availableCents >= s.payoutMinimumCents
+                      ? t("earnings.goal.ready")
+                      : t("earnings.goal.toGo", { amount: money(s.payoutMinimumCents - s.availableCents) })
+                  }
+                />
+              </section>
+              <section className={cn(card, "space-y-4")} aria-labelledby="split-title">
+                <h2 id="split-title" className="text-sm font-bold text-fg">{t("earnings.split.title")}</h2>
+                {s.grossCents > 0 ? (
+                  <Meter
+                    label={t("earnings.split.label")}
+                    size="lg"
+                    max={s.grossCents}
+                    parts={[
+                      { label: t("earnings.split.you"), value: s.netCents, valueText: money(s.netCents) },
+                      { label: t("earnings.split.platform"), value: s.feeCents, valueText: money(s.feeCents) },
+                    ]}
+                  />
+                ) : (
+                  <p className="text-xs text-fg-muted">{t("earnings.split.none")}</p>
+                )}
+                <p className="text-[11px] leading-relaxed text-fg-muted">{t("earnings.split.hint", { percent: 100 - s.feePercent })}</p>
+              </section>
+            </div>
+          </div>
 
+          <div className="grid gap-6">
             <section className={card} aria-labelledby="videos-title">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <h2 id="videos-title" className="text-sm font-bold text-fg">{t("earnings.videos")}</h2>
@@ -150,7 +227,7 @@ function EarningsPage() {
                 </Chip.Group>
               </div>
               {videos.length === 0 ? (
-                <p className="py-8 text-center text-xs text-fg-muted">{t("earnings.noVideos")}</p>
+                <EmptyState bird="duck" title={t("earnings.noVideos")} className="border-0" />
               ) : (
                 <ol className="max-h-80 space-y-1 overflow-y-auto pr-1">
                   {videos.map((v, i) => (
@@ -189,7 +266,7 @@ function EarningsPage() {
               </div>
             </div>
             {data!.lines.length === 0 ? (
-              <p className="py-8 text-center text-xs text-fg-muted">{t("earnings.noTransactions")}</p>
+              <EmptyState bird="flamingo" title={t("earnings.noTransactions")} className="border-0" />
             ) : (
               <div className="-mx-5 overflow-x-auto">
                 <table className="w-full min-w-[520px] text-left text-sm">

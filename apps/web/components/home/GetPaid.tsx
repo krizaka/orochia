@@ -4,8 +4,7 @@ import Link from "next/link";
 import React from "react";
 
 import { BackdropMedia } from "@/components/home/BackdropMedia";
-import { SplitIllustration } from "@/components/home/SplitIllustration";
-import { buttonVariants, cn, SectionBackdrop } from "@/components/ui";
+import { Button, buttonVariants, cn, IsoHub, SectionBackdrop } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
 import { SOURCE_URL } from "@/lib/seo";
@@ -23,6 +22,9 @@ const WAYS = [
   ["challenges", ChallengeIcon, CHALLENGE_SUGGESTED_PLEDGES_CENTS[2]],
 ] as const;
 
+/** The pictogram of each way on the hub's tiles. */
+const HUB_GLYPHS = { tips: "coin", unlocks: "lock", auctions: "arrow", challenges: "flag" } as const;
+
 const PROOFS = [
   ["confirmed", ShieldIcon],
   ["escrow", LockIcon],
@@ -32,7 +34,8 @@ const PROOFS = [
 
 /**
  * "Get paid" — the creator's side of the home: four ways money comes in (tips, paid unlocks, auctions, challenges),
- * the split drawn as an object (SplitIllustration) and written out, the guarantees that make it trustworthy, and the
+ * every support converging on the creator (`IsoHub` of @krizaka/ui, the `iso/orochia-hero` scene: tips, unlocks, bids
+ * and pledges flow in, the creator's share on each link) and the split written out, the guarantees that make it trustworthy, and the
  * way in. Every figure is computed from the platform's rules; nothing pretends to be someone's earnings.
  */
 export function GetPaid({ fee }: { fee: number }) {
@@ -74,7 +77,24 @@ export function GetPaid({ fee }: { fee: number }) {
                 <p className="mt-2 text-xs font-medium text-fg-muted">{t("home.paid.split.platform")}</p>
               </div>
             </div>
-            <SplitIllustration share={share} className="-mx-4 mt-2 w-[calc(100%+2rem)] max-w-none" />
+            <IsoHub
+              label={t("home.paid.hub.label")}
+              description={t("home.paid.hub.description", { share })}
+              className="-mx-2 my-2 w-[calc(100%+1rem)] max-w-none"
+              shape="hex"
+              size={110}
+              layers={[
+                { label: t("home.paid.hub.community"), height: 16 },
+                { label: t("home.paid.hub.creator"), height: 44, material: "accent2" },
+              ]}
+              core={t("home.paid.hub.payouts")}
+              highlight={{ strong: t("home.paid.split.percent", { value: share }), text: t("home.paid.hub.toCreator") }}
+              satellites={WAYS.map(([key, , gross]) => ({
+                label: t(`home.paid.hub.ways.${key}`),
+                glyph: HUB_GLYPHS[key],
+                value: t("home.paid.hub.value", { amount: money(splitPlatformFee(gross, fee).netAmountCents) }),
+              }))}
+            />
             <div role="img" aria-label={t("home.paid.split.label", { share, fee })} className="flex h-2.5 overflow-hidden rounded-full bg-surface-3">
               <span className="h-full rounded-full bg-linear-to-r from-accent to-accent-2" style={{ width: `${share}%` }} />
             </div>
@@ -133,12 +153,11 @@ export function GetPaid({ fee }: { fee: number }) {
         </ul>
 
         <div data-reveal className="mt-12 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link
-            href="/auth/register"
-            className={cn(buttonVariants({ variant: "primary", size: "lg", shape: "pill" }), "kz-sheen w-full gap-2 sm:w-auto")}
-          >
-            <PayoutIcon size={18} /> {t("home.paid.cta")}
-          </Link>
+          <Button asChild variant="primary" size="lg" shimmer className="w-full gap-2 sm:w-auto">
+            <Link href="/auth/register">
+              <PayoutIcon size={18} /> {t("home.paid.cta")}
+            </Link>
+          </Button>
           <Link href="/challenges" className={cn(buttonVariants({ variant: "outline", size: "lg", shape: "pill" }), "w-full gap-2 bg-surface-1/60 backdrop-blur-md sm:w-auto")}>
             {t("home.paid.ctaChallenges")}
           </Link>

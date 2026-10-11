@@ -13,33 +13,26 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
-import { cn, IconButton, Spinner } from "@/components/ui";
+import { IconButton, Progress, progressToast, toast } from "@/components/ui";
 import { t } from "@/lib/i18n";
-import { type UploadItem,useUploadManager } from "@/lib/upload-manager";
+import { bytes, duration, speed } from "@/lib/units";
+import { useUploadManager } from "@/lib/upload-manager";
 
-function formatBytes(bytes: number): string {
-  if (bytes <= 0) return "0 B";
-  if (bytes >= 1024 ** 3) return `${(bytes / 1024 ** 3).toFixed(1)} GB`;
-  if (bytes >= 1024 ** 2) return `${(bytes / 1024 ** 2).toFixed(1)} MB`;
-  return `${Math.round(bytes / 1024)} KB`;
-}
+const STATUS = { uploading: "active", queued: "active", paused: "paused", error: "error", completed: "active" } as const;
 
-function formatSpeed(bytesPerSec: number): string {
-  if (bytesPerSec <= 0) return "--";
-  if (bytesPerSec >= 1024 ** 2) return `${(bytesPerSec / 1024 ** 2).toFixed(1)} MB/s`;
-  return `${Math.round(bytesPerSec / 1024)} KB/s`;
-}
+/** “About 2 min left”, or nothing while the speed is not known. */
+const etaOf = (seconds: number | null) => {
+  const left = duration(seconds);
+  return left ? t("uploads.eta", { time: left }) : undefined;
+};
 
-function formatEta(seconds: number | null): string {
-  if (seconds === null || seconds <= 0) return "";
-  if (seconds < 60) return `${seconds}s left`;
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}m ${s}s left`;
-}
-
+/**
+ * The upload dock: every upload with its bar (percentage, time left, paused or failed), pause / resume / cancel. Minimized,
+ * the uploads keep going in one toast that advances (`progressToast`) and turns to a success at the end; its action
+ * opens the dock again.
+ */
 export function FloatingUploadBar() {
   const {
     uploads,
@@ -51,8 +44,6 @@ export function FloatingUploadBar() {
     dismissUpload,
   } = useUploadManager();
 
-  if (uploads.length === 0) return null;
-
   const activeCount = uploads.filter(
     (u) => u.status === "uploading" || u.status === "queued" || u.status === "paused"
   ).length;
@@ -61,6 +52,33 @@ export function FloatingUploadBar() {
     uploads.length > 0
       ? Math.round(uploads.reduce((acc, u) => acc + u.progress, 0) / uploads.length)
       : 0;
+  const failed = uploads.some((u) => u.status === "error");
+  const slowest = Math.max(0, ...uploads.map((u) => (u.status === "uploading" ? (u.timeRemainingSec ?? 0) : 0)));
+
+  // Minimized: one toast carries the uploads in the background, until they are done (or the dock opens again).
+  const toastId = useRef<string | number | null>(null);
+  const tracking = isDockMinimized && uploads.length > 0;
+  useEffect(() => {
+    if (!tracking) {
+      if (toastId.current !== null) toast.dismiss(toastId.current);
+      toastId.current = null;
+      return;
+    }
+    if (activeCount === 0 && toastId.current === null) return;
+    if (activeCount === 0 && failed) {
+      toast.error(t("uploads.failed"), { id: toastId.current ?? undefined, action: { label: t("uploads.expand"), onClick: () => setIsDockMinimized(false) } });
+      return;
+    }
+    toastId.current = progressToast(t("uploads.running", { count: Math.max(1, activeCount) }), {
+      id: toastId.current ?? undefined,
+      value: activeCount === 0 ? 1 : totalProgress / 100,
+      description: etaOf(slowest),
+      doneMessage: t("uploads.processing"),
+      action: { label: t("uploads.expand"), onClick: () => setIsDockMinimized(false) },
+    });
+  }, [tracking, activeCount, failed, totalProgress, slowest, setIsDockMinimized]);
+
+  if (uploads.length === 0) return null;
 
   if (isDockMinimized) {
     return (
@@ -70,13 +88,7 @@ export function FloatingUploadBar() {
           className="flex items-center gap-3 px-4 py-2.5 rounded-full bg-surface-1/95 border border-accent/30 text-fg shadow-2xl backdrop-blur-xl hover:border-accent/60 transition-all group"
           title={t("uploads.expand")}
         >
-          <div className="relative flex items-center justify-center">
-            {activeCount > 0 ? (
-              <Spinner size="sm" />
-            ) : (
-              <CheckCircle className="h-4 w-4 text-success" />
-            )}
-          </div>
+          <Progress variant="ring" size="sm" value={activeCount > 0 ? totalProgress : 100} label={t("uploads.label")} className="h-6 w-6" />
           <span className="text-xs font-semibold">
             {activeCount > 0 ? t("uploads.uploading", { progress: totalProgress }) : t("uploads.complete")}
           </span>
@@ -181,34 +193,24 @@ export function FloatingUploadBar() {
               </div>
             </div>
 
-            {/* Progress Bar */}
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-3 mb-2">
-              <div
-                className={cn("h-full transition-all duration-300", item.status === "completed"
-                  ? "bg-success"
-                  : item.status === "error"
-                  ? "bg-danger"
-                  : item.status === "paused"
-                  ? "bg-warning"
-                  : "bg-linear-to-r from-accent via-accent-2 to-accent-2")}
-                style={{ width: `${item.progress}%` }}
-              />
-            </div>
+            <Progress
+              value={item.progress}
+              max={100}
+              size="sm"
+              label={item.title}
+              status={STATUS[item.status]}
+              eta={item.status === "uploading" ? etaOf(item.timeRemainingSec) : undefined}
+              className="mb-2"
+            />
 
             {/* Stats / Status Row */}
-            <div className="flex items-center justify-between text-[11px] text-fg-secondary">
-              <span>
+            <div className="flex items-center justify-between gap-2 text-[11px] text-fg-secondary">
+              <span className="min-w-0">
                 {item.status === "uploading" && (
                   <>
-                    <span className="font-mono text-accent font-semibold">{item.progress}%</span>
-                    {" • "}
-                    <span>{formatSpeed(item.speedBytesPerSec)}</span>
-                    {item.timeRemainingSec && (
-                      <>
-                        {" • "}
-                        <span>{formatEta(item.timeRemainingSec)}</span>
-                      </>
-                    )}
+                    <span className="font-mono font-semibold text-fg-accent">{item.progress}%</span>
+                    {speed(item.speedBytesPerSec) && <span> · {speed(item.speedBytesPerSec)}</span>}
+                    {etaOf(item.timeRemainingSec) && <span> · {etaOf(item.timeRemainingSec)}</span>}
                   </>
                 )}
                 {item.status === "paused" && (
@@ -227,13 +229,13 @@ export function FloatingUploadBar() {
                 )}
               </span>
 
-              <span className="font-mono text-[10px]">
-                {formatBytes(item.bytesUploaded)} / {formatBytes(item.bytesTotal)}
+              <span className="shrink-0 font-mono text-[10px]">
+                {bytes(item.bytesUploaded)} / {bytes(item.bytesTotal)}
               </span>
             </div>
 
             {item.status === "completed" && item.videoId && (
-              <div className="mt-2 pt-2 border-t border-white/5 flex justify-end">
+              <div className="mt-2 pt-2 border-t border-border-subtle flex justify-end">
                 <Link
                   href={`/watch/${item.videoId}`}
                   className="text-[11px] text-accent hover:text-accent font-semibold transition-colors"
