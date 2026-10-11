@@ -103,6 +103,13 @@ services:
       - key: NEXT_PUBLIC_APP_URL
         scope: RUN_AND_BUILD_TIME
         value: ${APP_URL}
+      # The build badge next to the brand (lib/build-info.ts): "v<version> · dev · <commit>" — never shown in production.
+      - key: NEXT_PUBLIC_APP_ENV
+        scope: BUILD_TIME
+        value: "dev"
+      - key: COMMIT_SHA
+        scope: BUILD_TIME
+        value: ${_self.COMMIT_HASH}
       - key: STORAGE_DRIVER
         scope: RUN_TIME
         value: "bunny"

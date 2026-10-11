@@ -27,6 +27,7 @@
 | `COMPLIANCE_ALERT_EMAIL` | — | Receives every content report (`[URGENT]` for underage / non-consensual). |
 | `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET`, `FACEBOOK_APP_ID` + `FACEBOOK_APP_SECRET` | — | Sign in with Google / Facebook — see *Sign-in providers*. A provider without both values is not offered. |
 | `SEARCH_INDEXING=off` | dev / preview | Every page noindex, robots.txt disallows all: only production is indexed (build time). |
+| `NEXT_PUBLIC_APP_ENV` (`local` · `dev` · `staging` · `production`), `COMMIT_SHA` | dev / staging (build time) | The build badge next to the brand, `v<version> · <env> · <commit>`, linking the commit — never shown with `production`, `local` when unset. App Platform passes `COMMIT_SHA=${_self.COMMIT_HASH}` (its Docker build has no `.git`); elsewhere `git rev-parse` gives it. |
 | `OROCHIA_OWNER_EMAIL`, `_USERNAME`, `_NAME`, `_PASSWORD` | recommended | The default user (owner, ADMIN), applied by the release job — see *Owner account*. |
 | Gateway credentials | at least one | See `.env.example`. A gateway is offered only when **all** its variables are set. |
 

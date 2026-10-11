@@ -2629,5 +2629,18 @@
     "page": "Page {page}",
     "pageOf": "Page {page} of {count}",
     "pageSize": "Rows per page"
+  },
+  "build": {
+    "label": "v{version} · {env} · {sha}",
+    "labelNoSha": "v{version} · {env}",
+    "env": {
+      "local": "local",
+      "dev": "dev",
+      "staging": "staging",
+      "production": "production"
+    },
+    "notice": "Development build — still being tested, not production-ready",
+    "noticeLocal": "Local build — running on this machine, not production-ready",
+    "ariaLabel": "Version {label}. {notice}. Opens the commit on GitHub."
   }
 }
