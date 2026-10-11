@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse, after } from "next/server";
-import { z } from "zod";
 import { placeBid } from "@orochia/payments";
-import { requireUserWithRole } from "@/lib/auth";
+import { after,NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
 import { announceBid, auctionHttpError, auctionIdOr404, notifyBid } from "@/lib/auctions";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { requireUserWithRole } from "@/lib/auth";
 import { errorResponse, jsonError } from "@/lib/http";
+import { limitAction } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
   try {
     const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
     const id = auctionIdOr404((await props.params).id);
-    if (!(await checkRateLimit(`bid:${user.id}`, 30, 60)).success) return jsonError(429, "Too many bids. Wait a moment.");
+    await limitAction("bid", req, user.id, { perUser: [30, 60], perIp: [90, 60] }, "Too many bids. Wait a moment.");
     const { amountCents } = Bid.parse(await req.json());
     const outcome = await placeBid({ auctionId: id, bidderId: user.id, amountCents });
     // The live feed goes out before the response, so the bidder's own screen and everyone else's agree.

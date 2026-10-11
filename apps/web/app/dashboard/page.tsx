@@ -23,6 +23,7 @@ import { ListsPanel } from "@/components/dashboard/ListsPanel";
 import { NetworkPanel } from "@/components/dashboard/NetworkPanel";
 import { PlaylistsPanel } from "@/components/dashboard/PlaylistsPanel";
 import { ProfileSettingsPanel } from "@/components/dashboard/ProfileSettingsPanel";
+import { StorageMeter } from "@/components/dashboard/StorageMeter";
 import { type StudioVideo,VideoManager } from "@/components/dashboard/VideoManager";
 import { ProfileHero } from "@/components/profile/ProfileHero";
 import { cn, EmptyState, Tabs } from "@/components/ui";
@@ -278,6 +279,8 @@ function DashboardContent() {
                 {isCreator ? money(data.pendingPayoutCents) : data.ledger.length}
               </p>
             </div>
+            {/* What a creator keeps at Bunny against their plan: warned before the limit, not at it. */}
+            {(isCreator || isAdmin) && <StorageMeter className="sm:col-span-3" />}
           </div>
         )}</Tabs.Content>
 
@@ -312,7 +315,12 @@ function DashboardContent() {
           </div>
         )}</Tabs.Content>
 
-        {isCreator && <Tabs.Content value="uploads">{data && <VideoManager videos={data.uploads} onChange={() => void load()} />}</Tabs.Content>}
+        {isCreator && <Tabs.Content value="uploads">{data && (
+          <div className="flex flex-col gap-6">
+            <StorageMeter compact />
+            <VideoManager videos={data.uploads} onChange={() => void load()} />
+          </div>
+        )}</Tabs.Content>}
 
         <Tabs.Content value="network"><NetworkPanel isCreator={isCreator} /></Tabs.Content>
 

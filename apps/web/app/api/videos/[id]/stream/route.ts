@@ -1,10 +1,12 @@
+import { db, videos } from "@orochia/db";
+import { BunnyStreamClient } from "@orochia/media";
+import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getCurrentUser } from "@/lib/auth";
+
 import { evaluateVideoAccess } from "@/lib/access";
-import { BunnyStreamClient } from "@orochia/media";
-import { db, videos } from "@orochia/db";
-import { eq } from "drizzle-orm";
+import { getCurrentUser } from "@/lib/auth";
+import { clientIp, playbackIp } from "@/lib/client-ip";
 import { recordView } from "@/lib/engagement";
 import { bunnyStreamConfig, STREAM_TOKEN_TTL_SECONDS } from "@/lib/env";
 import { errorResponse, jsonError } from "@/lib/http";
@@ -33,11 +35,13 @@ export async function GET(req: NextRequest, props: { params: Promise<{ id: strin
     const signed = new BunnyStreamClient(bunnyStreamConfig()).getSignedStreamUrl(
       video.bunnyVideoId,
       STREAM_TOKEN_TTL_SECONDS,
+      // Bound to the viewer's address when BUNNY_TOKEN_BIND_IP=on (lib/client-ip.ts).
+      playbackIp(req.headers),
     );
 
     // A view counts once per viewer and day (lib/engagement.ts); counting never blocks playback.
     const network = {
-      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null,
+      ip: clientIp(req.headers),
       userAgent: req.headers.get("user-agent"),
     };
     recordView(video, user?.id ?? null, network).catch((err: unknown) => console.warn("Failed to record view:", err));

@@ -1,22 +1,23 @@
-import { NextRequest, NextResponse, after } from "next/server";
-import { z } from "zod";
 import { db, videos } from "@orochia/db";
-import { eq } from "drizzle-orm";
 import {
-  GatewayTypeSchema,
   attachGatewaySession,
   chargeCredits,
   configuredGateways,
-  refundCredits,
   createPaymentIntent,
+  GatewayTypeSchema,
   getPaymentGateway,
+  refundCredits,
   settlePaymentIntent,
 } from "@orochia/payments";
+import { eq } from "drizzle-orm";
+import { after,NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
 import { requireUserWithRole } from "@/lib/auth";
-import { checkRateLimit } from "@/lib/rate-limit";
 import { appUrl, isDemoMode } from "@/lib/env";
 import { errorResponse, jsonError } from "@/lib/http";
 import { notifySettlement } from "@/lib/notifications";
+import { limitAction } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -39,8 +40,7 @@ const UnlockVideoRequestSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
-    const limit = await checkRateLimit(`checkout:${user.id}`, 20, 60 * 60);
-    if (!limit.success) return jsonError(429, "Too many payment attempts. Try again later.");
+    await limitAction("checkout", req, user.id, { perUser: [20, 60 * 60], perIp: [60, 60 * 60] }, "Too many payment attempts. Try again later.");
 
     const { videoId, amountCents, gateway } = UnlockVideoRequestSchema.parse(await req.json());
 

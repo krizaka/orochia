@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse, after } from "next/server";
-import { z } from "zod";
 import { createChallenge } from "@orochia/payments";
+import { after,NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
 import { getCurrentUser, requireUserWithRole } from "@/lib/auth";
-import { CHALLENGE_TABS, PERSONAL_CHALLENGE_TABS, challengeHttpError, creatorIdByUsername, listChallenges, notifyCreated } from "@/lib/challenges";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { CHALLENGE_TABS, challengeHttpError, creatorIdByUsername, listChallenges, notifyCreated,PERSONAL_CHALLENGE_TABS } from "@/lib/challenges";
 import { errorResponse, jsonError } from "@/lib/http";
 import { t } from "@/lib/i18n";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -61,7 +62,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
-    if (!(await checkRateLimit(`challenge-create:${user.id}`, 20, 60 * 60)).success) return jsonError(429, t("challenge.errors.TOO_MANY"));
+    await enforceRateLimit(`challenge-create:${user.id}`, 20, 60 * 60, t("challenge.errors.TOO_MANY"));
     const input = Create.parse(await req.json());
     const targetCreatorId = input.kind === "REQUEST" ? await creatorIdByUsername(input.creatorUsername) : null;
     if (input.kind === "REQUEST" && !targetCreatorId) return jsonError(404, t("challenge.errors.NOT_A_CREATOR"));

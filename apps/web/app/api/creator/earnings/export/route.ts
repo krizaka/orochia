@@ -1,8 +1,9 @@
 import { NextRequest } from "next/server";
+
 import { requireUserWithRole } from "@/lib/auth";
-import { PERIODS, type Period, earningLines, transactionsCsv, videoEarnings, videosCsv } from "@/lib/earnings";
-import { checkRateLimit } from "@/lib/rate-limit";
-import { errorResponse, jsonError } from "@/lib/http";
+import { earningLines, type Period, PERIODS, transactionsCsv, videoEarnings, videosCsv } from "@/lib/earnings";
+import { errorResponse } from "@/lib/http";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +11,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   try {
     const user = await requireUserWithRole(["CREATOR", "ADMIN"]);
-    if (!(await checkRateLimit(`earnings-export:${user.id}`, 30, 60 * 60)).success) return jsonError(429, "Too many exports. Try again later.");
+    await enforceRateLimit(`earnings-export:${user.id}`, 30, 60 * 60, "Too many exports. Try again later.");
     const asked = req.nextUrl.searchParams.get("period");
     const period: Period = (PERIODS as readonly string[]).includes(asked ?? "") ? (asked as Period) : "all";
     const kind = req.nextUrl.searchParams.get("kind") === "videos" ? "videos" : "transactions";

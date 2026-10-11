@@ -85,7 +85,7 @@
       "id": "data",
       "name": "Data persistence",
       "path": "packages/db",
-      "tablesCount": 43,
+      "tablesCount": 46,
       "tables": [
         "auctions",
         "auction_bids",
@@ -115,6 +115,9 @@
         "direct_messages",
         "blocked_users",
         "notifications",
+        "rate_limit_buckets",
+        "storage_alerts",
+        "storage_snapshots",
         "playlists",
         "playlist_items",
         "playlist_members",
@@ -242,6 +245,24 @@
     },
     {
       "method": "GET",
+      "path": "/api/admin/storage",
+      "access": "session · ADMIN",
+      "summary": "Platform storage for operators: usage against the cap and alert thresholds, the plans, the largest accounts, the last reconciliation with Bunny, and the state of the abuse defences (rate-limit store, bot challenge)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/storage",
+      "access": "session · ADMIN",
+      "summary": "Reconciles the storage counters with Bunny now (lists the Stream library; at most a few times an hour)."
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/admin/storage/[userId]",
+      "access": "session · ADMIN",
+      "summary": "Sets an account's storage plan (a name of QUOTA_PLANS, or null for the default); its held uploads go online if they fit."
+    },
+    {
+      "method": "GET",
       "path": "/api/admin/users",
       "access": "session · ADMIN",
       "summary": "Every account (filter by `?role=`, `?suspended=`, `?q=`): role, verification and suspension state."
@@ -307,6 +328,12 @@
       "summary": "Server-Sent Events of an auction: each bid (amount, alias, new end) and every change of state."
     },
     {
+      "method": "GET",
+      "path": "/api/auth/challenge",
+      "access": "public",
+      "summary": "The public bot-challenge settings (provider and site key), or null when protected forms need no challenge."
+    },
+    {
       "method": "POST",
       "path": "/api/auth/forgot-password",
       "access": "public",
@@ -359,6 +386,12 @@
       "path": "/api/auth/providers",
       "access": "public",
       "summary": "The sign-in providers this deployment offers (only those whose keys are configured)."
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/register",
+      "access": "public",
+      "summary": "Opens a sign-up form: a signed form token (bound to this browser's device cookie, set here when missing) and the public bot-challenge settings — the form cannot be posted without them."
     },
     {
       "method": "POST",
@@ -785,6 +818,12 @@
       "path": "/api/me/profile",
       "access": "session · ADMIN / CREATOR / MEMBER",
       "summary": "Updates the signed-in user's own profile and preferences (only the fields sent)."
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/storage",
+      "access": "session · CREATOR / ADMIN",
+      "summary": "Your storage: space and video time used against your plan, uploads on hold, today's uploads and the per-file limits."
     },
     {
       "method": "GET",

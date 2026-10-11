@@ -4,6 +4,7 @@ import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { discoverableTags, exploreResults, newVideos } from "@/lib/explore";
 import { errorResponse } from "@/lib/http";
+import { limitAction } from "@/lib/rate-limit";
 import { normalizeTag } from "@/lib/tags";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,8 @@ export async function GET(req: NextRequest) {
   try {
     const { q } = Query.parse(Object.fromEntries(req.nextUrl.searchParams));
     const viewer = await getCurrentUser();
+    // Full-text queries cost the database: a person types a few a second at most (the palette debounces).
+    await limitAction("search", req, viewer?.id, { perIp: [120, 60], perUser: [120, 60] }, "Too many searches. Slow down.");
     if (!q) {
       const [videos, tags] = await Promise.all([newVideos(viewer, 6), discoverableTags(8)]);
       return NextResponse.json({ success: true, creators: [], videos, stories: [], tags });

@@ -50,10 +50,13 @@ PostgreSQL runs in the `orochia-postgres-dev` container
 | browse and edit data | `npm run db:studio` (Drizzle Studio) or `npm run db:psql` |
 | start over from a clean state | `npm run db:reset -- --yes` |
 | keep a copy before an experiment | `npm run db:dump` → `backups/orochia-<date>.sql` |
-| come back to that copy | `npm run db:restore -- backups/orochia-<date>.sql` |
+| come back to that copy | `npm run db:restore -- backups/orochia-<database>-<date>.sql` |
 
 `db:reset`, `db:restore` and `db:psql` work only on the local container: they refuse `NODE_ENV=production` and any
-`DATABASE_URL` that does not point at this machine.
+`DATABASE_URL` that does not point at this machine. They act on the database **named in `DATABASE_URL`**, so a worktree
+working on its own database (`create database orochia_<topic>` in the container, `DATABASE_URL=…/orochia_<topic>`) resets
+only that one — never the shared `orochia_db`. `npm run test:e2e` reads `DATABASE_URL` from the environment (not `.env`):
+export it too when the scenarios run against another database.
 
 ### Changing the schema
 

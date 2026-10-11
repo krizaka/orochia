@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+
 import { requireUserWithRole } from "@/lib/auth";
-import { PAYOUT_METHODS, getPayoutAccount, savePayoutAccount } from "@/lib/payout-account";
-import { checkRateLimit } from "@/lib/rate-limit";
-import { errorResponse, jsonError } from "@/lib/http";
+import { errorResponse } from "@/lib/http";
+import { getPayoutAccount, PAYOUT_METHODS, savePayoutAccount } from "@/lib/payout-account";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +29,7 @@ export async function GET() {
 export async function PUT(req: NextRequest) {
   try {
     const user = await requireUserWithRole(["CREATOR", "ADMIN"]);
-    if (!(await checkRateLimit(`payout-account:${user.id}`, 10, 60 * 60)).success) return jsonError(429, "Too many changes. Try again later.");
+    await enforceRateLimit(`payout-account:${user.id}`, 10, 60 * 60, "Too many changes. Try again later.");
     return NextResponse.json({ success: true, account: await savePayoutAccount(user.id, Account.parse(await req.json())) });
   } catch (error) {
     return errorResponse(error, "me/payout-account/put");

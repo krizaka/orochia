@@ -1,6 +1,7 @@
-import { db, users, profiles, videos, videoAccessGrants, tipsLedger, payoutRequests, playlists, stories } from "@orochia/db";
-import { and, desc, eq, gt, ilike, isNull, ne, or, sql, type SQL } from "drizzle-orm";
+import { db, payoutRequests, playlists, profiles, stories,tipsLedger, users, videoAccessGrants, videos } from "@orochia/db";
 import { getCreatorAvailableBalanceCents } from "@orochia/payments";
+import { and, desc, eq, gt, ilike, isNull, ne, or, type SQL,sql } from "drizzle-orm";
+
 import type { SessionUser } from "./auth";
 import { withSignedMedia } from "./media-urls";
 import { socialLinksView } from "./profile";
@@ -308,7 +309,7 @@ export const CREATOR_DELETED = "Deleted by its creator";
 export interface StudioVideo extends VideoSummary {
   description: string | null;
   tags: string[];
-  status: "PENDING_UPLOAD" | "PROCESSING" | "READY" | "FAILED";
+  status: "PENDING_UPLOAD" | "PROCESSING" | "READY" | "FAILED" | "HELD";
   removedAt: Date | null;
   removalReason: string | null;
 }

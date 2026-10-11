@@ -4,6 +4,7 @@ import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { exploreResults, exploreSections, exploreTag } from "@/lib/explore";
 import { errorResponse } from "@/lib/http";
+import { limitAction } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,7 @@ export async function GET(req: NextRequest) {
   try {
     const query = Query.parse(Object.fromEntries(req.nextUrl.searchParams));
     const viewer = await getCurrentUser();
+    await limitAction("explore", req, viewer?.id, { perIp: [120, 60], perUser: [120, 60] }, "Too many requests. Slow down.");
     const tag = exploreTag(query.tag);
     if (query.q || tag || query.view === "all") {
       const results = await exploreResults(viewer, { q: query.q, tag, page: query.page });

@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse, after } from "next/server";
-import { z } from "zod";
 import { db, users } from "@orochia/db";
 import { eq, sql } from "drizzle-orm";
+import { after,NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
 import { getCurrentUser, requireUserWithRole } from "@/lib/auth";
-import { STORY_AUDIENCES, createImageStory, reconcileStoryVideos, storyRail } from "@/lib/stories";
-import { checkRateLimit } from "@/lib/rate-limit";
-import { errorResponse, jsonError } from "@/lib/http";
+import { errorResponse } from "@/lib/http";
+import { enforceRateLimit } from "@/lib/rate-limit";
+import { createImageStory, reconcileStoryVideos, STORY_AUDIENCES, storyRail } from "@/lib/stories";
 
 export const dynamic = "force-dynamic";
 
@@ -46,8 +47,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const user = await requireUserWithRole(["CREATOR", "ADMIN"]);
-    const limit = await checkRateLimit(`story:${user.id}`, 30, 60 * 60);
-    if (!limit.success) return jsonError(429, "Too many stories. Try again later.");
+    await enforceRateLimit(`story:${user.id}`, 30, 60 * 60, "Too many stories. Try again later.");
     const story = await createImageStory(user.id, ImageStory.parse(await req.json()));
     return NextResponse.json({ success: true, story }, { status: 201 });
   } catch (error) {

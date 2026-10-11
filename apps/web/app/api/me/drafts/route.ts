@@ -1,10 +1,11 @@
+import { UPLOAD_LIMITS } from "@orochia/media";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { UPLOAD_LIMITS } from "@orochia/media";
+
 import { requireUserWithRole } from "@/lib/auth";
-import { DRAFT_KINDS, createDraft, listDrafts } from "@/lib/video-drafts";
-import { checkRateLimit } from "@/lib/rate-limit";
-import { errorResponse, jsonError } from "@/lib/http";
+import { errorResponse } from "@/lib/http";
+import { limitAction } from "@/lib/rate-limit";
+import { createDraft, DRAFT_KINDS, listDrafts } from "@/lib/video-drafts";
 
 export const dynamic = "force-dynamic";
 
@@ -32,8 +33,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const user = await requireUserWithRole(["CREATOR", "ADMIN"]);
-    const limit = await checkRateLimit(`draft:${user.id}`, 20, 60 * 60);
-    if (!limit.success) return jsonError(429, "Too many drafts saved. Try again later.");
+    await limitAction("draft", req, user.id, { perUser: [20, 60 * 60], perIp: [60, 60 * 60] }, "Too many drafts saved. Try again later.");
     return NextResponse.json({ success: true, ...(await createDraft(user.id, Create.parse(await req.json()))) }, { status: 201 });
   } catch (error) {
     return errorResponse(error, "me/drafts/post");

@@ -32,7 +32,9 @@ One table, `packages/media/src/limits.ts`, read by the browser and the server:
 | Draft music | 25 MB | — |
 
 The browser refuses before sending; the upload session refuses a larger declared size; the webhook reads the encoded
-length and deletes at Bunny a video or story longer than allowed (status FAILED).
+length and deletes at Bunny a video or story longer than allowed (status FAILED). These are hard ceilings: the
+deployment can lower them (`QUOTA_VIDEO_MAX_MB`, `QUOTA_VIDEO_MAX_MINUTES`, `QUOTA_STORY_MAX_MB`, `QUOTA_DRAFT_MAX_MB`),
+never raise them — and every upload also has to fit the storage quotas of §6.
 
 ## 3. Direct-to-Bunny Tus upload
 
@@ -100,3 +102,66 @@ token = base64url(sha256(tokenAuthKey + "/{guid}/" + expires + "token_path=/{gui
 The token is in the path, not the query, because HLS players request renditions and segments by relative URL — the
 path prefix is kept, a query string would be dropped. Thumbnails and preview animations are signed one file at a time
 (`?token=…&expires=…`, 6-hour windows), which never opens the renditions.
+
+## 6. Storage quotas
+
+Bunny bills what it stores, so nothing is uploaded without fitting a budget: the platform's, and the creator's plan.
+
+### What Bunny can tell us (study)
+
+| Source | Call | What it gives | Notes |
+| :--- | :--- | :--- | :--- |
+| Stream API (library key) | `GET /library/{id}/videos/{guid}` | `storageSize` (bytes, every rendition and the original), `length` (s) | One video; read by the webhook at READY |
+| Stream API (library key) | `GET /library/{id}/videos?page=&itemsPerPage=1000` | the same for every video, paged | One request per 1 000 videos — the reconciliation's input |
+| Stream API (library key) | `GET /library/{id}/statistics` | views, watch time, countries | No storage figure |
+| Account API (account key) | `GET https://api.bunny.net/videolibrary/{id}` | `StorageUsage`, `TrafficUsage` (whole library) | Refreshed by Bunny periodically, not in real time |
+| Account API (account key) | `GET https://api.bunny.net/storagezone/{id}` | `StorageUsed`, `FilesStored` (the media zone) | Same: billing figures, periodic |
+| Storage API (zone key) | `GET https://{region}.storage.bunnycdn.com/{zone}/{path}/` | `Length` of each object in one folder | No recursive total: a full walk is one call per folder |
+
+The calls are not billed, but they are rate-limited, slow compared with a query, and the account totals lag. Asking
+Bunny at every upload would make each upload depend on Bunny's API being up and still read stale totals; and Tus does
+not stop a client from sending more bytes than it declared, so the declared size cannot be trusted alone either.
+
+**Decision: the database is the source of truth, reconciled with Bunny.**
+
+1. **At the upload session** (`/api/videos/create-upload-session`, `/api/stories/upload-session`, `/api/me/drafts`), *before*
+   the Tus signature: `assertUploadAllowed` (`lib/storage-usage.ts`, rules in `lib/quotas.ts`) adds the declared size
+   (and length, when the browser read it) to the creator's usage and the platform's, checks the per-file maximum, the
+   plan, the cap, the uploads of the day and those in progress. A refusal is **413** (`FILE_TOO_LARGE`, `VIDEO_TOO_LONG`,
+   `CREATOR_STORAGE_FULL`, `CREATOR_MINUTES_FULL`, `PLATFORM_STORAGE_FULL`, `PLATFORM_MINUTES_FULL`) or **429** with
+   `Retry-After` (`UPLOADS_PER_DAY`, `CONCURRENT_UPLOADS`); the row records the declared size (`storage_bytes`).
+2. **At the end of encoding** (webhook, or the stories' catch-up): the real `storageSize` and length replace the declared
+   ones. If the creator's plan or the platform's cap is now exceeded, the file is **HELD** (`video_status` HELD): kept,
+   shown to nobody, listed for its author as "On hold — storage full", and the creator is notified (`storageHeld`).
+   **Nothing is deleted for a quota.** Held files go online by themselves when space is freed (a draft or video
+   deleted, a story withdrawn, a larger plan, a reconciliation): `releaseHeld`.
+3. **At deletion**: a draft's row (and its Bunny file) goes; a video or story withdrawn by its creator stops counting
+   for them — its file stays at Bunny for the record (§3.D) and still counts for the platform.
+4. **Reconciliation** (`lib/storage-reconcile.ts`): `npm run quota:reconcile`, `POST /api/admin/storage`, and the
+   background loop every `QUOTA_RECONCILE_INTERVAL_MINUTES` (360). It lists the library, corrects every row's bytes,
+   zeroes the rows whose video Bunny no longer has, counts the **orphans** (videos at Bunny no row knows — abandoned
+   sessions, manual uploads, another environment sharing the library) and adds their bytes to the platform's usage,
+   records a `storage_snapshots` row (with the account totals when `BUNNY_ACCOUNT_API_KEY` is set), releases held files
+   that fit and re-checks the alerts.
+
+### What counts
+
+| | Creator's plan | Platform |
+| :--- | :---: | :---: |
+| Videos (not withdrawn, not failed; held included) | ✓ | ✓ |
+| Withdrawn or taken-down videos | — | ✓ (still at Bunny) |
+| Stories showing or encoding | ✓ | ✓ |
+| Expired or withdrawn stories | — | ✓ (still at Bunny) |
+| Draft originals | ✓ | ✓ |
+| Orphans found by the last reconciliation | — | ✓ |
+| Pictures (avatars, covers, thumbnails, story images) | per-file size + `QUOTA_IMAGE_UPLOADS_PER_DAY` | — (small; see the storage zone total) |
+
+### Plans and alerts
+
+A creator is on the `default` plan (`QUOTA_CREATOR_DEFAULT_GB`, `QUOTA_CREATOR_DEFAULT_MINUTES`); ADMIN accounts on
+`QUOTA_ADMIN_PLAN` (`unlimited`). An operator gives an account a named plan of `QUOTA_PLANS`
+(`PATCH /api/admin/storage/<userId>` `{ "plan": "pro" }`, `null` for the default); `unlimited` lifts the plan, never the
+platform's cap. The platform alerts every ADMIN account once per threshold crossed (`QUOTA_ALERT_THRESHOLDS`, 80 and 95 %:
+bell, push, e-mail, log); a creator is told once a week when they pass 90 % (`storageLow`). The dashboard and the
+upload page show the gauge (`StorageMeter`, `GET /api/me/storage`); operators read `GET /api/admin/storage` (usage,
+plans, largest accounts, last reconciliation, the state of the abuse defences).

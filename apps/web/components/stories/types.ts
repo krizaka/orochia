@@ -2,8 +2,8 @@
 export interface StoryItem {
   id: string;
   type: "image" | "video";
-  /** Your own video stories arrive "processing" while Bunny encodes them (or "failed"); others' are always "ready". */
-  state: "ready" | "processing" | "failed";
+  /** Your own video stories arrive "processing" while Bunny encodes them (or "failed", or "held" when over the storage quota); others' are always "ready". */
+  state: "ready" | "processing" | "failed" | "held";
   url: string;
   thumbnailUrl: string | null;
   caption: string;

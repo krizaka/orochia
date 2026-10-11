@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse, after } from "next/server";
-import { z } from "zod";
 import { pledgeChallenge } from "@orochia/payments";
+import { after,NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
 import { requireUserWithRole } from "@/lib/auth";
 import { announcePledge, challengeHttpError, challengeIdOr404, notifyPledge } from "@/lib/challenges";
-import { checkRateLimit } from "@/lib/rate-limit";
 import { errorResponse, jsonError } from "@/lib/http";
 import { t } from "@/lib/i18n";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
   try {
     const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
     const id = challengeIdOr404((await props.params).id);
-    if (!(await checkRateLimit(`pledge:${user.id}`, 30, 60)).success) return jsonError(429, t("challenge.errors.TOO_MANY"));
+    await enforceRateLimit(`pledge:${user.id}`, 30, 60, t("challenge.errors.TOO_MANY"));
     const { amountCents } = Pledge.parse(await req.json());
     const outcome = await pledgeChallenge({
       challengeId: id,

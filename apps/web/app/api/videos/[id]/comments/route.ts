@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+
 import { getCurrentUser, requireUserWithRole } from "@/lib/auth";
-import { COMMENT_MAX_LENGTH, addComment, listComments } from "@/lib/engagement";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { addComment, COMMENT_MAX_LENGTH, listComments } from "@/lib/engagement";
 import { errorResponse, jsonError } from "@/lib/http";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -32,8 +33,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
     const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
     const id = z.string().uuid().safeParse(params.id);
     if (!id.success) return jsonError(404, "Video not found");
-    const limit = await checkRateLimit(`comment:${user.id}`, 30, 10 * 60);
-    if (!limit.success) return jsonError(429, "Too many requests. Try again later.");
+    await enforceRateLimit(`comment:${user.id}`, 30, 10 * 60, "Too many requests. Try again later.");
     const comment = await addComment(user, id.data, Create.parse(await req.json()));
     return NextResponse.json({ success: true, comment }, { status: 201 });
   } catch (error) {

@@ -24,6 +24,25 @@ async function session(identifier, password) {
   return { status: r.status, call, cookie };
 }
 const anon = { call: async (path) => { const r = await fetch(B + path); return { status: r.status, json: await r.json().catch(() => ({})) }; } };
+// Sign-up needs a form token (GET /api/auth/register: device cookie + signed issue time) at least
+// SIGNUP_MIN_FILL_SECONDS old. Each sign-up comes from its own address (the per-IP limit is 5 an hour).
+const MIN_FILL_MS = Number(process.env.SIGNUP_MIN_FILL_SECONDS ?? 3) * 1000 + 300;
+const freshIp = () => `198.51.100.${1 + Math.floor(Math.random() * 250)}`;
+async function signupForm(ip = freshIp()) {
+  const r = await fetch(B + "/api/auth/register", { headers: { "X-Forwarded-For": ip } });
+  const device = (r.headers.get("set-cookie") || "").split(";")[0];
+  const { formToken } = await r.json();
+  return { ip, device, formToken };
+}
+async function register(body, { form, wait = true, headers = {} } = {}) {
+  const f = form ?? (await signupForm());
+  if (wait) await sleep(MIN_FILL_MS);
+  return fetch(B + "/api/auth/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Cookie: f.device, "X-Forwarded-For": f.ip, ...headers },
+    body: JSON.stringify({ formToken: f.formToken, ...body }),
+  });
+}
 
 const alex = await session("alex@sanctuary.io", "alex1234");
 const sam = await session("sam@sanctuary.io", "sam1234");
@@ -364,15 +383,17 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
 {
   const stamp = Date.now().toString(36);
   const email = `new_${stamp}@example.com`;
-  const jar = { cookie: "" };
+  const form = await signupForm();
+  const jar = { cookie: form.device };
   const call = async (path, method = "GET", body) => {
-    const res = await fetch(B + path, { method, headers: { Cookie: jar.cookie, ...(body ? { "Content-Type": "application/json" } : {}) }, body: body ? JSON.stringify(body) : undefined });
+    const res = await fetch(B + path, { method, headers: { Cookie: jar.cookie, "X-Forwarded-For": form.ip, ...(body ? { "Content-Type": "application/json" } : {}) }, body: body ? JSON.stringify(body) : undefined });
     const set = res.headers.get("set-cookie");
     if (set) jar.cookie = set.split(";")[0];
     let json = {}; try { json = await res.json(); } catch {}
     return { status: res.status, json };
   };
-  const reg = await call("/api/auth/register", "POST", { username: `new_${stamp}`, email, displayName: "New Member", password: "first-password-1", dateOfBirth: "1990-01-01", isAgeVerified: true, acceptTerms: true });
+  await sleep(MIN_FILL_MS);
+  const reg = await call("/api/auth/register", "POST", { formToken: form.formToken, username: `new_${stamp}`, email, displayName: "New Member", password: "first-password-1", dateOfBirth: "1990-01-01", isAgeVerified: true, acceptTerms: true });
   check("register → verification required", reg.status === 201 && reg.json.verificationRequired === true);
   const firstLink = reg.json.devVerificationUrl ?? "";
   check("verification link on this origin", firstLink.startsWith(`${B}/auth/verify?token=`), firstLink);
@@ -410,9 +431,9 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
 // Profile: links, pictures, date of birth, notifications, public pages
 {
   const tooYoung = new Date(Date.now() - 17 * 365.25 * 86400000).toISOString().slice(0, 10);
-  const minor = await fetch(`${B}/api/auth/register`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: `minor_${Date.now()}`, email: `minor${Date.now()}@example.com`, displayName: "Minor", password: "a-long-password-1", dateOfBirth: tooYoung, isAgeVerified: true, acceptTerms: true }) });
+  const minor = await register({ username: `minor_${Date.now()}`, email: `minor${Date.now()}@example.com`, displayName: "Minor", password: "a-long-password-1", dateOfBirth: tooYoung, isAgeVerified: true, acceptTerms: true });
   check("under 18 cannot register, whatever is ticked", minor.status === 403);
-  const noBirth = await fetch(`${B}/api/auth/register`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: `nob_${Date.now()}`, email: `nob${Date.now()}@example.com`, displayName: "N", password: "a-long-password-1", isAgeVerified: true, acceptTerms: true }) });
+  const noBirth = await register({ username: `nob_${Date.now()}`, email: `nob${Date.now()}@example.com`, displayName: "N", password: "a-long-password-1", isAgeVerified: true, acceptTerms: true });
   check("a date of birth is required", noBirth.status === 400);
 
   const put = (who, body) => who.call("/api/me/profile", "PUT", body);
@@ -877,6 +898,81 @@ check("invited-only watch page is noindex", /<meta name="robots" content="noinde
 check("public watch page carries a VideoObject", (await (await fetch(`${B}/watch/${noir.id}`)).text()).includes('"@type":"VideoObject"'));
 check("robots.txt keeps accounts out", (await (await fetch(`${B}/robots.txt`)).text()).includes("Disallow: /dashboard"));
 check("llms.txt served", (await fetch(`${B}/llms.txt`)).status === 200);
+
+// Storage quotas (lib/quotas.ts, lib/storage-usage.ts) and abuse defences (lib/abuse/*, lib/rate-limit.ts).
+{
+  const GB = 1024 ** 3;
+  const QUOTA_GB = Number(process.env.QUOTA_CREATOR_DEFAULT_GB ?? 10);
+  const storage = await elena.call("/api/me/storage");
+  check("a creator reads their storage against their plan", storage.status === 200 && storage.json.storage.plan === "default" && storage.json.storage.limit.bytes === QUOTA_GB * GB, JSON.stringify(storage.json));
+  check("…a member has no storage to read", (await alex.call("/api/me/storage")).status === 403);
+  if (QUOTA_GB < 4) {
+    // One file over the plan (the per-file maximum is 4 GB): refused BEFORE anything is signed or recorded.
+    const refused = await elena.call("/api/videos/create-upload-session", "POST", { title: "Too big for the plan", visibility: "PUBLIC", minTipAmountCents: 0, tags: [], sizeBytes: (QUOTA_GB + 1) * GB });
+    check("an upload over the creator's plan is refused before signing (413 CREATOR_STORAGE_FULL)", refused.status === 413 && refused.json.code === "CREATOR_STORAGE_FULL" && refused.json.quota?.limitBytes === QUOTA_GB * GB, JSON.stringify(refused.json));
+    check("…with a message the creator can act on", /space/i.test(refused.json.error ?? ""));
+    check("…and no video was recorded", !(await elena.call("/api/me/dashboard")).json.data.uploads.some((v) => v.title === "Too big for the plan"));
+  } else {
+    console.log("· QUOTA_CREATOR_DEFAULT_GB ≥ 4: the over-quota upload is checked with QUOTA_CREATOR_DEFAULT_GB=2 (CI)");
+  }
+  const page = await fetch(`${B}/creator/upload`, { headers: { Cookie: elena.cookie } });
+  check("the upload page shows the space used against the plan", page.status === 200 && (await page.text()).includes(`of ${QUOTA_GB.toFixed(1)} GB used`));
+
+  const ops = await admin.call("/api/admin/storage");
+  check("operators see the platform's storage, its plans and the largest accounts", ops.status === 200 && ops.json.storage.platform.limit.bytes > 0 && Array.isArray(ops.json.storage.topCreators) && Boolean(ops.json.defences?.rateLimitStore), JSON.stringify(ops.json).slice(0, 300));
+  check("…members cannot", (await alex.call("/api/admin/storage")).status === 403);
+  const elenaId = (await elena.call("/api/auth/me")).json.user?.id;
+  const unlimited = await admin.call(`/api/admin/storage/${elenaId}`, "PATCH", { plan: "unlimited" });
+  check("an operator gives a creator the unlimited plan", unlimited.status === 200 && unlimited.json.plan === "unlimited", JSON.stringify(unlimited.json));
+  const free = (await elena.call("/api/me/storage")).json.storage;
+  check("…which has no storage limit (the platform's cap still applies)", free?.limit.bytes === null && free.level === "unlimited");
+  check("…an unknown plan is refused", (await admin.call(`/api/admin/storage/${elenaId}`, "PATCH", { plan: "gold" })).status === 400);
+  check("…and the default plan comes back", (await admin.call(`/api/admin/storage/${elenaId}`, "PATCH", { plan: null })).json.plan === "default");
+
+  // Sign-up: form token, honeypot, minimal delay, disposable addresses, scripts, per-IP limit.
+  const person = () => {
+    const n = `${Date.now().toString(36)}${Math.floor(Math.random() * 1e6)}`;
+    return { username: `p_${n}`.slice(0, 30), email: `p_${n}@example.com`, displayName: "P", password: "a-long-password-1", dateOfBirth: "1990-01-01", isAgeVerified: true, acceptTerms: true };
+  };
+  const codeOf = async (res) => (await res.json().catch(() => ({}))).code;
+  const bare = await fetch(`${B}/api/auth/register`, { method: "POST", headers: { "Content-Type": "application/json", "X-Forwarded-For": freshIp() }, body: JSON.stringify(person()) });
+  check("sign-up without the form's token is refused (FORM_TOKEN_MISSING)", bare.status === 400 && (await codeOf(bare)) === "FORM_TOKEN_MISSING");
+  if (MIN_FILL_MS > 1000) {
+    const fast = await register(person(), { wait: false });
+    check("…a form sent faster than a person fills it is refused (FORM_TOO_FAST)", fast.status === 400 && (await codeOf(fast)) === "FORM_TOO_FAST");
+  }
+  const honey = await register({ ...person(), website: "https://spam.example" });
+  check("…a filled honeypot is refused (BOT_SUSPECTED)", honey.status === 400 && (await codeOf(honey)) === "BOT_SUSPECTED");
+  const throwaway = await register({ ...person(), email: `x${Date.now()}@mailinator.com` });
+  check("…a disposable address is refused (EMAIL_DOMAIN_REFUSED)", throwaway.status === 400 && (await codeOf(throwaway)) === "EMAIL_DOMAIN_REFUSED");
+  const script = await register(person(), { headers: { "User-Agent": "curl/8.4.0" } });
+  check("…a scripted client is refused (403 AUTOMATION_REFUSED)", script.status === 403 && (await codeOf(script)) === "AUTOMATION_REFUSED");
+  const ip = freshIp();
+  for (let i = 0; i < 5; i++) await fetch(`${B}/api/auth/register`, { method: "POST", headers: { "Content-Type": "application/json", "X-Forwarded-For": ip }, body: "{}" });
+  const flood = await fetch(`${B}/api/auth/register`, { method: "POST", headers: { "Content-Type": "application/json", "X-Forwarded-For": ip }, body: "{}" });
+  check("…one address cannot open accounts in bulk (429 + Retry-After)", flood.status === 429 && Number(flood.headers.get("retry-after")) > 0);
+
+  // Sign-in: back-off, then a temporary lock-out — for any identifier, existing or not.
+  const ghost = `ghost_${Date.now()}@example.com`;
+  const attempt = () => fetch(`${B}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json", "X-Forwarded-For": freshIp() }, body: JSON.stringify({ identifier: ghost, password: "guess-guess-1" }) });
+  const first = [];
+  for (let i = 0; i < 6; i++) first.push((await attempt()).status);
+  check("wrong passwords answer 401 until the lock-out", first.every((st) => st === 401), first.join(","));
+  const locked = await attempt();
+  check("…then the identifier is locked (429 LOGIN_LOCKED + Retry-After), from any address", locked.status === 429 && (await codeOf(locked)) === "LOGIN_LOCKED" && Number(locked.headers.get("retry-after")) > 0);
+
+  // Sensitive reads are limited per IP too (429 + Retry-After).
+  const searcher = freshIp();
+  let last;
+  for (let i = 0; i < 121; i++) last = await fetch(`${B}/api/search?q=velvet`, { headers: { "X-Forwarded-For": searcher } });
+  check("search is limited per address (429 + Retry-After)", last.status === 429 && Number(last.headers.get("retry-after")) > 0);
+
+  // Security headers on every page.
+  const home = await fetch(`${B}/`);
+  const csp = home.headers.get("content-security-policy") ?? "";
+  check("pages carry a Content-Security-Policy (no plugins, no framing, base locked)", csp.includes("object-src 'none'") && csp.includes("frame-ancestors 'none'") && csp.includes("base-uri 'self'"), csp);
+  check("…and isolate their window (COOP)", home.headers.get("cross-origin-opener-policy") === "same-origin");
+}
 
 // The operator console's service token: ADMIN routes only, never a member's.
 if (process.env.OROCHIA_ADMIN_API_TOKEN) {

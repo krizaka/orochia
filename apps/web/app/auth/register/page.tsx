@@ -1,15 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
-import { SocialSignIn } from "@/components/SocialSignIn";
-import { useRouter } from "next/navigation";
 import { Lock, Mail, UserPlus } from "lucide-react";
-import { useAuth } from "@/lib/auth-context";
-import { Button, Checkbox, Field, Input, OrochiaLogo } from "@/components/ui";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React, { useCallback, useEffect, useState } from "react";
+
 import { BirthDateField, isAdultBirthDate } from "@/components/BirthDateField";
-import { UsernameField } from "@/components/UsernameField";
+import { BotChallenge, type PublicChallenge } from "@/components/BotChallenge";
 import { Rich } from "@/components/Rich";
+import { SocialSignIn } from "@/components/SocialSignIn";
+import { Button, Checkbox, Field, Input, OrochiaLogo } from "@/components/ui";
+import { UsernameField } from "@/components/UsernameField";
+import { useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 
 
@@ -29,6 +31,22 @@ export default function RegisterPage() {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Anti-bot: a signed form token (asked for when the form opens), a honeypot, and the bot challenge when configured.
+  const [formToken, setFormToken] = useState<string | undefined>();
+  const [challenge, setChallenge] = useState<PublicChallenge | null>(null);
+  const [challengeToken, setChallengeToken] = useState<string | null>(null);
+  const [challengeKey, setChallengeKey] = useState(0);
+  const [website, setWebsite] = useState("");
+
+  const openForm = useCallback(async () => {
+    const res = await fetch("/api/auth/register", { cache: "no-store" }).catch(() => null);
+    const body = res?.ok ? ((await res.json()) as { formToken: string; challenge: PublicChallenge | null }) : null;
+    setFormToken(body?.formToken);
+    setChallenge(body?.challenge ?? null);
+  }, []);
+  useEffect(() => {
+    void openForm();
+  }, [openForm]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,10 +57,14 @@ export default function RegisterPage() {
     if (!acceptTerms) return setError(t("auth.register.errors.terms"));
     setIsLoading(true);
     try {
-      await register({ username, displayName: displayName || username, email, password, dateOfBirth, isAgeVerified, acceptTerms });
+      await register({ username, displayName: displayName || username, email, password, dateOfBirth, isAgeVerified, acceptTerms, formToken, website, challengeToken });
       router.push("/");
     } catch (err) {
       setError(err instanceof Error ? err.message : t("auth.register.errors.failed"));
+      // A token is good once: a new form token and a new challenge for the next try.
+      setChallengeToken(null);
+      setChallengeKey((k) => k + 1);
+      void openForm();
     } finally {
       setIsLoading(false);
     }
@@ -151,6 +173,14 @@ export default function RegisterPage() {
               </span>
             </Checkbox>
           </div>
+
+          {/* The honeypot: invisible and unreachable for people (and assistive technology); bots fill every field. */}
+          <div aria-hidden="true" className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden">
+            <label htmlFor="website">{t("auth.register.honeypot")}</label>
+            <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
+          </div>
+
+          <BotChallenge key={challengeKey} challenge={challenge} action="signup" onToken={setChallengeToken} />
 
           <Button type="submit" variant="sensual" size="lg" shape="rounded" loading={isLoading} className="mt-2 w-full rounded-xl font-bold">
             {!isLoading && <UserPlus className="h-4 w-4" aria-hidden />}

@@ -1,4 +1,5 @@
 import {
+  bigint,
   pgTable,
   text,
   timestamp,
@@ -29,6 +30,8 @@ export const videos = pgTable(
     status: videoStatusEnum("status").default("PENDING_UPLOAD").notNull(),
     minTipAmountCents: integer("min_tip_amount_cents").default(0).notNull(),
     durationSeconds: integer("duration_seconds").default(0).notNull(),
+    /** Bytes held at Bunny for this video: the declared size until encoded, then Bunny's storageSize (renditions included). */
+    storageBytes: bigint("storage_bytes", { mode: "number" }).default(0).notNull(),
     thumbnailUrl: text("thumbnail_url"),
     previewAnimationUrl: text("preview_animation_url"),
     viewsCount: integer("views_count").default(0).notNull(),

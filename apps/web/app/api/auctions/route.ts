@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse, after } from "next/server";
-import { z } from "zod";
 import { createAuction } from "@orochia/payments";
-import { getCurrentUser, requireUserWithRole } from "@/lib/auth";
+import { after,NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
 import { AUCTION_TABS, auctionHttpError, listAuctions, notifyAuctionAnnounced } from "@/lib/auctions";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { getCurrentUser, requireUserWithRole } from "@/lib/auth";
 import { errorResponse, jsonError } from "@/lib/http";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +34,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const user = await requireUserWithRole(["CREATOR"]);
-    if (!(await checkRateLimit(`auction-create:${user.id}`, 20, 60 * 60)).success) return jsonError(429, "Too many auctions created. Try again later.");
+    await enforceRateLimit(`auction-create:${user.id}`, 20, 60 * 60, "Too many auctions created. Try again later.");
     const input = Create.parse(await req.json());
     const auction = await createAuction({ ...input, creatorId: user.id });
     after(() => notifyAuctionAnnounced(auction));

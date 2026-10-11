@@ -59,9 +59,11 @@
 | `npm run workspace -- clone\|status\|pull` | The three repositories, side by side |
 | `npm run mail:templates:preview` | Every e-mail template and locale rendered to `apps/web/.mail-preview/` |
 | `npm run mail:templates:push [-- --apply]` | Compare the e-mail templates with Bunny Storage; `--apply` publishes them |
+| `npm run quota:reconcile [-- --json]` | Reconcile the storage counters with Bunny (library listing, orphans, snapshot) |
 
 - Destructive commands are **local-only by construction**: they refuse `NODE_ENV=production` and any
-  `DATABASE_URL` whose host is not this machine or the dev container.
+  `DATABASE_URL` whose host is not this machine or the dev container, and act on **the database named in
+  `DATABASE_URL`** (a worktree on its own database never touches the shared `orochia_db`).
 - On a deployment, the only destructive database operation is the operator's **factory reset** (admin console →
   Platform & Database, `/api/admin/platform/reset`), and the release job's rebuild of a database whose migration history
   was squashed. Both require `OROCHIA_ALLOW_DATABASE_RESET=true`, are refused on the indexed production whatever it says,
@@ -157,6 +159,14 @@ orochia/                           npm workspaces
 - **Upload limits** live only in `packages/media/src/limits.ts` (video 4 GB / 3 h, story 250 MB / 60 s, draft original
   400 MB): the browser checks them before sending, the session refuses a larger declared size, and the webhook deletes
   at Bunny a video or story longer than allowed.
+- **Storage quotas** (`lib/quotas.ts` decides, `lib/storage-usage.ts` applies, `docs/MEDIA_PIPELINE.md` §6): the
+  database counts what is kept at Bunny (`storage_bytes`, `duration_seconds` on videos, stories and drafts — declared at
+  the session, Bunny's `storageSize` at the end of encoding, reconciled by `lib/storage-reconcile.ts`); never a Bunny
+  call at upload time. Every upload session checks the per-file maximum, the creator's plan (`users.storage_plan` →
+  `QUOTA_PLANS`, `unlimited` allowed), the platform's cap and the daily / concurrent counts **before the Tus signature**,
+  refusing with a stable code (413 / 429 + `Retry-After`). A file over quota after encoding is **HELD** (kept, shown to
+  nobody but its author) and released when space is freed — **a quota never deletes anything**. `STORAGE_LIMITS=off`
+  is refused in production without `STORAGE_LIMITS_OFF_CONFIRMED=true`.
 - **Editor drafts** (`lib/video-drafts.ts`): the original clip goes to Bunny over Tus (drafts collection), the edit
   settings (validated by `parseStoredEdit`) and the form in `video_drafts`, the music under `private/audio/`. Owner-only,
   removed with their files when published, deleted or expired (`DRAFT_RETENTION_DAYS`). Editing is non-destructive:
@@ -301,7 +311,12 @@ orochia/                           npm workspaces
   routes) → path ids validated as UUIDs (invalid → **404**, never 500) → body/query parsed with **zod** →
   domain call → `NextResponse.json({ success: true, … })`. Errors go through `errorResponse` (no internals leaked).
 - Ownership is enforced in the **query** (`where id = … and creator_id = me`), so another user's id is a 404.
-- Mutations that can be abused are rate-limited (`checkRateLimit`, in memory per instance — no Redis for now).
+- Mutations that can be abused are rate-limited **per account and per IP** (`limitAction` / `enforceRateLimit`,
+  `lib/rate-limit.ts`), answered 429 with a stable `code` and `Retry-After`. The IP is `clientIp()` (`lib/client-ip.ts`),
+  never the left end of `X-Forwarded-For`. Counters live in a `RateLimitStore`: `memory` (one instance) or `postgres`
+  (`RATE_LIMIT_STORE=postgres`, required before a second instance; Redis / Valkey later behind the same interface, #40).
+- Refusals a client acts on carry a stable `code` (`HttpError(status, message, { code }, headers)`); the UI words them
+  through `lib/api-errors.ts` (`apiErrors.<code>` in `en.json`), never by parsing the English message.
 - **Realtime goes through `lib/realtime.ts` only** (`publish` / `subscribe` / `sseResponse`): PostgreSQL `NOTIFY` fans
   events out to every instance's `LISTEN` connection (`packages/db/src/listen.ts`) — no broker. Topics `user:<id>`,
   `auction:<id>` and `challenge:<id>`; payloads are small facts (≤ 8 KB), never documents. `DATABASE_URL` must be a direct connection (not a
@@ -429,7 +444,13 @@ orochia/                           npm workspaces
 
 - No credentials in code or in git; `.env` is git-ignored.
 - Security headers (HSTS, frame denial, nosniff, referrer and permissions policies) on every response.
+- Content-Security-Policy, COOP and the headers above in `next.config.mjs`; a new third-party script, frame or worker
+  origin is added there deliberately.
 - Webhooks: signature over the raw body, constant-time comparison, no lenient mode, idempotent effects.
+- **Bots** (`lib/abuse/`): sign-up needs a signed form token (minimal fill time, device cookie), an empty honeypot, a
+  non-disposable address, a browser-like client and — when `TURNSTILE_*` are set — Cloudflare Turnstile, which **fails
+  closed** for sign-up and password reset and is never asked for reading or for content reports (a report is never
+  lost). Sign-in backs off then locks per identifier (`lib/abuse/login-throttle.ts`).
 - Uploads: type and size checked per kind; 2257 documents only for creators.
 - Report vulnerabilities privately ([SECURITY.md](SECURITY.md)).
 

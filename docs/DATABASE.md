@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 43 tables · 26 enums · 5 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 46 tables · 26 enums · 6 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -526,6 +526,45 @@ erDiagram
 
 **Indexes:** `push_devices_token_idx` (unique, token) · `push_devices_user_idx` (user_id)
 
+### `rate_limit_buckets`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `key` | varchar(200) | no |  | primary key |
+| `count` | integer | no | `0` |  |
+| `reset_at` | timestamp with time zone | no |  |  |
+
+**Indexes:** `rate_limit_buckets_reset_at_idx` (reset_at)
+
+### `storage_alerts`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `threshold` | integer | no |  | primary key |
+| `alerted_at` | timestamp with time zone | no | `now()` |  |
+| `used_bytes` | bigint | no |  |  |
+| `limit_bytes` | bigint | no |  |  |
+
+### `storage_snapshots`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `taken_at` | timestamp with time zone | no | `now()` |  |
+| `library_bytes` | bigint | no |  |  |
+| `library_videos` | integer | no |  |  |
+| `library_seconds` | integer | no | `0` |  |
+| `zone_bytes` | bigint | yes |  |  |
+| `zone_files` | integer | yes |  |  |
+| `app_bytes` | bigint | no |  |  |
+| `orphan_bytes` | bigint | no | `0` |  |
+| `orphan_videos` | integer | no | `0` |  |
+| `missing_videos` | integer | no | `0` |  |
+| `updated_rows` | integer | no | `0` |  |
+| `details` | jsonb | no | `'{}'::jsonb` |  |
+
+**Indexes:** `storage_snapshots_taken_at_idx` (taken_at)
+
 ### `stories`
 
 | Column | Type | Null | Default | Notes |
@@ -543,6 +582,7 @@ erDiagram
 | `is_blurred` | boolean | no | `false` |  |
 | `status` | video_status | no | `"READY"` |  |
 | `duration_seconds` | integer | no | `0` |  |
+| `storage_bytes` | bigint | no | `0` |  |
 | `views_count` | integer | no | `0` |  |
 | `likes_count` | integer | no | `0` |  |
 | `tips_count` | integer | no | `0` |  |
@@ -627,6 +667,7 @@ erDiagram
 | `email_verified_at` | timestamp with time zone | yes |  |  |
 | `suspended_at` | timestamp with time zone | yes |  |  |
 | `suspension_reason` | text | yes |  |  |
+| `storage_plan` | varchar(40) | yes |  |  |
 | `created_at` | timestamp with time zone | no | `now()` |  |
 | `updated_at` | timestamp with time zone | no | `now()` |  |
 
@@ -685,6 +726,7 @@ erDiagram
 | `content_type` | varchar(100) | no |  |  |
 | `size_bytes` | bigint | no |  |  |
 | `duration_seconds` | integer | no | `0` |  |
+| `storage_bytes` | bigint | no | `0` |  |
 | `edit` | jsonb | no |  |  |
 | `details` | jsonb | no | `'{}'::jsonb` |  |
 | `music_ref` | text | yes |  |  |
@@ -755,6 +797,7 @@ erDiagram
 | `status` | video_status | no | `"PENDING_UPLOAD"` |  |
 | `min_tip_amount_cents` | integer | no | `0` |  |
 | `duration_seconds` | integer | no | `0` |  |
+| `storage_bytes` | bigint | no | `0` |  |
 | `thumbnail_url` | text | yes |  |  |
 | `preview_animation_url` | text | yes |  |  |
 | `views_count` | integer | no | `0` |  |
@@ -816,7 +859,7 @@ erDiagram
 | `report_status` | `OPEN`, `IN_REVIEW`, `RESOLVED` |
 | `share_channel` | `LINK`, `X`, `WHATSAPP`, `TELEGRAM`, `EMAIL`, `OTHER` |
 | `user_role` | `ADMIN`, `CREATOR`, `MEMBER` |
-| `video_status` | `PENDING_UPLOAD`, `PROCESSING`, `READY`, `FAILED` |
+| `video_status` | `PENDING_UPLOAD`, `PROCESSING`, `READY`, `FAILED`, `HELD` |
 | `video_visibility` | `PUBLIC`, `CONTACTS_ONLY`, `APPROVED_FOLLOWERS_ONLY`, `TIPPED_UNLOCKED`, `INVITED_ONLY`, `AUCTION`, `CHALLENGE` |
 | `wallet_entry_type` | `TOPUP`, `SPEND`, `REFUND`, `ADJUSTMENT`, `HOLD`, `RELEASE` |
 
@@ -827,3 +870,4 @@ erDiagram
 - `0002_push_devices.sql`
 - `0003_story_engagement.sql`
 - `0004_explore_search.sql`
+- `0005_storage_quotas_abuse.sql`

@@ -6,6 +6,7 @@ import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 
 import { Badge, Button, buttonVariants, Checkbox, Chip, cn, IconButton, Input, RadioGroup, Select, Switch, Textarea } from "@/components/ui";
+import { apiErrorMessage } from "@/lib/api-errors";
 import { deleteDraft } from "@/lib/drafts";
 import { type MessageKey,t } from "@/lib/i18n";
 import { money } from "@/lib/money";
@@ -184,13 +185,16 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
           visibility,
           minTipAmountCents: visibility === "TIPPED_UNLOCKED" ? priceCents : 0,
           sizeBytes: file.size,
+          // Checked against the plan's video time before the upload is signed.
+          ...(duration !== null && Number.isFinite(duration) ? { durationSeconds: Math.round(duration) } : {}),
           tags,
           contentRatingId: selectedRating || null,
           isBlurred,
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t("settings.failed"));
+      const data = await res.json().catch(() => ({}));
+      // Quotas and limits answer a stable code: say it in the app's words (space left, wait, what to do).
+      if (!res.ok) throw new Error(apiErrorMessage(data, t("settings.failed"), { retryAfter: res.headers.get("Retry-After"), maxFileBytes: LIMIT.maxBytes }));
       const { session, videoId } = data as { session: Parameters<typeof startUpload>[0]["session"]; videoId: string };
       // Filed in the chosen collection now; it shows there once encoding is finished.
       if (selectedCollection) {

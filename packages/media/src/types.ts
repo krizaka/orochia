@@ -25,6 +25,8 @@ export const CreateUploadSessionSchema = z.object({
   isBlurred: z.boolean().optional().default(false),
   /** Size of the file about to be sent, refused above the video limit. */
   sizeBytes: z.number().int().positive().max(UPLOAD_LIMITS.video.maxBytes),
+  /** Its length when the browser could read it (checked against the plan's video time before signing). */
+  durationSeconds: z.number().nonnegative().max(UPLOAD_LIMITS.video.maxSeconds + 60).optional(),
 });
 
 export type CreateUploadSessionInput = z.infer<typeof CreateUploadSessionSchema>;
@@ -49,6 +51,14 @@ export interface BunnyVideoResponse {
   hasMP4Fallback: boolean;
   /** File name of the chosen thumbnail inside the video folder (e.g. "thumbnail.jpg"). */
   thumbnailFileName?: string;
+}
+
+/** A page of `GET /library/{id}/videos`. */
+export interface BunnyVideoPage {
+  totalItems: number;
+  currentPage: number;
+  itemsPerPage: number;
+  items: BunnyVideoResponse[];
 }
 
 export interface TusDirectUploadSession {

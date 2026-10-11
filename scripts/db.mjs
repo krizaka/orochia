@@ -16,7 +16,15 @@ import { ROOT, c, ok, run, step, fail, warn, isLocalDatabase, databaseUrl } from
 
 const [command, ...rest] = process.argv.slice(2);
 const CONTAINER = "orochia-postgres-dev";
-const PSQL = ["exec", "-i", CONTAINER, "psql", "-U", "orochia_user", "-d", "orochia_db", "-v", "ON_ERROR_STOP=1"];
+// The database and role of DATABASE_URL — never a hard-coded name: a worktree or a session on its own database
+// (e.g. orochia_quota) must never reset, dump or restore the shared orochia_db.
+const target = (() => {
+  const url = new URL(databaseUrl());
+  const name = decodeURIComponent(url.pathname.replace(/^\//, "")) || "orochia_db";
+  if (!/^[A-Za-z0-9_-]{1,63}$/.test(name)) fail(`Unexpected database name in DATABASE_URL: ${name}`);
+  return { name, user: decodeURIComponent(url.username) || "orochia_user" };
+})();
+const PSQL = ["exec", "-i", CONTAINER, "psql", "-U", target.user, "-d", target.name, "-v", "ON_ERROR_STOP=1"];
 
 function guardLocal(action) {
   if (process.env.NODE_ENV === "production") fail(`Refusing to ${action}: NODE_ENV=production`);
@@ -46,11 +54,11 @@ switch (command) {
     guardLocal("reset the database");
     if (!rest.includes("--yes")) {
       const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-      const answer = await rl.question(`${c.red("This deletes every row of the local database.")} Type "reset" to continue: `);
+      const answer = await rl.question(`${c.red(`This deletes every row of the local database ${target.name}.`)} Type "reset" to continue: `);
       rl.close();
       if (answer.trim() !== "reset") fail("Cancelled");
     }
-    step("Dropping the local schema");
+    step(`Dropping the local schema of ${target.name}`);
     run("docker", [...PSQL, "-c", "drop schema if exists public cascade; drop schema if exists drizzle cascade; create schema public;"], { quiet: true });
     ok("Schema dropped");
     step("Migrations");
@@ -62,14 +70,14 @@ switch (command) {
   }
   case "psql": {
     guardLocal("open psql");
-    run("docker", ["exec", "-it", CONTAINER, "psql", "-U", "orochia_user", "-d", "orochia_db"]);
+    run("docker", ["exec", "-it", CONTAINER, "psql", "-U", target.user, "-d", target.name]);
     break;
   }
   case "dump": {
     guardLocal("dump the database");
     fs.mkdirSync(path.join(ROOT, "backups"), { recursive: true });
-    const file = path.join(ROOT, "backups", `orochia-${new Date().toISOString().replace(/[:.]/g, "-")}.sql`);
-    const r = run("docker", ["exec", CONTAINER, "pg_dump", "-U", "orochia_user", "-d", "orochia_db", "--no-owner"], { quiet: true });
+    const file = path.join(ROOT, "backups", `orochia-${target.name}-${new Date().toISOString().replace(/[:.]/g, "-")}.sql`);
+    const r = run("docker", ["exec", CONTAINER, "pg_dump", "-U", target.user, "-d", target.name, "--no-owner"], { quiet: true });
     fs.writeFileSync(file, r.stdout);
     ok(`Dump written to ${path.relative(ROOT, file)}`);
     break;
@@ -78,7 +86,7 @@ switch (command) {
     guardLocal("restore the database");
     const file = rest.find((a) => !a.startsWith("--"));
     if (!file || !fs.existsSync(file)) fail("Usage: npm run db:restore -- backups/<file>.sql");
-    warn("Restoring over the current local database");
+    warn(`Restoring over the local database ${target.name}`);
     run("docker", [...PSQL, "-c", "drop schema if exists public cascade; drop schema if exists drizzle cascade; create schema public;"], { quiet: true });
     const restore = spawnSync("docker", PSQL, { input: fs.readFileSync(file), stdio: ["pipe", "inherit", "inherit"] });
     if (restore.status !== 0) fail("Restore failed");

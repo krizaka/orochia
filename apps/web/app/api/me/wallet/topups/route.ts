@@ -1,10 +1,11 @@
+import { configuredGateways, createTopup, CREDIT_PACKS, GatewayTypeSchema, getPaymentGateway, grantTestTopup, testTopupsEnabled } from "@orochia/payments";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { CREDIT_PACKS, GatewayTypeSchema, configuredGateways, createTopup, getPaymentGateway, grantTestTopup, testTopupsEnabled } from "@orochia/payments";
+
 import { requireUserWithRole } from "@/lib/auth";
 import { appUrl } from "@/lib/env";
-import { checkRateLimit } from "@/lib/rate-limit";
 import { errorResponse, jsonError } from "@/lib/http";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,7 @@ const Topup = z.object({ packId: z.enum(PACK_IDS), gateway: z.union([GatewayType
 export async function POST(req: NextRequest) {
   try {
     const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
-    if (!(await checkRateLimit(`topup:${user.id}`, 10, 60 * 60)).success) return jsonError(429, "Too many attempts. Try again later.");
+    await enforceRateLimit(`topup:${user.id}`, 10, 60 * 60, "Too many attempts. Try again later.");
     const { packId, gateway } = Topup.parse(await req.json());
     const pack = CREDIT_PACKS.find((p) => p.id === packId)!;
 
