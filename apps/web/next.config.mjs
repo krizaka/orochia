@@ -1,10 +1,28 @@
-import { existsSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 // One .env for the whole monorepo, at its root. Next has already loaded apps/web/.env* by now, and
 // loadEnvFile never overrides a variable that is set, so those (and the real environment) still win.
 const rootEnv = fileURLToPath(new URL("../../.env", import.meta.url));
 if (existsSync(rootEnv)) process.loadEnvFile(rootEnv);
+
+/**
+ * What this build is, inlined at build time for the version badge next to the brand (components/BuildBadge.tsx):
+ * the web app's package.json version, the short commit SHA — `COMMIT_SHA` when the builder provides it (App Platform:
+ * `${_self.COMMIT_HASH}`, its Docker build has no .git), else `git rev-parse` — and NEXT_PUBLIC_APP_ENV
+ * (local · dev · staging · production; the badge never shows in production).
+ */
+function commitSha() {
+  const given = process.env.COMMIT_SHA?.trim();
+  if (given) return given.slice(0, 7);
+  try {
+    return execFileSync("git", ["rev-parse", "--short=7", "HEAD"], { stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
+  } catch {
+    return "";
+  }
+}
+const appVersion = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8")).version;
 
 /** @type {import('next').NextConfig} */
 
@@ -51,6 +69,11 @@ const nextConfig = {
   output: "standalone",
   reactStrictMode: true,
   poweredByHeader: false,
+  env: {
+    NEXT_PUBLIC_APP_VERSION: appVersion,
+    NEXT_PUBLIC_COMMIT_SHA: commitSha(),
+    NEXT_PUBLIC_APP_ENV: process.env.NEXT_PUBLIC_APP_ENV?.trim() || "local",
+  },
   transpilePackages: ["@orochia/db", "@orochia/media", "@orochia/payments", "@orochia/config", "@orochia/realtime"],
   // The Redis client (@orochia/realtime) stays a Node module, required at run time — it connects only with REALTIME_BUS=redis.
   serverExternalPackages: ["ioredis"],

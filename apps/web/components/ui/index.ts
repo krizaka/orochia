@@ -38,6 +38,7 @@ export { Switch } from "@krizaka/ui/switch";
 export { Tabs } from "@krizaka/ui/tabs";
 export { ThemeProvider, ThemeScript, useTheme } from "@krizaka/ui/theme";
 export { toast } from "@krizaka/ui/toast";
+export { Tooltip } from "@krizaka/ui/tooltip";
 // The app's words on the primitives that need them, and the Orochia composites (the kit: no primitive comes from it).
 export { Button, type ButtonProps, type ButtonVariant, IconButton } from "./Button";
 export {

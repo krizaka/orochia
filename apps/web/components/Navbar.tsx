@@ -16,6 +16,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
+import { BuildBadge } from "@/components/BuildBadge";
 import { MessagesButton } from "@/components/messages/MessagesButton";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { Avatar, cn,IconButton, OrochiaLogo, ThemeToggle } from "@/components/ui";
@@ -76,12 +77,15 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border-default bg-surface-1/80 backdrop-blur-xl pt-[env(safe-area-inset-top)]">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:h-16 sm:px-6">
-        <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Orochia">
-          <OrochiaLogo size={30} />
-          <span className="font-display text-base font-black tracking-wider text-fg sm:text-lg">
-            OROCHIA<span className="text-fg-accent">.</span>
-          </span>
-        </Link>
+        <div className="flex min-w-0 shrink-0 items-center gap-2">
+          <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Orochia">
+            <OrochiaLogo size={30} />
+            <span className="font-display text-base font-black tracking-wider text-fg sm:text-lg">
+              OROCHIA<span className="text-fg-accent">.</span>
+            </span>
+          </Link>
+          <BuildBadge />
+        </div>
 
         <button
           onClick={onOpenSearch}

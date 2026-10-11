@@ -32,6 +32,13 @@ ARG NEXT_PUBLIC_APP_URL
 ARG SEARCH_INDEXING
 ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
 ENV SEARCH_INDEXING=$SEARCH_INDEXING
+# The build badge next to the brand (lib/build-info.ts): the environment (local · dev · staging · production — hidden in
+# production) and the commit built — .git is not in the build context, so the builder passes it (App Platform:
+# COMMIT_SHA = ${_self.COMMIT_HASH}).
+ARG NEXT_PUBLIC_APP_ENV
+ARG COMMIT_SHA
+ENV NEXT_PUBLIC_APP_ENV=$NEXT_PUBLIC_APP_ENV
+ENV COMMIT_SHA=$COMMIT_SHA
 
 # Generate build output for Next.js standalone
 RUN npm run build --workspace=@orochia/web
