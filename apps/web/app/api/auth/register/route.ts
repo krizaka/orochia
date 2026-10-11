@@ -1,13 +1,28 @@
+import { db, hashPassword,profiles, users } from "@orochia/db";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { db, users, profiles, hashPassword } from "@orochia/db";
-import { setSessionCookie } from "@/lib/auth";
+
+import { refuseAutomation } from "@/lib/abuse/automation";
+import {
+  assertEmailDomainAllowed,
+  assertFormToken,
+  assertHoneypot,
+  DEVICE_COOKIE,
+  DEVICE_COOKIE_MAX_AGE,
+  isDeviceId,
+  issueFormToken,
+  newDeviceId,
+} from "@/lib/abuse/signup-guard";
+import { publicChallenge,requireChallenge } from "@/lib/abuse/turnstile";
 import { sendVerificationEmail } from "@/lib/account-tokens";
-import { acceptInvitation } from "@/lib/invitations";
+import { setSessionCookie } from "@/lib/auth";
+import { clientIp } from "@/lib/client-ip";
 import { isDemoMode } from "@/lib/env";
-import { checkRateLimit } from "@/lib/rate-limit";
 import { errorResponse, isUniqueViolation, jsonError } from "@/lib/http";
+import { acceptInvitation } from "@/lib/invitations";
 import { checkDateOfBirth } from "@/lib/profile";
+import { enforceRateLimit } from "@/lib/rate-limit";
 import { isReserved } from "@/lib/usernames";
 
 export const dynamic = "force-dynamic";
@@ -28,7 +43,39 @@ const RegisterSchema = z.object({
     errorMap: () => ({ message: "18+ age certification is required (18 U.S.C. § 2257)" }),
   }),
   acceptTerms: z.literal(true, { errorMap: () => ({ message: "The terms must be accepted" }) }),
+  /** From GET /api/auth/register: signed, bound to this device, at least a few seconds old (lib/abuse/signup-guard.ts). */
+  formToken: z.string().max(200).optional(),
+  /** The honeypot: hidden from people, filled by bots. */
+  website: z.string().max(500).optional(),
+  /** Cloudflare Turnstile's response, when the bot challenge is on (lib/abuse/turnstile.ts). */
+  challengeToken: z.string().max(2048).optional(),
 });
+
+/**
+ * Opens a sign-up form: a signed form token (bound to this browser's device cookie, set here when missing) and the
+ * public bot-challenge settings — the form cannot be posted without them.
+ */
+export async function GET() {
+  try {
+    const jar = await cookies();
+    const existing = jar.get(DEVICE_COOKIE)?.value;
+    const deviceId = isDeviceId(existing) ? existing : newDeviceId();
+    const response = NextResponse.json({ success: true, formToken: issueFormToken(deviceId), challenge: publicChallenge() });
+    response.headers.set("Cache-Control", "no-store");
+    if (deviceId !== existing) {
+      response.cookies.set(DEVICE_COOKIE, deviceId, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+        maxAge: DEVICE_COOKIE_MAX_AGE,
+      });
+    }
+    return response;
+  } catch (error) {
+    return errorResponse(error, "auth/register/get");
+  }
+}
 
 /**
  * Creates an account (a member — creators are opened later, never an administrator), signs it in and e-mails the link that
@@ -36,11 +83,19 @@ const RegisterSchema = z.object({
  */
 export async function POST(req: NextRequest) {
   try {
-    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-    const limit = await checkRateLimit(`register:${ip}`, 5, 60 * 60);
-    if (!limit.success) return jsonError(429, "Too many registrations. Try again later.");
+    // Cheap checks first, the paid one (Cloudflare) last: an automated client, the per-IP and per-device limits,
+    // the honeypot, the form token, a disposable address — then the bot challenge (fail closed).
+    refuseAutomation(req.headers);
+    const ip = clientIp(req.headers);
+    await enforceRateLimit(`register:${ip ?? "unknown"}`, 5, 60 * 60, "Too many registrations. Try again later.");
+    const deviceId = (await cookies()).get(DEVICE_COOKIE)?.value;
+    if (isDeviceId(deviceId)) await enforceRateLimit(`register-device:${deviceId}`, 3, 24 * 60 * 60, "Too many registrations. Try again later.");
 
     const input = RegisterSchema.parse(await req.json());
+    assertHoneypot(input.website);
+    assertFormToken(input.formToken, deviceId);
+    assertEmailDomainAllowed(input.email);
+    await requireChallenge(input.challengeToken, { ip, failMode: "closed" });
     const dateOfBirth = checkDateOfBirth(input.dateOfBirth);
     if (isReserved(input.username)) return jsonError(400, "This username is reserved. Choose another one.");
 

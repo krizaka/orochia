@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (155)
+## Endpoints (161)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -27,6 +27,9 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/admin/platform/reset` | session · ADMIN | Factory reset: backs the database up first (unless asked not to), wipes it and rebuilds it from the migrations — development deployments only (OROCHIA_ALLOW_DATABASE_RESET, never the indexed production), after the operator typed “reset &lt;database&gt;”. The operator and the owner are kept. |
 | `GET` | `/api/admin/reports` | session · ADMIN | Content reports, newest first; `?status=` filters. |
 | `PATCH` | `/api/admin/reports/[id]` | session · ADMIN | Moves a report through triage (open → in review → resolved). |
+| `GET` | `/api/admin/storage` | session · ADMIN | Platform storage for operators: usage against the cap and alert thresholds, the plans, the largest accounts, the last reconciliation with Bunny, and the state of the abuse defences (rate-limit store, bot challenge). |
+| `POST` | `/api/admin/storage` | session · ADMIN | Reconciles the storage counters with Bunny now (lists the Stream library; at most a few times an hour). |
+| `PATCH` | `/api/admin/storage/[userId]` | session · ADMIN | Sets an account's storage plan (a name of QUOTA_PLANS, or null for the default); its held uploads go online if they fit. |
 | `GET` | `/api/admin/users` | session · ADMIN | Every account (filter by `?role=`, `?suspended=`, `?q=`): role, verification and suspension state. |
 | `PATCH` | `/api/admin/users/[id]` | session · ADMIN | Suspends an account (it can no longer sign in, and its open sessions are refused on their next request; its open auctions are cancelled and their bids released), reinstates it, or changes its role. |
 | `GET` | `/api/admin/videos` | session · ADMIN | The catalogue for moderation: every video with its creator, state and open reports; `?state=removed` lists takedowns. |
@@ -38,6 +41,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/auctions/[id]/bids` | session · MEMBER / CREATOR / ADMIN | Places a bid in Orochia credits; they are held while the bid leads and released when it is outbid. |
 | `POST` | `/api/auctions/[id]/decision` | session · CREATOR | The creator accepts the best bid (the video is sold to its bidder) or declines it (the credits go back). |
 | `GET` | `/api/auctions/[id]/stream` | public | Server-Sent Events of an auction: each bid (amount, alias, new end) and every change of state. |
+| `GET` | `/api/auth/challenge` | public | The public bot-challenge settings (provider and site key), or null when protected forms need no challenge. |
 | `POST` | `/api/auth/forgot-password` | public | E-mails a password-reset link (1 h) to the address, if an active account uses it. |
 | `POST` | `/api/auth/login` | public | Password login — a session cookie for the browser, a bearer token for a native app. |
 | `POST` | `/api/auth/logout` | public | — |
@@ -47,6 +51,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/auth/oauth/complete` | public | Creates the account of a new Google / Facebook sign-in after the person gives a date of birth (18+), certifies it and accepts the terms. |
 | `GET` | `/api/auth/oauth/pending` | public | The provider sign-in waiting to become an account: what the completion form can prefill. |
 | `GET` | `/api/auth/providers` | public | The sign-in providers this deployment offers (only those whose keys are configured). |
+| `GET` | `/api/auth/register` | public | Opens a sign-up form: a signed form token (bound to this browser's device cookie, set here when missing) and the public bot-challenge settings — the form cannot be posted without them. |
 | `POST` | `/api/auth/register` | public | Creates an account (a member — creators are opened later, never an administrator), signs it in and e-mails the link that verifies its address — until then the account can do nothing else. |
 | `POST` | `/api/auth/resend-verification` | public | E-mails a new verification link to the signed-in account (the previous link stops working). |
 | `POST` | `/api/auth/reset-password` | public | Sets a new password with the link's one-time token (1 h). |
@@ -118,6 +123,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `PUT` | `/api/me/payout-account` | session · CREATOR / ADMIN | Saves (or replaces) where your earnings are sent; the details are checked and encrypted at rest. |
 | `GET` | `/api/me/profile` | session · ADMIN / CREATOR / MEMBER | Reads the signed-in user's own profile and settings (private fields included: e-mail, date of birth). |
 | `PUT` | `/api/me/profile` | session · ADMIN / CREATOR / MEMBER | Updates the signed-in user's own profile and preferences (only the fields sent). |
+| `GET` | `/api/me/storage` | session · CREATOR / ADMIN | Your storage: space and video time used against your plan, uploads on hold, today's uploads and the per-file limits. |
 | `GET` | `/api/me/stories` | session · CREATOR / ADMIN | Your stories of the last 30 days — up, encoding or expired — with their figures. |
 | `GET` | `/api/me/tags` | session · CREATOR / ADMIN | The creator's tag suggestions for the publish form: the tags they used before (most used first) and the curated list. |
 | `GET` | `/api/me/wallet` | session · MEMBER / CREATOR / ADMIN | Your Orochia credits: balance (and what is held behind your leading bids and challenge pledges), the packs you can buy, how you can pay for them, and your history. |
@@ -167,7 +173,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/webhooks/bunny` | signed webhook | Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (BUNNY_WEBHOOK_SECRET). |
 | `POST` | `/api/webhooks/payments/[gateway]` | signed webhook | Gateway payment notifications. |
 
-## Database tables (43)
+## Database tables (46)
 
 | Table | Drizzle export | Defined in |
 | :--- | :--- | :--- |
@@ -199,6 +205,9 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `direct_messages` | `directMessages` | `packages/db/src/schema/messaging.ts` |
 | `blocked_users` | `blockedUsers` | `packages/db/src/schema/messaging.ts` |
 | `notifications` | `notifications` | `packages/db/src/schema/notifications.ts` |
+| `rate_limit_buckets` | `rateLimitBuckets` | `packages/db/src/schema/platform-guard.ts` |
+| `storage_alerts` | `storageAlerts` | `packages/db/src/schema/platform-guard.ts` |
+| `storage_snapshots` | `storageSnapshots` | `packages/db/src/schema/platform-guard.ts` |
 | `playlists` | `playlists` | `packages/db/src/schema/playlists.ts` |
 | `playlist_items` | `playlistItems` | `packages/db/src/schema/playlists.ts` |
 | `playlist_members` | `playlistMembers` | `packages/db/src/schema/playlists.ts` |

@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+
 import { requireUserWithRole } from "@/lib/auth";
-import { draftMusicRef, setDraftMusic } from "@/lib/video-drafts";
-import { readPrivateFile } from "@/lib/storage";
-import { checkRateLimit } from "@/lib/rate-limit";
 import { errorResponse, jsonError } from "@/lib/http";
+import { enforceRateLimit } from "@/lib/rate-limit";
+import { readPrivateFile } from "@/lib/storage";
+import { draftMusicRef, setDraftMusic } from "@/lib/video-drafts";
 
 export const dynamic = "force-dynamic";
 
@@ -37,8 +38,7 @@ export async function PUT(req: NextRequest, props: { params: Promise<{ id: strin
     const user = await requireUserWithRole(["CREATOR", "ADMIN"]);
     const id = await draftId(props);
     if (!id.success) return jsonError(404, "Draft not found");
-    const limit = await checkRateLimit(`draft-music:${user.id}`, 30, 60 * 60);
-    if (!limit.success) return jsonError(429, "Too many uploads. Try again later.");
+    await enforceRateLimit(`draft-music:${user.id}`, 30, 60 * 60, "Too many uploads. Try again later.");
     const file = (await req.formData()).get("file");
     if (!(file instanceof File)) return jsonError(400, "No file provided");
     return NextResponse.json({ success: true, ...(await setDraftMusic(user.id, id.data, file)) });

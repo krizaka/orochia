@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+
 import { requireUserWithRole } from "@/lib/auth";
 import { errorResponse, jsonError } from "@/lib/http";
 import { registerDevice, unregisterDevice } from "@/lib/push";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,7 @@ const Forget = z.object({ token: z.string().min(10).max(255) });
 export async function POST(req: NextRequest) {
   try {
     const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
-    if (!(await checkRateLimit(`push-device:${user.id}`, 20, 60 * 60)).success) return jsonError(429, "Too many requests");
+    await enforceRateLimit(`push-device:${user.id}`, 20, 60 * 60, "Too many requests");
     const { token, platform } = Device.parse(await req.json());
     if (!(await registerDevice(user.id, token, platform))) return jsonError(400, "Not a push token");
     return NextResponse.json({ success: true });

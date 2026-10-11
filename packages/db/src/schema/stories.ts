@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, varchar, integer, index, uniqueIndex, boolean } from "drizzle-orm/pg-core";
+import { bigint, pgTable, text, timestamp, uuid, varchar, integer, index, uniqueIndex, boolean } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { users } from "./users";
 import { audienceLists } from "./audiences";
@@ -33,6 +33,8 @@ export const stories = pgTable(
     isBlurred: boolean("is_blurred").default(false).notNull(),
     status: videoStatusEnum("status").default("READY").notNull(),
     durationSeconds: integer("duration_seconds").default(0).notNull(),
+    /** Bytes held at Bunny for a video story (declared, then Bunny's storageSize); 0 for an image story. */
+    storageBytes: bigint("storage_bytes", { mode: "number" }).default(0).notNull(),
     viewsCount: integer("views_count").default(0).notNull(),
     likesCount: integer("likes_count").default(0).notNull(),
     tipsCount: integer("tips_count").default(0).notNull(),

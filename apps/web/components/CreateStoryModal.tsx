@@ -8,6 +8,7 @@ import * as tus from "tus-js-client";
 import { DraftsShelf } from "@/components/DraftsShelf";
 import { Button, Checkbox, Chip, cn, Dialog, Select, Sheet, Textarea } from "@/components/ui";
 import { VideoEditor } from "@/components/VideoEditor";
+import { type ApiErrorBody, apiErrorMessage, responseErrorMessage } from "@/lib/api-errors";
 import { deleteDraft } from "@/lib/drafts";
 import { t } from "@/lib/i18n";
 import { EDITOR_MAX_BYTES, type VideoEdit } from "@/lib/video-edit";
@@ -127,15 +128,15 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
         form.append("category", "stories");
         form.append("file", file);
         const stored = await fetch("/api/uploads", { method: "POST", body: form });
-        const storedData = (await stored.json()) as { data?: { ref: string }; error?: string };
-        if (!stored.ok || !storedData.data) throw new Error(storedData.error);
+        const storedData = (await stored.json().catch(() => ({}))) as ApiErrorBody & { data?: { ref: string } };
+        if (!stored.ok || !storedData.data) throw new Error(apiErrorMessage(storedData, t("stories.create.failed"), { retryAfter: stored.headers.get("Retry-After") }));
         setProgress(70);
         const res = await fetch("/api/stories", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...common, imageRef: storedData.data.ref }),
         });
-        if (!res.ok) throw new Error(((await res.json().catch(() => ({}))) as { error?: string }).error);
+        if (!res.ok) throw new Error(await responseErrorMessage(res, t("stories.create.failed")));
         setDoneMessage(t("stories.create.publishedImage"));
         setState("done");
         onSuccess?.();
@@ -143,11 +144,10 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
       }
 
       const res = await fetch("/api/stories/upload-session", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...common, sizeBytes: file.size }) });
-      const data = (await res.json()) as {
-        error?: string;
+      const data = (await res.json().catch(() => ({}))) as ApiErrorBody & {
         session?: { tusEndpoint: string; headers: { AuthorizationSignature: string; AuthorizationExpire: number; VideoId: string; LibraryId: string } };
       };
-      if (!res.ok || !data.session) throw new Error(data.error);
+      if (!res.ok || !data.session) throw new Error(apiErrorMessage(data, t("stories.create.failed"), { retryAfter: res.headers.get("Retry-After"), maxFileBytes: UPLOAD_LIMITS.story.maxBytes }));
       const { session } = data;
       await new Promise<void>((resolve, reject) => {
         new tus.Upload(file, {

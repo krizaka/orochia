@@ -205,8 +205,8 @@ export function StoryMedia(props: MediaProps & { veiled: boolean; onReveal: () =
     return (
       <div className="flex max-w-xs flex-col items-center gap-2 px-6 text-center">
         {story.state === "processing" && <Spinner size="md" label={t("stories.processing")} className="text-fg-on-media" />}
-        <p className="text-sm font-semibold text-fg-on-media">{t(story.state === "processing" ? "stories.processing" : "stories.failed")}</p>
-        <p className="text-xs text-fg-on-media/75">{t(story.state === "processing" ? "stories.processingHint" : "stories.failedHint")}</p>
+        <p className="text-sm font-semibold text-fg-on-media">{t(story.state === "processing" ? "stories.processing" : story.state === "held" ? "stories.held" : "stories.failed")}</p>
+        <p className="text-xs text-fg-on-media/75">{t(story.state === "processing" ? "stories.processingHint" : story.state === "held" ? "stories.heldHint" : "stories.failedHint")}</p>
       </div>
     );
   }

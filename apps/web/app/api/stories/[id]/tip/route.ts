@@ -1,22 +1,23 @@
-import { NextRequest, NextResponse, after } from "next/server";
-import { z } from "zod";
+import { db, profiles } from "@orochia/db";
 import {
-  GatewayTypeSchema,
   attachGatewaySession,
   chargeCredits,
   configuredGateways,
   createPaymentIntent,
+  GatewayTypeSchema,
   getPaymentGateway,
   refundCredits,
   settlePaymentIntent,
 } from "@orochia/payments";
-import { db, profiles } from "@orochia/db";
 import { eq } from "drizzle-orm";
+import { after,NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
 import { requireUserWithRole } from "@/lib/auth";
-import { checkRateLimit } from "@/lib/rate-limit";
 import { appUrl, isDemoMode } from "@/lib/env";
 import { errorResponse, jsonError } from "@/lib/http";
 import { notifySettlement } from "@/lib/notifications";
+import { limitAction } from "@/lib/rate-limit";
 import { storyForViewerAction } from "@/lib/stories";
 
 export const dynamic = "force-dynamic";
@@ -36,8 +37,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
     const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
     const id = z.string().uuid().safeParse((await props.params).id);
     if (!id.success) return jsonError(404, "Story not found");
-    const limit = await checkRateLimit(`checkout:${user.id}`, 20, 60 * 60);
-    if (!limit.success) return jsonError(429, "Too many payment attempts. Try again later.");
+    await limitAction("checkout", req, user.id, { perUser: [20, 60 * 60], perIp: [60, 60 * 60] }, "Too many payment attempts. Try again later.");
     const { amountCents, gateway } = StoryTip.parse(await req.json());
 
     const story = await storyForViewerAction(id.data, user.id);

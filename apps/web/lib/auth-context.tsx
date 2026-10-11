@@ -2,6 +2,9 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 
+import { responseErrorMessage } from "./api-errors";
+import { t } from "./i18n";
+
 export const AVATAR_PLACEHOLDER = "/avatar-placeholder.svg";
 
 export interface UserProfile {
@@ -30,6 +33,10 @@ export interface RegisterInput {
   dateOfBirth: string;
   isAgeVerified: boolean;
   acceptTerms: boolean;
+  /** Anti-bot (lib/abuse/signup-guard.ts): the form token from GET /api/auth/register, the honeypot, the challenge. */
+  formToken?: string;
+  website?: string;
+  challengeToken?: string | null;
 }
 
 interface AuthContextType {
@@ -67,10 +74,7 @@ async function postJson(url: string, body: unknown): Promise<void> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  if (!res.ok) {
-    const data = (await res.json().catch(() => ({}))) as { error?: string };
-    throw new Error(data.error || "Request failed");
-  }
+  if (!res.ok) throw new Error(await responseErrorMessage(res, t("settings.failed")));
 }
 
 /** Session state, read from the server (httpOnly cookie) — nothing about the user is stored client-side. */

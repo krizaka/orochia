@@ -32,7 +32,7 @@ export interface StudioVideo {
   tags: string[];
   visibility: VideoVisibility;
   minTipAmountCents: number;
-  status: "PENDING_UPLOAD" | "PROCESSING" | "READY" | "FAILED";
+  status: "PENDING_UPLOAD" | "PROCESSING" | "READY" | "FAILED" | "HELD";
   removedAt: string | null;
   removalReason: string | null;
   durationSeconds: number;
@@ -56,7 +56,9 @@ function StatusBadge({ v }: { v: StudioVideo }) {
       ? [t("studio.status.published"), "success" as const]
       : v.status === "FAILED"
         ? [t("studio.status.failed"), "danger" as const]
-        : [t("studio.status.encoding"), "warning" as const];
+        : v.status === "HELD"
+          ? [t("studio.status.held"), "warning" as const]
+          : [t("studio.status.encoding"), "warning" as const];
   return <Badge size="sm" tone={tone} dot>{label}</Badge>;
 }
 

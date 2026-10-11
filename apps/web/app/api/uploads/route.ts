@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+
 import { requireUserWithRole } from "@/lib/auth";
-import { checkRateLimit } from "@/lib/rate-limit";
-import { uploadMediaFile } from "@/lib/storage";
 import { errorResponse, jsonError } from "@/lib/http";
+import { quotaConfig } from "@/lib/quotas";
+import { enforceRateLimit, limitAction } from "@/lib/rate-limit";
+import { uploadMediaFile } from "@/lib/storage";
 
 export const dynamic = "force-dynamic";
 
@@ -36,8 +38,10 @@ export async function POST(req: NextRequest) {
     const rule = RULES[category.data];
 
     const user = await requireUserWithRole([...rule.roles]);
-    const limit = await checkRateLimit(`upload:${user.id}`, 30, 60 * 60);
-    if (!limit.success) return jsonError(429, "Too many uploads. Try again later.");
+    await enforceRateLimit(`upload:${user.id}`, 30, 60 * 60, "Too many uploads. Try again later.");
+    // Pictures count per day too (QUOTA_IMAGE_UPLOADS_PER_DAY) and per IP: each is small, but the zone is billed by size.
+    const perDay = quotaConfig().imageUploadsPerDay;
+    await limitAction("image-upload", req, perDay === null ? null : user.id, { perUser: [perDay ?? 0, 24 * 60 * 60], perIp: [120, 60 * 60] }, "Too many pictures uploaded today. Try again tomorrow.");
 
     const file = formData.get("file");
     if (!(file instanceof File)) return jsonError(400, "No file provided");

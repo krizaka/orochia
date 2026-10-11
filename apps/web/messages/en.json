@@ -158,7 +158,10 @@
       "story": "Story",
       "open": "Watch stories ({count})",
       "openOf": "Stories of {name}"
-    }
+    },
+    "held": "On hold — storage full",
+    "heldHint": "This story is kept but shown to nobody: your storage space is full. Free some space (drafts, old videos) and it goes online.",
+    "heldTitle": "Your video story"
   },
   "auth": {
     "register": {
@@ -194,7 +197,9 @@
       "usernameTaken": "Taken — try {suggestion}",
       "usernameReserved": "Reserved — try {suggestion}",
       "usernameFormat": "3–30 letters, digits or _",
-      "useSuggestion": "Use it"
+      "useSuggestion": "Use it",
+      "honeypot": "Leave this field empty",
+      "challenge": "Checking you are a person…"
     },
     "becomeCreator": {
       "title": "Publish on Orochia",
@@ -833,7 +838,9 @@
         "challengeChosen": "You are picked for an open call",
         "challengeDelivered": "A challenge you back is delivered",
         "challengeReleased": "A challenge you back will not happen",
-        "challengeClosed": "A challenge you could make closes"
+        "challengeClosed": "A challenge you could make closes",
+        "storageLow": "Your storage space is almost full",
+        "storageHeld": "An upload is on hold because your space is full"
       },
       "inApp": "In the app",
       "byEmail": "By e-mail",
@@ -977,6 +984,18 @@
     "challengeClosed": {
       "subject": "“{title}” is closed",
       "body": "“{title}” is closed: {reason}."
+    },
+    "storageLow": {
+      "subject": "Your storage is {percent}% full",
+      "body": "You have used {percent}% of your {limit} of storage. Delete drafts or old videos, or ask for a larger plan, before uploads are refused."
+    },
+    "storageHeld": {
+      "subject": "“{title}” is on hold: storage full",
+      "body": "“{title}” is encoded and kept, but not published: your storage space is full. Free some space and it goes online by itself — nothing was deleted."
+    },
+    "storageAlert": {
+      "subject": "Platform storage at {percent}%",
+      "body": "Orochia's video storage is at {percent}% ({used} of {limit}). New uploads are refused at 100%: raise QUOTA_PLATFORM_GB or free space."
     }
   },
   "notifications": {
@@ -1775,7 +1794,8 @@
       "removed": "Taken down",
       "failed": "Encoding failed",
       "encoding": "Encoding",
-      "published": "Published"
+      "published": "Published",
+      "held": "On hold — storage full"
     },
     "saveFailed": "The changes could not be saved.",
     "empty": "No videos yet. {link}.",
@@ -2417,5 +2437,60 @@
       }
     },
     "seeOpen": "See open challenges"
+  },
+  "quota": {
+    "title": "Storage",
+    "label": "Storage used",
+    "loading": "Checking your storage…",
+    "used": "{used} of {limit} used",
+    "usedUnlimited": "{used} used — unlimited plan",
+    "minutes": "{used} of {limit} minutes of video",
+    "minutesUnlimited": "{used} minutes of video",
+    "plan": "Plan: {plan}",
+    "plans": {
+      "default": "Standard",
+      "pro": "Pro",
+      "unlimited": "Unlimited"
+    },
+    "today": "{count} of {max} uploads today",
+    "levels": {
+      "ok": "Plenty of room for new uploads.",
+      "warning": "You have used {percent}% of your space. Delete drafts or old videos, or ask for a larger plan.",
+      "critical": "Almost full ({percent}%): the next large upload may be refused.",
+      "full": "Your space is full: new uploads are refused until you free some.",
+      "unlimited": "No storage limit on your plan."
+    },
+    "held": "{count} upload(s) on hold until space is freed — kept, never deleted.",
+    "paused": "Uploads are paused for everyone while the platform's storage is extended. Try again later.",
+    "off": "Storage limits are off on this deployment.",
+    "manage": "Manage uploads"
+  },
+  "apiErrors": {
+    "FILE_TOO_LARGE": "This file is too large: the limit is {max} per file.",
+    "VIDEO_TOO_LONG": "This video is too long for an upload here.",
+    "CREATOR_STORAGE_FULL": "Not enough space: you have {left} left of {limit}. Delete drafts or old videos, or ask for a larger plan.",
+    "CREATOR_MINUTES_FULL": "Not enough video time left on your plan for this file.",
+    "PLATFORM_STORAGE_FULL": "Uploads are paused: the platform's storage is full. Try again later.",
+    "PLATFORM_MINUTES_FULL": "Uploads are paused: the platform's video time is full. Try again later.",
+    "UPLOADS_PER_DAY": "You reached today's upload limit. Try again in {wait}.",
+    "CONCURRENT_UPLOADS": "Finish the uploads in progress before starting another.",
+    "STORAGE_LIMITS_UNAVAILABLE": "Uploads are unavailable right now. Try again later.",
+    "RATE_LIMITED": "Too many attempts. Try again in {wait}.",
+    "LOGIN_LOCKED": "Too many failed attempts. Try again in {wait}.",
+    "LOGIN_RATE_LIMITED": "Too many sign-in attempts from this network. Try again in {wait}.",
+    "AUTOMATION_REFUSED": "This request looks automated. Use the Orochia website or app.",
+    "BOT_SUSPECTED": "Something went wrong. Reload the page and try again.",
+    "FORM_TOKEN_MISSING": "Something went wrong. Reload the page and try again.",
+    "FORM_TOKEN_INVALID": "Something went wrong. Reload the page and try again.",
+    "FORM_TOO_FAST": "That was quick! Check your details and send the form again.",
+    "FORM_EXPIRED": "This form has expired. Reload the page and try again.",
+    "EMAIL_DOMAIN_REFUSED": "Disposable e-mail addresses are not accepted. Use an address you keep.",
+    "CHALLENGE_FAILED": "The anti-bot check failed. Try again.",
+    "CHALLENGE_UNAVAILABLE": "The anti-bot check is unavailable right now. Try again in a few minutes.",
+    "wait": {
+      "seconds": "{count} s",
+      "minutes": "{count} min",
+      "hours": "{count} h"
+    }
   }
 }

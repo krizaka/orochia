@@ -148,6 +148,9 @@ export const NOTIFICATION_EVENTS = [
   "challengeDelivered",
   "challengeReleased",
   "challengeClosed",
+  "storageLow",
+  "storageHeld",
+  "storageAlert",
 ] as const;
 export type NotificationEvent = (typeof NOTIFICATION_EVENTS)[number];
 

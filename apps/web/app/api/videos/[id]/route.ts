@@ -1,11 +1,13 @@
 import { auctions, challenges,db, videos } from "@orochia/db";
 import { and, eq, inArray, isNull } from "drizzle-orm";
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { requireUserWithRole } from "@/lib/auth";
 import { errorResponse, jsonError } from "@/lib/http";
+import { notifyVideoReady } from "@/lib/notifications";
 import { CREATOR_DELETED } from "@/lib/queries";
+import { releaseHeld } from "@/lib/storage-usage";
 import { normalizeTags } from "@/lib/tags";
 
 export const dynamic = "force-dynamic";
@@ -71,6 +73,9 @@ export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: s
       .where(and(eq(videos.id, id.data), eq(videos.creatorId, user.id), isNull(videos.removedAt)))
       .returning({ id: videos.id });
     if (!row) return jsonError(404, "Video not found");
+    // A withdrawn video no longer counts against its creator's plan: uploads held for want of space may go online.
+    const released = await releaseHeld(user.id);
+    for (const videoId of released.videos) after(() => notifyVideoReady(videoId));
     return NextResponse.json({ success: true });
   } catch (error) {
     return errorResponse(error, "videos/delete");

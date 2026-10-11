@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import {
   BunnyConfig,
+  BunnyVideoPage,
   BunnyVideoResponse,
   TusDirectUploadSession,
   SignedHlsStreamUrl,
@@ -81,6 +82,31 @@ export class BunnyStreamClient {
     }
 
     return (await response.json()) as BunnyVideoResponse;
+  }
+
+  /**
+   * Lists the library, one page at a time (`GET /library/{id}/videos`): each item carries `storageSize` (bytes,
+   * renditions included) and `length` (seconds). One request per page of up to 1000 videos — what the storage
+   * reconciliation reads, never the upload path.
+   */
+  async listVideos(page = 1, itemsPerPage = 1000): Promise<BunnyVideoPage> {
+    const url = `${this.baseUrl}/library/${this.libraryId}/videos?page=${page}&itemsPerPage=${itemsPerPage}&orderBy=date`;
+    const response = await fetch(url, { headers: { AccessKey: this.apiKey, Accept: "application/json" } });
+    if (!response.ok) {
+      throw new BunnyApiError(response.status, `Bunny Stream List Videos Error (${response.status}): ${await response.text()}`);
+    }
+    return (await response.json()) as BunnyVideoPage;
+  }
+
+  /** Every video of the library (pages of 1000, at most `maxPages`). */
+  async listAllVideos(maxPages = 200): Promise<BunnyVideoResponse[]> {
+    const all: BunnyVideoResponse[] = [];
+    for (let page = 1; page <= maxPages; page++) {
+      const result = await this.listVideos(page, 1000);
+      all.push(...(result.items ?? []));
+      if (!result.items?.length || all.length >= result.totalItems) break;
+    }
+    return all;
   }
 
   /**

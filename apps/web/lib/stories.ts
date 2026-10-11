@@ -1,13 +1,16 @@
-import { db, stories, storyViews, storyLikes, users, profiles, audienceLists, audienceListMembers, tipsLedger } from "@orochia/db";
-import { and, asc, desc, eq, gt, inArray, isNotNull, isNull, lt, or, sql } from "drizzle-orm";
+import { audienceListMembers, audienceLists, db, profiles, stories, storyLikes, storyViews, tipsLedger,users } from "@orochia/db";
 import { BunnyApiError, BunnyStreamClient, exceedsLength, generateBunnyStreamToken, mapBunnyApiStatusToOrochia, signBunnyFileUrl } from "@orochia/media";
+import { and, asc, desc, eq, gt, inArray, isNotNull, isNull, lt, or, sql } from "drizzle-orm";
+
 import { areContacts, isApprovedFollower, paidForChallengeStory } from "./access";
-import { bunnyStreamConfig, requireBunnyStream } from "./env";
 import { viewerKey } from "./engagement";
+import { bunnyStreamConfig, requireBunnyStream } from "./env";
 import { HttpError } from "./http";
-import { sendMessage } from "./messaging";
+import { t } from "./i18n";
 import { signMediaUrl } from "./media-urls";
+import { sendMessage } from "./messaging";
 import { publicUrlForRef } from "./storage";
+import { holdReason, recordStoredBytes, releaseHeld } from "./storage-usage";
 
 /**
  * Stories: images or short videos that live 24 hours (Instagram-style). Video stories are Bunny
@@ -49,11 +52,13 @@ export async function canViewStory(story: Pick<StoryRow, "id" | "creatorId" | "v
  * Where a story stands for whoever sees it. Others only ever receive "ready" stories; the author also
  * sees their own video stories while Bunny encodes them ("processing") or when encoding failed.
  */
-export type StoryState = "ready" | "processing" | "failed";
+export type StoryState = "ready" | "processing" | "failed" | "held";
 
 export function storyState(status: StoryRow["status"]): StoryState {
   if (status === "READY") return "ready";
   if (status === "FAILED") return "failed";
+  // Encoded, but over the storage quota: kept for its author, shown to nobody until space is freed.
+  if (status === "HELD") return "held";
   return "processing";
 }
 
@@ -257,7 +262,7 @@ export async function createImageStory(creatorId: string, input: NewStory & { im
  * A video story: records the story (PENDING_UPLOAD) and opens a Tus session straight to Bunny, in the
  * stories collection, titled so it is easy to find there ("story · @username · <id>").
  */
-export async function openVideoStoryUpload(creatorId: string, input: NewStory) {
+export async function openVideoStoryUpload(creatorId: string, input: NewStory & { sizeBytes?: number }) {
   const account = await requireVerifiedCreator(creatorId);
   const listId = await checkAudience(creatorId, input.audience, input.audienceListId);
   const config = requireBunnyStream();
@@ -272,6 +277,8 @@ export async function openVideoStoryUpload(creatorId: string, input: NewStory) {
       contentRatingId: input.contentRatingId || null,
       isBlurred: Boolean(input.isBlurred),
       status: "PENDING_UPLOAD",
+      // The declared size until Bunny reports the real one.
+      storageBytes: input.sizeBytes ?? 0,
       expiresAt: new Date(Date.now() + STORY_LIFETIME_MS),
     })
     .returning({ id: stories.id });
@@ -287,16 +294,17 @@ export async function openVideoStoryUpload(creatorId: string, input: NewStory) {
 }
 
 /** Called by the Bunny webhook for a story video: READY starts its 24 hours. */
-export async function applyStoryEncoding(bunnyVideoId: string, target: "PROCESSING" | "READY" | "FAILED", details?: { durationSeconds?: number }) {
+export async function applyStoryEncoding(bunnyVideoId: string, target: "PROCESSING" | "READY" | "FAILED" | "HELD", details?: { durationSeconds?: number; storageBytes?: number }) {
   const [story] = await db.select().from(stories).where(eq(stories.bunnyVideoId, bunnyVideoId)).limit(1);
   if (!story) return null;
   // Late, repeated or out-of-order events (and a webhook racing the reconciliation) change nothing.
-  if (story.status === target || (story.status === "READY" && target === "PROCESSING")) return story.id;
+  if (story.status === target || ((story.status === "READY" || story.status === "HELD") && target !== "FAILED")) return story.id;
   await db
     .update(stories)
     .set({
       status: target,
-      ...(target === "READY"
+      ...(details?.storageBytes !== undefined ? { storageBytes: details.storageBytes } : {}),
+      ...(target === "READY" || target === "HELD"
         ? { expiresAt: new Date(Date.now() + STORY_LIFETIME_MS), durationSeconds: Math.min(Math.round(details?.durationSeconds ?? 0), 600) }
         : {}),
       updatedAt: new Date(),
@@ -306,27 +314,43 @@ export async function applyStoryEncoding(bunnyVideoId: string, target: "PROCESSI
 }
 
 /**
- * Settles a story video Bunny reports finished: reads its length, refuses (FAILED, deleted at Bunny)
- * one longer than a story may be — the browser checks, but a client can lie — else makes it READY.
- * Shared by the webhook and the reconciliation below.
+ * Settles a story video Bunny reports finished: reads its length and size, refuses (FAILED, deleted at Bunny)
+ * one longer than a story may be — the browser checks, but a client can lie —, HOLDS one whose real size puts its
+ * creator or the platform over the storage quota (kept, shown to nobody, released when space is freed — never
+ * deleted for it), else makes it READY. Shared by the webhook and the reconciliation below.
  */
 export async function settleStoryVideo(
   bunnyVideoId: string,
   target: "PROCESSING" | "READY" | "FAILED",
   client: Pick<BunnyStreamClient, "getVideo" | "deleteVideo">,
   knownDurationSeconds?: number,
+  knownStorageBytes?: number,
 ) {
   let durationSeconds = knownDurationSeconds;
-  if (target === "READY" && durationSeconds === undefined) {
-    durationSeconds = await client
-      .getVideo(bunnyVideoId)
-      .then((d) => d.length)
-      .catch(() => undefined);
+  let storageBytes = knownStorageBytes;
+  if (target === "READY" && (durationSeconds === undefined || storageBytes === undefined)) {
+    const details = await client.getVideo(bunnyVideoId).catch(() => undefined);
+    durationSeconds ??= details?.length;
+    storageBytes ??= details?.storageSize;
   }
   const tooLong = target === "READY" && durationSeconds !== undefined && exceedsLength("story", durationSeconds);
-  const storyId = await applyStoryEncoding(bunnyVideoId, tooLong ? "FAILED" : target, { durationSeconds });
+  let final: "PROCESSING" | "READY" | "FAILED" | "HELD" = tooLong ? "FAILED" : target;
+  if (final === "READY") {
+    const holder = storageBytes !== undefined ? await recordStoredBytes(bunnyVideoId, storageBytes) : null;
+    if (holder && (await holdReason(holder.creatorId))) final = "HELD";
+  }
+  // Refused for its length, its file is deleted at Bunny: it holds no bytes any more.
+  const storyId = await applyStoryEncoding(bunnyVideoId, final, { durationSeconds, ...(tooLong ? { storageBytes: 0 } : {}) });
   if (storyId && tooLong) await client.deleteVideo(bunnyVideoId).catch(() => undefined);
-  return storyId ? { storyId, status: tooLong ? ("FAILED" as const) : target, durationSeconds } : null;
+  if (storyId && final === "HELD") void notifyStoryHeld(storyId);
+  return storyId ? { storyId, status: final, durationSeconds } : null;
+}
+
+async function notifyStoryHeld(storyId: string) {
+  const [story] = await db.select({ creatorId: stories.creatorId }).from(stories).where(eq(stories.id, storyId)).limit(1);
+  if (!story) return;
+  const { notify } = await import("./notifications");
+  await notify({ userId: story.creatorId, event: "storageHeld", vars: { title: t("stories.heldTitle") }, path: "/dashboard?tab=uploads" });
 }
 
 /** A story video unsettled for this long is asked about at Bunny (its webhook may never come). */
@@ -391,7 +415,7 @@ export async function reconcileStoryVideos(
       if (!claimed) return false;
       try {
         const video = await client.getVideo(guid).then(
-          (v) => ({ status: v.status, length: v.length }),
+          (v) => ({ status: v.status, length: v.length, storageSize: v.storageSize }),
           (error: unknown) => {
             if (error instanceof BunnyApiError && error.status === 404) return { missing: true as const };
             throw error;
@@ -399,7 +423,7 @@ export async function reconcileStoryVideos(
         );
         const target = reconcileDecision(story, video);
         if (!target) return false;
-        const settled = await settleStoryVideo(guid, target, client, "length" in video ? video.length : undefined);
+        const settled = await settleStoryVideo(guid, target, client, "length" in video ? video.length : undefined, "storageSize" in video ? video.storageSize : undefined);
         if (settled) console.info(`stories: ${story.id} reconciled with Bunny → ${settled.status} (webhook missing)`);
         return Boolean(settled);
       } catch (error) {
@@ -456,6 +480,8 @@ export async function removeStory(storyId: string, user: { id: string; role: str
   const [story] = await db.select({ creatorId: stories.creatorId }).from(stories).where(and(eq(stories.id, storyId), isNull(stories.removedAt))).limit(1);
   if (!story || (story.creatorId !== user.id && user.role !== "ADMIN")) throw new HttpError(404, "Story not found");
   await db.update(stories).set({ removedAt: new Date(), updatedAt: new Date() }).where(eq(stories.id, storyId));
+  // A withdrawn story no longer counts against its creator: held uploads may fit again.
+  await releaseHeld(story.creatorId).catch((error: unknown) => console.error("stories: release of held uploads failed", error));
 }
 
 /** The creator's own stories (live, encoding or expired in the last 30 days), newest first. */

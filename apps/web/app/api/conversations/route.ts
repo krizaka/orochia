@@ -1,10 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 import { db, users } from "@orochia/db";
 import { eq, sql } from "drizzle-orm";
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
 import { requireUserWithRole } from "@/lib/auth";
-import { listConversations, getOrCreateConversation } from "@/lib/messaging";
 import { errorResponse, HttpError } from "@/lib/http";
+import { getOrCreateConversation,listConversations } from "@/lib/messaging";
+import { limitAction } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +30,8 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const user = await requireUserWithRole(["ADMIN", "CREATOR", "MEMBER"]);
+    // New conversations are where spam starts: a few an hour per account, per IP.
+    await limitAction("conversation", req, user.id, { perUser: [20, 60 * 60], perIp: [60, 60 * 60] }, "Too many new conversations. Try again later.");
     const body = CreateConversationSchema.parse(await req.json());
 
     let targetUserId = body.recipientId;

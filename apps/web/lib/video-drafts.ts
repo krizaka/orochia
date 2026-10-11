@@ -1,9 +1,11 @@
-import { BunnyStreamClient, UPLOAD_LIMITS, DRAFT_MUSIC_MAX_BYTES, signBunnyFileUrl } from "@orochia/media";
 import { db, users, videoDrafts } from "@orochia/db";
+import { BunnyStreamClient, DRAFT_MUSIC_MAX_BYTES, signBunnyFileUrl,UPLOAD_LIMITS } from "@orochia/media";
 import { and, count, desc, eq, lte, ne } from "drizzle-orm";
+
 import { bunnyStreamConfig, draftsConfig, requireBunnyStream } from "./env";
 import { HttpError } from "./http";
 import { deletePrivateFile, uploadMediaFile } from "./storage";
+import { assertUploadAllowed, releaseHeld } from "./storage-usage";
 import { parseStoredEdit, type StoredEdit } from "./video-edit-settings";
 
 /**
@@ -115,6 +117,8 @@ export async function createDraft(ownerId: string, input: NewDraft) {
   await purgeExpired(ownerId);
   const [{ n }] = await db.select({ n: count() }).from(videoDrafts).where(eq(videoDrafts.ownerId, ownerId));
   if (n >= draftsConfig().maxPerUser) throw new HttpError(409, "You have too many drafts. Publish or delete one first.");
+  // Storage quotas before the Tus signature: a draft's original counts against the creator's plan.
+  await assertUploadAllowed(ownerId, { kind: "draft", sizeBytes: input.sizeBytes });
 
   const config = requireBunnyStream();
   const client = new BunnyStreamClient(config);
@@ -129,6 +133,7 @@ export async function createDraft(ownerId: string, input: NewDraft) {
         fileName: input.fileName.slice(0, 255),
         contentType: input.contentType.slice(0, 100),
         sizeBytes: input.sizeBytes,
+        storageBytes: input.sizeBytes,
         edit,
         details: parseDetails(input.details),
         expiresAt: expiry(),
@@ -186,6 +191,8 @@ export async function deleteDraft(ownerId: string, draftId: string) {
   const [row] = await db.delete(videoDrafts).where(and(eq(videoDrafts.id, draftId), eq(videoDrafts.ownerId, ownerId))).returning();
   if (!row) throw new HttpError(404, "Draft not found");
   await removeFiles(row);
+  // The space it held is free: uploads held for want of it may go online.
+  await releaseHeld(ownerId).catch((error: unknown) => console.error("drafts: release of held uploads failed", error));
 }
 
 /** Webhook: a draft's original is processed (READY lets the list show its thumbnail). Null when not a draft. */

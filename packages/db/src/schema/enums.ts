@@ -20,6 +20,8 @@ export const videoStatusEnum = pgEnum("video_status", [
   "PROCESSING",
   "READY",
   "FAILED",
+  /** Encoded, but its real size put its creator (or the platform) over the storage quota: kept, private, until space is freed. */
+  "HELD",
 ]);
 
 export const contactStatusEnum = pgEnum("contact_status", [

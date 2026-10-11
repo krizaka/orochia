@@ -97,6 +97,9 @@ jobs:
       OROCHIA_OWNER_NAME: Orochia Operator
       OROCHIA_DEMO_MODE: "true"
       NEXT_PUBLIC_APP_URL: http://localhost:3000
+      # Shared by the app and the scenarios: a 2 GB plan so one file can exceed it, and a 1 s minimal sign-up time.
+      QUOTA_CREATOR_DEFAULT_GB: "2"
+      SIGNUP_MIN_FILL_SECONDS: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

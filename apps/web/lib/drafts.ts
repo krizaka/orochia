@@ -1,6 +1,9 @@
 "use client";
 
 import * as tus from "tus-js-client";
+
+import { type ApiErrorBody,apiErrorMessage } from "./api-errors";
+import { t } from "./i18n";
 import type { VideoEdit } from "./video-edit-settings";
 
 /**
@@ -45,8 +48,8 @@ const KIND = { video: "VIDEO", story: "STORY" } as const;
 
 async function api<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, { cache: "no-store", ...init });
-  const data = (await res.json().catch(() => ({}))) as T & { error?: string };
-  if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+  const data = (await res.json().catch(() => ({}))) as T & ApiErrorBody;
+  if (!res.ok) throw new Error(apiErrorMessage(data, t("settings.failed"), { retryAfter: res.headers.get("Retry-After") }));
   return data;
 }
 const json = (method: string, body: unknown): RequestInit => ({ method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });

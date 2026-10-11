@@ -13,6 +13,11 @@
 | `PAYOUT_ENCRYPTION_KEY` | ✓ | Encrypts payout account details at rest (≥ 32 characters, `openssl rand -hex 32`). Keep it: changing it makes saved payout accounts unreadable. |
 | `PAYMENTS_CREDITS_MODE=test` | dev / test | Adds a free "test top-up" to the wallet. Ignored on the public deployment (the one without `SEARCH_INDEXING=off`); credits are otherwise bought through a gateway. |
 | `DRAFT_RETENTION_DAYS` (30), `DRAFTS_MAX_PER_USER` (20) | — | How long an editor draft is kept, and how many an account may keep. |
+| `QUOTA_PLATFORM_GB`, `QUOTA_CREATOR_DEFAULT_GB`, `QUOTA_PLANS`… | recommended | Storage quotas — see *Storage quotas*. `STORAGE_LIMITS=off` is refused in production without `STORAGE_LIMITS_OFF_CONFIRMED=true`. |
+| `BUNNY_ACCOUNT_API_KEY` | — | Bunny account key: the reconciliation also records the library's and storage zone's billed totals. |
+| `RATE_LIMIT_STORE=postgres` | ✓ with 2+ instances | Rate-limit counters shared by every instance — see *Abuse defences*. |
+| `CLIENT_IP_HEADER=do-connecting-ip` | App Platform | The visitor's address as App Platform sets it (else the right-most `X-Forwarded-For` entry). |
+| `BOT_CHALLENGE=required`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` | production | Cloudflare Turnstile on sign-up and password reset — see *Abuse defences*. |
 | `STORAGE_DRIVER=bunny`, `BUNNY_STORAGE_API_KEY`, `BUNNY_STORAGE_ZONE`, `BUNNY_PULL_ZONE_HOSTNAME` | ✓ | Avatars, thumbnails, 2257 documents (container disks are ephemeral). |
 | `METRICS_AUTH_TOKEN` | ✓ | Bearer token for `/api/metrics`. |
 | `DATABASE_CA_CERT` | managed DB | CA of a managed PostgreSQL (`${<db>.CA_CERT}` on App Platform): TLS verified against it. |
@@ -140,6 +145,57 @@ than allowed is marked FAILED and deleted at Bunny — a client that lies about 
 A draft keeps the **original** clip at Bunny (drafts collection), the edit settings and the form in `video_drafts`,
 and the music under `private/audio/` in storage. Saving it again only updates the settings. It is removed with its
 files when published, deleted, or after `DRAFT_RETENTION_DAYS`.
+
+### Storage quotas
+
+So that Bunny's bill never surprises anyone, every upload must fit two budgets **before it is signed**: the platform's
+cap and the creator's plan (rules, codes and the Bunny study: [MEDIA_PIPELINE.md §6](MEDIA_PIPELINE.md#6-storage-quotas)).
+The application counts the bytes and minutes it keeps (declared at the session, Bunny's real size at the end of
+encoding) and reconciles them with Bunny every 6 hours, on `npm run quota:reconcile`, or from the admin API.
+
+| Variable | dev (recommended) | production (recommended) | Meaning |
+| :--- | :--- | :--- | :--- |
+| `STORAGE_LIMITS` | `on` | `on` | `off` only as a written decision, with `STORAGE_LIMITS_OFF_CONFIRMED=true` in production |
+| `QUOTA_PLATFORM_GB` | `50` | `500` (raise with the budget: ~$5–15 / month per 500 GB of Stream storage, depending on replication) | Past it, new uploads are refused (`PLATFORM_STORAGE_FULL`) |
+| `QUOTA_PLATFORM_MINUTES` | `unlimited` | `unlimited` | Optional cap on video time |
+| `QUOTA_ALERT_THRESHOLDS` | `80,95` | `80,95` | Operators alerted once per threshold (bell, push, e-mail) |
+| `QUOTA_CREATOR_DEFAULT_GB` / `_MINUTES` | `5` / `600` | `20` / `600` | A creator without a plan |
+| `QUOTA_PLANS` | `pro=100GB/3000min,unlimited=unlimited` | same, plus any commercial plan | Plans an operator gives (`PATCH /api/admin/storage/<userId>`) |
+| `QUOTA_ADMIN_PLAN` | `unlimited` | `unlimited` | The owner's plan |
+| `QUOTA_UPLOADS_PER_DAY` / `QUOTA_CONCURRENT_UPLOADS` | `50` / `3` | `50` / `3` | Sessions per 24 h / in progress |
+| `QUOTA_IMAGE_UPLOADS_PER_DAY` | `100` | `100` | Pictures per account and day |
+| `QUOTA_RECONCILE_INTERVAL_MINUTES` | `360` | `360` | `0` turns the automatic reconciliation off |
+
+Give each environment **its own Stream library**: a library shared by two environments makes each see the other's
+videos as orphans (counted in its usage). A video **held** for want of space (status HELD) is never deleted: it goes
+online when its creator frees space or gets a larger plan.
+
+### Abuse defences
+
+- **Rate limits** (`lib/rate-limit.ts`): per account **and** per IP on every action that can be abused (sign-up, sign-in,
+  password reset, uploads, tips, unlocks, bids, messages, reports, search, explore…), answered `429` with `Retry-After`.
+  `RATE_LIMIT_STORE=memory` (default) counts per instance — fine for **one** instance only; set
+  `RATE_LIMIT_STORE=postgres` (table `rate_limit_buckets`, swept every 10 minutes) **before running two instances**.
+  A Redis / Valkey store implements the same interface when the load calls for it (issue #40).
+- **The visitor's address** (`lib/client-ip.ts`): the left end of `X-Forwarded-For` is written by the client, so it is
+  never trusted. On App Platform set `CLIENT_IP_HEADER=do-connecting-ip`; behind one other proxy (Caddy) the default
+  `TRUSTED_PROXY_HOPS=1` reads the address that proxy appended.
+- **Bot challenge — Cloudflare Turnstile.** Cloudflare dashboard → Turnstile → *Add widget*: domains `orochia.com`
+  (and the dev host), **Widget mode: Invisible**. Copy the site key to `TURNSTILE_SITE_KEY` and the secret to
+  `TURNSTILE_SECRET_KEY` (SECRET), then set `BOT_CHALLENGE=required` in production (a missing key then refuses sign-up
+  with 503 instead of running unprotected). Sign-up and password reset **fail closed** when Cloudflare is unreachable
+  (503 `CHALLENGE_UNAVAILABLE`); content reports are never challenged (a report of abuse is never lost); reading is never
+  challenged.
+- **Sign-up** also needs a form token at least `SIGNUP_MIN_FILL_SECONDS` (3) old, bound to a device cookie, refuses a
+  filled honeypot, disposable e-mail domains (`lib/abuse/disposable-email-domains.ts`, `BLOCKED_EMAIL_DOMAINS`,
+  `ALLOWED_EMAIL_DOMAINS`) and scripted clients, and is limited to 5 per IP an hour and 3 per device a day.
+- **Sign-in**: 5 free failures per identifier an hour, then a lock-out of 30 s doubling to 15 min (`LOGIN_LOCKED`), and
+  50 attempts per IP per 15 min.
+- **Playback**: signed URLs live 300 s; `BUNNY_TOKEN_BIND_IP=on` also binds them to the viewer's IP — leave it off until
+  checked on real traffic (IPv4/IPv6 and mobile networks can change the address mid-play).
+- **Headers**: a Content-Security-Policy (no plugins, no framing, `base-uri`/`form-action` locked, scripts from this
+  origin, Turnstile and the ffmpeg core CDN only), HSTS, `nosniff`, `X-Frame-Options: DENY`, COOP `same-origin`,
+  referrer and permissions policies (`apps/web/next.config.mjs`).
 
 ### E-mail (Resend, mg.orochia.com)
 

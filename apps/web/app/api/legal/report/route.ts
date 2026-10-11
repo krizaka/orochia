@@ -1,12 +1,13 @@
+import { complianceReports, db, stories, videos } from "@orochia/db";
+import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { db, complianceReports, stories, videos } from "@orochia/db";
-import { eq } from "drizzle-orm";
+
 import { getCurrentUser } from "@/lib/auth";
-import { checkRateLimit } from "@/lib/rate-limit";
-import { errorResponse, jsonError } from "@/lib/http";
-import { sendTemplate } from "@/lib/mail";
 import { appUrl } from "@/lib/env";
+import { errorResponse } from "@/lib/http";
+import { sendTemplate } from "@/lib/mail";
+import { limitAction } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -27,9 +28,10 @@ const ReportSchema = z.object({
  */
 export async function POST(req: NextRequest) {
   try {
-    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-    const limit = await checkRateLimit(`report:${ip}`, 20, 60 * 60);
-    if (!limit.success) return jsonError(429, "Too many reports. Try again later.");
+    // Limited per IP and per account — but never behind a bot challenge: a report of abuse must not be lost to a
+    // widget that did not load or a third party's outage (persisted first, triaged by people).
+    const reporterSession = await getCurrentUser();
+    await limitAction("report", req, reporterSession?.id, { perIp: [20, 60 * 60], perUser: [30, 24 * 60 * 60] }, "Too many reports. Try again later.");
 
     const input = ReportSchema.parse(await req.json());
     const videoId = z.string().uuid().safeParse(input.videoId);
@@ -37,7 +39,7 @@ export async function POST(req: NextRequest) {
       ? await db.select({ id: videos.id }).from(videos).where(eq(videos.id, videoId.data)).limit(1)
       : [];
     const [story] = input.storyId ? await db.select({ id: stories.id }).from(stories).where(eq(stories.id, input.storyId)).limit(1) : [];
-    const reporter = await getCurrentUser();
+    const reporter = reporterSession;
 
     const [report] = await db
       .insert(complianceReports)

@@ -25,6 +25,8 @@ export const videoDrafts = pgTable(
     contentType: varchar("content_type", { length: 100 }).notNull(),
     sizeBytes: bigint("size_bytes", { mode: "number" }).notNull(),
     durationSeconds: integer("duration_seconds").default(0).notNull(),
+    /** Bytes held at Bunny for the original (size_bytes until encoded, then Bunny's storageSize). */
+    storageBytes: bigint("storage_bytes", { mode: "number" }).default(0).notNull(),
     /** Editor settings (validated by parseStoredEdit). */
     edit: jsonb("edit").notNull(),
     /** What the upload form held: title, description, caption, audience… */

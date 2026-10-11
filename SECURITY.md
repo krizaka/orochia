@@ -18,6 +18,14 @@ Content that may involve minors or non-consensual material must be reported thro
   for every play.
 - **Payments**: payment intents are recorded server-side; access is granted only on a gateway webhook whose
   signature is verified in constant time; settlement is idempotent.
-- **Uploads**: authenticated, type- and size-restricted, server-generated names; videos go directly to Bunny.
+- **Uploads**: authenticated, type- and size-restricted, server-generated names; videos go directly to Bunny. Every
+  upload must fit the storage quotas (the creator's plan and the platform's cap) before it is signed; a file whose real
+  size exceeds them after encoding is held, never published (docs/MEDIA_PIPELINE.md §6).
+- **Abuse**: rate limits per account and per IP with `Retry-After`, counted on the address the trusted proxy saw (never
+  the client's `X-Forwarded-For`); sign-up behind a signed form token with a minimal fill time, a honeypot, a
+  disposable-domain block list, a scripted-client refusal and Cloudflare Turnstile (fail closed); sign-in with
+  progressive back-off and temporary lock-out per identifier. Multi-instance deployments use `RATE_LIMIT_STORE=postgres`.
 - **Configuration**: production refuses to run on missing secrets (503) and has no demo mode.
-- **HTTP**: HSTS, `nosniff`, `X-Frame-Options: DENY`, strict referrer and permissions policies.
+- **HTTP**: Content-Security-Policy (`object-src 'none'`, `frame-ancestors 'none'`, `base-uri 'self'`, scripts from
+  this origin, Turnstile and the ffmpeg core CDN), HSTS, `nosniff`, `X-Frame-Options: DENY`, COOP `same-origin`, strict
+  referrer and permissions policies. Scripts still allow `'unsafe-inline'` (Next.js bootstrap without nonces).

@@ -1,14 +1,17 @@
-import React from "react";
+import { db, users } from "@orochia/db";
+import { platformFeePercent } from "@orochia/payments";
+import { eq } from "drizzle-orm";
+import { ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ShieldCheck } from "lucide-react";
-import { db, users } from "@orochia/db";
-import { eq } from "drizzle-orm";
-import { platformFeePercent } from "@orochia/payments";
-import { getCurrentUser } from "@/lib/auth";
-import { UploadDropzone } from "@/components/UploadDropzone";
+import React from "react";
+
 import { BecomeCreatorCard } from "@/components/BecomeCreatorCard";
+import { StorageMeter } from "@/components/dashboard/StorageMeter";
+import { UploadDropzone } from "@/components/UploadDropzone";
+import { getCurrentUser } from "@/lib/auth";
 import { t } from "@/lib/i18n";
+import { storageOverview } from "@/lib/storage-usage";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Upload a video" };
@@ -36,8 +39,11 @@ export default async function CreatorUploadPage() {
     );
   }
 
+  // The space left, before choosing a file (a configuration error leaves the gauge to the client, which hides it).
+  const storage = await storageOverview(user.id).catch(() => null);
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+      {storage && <StorageMeter initial={storage} compact className="mb-6" />}
       <UploadDropzone platformFeePercent={platformFeePercent()} />
     </div>
   );

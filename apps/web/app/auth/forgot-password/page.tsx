@@ -1,11 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
 import { KeyRound, Mail } from "lucide-react";
-import { Button, Input } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import Link from "next/link";
+import React, { useState } from "react";
+
+import { BotChallenge, useBotChallenge } from "@/components/BotChallenge";
 import { Rich } from "@/components/Rich";
+import { Button, Input } from "@/components/ui";
+import { responseErrorMessage } from "@/lib/api-errors";
+import { t } from "@/lib/i18n";
 
 /** Asks for a password-reset link. The answer never says whether the address has an account. */
 export default function ForgotPasswordPage() {
@@ -13,18 +16,23 @@ export default function ForgotPasswordPage() {
   const [state, setState] = useState<"idle" | "sending" | "sent">("idle");
   const [error, setError] = useState<string | null>(null);
   const [devLink, setDevLink] = useState<string | null>(null);
+  const challenge = useBotChallenge();
+  const [challengeToken, setChallengeToken] = useState<string | null>(null);
+  const [challengeKey, setChallengeKey] = useState(0);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setState("sending");
     setError(null);
-    const res = await fetch("/api/auth/forgot-password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) });
-    const data = (await res.json().catch(() => ({}))) as { error?: string; devResetUrl?: string };
+    const res = await fetch("/api/auth/forgot-password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, challengeToken: challengeToken ?? undefined }) });
     if (!res.ok) {
-      setError(data.error ?? t("auth.forgot.failed"));
+      setError(await responseErrorMessage(res, t("auth.forgot.failed")));
       setState("idle");
+      setChallengeToken(null);
+      setChallengeKey((k) => k + 1);
       return;
     }
+    const data = (await res.json().catch(() => ({}))) as { devResetUrl?: string };
     setDevLink(data.devResetUrl ?? null);
     setState("sent");
   };
@@ -62,6 +70,7 @@ export default function ForgotPasswordPage() {
               </div>
             </label>
             {error && <p role="alert" className="text-xs text-danger">{error}</p>}
+            <BotChallenge key={challengeKey} challenge={challenge} action="password_reset" onToken={setChallengeToken} />
             <Button type="submit" variant="primary" size="lg" shape="rounded" loading={state === "sending"} className="w-full rounded-xl font-bold">
               {t("auth.forgot.submit")}
             </Button>

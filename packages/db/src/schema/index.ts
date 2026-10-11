@@ -35,6 +35,7 @@ export * from "./auctions";
 export * from "./challenges";
 export * from "./push";
 export * from "./search";
+export * from "./platform-guard";
 
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({

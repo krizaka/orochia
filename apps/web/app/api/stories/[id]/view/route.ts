@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+
 import { getCurrentUser } from "@/lib/auth";
-import { recordStoryView } from "@/lib/stories";
+import { clientIp } from "@/lib/client-ip";
 import { errorResponse, jsonError } from "@/lib/http";
+import { recordStoryView } from "@/lib/stories";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +15,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
     if (!id.success) return jsonError(404, "Story not found");
     const viewer = await getCurrentUser();
     const counted = await recordStoryView(id.data, viewer?.id ?? null, {
-      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null,
+      ip: clientIp(req.headers),
       userAgent: req.headers.get("user-agent"),
     });
     return NextResponse.json({ success: true, counted });

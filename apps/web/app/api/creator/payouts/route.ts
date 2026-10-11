@@ -7,7 +7,7 @@ import { z } from "zod";
 import { requireUserWithRole } from "@/lib/auth";
 import { errorResponse, jsonError } from "@/lib/http";
 import { payoutDestinationOf } from "@/lib/payout-account";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -46,8 +46,7 @@ const PayoutSchema = z.object({ amountCents: z.number().int().min(PAYOUT_MINIMUM
 export async function POST(req: NextRequest) {
   try {
     const user = await requireUserWithRole(["CREATOR", "ADMIN"]);
-    const limit = await checkRateLimit(`payout:${user.id}`, 5, 60 * 60);
-    if (!limit.success) return jsonError(429, "Too many payout requests. Try again later.");
+    await enforceRateLimit(`payout:${user.id}`, 5, 60 * 60, "Too many payout requests. Try again later.");
     const input = PayoutSchema.parse(await req.json());
     try {
       const destination = await payoutDestinationOf(user.id);

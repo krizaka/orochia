@@ -148,7 +148,7 @@ export function ProfileStoriesRow() {
               )}
               {s.state !== "ready" && (
                 <span className="absolute inset-x-1 bottom-1 rounded-full bg-scrim px-1 py-0.5 text-center text-[9px] font-semibold text-fg-on-media">
-                  {t(s.state === "processing" ? "stories.processing" : "stories.failed")}
+                  {t(s.state === "processing" ? "stories.processing" : s.state === "held" ? "stories.held" : "stories.failed")}
                 </span>
               )}
             </button>

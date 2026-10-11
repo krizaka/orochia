@@ -1,12 +1,13 @@
 import { db, users,videos } from "@orochia/db";
 import { BunnyStreamClient, CreateUploadSessionSchema } from "@orochia/media";
 import { eq } from "drizzle-orm";
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 
 import { getCurrentUser } from "@/lib/auth";
 import { requireBunnyStream } from "@/lib/env";
 import { errorResponse } from "@/lib/http";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { limitAction } from "@/lib/rate-limit";
+import { assertUploadAllowed, checkPlatformAlerts } from "@/lib/storage-usage";
 import { normalizeTags } from "@/lib/tags";
 
 export const dynamic = "force-dynamic";
@@ -31,14 +32,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 2. Rate limit check (e.g., max 10 upload sessions per hour)
-    const rateLimit = await checkRateLimit(`upload_session:${user.id}`, 10, 3600);
-    if (!rateLimit.success) {
-      return NextResponse.json(
-        { error: "Too many upload attempts. Please try again later." },
-        { status: 429 }
-      );
-    }
+    // 2. Rate limits, per account and per IP (Retry-After on refusal)
+    await limitAction("upload-session", req, user.id, { perUser: [10, 3600], perIp: [30, 3600] }, "Too many upload attempts. Please try again later.");
 
     // 3. Validate request payload with Zod
     const body = await req.json();
@@ -51,6 +46,10 @@ export async function POST(req: NextRequest) {
     }
 
     const input = parseResult.data;
+
+    // 3b. Storage quotas, BEFORE anything is signed: the declared size (and length) against the per-file maximum,
+    // the creator's plan, the platform's cap and the daily / concurrent counts (lib/storage-usage.ts).
+    await assertUploadAllowed(user.id, { kind: "video", sizeBytes: input.sizeBytes, durationSeconds: input.durationSeconds });
 
     // 4. Bunny Stream client (credentials are mandatory in production)
     const bunnyClient = new BunnyStreamClient(requireBunnyStream());
@@ -68,6 +67,8 @@ export async function POST(req: NextRequest) {
         description: input.description,
         visibility: input.visibility,
         status: "PENDING_UPLOAD",
+        // The declared size until Bunny reports the real one (webhook, reconciliation).
+        storageBytes: input.sizeBytes,
         minTipAmountCents: input.minTipAmountCents,
         // One spelling per idea (lower case, no accent, synonyms folded, no duplicate): /explore?tag= finds it.
         tags: normalizeTags(input.tags),
@@ -76,6 +77,7 @@ export async function POST(req: NextRequest) {
       })
       .returning();
 
+    after(() => checkPlatformAlerts());
     return NextResponse.json({
       success: true,
       videoId: videoRecord.id,

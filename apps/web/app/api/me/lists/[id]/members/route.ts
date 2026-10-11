@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireUserWithRole } from "@/lib/auth";
+
 import { addToList, listPeople, removeFromList } from "@/lib/audiences";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { requireUserWithRole } from "@/lib/auth";
 import { errorResponse, jsonError } from "@/lib/http";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -31,8 +32,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
   try {
     const { user, id } = await context(props.params);
     if (!id) return jsonError(404, "List not found");
-    const limit = await checkRateLimit(`list-member:${user.id}`, 200, 60 * 60);
-    if (!limit.success) return jsonError(429, "Too many requests. Try again later.");
+    await enforceRateLimit(`list-member:${user.id}`, 200, 60 * 60, "Too many requests. Try again later.");
     const { username } = Add.parse(await req.json());
     return NextResponse.json({ success: true, member: await addToList(user.id, id, username) }, { status: 201 });
   } catch (error) {

@@ -1,10 +1,12 @@
+import { conversations,db } from "@orochia/db";
+import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { db, conversations } from "@orochia/db";
-import { eq } from "drizzle-orm";
+
 import { requireUserWithRole } from "@/lib/auth";
-import { getConversationMessages, sendMessage } from "@/lib/messaging";
 import { errorResponse, HttpError } from "@/lib/http";
+import { getConversationMessages, sendMessage } from "@/lib/messaging";
+import { limitAction } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +35,9 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 export async function POST(req: NextRequest, { params }: RouteParams) {
   try {
     const user = await requireUserWithRole(["ADMIN", "CREATOR", "MEMBER"]);
+    // Bursts (a message a second for a minute) and volume (per hour), per account and per IP.
+    await limitAction("message-burst", req, user.id, { perUser: [20, 60] });
+    await limitAction("message", req, user.id, { perUser: [300, 60 * 60], perIp: [600, 60 * 60] }, "Too many messages. Slow down.");
     const { id: conversationId } = await params;
     const body = SendMessageSchema.parse(await req.json());
 

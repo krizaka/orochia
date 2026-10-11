@@ -1,9 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 import { db, users, verifyPassword } from "@orochia/db";
 import { eq, or } from "drizzle-orm";
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
+import { assertLoginAllowed, clearLoginFailures, recordLoginFailure } from "@/lib/abuse/login-throttle";
 import { SESSION_TTL_SECONDS, setSessionCookie, signSessionToken } from "@/lib/auth";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { clientIp } from "@/lib/client-ip";
 import { errorResponse, jsonError } from "@/lib/http";
 
 export const dynamic = "force-dynamic";
@@ -21,8 +23,8 @@ export async function POST(req: NextRequest) {
     const { identifier, password, client } = LoginSchema.parse(await req.json());
     const key = identifier.toLowerCase();
 
-    const limit = await checkRateLimit(`login:${key}`, 10, 15 * 60);
-    if (!limit.success) return jsonError(429, "Too many attempts. Try again later.");
+    // Back-off then a temporary lock-out per identifier, and a ceiling per IP (lib/abuse/login-throttle.ts).
+    await assertLoginAllowed(key, clientIp(req.headers) ?? "unknown");
 
     const [account] = await db
       .select()
@@ -31,8 +33,10 @@ export async function POST(req: NextRequest) {
       .limit(1);
 
     if (!account || !verifyPassword(password, account.passwordHash)) {
+      await recordLoginFailure(key);
       return jsonError(401, "Invalid credentials");
     }
+    await clearLoginFailures(key);
     if (account.suspendedAt) return jsonError(403, "This account is suspended. Contact the platform operator.");
 
     const session = {

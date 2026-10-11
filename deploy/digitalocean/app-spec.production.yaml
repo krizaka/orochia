@@ -161,6 +161,56 @@ services:
       - key: STRIPE_WEBHOOK_SECRET
         scope: RUN_TIME
         type: SECRET
+      # Storage quotas (docs/DEPLOYMENT.md, "Storage quotas"): the platform's cap, a creator's default plan, named plans.
+      - key: STORAGE_LIMITS
+        scope: RUN_TIME
+        value: "on"
+      - key: QUOTA_PLATFORM_GB
+        scope: RUN_TIME
+        value: "500"
+      - key: QUOTA_ALERT_THRESHOLDS
+        scope: RUN_TIME
+        value: "80,95"
+      - key: QUOTA_CREATOR_DEFAULT_GB
+        scope: RUN_TIME
+        value: "20"
+      - key: QUOTA_CREATOR_DEFAULT_MINUTES
+        scope: RUN_TIME
+        value: "600"
+      - key: QUOTA_PLANS
+        scope: RUN_TIME
+        value: "pro=100GB/3000min,unlimited=unlimited"
+      - key: QUOTA_ADMIN_PLAN
+        scope: RUN_TIME
+        value: "unlimited"
+      - key: QUOTA_UPLOADS_PER_DAY
+        scope: RUN_TIME
+        value: "50"
+      - key: QUOTA_CONCURRENT_UPLOADS
+        scope: RUN_TIME
+        value: "3"
+      - key: QUOTA_RECONCILE_INTERVAL_MINUTES
+        scope: RUN_TIME
+        value: "360"
+      - key: BUNNY_ACCOUNT_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      # Abuse defences (SECURITY.md): shared rate limits, the client address App Platform sets, the bot challenge.
+      - key: RATE_LIMIT_STORE
+        scope: RUN_TIME
+        value: "postgres"
+      - key: CLIENT_IP_HEADER
+        scope: RUN_TIME
+        value: "do-connecting-ip"
+      - key: BOT_CHALLENGE
+        scope: RUN_TIME
+        value: "required"
+      - key: TURNSTILE_SITE_KEY
+        scope: RUN_TIME
+        type: GENERAL
+      - key: TURNSTILE_SECRET_KEY
+        scope: RUN_TIME
+        type: SECRET
     # A payment gateway is offered only when all of its variables are set (packages/payments factory).
 
 jobs:

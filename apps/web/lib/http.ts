@@ -1,20 +1,26 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
+
 import { ConfigurationError } from "./env";
 
-/** An error that carries the HTTP status it should be answered with. */
+/**
+ * An error that carries the HTTP status it should be answered with — and, for refusals a client acts on (quotas,
+ * rate limits, anti-bot), a stable `code` and details in `extra`, and headers such as `Retry-After`.
+ */
 export class HttpError extends Error {
   constructor(
     readonly status: number,
     message: string,
+    readonly extra: Record<string, unknown> = {},
+    readonly headers: Record<string, string> = {},
   ) {
     super(message);
     this.name = "HttpError";
   }
 }
 
-export function jsonError(status: number, error: string, extra: Record<string, unknown> = {}) {
-  return NextResponse.json({ success: false, error, ...extra }, { status });
+export function jsonError(status: number, error: string, extra: Record<string, unknown> = {}, headers: Record<string, string> = {}) {
+  return NextResponse.json({ success: false, error, ...extra }, { status, headers });
 }
 
 /**
@@ -22,7 +28,7 @@ export function jsonError(status: number, error: string, extra: Record<string, u
  * status and message, a validation error answers 400, everything else is a generic 500/503.
  */
 export function errorResponse(error: unknown, context: string) {
-  if (error instanceof HttpError) return jsonError(error.status, error.message);
+  if (error instanceof HttpError) return jsonError(error.status, error.message, error.extra, error.headers);
   if (error instanceof ZodError) return jsonError(400, "Invalid payload", { details: error.flatten() });
   if (error instanceof SyntaxError) return jsonError(400, "Malformed JSON body");
   if (error instanceof ConfigurationError) {
