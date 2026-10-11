@@ -42,7 +42,9 @@
 | `npm run dev` / `build` / `start` | Web app on :3000 |
 | `npm run check` | lint (incl. i18n and the UI debt ratchet) + type-check + unit tests + docs freshness — run before every push |
 | `npm run screenshots` | Dark and light captures of the main pages from a running app (`docs/screenshots/web`, git-ignored — publish them with krizaka-com's `scripts/pr-assets.mjs`, §11) |
-| `npm run record:tour [-- prepare]` | The krizaka.com video tour, recorded on a running production build as the seed's Alex and Elena (`scripts/record-tour.mjs`) |
+| `npm run demo:seed` | The official demo (Elena Marlow, a creator; Alex Carter, a fan — `scripts/demo/cast.json`), rebuilt from scratch in its own local database `orochia_demo`, never the shared one (`scripts/demo.mjs`) |
+| `npm run demo:start` | A production build on the demo database, on :3100 — no mail, no push, test top-ups |
+| `npm run record:tour [-- <clip>…]` | The krizaka.com video tour, recorded on `demo:start` as Elena and Alex (`scripts/record-tour.mjs`) |
 | `npm run test:e2e` | Feature scenarios over HTTP against a running app on a freshly reset database |
 | `npm run db:up` / `db:down` | Start / stop PostgreSQL |
 | `npm run db:generate` | SQL migration from a schema change (review it before committing) |

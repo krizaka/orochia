@@ -1,0 +1,464 @@
+{
+  "$comment": "The official demo of Orochia (npm run demo:seed, npm run record:tour). Invented people with illustrated avatars (apps/web/public/defaults); their videos and stories play the licensed showcase clips (apps/web/public/showcase, Mixkit — see public/CREDITS.md), mapped by Bunny id in the recordings. E-mails are on example.com (RFC 2606): nothing can reach a real inbox.",
+  "password": "orochia-demo",
+  "people": [
+    {
+      "key": "elena",
+      "email": "elena@example.com",
+      "username": "elenamarlow",
+      "role": "CREATOR",
+      "displayName": "Elena Marlow",
+      "bio": "Singer-songwriter and director. I write the songs, then film them at night — a new music video every month.",
+      "avatar": "avatar-01",
+      "banner": "banner-01",
+      "minTipCents": 500,
+      "website": "https://example.com"
+    },
+    {
+      "key": "mia",
+      "email": "mia@example.com",
+      "username": "miacalder",
+      "role": "CREATOR",
+      "displayName": "Mia Calder",
+      "bio": "Live loops, one synth, no second take.",
+      "avatar": "avatar-03",
+      "banner": "banner-03",
+      "minTipCents": 300
+    },
+    {
+      "key": "theo",
+      "email": "theo@example.com",
+      "username": "theolang",
+      "role": "CREATOR",
+      "displayName": "Theo Lang",
+      "bio": "Street choreographer. I film the city as a stage.",
+      "avatar": "avatar-05",
+      "banner": "banner-04",
+      "minTipCents": 300
+    },
+    {
+      "key": "alex",
+      "email": "alex@example.com",
+      "username": "alexcarter",
+      "role": "MEMBER",
+      "displayName": "Alex Carter",
+      "bio": "Late-night listener. I back the artists I play on repeat.",
+      "avatar": "avatar-06"
+    },
+    {
+      "key": "sam",
+      "email": "sam@example.com",
+      "username": "samreyes",
+      "role": "MEMBER",
+      "displayName": "Sam Reyes",
+      "bio": "Front row, every time.",
+      "avatar": "avatar-07"
+    },
+    {
+      "key": "lina",
+      "email": "lina@example.com",
+      "username": "linapark",
+      "role": "MEMBER",
+      "displayName": "Lina Park",
+      "bio": "Collecting music videos since forever.",
+      "avatar": "avatar-02"
+    },
+    {
+      "key": "omar",
+      "email": "omar@example.com",
+      "username": "omardiaz",
+      "role": "MEMBER",
+      "displayName": "Omar Diaz",
+      "bio": ""
+    },
+    {
+      "key": "jules",
+      "email": "jules@example.com",
+      "username": "julesmartin",
+      "role": "MEMBER",
+      "displayName": "Jules Martin",
+      "bio": ""
+    }
+  ],
+  "videos": [
+    {
+      "key": "neonRain",
+      "bunnyId": "0de10000-0000-4000-8000-000000000001",
+      "creator": "elena",
+      "clip": "feed-2",
+      "title": "Neon Rain — official music video",
+      "description": "The first single of the new record, shot in one night between two showers.",
+      "visibility": "PUBLIC",
+      "duration": 214,
+      "views": 12480,
+      "daysAgo": 41,
+      "tags": [
+        "music-video",
+        "neon",
+        "night"
+      ]
+    },
+    {
+      "key": "glassHearts",
+      "bunnyId": "0de10000-0000-4000-8000-000000000002",
+      "creator": "elena",
+      "clip": "feed-1",
+      "title": "Glass Hearts — live at the warehouse",
+      "description": "The whole set, from the second row, with the crowd singing the last chorus.",
+      "visibility": "PUBLIC",
+      "duration": 1840,
+      "views": 8320,
+      "daysAgo": 26,
+      "tags": [
+        "live",
+        "concert"
+      ]
+    },
+    {
+      "key": "afterglow",
+      "bunnyId": "0de10000-0000-4000-8000-000000000003",
+      "creator": "elena",
+      "clip": "story-1",
+      "title": "Afterglow — a dance film",
+      "description": "Four minutes, one dancer, one smoke machine.",
+      "visibility": "PUBLIC",
+      "duration": 252,
+      "views": 5120,
+      "daysAgo": 12,
+      "tags": [
+        "dance",
+        "music-video"
+      ]
+    },
+    {
+      "key": "acoustic",
+      "bunnyId": "0de10000-0000-4000-8000-000000000004",
+      "creator": "elena",
+      "clip": "unlock",
+      "title": "Night Drive — acoustic session, one take",
+      "description": "The song as it was written: one microphone, one take, with Theo on the second voice.",
+      "visibility": "TIPPED_UNLOCKED",
+      "minTipCents": 800,
+      "duration": 368,
+      "views": 2210,
+      "daysAgo": 8,
+      "tags": [
+        "acoustic",
+        "session"
+      ]
+    },
+    {
+      "key": "diaries",
+      "bunnyId": "0de10000-0000-4000-8000-000000000005",
+      "creator": "elena",
+      "clip": "story-3",
+      "title": "Studio diaries — writing the chorus",
+      "description": "How Neon Rain found its chorus, for the followers I approved.",
+      "visibility": "APPROVED_FOLLOWERS_ONLY",
+      "duration": 612,
+      "views": 940,
+      "daysAgo": 5,
+      "tags": [
+        "behind-the-scenes",
+        "studio"
+      ]
+    },
+    {
+      "key": "directorsCut",
+      "bunnyId": "0de10000-0000-4000-8000-000000000006",
+      "creator": "elena",
+      "clip": "auction",
+      "title": "Neon Rain — the director's cut",
+      "description": "The long version nobody has seen: twelve minutes, the takes I kept for myself.",
+      "visibility": "PUBLIC",
+      "duration": 724,
+      "views": 0,
+      "daysAgo": 2,
+      "tags": [
+        "directors-cut",
+        "exclusive"
+      ]
+    },
+    {
+      "key": "greenLight",
+      "bunnyId": "0de10000-0000-4000-8000-000000000007",
+      "creator": "mia",
+      "clip": "challenge",
+      "title": "Green Light — live loop session",
+      "description": "Built from nothing in nine minutes.",
+      "visibility": "PUBLIC",
+      "duration": 545,
+      "views": 6730,
+      "daysAgo": 19,
+      "tags": [
+        "live",
+        "electronic"
+      ]
+    },
+    {
+      "key": "cityWalk",
+      "bunnyId": "0de10000-0000-4000-8000-000000000008",
+      "creator": "theo",
+      "clip": "story-2",
+      "title": "City Walk — street choreography",
+      "description": "One avenue, one track, the morning before the city wakes up.",
+      "visibility": "PUBLIC",
+      "duration": 188,
+      "views": 4410,
+      "daysAgo": 15,
+      "tags": [
+        "dance",
+        "street"
+      ]
+    }
+  ],
+  "stories": [
+    {
+      "key": "elenaTonight",
+      "bunnyId": "0de10000-0000-4000-8000-0000000000a1",
+      "creator": "elena",
+      "clip": "story-3",
+      "caption": "Shooting part two of Neon Rain tonight. Back the episode if you want it in the rain.",
+      "hoursAgo": 3,
+      "views": [
+        "alex",
+        "sam",
+        "lina",
+        "omar"
+      ],
+      "likes": [
+        "sam",
+        "lina"
+      ],
+      "tips": [
+        {
+          "from": "lina",
+          "cents": 500
+        }
+      ]
+    },
+    {
+      "key": "miaLoop",
+      "bunnyId": "0de10000-0000-4000-8000-0000000000a2",
+      "creator": "mia",
+      "clip": "story-1",
+      "caption": "New loop, half finished.",
+      "hoursAgo": 6,
+      "views": [
+        "alex"
+      ],
+      "likes": [],
+      "tips": []
+    },
+    {
+      "key": "theoMorning",
+      "bunnyId": "0de10000-0000-4000-8000-0000000000a3",
+      "creator": "theo",
+      "clip": "story-2",
+      "caption": "6 a.m., empty avenue.",
+      "hoursAgo": 9,
+      "views": [],
+      "likes": [],
+      "tips": []
+    }
+  ],
+  "follows": [
+    [
+      "alex",
+      "elena"
+    ],
+    [
+      "alex",
+      "mia"
+    ],
+    [
+      "sam",
+      "elena"
+    ],
+    [
+      "lina",
+      "elena"
+    ],
+    [
+      "omar",
+      "elena"
+    ],
+    [
+      "jules",
+      "elena"
+    ],
+    [
+      "sam",
+      "theo"
+    ],
+    [
+      "lina",
+      "mia"
+    ]
+  ],
+  "payments": [
+    {
+      "from": "sam",
+      "video": "neonRain",
+      "cents": 2000,
+      "daysAgo": 112,
+      "kind": "tip"
+    },
+    {
+      "from": "lina",
+      "video": "neonRain",
+      "cents": 4000,
+      "daysAgo": 98,
+      "kind": "tip"
+    },
+    {
+      "from": "omar",
+      "video": "glassHearts",
+      "cents": 3000,
+      "daysAgo": 84,
+      "kind": "tip"
+    },
+    {
+      "from": "jules",
+      "video": "neonRain",
+      "cents": 1000,
+      "daysAgo": 71,
+      "kind": "tip"
+    },
+    {
+      "from": "sam",
+      "video": "glassHearts",
+      "cents": 5000,
+      "daysAgo": 63,
+      "kind": "tip"
+    },
+    {
+      "from": "lina",
+      "video": "afterglow",
+      "cents": 2000,
+      "daysAgo": 47,
+      "kind": "tip"
+    },
+    {
+      "from": "omar",
+      "video": "neonRain",
+      "cents": 10000,
+      "daysAgo": 38,
+      "kind": "tip"
+    },
+    {
+      "from": "jules",
+      "video": "glassHearts",
+      "cents": 2000,
+      "daysAgo": 29,
+      "kind": "tip"
+    },
+    {
+      "from": "sam",
+      "video": "afterglow",
+      "cents": 4000,
+      "daysAgo": 17,
+      "kind": "tip"
+    },
+    {
+      "from": "lina",
+      "video": "acoustic",
+      "cents": 800,
+      "daysAgo": 7,
+      "kind": "unlock"
+    },
+    {
+      "from": "omar",
+      "video": "acoustic",
+      "cents": 1200,
+      "daysAgo": 6,
+      "kind": "unlock"
+    },
+    {
+      "from": "jules",
+      "video": "acoustic",
+      "cents": 800,
+      "daysAgo": 4,
+      "kind": "unlock"
+    },
+    {
+      "from": "sam",
+      "video": "acoustic",
+      "cents": 1500,
+      "daysAgo": 3,
+      "kind": "unlock"
+    },
+    {
+      "from": "omar",
+      "video": "afterglow",
+      "cents": 2000,
+      "daysAgo": 1,
+      "kind": "tip"
+    }
+  ],
+  "payouts": [
+    {
+      "cents": 25000,
+      "daysAgo": 45,
+      "status": "SETTLED"
+    },
+    {
+      "cents": 4000,
+      "daysAgo": 1,
+      "status": "REQUESTED"
+    }
+  ],
+  "auction": {
+    "video": "directorsCut",
+    "startingPriceCents": 2000,
+    "endsInHours": 52,
+    "bids": [
+      [
+        "sam",
+        2000
+      ],
+      [
+        "lina",
+        2500
+      ],
+      [
+        "omar",
+        3000
+      ]
+    ]
+  },
+  "goal": {
+    "creator": "elena",
+    "title": "Neon Rain part two — shot in the rain",
+    "description": "If we reach the goal, I film part two on a real rainy night, with a rain machine for the close-ups, and every backer watches it first.",
+    "deliverable": "VIDEO",
+    "deliveryDays": 14,
+    "goalCents": 25000,
+    "deadlineDays": 9,
+    "pledges": [
+      [
+        "sam",
+        5000
+      ],
+      [
+        "lina",
+        5000
+      ],
+      [
+        "omar",
+        2500
+      ],
+      [
+        "jules",
+        2500
+      ]
+    ]
+  },
+  "fanCredits": {
+    "alex": "max",
+    "sam": "max",
+    "lina": "max",
+    "omar": "max",
+    "jules": "max"
+  }
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckCircle2 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Button, Chip, Dialog, Input, Sheet } from "@/components/ui";
 import { t } from "@/lib/i18n";
@@ -17,6 +17,11 @@ export function WithdrawSheet({ open, onClose, availableCents, destinationHint, 
   const [done, setDone] = useState(false);
   const cents = Math.round(Number(amount.replace(",", ".")) * 100) || 0;
   const valid = cents >= MIN && cents <= availableCents;
+  // Most withdrawals take everything: the sheet opens on the whole available balance, ready to request.
+  useEffect(() => {
+    if (open && amount === "" && availableCents >= MIN) setAmount((availableCents / 100).toFixed(2));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, availableCents]);
 
   const submit = async () => {
     setBusy(true);
@@ -63,14 +68,15 @@ export function WithdrawSheet({ open, onClose, availableCents, destinationHint, 
                     inputMode="decimal"
                     placeholder="0.00"
                     aria-describedby="withdraw-hint"
-                    className="bg-transparent px-2 py-3 font-display text-2xl font-black outline-hidden"
+                    className="border-0 bg-transparent px-2 py-3 font-display text-2xl font-black shadow-none outline-hidden focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
                 </span>
                 <span id="withdraw-hint" className="mt-1 block text-[11px] text-fg-muted">{t("earnings.request.min")}</span>
               </label>
               <Chip.Group type="single" label={t("earnings.request.quick")} value={String(cents)} onValueChange={(v) => v && setAmount((Number(v) / 100).toFixed(2))}>
                 {[0.25, 0.5, 1].map((share) => {
-                  const value = Math.floor((availableCents * share) / 100) * 100;
+                  // A quarter and a half in round $5 steps; "everything" is the exact balance.
+                  const value = share === 1 ? availableCents : Math.floor((availableCents * share) / 500) * 500;
                   if (value < MIN) return null;
                   return (
                     <Chip key={share} value={String(value)}>

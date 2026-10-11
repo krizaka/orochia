@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 
 import { Button, cn, Dialog, RadioGroup, Sheet } from "@/components/ui";
 import { t } from "@/lib/i18n";
-import { money } from "@/lib/money";
+import { amountChoices, money } from "@/lib/money";
 
 type Gateway = "CREDITS" | "CCBILL" | "SEGPAY" | "CRYPTO" | "STRIPE";
 /** The ways to pay, in display order (only those the deployment offers are shown). */
@@ -38,9 +38,9 @@ export function TipModal({
   minTipAmountCents,
   onUnlockedSuccess,
 }: TipModalProps) {
-  const [selectedAmount, setSelectedAmount] = useState<number>(
-    storyId ? Math.max(500, minTipAmountCents) : Math.max(1000, minTipAmountCents)
-  );
+  // The amounts offered start at the creator's price (an $8 unlock offers $8 first, selected), then the usual steps.
+  const presets = amountChoices(minTipAmountCents);
+  const [selectedAmount, setSelectedAmount] = useState<number>(minTipAmountCents > 100 ? minTipAmountCents : storyId ? 500 : 1000);
   const [selectedGateway, setSelectedGateway] = useState<Gateway>("CREDITS");
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -67,13 +67,6 @@ export function TipModal({
 
   const offers = (gateway: string) => demoMode || (gateways ?? []).includes(gateway);
   const unavailable = gateways !== null && gateways.length === 0 && !demoMode;
-
-  const presets = [
-    { label: "$5", cents: 500 },
-    { label: "$10", cents: 1000 },
-    { label: "$25", cents: 2500 },
-    { label: "$50", cents: 5000 },
-  ];
 
   const handleProcessTip = async () => {
     setIsProcessing(true);
@@ -145,7 +138,7 @@ export function TipModal({
                   disabled={p.cents < minTipAmountCents}
                   className="items-center rounded-xl py-3 text-sm font-bold data-[state=checked]:bg-accent data-[state=checked]:text-on-accent data-[state=checked]:shadow-md data-[state=checked]:shadow-accent/30"
                 >
-                  {p.label}
+                  {money(p.cents)}
                 </RadioGroup.Card>
               ))}
             </RadioGroup.Root>
