@@ -181,7 +181,7 @@
       "method": "GET",
       "path": "/api/admin/overview",
       "access": "session · ADMIN",
-      "summary": "Operator overview: money, catalogue and the three queues that need a human."
+      "summary": "Operator overview: money, catalogue, the three queues that need a human, and 12 months of revenue and reports."
     },
     {
       "method": "GET",

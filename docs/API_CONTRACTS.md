@@ -16,7 +16,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/admin/creators` | session · ADMIN | Creator accounts with their verification state; `?verified=false` lists the review queue. |
 | `PATCH` | `/api/admin/creators/[id]` | session · ADMIN | Records the outcome of a creator's 18 U.S.C. § 2257 review. |
 | `GET` | `/api/admin/documents` | session · ADMIN | A creator's 2257 document (`?ref=private/documents/&lt;uuid&gt;.&lt;ext&gt;`), for operators only; never cached. |
-| `GET` | `/api/admin/overview` | session · ADMIN | Operator overview: money, catalogue and the three queues that need a human. |
+| `GET` | `/api/admin/overview` | session · ADMIN | Operator overview: money, catalogue, the three queues that need a human, and 12 months of revenue and reports. |
 | `GET` | `/api/admin/payouts` | session · ADMIN | Payout requests with their creator; `?status=` filters. |
 | `PATCH` | `/api/admin/payouts/[id]` | session · ADMIN | Advances a payout. |
 | `GET` | `/api/admin/platform` | session · ADMIN | The platform for operators: environment, database (size, rows per table), migration history, whether a reset is allowed. |

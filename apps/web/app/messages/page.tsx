@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { t } from "@/lib/i18n";
-import { Avatar, Button, cn, EmptyState, IconButton, Input, Spinner } from "@/components/ui";
+import { Avatar, Button, IconButton, Input, Spinner, cn } from "@/components/ui";
 
 interface OtherUser {
   id: string;
@@ -587,8 +587,14 @@ function MessagesContent() {
               </div>
             </>
           ) : (
-            <div className="flex h-full items-center justify-center p-8">
-              <EmptyState bird="pigeon" mood="welcome" title={t("inbox.emptyTitle")} description={t("inbox.emptyHint")} className="border-0" />
+            <div className="flex flex-col items-center justify-center h-full text-center p-8 text-fg-muted">
+              <div className="h-16 w-16 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center text-accent mb-4">
+                <MessageSquare className="h-8 w-8" />
+              </div>
+              <h3 className="text-base font-bold text-fg">{t("inbox.emptyTitle")}</h3>
+              <p className="text-xs text-fg-secondary max-w-sm mt-1">
+                {t("inbox.emptyHint")}
+              </p>
             </div>
           )}
         </section>
