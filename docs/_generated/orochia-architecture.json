@@ -1251,7 +1251,8 @@
       "PENDING_UPLOAD",
       "PROCESSING",
       "READY",
-      "FAILED"
+      "FAILED",
+      "HELD"
     ],
     "video_visibility": [
       "PUBLIC",
@@ -1369,7 +1370,7 @@
         "runtime": "node",
         "version": "1.0.0",
         "published": false,
-        "description": "The API: 121 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
+        "description": "The API: 125 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
       },
       {
         "id": "orochia-config",
@@ -1439,9 +1440,9 @@
         "repository": "orochia-design-system",
         "path": ".",
         "runtime": "library",
-        "version": "4.0.0",
+        "version": "4.1.0",
         "published": true,
-        "description": "The Orochia identity on the Krizaka platform: the Obsidian Velvet Noir theme as --kz-* token overrides and the product composites (LiveBadge, SocialIcon, orochiaButton). The primitives come from @krizaka/ui."
+        "description": "The Orochia identity on the Krizaka platform: the Obsidian Velvet Noir theme as --kz-* token overrides and the product composites (StatusBadge, SocialIcon, orochiaButton), with their documentation registry (krizaka.com/docs/orochia/ui). The primitives come from @krizaka/ui."
       },
       {
         "id": "krizaka-i18n",

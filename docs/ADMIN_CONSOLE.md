@@ -5,13 +5,13 @@ with its own database, its own single account and its own network gate. It never
 decision goes through Orochia's admin API (`/api/admin/*`, listed in the [API reference](API_CONTRACTS.md)), server
 side, with a service token the browser never sees. What an operator decides is recorded in the console's own log.
 
-```mermaid
-flowchart LR
-    Operator -->|allowed IP only, one account| Console[orochia-admin :3001]
-    Console --> Own[(its own PostgreSQL: account, sessions, operator log)]
-    Console -->|server-side, Bearer service token| API[Orochia /api/admin/*]
-    API --> DB[(Orochia PostgreSQL)]
+```architecture
+product: orochia
+focus: orochia-admin
+mode: runtime
 ```
+
+The operator reaches the console from an allowed IP only, with its one account; the console keeps its account, sessions and operator log in its own PostgreSQL, and calls Orochia server-side on `/api/admin/*` with the service token — never the Orochia database.
 
 ## What you control
 
