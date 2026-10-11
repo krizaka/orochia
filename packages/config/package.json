@@ -1,6 +1,7 @@
 {
   "name": "@orochia/config",
   "version": "1.0.0",
+  "description": "Shared TypeScript, ESLint and Tailwind presets of the workspace.",
   "private": true,
   "main": "./eslint/index.js",
   "files": [

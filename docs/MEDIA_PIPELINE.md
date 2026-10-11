@@ -38,21 +38,19 @@ never raise them — and every upload also has to fit the storage quotas of §6.
 
 ## 3. Direct-to-Bunny Tus upload
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Creator as Creator browser
-    participant App as Orochia API
-    participant DB as PostgreSQL
-    participant Bunny as Bunny Stream
+```sequence
+participant creator: @orochia-web
+participant api: @orochia-api
+participant db: @postgresql
+participant bunny: @bunny-stream
 
-    Creator->>App: POST /api/videos/create-upload-session (title, visibility, size…)
-    App->>App: verified creator (2257) · limits · rate limit
-    App->>Bunny: create the video (in BUNNY_STREAM_COLLECTION_ID)
-    App->>App: Tus signature = sha256(libraryId + apiKey + expires + guid)
-    App->>DB: videos row, status PENDING_UPLOAD
-    App-->>Creator: { tusEndpoint, signed headers }
-    Creator->>Bunny: Tus upload, resumable chunks
+creator -> api: POST /api/videos/create-upload-session (title, visibility, size…)
+api -> api: verified creator (2257) · limits · rate limit
+api -> bunny: create the video (in BUNNY_STREAM_COLLECTION_ID)
+api -> api: Tus signature = sha256(libraryId + apiKey + expires + guid)
+api -> db: videos row, status PENDING_UPLOAD
+api --> creator: tusEndpoint and the signed headers
+creator -> bunny: Tus upload, resumable chunks
 ```
 
 Story videos (`/api/stories/upload-session`) and draft originals (`/api/me/drafts`) take the same path into their own

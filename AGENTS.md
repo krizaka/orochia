@@ -436,6 +436,14 @@ orochia/                           npm workspaces
   `docs/_generated/orochia-architecture.json`; `-- --check` fails CI when they are stale.
 - When this repository is cloned inside krizaka-com (`products/orochia`), the same command syncs the docs and the
   architecture data to the site, where the published set is decided by its manifest.
+- The architecture data also carries the **module map** (`map`, `scripts/architecture-map.mjs`): the modules of the four
+  repositories, the @krizaka/* packages they install, the data stores and the third-party services the code calls, their
+  build dependencies and runtime flows (HTTP, SQL, webhooks, SSE, LISTEN/NOTIFY, push) — krizaka.com draws it with the
+  same component as Orazaka's. A repository not cloned (CI) keeps its part of the previous map.
+- **No Mermaid.** A doc that needs a schema writes a fenced block krizaka.com draws from the data: ` ```architecture `
+  (`product`, `focus`, `mode`, `journey`), ` ```sequence ` (participants — `@module` ids are checked against the map —
+  then numbered steps) or ` ```states ` (`enum: <pg enum>` checks every state against the schema). A ` ```mermaid `
+  fence in a published doc fails the site build.
 - Generated files are **never hand-edited**.
 
 ---

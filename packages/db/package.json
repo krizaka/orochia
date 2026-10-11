@@ -1,6 +1,7 @@
 {
   "name": "@orochia/db",
   "version": "1.0.0",
+  "description": "PostgreSQL schema (Drizzle, the source of truth), migrations and migrator, connection pool, LISTEN/NOTIFY, development seed.",
   "private": true,
   "main": "./src/index.ts",
   "types": "./src/index.ts",

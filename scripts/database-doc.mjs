@@ -9,17 +9,27 @@ import path from "node:path";
 const code = (s) => "`" + s + "`";
 const cell = (s) => String(s).replace(/\|/g, "\\|");
 
-export function buildDatabaseMarkdown(root) {
-  const { tables, enums } = JSON.parse(
+/** The schema as data (tables, columns, foreign keys, enums), read from the Drizzle objects. */
+export function readSchema(root) {
+  return JSON.parse(
     execFileSync(path.join(root, "node_modules/.bin/tsx"), [path.join(root, "packages/db/scripts/schema-json.ts")], {
       cwd: path.join(root, "packages/db"),
       encoding: "utf8",
     }),
   );
+}
+
+export function buildDatabaseMarkdown(root, schema = readSchema(root)) {
+  const { tables, enums } = schema;
   const migrations = fs.readdirSync(path.join(root, "packages/db/drizzle")).filter((f) => f.endsWith(".sql")).sort();
 
-  const relations = new Set();
-  for (const t of tables) for (const fk of t.foreignKeys) relations.add(`    ${fk.table} ||--o{ ${t.name} : "${fk.columns.join(", ")}"`);
+  // Relationships as a table (one row per table that has any): what it points to, what points to it.
+  const refs = (t) => t.foreignKeys.map((fk) => `${code(fk.table)} (${fk.columns.map(code).join(", ")})`);
+  const referencedBy = (name) =>
+    [...new Set(tables.filter((o) => o.foreignKeys.some((fk) => fk.table === name)).map((o) => code(o.name)))];
+  const relations = tables
+    .filter((t) => t.foreignKeys.length || referencedBy(t.name).length)
+    .map((t) => `| ${code(t.name)} | ${refs(t).join(" · ") || "—"} | ${referencedBy(t.name).join(" · ") || "—"} |`);
 
   const tableSection = (t) => {
     const rows = t.columns.map((col) => {
@@ -57,10 +67,11 @@ export function buildDatabaseMarkdown(root) {
     "",
     "## Relationships",
     "",
-    "```mermaid",
-    "erDiagram",
+    "Every foreign key, read from the schema: what each table points to (through which columns) and which tables point to it.",
+    "",
+    "| Table | References (columns) | Referenced by |",
+    "| :--- | :--- | :--- |",
     ...relations,
-    "```",
     "",
     "## Tables",
     "",

@@ -23,17 +23,17 @@ The rules are pure functions shared by the server, the UI and the unit tests (`a
 
 ## 2. Lifecycle
 
-```mermaid
-stateDiagram-v2
-    [*] --> OPEN: creator starts it (video becomes AUCTION)
-    OPEN --> OPEN: bid (previous leader released, end may move)
-    OPEN --> UNSOLD: ends without bids (visibility restored)
-    OPEN --> SOLD: ends, settlement HIGHEST_BID
-    OPEN --> AWAITING_DECISION: ends, settlement CREATOR_DECIDES
-    AWAITING_DECISION --> SOLD: creator accepts
-    AWAITING_DECISION --> DECLINED: creator declines, or 48 h pass (credits released, visibility restored)
-    OPEN --> CANCELLED: creator (no bids yet) or operator
-    AWAITING_DECISION --> CANCELLED: operator
+```states
+enum: auction_status
+start -> OPEN: the creator starts it (the video becomes AUCTION)
+OPEN -> OPEN: a bid (the previous leader is released, the end may move)
+OPEN -> UNSOLD: ends without bids (visibility restored)
+OPEN -> SOLD: ends, settlement HIGHEST_BID
+OPEN -> AWAITING_DECISION: ends, settlement CREATOR_DECIDES
+AWAITING_DECISION -> SOLD: the creator accepts
+AWAITING_DECISION -> DECLINED: the creator declines, or 48 h pass (credits released, visibility restored)
+OPEN -> CANCELLED: the creator (no bids yet) or an operator
+AWAITING_DECISION -> CANCELLED: an operator
 ```
 
 `OPEN` covers both *upcoming* and *open*; the UI phase (`UPCOMING`, `OPEN`, `ENDING`…) is derived from the clock

@@ -12,92 +12,53 @@ PostgreSQL 16 · 46 tables · 26 enums · 6 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
-```mermaid
-erDiagram
-    auctions ||--o{ auction_bids : "auction_id"
-    users ||--o{ auction_bids : "bidder_id"
-    videos ||--o{ auctions : "video_id"
-    users ||--o{ auctions : "creator_id"
-    users ||--o{ auctions : "leader_id"
-    audience_lists ||--o{ audience_list_members : "list_id"
-    users ||--o{ audience_list_members : "user_id"
-    users ||--o{ audience_lists : "owner_id"
-    users ||--o{ auth_identities : "user_id"
-    users ||--o{ auth_tokens : "user_id"
-    users ||--o{ blocked_users : "blocker_id"
-    users ||--o{ blocked_users : "blocked_id"
-    challenges ||--o{ challenge_applications : "challenge_id"
-    users ||--o{ challenge_applications : "creator_id"
-    challenges ||--o{ challenge_pledges : "challenge_id"
-    users ||--o{ challenge_pledges : "backer_id"
-    users ||--o{ challenges : "author_id"
-    users ||--o{ challenges : "creator_id"
-    videos ||--o{ challenges : "delivered_video_id"
-    stories ||--o{ challenges : "delivered_story_id"
-    videos ||--o{ compliance_reports : "video_id"
-    stories ||--o{ compliance_reports : "story_id"
-    users ||--o{ compliance_reports : "reporter_id"
-    users ||--o{ contacts : "requester_id"
-    users ||--o{ contacts : "addressee_id"
-    users ||--o{ conversations : "participant1_id"
-    users ||--o{ conversations : "participant2_id"
-    users ||--o{ credit_topups : "user_id"
-    conversations ||--o{ direct_messages : "conversation_id"
-    users ||--o{ direct_messages : "sender_id"
-    users ||--o{ direct_messages : "recipient_id"
-    stories ||--o{ direct_messages : "story_id"
-    users ||--o{ follows : "follower_id"
-    users ||--o{ follows : "creator_id"
-    users ||--o{ notifications : "user_id"
-    users ||--o{ notifications : "actor_id"
-    users ||--o{ payment_intents : "sender_id"
-    users ||--o{ payment_intents : "creator_id"
-    videos ||--o{ payment_intents : "video_id"
-    stories ||--o{ payment_intents : "story_id"
-    users ||--o{ payout_accounts : "user_id"
-    users ||--o{ payout_requests : "creator_id"
-    playlists ||--o{ playlist_audience_lists : "playlist_id"
-    audience_lists ||--o{ playlist_audience_lists : "list_id"
-    playlists ||--o{ playlist_items : "playlist_id"
-    videos ||--o{ playlist_items : "video_id"
-    playlists ||--o{ playlist_members : "playlist_id"
-    users ||--o{ playlist_members : "user_id"
-    users ||--o{ playlists : "creator_id"
-    users ||--o{ profiles : "user_id"
-    users ||--o{ push_devices : "user_id"
-    users ||--o{ stories : "creator_id"
-    audience_lists ||--o{ stories : "audience_list_id"
-    content_ratings ||--o{ stories : "content_rating_id"
-    stories ||--o{ story_likes : "story_id"
-    users ||--o{ story_likes : "user_id"
-    stories ||--o{ story_views : "story_id"
-    users ||--o{ story_views : "viewer_id"
-    users ||--o{ tips_ledger : "sender_id"
-    users ||--o{ tips_ledger : "creator_id"
-    videos ||--o{ tips_ledger : "video_id"
-    stories ||--o{ tips_ledger : "story_id"
-    users ||--o{ user_invitations : "inviter_id"
-    videos ||--o{ video_access_grants : "video_id"
-    users ||--o{ video_access_grants : "user_id"
-    videos ||--o{ video_audience_lists : "video_id"
-    audience_lists ||--o{ video_audience_lists : "list_id"
-    videos ||--o{ video_comments : "video_id"
-    users ||--o{ video_comments : "author_id"
-    video_comments ||--o{ video_comments : "parent_id"
-    users ||--o{ video_comments : "removed_by"
-    users ||--o{ video_drafts : "owner_id"
-    videos ||--o{ video_likes : "video_id"
-    users ||--o{ video_likes : "user_id"
-    videos ||--o{ video_shares : "video_id"
-    users ||--o{ video_shares : "user_id"
-    videos ||--o{ video_viewers : "video_id"
-    users ||--o{ video_viewers : "user_id"
-    videos ||--o{ video_views : "video_id"
-    users ||--o{ video_views : "viewer_id"
-    users ||--o{ videos : "creator_id"
-    content_ratings ||--o{ videos : "content_rating_id"
-    users ||--o{ wallet_ledger : "user_id"
-```
+Every foreign key, read from the schema: what each table points to (through which columns) and which tables point to it.
+
+| Table | References (columns) | Referenced by |
+| :--- | :--- | :--- |
+| `auction_bids` | `auctions` (`auction_id`) · `users` (`bidder_id`) | — |
+| `auctions` | `videos` (`video_id`) · `users` (`creator_id`) · `users` (`leader_id`) | `auction_bids` |
+| `audience_list_members` | `audience_lists` (`list_id`) · `users` (`user_id`) | — |
+| `audience_lists` | `users` (`owner_id`) | `audience_list_members` · `playlist_audience_lists` · `stories` · `video_audience_lists` |
+| `auth_identities` | `users` (`user_id`) | — |
+| `auth_tokens` | `users` (`user_id`) | — |
+| `blocked_users` | `users` (`blocker_id`) · `users` (`blocked_id`) | — |
+| `challenge_applications` | `challenges` (`challenge_id`) · `users` (`creator_id`) | — |
+| `challenge_pledges` | `challenges` (`challenge_id`) · `users` (`backer_id`) | — |
+| `challenges` | `users` (`author_id`) · `users` (`creator_id`) · `videos` (`delivered_video_id`) · `stories` (`delivered_story_id`) | `challenge_applications` · `challenge_pledges` |
+| `compliance_reports` | `videos` (`video_id`) · `stories` (`story_id`) · `users` (`reporter_id`) | — |
+| `contacts` | `users` (`requester_id`) · `users` (`addressee_id`) | — |
+| `content_ratings` | — | `stories` · `videos` |
+| `conversations` | `users` (`participant1_id`) · `users` (`participant2_id`) | `direct_messages` |
+| `credit_topups` | `users` (`user_id`) | — |
+| `direct_messages` | `conversations` (`conversation_id`) · `users` (`sender_id`) · `users` (`recipient_id`) · `stories` (`story_id`) | — |
+| `follows` | `users` (`follower_id`) · `users` (`creator_id`) | — |
+| `notifications` | `users` (`user_id`) · `users` (`actor_id`) | — |
+| `payment_intents` | `users` (`sender_id`) · `users` (`creator_id`) · `videos` (`video_id`) · `stories` (`story_id`) | — |
+| `payout_accounts` | `users` (`user_id`) | — |
+| `payout_requests` | `users` (`creator_id`) | — |
+| `playlist_audience_lists` | `playlists` (`playlist_id`) · `audience_lists` (`list_id`) | — |
+| `playlist_items` | `playlists` (`playlist_id`) · `videos` (`video_id`) | — |
+| `playlist_members` | `playlists` (`playlist_id`) · `users` (`user_id`) | — |
+| `playlists` | `users` (`creator_id`) | `playlist_audience_lists` · `playlist_items` · `playlist_members` |
+| `profiles` | `users` (`user_id`) | — |
+| `push_devices` | `users` (`user_id`) | — |
+| `stories` | `users` (`creator_id`) · `audience_lists` (`audience_list_id`) · `content_ratings` (`content_rating_id`) | `challenges` · `compliance_reports` · `direct_messages` · `payment_intents` · `story_likes` · `story_views` · `tips_ledger` |
+| `story_likes` | `stories` (`story_id`) · `users` (`user_id`) | — |
+| `story_views` | `stories` (`story_id`) · `users` (`viewer_id`) | — |
+| `tips_ledger` | `users` (`sender_id`) · `users` (`creator_id`) · `videos` (`video_id`) · `stories` (`story_id`) | — |
+| `user_invitations` | `users` (`inviter_id`) | — |
+| `users` | — | `auction_bids` · `auctions` · `audience_list_members` · `audience_lists` · `auth_identities` · `auth_tokens` · `blocked_users` · `challenge_applications` · `challenge_pledges` · `challenges` · `compliance_reports` · `contacts` · `conversations` · `credit_topups` · `direct_messages` · `follows` · `notifications` · `payment_intents` · `payout_accounts` · `payout_requests` · `playlist_members` · `playlists` · `profiles` · `push_devices` · `stories` · `story_likes` · `story_views` · `tips_ledger` · `user_invitations` · `video_access_grants` · `video_comments` · `video_drafts` · `video_likes` · `video_shares` · `video_viewers` · `video_views` · `videos` · `wallet_ledger` |
+| `video_access_grants` | `videos` (`video_id`) · `users` (`user_id`) | — |
+| `video_audience_lists` | `videos` (`video_id`) · `audience_lists` (`list_id`) | — |
+| `video_comments` | `videos` (`video_id`) · `users` (`author_id`) · `video_comments` (`parent_id`) · `users` (`removed_by`) | `video_comments` |
+| `video_drafts` | `users` (`owner_id`) | — |
+| `video_likes` | `videos` (`video_id`) · `users` (`user_id`) | — |
+| `video_shares` | `videos` (`video_id`) · `users` (`user_id`) | — |
+| `video_viewers` | `videos` (`video_id`) · `users` (`user_id`) | — |
+| `video_views` | `videos` (`video_id`) · `users` (`viewer_id`) | — |
+| `videos` | `users` (`creator_id`) · `content_ratings` (`content_rating_id`) | `auctions` · `challenges` · `compliance_reports` · `payment_intents` · `playlist_items` · `tips_ledger` · `video_access_grants` · `video_audience_lists` · `video_comments` · `video_likes` · `video_shares` · `video_viewers` · `video_views` |
+| `wallet_ledger` | `users` (`user_id`) | — |
 
 ## Tables
 

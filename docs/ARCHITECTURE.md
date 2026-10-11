@@ -6,59 +6,12 @@ Orochia is an adult-friendly, high-performance open-source video streaming and c
 
 ## 1. System Topology Overview
 
-```mermaid
-graph TD
-    subgraph CLIENT["Client tier"]
-        UserBrowser[Viewer Browser / HLS Player]
-        CreatorBrowser[Creator Studio / Tus Uploader]
-    end
+The map below is generated from the code of the four repositories (`npm run docs:generate`): every module in its role, what it is built on, and who calls whom at run time — HTTP, SQL, signed webhooks, Server-Sent Events, LISTEN/NOTIFY, push. Pick a journey to follow a real request through it, step by step.
 
-    subgraph CORE["Orochia core · apps/web on DigitalOcean"]
-        NextApp[Next.js App Router Core]
-        AuthGuard[RBAC & Session Guard]
-        AccessResolver[Granular Access Matrix]
-        StreamSigner[Bunny HMAC Token Generator]
-        LedgerService[Atomic Tips Ledger]
-        WebhookReceiver[Bunny Webhook Ingestion]
-    end
-
-    subgraph DATA["Data tier"]
-        Postgres[(Managed PostgreSQL 16)]
-    end
-
-    subgraph EDGE["Media & edge tier"]
-        BunnyTus[Bunny.net Direct Tus Ingest]
-        BunnyTranscoder[Bunny Encoding Pipeline]
-        BunnyEdge[Bunny Global HLS Edge CDN]
-    end
-
-    subgraph RAILS["Payment rails"]
-        CCBill[CCBill Dynamic Pricing]
-        Segpay[Segpay Merchant Gateway]
-        CryptoGW[Crypto Gateway / NowPayments]
-    end
-
-    CreatorBrowser -->|1. Direct Resumable Tus Upload| BunnyTus
-    CreatorBrowser -->|Request Upload Credentials| NextApp
-    BunnyTranscoder -->|2. Webhook: Transcoding Complete| WebhookReceiver
-    WebhookReceiver --> Postgres
-
-    UserBrowser -->|3. Request Stream Auth| NextApp
-    NextApp --> AuthGuard
-    AuthGuard --> AccessResolver
-    AccessResolver --> Postgres
-    AccessResolver -->|Allowed| StreamSigner
-    StreamSigner -->|Signed m3u8 URL with HMAC Token| UserBrowser
-
-    UserBrowser -->|4. Pull 4K HLS Segments with Token| BunnyEdge
-
-    UserBrowser -->|5. Unlock: payment intent + checkout URL| NextApp
-    UserBrowser -->|6. Pays on the gateway's hosted page| CCBill
-    CCBill -.->|7. Signed webhook| NextApp
-    Segpay -.->|Signed webhook| NextApp
-    CryptoGW -.->|Signed IPN| NextApp
-    NextApp --> LedgerService
-    LedgerService --> Postgres
+```architecture
+product: orochia
+mode: runtime
+focus: orochia-api
 ```
 
 ---
@@ -73,6 +26,7 @@ The repository is organized as an enterprise-grade TypeScript monorepo:
 | `packages/db` | `@orochia/db` | PostgreSQL schema, Drizzle ORM relations, migrations, connection pool, and development seed factory. |
 | `packages/media` | `@orochia/media` | Bunny.net Stream SDK wrapper, direct Tus signing, HMAC-SHA256 playlist token generator, and webhook verification. |
 | `packages/payments` | `@orochia/payments` | Unified adapter interfaces for CCBill, Segpay, Crypto, and Stripe; atomic double-entry tips ledger. |
+| `packages/push` | `@orochia/push` | Mobile push through the Expo Push Service (FCM / APNs), without an SDK. |
 | `packages/config` | `@orochia/config` | Shared TypeScript, ESLint, and Tailwind presets. |
 | `deploy/` | Infrastructure | Multi-stage Dockerfiles, Docker Compose dev/prod environments, and DigitalOcean App Platform spec. |
 
@@ -82,25 +36,37 @@ The repository is organized as an enterprise-grade TypeScript monorepo:
 
 Orochia implements strict zero-trust permission checks before ever signing a media playback token:
 
-```mermaid
-stateDiagram-v2
-    [*] --> CheckAuthor: Video Playback Requested
-    CheckAuthor --> StreamGranted: Viewer is Video Author
-    CheckAuthor --> CheckVisibility: Viewer != Author
+```states
+state author: Is the viewer the author?
+state visibility: Which visibility?
+state followers: Approved follower?
+state contacts: Accepted contact?
+state invited: Invited?
+state grant: Access grant?
+state granted: Stream granted
+state denied: Refused
+state paywall: Paywall
 
-    CheckVisibility --> StreamGranted: Visibility == PUBLIC
-    CheckVisibility --> CheckContacts: Visibility == CONTACTS_ONLY
-    CheckVisibility --> CheckAccessGrant: Visibility == TIPPED_UNLOCKED
-
-    CheckContacts --> StreamGranted: Relationship == ACCEPTED
-    CheckContacts --> AccessDenied: No mutual accepted connection
-
-    CheckAccessGrant --> StreamGranted: Valid VideoAccessGrant Exists
-    CheckAccessGrant --> PaywallPrompt: No Grant (Prompt Tip to Unlock)
-
-    StreamGranted --> GenerateHMACToken: Issue signed Bunny HLS URL
-    AccessDenied --> [*]: Return HTTP 403 Forbidden
-    PaywallPrompt --> [*]: Return Paywall Overlay State
+start -> author: GET /api/videos/[id]/stream
+author -> granted: the viewer is the author
+author -> visibility: anyone else
+visibility -> granted: PUBLIC
+visibility -> followers: APPROVED_FOLLOWERS_ONLY
+visibility -> contacts: CONTACTS_ONLY
+visibility -> invited: INVITED_ONLY
+visibility -> grant: TIPPED_UNLOCKED · AUCTION · CHALLENGE
+followers -> granted: a follow the creator approved
+followers -> denied: none
+contacts -> granted: an accepted contact, in either direction
+contacts -> denied: none
+invited -> granted: invited directly, or a member of an audience list attached to the video
+invited -> denied: not invited — the video answers 404
+grant -> granted: a grant written by settlement, an auction sale or a challenge delivery
+grant -> paywall: TIPPED_UNLOCKED without a grant
+grant -> denied: AUCTION or CHALLENGE without a grant
+granted -> end: a signed HLS URL, valid 300 s
+denied -> end: 403 (404 for INVITED_ONLY)
+paywall -> end: the unlock offer, never a URL
 ```
 
 ---
@@ -147,13 +113,20 @@ to every app instance, which streams them to browsers as Server-Sent Events; a p
 with `FOR UPDATE SKIP LOCKED`. Details, trade-offs and the point at which a broker would pay off:
 [AUCTIONS.md](AUCTIONS.md).
 
-```mermaid
-graph LR
-    Bidder[Bidder] -->|POST bid| Web[apps/web]
-    Web -->|"tx: lock auction, HOLD credits, release previous"| PG[(PostgreSQL)]
-    PG -->|NOTIFY orochia_events| Web2[every app instance]
-    Web2 -->|SSE auction:id| Viewers[Everyone watching]
-    Closer[closer loop · SKIP LOCKED] --> PG
+```sequence
+participant bidder: @orochia-web
+participant api: @orochia-api
+participant pg: @postgresql
+participant viewers: Everyone watching (every app instance)
+
+bidder -> api: POST /api/auctions/[id]/bids
+api -> pg: one transaction — lock the auction, HOLD the bidder's credits, release the previous leader
+api -> pg: NOTIFY orochia_events (auction:id)
+pg --> api: every instance's LISTEN connection receives it
+api --> viewers: SSE /api/auctions/[id]/stream
+## Closing
+api -> pg: closer loop — due auctions, FOR UPDATE SKIP LOCKED
+api -> pg: settle or release in the same transaction, then NOTIFY
 ```
 
 ## 7. Compliance
