@@ -27,6 +27,26 @@ flowchart LR
 | **Accounts** | Every account, filtered by role, suspension or search; suspend (sign-in blocked, open sessions refused on their next request, open auctions cancelled) with a reason shown to the account, reinstate, or change the role (member, creator, administrator) | `GET/PATCH /api/admin/users` |
 | **Platform & Database** | Environment, database size and rows per table, migration history, backups (create, download, delete), the operator log and the factory reset | `/api/admin/platform*` |
 
+## Screens
+
+Captured on a local development stack (e-mail addresses and the operator's name redacted).
+
+![Overview: the three queues that need a human, and the ledger](https://krizaka-assets.b-cdn.net/pr-assets/orochia/admin-console/01-overview.png)
+
+*Overview — the three queues that need a human, and the ledger.*
+
+![Accounts: role changes and suspensions, each behind a confirmation](https://krizaka-assets.b-cdn.net/pr-assets/orochia/admin-console/08-accounts.png)
+
+*Accounts — every account, its role, its checks and its state.*
+
+![Platform and database: deployment, migrations, backups and tables](https://krizaka-assets.b-cdn.net/pr-assets/orochia/admin-console/09-platform.png)
+
+*Platform & Database — deployment, migrations, backups and rows per table.*
+
+![The factory reset, armed by a typed phrase](https://krizaka-assets.b-cdn.net/pr-assets/orochia/admin-console/10-factory-reset-armed.png)
+
+*The factory reset — backup first by default, locked until the phrase is typed.*
+
 ## How it is secured
 
 Four gates, each enforced in code:
