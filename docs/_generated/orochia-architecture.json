@@ -1074,5 +1074,859 @@
       "access": "signed webhook",
       "summary": "Gateway payment notifications."
     }
-  ]
+  ],
+  "enums": {
+    "auction_bid_status": [
+      "LEADING",
+      "OUTBID",
+      "WON",
+      "RELEASED"
+    ],
+    "auction_rights": [
+      "WATCH",
+      "DOWNLOAD"
+    ],
+    "auction_settlement": [
+      "CREATOR_DECIDES",
+      "HIGHEST_BID"
+    ],
+    "auction_status": [
+      "OPEN",
+      "AWAITING_DECISION",
+      "SOLD",
+      "DECLINED",
+      "UNSOLD",
+      "CANCELLED"
+    ],
+    "auth_provider": [
+      "GOOGLE",
+      "FACEBOOK"
+    ],
+    "auth_token_purpose": [
+      "VERIFY_EMAIL",
+      "RESET_PASSWORD"
+    ],
+    "challenge_application_status": [
+      "PENDING",
+      "CHOSEN",
+      "NOT_CHOSEN",
+      "WITHDRAWN"
+    ],
+    "challenge_deliverable": [
+      "VIDEO",
+      "STORY"
+    ],
+    "challenge_kind": [
+      "GOAL",
+      "REQUEST",
+      "OPEN_CALL"
+    ],
+    "challenge_pledge_status": [
+      "HELD",
+      "PAID",
+      "RELEASED"
+    ],
+    "challenge_reward": [
+      "BACKERS",
+      "EVERYONE"
+    ],
+    "challenge_status": [
+      "OPEN",
+      "ACCEPTED",
+      "DELIVERED",
+      "DECLINED",
+      "EXPIRED",
+      "FAILED",
+      "CANCELLED"
+    ],
+    "collection_visibility": [
+      "PUBLIC",
+      "APPROVED_FOLLOWERS_ONLY",
+      "CONTACTS_ONLY",
+      "INVITED_ONLY",
+      "PRIVATE"
+    ],
+    "contact_status": [
+      "PENDING",
+      "ACCEPTED",
+      "REJECTED",
+      "BLOCKED"
+    ],
+    "follow_status": [
+      "PENDING",
+      "APPROVED"
+    ],
+    "ledger_entry_type": [
+      "TIP_RECEIVED",
+      "PLATFORM_FEE",
+      "CREATOR_CREDIT",
+      "PAYOUT_REQUESTED",
+      "PAYOUT_COMPLETED",
+      "REFUND"
+    ],
+    "payment_gateway": [
+      "CCBILL",
+      "SEGPAY",
+      "CRYPTO",
+      "STRIPE",
+      "CREDITS"
+    ],
+    "payment_intent_status": [
+      "PENDING",
+      "SUCCEEDED",
+      "FAILED"
+    ],
+    "payout_status": [
+      "REQUESTED",
+      "UNDER_REVIEW",
+      "PROCESSING",
+      "SETTLED",
+      "FAILED"
+    ],
+    "report_reason": [
+      "NON_CONSENSUAL",
+      "UNDERAGE",
+      "DMCA_COPYRIGHT",
+      "TERMS_VIOLATION",
+      "FRAUD_SCAM"
+    ],
+    "report_status": [
+      "OPEN",
+      "IN_REVIEW",
+      "RESOLVED"
+    ],
+    "share_channel": [
+      "LINK",
+      "X",
+      "WHATSAPP",
+      "TELEGRAM",
+      "EMAIL",
+      "OTHER"
+    ],
+    "user_role": [
+      "ADMIN",
+      "CREATOR",
+      "MEMBER"
+    ],
+    "video_status": [
+      "PENDING_UPLOAD",
+      "PROCESSING",
+      "READY",
+      "FAILED"
+    ],
+    "video_visibility": [
+      "PUBLIC",
+      "CONTACTS_ONLY",
+      "APPROVED_FOLLOWERS_ONLY",
+      "TIPPED_UNLOCKED",
+      "INVITED_ONLY",
+      "AUCTION",
+      "CHALLENGE"
+    ],
+    "wallet_entry_type": [
+      "TOPUP",
+      "SPEND",
+      "REFUND",
+      "ADJUSTMENT",
+      "HOLD",
+      "RELEASE"
+    ]
+  },
+  "map": {
+    "roles": [
+      {
+        "id": "client",
+        "title": "Clients",
+        "rule": "what a person uses: the pages of apps/web (in the browser), a sibling app repository (admin console, mobile app)"
+      },
+      {
+        "id": "service",
+        "title": "Application",
+        "rule": "the API route handlers of apps/web (app/api/**/route.ts): the one process that serves every client"
+      },
+      {
+        "id": "library",
+        "title": "Packages",
+        "rule": "a workspace package of this monorepo (packages/*), imported by the application"
+      },
+      {
+        "id": "design",
+        "title": "Design system",
+        "rule": "the Orochia design system and the @krizaka/* packages the apps install"
+      },
+      {
+        "id": "data",
+        "title": "Data stores",
+        "rule": "a database an app opens (pg / Drizzle and its DATABASE_URL)"
+      },
+      {
+        "id": "external",
+        "title": "External services",
+        "rule": "a third-party service the code calls (its API host appears in the sources)"
+      }
+    ],
+    "repositories": [
+      {
+        "name": "orochia",
+        "url": "https://github.com/krizaka/orochia"
+      },
+      {
+        "name": "orochia-admin",
+        "url": "https://github.com/krizaka/orochia-admin"
+      },
+      {
+        "name": "orochia-design-system",
+        "url": "https://github.com/krizaka/orochia-design-system"
+      },
+      {
+        "name": "orochia-mobile",
+        "url": "https://github.com/krizaka/orochia-mobile"
+      }
+    ],
+    "modules": [
+      {
+        "id": "orochia-admin",
+        "name": "@krizaka/orochia-admin",
+        "role": "client",
+        "owner": "orochia",
+        "repository": "orochia-admin",
+        "path": ".",
+        "runtime": "node",
+        "version": "1.0.0",
+        "published": false,
+        "description": "Operator console for Orochia: 2257 creator verification, content reports, payouts and treasury"
+      },
+      {
+        "id": "orochia-mobile",
+        "name": "orochia-mobile",
+        "role": "client",
+        "owner": "orochia",
+        "repository": "orochia-mobile",
+        "path": ".",
+        "runtime": "react-native",
+        "version": "1.0.0",
+        "published": false,
+        "description": "Orochia for iOS and Android — the creator video platform, in your pocket. React Native (Expo)."
+      },
+      {
+        "id": "orochia-web",
+        "name": "@orochia/web",
+        "role": "client",
+        "owner": "orochia",
+        "repository": "orochia",
+        "path": "apps/web/app",
+        "runtime": "browser",
+        "version": "1.0.0",
+        "published": false,
+        "description": "The web app in the browser: viewer pages, creator studio, the HLS player and the Tus uploader (Next.js App Router)."
+      },
+      {
+        "id": "orochia-api",
+        "name": "@orochia/web",
+        "role": "service",
+        "owner": "orochia",
+        "repository": "orochia",
+        "path": "apps/web/app/api",
+        "runtime": "node",
+        "version": "1.0.0",
+        "published": false,
+        "description": "The API: 121 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
+      },
+      {
+        "id": "orochia-config",
+        "name": "@orochia/config",
+        "role": "library",
+        "owner": "orochia",
+        "repository": "orochia",
+        "path": "packages/config",
+        "runtime": "node",
+        "version": "1.0.0",
+        "published": false,
+        "description": "Shared TypeScript, ESLint and Tailwind presets of the workspace."
+      },
+      {
+        "id": "orochia-db",
+        "name": "@orochia/db",
+        "role": "library",
+        "owner": "orochia",
+        "repository": "orochia",
+        "path": "packages/db",
+        "runtime": "node",
+        "version": "1.0.0",
+        "published": false,
+        "description": "PostgreSQL schema (Drizzle, the source of truth), migrations and migrator, connection pool, LISTEN/NOTIFY, development seed."
+      },
+      {
+        "id": "orochia-media",
+        "name": "@orochia/media",
+        "role": "library",
+        "owner": "orochia",
+        "repository": "orochia",
+        "path": "packages/media",
+        "runtime": "node",
+        "version": "1.0.0",
+        "published": false,
+        "description": "Bunny Stream client, direct Tus signing, signed HLS playback tokens (300 s), webhook verification, upload limits."
+      },
+      {
+        "id": "orochia-payments",
+        "name": "@orochia/payments",
+        "role": "library",
+        "owner": "orochia",
+        "repository": "orochia",
+        "path": "packages/payments",
+        "runtime": "node",
+        "version": "1.0.0",
+        "published": false,
+        "description": "Gateway adapters (CCBill, Segpay, NowPayments, Stripe), payment intents, exactly-once settlement, the double-entry ledger, credits, payouts, auctions and challenges."
+      },
+      {
+        "id": "orochia-push",
+        "name": "@orochia/push",
+        "role": "library",
+        "owner": "orochia",
+        "repository": "orochia",
+        "path": "packages/push",
+        "runtime": "node",
+        "version": "1.0.0",
+        "published": false,
+        "description": "Mobile push, without an SDK: the Expo Push Service (https://exp.host/--/api/v2/push/send) relays to Firebase Cloud Messaging on Android and to the Apple Push Notification service on iOS, from one HTTP call and one kind of token (`ExponentPushToken[…]`)."
+      },
+      {
+        "id": "orochia-design-system",
+        "name": "@krizaka/orochia-design-system",
+        "role": "design",
+        "owner": "orochia",
+        "repository": "orochia-design-system",
+        "path": ".",
+        "runtime": "library",
+        "version": "4.0.0",
+        "published": true,
+        "description": "The Orochia identity on the Krizaka platform: the Obsidian Velvet Noir theme as --kz-* token overrides and the product composites (LiveBadge, SocialIcon, orochiaButton). The primitives come from @krizaka/ui."
+      },
+      {
+        "id": "krizaka-i18n",
+        "name": "@krizaka/i18n",
+        "role": "design",
+        "owner": "krizaka",
+        "repository": "krizaka-ui",
+        "path": "node_modules/@krizaka/i18n",
+        "runtime": "library",
+        "version": "0.1.0",
+        "published": true,
+        "description": "The i18n engine of every Krizaka app: typed message keys and placeholders from en.json, format(), plurals through @krizaka/intl, <Rich> (<b>, <a>), a React provider, and the krizaka-i18n CLI that checks catalogues and finds hard-coded strings."
+      },
+      {
+        "id": "krizaka-icons",
+        "name": "@krizaka/icons",
+        "role": "design",
+        "owner": "krizaka",
+        "repository": "krizaka-ui",
+        "path": "node_modules/@krizaka/icons",
+        "runtime": "library",
+        "version": "0.1.0",
+        "published": true,
+        "description": "The Krizaka signature icons: one drawing language (24 grid, cut corners, a node at the core) for every Krizaka product — React (tree-shakable, server-safe) and React Native (react-native-svg)."
+      },
+      {
+        "id": "krizaka-intl",
+        "name": "@krizaka/intl",
+        "role": "design",
+        "owner": "krizaka",
+        "repository": "krizaka-ui",
+        "path": "node_modules/@krizaka/intl",
+        "runtime": "library",
+        "version": "0.1.0",
+        "published": true,
+        "description": "Money, numbers, dates and plurals formatted the same way in every Krizaka product: zero dependency, built on Intl, money from integer minor units only."
+      },
+      {
+        "id": "krizaka-tailwind",
+        "name": "@krizaka/tailwind",
+        "role": "design",
+        "owner": "krizaka",
+        "repository": "krizaka-ui",
+        "path": "node_modules/@krizaka/tailwind",
+        "runtime": "library",
+        "version": "2.0.0",
+        "published": true,
+        "description": "The Krizaka Tailwind CSS v4 preset: the semantic --kz-* tokens as utilities (bg-surface-1, text-fg-secondary, border-border-default, text-accent, rounded-xl…), illustration-only light/dark variants and the Krizaka easing."
+      },
+      {
+        "id": "krizaka-tokens",
+        "name": "@krizaka/tokens",
+        "role": "design",
+        "owner": "krizaka",
+        "repository": "krizaka-ui",
+        "path": "node_modules/@krizaka/tokens",
+        "runtime": "library",
+        "version": "2.0.0",
+        "published": true,
+        "description": "The Krizaka semantic design tokens (--kz-*) and the brand themes (Krizaka, Orazaka, Orochia): one DTCG source compiled to CSS (dark, light, media invariants), typed constants and React Native themes."
+      },
+      {
+        "id": "krizaka-ui",
+        "name": "@krizaka/ui",
+        "role": "design",
+        "owner": "krizaka",
+        "repository": "krizaka-ui",
+        "path": "node_modules/@krizaka/ui",
+        "runtime": "library",
+        "version": "2.0.0",
+        "published": true,
+        "description": "The Krizaka front-end platform's components: the primitives (button, card, dialog, toast, menu, field, tabs, chip, switch, slider, command palette, theme, countdown…) on the semantic --kz-* tokens, the animated marks (Krizaka, Orazaka, Orochia) and the motion signature — web and /native."
+      },
+      {
+        "id": "admin-postgresql",
+        "name": "PostgreSQL (console)",
+        "role": "data",
+        "owner": "external",
+        "repository": "orochia-admin",
+        "path": "lib/db.ts",
+        "runtime": "postgresql",
+        "version": null,
+        "published": false,
+        "description": "The console's own database: its operator account and sessions — never the Orochia data, which it reaches through the admin API."
+      },
+      {
+        "id": "postgresql",
+        "name": "PostgreSQL",
+        "role": "data",
+        "owner": "external",
+        "repository": "orochia",
+        "path": "packages/db",
+        "runtime": "postgresql",
+        "version": null,
+        "published": false,
+        "description": "The Orochia database: accounts, videos, the ledger, auctions, challenges — and the realtime bus (LISTEN/NOTIFY). Schema and migrations in packages/db."
+      },
+      {
+        "id": "bunny-stream",
+        "name": "Bunny Stream",
+        "role": "external",
+        "owner": "external",
+        "repository": null,
+        "path": null,
+        "runtime": "saas",
+        "version": null,
+        "published": false,
+        "description": "Video storage, encoding and the HLS edge CDN: uploads go to it directly (Tus), playback comes from it with a signed URL."
+      },
+      {
+        "id": "ccbill",
+        "name": "CCBill",
+        "role": "external",
+        "owner": "external",
+        "repository": null,
+        "path": null,
+        "runtime": "saas",
+        "version": null,
+        "published": false,
+        "description": "Card payment gateway: hosted checkout form, signed webhook."
+      },
+      {
+        "id": "expo-push",
+        "name": "Expo Push",
+        "role": "external",
+        "owner": "external",
+        "repository": null,
+        "path": null,
+        "runtime": "saas",
+        "version": null,
+        "published": false,
+        "description": "Push notifications to the iOS and Android app."
+      },
+      {
+        "id": "facebook-oauth",
+        "name": "Facebook sign-in",
+        "role": "external",
+        "owner": "external",
+        "repository": null,
+        "path": null,
+        "runtime": "saas",
+        "version": null,
+        "published": false,
+        "description": "OAuth 2 sign-in: consent dialog, code exchange, profile."
+      },
+      {
+        "id": "google-oauth",
+        "name": "Google sign-in",
+        "role": "external",
+        "owner": "external",
+        "repository": null,
+        "path": null,
+        "runtime": "saas",
+        "version": null,
+        "published": false,
+        "description": "OAuth 2 sign-in: consent screen, code exchange, user info."
+      },
+      {
+        "id": "mailgun",
+        "name": "Mailgun",
+        "role": "external",
+        "owner": "external",
+        "repository": null,
+        "path": null,
+        "runtime": "saas",
+        "version": null,
+        "published": false,
+        "description": "Transactional e-mail (verification, password reset, notifications)."
+      },
+      {
+        "id": "nowpayments",
+        "name": "NowPayments",
+        "role": "external",
+        "owner": "external",
+        "repository": null,
+        "path": null,
+        "runtime": "saas",
+        "version": null,
+        "published": false,
+        "description": "Crypto payment gateway: invoices over its API, signed IPN."
+      },
+      {
+        "id": "resend",
+        "name": "Resend",
+        "role": "external",
+        "owner": "external",
+        "repository": null,
+        "path": null,
+        "runtime": "saas",
+        "version": null,
+        "published": false,
+        "description": "Transactional e-mail, the alternative provider."
+      },
+      {
+        "id": "segpay",
+        "name": "Segpay",
+        "role": "external",
+        "owner": "external",
+        "repository": null,
+        "path": null,
+        "runtime": "saas",
+        "version": null,
+        "published": false,
+        "description": "Card payment gateway: hosted checkout page, signed webhook."
+      },
+      {
+        "id": "stripe",
+        "name": "Stripe",
+        "role": "external",
+        "owner": "external",
+        "repository": null,
+        "path": null,
+        "runtime": "saas",
+        "version": null,
+        "published": false,
+        "description": "Card payment gateway: Checkout sessions over its API, signed webhook (timestamp tolerance)."
+      }
+    ],
+    "dependencies": [
+      {
+        "from": "orochia-admin",
+        "to": "krizaka-tailwind",
+        "version": "2.0.0-beta.1"
+      },
+      {
+        "from": "orochia-admin",
+        "to": "krizaka-tokens",
+        "version": "2.0.0-beta.1"
+      },
+      {
+        "from": "orochia-admin",
+        "to": "krizaka-ui",
+        "version": "2.0.0-beta.1"
+      },
+      {
+        "from": "orochia-admin",
+        "to": "orochia-design-system",
+        "version": "3.0.0"
+      },
+      {
+        "from": "orochia-api",
+        "to": "orochia-db"
+      },
+      {
+        "from": "orochia-api",
+        "to": "orochia-media"
+      },
+      {
+        "from": "orochia-api",
+        "to": "orochia-payments"
+      },
+      {
+        "from": "orochia-api",
+        "to": "orochia-push"
+      },
+      {
+        "from": "orochia-design-system",
+        "to": "krizaka-tailwind",
+        "version": "2.2.0"
+      },
+      {
+        "from": "orochia-design-system",
+        "to": "krizaka-tokens",
+        "version": "2.2.0"
+      },
+      {
+        "from": "orochia-design-system",
+        "to": "krizaka-ui",
+        "version": "2.2.0"
+      },
+      {
+        "from": "orochia-mobile",
+        "to": "krizaka-tokens",
+        "version": "2.0.0-beta.4"
+      },
+      {
+        "from": "orochia-mobile",
+        "to": "krizaka-ui",
+        "version": "2.0.0-beta.4"
+      },
+      {
+        "from": "orochia-mobile",
+        "to": "orochia-design-system",
+        "version": "4.0.0"
+      },
+      {
+        "from": "orochia-payments",
+        "to": "orochia-db"
+      },
+      {
+        "from": "orochia-web",
+        "to": "krizaka-i18n",
+        "version": "0.1.0"
+      },
+      {
+        "from": "orochia-web",
+        "to": "krizaka-icons",
+        "version": "0.1.0"
+      },
+      {
+        "from": "orochia-web",
+        "to": "krizaka-intl",
+        "version": "0.1.0"
+      },
+      {
+        "from": "orochia-web",
+        "to": "krizaka-tailwind",
+        "version": "2.0.0"
+      },
+      {
+        "from": "orochia-web",
+        "to": "krizaka-tokens",
+        "version": "2.0.0"
+      },
+      {
+        "from": "orochia-web",
+        "to": "krizaka-ui",
+        "version": "2.0.0"
+      },
+      {
+        "from": "orochia-web",
+        "to": "orochia-design-system",
+        "version": "4.0.0"
+      }
+    ],
+    "flows": [
+      {
+        "from": "orochia-admin",
+        "to": "orochia-api",
+        "kind": "http",
+        "via": "/api/admin/* · service token"
+      },
+      {
+        "from": "orochia-api",
+        "to": "bunny-stream",
+        "kind": "http",
+        "via": "create video · Tus signature"
+      },
+      {
+        "from": "orochia-api",
+        "to": "expo-push",
+        "kind": "http",
+        "via": "@orochia/push · send"
+      },
+      {
+        "from": "orochia-api",
+        "to": "facebook-oauth",
+        "kind": "http",
+        "via": "code exchange · user info"
+      },
+      {
+        "from": "orochia-api",
+        "to": "google-oauth",
+        "kind": "http",
+        "via": "code exchange · user info"
+      },
+      {
+        "from": "orochia-api",
+        "to": "mailgun",
+        "kind": "http",
+        "via": "send e-mail"
+      },
+      {
+        "from": "orochia-api",
+        "to": "nowpayments",
+        "kind": "http",
+        "via": "checkout session over its API"
+      },
+      {
+        "from": "orochia-api",
+        "to": "resend",
+        "kind": "http",
+        "via": "send e-mail"
+      },
+      {
+        "from": "orochia-api",
+        "to": "stripe",
+        "kind": "http",
+        "via": "checkout session over its API"
+      },
+      {
+        "from": "orochia-mobile",
+        "to": "bunny-stream",
+        "kind": "http",
+        "via": "HLS playback · signed URL"
+      },
+      {
+        "from": "orochia-mobile",
+        "to": "orochia-api",
+        "kind": "http",
+        "via": "/api/* · Bearer session"
+      },
+      {
+        "from": "orochia-web",
+        "to": "bunny-stream",
+        "kind": "http",
+        "via": "HLS playback · signed URL"
+      },
+      {
+        "from": "orochia-web",
+        "to": "bunny-stream",
+        "kind": "http",
+        "via": "Tus upload (resumable)"
+      },
+      {
+        "from": "orochia-web",
+        "to": "ccbill",
+        "kind": "http",
+        "via": "hosted checkout page"
+      },
+      {
+        "from": "orochia-web",
+        "to": "facebook-oauth",
+        "kind": "http",
+        "via": "consent screen (redirect)"
+      },
+      {
+        "from": "orochia-web",
+        "to": "google-oauth",
+        "kind": "http",
+        "via": "consent screen (redirect)"
+      },
+      {
+        "from": "orochia-web",
+        "to": "nowpayments",
+        "kind": "http",
+        "via": "hosted checkout page"
+      },
+      {
+        "from": "orochia-web",
+        "to": "orochia-api",
+        "kind": "http",
+        "via": "/api/* · session cookie"
+      },
+      {
+        "from": "orochia-web",
+        "to": "segpay",
+        "kind": "http",
+        "via": "hosted checkout page"
+      },
+      {
+        "from": "orochia-web",
+        "to": "stripe",
+        "kind": "http",
+        "via": "hosted checkout page"
+      },
+      {
+        "from": "postgresql",
+        "to": "orochia-api",
+        "kind": "notify",
+        "via": "LISTEN/NOTIFY orochia_events"
+      },
+      {
+        "from": "expo-push",
+        "to": "orochia-mobile",
+        "kind": "push",
+        "via": "notification"
+      },
+      {
+        "from": "orochia-admin",
+        "to": "admin-postgresql",
+        "kind": "sql",
+        "via": "operator accounts · sessions"
+      },
+      {
+        "from": "orochia-api",
+        "to": "postgresql",
+        "kind": "sql",
+        "via": "@orochia/db · Drizzle"
+      },
+      {
+        "from": "orochia-api",
+        "to": "orochia-mobile",
+        "kind": "sse",
+        "via": "/api/conversations/stream"
+      },
+      {
+        "from": "orochia-api",
+        "to": "orochia-web",
+        "kind": "sse",
+        "via": "/api/auctions/[id]/stream"
+      },
+      {
+        "from": "orochia-api",
+        "to": "orochia-web",
+        "kind": "sse",
+        "via": "/api/challenges/[id]/stream"
+      },
+      {
+        "from": "orochia-api",
+        "to": "orochia-web",
+        "kind": "sse",
+        "via": "/api/conversations/stream"
+      },
+      {
+        "from": "bunny-stream",
+        "to": "orochia-api",
+        "kind": "webhook",
+        "via": "/api/webhooks/bunny"
+      },
+      {
+        "from": "ccbill",
+        "to": "orochia-api",
+        "kind": "webhook",
+        "via": "/api/webhooks/payments/ccbill"
+      },
+      {
+        "from": "nowpayments",
+        "to": "orochia-api",
+        "kind": "webhook",
+        "via": "/api/webhooks/payments/crypto"
+      },
+      {
+        "from": "segpay",
+        "to": "orochia-api",
+        "kind": "webhook",
+        "via": "/api/webhooks/payments/segpay"
+      },
+      {
+        "from": "stripe",
+        "to": "orochia-api",
+        "kind": "webhook",
+        "via": "/api/webhooks/payments/stripe"
+      }
+    ]
+  }
 }

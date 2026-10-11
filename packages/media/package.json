@@ -1,6 +1,7 @@
 {
   "name": "@orochia/media",
   "version": "1.0.0",
+  "description": "Bunny Stream client, direct Tus signing, signed HLS playback tokens (300 s), webhook verification, upload limits.",
   "private": true,
   "main": "./src/index.ts",
   "types": "./src/index.ts",

@@ -11,17 +11,20 @@
  *
  * Deterministic (no timestamps), so `--check` can fail a build when the docs are stale.
  *
- *   node scripts/generate-docs.mjs           generate (+ sync when inside krizaka-com)
- *   node scripts/generate-docs.mjs --check   exit 1 when a generated file is out of date
+ *   node scripts/generate-docs.mjs                  generate (+ sync when inside krizaka-com)
+ *   node scripts/generate-docs.mjs --site <dir>     sync to that krizaka-com checkout instead (a worktree)
+ *   node scripts/generate-docs.mjs --check          exit 1 when a generated file is out of date
  */
 
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildDatabaseMarkdown } from "./database-doc.mjs";
+import { buildDatabaseMarkdown, readSchema } from "./database-doc.mjs";
+import { buildArchitectureMap } from "./architecture-map.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const SITE = path.resolve(ROOT, "../..");
+const siteArg = process.argv.indexOf("--site");
+const SITE = siteArg > 0 ? path.resolve(process.argv[siteArg + 1]) : path.resolve(ROOT, "../..");
 const CHECK = process.argv.includes("--check");
 
 // Text for Markdown that is also compiled as MDX on krizaka.com: angle brackets and braces would be read as JSX.
@@ -91,6 +94,9 @@ const endpoints = walk(apiDir, (p) => /route\.(ts|js)$/.test(p))
   })
   .flat()
   .sort((a, b) => a.path.localeCompare(b.path) || a.method.localeCompare(b.method));
+
+// ── Schema (Drizzle objects): the database reference, and the enums the docs' state machines are checked against ──
+const schema = readSchema(ROOT);
 
 // ── Model ────────────────────────────────────────────────────────────────────────────────
 const feePct = (read(path.join(ROOT, "packages/payments/src/ledger.ts")).match(/\? (\d+) : Number\(raw\)/) ?? [])[1];
@@ -171,6 +177,14 @@ const model = {
     },
   ],
   apiEndpoints: endpoints,
+  // Every PostgreSQL enum: a ```states``` block of the docs naming one (`enum: auction_status`) is checked against it.
+  enums: Object.fromEntries(schema.enums.map((e) => [e.name, e.values])),
+  // The module map (scripts/architecture-map.mjs): roles, modules, build dependencies, runtime flows.
+  map: buildArchitectureMap(
+    ROOT,
+    JSON.parse(read(path.join(ROOT, "orochia.workspace.json"))),
+    JSON.parse(read(path.join(ROOT, "docs/_generated/orochia-architecture.json")) || "{}").map ?? null,
+  ),
 };
 
 const apiMarkdown = `---
@@ -196,7 +210,7 @@ ${tables.map((t) => `| \`${t.table}\` | \`${t.export}\` | \`${t.file}\` |`).join
 `;
 
 // ── Database reference (docs/DATABASE.md) — read from the Drizzle schema objects ─────────
-const databaseMarkdown = buildDatabaseMarkdown(ROOT);
+const databaseMarkdown = buildDatabaseMarkdown(ROOT, schema);
 
 const outputs = {
   [path.join(ROOT, "docs/_generated/orochia-architecture.json")]: JSON.stringify(model, null, 2) + "\n",

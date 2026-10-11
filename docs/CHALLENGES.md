@@ -39,17 +39,17 @@ audience). Dares and open calls are always for their backers.
 
 ## 3. Lifecycle
 
-```mermaid
-stateDiagram-v2
-    [*] --> OPEN: goal set / dare sent (offer held) / open call posted (pot held)
-    OPEN --> OPEN: pledge (credits held)
-    OPEN --> ACCEPTED: goal reached at deadline, or started early · dare accepted · applicant picked
-    OPEN --> DECLINED: the dared creator declines
-    OPEN --> EXPIRED: goal missed · dare unanswered in 72 h · nobody picked
-    OPEN --> CANCELLED: its author withdraws it · an operator
-    ACCEPTED --> DELIVERED: the creator delivers a video or a story (pledges paid)
-    ACCEPTED --> FAILED: not delivered in time
-    ACCEPTED --> CANCELLED: an operator
+```states
+enum: challenge_status
+start -> OPEN: goal set · dare sent (offer held) · open call posted (pot held)
+OPEN -> OPEN: a pledge (credits held)
+OPEN -> ACCEPTED: goal reached at the deadline, or started early · dare accepted · applicant picked
+OPEN -> DECLINED: the dared creator declines
+OPEN -> EXPIRED: goal missed · dare unanswered in 72 h · nobody picked
+OPEN -> CANCELLED: its author withdraws it · an operator
+ACCEPTED -> DELIVERED: the creator delivers a video or a story (pledges paid)
+ACCEPTED -> FAILED: not delivered in time
+ACCEPTED -> CANCELLED: an operator
 ```
 
 Every transition runs in **one transaction under the challenge's row lock** (`packages/payments/src/challenges.ts`),
