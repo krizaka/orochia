@@ -15,17 +15,23 @@ The creator video platform: direct-to-CDN 4K streaming, server-side access contr
 [![CI](https://github.com/krizaka/orochia/actions/workflows/ci.yml/badge.svg)](https://github.com/krizaka/orochia/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Orochia](https://img.shields.io/badge/part%20of-Orochia-7c3aed)](https://www.krizaka.com/en/products/orochia#guarantees)
-[![Docs](https://img.shields.io/badge/docs-krizaka.com-7c3aed)](https://www.krizaka.com/en/products/orochia/docs)
+[![Docs](https://img.shields.io/badge/docs-krizaka.com%2Fdocs%2Forochia-7c3aed)](https://www.krizaka.com/docs/orochia)
 
-[Documentation](https://www.krizaka.com/en/products/orochia/docs) · [Website](https://www.krizaka.com) · [Krizaka on GitHub](https://github.com/krizaka)
+[Try it](https://dev.orochia.com) · [Documentation](https://www.krizaka.com/docs/orochia) · [Video tour](https://www.krizaka.com/en/products/orochia#tour) · [Website](https://www.krizaka.com) · [Krizaka on GitHub](https://github.com/krizaka)
 
 </div>
 <!-- /krizaka-header -->
 
 <p align="center">
-  <a href="https://www.krizaka.com/en/products/orochia#tour"><img src="docs/assets/orochia-tour.gif" alt="Orochia — feed, playback and tipping, recorded on the latest build" width="760"></a>
-  <br><sub>Orochia — feed, playback and tipping, recorded on the latest build · <a href="https://www.krizaka.com/en/products/orochia#tour">more on krizaka.com</a></sub>
+  <a href="https://www.krizaka.com/en/products/orochia#tour"><img src="https://raw.githubusercontent.com/krizaka/.github/main/profile/assets/orochia-tour.gif" alt="Orochia, signed in as Alex: Elena's story opened from the ring on her profile, sound on, a like, a private reply and a $10 tip" width="760"></a>
+  <br><sub>Alex opens Elena's story from her profile, likes it, replies privately and tips her — Elena keeps 90 % of it. More in the tour: Explore, unlocks, auctions, challenges, payouts. <a href="https://www.krizaka.com/en/products/orochia#tour">Full tour</a></sub>
 </p>
+
+Direct-to-CDN 4K streaming, an **Explorer** that is never empty,
+complete **stories** (sound, likes, tips, private replies), audiences the creator chooses, **auctions** and
+**challenges** paid in credits held in escrow until delivery. Creators keep **90 %**, settled once on a double-entry
+ledger. Built-in 18+ compliance — on the web and on iOS and Android
+([orochia-mobile](https://github.com/krizaka/orochia-mobile)).
 
 ---
 
@@ -34,8 +40,12 @@ The creator video platform: direct-to-CDN 4K streaming, server-side access contr
 - 📺 **Direct-to-CDN media**: uploads go straight to Bunny Stream over Tus; playback uses HMAC-signed HLS URLs that expire after 5 minutes. Video never passes through the app servers.
 - 🔐 **Server-side access control**: every play is authorised against the video's visibility — public, approved followers, contacts only, or paid unlock — before a URL is signed.
 - 💳 **Gateway-confirmed payments**: an unlock records a payment intent and sends the buyer to CCBill, Segpay, NowPayments (crypto) or Stripe; access is granted only when the gateway's signed webhook confirms it, exactly once.
-- 🔨 **Live video auctions** ([docs/AUCTIONS.md](docs/AUCTIONS.md)): bids in credits held while they lead and released the moment they are outbid, anti-sniping soft close, the creator accepts or declines (or sells to the highest bid), and only the winner watches or downloads — pushed live over PostgreSQL LISTEN/NOTIFY and Server-Sent Events, no broker.
-- 🤝 **Social graph**: creators approve their followers (followers-only videos), people become mutual contacts (contacts-only videos); explore search by title, creator or tag; public and private playlists.
+- 🔨 **Video auctions** ([docs/AUCTIONS.md](docs/AUCTIONS.md)): bids in credits held while they lead and released the moment they are outbid, anti-sniping soft close, the creator accepts or declines (or sells to the highest bid), and only the winner watches or downloads — pushed in real time over PostgreSQL LISTEN/NOTIFY and Server-Sent Events, no broker.
+- 🔥 **Challenges** ([docs/CHALLENGES.md](docs/CHALLENGES.md)): goals, dares and open calls — fans put credits behind what they want to see, held in escrow until the video or story is delivered and returned when it is not. Nobody pays for nothing.
+- 📖 **Stories**: a complete viewer — sound, gestures, likes, private replies, tips and reports — opened from the ring on a creator's profile.
+- 🧭 **Explorer**: discovery that is never empty — sections, full-text search, normalised tags, public videos only.
+- 💸 **90 % to the creator**: the platform fee (10 % by default, `PLATFORM_FEE_PERCENTAGE`) and the creator's credit are written once, together, on the ledger.
+- 🤝 **Social graph**: creators approve their followers (followers-only videos), people become mutual contacts (contacts-only videos); public and private playlists.
 - 🧹 **Moderation**: operators take videos down with a recorded reason (and restore them), suspend accounts with immediate effect, change roles — from the admin console.
 - 📒 **Double-entry ledger**: platform fee and creator credit always add up to the gross; balances are computed from the ledger; concurrent payout requests are serialised.
 - 🛡️ **18 U.S.C. § 2257 & safety**: 18+ certification at sign-up, creator verification before upload, persisted content reports (non-consensual content, suspected minors, DMCA).
