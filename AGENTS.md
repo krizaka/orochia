@@ -84,11 +84,10 @@ orochia/                           npm workspaces
 │   └── components/                UI (player, modals, dashboard panels, relationship actions…)
 ├── packages/db/                   Drizzle schema (source of truth), migrations, migrator, seed
 ├── packages/media/                Bunny Stream client, Tus signing, signed playback tokens, webhook verifier
-├── packages/push/                 the mobile push client (Expo Push Service → FCM / APNs), pure and tested
-├── packages/realtime/             the realtime bus behind one interface (memory · PostgreSQL LISTEN/NOTIFY · Redis/Valkey),
-│                                  presence (heartbeat + TTL), SSE framing — knows nothing of Orochia
 ├── packages/payments/             gateway adapters, payment intents, settlement, double-entry ledger, payouts,
 │                                  credits, auctions and challenges (rules + state machine)
+│   (from npm, krizaka-ui)         @krizaka/realtime — the realtime bus (memory · PostgreSQL LISTEN/NOTIFY · Redis/Valkey),
+│                                  presence (heartbeat + TTL), SSE framing · @krizaka/push — Expo Push → FCM / APNs
 ├── deploy/                        Dockerfile (bundled migrator), compose (dev/prod), Caddy, DigitalOcean spec
 ├── e2e/                           HTTP feature scenarios
 ├── scripts/                       setup, db lifecycle, workspace, docs generation
@@ -252,7 +251,7 @@ orochia/                           npm workspaces
   are never on it.
 - **Notifications** (`lib/notifications.ts`, `docs/NOTIFICATIONS.md`): each event is written to `notifications` (the bell,
   `/notifications`), pushed live to open pages over SSE (a toast + the bell), pushed to the account's phones
-  (`lib/push.ts` → `packages/push`, Expo Push → FCM / APNs, only in production or with `PUSH_DELIVERY=on`; a message is
+  (`lib/push.ts` → `@krizaka/push`, Expo Push → FCM / APNs, only in production or with `PUSH_DELIVERY=on`; a message is
   not pushed to someone whose presence is `online` — it is on their screen already) and e-mailed; both channels are on by default and each event can be turned off on either
   (`profiles.in_app_off`, `profiles.notifications_off`). E-mail pace: `profiles.email_frequency` INSTANT · HOURLY
   (one an hour at most, claimed atomically) · NONE. E-mail only to verified active addresses; sent after the action
@@ -324,11 +323,12 @@ orochia/                           npm workspaces
 - Refusals a client acts on carry a stable `code` (`HttpError(status, message, { code }, headers)`); the UI words them
   through `lib/api-errors.ts` (`apiErrors.<code>` in `en.json`), never by parsing the English message.
 - **Realtime goes through `lib/realtime.ts` only** (`publish` / `subscribe` / `sseResponse`), over the `RealtimeBus` of
-  `packages/realtime` chosen by `REALTIME_BUS`: `postgres` (default — `NOTIFY` to every instance's `LISTEN`
+  `@krizaka/realtime` (npm) chosen by `REALTIME_BUS`: `postgres` (default — `NOTIFY` to every instance's `LISTEN`
   connection, `packages/db/src/listen.ts`, no broker) or `redis` (Redis / Valkey, `REDIS_URL`); business code never
   knows which ([ADR 0001](docs/adr/0001-realtime-transport.md)). Topics `user:<id>`, `presence:<id>`, `auction:<id>`
   and `challenge:<id>`; payloads are small facts (≤ 8 KB), never documents — what must not be lost is in the database
-  and replayed from it. `DATABASE_URL` must be a direct connection (not a transaction pooler). Background loops start
+  and replayed from it. The NOTIFY channel is `orochia_events`, the Redis prefix `orochia:rt:` (`REALTIME_PREFIX`) — keep
+  them: instances of two versions share them during a deploy. `DATABASE_URL` must be a direct connection (not a transaction pooler). Background loops start
   in `instrumentation.ts` and share work with `FOR UPDATE SKIP LOCKED`.
 - **Chat and presence** (`docs/NOTIFICATIONS.md` §5): one stream per tab or app (`/api/conversations/stream`,
   resumable with `Last-Event-ID: m<seq>`); a message is ordered by `seq` (assigned under the conversation's row lock)

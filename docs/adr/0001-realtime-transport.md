@@ -1,6 +1,6 @@
 # ADR 0001 — Realtime transport for chat and presence
 
-**Status**: accepted (2026-10-11) · **Scope**: Orochia web + mobile · **Code**: `packages/realtime`, `apps/web/lib/realtime.ts`
+**Status**: accepted (2026-10-11) · **Scope**: Orochia web + mobile · **Code**: [`@krizaka/realtime`](https://github.com/krizaka/krizaka-ui/tree/main/packages/realtime) (was `packages/realtime`), `apps/web/lib/realtime.ts`
 
 ## Context
 
@@ -74,6 +74,7 @@ locally (NOTIFY needs no LISTEN — it now always notifies).
   keeps `react-native-sse` and adds `?after=<seq>` on reconnect.
 - The bus is best-effort; durability is the database's: messages are replayed from `seq`, receipts and unread counts
   reloaded on reconnect.
-- `@orochia/realtime` is the candidate `@krizaka/realtime` brick ([krizaka/krizaka-ui#75](https://github.com/krizaka/krizaka-ui/issues/75):
-  a TypeScript package beside `@krizaka/i18n`; `krizaka-platform-kit` is the JVM side) — not published until a second
-  product needs it. The presence dot is local until `Avatar` has a status ([krizaka/krizaka-ui#74](https://github.com/krizaka/krizaka-ui/issues/74)).
+- `@orochia/realtime` was the candidate `@krizaka/realtime` brick ([krizaka/krizaka-ui#75](https://github.com/krizaka/krizaka-ui/issues/75):
+  a TypeScript package beside `@krizaka/i18n`; `krizaka-platform-kit` is the JVM side). **2026-10-11**: a second
+  product (Yazakia) needs it — published as `@krizaka/realtime` (and `packages/push` as `@krizaka/push`); Orochia
+  consumes the npm versions, same API, its channel and prefix passed explicitly. The presence dot is local until `Avatar` has a status ([krizaka/krizaka-ui#74](https://github.com/krizaka/krizaka-ui/issues/74)).

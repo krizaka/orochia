@@ -38,7 +38,7 @@ latency stays under 80 ms at 2 000 streams on one instance ([ADR 0001](adr/0001-
 ## 3. One bus, chosen by configuration
 
 `apps/web/lib/realtime.ts` is the only door: `publish(topic, event)` → the **`RealtimeBus`** of
-[`packages/realtime`](../packages/realtime) → every instance's subscribers → the SSE streams they hold. Topics:
+[`@krizaka/realtime`](https://www.npmjs.com/package/@krizaka/realtime) → every instance's subscribers → the SSE streams they hold. Topics:
 `user:<id>` (notifications, messages, receipts, typing, the unread count), `presence:<id>` (one account's presence,
 followed only by the streams of the people allowed to see it), `auction:<id>`, `challenge:<id>`. Payloads are small
 facts (≤ 8 KB), never documents. Why this transport and not WebSocket, a managed service or a broker:
@@ -50,15 +50,17 @@ facts (≤ 8 KB), never documents. Why this transport and not WebSocket, a manag
 | `redis` + `REDIS_URL` | Redis / Valkey pub/sub, one subscription per channel an instance needs | in Redis (one Lua script per beat, keys that expire) | more instances, ~10 k+ streams, or LISTEN/NOTIFY weighing on the database |
 | `memory` | none (one process) | memory | tests |
 
-The code that publishes never knows which: switching is a variable and a restart. `@orochia/realtime` knows nothing
-of Orochia — it is the candidate `@krizaka/realtime` brick for when a second product needs it
-([krizaka/krizaka-ui#75](https://github.com/krizaka/krizaka-ui/issues/75)).
+The code that publishes never knows which: switching is a variable and a restart. The bus is the Krizaka brick
+[`@krizaka/realtime`](https://github.com/krizaka/krizaka-ui/tree/main/packages/realtime) (extracted from Orochia when a
+second product needed it, [krizaka/krizaka-ui#75](https://github.com/krizaka/krizaka-ui/issues/75)); Orochia hands it
+its LISTEN/NOTIFY primitives (`packages/db/src/listen.ts`), its channel `orochia_events` and its Redis prefix
+`orochia:rt:`.
 
 ## 4. Mobile push
 
 ```
 app (expo-notifications) ──token──▶ POST /api/me/devices ──▶ push_devices
-notify() ──▶ lib/push.ts ──▶ packages/push ──▶ Expo Push Service ──▶ FCM / APNs ──▶ phone
+notify() ──▶ lib/push.ts ──▶ @krizaka/push ──▶ Expo Push Service ──▶ FCM / APNs ──▶ phone
                          ◀── dead tokens (DeviceNotRegistered) are deleted
 ```
 
@@ -71,7 +73,7 @@ notify() ──▶ lib/push.ts ──▶ packages/push ──▶ Expo Push Servi
   `PUSH_DELIVERY=off` stops them in production too.
 - **Why Expo Push and not Firebase directly**: one HTTP call and one kind of token for both platforms, no Admin SDK
   and no service-account key on the server. Firebase is still underneath for Android — its credentials live in the
-  app's EAS project (below). Switching to FCM HTTP v1 directly later only changes `packages/push`.
+  app's EAS project (below). Switching to FCM HTTP v1 directly later only changes `@krizaka/push`.
 
 ### To turn it on (once)
 
@@ -141,8 +143,9 @@ instances, `REALTIME_BUS=redis` (DigitalOcean Managed Caching, Valkey) — [DEPL
 ## 6. Where the code is
 
 ```
-packages/realtime/                       the bus interface, memory / PostgreSQL / Redis adapters, presence, SSE framing
+@krizaka/realtime (npm)                  the bus interface, memory / PostgreSQL / Redis adapters, presence, SSE framing
 apps/web/lib/realtime.ts                 the door: picks the bus (REALTIME_BUS), publish / subscribe / sseResponse
+apps/web/lib/realtime.integration.test.ts  the wiring against real PostgreSQL and Valkey (REALTIME_IT=1, CI e2e job)
 apps/web/lib/chat-stream.ts              the account's stream: replay, delivery, presence heartbeat, circle filter
 apps/web/lib/presence.ts                 circle (SQL), presence views, announcements, last seen
 apps/web/lib/presence-rules.ts           who sees whom (pure, tested)
@@ -154,7 +157,7 @@ apps/web/mail-templates/notification/    the e-mail around a notification (subje
 apps/web/lib/push.ts                     pushToUser, registerDevice, unregisterDevice, the delivery gate
 apps/web/app/api/me/devices/route.ts     register / forget a phone
 apps/web/components/notifications/       the bell, the toasts, useNotifications
-packages/push/                           the Expo Push client (pure, tested)
+@krizaka/push (npm)                      the Expo Push client (pure, tested)
 packages/db/src/schema/push.ts           push_devices
 scripts/realtime-load.mjs                the load test
 ```

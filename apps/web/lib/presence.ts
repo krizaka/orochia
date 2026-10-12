@@ -1,5 +1,5 @@
 import { db, users } from "@orochia/db";
-import { type ConnectionState, DEFAULT_PRESENCE, type PresenceChange, type PresenceState } from "@orochia/realtime";
+import { type ConnectionState, DEFAULT_PRESENCE, type PresenceChange, type PresenceState } from "@krizaka/realtime";
 import { eq, inArray, sql } from "drizzle-orm";
 
 import { PRESENCE_CIRCLE_LIMIT } from "./presence-rules";

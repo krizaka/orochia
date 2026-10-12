@@ -1,10 +1,11 @@
+import { createBus, eventStream, type RealtimeBus, type SseFrame } from "@krizaka/realtime";
+import { redisBus } from "@krizaka/realtime/redis";
 import { listenChannel, notifyChannel } from "@orochia/db";
-import { createBus, eventStream, type RealtimeBus, type SseFrame } from "@orochia/realtime";
 
 import { realtimeConfig } from "./env";
 
 /**
- * The realtime door: everything that is pushed live goes through here. The transport is `@orochia/realtime`'s
+ * The realtime door: everything that is pushed live goes through here. The transport is `@krizaka/realtime`'s
  * `RealtimeBus` — PostgreSQL LISTEN/NOTIFY by default, Redis / Valkey with `REALTIME_BUS=redis` — chosen by
  * configuration; the code that publishes and subscribes never knows which.
  *
@@ -13,6 +14,9 @@ import { realtimeConfig } from "./env";
  * Payloads are small facts (≤ 8 KB), never documents: what must not be lost lives in the database and is replayed
  * from it (lib/chat-stream.ts).
  */
+
+/** The PostgreSQL NOTIFY channel of Orochia (every instance LISTENs on it — packages/db/src/listen.ts). */
+export const CHANNEL = "orochia_events";
 
 // One bus per process, kept across hot reloads in development.
 const holder = globalThis as unknown as { __orochiaBus?: RealtimeBus };
@@ -23,6 +27,8 @@ export function realtimeBus(): RealtimeBus {
     holder.__orochiaBus = createBus({
       kind: config.kind,
       postgres: { listen: listenChannel, notify: notifyChannel },
+      channel: CHANNEL,
+      redisBus,
       redisUrl: config.redisUrl,
       prefix: config.prefix,
     });

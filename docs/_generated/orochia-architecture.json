@@ -1463,30 +1463,6 @@
         "description": "Gateway adapters (CCBill, Segpay, NowPayments, Stripe), payment intents, exactly-once settlement, the double-entry ledger, credits, payouts, auctions and challenges."
       },
       {
-        "id": "orochia-push",
-        "name": "@orochia/push",
-        "role": "library",
-        "owner": "orochia",
-        "repository": "orochia",
-        "path": "packages/push",
-        "runtime": "node",
-        "version": "1.0.0",
-        "published": false,
-        "description": "Mobile push, without an SDK: the Expo Push Service (https://exp.host/--/api/v2/push/send) relays to Firebase Cloud Messaging on Android and to the Apple Push Notification service on iOS, from one HTTP call and one kind of token (`ExponentPushToken[…]`)."
-      },
-      {
-        "id": "orochia-realtime",
-        "name": "@orochia/realtime",
-        "role": "library",
-        "owner": "orochia",
-        "repository": "orochia",
-        "path": "packages/realtime",
-        "runtime": "node",
-        "version": "1.0.0",
-        "published": false,
-        "description": "The realtime layer behind one interface: a bus (publish / subscribe by channel) and presence (who is connected), with a memory, a PostgreSQL LISTEN/NOTIFY and a Redis / Valkey adapter, plus Server-Sent Events framing. Knows nothing of Orochia: the candidate @krizaka/realtime brick."
-      },
-      {
         "id": "orochia-design-system",
         "name": "@krizaka/orochia-design-system",
         "role": "design",
@@ -1545,6 +1521,30 @@
         "version": "0.1.0",
         "published": true,
         "description": "Money, numbers, dates and plurals formatted the same way in every Krizaka product: zero dependency, built on Intl, money from integer minor units only."
+      },
+      {
+        "id": "krizaka-push",
+        "name": "@krizaka/push",
+        "role": "design",
+        "owner": "krizaka",
+        "repository": "krizaka-ui",
+        "path": "node_modules/@krizaka/push",
+        "runtime": "library",
+        "version": "0.1.0",
+        "published": true,
+        "description": "Mobile push without an SDK: the Expo Push Service relays to FCM (Android) and APNs (iOS) from one HTTP call. Pure and dependency-free: batches by 100, never throws, reports the dead tokens to forget."
+      },
+      {
+        "id": "krizaka-realtime",
+        "name": "@krizaka/realtime",
+        "role": "design",
+        "owner": "krizaka",
+        "repository": "krizaka-ui",
+        "path": "node_modules/@krizaka/realtime",
+        "runtime": "library",
+        "version": "0.1.0",
+        "published": true,
+        "description": "Realtime for Node apps behind one interface: a bus (publish / subscribe by channel) and presence (who is connected, by heartbeat and TTL), with memory, PostgreSQL LISTEN/NOTIFY and Redis / Valkey adapters, plus Server-Sent Events framing."
       },
       {
         "id": "krizaka-tailwind",
@@ -1761,14 +1761,6 @@
         "to": "orochia-payments"
       },
       {
-        "from": "orochia-api",
-        "to": "orochia-push"
-      },
-      {
-        "from": "orochia-api",
-        "to": "orochia-realtime"
-      },
-      {
         "from": "orochia-design-system",
         "to": "krizaka-tailwind",
         "version": "2.2.0"
@@ -1824,6 +1816,16 @@
       },
       {
         "from": "orochia-web",
+        "to": "krizaka-push",
+        "version": "0.1.0"
+      },
+      {
+        "from": "orochia-web",
+        "to": "krizaka-realtime",
+        "version": "0.1.0"
+      },
+      {
+        "from": "orochia-web",
         "to": "krizaka-tailwind",
         "version": "2.4.0"
       },
@@ -1860,7 +1862,7 @@
         "from": "orochia-api",
         "to": "expo-push",
         "kind": "http",
-        "via": "@orochia/push · send"
+        "via": "@krizaka/push · send"
       },
       {
         "from": "orochia-api",
@@ -1963,6 +1965,12 @@
         "to": "stripe",
         "kind": "http",
         "via": "hosted checkout page"
+      },
+      {
+        "from": "postgresql",
+        "to": "orochia-api",
+        "kind": "notify",
+        "via": "LISTEN/NOTIFY orochia_events"
       },
       {
         "from": "expo-push",

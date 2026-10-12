@@ -26,8 +26,9 @@ The repository is organized as an enterprise-grade TypeScript monorepo:
 | `packages/db` | `@orochia/db` | PostgreSQL schema, Drizzle ORM relations, migrations, connection pool, and development seed factory. |
 | `packages/media` | `@orochia/media` | Bunny.net Stream SDK wrapper, direct Tus signing, HMAC-SHA256 playlist token generator, and webhook verification. |
 | `packages/payments` | `@orochia/payments` | Unified adapter interfaces for CCBill, Segpay, Crypto, and Stripe; atomic double-entry tips ledger. |
-| `packages/push` | `@orochia/push` | Mobile push through the Expo Push Service (FCM / APNs), without an SDK. |
 | `packages/config` | `@orochia/config` | Shared TypeScript, ESLint, and Tailwind presets. |
+| npm | `@krizaka/realtime` | The realtime bus (memory · PostgreSQL LISTEN/NOTIFY · Redis / Valkey), presence and SSE framing — a Krizaka brick, wired in `apps/web/lib/realtime.ts`. |
+| npm | `@krizaka/push` | Mobile push through the Expo Push Service (FCM / APNs), without an SDK — a Krizaka brick, used by `apps/web/lib/push.ts`. |
 | `deploy/` | Infrastructure | Multi-stage Dockerfiles, Docker Compose dev/prod environments, and DigitalOcean App Platform spec. |
 
 ---
