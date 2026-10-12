@@ -3,7 +3,7 @@
  * End-to-end feature scenarios against a running Orochia on a freshly seeded database:
  * approved followers, contacts, invited-only videos and audience lists, collections and their permissions, views, likes, comments, shares, search, explore (sections, tags, no leak), creator edits, takedowns, suspensions,
  * role changes, the wallet, auctions and challenges, realtime chat and presence (live streams, receipts, typing, resume) —
- * each checked through the HTTP API with real sessions.
+ * native sign-up (the app's device id, a bearer session), each checked through the HTTP API with real sessions.
  *
  *   npm run db:reset -- --yes && npm run dev      # in another terminal
  *   npm run test:e2e                              # OROCHIA_URL defaults to http://localhost:3000
@@ -379,6 +379,48 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
     check("'finished' (3) makes the video READY and listed", (await (await send(3)).json()).status === "READY" && (await listed()));
     check("a late 'encoding' (2) never un-publishes it", (await (await send(2)).json()).status === "READY" && (await listed()));
   }
+}
+
+// Native sign-up (krizaka/orochia-mobile): the same rules as the web form — form token, minimal delay, 18+ checked by
+// the server, per-device limit — with the app's device id in a header and the session as a bearer token, never a cookie.
+{
+  const ip = freshIp();
+  const device = `e2eNative_${Date.now().toString(36)}_device`;
+  const app = { "User-Agent": "Orochia/1 CFNetwork/3826 Darwin/25.0.0", "X-Forwarded-For": ip, "X-Orochia-Device": device };
+  const noDevice = await fetch(`${B}/api/auth/register?client=native`, { headers: { "X-Forwarded-For": ip } });
+  check("native sign-up: the form needs the app's device id (400 DEVICE_ID_INVALID)", noDevice.status === 400 && (await noDevice.json()).code === "DEVICE_ID_INVALID");
+  const open = await fetch(`${B}/api/auth/register?client=native`, { headers: app });
+  const { formToken } = await open.json();
+  check("…the form token is bound to it, and no cookie is set", open.status === 200 && typeof formToken === "string" && !open.headers.get("set-cookie"));
+  await sleep(MIN_FILL_MS);
+  const stamp = Date.now().toString(36);
+  const person = { username: `app_${stamp}`, email: `app_${stamp}@example.com`, displayName: "App Member", password: "an-app-password-1", dateOfBirth: "1992-05-04", isAgeVerified: true, acceptTerms: true, client: "native", formToken };
+  const post = (body, headers = app) => fetch(`${B}/api/auth/register`, { method: "POST", headers: { "Content-Type": "application/json", ...headers }, body: JSON.stringify(body) });
+  const elsewhere = await post(person, { ...app, "X-Orochia-Device": `${device}_other` });
+  check("…another device cannot reuse it (FORM_TOKEN_INVALID)", elsewhere.status === 400 && (await elsewhere.json()).code === "FORM_TOKEN_INVALID");
+  const young = new Date();
+  young.setUTCFullYear(young.getUTCFullYear() - 17);
+  const minor = await post({ ...person, dateOfBirth: young.toISOString().slice(0, 10) });
+  check("…a minor is refused by the server, whatever the boxes say (403)", minor.status === 403);
+  const created = await post(person);
+  const reg = await created.json();
+  check("…an adult's account is created with a session token in the answer, no cookie", created.status === 201 && reg.verificationRequired === true && typeof reg.token === "string" && !created.headers.get("set-cookie"), JSON.stringify(reg));
+  const bearer = (path, method = "GET", body) =>
+    fetch(B + path, { method, headers: { Authorization: `Bearer ${reg.token}`, ...(body ? { "Content-Type": "application/json" } : {}) }, body: body ? JSON.stringify(body) : undefined });
+  const before = await (await bearer("/api/auth/me")).json();
+  check("…signed in, e-mail not verified yet, and no new token while nothing changed", before.user?.username === person.username && before.user.emailVerified === false && !before.token);
+  check("…which can do nothing else yet", (await bearer("/api/me/wallet")).status === 403);
+  const resent = await bearer("/api/auth/resend-verification", "POST");
+  const link = (await resent.json()).devVerificationUrl ?? reg.devVerificationUrl;
+  check("…the app can ask for the link again", resent.status === 200 && typeof link === "string");
+  const verified = await fetch(`${B}/api/auth/verify-email`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token: new URL(link).searchParams.get("token") }) });
+  check("…the link opened anywhere verifies the address", verified.status === 200);
+  const after = await (await bearer("/api/auth/me")).json();
+  check("…and the app's next /api/auth/me answers a refreshed token", after.user?.emailVerified === true && typeof after.token === "string" && after.token !== reg.token);
+  const wallet = await fetch(`${B}/api/me/wallet`, { headers: { Authorization: `Bearer ${after.token}` } });
+  check("…which opens the account", wallet.status === 200);
+  const login = await fetch(`${B}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ identifier: person.username, password: person.password, client: "native" }) });
+  check("…and the new account signs in from the app", login.status === 200 && (await login.json()).emailVerified === true);
 }
 
 // Accounts: an unverified e-mail can only sign in and ask for the link; links point to this origin

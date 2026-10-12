@@ -107,6 +107,12 @@ export async function getSession(): Promise<SessionUser | null> {
   return token ? verifySessionToken(token) : null;
 }
 
+/** How the request's session travels: the browser's cookie, a native app's bearer token, or none. */
+export async function sessionTransport(): Promise<"cookie" | "bearer" | null> {
+  if ((await cookies()).get(SESSION_COOKIE_NAME)?.value) return "cookie";
+  return bearerToken((await headers()).get("authorization")) ? "bearer" : null;
+}
+
 /** The token of an `Authorization: Bearer …` header, if there is one. */
 export function bearerToken(authorization: string | null): string | undefined {
   const match = authorization?.match(/^Bearer\s+([A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)$/);

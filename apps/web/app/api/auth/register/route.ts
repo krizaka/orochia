@@ -10,13 +10,15 @@ import {
   assertHoneypot,
   DEVICE_COOKIE,
   DEVICE_COOKIE_MAX_AGE,
+  DEVICE_HEADER,
   isDeviceId,
   issueFormToken,
   newDeviceId,
+  signupDeviceId,
 } from "@/lib/abuse/signup-guard";
 import { publicChallenge,requireChallenge } from "@/lib/abuse/turnstile";
 import { sendVerificationEmail } from "@/lib/account-tokens";
-import { setSessionCookie } from "@/lib/auth";
+import { SESSION_TTL_SECONDS, setSessionCookie, signSessionToken } from "@/lib/auth";
 import { clientIp } from "@/lib/client-ip";
 import { isDemoMode } from "@/lib/env";
 import { errorResponse, isUniqueViolation, jsonError } from "@/lib/http";
@@ -49,14 +51,24 @@ const RegisterSchema = z.object({
   website: z.string().max(500).optional(),
   /** Cloudflare Turnstile's response, when the bot challenge is on (lib/abuse/turnstile.ts). */
   challengeToken: z.string().max(2048).optional(),
+  /** A native app asks for its session token in the answer (as at sign-in) instead of a cookie. */
+  client: z.enum(["web", "native"]).default("web"),
 });
 
 /**
- * Opens a sign-up form: a signed form token (bound to this browser's device cookie, set here when missing) and the
- * public bot-challenge settings — the form cannot be posted without them.
+ * Opens a sign-up form: a signed form token (bound to this browser's device cookie, set here when missing — or, with
+ * `?client=native`, to the app's device id header) and the public bot-challenge settings — the form cannot be posted
+ * without them.
  */
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    if (req.nextUrl.searchParams.get("client") === "native") {
+      const deviceId = req.headers.get(DEVICE_HEADER)?.trim();
+      if (!isDeviceId(deviceId)) return jsonError(400, "Please try again.", { code: "DEVICE_ID_INVALID" });
+      const response = NextResponse.json({ success: true, formToken: issueFormToken(deviceId), challenge: publicChallenge() });
+      response.headers.set("Cache-Control", "no-store");
+      return response;
+    }
     const jar = await cookies();
     const existing = jar.get(DEVICE_COOKIE)?.value;
     const deviceId = isDeviceId(existing) ? existing : newDeviceId();
@@ -79,7 +91,8 @@ export async function GET() {
 
 /**
  * Creates an account (a member — creators are opened later, never an administrator), signs it in and e-mails the link that
- * verifies its address — until then the account can do nothing else.
+ * verifies its address — until then the account can do nothing else. A native app (`client: "native"`) receives its
+ * session token in the answer, never a cookie.
  */
 export async function POST(req: NextRequest) {
   try {
@@ -88,8 +101,9 @@ export async function POST(req: NextRequest) {
     refuseAutomation(req.headers);
     const ip = clientIp(req.headers);
     await enforceRateLimit(`register:${ip ?? "unknown"}`, 5, 60 * 60, "Too many registrations. Try again later.");
-    const deviceId = (await cookies()).get(DEVICE_COOKIE)?.value;
-    if (isDeviceId(deviceId)) await enforceRateLimit(`register-device:${deviceId}`, 3, 24 * 60 * 60, "Too many registrations. Try again later.");
+    // The browser's device cookie, or the native app's device id header (lib/abuse/signup-guard.ts).
+    const deviceId = signupDeviceId(req.headers, (await cookies()).get(DEVICE_COOKIE)?.value);
+    if (deviceId) await enforceRateLimit(`register-device:${deviceId}`, 3, 24 * 60 * 60, "Too many registrations. Try again later.");
 
     const input = RegisterSchema.parse(await req.json());
     assertHoneypot(input.website);
@@ -97,7 +111,7 @@ export async function POST(req: NextRequest) {
     assertEmailDomainAllowed(input.email);
     await requireChallenge(input.challengeToken, { ip, failMode: "closed" });
     const dateOfBirth = checkDateOfBirth(input.dateOfBirth);
-    if (isReserved(input.username)) return jsonError(400, "This username is reserved. Choose another one.");
+    if (isReserved(input.username)) return jsonError(400, "This username is reserved. Choose another one.", { code: "USERNAME_RESERVED" });
 
     const account = await db.transaction(async (tx) => {
       const [user] = await tx
@@ -125,18 +139,26 @@ export async function POST(req: NextRequest) {
     const link = await sendVerificationEmail(account);
     // Demo mode only (never production): the link is also returned, so the flow can be tested end to end.
     const devVerificationUrl = isDemoMode() ? link : undefined;
-    const response = NextResponse.json({ success: true, verificationRequired: true, devVerificationUrl }, { status: 201 });
-    setSessionCookie(response, {
+    const session = {
       id: account.id,
       username: account.username,
       email: account.email,
       role: account.role,
       isAgeVerified: account.isAgeVerified,
       emailVerified: false,
-    });
+    };
+    // A native app keeps the token in the device's secure storage; a browser gets it only as an httpOnly cookie.
+    if (input.client === "native") {
+      return NextResponse.json(
+        { success: true, verificationRequired: true, devVerificationUrl, token: signSessionToken(session), expiresIn: SESSION_TTL_SECONDS },
+        { status: 201 },
+      );
+    }
+    const response = NextResponse.json({ success: true, verificationRequired: true, devVerificationUrl }, { status: 201 });
+    setSessionCookie(response, session);
     return response;
   } catch (error) {
-    if (isUniqueViolation(error)) return jsonError(409, "Username or e-mail already registered");
+    if (isUniqueViolation(error)) return jsonError(409, "Username or e-mail already registered", { code: "ACCOUNT_EXISTS" });
     return errorResponse(error, "auth/register");
   }
 }

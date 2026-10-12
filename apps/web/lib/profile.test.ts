@@ -52,6 +52,19 @@ describe("date of birth", () => {
     expect(() => checkDateOfBirth("2012-02-30", today)).toThrow(/Invalid/);
     expect(() => checkDateOfBirth("1890-01-01", today)).toThrow(/Invalid/);
   });
+  it("names its refusals with a stable code (the native app puts them on the birth-date field)", () => {
+    const codeOf = (iso: string): string | undefined => {
+      try {
+        checkDateOfBirth(iso, today);
+        return undefined;
+      } catch (error) {
+        return (error as { extra?: { code?: string } }).extra?.code;
+      }
+    };
+    expect(codeOf("2008-10-09")).toBe("UNDERAGE");
+    expect(codeOf("2012-02-30")).toBe("BIRTH_DATE_INVALID");
+    expect(codeOf("1890-01-01")).toBe("BIRTH_DATE_INVALID");
+  });
 });
 
 describe("notifications", () => {
