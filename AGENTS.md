@@ -237,8 +237,11 @@ orochia/                           npm workspaces
   provider offered only when its keys are set. The provider's user id is the key (`auth_identities`); an address the
   provider verified links to the existing account. A new person completes the account (username, 18+ certification,
   terms) before it exists — the certifications never come from a provider.
-- **One kind of account at registration** (MEMBER). A member opens a creator space later
-  (`/api/me/become-creator`): it becomes CREATOR pending the 2257 review and keeps tipping and unlocking.
+- **One kind of account at registration** (MEMBER). A member opens a creator space later on the same account
+  (`/creator/apply` → `/api/me/become-creator`, a recorded date of birth required): it becomes CREATOR pending the 2257
+  review and keeps tipping and unlocking; an operator making someone a creator does not skip the review. Every call to
+  action follows the viewer's state (`lib/creator-journey.ts`: visitor · member · pending · creator · suspended) and **a
+  signed-in person is never sent to the sign-up form** — [`docs/CREATOR_ONBOARDING.md`](docs/CREATOR_ONBOARDING.md).
 - An account whose e-mail is not verified can only sign in and ask for the link again: `requireUserWithRole` refuses
   it everything else, `getCurrentUser` treats it as a visitor, and the UI shows only the verification page.
 - Sessions are stateless signed tokens — an httpOnly cookie in the browser; for the native app ([`orochia-mobile`](https://github.com/krizaka/orochia-mobile)) the same token from `POST /api/auth/login` with `client: "native"`, kept in the device's secure storage and sent as `Authorization: Bearer` — but **authorisation is not**: `requireUserWithRole` re-reads the account,

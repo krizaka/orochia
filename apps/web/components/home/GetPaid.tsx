@@ -5,6 +5,7 @@ import React from "react";
 
 import { BackdropMedia } from "@/components/home/BackdropMedia";
 import { Button, buttonVariants, cn, IsoHub, SectionBackdrop } from "@/components/ui";
+import { CREATOR_APPLY_PATH, signUpHref } from "@/lib/creator-journey";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
 import { SOURCE_URL } from "@/lib/seo";
@@ -154,7 +155,7 @@ export function GetPaid({ fee }: { fee: number }) {
 
         <div data-reveal className="mt-12 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Button asChild variant="primary" size="lg" shimmer className="w-full gap-2 sm:w-auto">
-            <Link href="/auth/register">
+            <Link href={signUpHref(CREATOR_APPLY_PATH)}>
               <PayoutIcon size={18} /> {t("home.paid.cta")}
             </Link>
           </Button>

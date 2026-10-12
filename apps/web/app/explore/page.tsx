@@ -13,10 +13,12 @@ import { StoryTile } from "@/components/explore/StoryTile";
 import { TagChip } from "@/components/explore/TagChip";
 import { Button, buttonVariants, EmptyState, Input, SectionBackdrop } from "@/components/ui";
 import { VideoCard } from "@/components/VideoCard";
-import { getCurrentUser, type SessionUser } from "@/lib/auth";
+import { type SessionUser } from "@/lib/auth";
+import { creatorSpaceCta, type ViewerState } from "@/lib/creator-journey";
 import { unlessUnavailable } from "@/lib/degrade";
 import { discoverableTags, exploreResults, exploreSectionsSettled, exploreTag, type ExploreVideo } from "@/lib/explore";
 import { t } from "@/lib/i18n";
+import { getViewer } from "@/lib/viewer";
 
 export const dynamic = "force-dynamic";
 
@@ -36,14 +38,16 @@ function exploreHref(p: Params): string {
   return s ? `/explore?${s}` : "/explore";
 }
 
-/** Where an empty section sends each kind of viewer: creators publish, members open a creator space, visitors join. */
-function ctas(user: SessionUser | null) {
-  const isCreator = user?.role === "CREATOR" || user?.role === "ADMIN";
-  const publish: SectionCta = isCreator
-    ? { href: "/creator/upload", label: t("explore.cta.publish") }
-    : user
-      ? { href: "/creator/upload", label: t("explore.cta.becomeCreator") }
-      : { href: "/auth/register", label: t("explore.cta.join") };
+/**
+ * Where an empty section sends each kind of viewer (lib/creator-journey.ts): a creator publishes, a member opens the
+ * creator space of their account, a pending creator follows their review, a visitor signs up — then the application.
+ */
+function ctas(user: SessionUser | null, state: ViewerState) {
+  const isCreator = state === "creator";
+  const space = creatorSpaceCta(state);
+  const publish: SectionCta = space
+    ? { href: space.href, label: isCreator ? t("explore.cta.publish") : state === "anonymous" ? t("explore.cta.join") : t(space.label) }
+    : { href: "/explore", label: t("explore.cta.backToExplore") };
   return {
     publish,
     story: isCreator && user ? { href: `/@${user.username}`, label: t("explore.cta.shareStory") } : publish,
@@ -78,7 +82,7 @@ export default async function ExplorePage(props: { searchParams: Promise<Params>
   // One address per tag: `?tag=BTS` becomes `?tag=behind-the-scenes`.
   if (rawTag && tag !== rawTag) redirect(exploreHref({ q: q || undefined, tag: tag ?? undefined, view: all ? "all" : undefined }));
 
-  const user = await getCurrentUser();
+  const { user, state } = await getViewer();
   const searching = Boolean(q || tag || all);
 
   return (
@@ -115,7 +119,7 @@ export default async function ExplorePage(props: { searchParams: Promise<Params>
       </SectionBackdrop>
 
       <div className="mx-auto max-w-7xl space-y-14 px-4 pt-4 sm:px-6">
-        {searching ? <Results q={q} tag={tag} page={page} all={all} user={user} /> : <Sections user={user} />}
+        {searching ? <Results q={q} tag={tag} page={page} all={all} user={user} /> : <Sections user={user} state={state} />}
       </div>
     </div>
   );
@@ -145,9 +149,9 @@ async function ExploreTags({ current, q }: { current: string | null; q: string }
 }
 
 /** The six discovery sections. */
-async function Sections({ user }: { user: SessionUser | null }) {
+async function Sections({ user, state }: { user: SessionUser | null; state: ViewerState }) {
   const { sections: s, unavailable } = await exploreSectionsSettled(user);
-  const cta = ctas(user);
+  const cta = ctas(user, state);
   return (
     <>
       <ExploreSection

@@ -6,12 +6,19 @@ import { t } from "@/lib/i18n";
 import { SocialSignIn } from "@/components/SocialSignIn";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { safeNext, signUpHref } from "@/lib/creator-journey";
 import { LogIn, Lock, Mail, ArrowRight, Sparkles } from "lucide-react";
 import { Button, Field, Input, OrochiaLogo } from "@/components/ui";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, switchProfile, demoMode } = useAuth();
+  const { login, switchProfile, demoMode, user, isLoading: sessionLoading } = useAuth();
+  // ?next= — where to go once signed in; a signed-in person is sent there at once (same-site paths only).
+  const [next, setNext] = useState<string | null>(null);
+  useEffect(() => setNext(safeNext(new URLSearchParams(window.location.search).get("next"))), []);
+  useEffect(() => {
+    if (!sessionLoading && user?.emailVerified) router.replace(safeNext(new URLSearchParams(window.location.search).get("next")) ?? "/dashboard");
+  }, [sessionLoading, user, router]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -32,8 +39,7 @@ export default function LoginPage() {
     try {
       await login(email, password);
       // Back where the visitor was sent from (?next=/creator/upload) — same-site paths only.
-      const next = new URLSearchParams(window.location.search).get("next");
-      router.push(next && /^\/(?!\/)/.test(next) ? next : "/dashboard");
+      router.push(next ?? "/dashboard");
     } catch (err) {
       setError(err instanceof Error && err.message ? err.message : t("auth.login.failed"));
     } finally {
@@ -148,7 +154,7 @@ export default function LoginPage() {
 
         <p className="mt-6 text-center text-xs text-fg-secondary">
           {t("auth.login.new")}{" "}
-          <Link href="/auth/register" className="font-semibold text-accent hover:underline">
+          <Link href={signUpHref(next ?? undefined)} className="font-semibold text-accent hover:underline">
             {t("auth.login.register")}
           </Link>
         </p>

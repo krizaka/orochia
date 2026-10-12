@@ -22,6 +22,8 @@ export interface UserProfile {
   isAgeVerified: boolean;
   /** False until the address is confirmed: the app then shows only the "verify your e-mail" page. */
   emailVerified: boolean;
+  /** A creator's 2257 review approved; false while a creator space waits for it (lib/creator-journey.ts). */
+  isVerified?: boolean;
 }
 
 export interface RegisterInput {

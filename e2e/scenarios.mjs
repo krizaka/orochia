@@ -331,6 +331,7 @@ check("reinstate", (await admin.call(`/api/admin/users/${samUser.id}`, "PATCH", 
 check("sam's session works again", (await sam.call("/api/me/network")).status === 200);
 check("promote sam to creator", (await admin.call(`/api/admin/users/${samUser.id}`, "PATCH", { action: "set-role", role: "CREATOR" })).status === 200);
 check("new role effective without re-login", (await sam.call("/api/creator/payouts")).status === 200);
+check("…a member made creator by an operator still waits for the 2257 review", (await sam.call("/api/stories/upload-session", "POST", { sizeBytes: 1000 })).json.error?.includes("pending"));
 await admin.call(`/api/admin/users/${samUser.id}`, "PATCH", { action: "set-role", role: "MEMBER" });
 check("demotion effective too", (await sam.call("/api/creator/payouts")).status === 403);
 
@@ -427,6 +428,33 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("…still cannot publish until verified", (await me.call("/api/stories/upload-session", "POST", { sizeBytes: 1000 })).json.error?.includes("pending"));
   check("…nor keep editor drafts", (await me.call("/api/me/drafts", "POST", { kind: "STORY", fileName: "a.mp4", contentType: "video/mp4", sizeBytes: 1000, edit: {} })).status === 403);
   check("…and still unlocks like a member", (await me.call("/api/videos/unlock-video", "POST", { videoId: feed[0].id, amountCents: 100, gateway: "CREDITS" })).status !== 403);
+
+  // Calls to action per viewer (docs/CREATOR_ONBOARDING.md): a signed-in person is never sent to the sign-up form; each
+  // state has its own next step — the creator application is a page of *their* account, not a new one.
+  {
+    const page = async (who, path) => {
+      const r = await fetch(B + path, { redirect: "manual", headers: who?.cookie ? { Cookie: who.cookie } : {} });
+      return { status: r.status, location: r.headers.get("location") ?? "", html: r.status === 200 ? await r.text() : "" };
+    };
+    const signUpLink = /href="\/auth\/register/;
+    const visitor = await page(null, "/creator/apply");
+    check("visitor → creator application asks to sign up first, then comes back", visitor.status === 307 && visitor.location.includes("/auth/register?next=%2Fcreator%2Fapply"), `${visitor.status} ${visitor.location}`);
+    check("visitor home offers the sign-up form", signUpLink.test((await page(null, "/")).html));
+    const member = await page(alex, "/creator/apply");
+    check("member → the creator application of their account", member.status === 200 && member.html.includes("Open my creator space") && member.html.includes("@alex_vance"));
+    check("member → upload leads to the application", (await page(alex, "/creator/upload")).location.endsWith("/creator/apply"));
+    for (const [name, who] of [["member", alex], ["verified creator", elena], ["pending creator", me]]) {
+      for (const path of ["/", "/explore", "/dashboard"]) {
+        const html = (await page(who, path)).html;
+        check(`${name} → ${path} never offers the sign-up form`, html.length > 0 && !signUpLink.test(html));
+      }
+    }
+    const pending = await page(me, "/creator/apply");
+    check("pending creator → the status of the 2257 review", pending.status === 200 && pending.html.includes("under review") && !pending.html.includes("Open my creator space"));
+    check("pending creator → upload leads to the review status", (await page(me, "/creator/upload")).location.endsWith("/creator/apply"));
+    check("verified creator → the application leads to the studio", (await page(elena, "/creator/apply")).location.includes("/dashboard?tab=uploads"));
+    check("verified creator → upload opens", (await page(elena, "/creator/upload")).status === 200);
+  }
 }
 
 // Profile: links, pictures, date of birth, notifications, public pages

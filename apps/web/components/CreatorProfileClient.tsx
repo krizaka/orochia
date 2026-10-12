@@ -7,7 +7,8 @@ import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
 import { PlaylistCard, type PlaylistCardProps } from "@/components/PlaylistCard";
 import { TipModal } from "@/components/TipModal";
 import { t } from "@/lib/i18n";
-import { cn, Tabs } from "@/components/ui";
+import { buttonVariants, cn, Tabs } from "@/components/ui";
+import Link from "next/link";
 
 interface CreatorProfileClientProps {
   creator: {
@@ -28,12 +29,15 @@ interface CreatorProfileClientProps {
   };
   videos: VideoCardProps[];
   playlists: PlaylistCardProps[];
+  /** On your own page: what to do when a section is empty (upload, your review, open a creator space). */
+  emptyAction?: { href: string; label: string };
 }
 
 export function CreatorProfileClient({
   creator,
   videos,
   playlists,
+  emptyAction,
 }: CreatorProfileClientProps) {
   // The open tab is in the address (?tab=…), so a link to it opens it.
   type ProfileTab = "all" | "ppv" | "playlists" | "about";
@@ -102,6 +106,13 @@ export function CreatorProfileClient({
               ) : filteredVideos.length === 0 ? (
                 <div className="rounded-3xl border border-border-default bg-surface-2/40 p-12 text-center text-sm text-fg-secondary">
                   {t("profileTabs.empty")}
+                  {emptyAction && (
+                    <div className="mt-4">
+                      <Link href={emptyAction.href} className={buttonVariants({ variant: "secondary", size: "sm", shape: "pill" })}>
+                        {emptyAction.label}
+                      </Link>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">

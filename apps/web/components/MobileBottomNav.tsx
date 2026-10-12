@@ -7,6 +7,7 @@ import React from "react";
 
 import { Avatar, cn } from "@/components/ui";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
+import { creatorSpaceCta, viewerStateOf } from "@/lib/creator-journey";
 import { t } from "@/lib/i18n";
 
 /**
@@ -16,7 +17,10 @@ import { t } from "@/lib/i18n";
  */
 export function MobileBottomNav() {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+  // Create: upload (verified creator), the creator application of this account (member, pending), sign up first (visitor).
+  // While the session is read, /creator/upload: the server sends each viewer to their own step.
+  const create = creatorSpaceCta(viewerStateOf(user ? { role: user.role, isVerified: user.isVerified ?? true } : null));
   const tab = (active: boolean) =>
     `flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors ${
       active ? "text-fg-accent" : "text-fg-secondary"
@@ -32,7 +36,7 @@ export function MobileBottomNav() {
         <Link href="/explore" className={tab(pathname.startsWith("/explore"))}>
           <GlobeIcon size={22} /> {t("nav.explore")}
         </Link>
-        <Link href={user ? "/creator/upload" : "/auth/register"} className="-mt-5 flex flex-col items-center justify-self-center" aria-label={t("nav.create")}>
+        <Link href={isLoading ? "/creator/upload" : (create?.href ?? "/")} className="-mt-5 flex flex-col items-center justify-self-center" aria-label={t("nav.create")}>
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-tr from-accent via-accent-2 to-accent-2 shadow-lg shadow-accent/40 active:scale-95">
             <PlusIcon size={24} className="text-on-accent" strokeWidth={2.25} />
           </span>
@@ -41,7 +45,9 @@ export function MobileBottomNav() {
         <Link href={user ? "/dashboard?tab=playlists" : "/auth/login?next=/dashboard?tab=playlists"} className={tab(false)}>
           <BookmarkIcon size={22} /> {t("nav.saved")}
         </Link>
-        {user ? (
+        {isLoading ? (
+          <span aria-hidden className={tab(false)} />
+        ) : user ? (
           <Link href="/dashboard" className={tab(accountActive)}>
             <Avatar size="xs" src={user.avatarUrl || AVATAR_PLACEHOLDER} fallback={user.displayName.charAt(0)} className={cn("h-6 w-6", accountActive && "ring-2 ring-ring")} />
             {t("nav.account")}

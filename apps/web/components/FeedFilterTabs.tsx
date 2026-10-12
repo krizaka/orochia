@@ -7,15 +7,57 @@ import React, { useMemo,useState } from "react";
 
 import { Avatar, Badge, buttonVariants, Chip, EmptyState, orochiaButton, Tabs } from "@/components/ui";
 import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
+import { feedEmptyActions, type FeedEmptyKind, type FeedTab, type ViewerState } from "@/lib/creator-journey";
 import { t } from "@/lib/i18n";
 
 interface FeedFilterTabsProps {
   initialVideos: VideoCardProps[];
+  /** Who is looking: each one gets their own next step under an empty feed (lib/creator-journey.ts). */
+  viewer: ViewerState;
+  /** The feed could not be read (the database did not answer): say so, never "no video yet". */
+  unavailable?: boolean;
 }
 
-export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
+/**
+ * An empty feed, said for the person looking at it: the platform has nothing listed yet, or this tab is empty. Signed in,
+ * it never offers the sign-up form — a fan explores or opens their creator space, a creator publishes.
+ */
+function FeedEmpty({ viewer, kind, tab }: { viewer: ViewerState; kind: FeedEmptyKind; tab: FeedTab }) {
+  const actions = feedEmptyActions(viewer, kind, tab);
+  return (
+    <div
+      data-testid="feed-empty"
+      data-viewer={viewer}
+      className="kz-spotlight relative overflow-hidden rounded-3xl border border-border-default bg-surface-2/40 px-6 py-10 text-center"
+    >
+      <div aria-hidden className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-accent to-accent-2 shadow-lg shadow-accent/30">
+        <Clapperboard className="h-6 w-6 text-on-accent" aria-hidden />
+      </div>
+      <h3 className="font-display text-xl font-black text-fg">
+        {kind === "platform" ? t(`feed.empty.platform.${viewer}.title`) : t(`feed.empty.tab.${tab}.title`)}
+      </h3>
+      <p className="mx-auto mt-2 max-w-md text-sm text-fg-secondary">
+        {kind === "platform" ? t(`feed.empty.platform.${viewer}.body`) : t(`feed.empty.tab.${tab}.body`)}
+      </p>
+      {actions.length > 0 && (
+        <div className="mt-5 flex flex-col justify-center gap-2 sm:flex-row">
+          {actions.map((a) => (
+            <Link
+              key={a.href}
+              href={a.href}
+              className={a.primary ? orochiaButton({ variant: "sensual", size: "md", shape: "pill" }) : buttonVariants({ variant: "secondary", size: "md", shape: "pill" })}
+            >
+              {t(a.label)}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function FeedFilterTabs({ initialVideos, viewer, unavailable = false }: FeedFilterTabsProps) {
   // The open tab lives in the address (?feed=…), so a shared link opens the same feed.
-  type FeedTab = "foryou" | "trending" | "vip" | "free" | "contacts";
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -53,30 +95,29 @@ export function FeedFilterTabs({ initialVideos }: FeedFilterTabsProps) {
     { id: "contacts", label: t("feed.tabs.contacts"), icon: Users },
   ] as const;
 
+  const empty = filteredVideos.length === 0 && (
+    unavailable ? (
+      <EmptyState
+        bird="owl"
+        mood="error"
+        title={t("feed.empty.unavailable.title")}
+        description={t("feed.empty.unavailable.body")}
+        className="rounded-3xl bg-surface-2/40"
+        action={
+          <a href={pathname} className={buttonVariants({ variant: "secondary", size: "sm", shape: "pill" })}>
+            {t("feed.empty.unavailable.retry")}
+          </a>
+        }
+      />
+    ) : (
+      <FeedEmpty viewer={viewer} kind={initialVideos.length === 0 ? "platform" : "tab"} tab={activeTab} />
+    )
+  );
+
   const content = (
     <>
-      {filteredVideos.length === 0 ? (
-        initialVideos.length === 0 ? (
-          <div className="space-y-8">
-            <div className="kz-spotlight relative overflow-hidden rounded-3xl border border-border-default bg-surface-2/40 px-6 py-10 text-center">
-              <div aria-hidden className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-accent to-accent-2 shadow-lg shadow-accent/30">
-                <Clapperboard className="h-6 w-6 text-on-accent" aria-hidden />
-              </div>
-              <h3 className="font-display text-xl font-black text-fg">{t("home.empty.title")}</h3>
-              <p className="mx-auto mt-2 max-w-md text-sm text-fg-secondary">{t("home.empty.body")}</p>
-              <div className="mt-5 flex flex-col justify-center gap-2 sm:flex-row">
-                <Link href="/auth/register" className={orochiaButton({ variant: "sensual", size: "md", shape: "pill" })}>
-                  {t("home.empty.join")}
-                </Link>
-                <Link href="/creator/upload" className={buttonVariants({ variant: "secondary", size: "md", shape: "pill" })}>
-                  {t("home.empty.create")}
-                </Link>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <EmptyState bird="owl" title={t("feed.emptyFilter")} className="rounded-3xl bg-surface-2/40" />
-        )
+      {empty ? (
+        empty
       ) : viewMode === "grid" ? (
         /* Grid Layout */
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 kz-fade">

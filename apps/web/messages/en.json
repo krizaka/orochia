@@ -210,16 +210,6 @@
       "honeypot": "Leave this field empty",
       "challenge": "Checking you are a person…"
     },
-    "becomeCreator": {
-      "title": "Publish on Orochia",
-      "body": "Creators upload videos and stories, set who watches them and get paid. Your account keeps everything it does today — you can still tip and unlock.",
-      "cta": "Become a creator",
-      "working": "Opening your creator space…",
-      "pendingTitle": "Verification pending",
-      "pendingBody": "Uploads open once your 18 U.S.C. § 2257 records have been reviewed by our compliance team.",
-      "pendingCta": "What the review checks",
-      "failed": "Your creator space could not be opened. Try again."
-    },
     "social": {
       "google": "Continue with Google",
       "facebook": "Continue with Facebook",
@@ -446,12 +436,6 @@
       "g": "Creators keep {share}%",
       "h": "Open source",
       "i": "Challenges & dares"
-    },
-    "empty": {
-      "title": "The first videos are on their way",
-      "body": "Creators are setting up their spaces. Create your account to follow them first — or open your own.",
-      "join": "Create your free account",
-      "create": "Become a creator"
     },
     "auctions": "Auctions",
     "auctionsAll": "All auctions",
@@ -1201,7 +1185,6 @@
     "shown": "{from}–{to} of {total}"
   },
   "feed": {
-    "emptyFilter": "Nothing here yet in this category — try another tab.",
     "tabs": {
       "foryou": "For you",
       "trending": "Trending",
@@ -1219,7 +1202,66 @@
     "creatorFallback": "creator",
     "unlockFor": "Unlock for {price}",
     "label": "Feeds",
-    "view": "View"
+    "view": "View",
+    "empty": {
+      "platform": {
+        "anonymous": {
+          "title": "The first videos are on their way",
+          "body": "Creators are setting up their spaces. Create your free account to follow them first — or open your own creator space."
+        },
+        "member": {
+          "title": "No video yet — the first creators are setting up",
+          "body": "You’re all set: follow creators as they arrive, explore what is already live — or publish yourself by opening a creator space on this account."
+        },
+        "creator-pending": {
+          "title": "No video yet — yours could be the first",
+          "body": "Your creator space is waiting for its identity and age review. Uploads open as soon as it is approved."
+        },
+        "creator": {
+          "title": "No video yet — be the first to publish",
+          "body": "Your creator space is verified. Upload a video and it opens this feed for everyone allowed to watch it."
+        },
+        "suspended": {
+          "title": "Nothing to show",
+          "body": "This account is suspended: it cannot watch or publish. Contact the platform operator."
+        }
+      },
+      "tab": {
+        "foryou": {
+          "title": "Nothing here yet",
+          "body": "The newest videos land here first."
+        },
+        "trending": {
+          "title": "Nothing trending yet",
+          "body": "Videos climb here as people watch them."
+        },
+        "vip": {
+          "title": "No paid video yet",
+          "body": "Creators unlock some videos for a tip — they will appear here."
+        },
+        "free": {
+          "title": "No free video yet",
+          "body": "Videos anyone can watch will appear here."
+        },
+        "contacts": {
+          "title": "No contacts-only video yet",
+          "body": "Creators keep some videos for their accepted contacts. Find people and ask to be someone’s contact to see theirs."
+        }
+      },
+      "unavailable": {
+        "title": "The feed could not load",
+        "body": "Something went wrong on our side — your account is fine. Try again in a moment.",
+        "retry": "Try again"
+      }
+    },
+    "actions": {
+      "join": "Create your free account",
+      "signIn": "Sign in to see them",
+      "explore": "Explore creators",
+      "findPeople": "Find people",
+      "network": "Your network",
+      "allVideos": "See all videos"
+    }
   },
   "publish": {
     "title": "Publish a video",
@@ -1393,7 +1435,6 @@
     },
     "cta": {
       "publish": "Publish a video",
-      "becomeCreator": "Open your creator space",
       "join": "Join Orochia",
       "shareStory": "Share a story",
       "seeNew": "See the newest videos",
@@ -2606,7 +2647,8 @@
     },
     "MESSAGE_BLOCKED": "You can't send messages to this account.",
     "MESSAGE_YOU_BLOCKED": "You blocked this account. Unblock it to write again.",
-    "MESSAGE_CONTACTS_ONLY": "This account only accepts messages from its contacts."
+    "MESSAGE_CONTACTS_ONLY": "This account only accepts messages from its contacts.",
+    "BIRTH_DATE_REQUIRED": "Add your date of birth in your settings first: Orochia checks you are 18 or older before opening a creator space."
   },
   "charts": {
     "showData": "Show data",
@@ -2666,5 +2708,87 @@
     "explore": "Explore Orochia",
     "sectionTitle": "This part did not load",
     "sectionBody": "The rest of the page works. Try again in a moment."
+  },
+  "creatorSpace": {
+    "cta": {
+      "anonymous": "Become a creator",
+      "member": "Open your creator space",
+      "pending": "See your verification status",
+      "creator": "Upload a video"
+    },
+    "apply": {
+      "metaTitle": "Your creator space",
+      "eyebrow": "Creator space",
+      "member": {
+        "title": "Open your creator space",
+        "lead": "It’s this account, @{username} — no new sign-up. It becomes a creator space and keeps everything it does today: following, tipping, unlocking, messages."
+      },
+      "pending": {
+        "title": "Your creator space is under review",
+        "lead": "Uploads open once Orochia’s compliance team has approved your identity and age records. There is nothing to fill in here meanwhile."
+      },
+      "steps": {
+        "label": "Your way to publishing",
+        "account": {
+          "title": "Your account",
+          "body": "Signed in, e-mail confirmed, 18+ checked by the server from your date of birth."
+        },
+        "accountMissing": {
+          "title": "Your date of birth",
+          "body": "Orochia checks you are 18 or older from it before opening a creator space. Add it in your settings — it is never shown."
+        },
+        "open": {
+          "title": "Open the creator space",
+          "body": "One tap: your account becomes a creator account. Nothing is published, nothing is charged."
+        },
+        "review": {
+          "title": "Identity and age review (18 U.S.C. § 2257)",
+          "body": "The law asks for a record proving every person who publishes is an adult. Today an operator reviews it by hand and writes to {email} if a document is needed; an identity-verification provider will soon do it here."
+        },
+        "publish": {
+          "title": "Publish and get paid",
+          "body": "Videos and 24-hour stories, who sees what, auctions and challenges. You keep {share}% of every payment, sent to the payout account you add (encrypted, only shown masked)."
+        }
+      },
+      "cta": "Open my creator space",
+      "working": "Opening your creator space…",
+      "failed": "Your creator space could not be opened. Try again.",
+      "addBirthDate": "Add your date of birth",
+      "before": {
+        "title": "Until it is approved",
+        "items": {
+          "fan": "Watch, follow, tip, unlock and message — as today",
+          "profile": "Edit your profile: picture, cover, bio, links",
+          "payout": "Add where your earnings will be sent"
+        }
+      },
+      "after": {
+        "title": "Once it is approved",
+        "items": {
+          "upload": "Upload videos and 24-hour stories",
+          "earn": "Auctions, goals, dares — and tips on everything you publish",
+          "badge": "The verified badge on your profile"
+        }
+      },
+      "links": {
+        "profile": "Edit your profile",
+        "payout": "Payout details",
+        "rules": "What the review checks"
+      },
+      "suspended": {
+        "title": "This account is suspended",
+        "body": "A suspended account cannot open a creator space. Contact the platform operator."
+      }
+    },
+    "banner": {
+      "member": {
+        "title": "Publish on Orochia",
+        "body": "Open a creator space on this account — no new sign-up. You keep following, tipping and unlocking."
+      },
+      "pending": {
+        "title": "Your creator space is under review",
+        "body": "Uploads open once your identity and age records (18 U.S.C. § 2257) are approved."
+      }
+    }
   }
 }

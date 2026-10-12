@@ -21,6 +21,7 @@ import { MessagesButton } from "@/components/messages/MessagesButton";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { Avatar, cn,IconButton, OrochiaLogo, ThemeToggle } from "@/components/ui";
 import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
+import { creatorSpaceCta, viewerStateOf } from "@/lib/creator-journey";
 import { t } from "@/lib/i18n";
 
 /**
@@ -29,7 +30,7 @@ import { t } from "@/lib/i18n";
  * (MobileBottomNav), so each action exists once on a phone.
  */
 export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
-  const { user, logout } = useAuth();
+  const { user, isLoading, logout } = useAuth();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -47,6 +48,9 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
   useEffect(() => setMenuOpen(false), [pathname]);
 
   const isCreator = user?.role === "CREATOR" || user?.role === "ADMIN";
+  // Publishing, for this viewer: upload (verified), the creator application (member, pending), sign up first (visitor).
+  const viewerState = viewerStateOf(user ? { role: user.role, isVerified: user.isVerified ?? true } : null);
+  const creatorSpace = creatorSpaceCta(viewerState);
   const navLink = (href: string, label: string) => (
     <Link
       href={href}
@@ -112,7 +116,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
             <>
               <MessagesButton />
               <NotificationBell />
-              {isCreator && (
+              {viewerState === "creator" && (
                 <Link
                   href="/creator/upload"
                   className="hidden items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-xs font-bold text-on-accent shadow-xs transition-colors hover:bg-accent-hover focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring md:flex"
@@ -162,6 +166,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                     )}
                     <div className="my-1 h-px bg-surface-2" />
                     {menuItem("/dashboard", <LayoutDashboard className="h-4 w-4" />, t("nav.dashboard"))}
+                    {creatorSpace && viewerState !== "creator" && menuItem(creatorSpace.href, <Upload className="h-4 w-4" />, t(creatorSpace.label))}
                     {menuItem("/messages", <MessageSquare className="h-4 w-4" />, t("nav.messages"))}
                     {menuItem("/wallet", <Coins className="h-4 w-4" />, t("nav.wallet"))}
                     {menuItem("/dashboard?tab=settings", <Settings className="h-4 w-4" />, t("nav.settings"))}
@@ -177,10 +182,11 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                 )}
               </div>
             </>
-          ) : (
+          ) : isLoading ? null : (
+            // While the session is read, nothing: a signed-in person never sees "Join" flash by.
             <>
               <Link
-                href="/creator/upload"
+                href={creatorSpace?.href ?? "/auth/register"}
                 className="hidden lg:flex items-center gap-1.5 rounded-full border border-border-default bg-accent-soft px-3.5 py-1.5 text-xs font-semibold text-fg-accent transition-colors hover:border-border-strong focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
                 title={t("nav.uploadHint")}
               >
