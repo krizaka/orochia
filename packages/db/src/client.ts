@@ -7,30 +7,154 @@ import * as schema from "./schema";
 const DEV_DATABASE_URL =
   "postgresql://orochia_user:orochia_secret@localhost:5432/orochia_db?sslmode=disable";
 
-let pool: Pool | null = null;
-let dbInstance: NodePgDatabase<typeof schema> | null = null;
+/**
+ * Connections per process when DATABASE_MAX_CONNECTIONS is not set. Small on purpose: a managed or App Platform
+ * PostgreSQL may accept ~22 connections in all, shared by every instance, the rolling deploy's second instance, the
+ * LISTEN connection of each instance and the migrate job. Raise it only with a database (or a pooler) that has room.
+ */
+export const DEFAULT_POOL_SIZE = 5;
+
+/** Above this, a typo (500) would exhaust any database: the value is capped and a warning says so. */
+const MAX_POOL_SIZE = 50;
 
 /** DATABASE_URL is mandatory in production; the local default exists for development only. */
-function connectionString(): string {
+export function databaseUrl(): string {
   const url = process.env.DATABASE_URL;
-  if (url && url.trim()) return url;
+  if (url && url.trim()) return url.trim();
   if (process.env.NODE_ENV === "production") {
     throw new Error("DATABASE_URL is required in production");
   }
   return DEV_DATABASE_URL;
 }
 
-export function getDb(): NodePgDatabase<typeof schema> {
-  if (!dbInstance) {
-    pool = new Pool({
-      ...connectionConfig(connectionString()),
-      max: parseInt(process.env.DATABASE_MAX_CONNECTIONS || "20", 10),
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 5000,
-    });
-    dbInstance = drizzle(pool, { schema });
+/** DATABASE_MAX_CONNECTIONS as a positive integer (default 5, at most 50). */
+export function poolSize(value: string | undefined = process.env.DATABASE_MAX_CONNECTIONS): number {
+  const raw = value?.trim();
+  if (!raw) return DEFAULT_POOL_SIZE;
+  const parsed = Number(raw);
+  if (!Number.isInteger(parsed) || parsed < 1) {
+    console.warn(`[db] DATABASE_MAX_CONNECTIONS="${raw}" is not a positive integer: using ${DEFAULT_POOL_SIZE}`);
+    return DEFAULT_POOL_SIZE;
   }
-  return dbInstance;
+  if (parsed > MAX_POOL_SIZE) {
+    console.warn(`[db] DATABASE_MAX_CONNECTIONS=${parsed} is capped at ${MAX_POOL_SIZE}`);
+    return MAX_POOL_SIZE;
+  }
+  return parsed;
+}
+
+/**
+ * PostgreSQL error codes and network errors that mean "the database is not taking connections" rather than "this
+ * query is wrong": too many connections (53300), starting up / shutting down (57P01-57P03), refused, unreachable,
+ * timed out.
+ */
+const UNAVAILABLE_CODES = new Set(["53300", "53400", "57P01", "57P02", "57P03", "08001", "08004", "08006", "ECONNREFUSED", "ECONNRESET", "ETIMEDOUT", "ENOTFOUND", "EAI_AGAIN"]);
+
+/** True when the error (or its cause — Drizzle wraps the driver's error) means the database is unavailable. */
+export function isDatabaseUnavailable(error: unknown): boolean {
+  for (let current: unknown = error, depth = 0; current && depth < 5; depth++) {
+    const { code, message, cause } = current as { code?: unknown; message?: unknown; cause?: unknown };
+    if (typeof code === "string" && UNAVAILABLE_CODES.has(code)) return true;
+    if (typeof message === "string" && /timeout exceeded when trying to connect|Connection terminated (unexpectedly|due to connection timeout)/i.test(message)) return true;
+    current = cause;
+  }
+  return false;
+}
+
+interface DbHolder {
+  pool: Pool;
+  db: NodePgDatabase<typeof schema>;
+  /** How many pools this process created — 1 for its whole life (asserted by client.test.ts). */
+  created: number;
+  unavailable: { lastLoggedAt: number; suppressed: number };
+}
+
+/**
+ * One pool per process, kept on globalThis. Next.js loads this module in several module graphs (pages, route
+ * handlers, instrumentation — each with its own copy of module-level variables): measured on a production build,
+ * three pools of DATABASE_MAX_CONNECTIONS each, which exhausted the dev database (53300) on 2026-10-12.
+ */
+const holder = globalThis as unknown as { __orochiaDb?: DbHolder; __orochiaDbCreated?: number };
+
+const UNAVAILABLE_LOG_EVERY_MS = 30_000;
+
+/** One clear line when the database refuses connections, at most every 30 s, with how many were not logged. */
+function reportUnavailable(state: DbHolder["unavailable"], error: unknown, max: number): void {
+  const now = Date.now();
+  if (now - state.lastLoggedAt < UNAVAILABLE_LOG_EVERY_MS) {
+    state.suppressed += 1;
+    return;
+  }
+  const { code, message } = error as { code?: string; message?: string };
+  const more = state.suppressed ? ` (${state.suppressed} more since the last report)` : "";
+  console.error(`[db] database unavailable: ${code ?? "error"} ${message ?? ""}${more} — this instance holds at most ${max} connections (DATABASE_MAX_CONNECTIONS)`);
+  state.lastLoggedAt = now;
+  state.suppressed = 0;
+}
+
+function createHolder(): DbHolder {
+  const max = poolSize();
+  const pool = new Pool({
+    ...connectionConfig(databaseUrl()),
+    application_name: "orochia-web",
+    max,
+    // Idle connections go back to the database quickly: a quiet instance holds none, the next one deploying has room.
+    idleTimeoutMillis: 10_000,
+    connectionTimeoutMillis: 5_000,
+    // A script that only imports the client (seed, owner CLI) exits when its work is done.
+    allowExitOnIdle: true,
+  });
+  const created = (holder.__orochiaDbCreated ?? 0) + 1;
+  holder.__orochiaDbCreated = created;
+  const state: DbHolder = { pool, db: drizzle(pool, { schema }), created, unavailable: { lastLoggedAt: 0, suppressed: 0 } };
+
+  // An idle connection dropped by the server (restart, failover) must not crash the process: the pool replaces it.
+  pool.on("error", (error) => {
+    if (isDatabaseUnavailable(error)) reportUnavailable(state.unavailable, error, max);
+    else console.error(`[db] idle connection error: ${error.message}`);
+  });
+
+  // Connection failures are reported once in a while, in one line; the query still fails (the caller decides).
+  const connect = pool.connect.bind(pool) as (callback?: (...args: unknown[]) => void) => unknown;
+  (pool as unknown as { connect: typeof connect }).connect = (callback) => {
+    if (callback) {
+      return connect((error: unknown, ...rest: unknown[]) => {
+        if (error && isDatabaseUnavailable(error)) reportUnavailable(state.unavailable, error, max);
+        callback(error, ...rest);
+      });
+    }
+    return (connect() as Promise<unknown>).catch((error: unknown) => {
+      if (isDatabaseUnavailable(error)) reportUnavailable(state.unavailable, error, max);
+      throw error;
+    });
+  };
+  return state;
+}
+
+function current(): DbHolder {
+  if (!holder.__orochiaDb) holder.__orochiaDb = createHolder();
+  return holder.__orochiaDb;
+}
+
+/** The process-wide pool — for the few operations that need raw SQL (platform status, backups, factory reset). */
+export function getPool(): Pool {
+  return current().pool;
+}
+
+export function getDb(): NodePgDatabase<typeof schema> {
+  return current().db;
+}
+
+/** How many pools this process created (1 once connected; read by tests and diagnostics). */
+export function poolsCreated(): number {
+  return holder.__orochiaDbCreated ?? 0;
+}
+
+/** Ends the pool (tests, graceful shutdown); the next query opens a new one. */
+export async function closeDb(): Promise<void> {
+  const state = holder.__orochiaDb;
+  holder.__orochiaDb = undefined;
+  await state?.pool.end();
 }
 
 /**
@@ -50,7 +174,8 @@ export async function checkDbHealth(): Promise<boolean> {
     await getDb().execute(sql`SELECT 1`);
     return true;
   } catch (error) {
-    console.error("Database health check failed:", error);
+    if (isDatabaseUnavailable(error)) console.error(`[db] health check: database unavailable (${(error as { code?: string }).code ?? "error"})`);
+    else console.error("Database health check failed:", error);
     return false;
   }
 }
