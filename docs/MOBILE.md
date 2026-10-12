@@ -4,13 +4,14 @@ The app is [`krizaka/orochia-mobile`](https://github.com/krizaka/orochia-mobile)
 Expo Router. It is a **client of the Orochia API** — the same server, the same rules as orochia.com: access, prices,
 balances and moderation are decided by the server, the app shows what it answers.
 
-What this page describes was **run on 2026-10-12** on the iOS 27 simulator (iPhone 17, Xcode 27), signed in against
-`dev.orochia.com` and against a local Orochia on its development seed. Nothing here is a mock-up.
+What this page describes was **run on 2026-10-12** on the iOS 27 simulator (iPhone 17, Xcode 27) and the Android 16
+emulator (Pixel 8 image), signed in against `dev.orochia.com` and against a local Orochia on its development seed.
+Nothing here is a mock-up.
 
 | Platform | State |
 | :--- | :--- |
 | iOS simulator (iOS 27) | ✅ builds and runs — every screen below, dark and light |
-| Android | ⚠️ not run on an emulator yet; an Android APK is built by CI on each `v*` tag ([releases](https://github.com/krizaka/orochia-mobile/releases)) |
+| Android emulator (Android 16) | ✅ development build runs — home, stories, sign-in, account, challenges; an APK is also built by CI on each `v*` tag ([releases](https://github.com/krizaka/orochia-mobile/releases)) |
 | iPhone / TestFlight | ❌ waiting for the Apple Developer activation and an Expo (EAS) account |
 | Push notifications | ❌ code in place, needs an EAS project id (and APNs / FCM keys) |
 
@@ -69,6 +70,11 @@ page and sign-out.
 ![A creator's account: wallet and earnings (local seed, Elena)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/05-account-earnings-dark.28ce17d1a1.webp)
 ![The account in the light theme](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/04-account-light.85be02b33e.webp)
 
+On Android (development build, Android 16 emulator, local seed):
+
+![Home on Android](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/android-home.e54d75548c.webp)
+![A creator's account on Android](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/android-account.b6d3b7981b.webp)
+
 A short recording of the smoke run (18+ gate → sign in → account → feed):
 [ios-smoke.mp4](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/ios-smoke.9605d457e2.mp4).
 
@@ -115,7 +121,10 @@ never in the generated folders. A Release build (no Metro, the bundle inside the
 **Against a local Orochia**: start it (see [Getting Started](./GETTING_STARTED.md)) and sign in with a seeded account
 (`npm run db:seed` prints them). The seed gives a feed, stories and a creator's earnings.
 
-**Android**: `npx expo run:android` needs the Android SDK, an emulator and JDK 17 — not verified on this Mac yet. On a
+**Android**: install the Android SDK with an emulator image (e.g. `brew install --cask android-commandlinetools`, then
+`sdkmanager "platform-tools" "emulator" "platforms;android-36" "system-images;android-36;google_apis;arm64-v8a"` and
+an AVD), a JDK (17 or 21), then `npx expo run:android`. The emulator reaches the Mac at `10.0.2.2`
+(`EXPO_PUBLIC_OROCHIA_URL=http://10.0.2.2:3000` for a local Orochia; a development build allows plain HTTP). On a
 phone, the APK attached to each [release](https://github.com/krizaka/orochia-mobile/releases) installs directly
 (signed with a debug key, not for a store).
 
@@ -146,7 +155,7 @@ maestro test .maestro/smoke.yaml -e OROCHIA_ID=<e-mail or username> -e OROCHIA_P
   testers is the way for now.
 - **Push**: the code registers the Expo push token at sign-in; it needs an EAS project id, the APNs key (iOS) and the
   Firebase service account (Android).
-- **Android**: run on an emulator and on a phone.
+- **Android**: a run on a phone, and a release-signed build.
 - **Video playback**: proven only up to the player; a run with real media (a creator's uploaded video) is still to do.
 - **Stories**: the web viewer's sound, gestures, actions and the "processing" state are not in the app yet
   ([orochia-mobile#3](https://github.com/krizaka/orochia-mobile/issues/3)).
