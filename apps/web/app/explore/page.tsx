@@ -6,6 +6,7 @@ import React from "react";
 
 import { AuctionCard } from "@/components/auctions/AuctionCard";
 import { ChallengeCard } from "@/components/challenges/ChallengeCard";
+import { SectionUnavailable } from "@/components/errors/SectionUnavailable";
 import { CreatorTile } from "@/components/explore/CreatorTile";
 import { CardRail, ExploreSection, type SectionCta } from "@/components/explore/ExploreSection";
 import { StoryTile } from "@/components/explore/StoryTile";
@@ -13,7 +14,8 @@ import { TagChip } from "@/components/explore/TagChip";
 import { Button, buttonVariants, EmptyState, Input, SectionBackdrop } from "@/components/ui";
 import { VideoCard } from "@/components/VideoCard";
 import { getCurrentUser, type SessionUser } from "@/lib/auth";
-import { discoverableTags, exploreResults, exploreSections, exploreTag, type ExploreVideo } from "@/lib/explore";
+import { unlessUnavailable } from "@/lib/degrade";
+import { discoverableTags, exploreResults, exploreSectionsSettled, exploreTag, type ExploreVideo } from "@/lib/explore";
 import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
@@ -121,7 +123,9 @@ export default async function ExplorePage(props: { searchParams: Promise<Params>
 
 /** The popular tags, as filter chips (the current one first, with a way out). */
 async function ExploreTags({ current, q }: { current: string | null; q: string }) {
-  const tags = await discoverableTags(16);
+  // The tags are a shortcut: when the database is unavailable they are left out, the search still works.
+  const loaded = await unlessUnavailable(() => discoverableTags(16));
+  const tags = loaded.ok ? loaded.value : [];
   if (tags.length === 0 && !current) return null;
   const list = current && !tags.some((x) => x.tag === current) ? [{ tag: current, count: 0 }, ...tags] : tags;
   return (
@@ -142,7 +146,7 @@ async function ExploreTags({ current, q }: { current: string | null; q: string }
 
 /** The six discovery sections. */
 async function Sections({ user }: { user: SessionUser | null }) {
-  const s = await exploreSections(user);
+  const { sections: s, unavailable } = await exploreSectionsSettled(user);
   const cta = ctas(user);
   return (
     <>
@@ -153,6 +157,7 @@ async function Sections({ user }: { user: SessionUser | null }) {
         title={t("explore.sections.trending.title")}
         description={t("explore.sections.trending.description")}
         isEmpty={s.trending.length === 0}
+        unavailable={unavailable.has("trending")}
         empty={{ title: t("explore.sections.trending.emptyTitle"), description: t("explore.sections.trending.emptyBody"), cta: s.fresh.length ? { href: "#new", label: t("explore.cta.seeNew") } : cta.publish }}
       >
         <VideoGrid videos={s.trending} label={t("explore.sections.trending.title")} />
@@ -165,6 +170,7 @@ async function Sections({ user }: { user: SessionUser | null }) {
         title={t("explore.sections.stories.title")}
         description={t("explore.sections.stories.description")}
         isEmpty={s.stories.length === 0}
+        unavailable={unavailable.has("stories")}
         empty={{ title: t("explore.sections.stories.emptyTitle"), description: t("explore.sections.stories.emptyBody"), cta: cta.story }}
       >
         <CardRail columns={6} label={t("explore.sections.stories.title")}>
@@ -182,6 +188,7 @@ async function Sections({ user }: { user: SessionUser | null }) {
         description={t("explore.sections.new.description")}
         seeAll={{ href: exploreHref({ view: "all" }), label: t("explore.seeAll") }}
         isEmpty={s.fresh.length === 0}
+        unavailable={unavailable.has("fresh")}
         empty={{ title: t("explore.sections.new.emptyTitle"), description: t("explore.sections.new.emptyBody"), cta: cta.publish }}
       >
         <VideoGrid videos={s.fresh} label={t("explore.sections.new.title")} />
@@ -194,6 +201,7 @@ async function Sections({ user }: { user: SessionUser | null }) {
         title={t("explore.sections.creators.title")}
         description={t("explore.sections.creators.description")}
         isEmpty={s.creators.length === 0}
+        unavailable={unavailable.has("creators")}
         empty={{ title: t("explore.sections.creators.emptyTitle"), description: t("explore.sections.creators.emptyBody"), cta: cta.publish }}
       >
         <CardRail label={t("explore.sections.creators.title")}>
@@ -211,6 +219,7 @@ async function Sections({ user }: { user: SessionUser | null }) {
         description={t("explore.sections.auctions.description")}
         seeAll={{ href: "/auctions", label: t("explore.seeAll") }}
         isEmpty={s.auctions.length === 0}
+        unavailable={unavailable.has("auctions")}
         empty={{ title: t("explore.sections.auctions.emptyTitle"), description: t("explore.sections.auctions.emptyBody"), cta: cta.auction }}
       >
         <CardRail label={t("explore.sections.auctions.title")}>
@@ -228,6 +237,7 @@ async function Sections({ user }: { user: SessionUser | null }) {
         description={t("explore.sections.challenges.description")}
         seeAll={{ href: "/challenges", label: t("explore.seeAll") }}
         isEmpty={s.challenges.length === 0}
+        unavailable={unavailable.has("challenges")}
         empty={{ title: t("explore.sections.challenges.emptyTitle"), description: t("explore.sections.challenges.emptyBody"), cta: cta.challenge }}
       >
         <CardRail label={t("explore.sections.challenges.title")}>
@@ -242,7 +252,9 @@ async function Sections({ user }: { user: SessionUser | null }) {
 
 /** A search, a tag, or every video: creators and stories first (when they match), then the videos, paged. */
 async function Results({ q, tag, page, all, user }: { q: string; tag: string | null; page: number; all: boolean; user: SessionUser | null }) {
-  const r = await exploreResults(user, { q, tag, page });
+  const loaded = await unlessUnavailable(() => exploreResults(user, { q, tag, page }));
+  if (!loaded.ok) return <SectionUnavailable />;
+  const r = loaded.value;
   const base = { q: q || undefined, tag: tag ?? undefined, view: all && !q && !tag ? "all" : undefined };
   const heading = q && tag ? t("explore.results.both", { q, tag }) : q ? t("explore.results.query", { q }) : tag ? t("explore.results.tag", { tag }) : t("explore.results.all");
   const nothing = r.videos.length === 0 && r.creators.length === 0 && r.stories.length === 0;

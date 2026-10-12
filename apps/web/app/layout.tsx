@@ -1,17 +1,16 @@
-import type { Metadata, Viewport } from "next";
-import localFont from "next/font/local";
-import { ClientLayoutShell } from "@/components/ClientLayoutShell";
-import { MotionObserver, ThemeProvider, ThemeScript, cn } from "@/components/ui";
-import { SiteFooter } from "@/components/SiteFooter";
-import { AuthProvider } from "@/lib/auth-context";
-import { JsonLd } from "@/components/JsonLd";
-import { INDEXABLE, NOINDEX, SITE_DESCRIPTION, SITE_NAME, SITE_URL, siteGraph } from "@/lib/seo";
 import "./globals.css";
 
-// Variable fonts in the repository (app/fonts, SIL OFL 1.1): no request to Google from the browser, and none from the
-// build either — a build that fetched them failed whenever fonts.googleapis.com did not answer the builder.
-const outfit = localFont({ src: "./fonts/outfit-latin-wght.woff2", weight: "100 900", variable: "--font-outfit", display: "swap" });
-const jakarta = localFont({ src: "./fonts/plus-jakarta-sans-latin-wght.woff2", weight: "200 800", variable: "--font-jakarta", display: "swap" });
+import type { Metadata, Viewport } from "next";
+
+import { ClientLayoutShell } from "@/components/ClientLayoutShell";
+import { JsonLd } from "@/components/JsonLd";
+import { SiteFooter } from "@/components/SiteFooter";
+import { cn,MotionObserver, ThemeProvider, ThemeScript } from "@/components/ui";
+import { AuthProvider } from "@/lib/auth-context";
+import { INDEXABLE, NOINDEX, SITE_DESCRIPTION, SITE_NAME, SITE_URL, siteGraph } from "@/lib/seo";
+
+import { jakarta, outfit } from "./fonts";
+
 
 export const viewport: Viewport = {
   width: "device-width",

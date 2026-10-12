@@ -2642,5 +2642,29 @@
     "notice": "Development build — still being tested, not production-ready",
     "noticeLocal": "Local build — running on this machine, not production-ready",
     "ariaLabel": "Version {label}. {notice}. Opens the commit on GitHub."
+  },
+  "errorPages": {
+    "serverMetaTitle": "This page did not load — Orochia",
+    "serverEyebrow": "A hiccup on our side",
+    "serverTitle": "This page did not load",
+    "exploreTitle": "Explore did not load",
+    "serverBody": "Something failed on our side while preparing it — nothing you did. Your account, your credits and your videos are safe.",
+    "serverHint": "Try again in a moment: these usually clear up on their own. If it keeps happening, tell us and give us the reference below.",
+    "retry": "Try again",
+    "retrying": "Trying again…",
+    "home": "Back to home",
+    "support": "Contact support",
+    "reference": "Error reference",
+    "copyReference": "Copy the error reference",
+    "copied": "Copied",
+    "notFoundMetaTitle": "Page not found",
+    "notFoundEyebrow": "Error 404 · page not found",
+    "notFoundTitle": "This page does not exist",
+    "notFoundBody": "The owl looked everywhere and did not find it. The link may be old or mistyped, or what it showed was taken down. Search for it, or start from Explore.",
+    "searchPlaceholder": "Search creators, videos, tags…",
+    "search": "Search",
+    "explore": "Explore Orochia",
+    "sectionTitle": "This part did not load",
+    "sectionBody": "The rest of the page works. Try again in a moment."
   }
 }

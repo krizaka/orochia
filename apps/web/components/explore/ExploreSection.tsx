@@ -2,6 +2,7 @@ import { ChevronRightIcon } from "@krizaka/icons";
 import Link from "next/link";
 import React from "react";
 
+import { SectionUnavailable } from "@/components/errors/SectionUnavailable";
 import { buttonVariants, cn, EmptyState } from "@/components/ui";
 
 export interface SectionCta {
@@ -11,7 +12,8 @@ export interface SectionCta {
 
 /**
  * A section of Explore: an icon, a title and a line under it, an optional "See all" — and, when it has nothing to
- * show, a designed empty state that says why and offers the next step (never a blank space).
+ * show, a designed empty state that says why and offers the next step (never a blank space); when the database
+ * could not answer it, an inline "try again" while the rest of the page works.
  */
 export function ExploreSection({
   id,
@@ -21,6 +23,7 @@ export function ExploreSection({
   seeAll,
   empty,
   isEmpty,
+  unavailable = false,
   children,
   index = 0,
 }: {
@@ -31,6 +34,8 @@ export function ExploreSection({
   seeAll?: SectionCta;
   empty: { title: string; description: string; cta: SectionCta };
   isEmpty: boolean;
+  /** The database could not answer this section just now: it says so and tries again in place. */
+  unavailable?: boolean;
   children?: React.ReactNode;
   index?: number;
 }) {
@@ -48,14 +53,16 @@ export function ExploreSection({
             <p className="mt-0.5 text-xs text-fg-secondary sm:text-sm">{description}</p>
           </div>
         </div>
-        {seeAll && !isEmpty && (
+        {seeAll && !isEmpty && !unavailable && (
           <Link href={seeAll.href} className={cn(buttonVariants({ variant: "ghost", size: "sm", shape: "rounded" }), "shrink-0 gap-1 text-xs")}>
             {seeAll.label}
             <ChevronRightIcon size={14} />
           </Link>
         )}
       </div>
-      {isEmpty ? (
+      {unavailable ? (
+        <SectionUnavailable />
+      ) : isEmpty ? (
         <EmptyState
           icon={icon}
           title={empty.title}
