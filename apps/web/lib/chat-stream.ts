@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 
 import { db, directMessages } from "@orochia/db";
-import { type ConnectionState, eventStream, type EventStreamControls } from "@orochia/realtime";
+import { type ConnectionState, eventStream, type EventStreamControls } from "@krizaka/realtime";
 import { and, asc, eq, gt, gte, or, sql } from "drizzle-orm";
 
 import { markDelivered, type MessageView,messageView } from "./messaging";

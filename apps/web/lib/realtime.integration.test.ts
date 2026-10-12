@@ -1,14 +1,15 @@
 /**
- * The bus contract against real servers, with two buses in one process standing for two app instances.
+ * Orochia's realtime wiring against real servers: @krizaka/realtime's buses on Orochia's own LISTEN/NOTIFY primitives
+ * (packages/db/src/listen.ts) and on Redis / Valkey, two buses in one process standing for two app instances. The
+ * adapters themselves are tested in krizaka-ui; this proves the connection Orochia hands them.
  * Runs when REALTIME_IT=1: PostgreSQL from DATABASE_URL, Redis / Valkey from REDIS_URL (CI: the e2e job's services;
  * locally: `docker run -p 6390:6379 valkey/valkey:8-alpine`, REDIS_URL=redis://localhost:6390).
  */
 import { randomUUID } from "node:crypto";
 import { afterAll, describe, expect, it } from "vitest";
 
-import { postgresBus } from "./postgres";
-import { redisBus } from "./redis";
-import type { RealtimeBus } from "./types";
+import { postgresBus, type RealtimeBus } from "@krizaka/realtime";
+import { redisBus } from "@krizaka/realtime/redis";
 
 const enabled = process.env.REALTIME_IT === "1";
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));

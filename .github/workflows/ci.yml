@@ -115,7 +115,7 @@ jobs:
       - run: npm ci
       - run: npm run db:migrate
       - name: Realtime bus contract — PostgreSQL and Valkey, two instances each
-        run: npx vitest run packages/realtime
+        run: npx vitest run apps/web/lib/realtime.integration.test.ts
         env:
           REALTIME_IT: "1"
           REDIS_URL: redis://localhost:6379

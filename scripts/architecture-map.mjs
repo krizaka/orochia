@@ -47,7 +47,7 @@ const EXTERNALS = [
   { id: "stripe", name: "Stripe", host: /api\.stripe\.com/, where: ["packages/payments/src/adapters"], description: "Card payment gateway: Checkout sessions over its API, signed webhook (timestamp tolerance)." },
   { id: "mailgun", name: "Mailgun", host: /api\.mailgun\.net/, where: ["apps/web/lib"], description: "Transactional e-mail (verification, password reset, notifications)." },
   { id: "resend", name: "Resend", host: /api\.resend\.com/, where: ["apps/web/lib"], description: "Transactional e-mail, the alternative provider." },
-  { id: "expo-push", name: "Expo Push", host: /exp\.host\/--\/api\/v2\/push/, where: ["packages/push/src"], description: "Push notifications to the iOS and Android app." },
+  { id: "expo-push", name: "Expo Push", host: /exp\.host\/--\/api\/v2\/push|from "@krizaka\/push"/, where: ["apps/web/lib"], description: "Push notifications to the iOS and Android app." },
   { id: "google-oauth", name: "Google sign-in", host: /oauth2\.googleapis\.com/, where: ["apps/web/lib"], description: "OAuth 2 sign-in: consent screen, code exchange, user info." },
   { id: "facebook-oauth", name: "Facebook sign-in", host: /graph\.facebook\.com/, where: ["apps/web/lib"], description: "OAuth 2 sign-in: consent dialog, code exchange, profile." },
 ];
@@ -173,7 +173,7 @@ export function buildArchitectureMap(root, workspace, previous = null) {
       name,
       role: "design",
       owner: "krizaka",
-      repository: name === "@krizaka/ui" || /^@krizaka\/(tokens|tailwind|i18n|icons|intl)$/.test(name) ? "krizaka-ui" : name.slice(9),
+      repository: name === "@krizaka/ui" || /^@krizaka\/(tokens|tailwind|i18n|icons|intl|realtime|push)$/.test(name) ? "krizaka-ui" : name.slice(9),
       path: `node_modules/${name}`,
       runtime: "library",
       version: resolved(lock, name) ?? installed?.version ?? null,
@@ -258,7 +258,7 @@ export function buildArchitectureMap(root, workspace, previous = null) {
     if (routes.some((p) => routeOf(p) === "/api/webhooks/payments/[gateway]")) flow(g, "orochia-api", "webhook", `/api/webhooks/payments/${g === "nowpayments" ? "crypto" : g}`);
   }
   for (const id of ["mailgun", "resend"]) flow("orochia-api", id, "http", "send e-mail");
-  flow("orochia-api", "expo-push", "http", "@orochia/push · send");
+  flow("orochia-api", "expo-push", "http", "@krizaka/push · send");
   for (const id of ["google-oauth", "facebook-oauth"]) {
     flow("orochia-web", id, "http", "consent screen (redirect)");
     if (/\/api\/auth\/oauth/.test(apiCode) || routes.some((p) => routeOf(p).startsWith("/api/auth/oauth"))) flow("orochia-api", id, "http", "code exchange · user info");

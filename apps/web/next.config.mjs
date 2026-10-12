@@ -74,8 +74,8 @@ const nextConfig = {
     NEXT_PUBLIC_COMMIT_SHA: commitSha(),
     NEXT_PUBLIC_APP_ENV: process.env.NEXT_PUBLIC_APP_ENV?.trim() || "local",
   },
-  transpilePackages: ["@orochia/db", "@orochia/media", "@orochia/payments", "@orochia/config", "@orochia/realtime"],
-  // The Redis client (@orochia/realtime) stays a Node module, required at run time — it connects only with REALTIME_BUS=redis.
+  transpilePackages: ["@orochia/db", "@orochia/media", "@orochia/payments", "@orochia/config"],
+  // The Redis client (@krizaka/realtime/redis) stays a Node module, required at run time — it connects only with REALTIME_BUS=redis.
   serverExternalPackages: ["ioredis"],
   experimental: {
     serverActions: {
