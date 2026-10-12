@@ -443,6 +443,11 @@ orochia/                           npm workspaces
 
 ## 7. Testing
 
+- **No test, not done.** Every feature and every fix ships with its tests in the same pull request: a unit test for
+  logic, a scenario in `e2e/scenarios.mjs` for a route or a flow, a render test for a component's states.
+- **A fix starts with a failing test** that reproduces the bug; the fix turns it green and the test stays as the guard.
+- **CI runs them all on every pull request and must be green** before merge. A test is never skipped, weakened or
+  deleted to get there.
 - **Unit** (`npm test`, Vitest): pure logic — sessions, env, gateway signatures, ledger splits.
 - **End-to-end** (`npm run test:e2e`): `e2e/scenarios.mjs` drives the real API with real sessions on a seeded
   PostgreSQL — followers, contacts, playlists, search, creator edits, takedowns, suspensions, role changes, wallet,
@@ -498,6 +503,7 @@ orochia/                           npm workspaces
 3. New behaviour has scenarios in `e2e/scenarios.mjs`, and `npm run test:e2e` passes on a reset database.
 4. The invariants of §3 still hold; no credential, demo shortcut or showcase data reaches production code.
 5. UI changes are checked at mobile and desktop widths, with reduced motion.
+6. The change ships with its tests (§7) — a fix with the test that failed before it.
 
 ---
 
