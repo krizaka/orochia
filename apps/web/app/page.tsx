@@ -30,11 +30,11 @@ import { StoriesRail } from "@/components/home/StoriesRail";
 import { RelationshipActions } from "@/components/RelationshipActions";
 import { buttonVariants, cn, SectionBackdrop } from "@/components/ui";
 import { listAuctions } from "@/lib/auctions";
-import { getCurrentUser } from "@/lib/auth";
 import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { listChallenges } from "@/lib/challenges";
 import { t } from "@/lib/i18n";
 import { featuredCreator, listFeed, platformStats } from "@/lib/queries";
+import { getViewer } from "@/lib/viewer";
 
 export const metadata = { alternates: { canonical: "/" } };
 export const dynamic = "force-dynamic";
@@ -68,15 +68,16 @@ const WHY = [
 async function loadHome() {
   try {
     const [videos, featured, stats, auctions, challenges] = await Promise.all([listFeed(24), featuredCreator(), platformStats(), listAuctions("open", null, 3), listChallenges("open", null, 3)]);
-    return { videos, featured, stats, auctions, challenges };
+    return { videos, featured, stats, auctions, challenges, unavailable: false };
   } catch (error) {
+    // Said as such under the feed ("could not load"), never as an empty platform.
     console.error("[home] feed unavailable:", error);
-    return { videos: [], featured: null, stats: { videos: 0, creators: 0 }, auctions: [], challenges: [] };
+    return { videos: [], featured: null, stats: { videos: 0, creators: 0 }, auctions: [], challenges: [], unavailable: true };
   }
 }
 
 export default async function HomePage() {
-  const [viewer, { videos, featured, stats, auctions, challenges }] = await Promise.all([getCurrentUser(), loadHome()]);
+  const [{ user: viewer, state: viewerState }, { videos, featured, stats, auctions, challenges, unavailable }] = await Promise.all([getViewer(), loadHome()]);
   const fee = platformFeePercent();
   const share = 100 - fee;
   const container = "mx-auto w-full max-w-7xl px-4 sm:px-6";
@@ -129,7 +130,7 @@ export default async function HomePage() {
     <div className={cn(container, "py-16")}>
       <section data-reveal aria-labelledby="home-trending" className="mb-14">
         <HomeSectionHeader id="home-trending" icon={<VideoIcon size={22} nodeColor="var(--kz-accent-2)" />} title={t("home.trending")} href="/explore" linkLabel={t("home.trendingAll")} />
-        <FeedFilterTabs initialVideos={videos} />
+        <FeedFilterTabs initialVideos={videos} viewer={viewerState} unavailable={unavailable} />
       </section>
 
       {featured && (

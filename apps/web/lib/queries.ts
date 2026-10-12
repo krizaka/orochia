@@ -244,6 +244,8 @@ export interface AccountProfile {
   unlockedVideosCount: number;
   isAgeVerified: boolean;
   emailVerified: boolean;
+  /** A creator's 18 U.S.C. § 2257 review approved (members are created true; opening a creator space sets it false). */
+  isVerified: boolean;
 }
 
 /** The signed-in account as the UI shows it; the balance is computed from the ledger. */
@@ -255,6 +257,7 @@ export async function accountProfile(user: SessionUser): Promise<AccountProfile 
       email: users.email,
       role: users.role,
       isAgeVerified: users.isAgeVerified,
+      isVerified: users.isVerified,
       emailVerified: sql<boolean>`${users.emailVerifiedAt} is not null`,
       displayName: sql<string>`coalesce(${profiles.displayName}, ${users.username})`,
       avatarUrl: profiles.avatarUrl,

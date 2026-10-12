@@ -12,16 +12,23 @@ import { SocialSignIn } from "@/components/SocialSignIn";
 import { Button, Checkbox, Field, Input, OrochiaLogo } from "@/components/ui";
 import { UsernameField } from "@/components/UsernameField";
 import { useAuth } from "@/lib/auth-context";
+import { NEXT_AFTER_VERIFY_KEY, safeNext, signInHref } from "@/lib/creator-journey";
 import { t } from "@/lib/i18n";
 
 
 /**
- * One kind of account: everyone joins to watch, follow, tip and unlock. Publishing is opened later
- * from the dashboard ("Become a creator"), behind the 2257 verification.
+ * One kind of account: everyone joins to watch, follow, tip and unlock. Publishing is opened later on the same account
+ * (`/creator/apply`), behind the 2257 verification — `?next=/creator/apply` brings a new creator there once the e-mail
+ * is confirmed. A signed-in person never stays here: they go on to `next` (docs/CREATOR_ONBOARDING.md).
  */
 export default function RegisterPage() {
   const router = useRouter();
-  const { register } = useAuth();
+  const { register, user, isLoading: sessionLoading } = useAuth();
+  const [next, setNext] = useState<string | null>(null);
+  useEffect(() => setNext(safeNext(new URLSearchParams(window.location.search).get("next"))), []);
+  useEffect(() => {
+    if (!sessionLoading && user?.emailVerified) router.replace(safeNext(new URLSearchParams(window.location.search).get("next")) ?? "/");
+  }, [sessionLoading, user, router]);
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
@@ -58,7 +65,14 @@ export default function RegisterPage() {
     setIsLoading(true);
     try {
       await register({ username, displayName: displayName || username, email, password, dateOfBirth, isAgeVerified, acceptTerms, formToken, website, challengeToken });
-      router.push("/");
+      if (next) {
+        try {
+          localStorage.setItem(NEXT_AFTER_VERIFY_KEY, next);
+        } catch {
+          // Storage refused (private window): the verification page falls back to the dashboard.
+        }
+      }
+      router.push(next ?? "/");
     } catch (err) {
       setError(err instanceof Error ? err.message : t("auth.register.errors.failed"));
       // A token is good once: a new form token and a new challenge for the next try.
@@ -190,7 +204,7 @@ export default function RegisterPage() {
 
         <p className="relative mt-6 text-center text-xs text-fg-secondary">
           {t("auth.register.haveAccount")}{" "}
-          <Link href="/auth/login" className="font-semibold text-accent hover:underline">
+          <Link href={signInHref(next ?? undefined)} className="font-semibold text-accent hover:underline">
             {t("auth.register.signIn")}
           </Link>
         </p>

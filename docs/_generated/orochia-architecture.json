@@ -271,7 +271,7 @@
       "method": "PATCH",
       "path": "/api/admin/users/[id]",
       "access": "session · ADMIN",
-      "summary": "Suspends an account (it can no longer sign in, and its open sessions are refused on their next request; its open auctions are cancelled and their bids released), reinstates it, or changes its role."
+      "summary": "Suspends an account (it can no longer sign in, and its open sessions are refused on their next request; its open auctions are cancelled and their bids released), reinstates it, or changes its role (a new creator waits for the 2257 review)."
     },
     {
       "method": "GET",
@@ -643,7 +643,7 @@
       "method": "POST",
       "path": "/api/me/become-creator",
       "access": "session · MEMBER / CREATOR / ADMIN",
-      "summary": "Opens a creator space for a member: the account becomes CREATOR, pending its 18 U.S.C. § 2257 review (uploads open once an operator verifies it)."
+      "summary": "Opens a creator space for a member: the same account becomes CREATOR, pending its 18 U.S.C. § 2257 review (uploads open once an operator verifies it)."
     },
     {
       "method": "POST",

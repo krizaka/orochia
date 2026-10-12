@@ -13,6 +13,7 @@ import { ProfileHero } from "@/components/profile/ProfileHero";
 import { ProfileStories } from "@/components/stories/ProfileStories";
 import { ShareProfileButton } from "@/components/profile/ShareProfileButton";
 import { StartChallengeButton } from "@/components/challenges/StartChallengeButton";
+import { creatorSpaceCta, viewerStateOf } from "@/lib/creator-journey";
 import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
@@ -38,6 +39,12 @@ export default async function CreatorPage(props: { params: Promise<{ username: s
   const creator = await creatorByUsername(params.username.toLowerCase());
   if (!creator) notFound();
   const viewer = await getCurrentUser();
+  // Your own page with nothing in it: your next step to publish (upload · your review · open a creator space).
+  const ownCta =
+    viewer?.id === creator.id
+      ? creatorSpaceCta(viewerStateOf({ role: creator.isCreator ? "CREATOR" : "MEMBER", isVerified: creator.isVerified }))
+      : null;
+  const ownEmptyAction = ownCta ? { href: ownCta.href, label: t(ownCta.label) } : undefined;
   const [videos, playlists] = await Promise.all([
     creatorVideos(creator.id),
     visiblePlaylists(creator.id, viewer?.id ?? null),
@@ -103,6 +110,7 @@ export default async function CreatorPage(props: { params: Promise<{ username: s
         creator={creator}
         videos={videos}
         playlists={playlists}
+        emptyAction={ownEmptyAction}
       />
     </div>
   );

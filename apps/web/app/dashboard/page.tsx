@@ -26,6 +26,7 @@ import { ProfileSettingsPanel } from "@/components/dashboard/ProfileSettingsPane
 import { StorageMeter } from "@/components/dashboard/StorageMeter";
 import { type StudioVideo,VideoManager } from "@/components/dashboard/VideoManager";
 import { ProfileHero } from "@/components/profile/ProfileHero";
+import { CreatorSpaceBanner } from "@/components/creator/CreatorSpaceBanner";
 import { cn, EmptyState, Tabs } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
@@ -225,7 +226,7 @@ function DashboardContent() {
             >
               {t("profile.viewPublic")}
             </Link>
-            {isCreator && (
+            {isCreator && user.isVerified !== false && (
               <Link
                 href="/creator/upload"
                 className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-accent to-accent-2 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-accent/30 transition-transform hover:scale-[1.03] active:scale-95"
@@ -236,6 +237,8 @@ function DashboardContent() {
           </>
         }
       />
+
+      <CreatorSpaceBanner user={user} />
 
       <Tabs.Root variant="segmented" value={activeTab} onValueChange={openTab} className="gap-8">
         <div ref={strip} className="flex overflow-x-auto gap-2 border-b border-border-subtle pb-3 text-xs font-semibold">

@@ -4,6 +4,7 @@ import React from "react";
 
 import { BackdropMedia } from "@/components/home/BackdropMedia";
 import { Button, buttonVariants, cn, OrochiaLogo, SectionBackdrop } from "@/components/ui";
+import { CREATOR_APPLY_PATH, signUpHref } from "@/lib/creator-journey";
 import { t } from "@/lib/i18n";
 
 /** The closing call to action for creators: the promise in one line, three facts, the way in. Ends tinted (`up`). */
@@ -31,7 +32,7 @@ export function CreatorsCallToAction({ share }: { share: number }) {
         </ul>
         <div className="mt-9 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row">
           <Button asChild variant="primary" size="lg" shimmer className="gap-2 shadow-lg">
-            <Link href="/auth/register">
+            <Link href={signUpHref(CREATOR_APPLY_PATH)}>
               <UploadIcon size={18} /> {t("home.creators.cta")}
             </Link>
           </Button>
