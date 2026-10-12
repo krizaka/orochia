@@ -22,6 +22,7 @@
 | `STORAGE_DRIVER=bunny`, `BUNNY_STORAGE_API_KEY`, `BUNNY_STORAGE_ZONE`, `BUNNY_PULL_ZONE_HOSTNAME` | ✓ | Avatars, thumbnails, 2257 documents (container disks are ephemeral). |
 | `METRICS_AUTH_TOKEN` | ✓ | Bearer token for `/api/metrics`. |
 | `DATABASE_CA_CERT` | managed DB | CA of a managed PostgreSQL (`${<db>.CA_CERT}` on App Platform): TLS verified against it. |
+| `DATABASE_MAX_CONNECTIONS` | — | Connections one instance's pool may hold (default 5, capped at 50) — see *Database connections*. |
 | `RESEND_API_KEY` or `MAILGUN_API_KEY` + `MAILGUN_DOMAIN` (+ `MAILGUN_API_URL`), `MAIL_FROM` | — | Transactional e-mail from `mg.orochia.com`: Resend when its key is set, Mailgun otherwise. Without either nothing is sent. |
 | `MAIL_TEMPLATES_SOURCE` (`bunny` in production), `MAIL_TEMPLATES_CACHE_TTL` (300) | — | E-mail templates from `mail-templates/` in the Bunny Storage zone (same `BUNNY_STORAGE_*` credentials), bundled ones as fallback — see *E-mail*. |
 | `COMPLIANCE_ALERT_EMAIL` | — | Receives every content report (`[URGENT]` for underage / non-consensual). |
@@ -78,6 +79,31 @@ a Valkey cache.
   messages are replayed from the database), and any instance serves any stream.
 - `DATABASE_URL` must be a **direct** connection (LISTEN needs a session; not a transaction pooler). Each instance
   holds one extra connection for LISTEN.
+
+### Database connections
+
+Every process opens **one** pool (`packages/db/src/client.ts`, kept on `globalThis`: Next.js loads the module in several
+module graphs — pages, route handlers, instrumentation — and a module-level pool was created once per graph, three
+pools of 20 on a production build; that exhausted the dev database on 2026-10-12, PostgreSQL 53300 on every page).
+The admin console's platform status, backups and factory reset use the same pool; the realtime bus (a process-wide
+singleton too) holds exactly one LISTEN connection. Idle connections are closed after 10 s.
+
+Budget — it must stay under the database's limit:
+
+```
+instances × (DATABASE_MAX_CONNECTIONS + 1 LISTEN) × 2 (rolling deploy: old and new run together)
+  + 1 (migrate job) + the admin's psql / consoles
+```
+
+| Database | `max_connections` (superuser-reserved) | Usable | Setting |
+| :--- | :--- | :--- | :--- |
+| App Platform dev database (orochia-dev, measured) | 25 (3) | 22 | `DATABASE_MAX_CONNECTIONS=5`, 1 instance → ≤ 13 |
+| Managed PostgreSQL `db-s-1vcpu-1gb` | 25 (3) | 22 | 5 per instance, ≤ 2 instances |
+
+When the database refuses connections (53300, restarting, unreachable), the server logs **one line** every 30 s
+(`[db] database unavailable: 53300 … (N more since the last report)`) rather than a stack per query, and the pages
+that can do without the data degrade instead of failing whole. A connection pooler (DigitalOcean connection pools /
+PgBouncer) is being studied separately; it would carry the queries, never the LISTEN connection or the migrations.
 - **Scaling out**: up to ~3 instances, keep `REALTIME_BUS=postgres` (every instance receives every event; presence is
   replicated between instances over the same channel). Beyond, or past ~10 k concurrent streams, create a
   DigitalOcean **Managed Caching (Valkey)** cluster in the same region, add it to the app's trusted sources, and set

@@ -40,6 +40,11 @@ services:
       - key: DATABASE_CA_CERT
         scope: RUN_TIME
         value: ${orochia-db.CA_CERT}
+      # One pool per instance (default 5). The database takes ~22 connections in all: instances × (this + 1 LISTEN),
+      # doubled during a rolling deploy, plus the migrate job (docs/DEPLOYMENT.md, "Database connections").
+      - key: DATABASE_MAX_CONNECTIONS
+        scope: RUN_TIME
+        value: "5"
       - key: BUNNY_STREAM_API_KEY
         scope: RUN_TIME
         type: SECRET

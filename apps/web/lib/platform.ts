@@ -1,14 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
-import { Pool } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
 import {
   applyMigrations,
-  connectionConfig,
   databaseResetAllowed,
   db,
   dropPublicObjects,
   ensureOwner,
+  getPool,
   historyState,
   loadMigrations,
   ownerFromEnv,
@@ -55,39 +54,31 @@ export interface PlatformStatus {
 }
 
 export async function platformStatus(): Promise<PlatformStatus> {
-  const pool = new Pool({ ...connectionConfig(databaseUrl()), max: 1 });
-  try {
-    const [{ rows: info }, history, { rows: tableRows }] = await Promise.all([
-      pool.query<{ name: string; size: string; version: string }>(`SELECT current_database() AS name, pg_database_size(current_database()) AS size, current_setting('server_version') AS version`),
-      historyState(pool, loadMigrations(migrationsFolder())),
-      pool.query<{ tablename: string }>(`SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename <> '__drizzle_migrations' ORDER BY tablename`),
-    ]);
-    const tables: { name: string; rows: number }[] = [];
-    for (const { tablename } of tableRows) {
-      const { rows } = await pool.query<{ n: string }>(`SELECT count(*) AS n FROM public."${tablename.replace(/"/g, '""')}"`);
-      tables.push({ name: tablename, rows: Number(rows[0].n) });
-    }
-    const name = info[0].name;
-    return {
-      environment: { appUrl: appUrl(), indexed: process.env.NODE_ENV === "production" && process.env.SEARCH_INDEXING !== "off", nodeEnv: process.env.NODE_ENV ?? "development" },
-      database: { name, host: new URL(databaseUrl()).hostname, sizeBytes: Number(info[0].size), serverVersion: info[0].version },
-      history,
-      tables,
-      reset: { allowed: databaseResetAllowed(), confirmPhrase: `reset ${name}`, ownerConfigured: ownerFromEnv() !== null },
-    };
-  } finally {
-    await pool.end();
+  const pool = getPool();
+  const [{ rows: info }, history, { rows: tableRows }] = await Promise.all([
+    pool.query<{ name: string; size: string; version: string }>(`SELECT current_database() AS name, pg_database_size(current_database()) AS size, current_setting('server_version') AS version`),
+    historyState(pool, loadMigrations(migrationsFolder())),
+    pool.query<{ tablename: string }>(`SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename <> '__drizzle_migrations' ORDER BY tablename`),
+  ]);
+  const tables: { name: string; rows: number }[] = [];
+  for (const { tablename } of tableRows) {
+    const { rows } = await pool.query<{ n: string }>(`SELECT count(*) AS n FROM public."${tablename.replace(/"/g, '""')}"`);
+    tables.push({ name: tablename, rows: Number(rows[0].n) });
   }
+  const name = info[0].name;
+  return {
+    environment: { appUrl: appUrl(), indexed: process.env.NODE_ENV === "production" && process.env.SEARCH_INDEXING !== "off", nodeEnv: process.env.NODE_ENV ?? "development" },
+    database: { name, host: new URL(databaseUrl()).hostname, sizeBytes: Number(info[0].size), serverVersion: info[0].version },
+    history,
+    tables,
+    reset: { allowed: databaseResetAllowed(), confirmPhrase: `reset ${name}`, ownerConfigured: ownerFromEnv() !== null },
+  };
 }
 
 /** A backup of the database now (any deployment: it changes nothing). */
 export async function backupDatabase(operator: string) {
-  const pool = new Pool({ ...connectionConfig(databaseUrl()), max: 1 });
-  try {
-    return await createBackup(pool, `asked by @${operator}`);
-  } finally {
-    await pool.end();
-  }
+  const pool = getPool();
+  return await createBackup(pool, `asked by @${operator}`);
 }
 
 /**
@@ -100,41 +91,37 @@ export async function resetDatabase(input: { operatorId: string; confirm: string
   if (!databaseResetAllowed()) throw new HttpError(403, "Resetting the database is disabled on this deployment");
   const folder = migrationsFolder();
   const migrations = loadMigrations(folder);
-  const pool = new Pool({ ...connectionConfig(databaseUrl()), max: 1 });
-  try {
-    const { rows } = await pool.query<{ name: string }>(`SELECT current_database() AS name`);
-    if (input.confirm.trim() !== `reset ${rows[0].name}`) throw new HttpError(400, `Type “reset ${rows[0].name}” to confirm`);
+  const pool = getPool();
+  const { rows } = await pool.query<{ name: string }>(`SELECT current_database() AS name`);
+  if (input.confirm.trim() !== `reset ${rows[0].name}`) throw new HttpError(400, `Type “reset ${rows[0].name}” to confirm`);
 
-    const [operator] = await db
-      .select({ id: users.id, email: users.email, username: users.username, passwordHash: users.passwordHash, displayName: profiles.displayName })
-      .from(users)
-      .leftJoin(profiles, eq(profiles.userId, users.id))
-      .where(eq(users.id, input.operatorId))
-      .limit(1);
+  const [operator] = await db
+    .select({ id: users.id, email: users.email, username: users.username, passwordHash: users.passwordHash, displayName: profiles.displayName })
+    .from(users)
+    .leftJoin(profiles, eq(profiles.userId, users.id))
+    .where(eq(users.id, input.operatorId))
+    .limit(1);
 
-    const backup = input.backup ? await createBackup(pool, `before the factory reset by @${operator?.username ?? input.operatorId}`) : null;
-    console.warn(`[platform] database ${rows[0].name} reset by @${operator?.username ?? input.operatorId}`);
-    await dropPublicObjects(pool);
-    const applied = await applyMigrations(pool, migrations);
+  const backup = input.backup ? await createBackup(pool, `before the factory reset by @${operator?.username ?? input.operatorId}`) : null;
+  console.warn(`[platform] database ${rows[0].name} reset by @${operator?.username ?? input.operatorId}`);
+  await dropPublicObjects(pool);
+  const applied = await applyMigrations(pool, migrations);
 
-    const fresh = drizzle(pool);
-    if (operator) {
-      await fresh.insert(users).values({
-        id: operator.id,
-        email: operator.email,
-        username: operator.username,
-        passwordHash: operator.passwordHash,
-        role: "ADMIN",
-        isVerified: true,
-        isAgeVerified: true,
-        emailVerifiedAt: new Date(),
-      });
-      await fresh.insert(profiles).values({ userId: operator.id, displayName: operator.displayName ?? operator.username });
-    }
-    const owner = ownerFromEnv();
-    const ownerOutcome = owner ? await ensureOwner(fresh as never, owner) : null;
-    return { migrationsApplied: applied, operatorKept: Boolean(operator), ownerRestored: Boolean(ownerOutcome), backup };
-  } finally {
-    await pool.end();
+  const fresh = drizzle(pool);
+  if (operator) {
+    await fresh.insert(users).values({
+      id: operator.id,
+      email: operator.email,
+      username: operator.username,
+      passwordHash: operator.passwordHash,
+      role: "ADMIN",
+      isVerified: true,
+      isAgeVerified: true,
+      emailVerifiedAt: new Date(),
+    });
+    await fresh.insert(profiles).values({ userId: operator.id, displayName: operator.displayName ?? operator.username });
   }
+  const owner = ownerFromEnv();
+  const ownerOutcome = owner ? await ensureOwner(fresh as never, owner) : null;
+  return { migrationsApplied: applied, operatorKept: Boolean(operator), ownerRestored: Boolean(ownerOutcome), backup };
 }

@@ -16,7 +16,7 @@ async function main(): Promise<void> {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) throw new Error("DATABASE_URL is required");
   const migrationsFolder = process.env.MIGRATIONS_DIR ?? path.resolve(__dirname, "drizzle");
-  const pool = new Pool({ ...connectionConfig(connectionString), max: 1 });
+  const pool = new Pool({ ...connectionConfig(connectionString), application_name: "orochia-migrate", max: 1 });
   try {
     const migrations = loadMigrations(migrationsFolder);
     const state = await historyState(pool, migrations);

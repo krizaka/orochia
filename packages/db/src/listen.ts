@@ -1,13 +1,14 @@
 import { Client } from "pg";
 import { connectionConfig } from "./connection";
-import { getDb } from "./client";
+import { databaseUrl, getDb, isDatabaseUnavailable } from "./client";
 import { sql } from "drizzle-orm";
 
 /**
  * PostgreSQL LISTEN / NOTIFY — the realtime fan-out between app instances, with no broker to run or pay for.
  * `notifyChannel` publishes (inside a transaction, delivery happens at commit); `listenChannel` keeps one dedicated
- * connection per process listening and reconnects with a growing delay when it drops. Payloads are at most ~8 KB:
- * publish ids and small facts, never documents. Needs a direct (session) connection — not a transaction pooler.
+ * connection listening and reconnects with a growing delay when it drops — one per process, because its only caller,
+ * the realtime bus, is a process-wide singleton (apps/web/lib/realtime.ts). Payloads are at most ~8 KB: publish ids and
+ * small facts, never documents. Needs a direct (session) connection — not a transaction pooler.
  */
 
 export const NOTIFY_PAYLOAD_LIMIT = 7900;
@@ -51,8 +52,13 @@ export function listenChannel(channel: string, onMessage: (payload: string) => v
   };
 
   const connect = async () => {
-    const url = process.env.DATABASE_URL?.trim() || "postgresql://orochia_user:orochia_secret@localhost:5432/orochia_db?sslmode=disable";
-    const next = new Client(connectionConfig(url));
+    let next: Client;
+    try {
+      next = new Client({ ...connectionConfig(databaseUrl()), application_name: "orochia-listen" });
+    } catch (error) {
+      console.warn(`[listen] ${channel}: ${(error as Error).message}`);
+      return retry();
+    }
     client = next;
     next.on("error", retry);
     next.on("end", retry);
@@ -65,7 +71,8 @@ export function listenChannel(channel: string, onMessage: (payload: string) => v
       delay = 1000;
       setState(true);
     } catch (error) {
-      console.warn(`[listen] ${channel}: ${(error as Error).message}`);
+      const reason = isDatabaseUnavailable(error) ? `database unavailable (${(error as { code?: string }).code ?? "error"})` : (error as Error).message;
+      console.warn(`[listen] ${channel}: ${reason} — retrying in ${Math.round(delay / 1000)} s`);
       retry();
     }
   };
