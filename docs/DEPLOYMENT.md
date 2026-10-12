@@ -88,17 +88,21 @@ pools of 20 on a production build; that exhausted the dev database on 2026-10-12
 The admin console's platform status, backups and factory reset use the same pool; the realtime bus (a process-wide
 singleton too) holds exactly one LISTEN connection. Idle connections are closed after 10 s.
 
-Budget — it must stay under the database's limit:
+Budget — keep it at **70 % of the usable slots** at most (headroom for a console, a stuck deploy, DigitalOcean's own
+probes):
 
 ```
-instances × (DATABASE_MAX_CONNECTIONS + 1 LISTEN) × 2 (rolling deploy: old and new run together)
-  + 1 (migrate job) + the admin's psql / consoles
+(instances + 1 rolling-deploy overlap, ≈ 40 s) × (DATABASE_MAX_CONNECTIONS + 1 LISTEN)
+  + jobs (migrate: 1) + admin (psql / consoles: 1)   ≤ 70 % × usable slots
 ```
 
-| Database | `max_connections` (superuser-reserved) | Usable | Setting |
-| :--- | :--- | :--- | :--- |
-| App Platform dev database (orochia-dev, measured) | 25 (3) | 22 | `DATABASE_MAX_CONNECTIONS=5`, 1 instance → ≤ 13 |
-| Managed PostgreSQL `db-s-1vcpu-1gb` | 25 (3) | 22 | 5 per instance, ≤ 2 instances |
+| Database | `max_connections` (superuser-reserved) | Usable | 70 % | With `DATABASE_MAX_CONNECTIONS=5` |
+| :--- | :--- | :--- | :--- | :--- |
+| App Platform dev database (orochia-dev, measured) | 25 (3) | 22 | 15 | 1 instance: (1 + 1) × 6 + 2 = **14** ✓ |
+| Managed PostgreSQL `db-s-1vcpu-1gb` | 25 (3) | 22 | 15 | 1 instance ✓ — a 2nd needs a bigger plan or a pooler |
+
+Measured on dev after the fix (2026-10-12): 5 `orochia-web` connections under load, one process, one pool. The admin
+console (orochia-admin) has its own database and is not in this budget.
 
 When the database refuses connections (53300, restarting, unreachable), the server logs **one line** every 30 s
 (`[db] database unavailable: 53300 … (N more since the last report)`) rather than a stack per query, and the pages
