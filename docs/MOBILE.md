@@ -11,9 +11,9 @@ Nothing here is a mock-up.
 | Platform | State |
 | :--- | :--- |
 | iOS simulator (iOS 27) | ✅ builds and runs — every screen below, dark and light |
-| Android emulator (Android 16) | ✅ development build runs — home, stories, sign-in, account, challenges; an APK is also built by CI on each `v*` tag ([releases](https://github.com/krizaka/orochia-mobile/releases)) |
-| iPhone / TestFlight | ❌ waiting for the Apple Developer activation and an Expo (EAS) account |
-| Push notifications | ❌ code in place, needs an EAS project id (and APNs / FCM keys) |
+| Android emulator (Android 16) | ✅ development build runs — home, stories, sign-in, account, challenges; the **EAS preview APK** (release build, EAS keystore, Firebase inside) installs and reaches the feed of `dev.orochia.com`; an APK is also built by CI on each `v*` tag ([releases](https://github.com/krizaka/orochia-mobile/releases)) |
+| iPhone / TestFlight | ❌ waiting for the Apple Developer activation (the EAS project exists: `@oussamaabid/orochia`) |
+| Push notifications | 🟡 Android ready: EAS project id in `app.json`, Firebase `orochia-2026` (`google-services.json` from EAS), FCM V1 key on EAS; not yet seen on a phone. iOS: APNs key after the Apple activation |
 
 ---
 
@@ -125,8 +125,10 @@ never in the generated folders. A Release build (no Metro, the bundle inside the
 `sdkmanager "platform-tools" "emulator" "platforms;android-36" "system-images;android-36;google_apis;arm64-v8a"` and
 an AVD), a JDK (17 or 21), then `npx expo run:android`. The emulator reaches the Mac at `10.0.2.2`
 (`EXPO_PUBLIC_OROCHIA_URL=http://10.0.2.2:3000` for a local Orochia; a development build allows plain HTTP). On a
-phone, the APK attached to each [release](https://github.com/krizaka/orochia-mobile/releases) installs directly
-(signed with a debug key, not for a store).
+phone: the **EAS preview APK** (`npx eas-cli@latest build --platform android --profile preview`, signed with the
+project's EAS keystore, push through Firebase) — its install link is on the build's page in the Expo project
+`@oussamaabid/orochia`; or the APK attached to each [release](https://github.com/krizaka/orochia-mobile/releases)
+(CI build, signed with a debug key, no push). Neither is for a store.
 
 ---
 
@@ -150,11 +152,10 @@ maestro test .maestro/smoke.yaml -e OROCHIA_ID=<e-mail or username> -e OROCHIA_P
 
 ## 5. What is missing
 
-- **On a phone**: TestFlight needs the Apple Developer activation and an Expo (EAS) account; a release-signed Android
-  build needs an EAS keystore. Apple and Google refuse sexually explicit apps in their stores: TestFlight internal
+- **On a phone**: TestFlight needs the Apple Developer activation (then `eas build --platform ios` + `eas submit`). Apple and Google refuse sexually explicit apps in their stores: TestFlight internal
   testers is the way for now.
-- **Push**: the code registers the Expo push token at sign-in; it needs an EAS project id, the APNs key (iOS) and the
-  Firebase service account (Android).
+- **Push**: Android is configured end to end (EAS project, Firebase, FCM V1) but a push has not yet been seen on a
+  real phone; iOS needs the APNs key (Apple activation).
 - **Android**: a run on a phone, and a release-signed build.
 - **Video playback**: proven only up to the player; a run with real media (a creator's uploaded video) is still to do.
 - **Stories**: the web viewer's sound, gestures, actions and the "processing" state are not in the app yet
