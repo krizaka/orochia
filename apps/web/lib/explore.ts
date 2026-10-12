@@ -13,6 +13,7 @@ import { and, desc, eq, gt, inArray, isNull, ne, notExists, or, type SQL,sql } f
 
 import { type AuctionCardView,listAuctions } from "./auctions";
 import { type ChallengeCardView,listChallenges } from "./challenges";
+import { unlessUnavailable } from "./degrade";
 import {
   DISCOVERABLE_VISIBILITY,
   HOLDING_REPORT_REASONS,
@@ -475,6 +476,30 @@ export async function exploreSections(viewer: ExploreViewer | null): Promise<Exp
     discoverableTags(20),
   ]);
   return { trending, fresh, stories: storyList, creators, auctions, challenges, tags };
+}
+
+/**
+ * The sections for the Explore page: each one loads on its own, so a database that is unavailable for a moment costs
+ * the sections it could not answer (`unavailable`, empty in `sections`), never the page (lib/degrade.ts).
+ */
+export async function exploreSectionsSettled(viewer: ExploreViewer | null): Promise<{ sections: ExploreSections; unavailable: Set<keyof ExploreSections> }> {
+  const unavailable = new Set<keyof ExploreSections>();
+  const part = async <K extends keyof ExploreSections>(key: K, load: () => Promise<ExploreSections[K]>): Promise<ExploreSections[K]> => {
+    const loaded = await unlessUnavailable(load);
+    if (loaded.ok) return loaded.value;
+    unavailable.add(key);
+    return [] as unknown as ExploreSections[K];
+  };
+  const [trending, fresh, storyList, creators, auctions, challenges, tags] = await Promise.all([
+    part("trending", () => trendingVideos(viewer)),
+    part("fresh", () => newVideos(viewer)),
+    part("stories", () => liveStories(viewer)),
+    part("creators", () => creatorsToFollow(viewer)),
+    part("auctions", () => listAuctions("open", viewer?.id ?? null, 8)),
+    part("challenges", () => listChallenges("open", viewer?.id ?? null, 8)),
+    part("tags", () => discoverableTags(20)),
+  ]);
+  return { sections: { trending, fresh, stories: storyList, creators, auctions, challenges, tags }, unavailable };
 }
 
 export const RESULTS_PAGE = 24;
