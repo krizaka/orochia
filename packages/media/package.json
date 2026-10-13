@@ -13,8 +13,8 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^20.14.10",
-    "typescript": "^5.5.4"
+    "@types/node": "^25.9.9",
+    "typescript": "^6.0.3"
   },
   "exports": {
     ".": "./src/index.ts",
