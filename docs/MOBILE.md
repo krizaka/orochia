@@ -136,11 +136,11 @@ A short recording of the smoke run (18+ gate → sign in → account → feed):
 | :--- | :--- |
 | Sign in | `POST /api/auth/login` with `client: "native"` → the server answers a **signed session token** (the same one the web keeps in an httpOnly cookie) |
 | Sign up | `GET /api/auth/register?client=native` opens the form: a form token bound to the install's **device id** (random, made once, kept in secure storage, sent as `X-Orochia-Device` — what the device cookie is to a browser); `POST /api/auth/register` with `client: "native"` answers the session token, never a cookie. Every web rule applies: automated clients, per-address and per-device limits, the honeypot, the form's minimal fill time, disposable addresses, 18+ from the date of birth, the terms. When Turnstile is on, the app shows the server's `/auth/native-challenge` page in a WebView (Turnstile has no native SDK) and sends its token — the same check, failing closed |
-| Verify | until the address is confirmed the app shows the verification step only; once it is, `GET /api/auth/me` answers a refreshed token, which replaces the stored one |
+| Verify | until the address is confirmed the app shows the verification step only; once it is, `GET /api/auth/me` (or `POST /api/auth/verify-email` sent with the bearer) answers a refreshed token, which replaces the stored one — never a cookie |
 | Keep it | the token goes to the device's secure storage only (`expo-secure-store`: Keychain on iOS, Keystore-backed on Android) — never plain storage, a log or a URL |
-| Use it | every call carries `Authorization: Bearer <token>`; the account is read from `GET /api/auth/me` |
+| Use it | every call carries `Authorization: Bearer <token>` and **no cookie** (`credentials: "omit"`); the account is read from `GET /api/auth/me`. When a request carries a bearer, the bearer decides: a cookie that comes along is ignored, even if the bearer is invalid ([#127](https://github.com/krizaka/orochia/issues/127)) |
 | Lose it | a `401` on a signed-in call drops the stored session; a call with no answer gives up after 20 s ("Orochia is out of reach") |
-| Sign out | the push token is forgotten on the server (`DELETE /api/me/devices`), then the session |
+| Sign out | the push token is forgotten on the server (`DELETE /api/me/devices`), then the session: `POST /api/auth/logout` revokes the token on the server (a copy of it opens nothing any more), and the app clears its secure storage, the native cookie jar and every cached answer — the next person to sign in on that phone never sees the previous account |
 
 While signed in and in the foreground, one live stream (`/api/conversations/stream`, Server-Sent Events with the
 bearer session) shows toasts and moves the badges; in the background, push (see

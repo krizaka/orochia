@@ -11,8 +11,11 @@ Content that may involve minors or non-consensual material must be reported thro
 
 ## Security model (summary)
 
-- **Sessions**: HMAC-SHA256-signed httpOnly cookies, 7-day expiry, constant-time verification; the role is
-  read from the account at login, never from the request.
+- **Sessions**: HMAC-SHA256-signed tokens, 7-day expiry, constant-time verification, a random id per session; the
+  role is read from the account, never from the request. The browser keeps its session in an httpOnly cookie; a native
+  app sends it as `Authorization: Bearer` and **a bearer always decides** — a cookie that comes along is ignored, and no
+  route sets a session cookie for a native client (#127: a native cookie jar outlives the app's sign-out). Signing out
+  revokes the token on the server (`revoked_sessions`, kept until the token would have expired).
 - **Passwords**: scrypt with per-password salt; no alternative hash format is accepted.
 - **Media**: never proxied; stream URLs are signed and expire after 300 seconds; access is decided server-side
   for every play.

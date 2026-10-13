@@ -19,6 +19,8 @@ export interface SessionUser {
 interface SessionPayload extends SessionUser {
   /** Expiry, seconds since epoch. */
   exp: number;
+  /** A random id: two sessions of one account are never the same token, so signing one out leaves the other. */
+  jti: string;
 }
 
 export const SESSION_COOKIE_NAME = "orochia_session";
@@ -42,6 +44,7 @@ export function signSessionToken(
     isAgeVerified: user.isAgeVerified,
     emailVerified: user.emailVerified,
     exp: Math.floor(now / 1000) + SESSION_TTL_SECONDS,
+    jti: crypto.randomBytes(12).toString("base64url"),
   };
   const data = Buffer.from(JSON.stringify(payload)).toString("base64url");
   return `${data}.${sign(data, secret)}`;
@@ -97,20 +100,63 @@ export function clearSessionCookie(response: NextResponse): void {
   });
 }
 
+/** How a request's session travels: a native app's bearer token, the browser's cookie, or none. */
+export type SessionTransport = "bearer" | "cookie";
+
 /**
- * The signed-in session of the request, verified address or not (sign-in, /auth/me, the resend link): the browser's
- * session cookie, or — for the native apps, which carry no cookie jar of their own — the same signed token sent as
- * `Authorization: Bearer <token>`. A bearer token is never sent by a browser on its own, so it opens no CSRF path.
+ * The session token a request carries, and how. **A bearer decides** (krizaka/orochia#127): when the request has an
+ * `Authorization: Bearer` header, its token is the only one considered — a cookie that comes along is ignored, even when
+ * the bearer is malformed, forged or expired (then there is no session at all). A native app's HTTP stack may keep a
+ * cookie in a system jar that outlives the app's sign-out (iOS does); were the cookie to win, the next person to sign
+ * in on that phone would land in the previous person's account. Without a bearer, the browser's cookie is the session.
  */
-export async function getSession(): Promise<SessionUser | null> {
-  const token = (await cookies()).get(SESSION_COOKIE_NAME)?.value ?? bearerToken((await headers()).get("authorization"));
-  return token ? verifySessionToken(token) : null;
+export function sessionTokenOf(request: { cookie?: string; authorization?: string | null }): { transport: SessionTransport; token?: string } | null {
+  if (request.authorization && /^Bearer\s/i.test(request.authorization)) return { transport: "bearer", token: bearerToken(request.authorization) };
+  if (request.cookie) return { transport: "cookie", token: request.cookie };
+  return null;
 }
 
-/** How the request's session travels: the browser's cookie, a native app's bearer token, or none. */
-export async function sessionTransport(): Promise<"cookie" | "bearer" | null> {
-  if ((await cookies()).get(SESSION_COOKIE_NAME)?.value) return "cookie";
-  return bearerToken((await headers()).get("authorization")) ? "bearer" : null;
+/** The session token of the current request, and how it travels (see {@link sessionTokenOf}). */
+export async function currentSessionToken(): Promise<{ transport: SessionTransport; token?: string } | null> {
+  return sessionTokenOf({ cookie: (await cookies()).get(SESSION_COOKIE_NAME)?.value, authorization: (await headers()).get("authorization") });
+}
+
+/**
+ * The signed-in session of the request, verified address or not (sign-in, /auth/me, the resend link): a native app's
+ * `Authorization: Bearer <token>` when it sends one, else the browser's session cookie — never a cookie over a bearer
+ * ({@link sessionTokenOf}). A bearer token is never sent by a browser on its own, so it opens no CSRF path. A token that
+ * was signed out ({@link revokeSession}) is no session.
+ */
+export async function getSession(): Promise<SessionUser | null> {
+  const token = (await currentSessionToken())?.token;
+  const session = token ? verifySessionToken(token) : null;
+  if (!session) return null;
+  const { isSessionRevoked } = await import("./session-revocation");
+  return (await isSessionRevoked(token!)) ? null : session;
+}
+
+/** How the request's session travels: a native app's bearer token (which then decides), the browser's cookie, or none. */
+export async function sessionTransport(): Promise<SessionTransport | null> {
+  return (await currentSessionToken())?.transport ?? null;
+}
+
+/** When a valid session token expires, or null when it is malformed, forged or expired already. */
+export function sessionTokenExpiry(token: string, secret: string = sessionSecret(), now: number = Date.now()): Date | null {
+  if (!verifySessionToken(token, secret, now)) return null;
+  const payload = JSON.parse(Buffer.from(token.split(".")[0], "base64url").toString("utf-8")) as SessionPayload;
+  return new Date(payload.exp * 1000);
+}
+
+/**
+ * Signs out the request's session: its token is revoked until it would have expired, so no surviving copy of it
+ * (a native cookie jar, a backup) opens the account again.
+ */
+export async function revokeCurrentSession(): Promise<void> {
+  const token = (await currentSessionToken())?.token;
+  const expiresAt = token ? sessionTokenExpiry(token) : null;
+  if (!token || !expiresAt) return;
+  const { revokeSession } = await import("./session-revocation");
+  await revokeSession(token, expiresAt);
 }
 
 /** The token of an `Authorization: Bearer …` header, if there is one. */

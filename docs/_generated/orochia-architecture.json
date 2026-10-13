@@ -85,7 +85,7 @@
       "id": "data",
       "name": "Data persistence",
       "path": "packages/db",
-      "tablesCount": 46,
+      "tablesCount": 47,
       "tables": [
         "auctions",
         "auction_bids",
@@ -96,6 +96,7 @@
         "playlist_audience_lists",
         "auth_identities",
         "auth_tokens",
+        "revoked_sessions",
         "challenges",
         "challenge_pledges",
         "challenge_applications",
@@ -349,7 +350,7 @@
       "method": "POST",
       "path": "/api/auth/logout",
       "access": "public",
-      "summary": ""
+      "summary": "Signs out: the request's session token — a native app's bearer or the browser's cookie — is revoked on the server (krizaka/orochia#127), so no surviving copy of it opens the account again; the browser's cookie is cleared too."
     },
     {
       "method": "GET",
@@ -421,7 +422,7 @@
       "method": "POST",
       "path": "/api/auth/verify-email",
       "access": "public",
-      "summary": "Verifies an e-mail address with the link's one-time token (48 h); refreshes the session of that account."
+      "summary": "Verifies an e-mail address with the link's one-time token (48 h); refreshes the session of that account — the cookie of a browser, or, for a native app's bearer session, a new `token` in the answer."
     },
     {
       "method": "GET",
