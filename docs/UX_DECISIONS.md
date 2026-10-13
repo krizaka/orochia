@@ -25,6 +25,7 @@ written here, each with the place that carries it. Disagree, or saw that signal?
 - **Cost** — One more screen before anything, on every new device.
 - **Signal we are wrong** — A high share of first visits that leave at the gate *and* come back from the same source,
   or feedback that the gate reads as a trap rather than a question.
+- **Feedback** — wrong for you? [Discussion #134](https://github.com/krizaka/orochia/discussions/134).
 
 ## Create an account in the app, not "on orochia.com"
 
@@ -41,6 +42,7 @@ written here, each with the place that carries it. Disagree, or saw that signal?
   rules of its own.
 - **Cost** — Two forms to keep in step (the server holds the rules, both forms show its refusals on their fields).
 - **Signal we are wrong** — Sign-ups started in the app that stop at *Check your inbox* far more often than on the web.
+- **Feedback** — wrong for you? [Discussion #134](https://github.com/krizaka/orochia/discussions/134).
 
 ## Never "live", never a profile that does not exist
 
@@ -58,6 +60,7 @@ written here, each with the place that carries it. Disagree, or saw that signal?
 - **Cost** — An early home looks quieter than the competition's.
 - **Signal we are wrong** — Feedback that people expected live streaming from what they saw, or a home judged "empty"
   by visitors who then leave without opening a video.
+- **Feedback** — wrong for you? [Discussion #134](https://github.com/krizaka/orochia/discussions/134).
 
 ## The creator's share is written before anything else
 
@@ -76,6 +79,7 @@ written here, each with the place that carries it. Disagree, or saw that signal?
   same variable).
 - **Signal we are wrong** — Creator applications or support questions that still ask "how much do you take?", or fans
   surprised by the split after paying.
+- **Feedback** — wrong for you? [Discussion #134](https://github.com/krizaka/orochia/discussions/134).
 
 ## A tip or an unlock is one dialog, with the creator's price already chosen
 
@@ -93,6 +97,7 @@ written here, each with the place that carries it. Disagree, or saw that signal?
 - **Cost** — A first payment leaves Orochia for the provider's page; on the phone, for the browser.
 - **Signal we are wrong** — Dialogs opened and closed without a payment far more often than they are paid, or many
   people leaving the preselected amount for a lower one.
+- **Feedback** — wrong for you? [Discussion #134](https://github.com/krizaka/orochia/discussions/134).
 
 ## Bids and pledges are held, never taken for nothing
 
@@ -110,6 +115,7 @@ written here, each with the place that carries it. Disagree, or saw that signal?
 - **Cost** — Credits sit held while an auction or a challenge runs; a creator waits for delivery to be paid.
 - **Signal we are wrong** — Many pledges withdrawn before the deadline, or backers asking "where did my credits go?"
   while they are held.
+- **Feedback** — wrong for you? [Discussion #134](https://github.com/krizaka/orochia/discussions/134).
 
 ## A bid in the last two minutes gives everyone two more minutes
 
@@ -123,6 +129,7 @@ written here, each with the place that carries it. Disagree, or saw that signal?
 - **Cost** — An auction's end is not fixed in advance; a contested one runs longer.
 - **Signal we are wrong** — Auctions extended many times in a row with tiny steps, or bidders saying they could not
   tell when it would really end.
+- **Feedback** — wrong for you? [Discussion #134](https://github.com/krizaka/orochia/discussions/134).
 
 ## Act where the thing is, and every view has its address
 
@@ -140,7 +147,7 @@ written here, each with the place that carries it. Disagree, or saw that signal?
 - **Cost** — More states to handle in each page (every view must load from its address alone).
 - **Signal we are wrong** — Support questions asking where a setting is, or shared links that open on a different view
   than the one sent.
-
+- **Feedback** — wrong for you? [Discussion #134](https://github.com/krizaka/orochia/discussions/134).
 
 ## Live screens move at once, then settle
 
@@ -158,6 +165,7 @@ written here, each with the place that carries it. Disagree, or saw that signal?
   from flickering.
 - **Signal we are wrong** — Reports of a price shown that the server refuses (`409` "the minimum moved") more often
   than before, or of a pot that jumps backwards.
+- **Feedback** — wrong for you? [Discussion #122](https://github.com/krizaka/orochia/discussions/122).
 
 ## Notification preferences by kind on the phone, by event on the web
 
@@ -173,6 +181,7 @@ written here, each with the place that carries it. Disagree, or saw that signal?
 - **Cost** — A finer choice ("outbid yes, new auctions no") needs the web.
 - **Signal we are wrong** — Many accounts with whole kinds off on the phone that then turn single events back on on the
   web, or feedback asking for one specific event on the phone.
+- **Feedback** — wrong for you? [Discussion #122](https://github.com/krizaka/orochia/discussions/122).
 
 ## In front, a toast; in the background, a push — never both
 
@@ -185,6 +194,7 @@ written here, each with the place that carries it. Disagree, or saw that signal?
 - **Refused** — The system banner in front (shows twice); pushing every message whatever the presence.
 - **Cost** — A person with a tab open on another computer does not get the phone buzz for a message.
 - **Signal we are wrong** — Feedback of messages "missed" while a forgotten tab was open elsewhere.
+- **Feedback** — wrong for you? [Discussion #122](https://github.com/krizaka/orochia/discussions/122).
 
 ## A tapped notification opens its screen, even from a closed app
 
@@ -196,3 +206,4 @@ written here, each with the place that carries it. Disagree, or saw that signal?
 - **Refused** — Opening Home with a toast pointing to the item.
 - **Cost** — Each new kind of path needs its route in the app (or falls back to the web).
 - **Signal we are wrong** — Taps followed by an immediate back and a search for the same item.
+- **Feedback** — wrong for you? [Discussion #122](https://github.com/krizaka/orochia/discussions/122).
