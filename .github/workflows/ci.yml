@@ -18,8 +18,8 @@ jobs:
     name: Lint · Typecheck · Unit tests · Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 20
           cache: npm
@@ -53,8 +53,8 @@ jobs:
     env:
       DATABASE_URL: postgresql://orochia_user:orochia_secret@localhost:5432/orochia_db
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 20
           cache: npm
@@ -107,8 +107,8 @@ jobs:
       ABUSE_QUOTA_CREATOR_DEFAULT_GB: "2"
       ABUSE_SIGNUP_MIN_FILL_SECONDS: "1"
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 20
           cache: npm
