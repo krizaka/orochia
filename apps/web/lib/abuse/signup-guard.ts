@@ -18,6 +18,12 @@ import { DISPOSABLE_EMAIL_DOMAINS } from "./disposable-email-domains";
  * Refusals carry stable codes; they say no more than needed.
  */
 export const DEVICE_COOKIE = "orochia_device";
+/**
+ * The native app has no browser cookie: it sends the same kind of random device id (made once per install and kept in
+ * the device's secure storage) in this header. The rules are the same — a token bound to that id, the per-device limit.
+ * Rotating it is no easier than clearing a browser's cookies, so it opens no shortcut.
+ */
+export const DEVICE_HEADER = "x-orochia-device";
 export const DEVICE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 export const FORM_TOKEN_MAX_AGE_MS = 2 * 60 * 60 * 1000;
 
@@ -103,6 +109,13 @@ export function assertEmailDomainAllowed(email: string) {
   if (isDisposableEmail(email)) {
     throw new HttpError(400, "Disposable e-mail addresses are not accepted. Use an address you keep.", { code: "EMAIL_DOMAIN_REFUSED" });
   }
+}
+
+/** The device a sign-up comes from: the app's header when it sends one, else the browser's device cookie. */
+export function signupDeviceId(headers: Headers, cookieValue: string | undefined | null): string | undefined {
+  const fromHeader = headers.get(DEVICE_HEADER)?.trim();
+  if (validDevice(fromHeader)) return fromHeader;
+  return validDevice(cookieValue) ? cookieValue : undefined;
 }
 
 export { validDevice as isDeviceId };

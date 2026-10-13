@@ -110,10 +110,10 @@ export function ageOn(isoDate: string, today = new Date()): number {
 export function checkDateOfBirth(isoDate: string, today = new Date()): string {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoDate);
   const date = match ? new Date(`${isoDate}T00:00:00Z`) : null;
-  if (!match || !date || Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== isoDate) throw new HttpError(400, "Invalid date of birth");
+  if (!match || !date || Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== isoDate) throw new HttpError(400, "Invalid date of birth", { code: "BIRTH_DATE_INVALID" });
   const age = ageOn(isoDate, today);
-  if (age < MINIMUM_AGE) throw new HttpError(403, "Orochia is for adults only: you must be 18 or older.");
-  if (age > 120) throw new HttpError(400, "Invalid date of birth");
+  if (age < MINIMUM_AGE) throw new HttpError(403, "Orochia is for adults only: you must be 18 or older.", { code: "UNDERAGE" });
+  if (age > 120) throw new HttpError(400, "Invalid date of birth", { code: "BIRTH_DATE_INVALID" });
   return isoDate;
 }
 

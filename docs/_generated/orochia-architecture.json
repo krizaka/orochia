@@ -391,7 +391,7 @@
       "method": "GET",
       "path": "/api/auth/register",
       "access": "public",
-      "summary": "Opens a sign-up form: a signed form token (bound to this browser's device cookie, set here when missing) and the public bot-challenge settings — the form cannot be posted without them."
+      "summary": "Opens a sign-up form: a signed form token (bound to this browser's device cookie, set here when missing — or, with `?client=native`, to the app's device id header) and the public bot-challenge settings — the form cannot be posted without them."
     },
     {
       "method": "POST",

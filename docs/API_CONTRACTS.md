@@ -51,7 +51,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/auth/oauth/complete` | public | Creates the account of a new Google / Facebook sign-in after the person gives a date of birth (18+), certifies it and accepts the terms. |
 | `GET` | `/api/auth/oauth/pending` | public | The provider sign-in waiting to become an account: what the completion form can prefill. |
 | `GET` | `/api/auth/providers` | public | The sign-in providers this deployment offers (only those whose keys are configured). |
-| `GET` | `/api/auth/register` | public | Opens a sign-up form: a signed form token (bound to this browser's device cookie, set here when missing) and the public bot-challenge settings — the form cannot be posted without them. |
+| `GET` | `/api/auth/register` | public | Opens a sign-up form: a signed form token (bound to this browser's device cookie, set here when missing — or, with `?client=native`, to the app's device id header) and the public bot-challenge settings — the form cannot be posted without them. |
 | `POST` | `/api/auth/register` | public | Creates an account (a member — creators are opened later, never an administrator), signs it in and e-mails the link that verifies its address — until then the account can do nothing else. |
 | `POST` | `/api/auth/resend-verification` | public | E-mails a new verification link to the signed-in account (the previous link stops working). |
 | `POST` | `/api/auth/reset-password` | public | Sets a new password with the link's one-time token (1 h). |
