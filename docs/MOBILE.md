@@ -13,7 +13,7 @@ Nothing here is a mock-up.
 | iOS simulator (iOS 27) | ✅ builds and runs — every screen below, dark and light |
 | Android emulator (Android 16) | ✅ development build runs — home, stories, sign-in, account, challenges; the **EAS preview APK** (release build, EAS keystore, Firebase inside) installs and reaches the feed of `dev.orochia.com`; an APK is also built by CI on each `v*` tag ([releases](https://github.com/krizaka/orochia-mobile/releases)) |
 | iPhone / TestFlight | ❌ waiting for the Apple Developer activation (the EAS project exists: `@oussamaabid/orochia`) |
-| Push notifications | 🟡 Android ready: EAS project id in `app.json`, Firebase `orochia-2026` (`google-services.json` from EAS), FCM V1 key on EAS; not yet seen on a phone. iOS: APNs key after the Apple activation |
+| Push notifications | ✅ Android, end to end (2026-10-13, emulator `krizaka-pixel`, Google APIs): a local Orochia with `PUSH_DELIVERY=on` → Expo Push → FCM (Firebase `orochia-2026`) → the app; the tap opens the conversation, from a cold start too. Median ≈ 0.5 s from the send to the notification. iOS: the APNs key after the Apple activation ([Notifications](./NOTIFICATIONS.md) §3) |
 
 ---
 
