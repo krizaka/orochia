@@ -71,7 +71,8 @@ Every event is on by default, in the app and by e-mail; each can be turned off o
   are deleted.
 - **Tap → screen**: `useOpenTappedPush` (orochia-mobile `src/lib/push.ts`) opens `data.path` through `openPath`
   (`src/lib/links.ts`): a conversation, an auction, a challenge, a video natively; anything else on orochia.com. It
-  works while the app runs **and when the tap launched it** (a cold start), each notification once.
+  works while the app runs **and when the tap launched it** (a cold start), each notification once — the launch
+  response is cleared once opened, so a later start does not reopen it.
 - **In front**, the app shows the live stream's toasts; a push arriving then goes to the list only (no double banner).
 - **Gate**: pushes leave only in production, or with `PUSH_DELIVERY=on` (local runs and CI never call the service);
   `PUSH_DELIVERY=off` stops them in production too.
@@ -106,6 +107,13 @@ Every event is on by default, in the app and by e-mail; each can be turned off o
 3. Sign in, allow notifications, send the app to the background.
 4. From another account, do something that notifies (follow, tip, comment, send a message): the notification arrives
    in a few seconds; tap it — the app opens on that screen.
+
+**Proven on 2026-10-13** (emulator `krizaka-pixel`, Android 16 with Google APIs, a local Orochia with
+`PUSH_DELIVERY=on`, the app built with Firebase `orochia-2026`): Alex's message to Elena, her app in the background →
+*New message from Alex Vance* in the shade; the tap opens the conversation. From the send to the notification on
+screen: 1.24 s the first time, then 0.50 · 0.52 · 0.55 · 0.50 · 0.76 s (median ≈ 0.53 s over 6 sends, timed by polling
+the emulator's notification list). Note: an emulator is *not a device* for `expo-device` — the app registers there
+anyway (krizaka/orochia-mobile#29); only an iOS simulator gets no token. The recording of this run: [live-push.mp4](https://krizaka-assets.b-cdn.net/site/products/orochia/mobile/live-push.6573b79033.mp4).
 
 ## 5. Where the code is
 
