@@ -1,8 +1,9 @@
-# 🔔 Notifications & Realtime
+# 🔔 Notifications & push
 
 Something happens — a follower, a tip, an unlock, a bid, a pledge, a message — and the person it concerns hears of it
 **wherever they are**: on an open page (in the second), on their phone (even with the app closed), by e-mail (at the
-pace they chose). One event, one row, three channels.
+pace they chose). One event, one row, three channels. How the live part works — the bus, the streams, reconnection,
+presence — is in [REALTIME.md](REALTIME.md).
 
 ---
 
@@ -10,154 +11,113 @@ pace they chose). One event, one row, three channels.
 
 | Where the person is | Channel | How |
 | :--- | :--- | :--- |
-| A page of orochia.com is open | **Server-Sent Events** | `/api/conversations/stream` (topic `user:<id>`): the bell's count moves, a **toast** slides in for a few seconds, the list updates |
-| The Orochia app is open | **Server-Sent Events** | the same stream, with the native session as `Authorization: Bearer` |
+| A page of orochia.com is open | **Server-Sent Events** | the account's stream (`/api/conversations/stream`, topic `user:<id>`): the bell's count moves, a **toast** slides in, the list updates |
+| The Orochia app is in front | **Server-Sent Events** | the same stream, with the native session as `Authorization: Bearer`: a toast, the account tab's badge |
 | The app is closed or in the background | **Push** | Expo Push Service → **FCM** (Android) / **APNs** (iOS), to every phone registered by the account |
 | Away | **E-mail** | `INSTANT`, `HOURLY` or `NONE` (`profiles.email_frequency`) |
 
-Every event goes through `notify()` (`apps/web/lib/notifications.ts`): it writes the notification (the source of
-truth), publishes it live, pushes it to the phones, then e-mails it. Each event can be turned off per channel in
-*Settings → Notifications* (the "in the app" switch covers the bell, the toasts and the phone).
-
-## 2. Why SSE and not WebSocket
-
-The traffic is **one-way, server → client**: the client acts through ordinary HTTP requests (follow, tip, bid,
-send a message), and only has to *hear* what follows. That is what Server-Sent Events are for:
-
-- **Plain HTTP**: through every proxy and CDN (checked on DigitalOcean App Platform — the stream is not buffered,
-  heartbeats every 15 s), the same cookie or bearer token as the rest of the API, no protocol upgrade, no extra port.
-- **Reconnection is built in** (`EventSource` retries by itself and sends `Last-Event-ID`): the messages missed are
-  replayed from the database, the rest (receipts, unread counts) reloaded — nothing missed while offline stays missing.
-- **No sticky sessions**: any instance serves any stream, because the fan-out happens in PostgreSQL (below).
-
-WebSocket would pay for a full-duplex channel nobody uses, and ask for sticky routing or a pub/sub tier to fan out
-between instances. It becomes the right tool only for high-frequency client → server traffic (video calls, cursors,
-games) — none of which Orochia has. Chat included: "typing…" is one small POST every 3 s at most, and measured
-latency stays under 80 ms at 2 000 streams on one instance ([ADR 0001](adr/0001-realtime-transport.md)).
-
-## 3. One bus, chosen by configuration
-
-`apps/web/lib/realtime.ts` is the only door: `publish(topic, event)` → the **`RealtimeBus`** of
-[`@krizaka/realtime`](https://www.npmjs.com/package/@krizaka/realtime) → every instance's subscribers → the SSE streams they hold. Topics:
-`user:<id>` (notifications, messages, receipts, typing, the unread count), `presence:<id>` (one account's presence,
-followed only by the streams of the people allowed to see it), `auction:<id>`, `challenge:<id>`. Payloads are small
-facts (≤ 8 KB), never documents. Why this transport and not WebSocket, a managed service or a broker:
-[ADR 0001](adr/0001-realtime-transport.md).
-
-| `REALTIME_BUS` | How events cross instances | Presence | When |
-| :--- | :--- | :--- | :--- |
-| `postgres` (default) | `NOTIFY orochia_events` → each instance's `LISTEN` connection (`packages/db/src/listen.ts`); every instance receives every event | each instance's memory, replicated over the same channel (changes + a snapshot every 30 s) | one to ~3 instances — no extra service |
-| `redis` + `REDIS_URL` | Redis / Valkey pub/sub, one subscription per channel an instance needs | in Redis (one Lua script per beat, keys that expire) | more instances, ~10 k+ streams, or LISTEN/NOTIFY weighing on the database |
-| `memory` | none (one process) | memory | tests |
-
-The code that publishes never knows which: switching is a variable and a restart. The bus is the Krizaka brick
-[`@krizaka/realtime`](https://github.com/krizaka/krizaka-ui/tree/main/packages/realtime) (extracted from Orochia when a
-second product needed it, [krizaka/krizaka-ui#75](https://github.com/krizaka/krizaka-ui/issues/75)); Orochia hands it
-its LISTEN/NOTIFY primitives (`packages/db/src/listen.ts`), its channel `orochia_events` and its Redis prefix
-`orochia:rt:`.
-
-## 4. Mobile push
-
 ```
-app (expo-notifications) ──token──▶ POST /api/me/devices ──▶ push_devices
-notify() ──▶ lib/push.ts ──▶ @krizaka/push ──▶ Expo Push Service ──▶ FCM / APNs ──▶ phone
-                         ◀── dead tokens (DeviceNotRegistered) are deleted
+ an action ──▶ notify()  (apps/web/lib/notifications.ts)
+                 │
+                 ├─ wanted in the app? (profiles.in_app_off) ── no ──▶ (no row, no live, no push)
+                 │      yes
+                 ├─▶ INSERT notifications                         the bell, /notifications — the source of truth
+                 ├─▶ publish user:<id> { type: "notification" }   open pages and apps: a toast (REALTIME.md)
+                 ├─▶ pushToUser()  (lib/push.ts)                  the phones, in the background (§3)
+                 │
+                 └─ wanted by e-mail? (profiles.notifications_off, verified address, frequency, throttles)
+                        └─▶ the notification e-mail
 ```
 
-- **Registration**: after sign-in the app asks for permission, gets its Expo push token and registers it
-  (`POST /api/me/devices`, `{ token, platform }`). A token belongs to one account at a time — signing in with another
-  account on the same phone moves it. Sign-out forgets it (`DELETE /api/me/devices`).
-- **Sending**: `pushToUser` sends the notification's subject and text, with `data.path` — tapping the notification
-  opens that screen in the app. Batches of 100, never throws; tokens reported dead are deleted.
+`notify()` never throws and never decides anything: it runs after the action, best-effort.
+
+## 2. Preferences
+
+Every event is on by default, in the app and by e-mail; each can be turned off on either side.
+
+- **Web** — *Settings → Notifications*: one switch per event and channel, the e-mail pace.
+- **App** — *You → Notification settings* (`orochia://settings/notifications`): one switch **per kind** (messages,
+  followers and contacts, comments, tips and unlocks, videos, auctions, challenges, storage) — 30 switches would be read
+  by nobody. A kind writes all its events into the same `in_app_off` list; an event turned off on the web shows its kind
+  as off. If the phone itself refuses Orochia's notifications, the screen says so first, with the way to the system
+  settings.
+- The "in the app" side (`in_app_off`) covers **the bell, the toasts and the push** together: a push only ever repeats
+  what the bell shows.
+- **Messages** ring the phone only when no Orochia screen of the recipient is in front of them (presence `online`): an
+  open page or app already shows the message live. E-mail for a conversation: at most one an hour.
+
+## 3. Mobile push
+
+```
+ app (expo-notifications)
+   ├─ after sign-in: permission (asked once) → Android channel "default" (high importance)
+   ├─ getExpoPushTokenAsync({ projectId }) ──▶ POST /api/me/devices { token, platform } ──▶ push_devices
+   └─ sign-out: DELETE /api/me/devices { token }
+
+ notify() ──▶ pushToUser(userId, { title, body, path })                       apps/web/lib/push.ts
+              └─▶ @krizaka/push: POST https://exp.host/--/api/v2/push/send (batches of 100)
+                    └─▶ Expo Push Service ──▶ FCM (Android) / APNs (iOS) ──▶ the phone
+              ◀── tickets: DeviceNotRegistered → the token is deleted
+
+ the phone: a notification "title — text"; tapped ──▶ data.path ──▶ openPath() ──▶ the native screen (or the web page)
+```
+
+- **Registration** (`POST /api/me/devices`, signed in, 20 an hour): only an Expo push token (`ExponentPushToken[…]`)
+  is stored. A token belongs to one account at a time — signing in with another account on the same phone moves it.
+  Sign-out forgets it.
+- **What is sent**: the event's subject as the title, its text as the body, `data.path` (what the tap opens), the
+  Android channel `default` that the app creates with **high importance** (a heads-up banner, not a silent line in the
+  shade) and the default **sound** (iOS rings). One message per phone, never throws; the tokens the service reports dead
+  are deleted.
+- **Tap → screen**: `useOpenTappedPush` (orochia-mobile `src/lib/push.ts`) opens `data.path` through `openPath`
+  (`src/lib/links.ts`): a conversation, an auction, a challenge, a video natively; anything else on orochia.com. It
+  works while the app runs **and when the tap launched it** (a cold start), each notification once.
+- **In front**, the app shows the live stream's toasts; a push arriving then goes to the list only (no double banner).
 - **Gate**: pushes leave only in production, or with `PUSH_DELIVERY=on` (local runs and CI never call the service);
   `PUSH_DELIVERY=off` stops them in production too.
-- **Why Expo Push and not Firebase directly**: one HTTP call and one kind of token for both platforms, no Admin SDK
-  and no service-account key on the server. Firebase is still underneath for Android — its credentials live in the
-  app's EAS project (below). Switching to FCM HTTP v1 directly later only changes `@krizaka/push`.
+- **Why Expo Push and not Firebase directly**: one HTTP call and one kind of token for both platforms, no Admin SDK and
+  no service-account key on the server. Firebase is still underneath for Android — its credentials live in the app's
+  EAS project. Switching to FCM HTTP v1 directly later only changes `@krizaka/push`.
 
-### To turn it on (once)
+### What is configured
 
-1. **Expo / EAS** — `npx eas-cli@latest init` in `orochia-mobile` (creates the project and its `projectId`).
-2. **Android — Firebase**: create a Firebase project, add an Android app `com.krizaka.orochia`, download
-   `google-services.json` (EAS file secret `GOOGLE_SERVICES_JSON`), and upload an FCM v1 service-account key with
-   `eas credentials` → Android → *Push Notifications (FCM V1)*.
-3. **iOS — APNs**: `eas credentials` → iOS → *Push Notifications* creates (or uploads) the APNs key from the Apple
-   Developer account.
-4. **Server** (optional): turn on *Enhanced push security* in the Expo project and set `EXPO_ACCESS_TOKEN`.
+| | State |
+| :--- | :--- |
+| Expo / EAS | project `@oussamaabid/orochia` (`extra.eas.projectId` in orochia-mobile `app.json`) |
+| Android | Firebase project `orochia-2026`, app `com.krizaka.orochia`; `google-services.json` as the EAS file variable `GOOGLE_SERVICES_JSON`; FCM V1 service-account key uploaded to the project's EAS credentials |
+| iOS | **waiting for the Apple Developer activation**: then `eas credentials` → iOS → *Push Notifications* (create or upload the APNs `.p8` key), `eas build --platform ios`, TestFlight. Nothing changes on the server or in the app's code |
+| Server | nothing to set: production sends by default. `EXPO_ACCESS_TOKEN` only if *Enhanced push security* is turned on in the Expo project (it is off) |
 
-## 5. Chat and presence (Messenger-style)
+## 4. How to test it
 
-Messages are the existing private messages (`direct_messages`), made live — there is no second system.
-
-**One stream per tab or app** — `GET /api/conversations/stream` (cookie or `Authorization: Bearer`), shared in the
-browser by the bell, the Messages badge and the inbox (`lib/realtime-client.ts`). Events (`data:` JSON, `type`):
-
-| Event | To | Carries |
+| Level | What | Where |
 | :--- | :--- | :--- |
-| `connected` (named event) | the stream | `connectionId`, `resumed`, `serverNow` |
-| `new_message` · `message_sent` | the recipient · the sender's other apps | the message, SSE `id: m<seq>` |
-| `receipt` | the sender | `conversationId`, `state` (`delivered` · `read`), `upTo` (seq), `at` |
-| `read` · `unread` | the reader's apps | a conversation read elsewhere · the account's unread total (the badge) |
-| `typing` | the other participant | `conversationId`, `userId`, `typing` — never stored |
-| `presence` · `presence_snapshot` | the circle | `userId`, `state` (`online` · `away` · `offline`), `lastSeenAt` · the circle at once |
-| `circle_changed` · `resync` | the stream | reload presence (a block, a contact, a setting) · reload (too much missed) |
-| `notification` | the account | as before (§1) |
+| Package | the Expo Push client: batches of 100, tickets, dead tokens, never throws | `@krizaka/push` (krizaka/krizaka-ui `packages/push/test`) |
+| Unit | the gate, one message per phone (title, text, path, channel, sound), access token, dead tokens forgotten (only those), never throws, registration and forgetting | `apps/web/lib/push.test.ts` |
+| e2e | a phone registered, a non-token refused, a token moving accounts, forgotten at sign-out; notifications written for comments, bids, an outbid, a won auction, a delivered challenge; a notification live on its owner's stream only | `e2e/scenarios.mjs` |
+| App | permission asked once, registration and forgetting, tap → screen (running and cold start, once), every path → its screen, preferences by kind and their screen | krizaka/orochia-mobile `src/lib/__tests__`, `src/__tests__/screens` |
 
-**Order, duplicates, resume.** `seq` (bigserial) is assigned under the conversation's row lock, so a conversation
-commits in `seq` order; the app sends a `clientId` (UUID) with each message and a retry answers the stored message
-(`200`, `duplicate: true`) instead of a second one. A reconnection sends `Last-Event-ID: m<seq>` (or `?after=<seq>`):
-the stream replays the messages since (with a 10 s overlap for transactions committed late), then goes live; clients
-drop duplicates by id. More than 500 missed → `resync`.
+**A real push, end to end** (Android emulator with Google APIs, or a phone):
 
-**Receipts.** Sent = stored. Delivered = handed to one of the recipient's open streams, or the recipient's app listed
-its conversations. Read = the conversation open and visible (`POST /api/conversations/:id/read { upTo }`, or opening
-its latest page).
+1. Run Orochia with `PUSH_DELIVERY=on` (or use dev.orochia.com, which sends).
+2. Install an app built with `google-services.json` and pointed at that server — the EAS `preview` APK (dev.orochia.com),
+   or a local `npx expo run:android --variant release` with `GOOGLE_SERVICES_JSON=<path>` and
+   `EXPO_PUBLIC_OROCHIA_URL=<server>` (from the emulator, the Mac is `http://10.0.2.2:<port>`).
+3. Sign in, allow notifications, send the app to the background.
+4. From another account, do something that notifies (follow, tip, comment, send a message): the notification arrives
+   in a few seconds; tap it — the app opens on that screen.
 
-**Presence** (`lib/presence.ts`, rule in `lib/presence-rules.ts`). Each open stream is a heartbeat (15 s, TTL 45 s);
-`POST /api/presence { connectionId, state }` says `away` (tab hidden, 3 min idle) or `online` again; a closed stream
-lingers 10 s so a reconnection does not flicker. `users.last_seen_at` is written once, when the last app closes.
-**Who sees whom**: two active accounts, no block either way (messaging block or blocked contact), both showing their
-presence (*Settings → Privacy*, `profiles.show_presence` — hiding yours hides everyone else's from you), and an
-accepted contact, an **exchange** (both have written in a shared conversation — opening a conversation or writing into
-the void is not enough) or an **approved follow of a creator** (the fan sees the creator, not the reverse).
-Administrators get no exception. `GET /api/presence?ids=` answers only the visible ones;
-`GET /api/presence/online` is "Online now".
-
-**Moderation and limits.** The recipient reports a message (`POST /api/conversations/:id/messages/:messageId/report`
-→ `compliance_reports.message_id`, the text copied into the report); blocking closes messages, typing and presence at
-once. Limits per account (and IP): messages 20/min burst and 300/h, typing 40/min, read 240/min, presence 60/min.
-No attachments, reactions or paid messages: none exists in the messaging model yet — they would be a product decision
-of their own.
-
-**Phones.** In the foreground the app holds the same stream; a message to someone whose presence is `online` (an
-Orochia screen open and active) is not pushed to their phone — it is on screen already; otherwise push as in §4.
-
-**Deploying.** App Platform has no session affinity and cuts requests idle for 100 s: the stream sends a heartbeat
-every 15 s, ends itself after `REALTIME_STREAM_MAX_SECONDS` (300) — the client reconnects at once and resumes — and
-needs no affinity (any instance serves any stream). Before a second instance: `RATE_LIMIT_STORE=postgres`; past ~3
-instances, `REALTIME_BUS=redis` (DigitalOcean Managed Caching, Valkey) — [DEPLOYMENT.md](DEPLOYMENT.md).
-
-**Measure it.** `node scripts/realtime-load.mjs --url … --streams 500 [--send-url <second instance>] [--pid …]`
-(development data only).
-
-## 6. Where the code is
+## 5. Where the code is
 
 ```
-@krizaka/realtime (npm)                  the bus interface, memory / PostgreSQL / Redis adapters, presence, SSE framing
-apps/web/lib/realtime.ts                 the door: picks the bus (REALTIME_BUS), publish / subscribe / sseResponse
-apps/web/lib/realtime.integration.test.ts  the wiring against real PostgreSQL and Valkey (REALTIME_IT=1, CI e2e job)
-apps/web/lib/chat-stream.ts              the account's stream: replay, delivery, presence heartbeat, circle filter
-apps/web/lib/presence.ts                 circle (SQL), presence views, announcements, last seen
-apps/web/lib/presence-rules.ts           who sees whom (pure, tested)
-apps/web/lib/messaging.ts                messages, receipts, unread, typing, reports, blocks
-apps/web/lib/realtime-client.ts          the browser's single shared stream, activity (away / online)
-apps/web/components/messages/            Messages: list, thread, presence avatars, report dialog, useChat
 apps/web/lib/notifications.ts            notify(): write, publish, push, e-mail — and every event's helper
-apps/web/mail-templates/notification/    the e-mail around a notification (subject and text come from messages/en.json)
 apps/web/lib/push.ts                     pushToUser, registerDevice, unregisterDevice, the delivery gate
 apps/web/app/api/me/devices/route.ts     register / forget a phone
+apps/web/app/api/me/profile/route.ts     preferences (inAppOff, notificationsOff, emailFrequency)
+apps/web/mail-templates/notification/    the e-mail around a notification (subject and text from messages/en.json)
 apps/web/components/notifications/       the bell, the toasts, useNotifications
-@krizaka/push (npm)                      the Expo Push client (pure, tested)
 packages/db/src/schema/push.ts           push_devices
-scripts/realtime-load.mjs                the load test
+@krizaka/push (npm)                      the Expo Push client (pure, tested)
+krizaka/orochia-mobile src/lib/push.ts   permission, token, registration, tap → screen
+krizaka/orochia-mobile src/lib/notification-prefs.ts, src/app/settings/notifications.tsx   preferences by kind
 ```

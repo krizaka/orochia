@@ -92,7 +92,7 @@ A short recording of the smoke run (18+ gate → sign in → account → feed):
 
 While signed in and in the foreground, one live stream (`/api/conversations/stream`, Server-Sent Events with the
 bearer session) shows toasts and moves the badges; in the background, push (see
-[Notifications](./NOTIFICATIONS.md)). Payments stay on the web, in the provider's checkout: the app never collects
+[Notifications](./NOTIFICATIONS.md); the live part: [Realtime](./REALTIME.md)). Payments stay on the web, in the provider's checkout: the app never collects
 card details.
 
 ---
