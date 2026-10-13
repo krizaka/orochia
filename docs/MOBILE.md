@@ -116,6 +116,7 @@ page and sign-out.
 ![Sign in — and Create an account](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/16-sign-in-dark.21969a3622.webp)
 
 [![Alex signs in from the You tab and reads his wallet (typing cut, 22 s)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/clip-sign-in-poster.a3124e54ce.webp)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/clip-sign-in.45d8952d50.mp4)
+
 ![A creator's account: wallet and earnings (local seed, Elena)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/05-account-earnings-dark.28ce17d1a1.webp)
 ![The account in the light theme](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/04-account-light.85be02b33e.webp)
 
