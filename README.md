@@ -49,6 +49,7 @@ ledger. Built-in 18+ compliance — on the web and on iOS and Android
 - 💸 **90 % to the creator**: the platform fee (10 % by default, `PAYMENTS_PLATFORM_FEE_PERCENTAGE`) and the creator's credit are written once, together, on the ledger.
 - 🤝 **Social graph**: creators approve their followers (followers-only videos), people become mutual contacts (contacts-only videos); public and private playlists.
 - 🧹 **Moderation**: operators take videos down with a recorded reason (and restore them), suspend accounts with immediate effect, change roles — from the admin console.
+- ♿ **Accessible, and explained** ([docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md), [docs/UX_DECISIONS.md](docs/UX_DECISIONS.md)): WCAG 2.2 AA checked by axe and keyboard tests in CI, both themes, desktop and phone; every notable experience choice written with its reason, its cost and the signal that would prove it wrong — tell us in [Discussions](https://github.com/krizaka/orochia/discussions).
 - 📒 **Double-entry ledger**: platform fee and creator credit always add up to the gross; balances are computed from the ledger; concurrent payout requests are serialised.
 - 🛡️ **18 U.S.C. § 2257 & safety**: 18+ certification at sign-up, creator verification before upload, persisted content reports (non-consensual content, suspected minors, DMCA).
 - 🚦 **Fail-closed configuration**: production refuses to run on missing secrets and has no demo mode; security headers (HSTS, frame denial, nosniff) on every response.

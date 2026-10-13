@@ -7,7 +7,7 @@ import { UserPlus } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { Rich } from "@/components/Rich";
 import { t } from "@/lib/i18n";
-import { Avatar, Button, buttonVariants, Checkbox, Field, Input, Spinner } from "@/components/ui";
+import { Avatar, Button, buttonVariants, Checkbox, Field, Input, OrochiaLogo, Spinner } from "@/components/ui";
 import { BirthDateField, isAdultBirthDate } from "@/components/BirthDateField";
 import { UsernameField } from "@/components/UsernameField";
 
@@ -81,7 +81,11 @@ export default function CompleteSignUpPage() {
     <div className="mx-auto max-w-md px-4 py-12">
       <form onSubmit={submit} className="space-y-4 rounded-3xl border border-border-default bg-surface-1 p-6 shadow-2xl sm:p-8">
         <div className="text-center">
-          {pending.avatarUrl && <Avatar src={pending.avatarUrl} fallback={pending.displayName.charAt(0)} className="mx-auto mb-3 h-16 w-16" />}
+          {pending.avatarUrl ? (
+            <Avatar src={pending.avatarUrl} fallback={pending.displayName.charAt(0)} className="mx-auto mb-3 h-16 w-16" />
+          ) : (
+            <OrochiaLogo size={64} className="mx-auto mb-3" />
+          )}
           <h1 className="font-display text-2xl font-black text-fg">{t("auth.complete.title")}</h1>
           <p className="mt-1.5 text-sm text-fg-secondary">{t("auth.complete.subtitle", { provider: providerName })}</p>
         </div>

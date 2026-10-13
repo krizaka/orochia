@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, XCircle } from "lucide-react";
-import { Spinner } from "@/components/ui";
+import { OrochiaLogo, Spinner } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { NEXT_AFTER_VERIFY_KEY, safeNext } from "@/lib/creator-journey";
 import { t } from "@/lib/i18n";
@@ -46,6 +46,7 @@ export default function VerifyEmailPage() {
 
   return (
     <div className="mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center px-4 py-16 text-center">
+      <OrochiaLogo size={64} className="mb-6" />
       {state === "working" && <Spinner size="lg" label={t("auth.verify.working")} />}
       {state === "done" && (
         <>
