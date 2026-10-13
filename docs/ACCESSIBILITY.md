@@ -56,12 +56,13 @@ Recorded on **2026-10-13** (krizaka/orochia#130), on the development seed.
 | Reduced motion (web) | `prefers-reduced-motion: reduce` on the 11 key pages | No animation left running |
 | Screen reader names (app) | render checks above | The story's previous / next zones were unnamed → **fixed**; four small buttons under 44 pt → **fixed** (orochia-mobile#33) |
 | Operator console | axe (WCAG 2.2 A/AA) on sign-in and the ten screens, dark and light; keyboard | 19 contrast failures (accent, muted, success/warning text) and no skip link → **fixed** (orochia-admin#21) |
-| VoiceOver (iOS simulator), TalkBack (Android emulator) | see §3 | **Not yet recorded** — §3 |
+| VoiceOver (iOS simulator), TalkBack (Android emulator), larger text, reduce motion (app) | see §3 | **Not yet recorded** — [orochia-mobile#34](https://github.com/krizaka/orochia-mobile/issues/34) |
 
 ## 3. Known gaps
 
 - **VoiceOver and TalkBack passes** on a device or simulator are still to be recorded (the render tests check names,
-  roles and targets, not the reading order nor the announcements of live regions). Tracked in krizaka/orochia#130.
+  roles and targets, not the reading order nor the announcements of live regions):
+  [orochia-mobile#34](https://github.com/krizaka/orochia-mobile/issues/34), with the path to walk.
 - **Captions**: videos have no captions yet; Bunny Stream's captions arrive with Explore phase 1 (#59).
 - **Stories** advance on their own (like every stories format); a screen-reader user moves with the named
   *Previous story* / *Next story* buttons, but the timer does not yet pause while VoiceOver or TalkBack is on.
