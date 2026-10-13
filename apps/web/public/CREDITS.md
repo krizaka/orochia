@@ -29,3 +29,11 @@ ever shown blurred (28 px) and dimmed behind a section, so no face is recognisab
 - `icon.svg`, the marks (`@krizaka/ui`), the icons (`@krizaka/icons`) and the isometric illustrations of the home
   (`components/home/*`, drawn in code): Krizaka, Apache-2.0.
 - Fonts (`app/fonts`): Outfit and Plus Jakarta Sans, SIL Open Font License 1.1.
+
+## People
+
+The faces of Orochia's invented people (the demo cast `scripts/demo/cast.json` and the development seed) are
+**AI-generated with Orazaka (FLUX.2 [klein], Apache-2.0), fictional people, owned by Krizaka** — no real person, no
+look-alike, no logo. They are served from the Krizaka CDN (`site/people/orochia/`, `packages/db/src/people.ts`), never
+shipped in `public/`, and no other product uses them. Prompts, seeds and credits: krizaka-com `lib/people.json` and
+`lib/people.credits.md`.
