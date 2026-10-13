@@ -1,7 +1,7 @@
 # -------------------------------------------------------------
 # Production Multi-Stage Dockerfile for Orochia Platform
 # -------------------------------------------------------------
-FROM node:20-alpine AS base
+FROM node:26-alpine AS base
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
@@ -46,7 +46,7 @@ RUN npm run build --workspace=@orochia/web
 RUN npm run build:migrator --workspace=@orochia/db
 
 # 3. Runner stage
-FROM node:20-alpine AS runner
+FROM node:26-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
