@@ -33,17 +33,45 @@ import { currentLocale, t } from "@/lib/i18n";
 
 type Labelled<P> = Omit<P, "closeLabel"> & { closeLabel?: string };
 
+/**
+ * On close, focus goes back to what opened the dialog (WCAG 2.4.3). Radix only gives it back to a `Dialog.Trigger`;
+ * the app's dialogs are controlled and opened by buttons outside (the tip, report, save…), so without this the focus
+ * fell to <body>. The opener is what has the focus when the content opens (before Radix moves it inside).
+ * Moves into @krizaka/ui's DialogContent and Sheet (krizaka/krizaka-ui#133).
+ */
+type AutoFocus = ((event: Event) => void) | undefined;
+function useReturnFocus(onOpenAutoFocus: AutoFocus, onCloseAutoFocus: AutoFocus) {
+  const opener = React.useRef<HTMLElement | null>(null);
+  return {
+    onOpenAutoFocus: (event: Event) => {
+      const active = document.activeElement as HTMLElement | null;
+      opener.current = active && active !== document.body ? active : null;
+      onOpenAutoFocus?.(event);
+    },
+    onCloseAutoFocus: (event: Event) => {
+      onCloseAutoFocus?.(event);
+      const target = opener.current;
+      opener.current = null;
+      if (event.defaultPrevented || !target?.isConnected) return;
+      event.preventDefault();
+      target.focus();
+    },
+  };
+}
+
 /** @krizaka/ui's dialog content with its close button named in the app's language. */
-function DialogContent(props: Labelled<DialogContentProps>) {
-  return <UiDialogContent closeLabel={t("common.closeLabel")} {...props} />;
+function DialogContent({ onOpenAutoFocus, onCloseAutoFocus, ...props }: Labelled<DialogContentProps>) {
+  const focus = useReturnFocus(onOpenAutoFocus, onCloseAutoFocus);
+  return <UiDialogContent closeLabel={t("common.closeLabel")} {...focus} {...props} />;
 }
 
 /** `Dialog.Root/Trigger/Content/Header/Title/Description/Body/Footer/Close` — `Content` knows the app's close label. */
 export const Dialog = { ...UiDialog, Content: DialogContent };
 
 /** A sheet (a dialog anchored at the bottom on a phone, centred from `sm` up), close button named in the app's language. */
-export function Sheet(props: Labelled<SheetProps>) {
-  return <UiSheet closeLabel={t("common.closeLabel")} {...props} />;
+export function Sheet({ onOpenAutoFocus, onCloseAutoFocus, ...props }: Labelled<SheetProps>) {
+  const focus = useReturnFocus(onOpenAutoFocus, onCloseAutoFocus);
+  return <UiSheet closeLabel={t("common.closeLabel")} {...focus} {...(props as SheetProps)} />;
 }
 
 /** A confirmation (Radix AlertDialog): Cancel is named by the app unless the screen says otherwise. */

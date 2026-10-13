@@ -10,6 +10,7 @@ import { GlobalSearchModal } from "@/components/GlobalSearchModal";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { Navbar } from "@/components/Navbar";
 import { Charts, Toaster } from "@/components/ui";
+import { t } from "@/lib/i18n";
 import { UploadManagerProvider } from "@/lib/upload-manager";
 
 export function ClientLayoutShell({ children }: { children: React.ReactNode }) {
@@ -24,10 +25,17 @@ export function ClientLayoutShell({ children }: { children: React.ReactNode }) {
 
   return (
     <UploadManagerProvider>
+      {/* The first Tab skips the navigation (WCAG 2.4.1) — @krizaka/ui's SkipLink when it ships (krizaka/krizaka-ui#134). */}
+      <a
+        href="#content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-[100] focus:rounded-full focus:bg-surface-1 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-fg focus:shadow-lg focus:outline-2 focus:outline-ring"
+      >
+        {t("common.skipToContent")}
+      </a>
       <AgeVerificationModal />
       <Navbar onOpenSearch={() => setSearchModalOpen(true)} />
       {/* Room for the bottom tab bar on phones. */}
-      <main className="min-h-[calc(100vh-4rem)] pb-20 md:pb-0">
+      <main id="content" tabIndex={-1} className="min-h-[calc(100vh-4rem)] pb-20 outline-none md:pb-0">
         {/* Every chart in the app speaks its words and wears the Orochia palette. */}
         <Charts>
           <EmailVerificationGate>{children}</EmailVerificationGate>
