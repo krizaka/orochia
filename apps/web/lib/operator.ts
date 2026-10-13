@@ -5,15 +5,15 @@ import type { SessionUser } from "./auth";
 
 /**
  * The operator console (krizaka/orochia-admin) calls the admin API as a service: `Authorization: Bearer <token>` with
- * OROCHIA_ADMIN_API_TOKEN (32+ characters, shared by the two deployments only). The console has its own single
- * operator account; here its calls act as the platform owner (OROCHIA_OWNER_EMAIL), who must exist and be an ADMIN.
+ * OPERATOR_API_TOKEN (32+ characters, shared by the two deployments only). The console has its own single
+ * operator account; here its calls act as the platform owner (AUTH_OWNER_EMAIL), who must exist and be an ADMIN.
  * Without the variable, no token is accepted. The token opens ADMIN routes only (requireUserWithRole).
  */
 
 const MIN_LENGTH = 32;
 
 function configuredToken(): string | null {
-  const token = process.env.OROCHIA_ADMIN_API_TOKEN?.trim();
+  const token = process.env.OPERATOR_API_TOKEN?.trim();
   return token && token.length >= MIN_LENGTH ? token : null;
 }
 
@@ -29,7 +29,7 @@ export async function operatorFromToken(): Promise<SessionUser | null> {
   if (!header?.startsWith("Bearer ")) return null;
   const expected = configuredToken();
   if (!expected || !same(header.slice(7).trim(), expected)) throw new HttpError(401, "Invalid operator token");
-  const email = process.env.OROCHIA_OWNER_EMAIL?.trim().toLowerCase();
+  const email = process.env.AUTH_OWNER_EMAIL?.trim().toLowerCase();
   if (!email) throw new HttpError(503, "The platform owner is not configured");
   const { db, users } = await import("@orochia/db");
   const { eq } = await import("drizzle-orm");

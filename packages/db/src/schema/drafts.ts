@@ -5,9 +5,9 @@ import { videoStatusEnum } from "./enums";
 
 /**
  * Editor drafts, so an edit can be left and picked up later, from any device. The ORIGINAL clip is a Bunny
- * Stream video filed in the drafts collection (BUNNY_STREAM_DRAFTS_COLLECTION_ID), sent over Tus like any
+ * Stream video filed in the drafts collection (MEDIA_STREAM_DRAFTS_COLLECTION_ID), sent over Tus like any
  * video; the edit settings (trim, filter, format, sound…) and the form being filled are stored here, and the
- * optional music track privately in storage. A draft is kept DRAFT_RETENTION_DAYS (30 by default), then
+ * optional music track privately in storage. A draft is kept MEDIA_DRAFT_RETENTION_DAYS (30 by default), then
  * removed with its files; publishing it renders a new file and the draft is deleted.
  */
 export const videoDrafts = pgTable(

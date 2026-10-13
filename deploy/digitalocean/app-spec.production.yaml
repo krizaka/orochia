@@ -45,37 +45,37 @@ services:
       - key: DATABASE_MAX_CONNECTIONS
         scope: RUN_TIME
         value: "5"
-      - key: BUNNY_STREAM_API_KEY
+      - key: MEDIA_STREAM_API_KEY
         scope: RUN_TIME
         type: SECRET
-      - key: BUNNY_STREAM_LIBRARY_ID
+      - key: MEDIA_STREAM_LIBRARY_ID
         scope: RUN_TIME
         type: GENERAL
-      - key: BUNNY_STREAM_HOSTNAME
+      - key: MEDIA_STREAM_HOSTNAME
         scope: RUN_TIME
         type: GENERAL
-      - key: BUNNY_STREAM_COLLECTION_ID
+      - key: MEDIA_STREAM_COLLECTION_ID
         scope: RUN_TIME
         type: GENERAL
-      - key: BUNNY_STREAM_STORIES_COLLECTION_ID
+      - key: MEDIA_STREAM_STORIES_COLLECTION_ID
         scope: RUN_TIME
         type: GENERAL
-      - key: BUNNY_STREAM_DRAFTS_COLLECTION_ID
+      - key: MEDIA_STREAM_DRAFTS_COLLECTION_ID
         scope: RUN_TIME
         type: GENERAL
-      - key: BUNNY_STREAM_TOKEN_AUTH_KEY
+      - key: MEDIA_STREAM_TOKEN_AUTH_KEY
         scope: RUN_TIME
         type: SECRET
-      - key: PAYOUT_ENCRYPTION_KEY
+      - key: PAYMENTS_PAYOUT_ENCRYPTION_KEY
         scope: RUN_TIME
         type: SECRET
-      - key: BUNNY_WEBHOOK_SECRET
+      - key: MEDIA_STREAM_WEBHOOK_SECRET
         scope: RUN_TIME
         type: SECRET
-      - key: SESSION_SECRET
+      - key: AUTH_SESSION_SECRET
         scope: RUN_TIME
         type: SECRET
-      - key: PLATFORM_FEE_PERCENTAGE
+      - key: PAYMENTS_PLATFORM_FEE_PERCENTAGE
         scope: RUN_TIME
         value: "10"
       - key: NEXT_PUBLIC_APP_URL
@@ -85,57 +85,57 @@ services:
       - key: NEXT_PUBLIC_APP_ENV
         scope: BUILD_TIME
         value: "production"
-      - key: COMMIT_SHA
+      - key: APP_COMMIT_SHA
         scope: BUILD_TIME
         value: ${_self.COMMIT_HASH}
-      - key: STORAGE_DRIVER
+      - key: MEDIA_STORAGE_PROVIDER
         scope: RUN_TIME
         value: "bunny"
-      - key: BUNNY_STORAGE_ZONE
+      - key: MEDIA_STORAGE_ZONE
         scope: RUN_TIME
         type: GENERAL
-      - key: BUNNY_PULL_ZONE_HOSTNAME
+      - key: MEDIA_CDN_HOSTNAME
         scope: RUN_TIME
         type: GENERAL
-      - key: CCBILL_CLIENT_ACCOUNT
+      - key: PAYMENTS_CCBILL_CLIENT_ACCOUNT
         scope: RUN_TIME
         type: GENERAL
-      - key: CCBILL_CLIENT_SUBACCOUNT
+      - key: PAYMENTS_CCBILL_CLIENT_SUBACCOUNT
         scope: RUN_TIME
         type: GENERAL
-      - key: CCBILL_FORM_NAME
+      - key: PAYMENTS_CCBILL_FORM_NAME
         scope: RUN_TIME
         type: GENERAL
-      - key: SEGPAY_MERCHANT_ID
+      - key: PAYMENTS_SEGPAY_MERCHANT_ID
         scope: RUN_TIME
         type: GENERAL
-      - key: SEGPAY_PACKAGE_ID
+      - key: PAYMENTS_SEGPAY_PACKAGE_ID
         scope: RUN_TIME
         type: GENERAL
-      - key: METRICS_AUTH_TOKEN
+      - key: OBSERVABILITY_METRICS_TOKEN
         scope: RUN_TIME
         type: SECRET
       # Sign in with Google / Facebook (offered only when both values of a provider are set).
-      - key: GOOGLE_CLIENT_ID
+      - key: AUTH_GOOGLE_CLIENT_ID
         scope: RUN_TIME
         type: GENERAL
-      - key: GOOGLE_CLIENT_SECRET
+      - key: AUTH_GOOGLE_CLIENT_SECRET
         scope: RUN_TIME
         type: SECRET
-      - key: FACEBOOK_APP_ID
+      - key: AUTH_FACEBOOK_APP_ID
         scope: RUN_TIME
         type: GENERAL
-      - key: FACEBOOK_APP_SECRET
+      - key: AUTH_FACEBOOK_APP_SECRET
         scope: RUN_TIME
         type: SECRET
-      # E-mail from mg.orochia.com: Resend when set, Mailgun otherwise.
-      - key: RESEND_API_KEY
+      # E-mail from mg.orochia.com through MAIL_PROVIDER (resend | mailgun) and its MAIL_API_KEY.
+      - key: MAIL_PROVIDER
+        scope: RUN_TIME
+        value: "resend"
+      - key: MAIL_API_KEY
         scope: RUN_TIME
         type: SECRET
-      - key: MAILGUN_API_KEY
-        scope: RUN_TIME
-        type: SECRET
-      - key: MAILGUN_DOMAIN
+      - key: MAIL_DOMAIN
         scope: RUN_TIME
         value: "mg.orochia.com"
       - key: MAIL_FROM
@@ -146,86 +146,86 @@ services:
       - key: MAIL_TEMPLATES_SOURCE
         scope: RUN_TIME
         value: "bunny"
-      - key: COMPLIANCE_ALERT_EMAIL
+      - key: MAIL_COMPLIANCE_ALERT_TO
         scope: RUN_TIME
         type: GENERAL
-      - key: BUNNY_STORAGE_API_KEY
+      - key: MEDIA_STORAGE_API_KEY
         scope: RUN_TIME
         type: SECRET
-      - key: CCBILL_SALT
+      - key: PAYMENTS_CCBILL_SALT
         scope: RUN_TIME
         type: SECRET
-      - key: CCBILL_WEBHOOK_SECRET
+      - key: PAYMENTS_CCBILL_WEBHOOK_SECRET
         scope: RUN_TIME
         type: SECRET
-      - key: SEGPAY_SECRET_KEY
+      - key: PAYMENTS_SEGPAY_SECRET_KEY
         scope: RUN_TIME
         type: SECRET
-      - key: NOWPAYMENTS_API_KEY
+      - key: PAYMENTS_NOWPAYMENTS_API_KEY
         scope: RUN_TIME
         type: SECRET
-      - key: NOWPAYMENTS_IPN_SECRET
+      - key: PAYMENTS_NOWPAYMENTS_IPN_SECRET
         scope: RUN_TIME
         type: SECRET
-      - key: STRIPE_SECRET_KEY
+      - key: PAYMENTS_STRIPE_SECRET_KEY
         scope: RUN_TIME
         type: SECRET
-      - key: STRIPE_WEBHOOK_SECRET
+      - key: PAYMENTS_STRIPE_WEBHOOK_SECRET
         scope: RUN_TIME
         type: SECRET
       # Storage quotas (docs/DEPLOYMENT.md, "Storage quotas"): the platform's cap, a creator's default plan, named plans.
-      - key: STORAGE_LIMITS
+      - key: ABUSE_QUOTAS
         scope: RUN_TIME
         value: "on"
-      - key: QUOTA_PLATFORM_GB
+      - key: ABUSE_QUOTA_PLATFORM_GB
         scope: RUN_TIME
         value: "500"
-      - key: QUOTA_ALERT_THRESHOLDS
+      - key: ABUSE_QUOTA_ALERT_THRESHOLDS
         scope: RUN_TIME
         value: "80,95"
-      - key: QUOTA_CREATOR_DEFAULT_GB
+      - key: ABUSE_QUOTA_CREATOR_DEFAULT_GB
         scope: RUN_TIME
         value: "20"
-      - key: QUOTA_CREATOR_DEFAULT_MINUTES
+      - key: ABUSE_QUOTA_CREATOR_DEFAULT_MINUTES
         scope: RUN_TIME
         value: "600"
-      - key: QUOTA_PLANS
+      - key: ABUSE_QUOTA_PLANS
         scope: RUN_TIME
         value: "pro=100GB/3000min,unlimited=unlimited"
-      - key: QUOTA_ADMIN_PLAN
+      - key: ABUSE_QUOTA_ADMIN_PLAN
         scope: RUN_TIME
         value: "unlimited"
-      - key: QUOTA_UPLOADS_PER_DAY
+      - key: ABUSE_QUOTA_UPLOADS_PER_DAY
         scope: RUN_TIME
         value: "50"
-      - key: QUOTA_CONCURRENT_UPLOADS
+      - key: ABUSE_QUOTA_CONCURRENT_UPLOADS
         scope: RUN_TIME
         value: "3"
-      - key: QUOTA_RECONCILE_INTERVAL_MINUTES
+      - key: ABUSE_QUOTA_RECONCILE_INTERVAL_MINUTES
         scope: RUN_TIME
         value: "360"
-      - key: BUNNY_ACCOUNT_API_KEY
+      - key: MEDIA_ACCOUNT_API_KEY
         scope: RUN_TIME
         type: SECRET
       # Abuse defences (SECURITY.md): shared rate limits, the client address App Platform sets, the bot challenge.
       # Realtime bus (docs/NOTIFICATIONS.md §3): PostgreSQL LISTEN/NOTIFY up to ~3 instances; beyond, REALTIME_BUS=redis
-      # and REDIS_URL (SECRET) of a Managed Caching (Valkey) cluster. Streams end every 5 minutes and resume.
+      # and REALTIME_REDIS_URL (SECRET) of a Managed Caching (Valkey) cluster. Streams end every 5 minutes and resume.
       - key: REALTIME_BUS
         scope: RUN_TIME
         value: "postgres"
-      - key: RATE_LIMIT_STORE
+      - key: ABUSE_RATE_LIMIT_STORE
         scope: RUN_TIME
         value: "postgres"
-      - key: CLIENT_IP_HEADER
+      - key: ABUSE_CLIENT_IP_HEADER
         scope: RUN_TIME
         value: "do-connecting-ip"
-      - key: BOT_CHALLENGE
+      - key: ABUSE_BOT_CHALLENGE
         scope: RUN_TIME
         value: "required"
-      - key: TURNSTILE_SITE_KEY
+      - key: ABUSE_BOT_CHALLENGE_SITE_KEY
         scope: RUN_TIME
         type: GENERAL
-      - key: TURNSTILE_SECRET_KEY
+      - key: ABUSE_BOT_CHALLENGE_SECRET_KEY
         scope: RUN_TIME
         type: SECRET
     # A payment gateway is offered only when all of its variables are set (packages/payments factory).
@@ -243,16 +243,16 @@ jobs:
     instance_size_slug: basic-xxs
     envs:
       # The default user (owner, ADMIN), created or reactivated after the migrations.
-      - key: OROCHIA_OWNER_EMAIL
+      - key: AUTH_OWNER_EMAIL
         scope: RUN_TIME
         type: GENERAL
-      - key: OROCHIA_OWNER_USERNAME
+      - key: AUTH_OWNER_USERNAME
         scope: RUN_TIME
         type: GENERAL
-      - key: OROCHIA_OWNER_NAME
+      - key: AUTH_OWNER_NAME
         scope: RUN_TIME
         type: GENERAL
-      - key: OROCHIA_OWNER_PASSWORD
+      - key: AUTH_OWNER_PASSWORD
         scope: RUN_TIME
         type: SECRET
       - key: DATABASE_URL

@@ -87,7 +87,7 @@ Every event is on by default, in the app and by e-mail; each can be turned off o
 | Expo / EAS | project `@oussamaabid/orochia` (`extra.eas.projectId` in orochia-mobile `app.json`) |
 | Android | Firebase project `orochia-2026`, app `com.krizaka.orochia`; `google-services.json` as the EAS file variable `GOOGLE_SERVICES_JSON`; FCM V1 service-account key uploaded to the project's EAS credentials |
 | iOS | **waiting for the Apple Developer activation**: then `eas credentials` → iOS → *Push Notifications* (create or upload the APNs `.p8` key), `eas build --platform ios`, TestFlight. Nothing changes on the server or in the app's code |
-| Server | nothing to set: production sends by default. `EXPO_ACCESS_TOKEN` only if *Enhanced push security* is turned on in the Expo project (it is off) |
+| Server | nothing to set: production sends by default. `PUSH_ACCESS_TOKEN` only if *Enhanced push security* is turned on in the Expo project (it is off) |
 
 ## 4. How to test it
 
@@ -103,7 +103,7 @@ Every event is on by default, in the app and by e-mail; each can be turned off o
 1. Run Orochia with `PUSH_DELIVERY=on` (or use dev.orochia.com, which sends).
 2. Install an app built with `google-services.json` and pointed at that server — the EAS `preview` APK (dev.orochia.com),
    or a local `npx expo run:android --variant release` with `GOOGLE_SERVICES_JSON=<path>` and
-   `EXPO_PUBLIC_OROCHIA_URL=<server>` (from the emulator, the Mac is `http://10.0.2.2:<port>`).
+   `EXPO_PUBLIC_APP_URL=<server>` (from the emulator, the Mac is `http://10.0.2.2:<port>`).
 3. Sign in, allow notifications, send the app to the background.
 4. From another account, do something that notifies (follow, tip, comment, send a message): the notification arrives
    in a few seconds; tap it — the app opens on that screen.

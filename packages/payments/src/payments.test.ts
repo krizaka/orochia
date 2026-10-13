@@ -39,7 +39,7 @@ describe("platform fee", () => {
   it("refuses non-positive or fractional amounts and absurd percentages", () => {
     expect(() => splitPlatformFee(0, 10)).toThrow();
     expect(() => splitPlatformFee(10.5, 10)).toThrow();
-    expect(() => platformFeePercent({ PLATFORM_FEE_PERCENTAGE: "150" })).toThrow();
+    expect(() => platformFeePercent({ PAYMENTS_PLATFORM_FEE_PERCENTAGE: "150" })).toThrow();
     expect(platformFeePercent({})).toBe(10);
   });
 });
@@ -153,7 +153,7 @@ describe("gateway factory", () => {
   it("never falls back to placeholder credentials", () => {
     expect(() => getPaymentGateway("STRIPE", {})).toThrow(GatewayConfigurationError);
     expect(configuredGateways({})).toEqual([]);
-    expect(configuredGateways({ STRIPE_SECRET_KEY: "sk", STRIPE_WEBHOOK_SECRET: "wh" })).toEqual(["STRIPE"]);
+    expect(configuredGateways({ PAYMENTS_STRIPE_SECRET_KEY: "sk", PAYMENTS_STRIPE_WEBHOOK_SECRET: "wh" })).toEqual(["STRIPE"]);
   });
 });
 
@@ -161,7 +161,7 @@ describe("test top-ups", () => {
   it("are available locally and on the non-indexed dev deployment, never on public production", async () => {
     const { testTopupsEnabled } = await import("./credits");
     expect(testTopupsEnabled({ PAYMENTS_CREDITS_MODE: "test" })).toBe(true);
-    expect(testTopupsEnabled({ PAYMENTS_CREDITS_MODE: "test", NODE_ENV: "production", SEARCH_INDEXING: "off" })).toBe(true);
+    expect(testTopupsEnabled({ PAYMENTS_CREDITS_MODE: "test", NODE_ENV: "production", APP_SEARCH_INDEXING: "off" })).toBe(true);
     expect(testTopupsEnabled({ PAYMENTS_CREDITS_MODE: "test", NODE_ENV: "production" })).toBe(false);
     expect(testTopupsEnabled({})).toBe(false);
   });

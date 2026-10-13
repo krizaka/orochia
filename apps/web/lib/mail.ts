@@ -2,9 +2,9 @@ import { appUrl } from "./env";
 import { type MailLocale, type MailTemplateId, type MailVars, renderMailTemplate } from "./mail-templates";
 
 /**
- * Transactional e-mail, from the sending subdomain mg.orochia.com (MAIL_FROM):
- *   RESEND_API_KEY                         the Resend API — used when set
- *   MAILGUN_API_KEY + MAILGUN_DOMAIN       the Mailgun HTTP API otherwise (+ MAILGUN_API_URL for the EU region)
+ * Transactional e-mail, from the sending subdomain mg.orochia.com (MAIL_FROM), through MAIL_PROVIDER:
+ *   resend    MAIL_API_KEY                   the Resend API
+ *   mailgun   MAIL_API_KEY + MAIL_DOMAIN     the Mailgun HTTP API (+ MAIL_API_URL for the EU region)
  * E-mail is a notification, never a step of a transaction: the record is written first, sending
  * is best-effort and a failure is logged, not returned. Without configuration nothing is sent.
  * Every message is a template (`sendTemplate`, lib/mail-templates.ts, apps/web/mail-templates/): no body in code.
@@ -26,17 +26,27 @@ export function mailDeliveryEnabled(env: NodeJS.ProcessEnv = process.env): boole
   return env.NODE_ENV === "production" || env.MAIL_DELIVERY === "on";
 }
 
-export function mailConfigured(env: NodeJS.ProcessEnv = process.env): boolean {
-  return Boolean(env.RESEND_API_KEY || (env.MAILGUN_API_KEY && env.MAILGUN_DOMAIN));
+export type MailProvider = "resend" | "mailgun";
+
+/** The provider MAIL_PROVIDER names, or null when it is unset or unknown (nothing is sent). */
+export function mailProvider(env: NodeJS.ProcessEnv = process.env): MailProvider | null {
+  const value = env.MAIL_PROVIDER?.trim().toLowerCase();
+  return value === "resend" || value === "mailgun" ? value : null;
 }
 
-const fromAddress = (env: NodeJS.ProcessEnv) => env.MAIL_FROM || `Orochia <no-reply@${env.MAILGUN_DOMAIN || "mg.orochia.com"}>`;
+export function mailConfigured(env: NodeJS.ProcessEnv = process.env): boolean {
+  const provider = mailProvider(env);
+  if (!provider || !env.MAIL_API_KEY) return false;
+  return provider === "resend" || Boolean(env.MAIL_DOMAIN);
+}
+
+const fromAddress = (env: NodeJS.ProcessEnv) => env.MAIL_FROM || `Orochia <no-reply@${env.MAIL_DOMAIN || "mg.orochia.com"}>`;
 
 /** https://resend.com/docs/api-reference/emails/send-email */
 async function sendWithResend(mail: Mail, recipients: string[], env: NodeJS.ProcessEnv): Promise<boolean> {
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
-    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+    headers: { Authorization: `Bearer ${env.MAIL_API_KEY}`, "Content-Type": "application/json" },
     body: JSON.stringify({ from: fromAddress(env), to: recipients, subject: mail.subject, text: mail.text, ...(mail.html ? { html: mail.html } : {}), ...(mail.replyTo ? { reply_to: mail.replyTo } : {}) }),
     signal: AbortSignal.timeout(8000),
   });
@@ -44,7 +54,7 @@ async function sendWithResend(mail: Mail, recipients: string[], env: NodeJS.Proc
   return res.ok;
 }
 
-/** Sends one message; resolves to whether Mailgun accepted it. Never throws. */
+/** Sends one message; resolves to whether the provider accepted it. Never throws. */
 export async function sendMail(mail: Mail, env: NodeJS.ProcessEnv = process.env): Promise<boolean> {
   const recipients = (Array.isArray(mail.to) ? mail.to : mail.to.split(",")).map((s) => s.trim()).filter(Boolean);
   if (!mailDeliveryEnabled(env)) {
@@ -55,7 +65,7 @@ export async function sendMail(mail: Mail, env: NodeJS.ProcessEnv = process.env)
     if (!mailConfigured(env)) console.warn(`mail: not configured, "${mail.subject}" not sent`);
     return false;
   }
-  if (env.RESEND_API_KEY) {
+  if (mailProvider(env) === "resend") {
     try {
       return await sendWithResend(mail, recipients, env);
     } catch (error) {
@@ -71,11 +81,11 @@ export async function sendMail(mail: Mail, env: NodeJS.ProcessEnv = process.env)
   form.append("subject", mail.subject);
   form.append("text", mail.text);
   if (mail.html) form.append("html", mail.html);
-  const base = (env.MAILGUN_API_URL || "https://api.mailgun.net").replace(/\/+$/, "");
+  const base = (env.MAIL_API_URL || "https://api.mailgun.net").replace(/\/+$/, "");
   try {
-    const res = await fetch(`${base}/v3/${encodeURIComponent(env.MAILGUN_DOMAIN!)}/messages`, {
+    const res = await fetch(`${base}/v3/${encodeURIComponent(env.MAIL_DOMAIN!)}/messages`, {
       method: "POST",
-      headers: { Authorization: `Basic ${Buffer.from(`api:${env.MAILGUN_API_KEY}`).toString("base64")}` },
+      headers: { Authorization: `Basic ${Buffer.from(`api:${env.MAIL_API_KEY}`).toString("base64")}` },
       body: form,
       signal: AbortSignal.timeout(8000),
     });

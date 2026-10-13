@@ -20,7 +20,7 @@ describe("reconciliation with Bunny (mocked library)", () => {
 
   it("runs every 6 hours by default, never with 0", () => {
     expect(reconcileIntervalMinutes({})).toBe(360);
-    expect(reconcileIntervalMinutes({ QUOTA_RECONCILE_INTERVAL_MINUTES: "0" })).toBe(0);
-    expect(reconcileIntervalMinutes({ QUOTA_RECONCILE_INTERVAL_MINUTES: "nope" })).toBe(360);
+    expect(reconcileIntervalMinutes({ ABUSE_QUOTA_RECONCILE_INTERVAL_MINUTES: "0" })).toBe(0);
+    expect(reconcileIntervalMinutes({ ABUSE_QUOTA_RECONCILE_INTERVAL_MINUTES: "nope" })).toBe(360);
   });
 });

@@ -14,11 +14,11 @@ export const SITE_DESCRIPTION =
   "followers, contacts, invited audiences and collections, tips and paid unlocks confirmed by the payment gateway, " +
   "and 18 U.S.C. § 2257 creator verification.";
 /**
- * SEARCH_INDEXING=off (dev and preview environments, read at build time): every page is noindex and
+ * APP_SEARCH_INDEXING=off (dev and preview environments, read at build time): every page is noindex and
  * robots.txt shuts the door, so only production is indexed — never a duplicate.
  */
-export const INDEXABLE = process.env.SEARCH_INDEXING !== "off";
-// (the Dockerfile passes SEARCH_INDEXING and NEXT_PUBLIC_APP_URL as build args; robots.txt reads them on request.)
+export const INDEXABLE = process.env.APP_SEARCH_INDEXING !== "off";
+// (the Dockerfile passes APP_SEARCH_INDEXING and NEXT_PUBLIC_APP_URL as build args; robots.txt reads them on request.)
 export const KRIZAKA_URL = "https://krizaka.com";
 export const SOURCE_URL = "https://github.com/krizaka/orochia";
 

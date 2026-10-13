@@ -9,12 +9,12 @@ import { DISPOSABLE_EMAIL_DOMAINS } from "./disposable-email-domains";
  *
  * - **Form token** — the form asks `GET /api/auth/register` for a token signed with the session secret, bound to this
  *   browser's device cookie and its issue time. The account is created only with a token at least
- *   `SIGNUP_MIN_FILL_SECONDS` old (default 3: nobody fills the form faster) and at most 2 hours old. A script must run
+ *   `ABUSE_SIGNUP_MIN_FILL_SECONDS` old (default 3: nobody fills the form faster) and at most 2 hours old. A script must run
  *   JavaScript-like steps, keep cookies and wait — and the device cookie lets sign-ups be limited per device too.
  * - **Honeypot** — a field (`website`) hidden from people and assistive technology; a bot that fills every input
  *   fills it, and is refused.
- * - **Disposable e-mail domains** — refused (`disposable-email-domains.ts`, `BLOCKED_EMAIL_DOMAINS`,
- *   `ALLOWED_EMAIL_DOMAINS`).
+ * - **Disposable e-mail domains** — refused (`disposable-email-domains.ts`, `ABUSE_BLOCKED_EMAIL_DOMAINS`,
+ *   `ABUSE_ALLOWED_EMAIL_DOMAINS`).
  * Refusals carry stable codes; they say no more than needed.
  */
 export const DEVICE_COOKIE = "orochia_device";
@@ -28,7 +28,7 @@ export const DEVICE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 export const FORM_TOKEN_MAX_AGE_MS = 2 * 60 * 60 * 1000;
 
 export function minFillSeconds(env: Record<string, string | undefined> = process.env): number {
-  const raw = env.SIGNUP_MIN_FILL_SECONDS?.trim();
+  const raw = env.ABUSE_SIGNUP_MIN_FILL_SECONDS?.trim();
   if (!raw) return 3;
   const value = Number(raw);
   return Number.isFinite(value) && value >= 0 && value <= 60 ? value : 3;
@@ -94,8 +94,8 @@ const listFromEnv = (value: string | undefined) =>
 export function isDisposableEmail(email: string, env: Record<string, string | undefined> = process.env): boolean {
   const domain = email.trim().toLowerCase().split("@")[1];
   if (!domain) return false;
-  const allowed = new Set(listFromEnv(env.ALLOWED_EMAIL_DOMAINS));
-  const blocked = new Set([...DISPOSABLE_EMAIL_DOMAINS, ...listFromEnv(env.BLOCKED_EMAIL_DOMAINS)]);
+  const allowed = new Set(listFromEnv(env.ABUSE_ALLOWED_EMAIL_DOMAINS));
+  const blocked = new Set([...DISPOSABLE_EMAIL_DOMAINS, ...listFromEnv(env.ABUSE_BLOCKED_EMAIL_DOMAINS)]);
   const labels = domain.split(".");
   for (let i = 0; i < labels.length - 1; i++) {
     const candidate = labels.slice(i).join(".");

@@ -136,7 +136,7 @@ Requirements: macOS with **Xcode 27** and its iOS simulator runtime (`xcodebuild
 git clone https://github.com/krizaka/orochia-mobile && cd orochia-mobile
 npm ci
 # The API the app talks to (read at build time); without it, https://dev.orochia.com.
-export EXPO_PUBLIC_OROCHIA_URL=http://localhost:3000   # a local Orochia (the simulator shares the Mac's network)
+export EXPO_PUBLIC_APP_URL=http://localhost:3000   # a local Orochia (the simulator shares the Mac's network)
 npx expo run:ios                                       # prebuild, pods, build, install, Metro
 ```
 
@@ -154,7 +154,7 @@ never in the generated folders. A Release build (no Metro, the bundle inside the
 **Android**: install the Android SDK with an emulator image (e.g. `brew install --cask android-commandlinetools`, then
 `sdkmanager "platform-tools" "emulator" "platforms;android-36" "system-images;android-36;google_apis;arm64-v8a"` and
 an AVD), a JDK (17 or 21), then `npx expo run:android`. The emulator reaches the Mac at `10.0.2.2`
-(`EXPO_PUBLIC_OROCHIA_URL=http://10.0.2.2:3000` for a local Orochia; a development build allows plain HTTP). On a
+(`EXPO_PUBLIC_APP_URL=http://10.0.2.2:3000` for a local Orochia; a development build allows plain HTTP). On a
 phone: the **EAS preview APK** (`npx eas-cli@latest build --platform android --profile preview`, signed with the
 project's EAS keystore, push through Firebase) — its install link is on the build's page in the Expo project
 `@oussamaabid/orochia`; or the APK attached to each [release](https://github.com/krizaka/orochia-mobile/releases)
@@ -176,7 +176,7 @@ request. The Maestro flow runs on a Mac with a simulator:
 
 ```bash
 maestro test .maestro/smoke.yaml -e OROCHIA_ID=<e-mail or username> -e OROCHIA_PASSWORD=<password>
-# Sign-up: against a LOCAL Orochia in demo mode (OROCHIA_DEMO_MODE=true) on its own database — never a shared one
+# Sign-up: against a LOCAL Orochia in demo mode (APP_DEMO_MODE=true) on its own database — never a shared one
 maestro test .maestro/sign-up.yaml -e SIGNUP_NAME=eric_$(date +%s)
 ```
 

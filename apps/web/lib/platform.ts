@@ -24,10 +24,10 @@ import { createBackup } from "./backups";
  * rebuilding the database from the migrations (packages/db/src/migrations.ts, the same code as the release job).
  */
 
-/** The migrations shipped with this build: MIGRATIONS_DIR, the image's ./drizzle, or the workspace's packages/db/drizzle. */
+/** The migrations shipped with this build: DATABASE_MIGRATIONS_DIR, the image's ./drizzle, or the workspace's packages/db/drizzle. */
 function migrationsFolder(): string {
   const candidates = [
-    process.env.MIGRATIONS_DIR,
+    process.env.DATABASE_MIGRATIONS_DIR,
     path.resolve(process.cwd(), "drizzle"),
     path.resolve(process.cwd(), "../../drizzle"),
     path.resolve(process.cwd(), "../../packages/db/drizzle"),
@@ -67,7 +67,7 @@ export async function platformStatus(): Promise<PlatformStatus> {
   }
   const name = info[0].name;
   return {
-    environment: { appUrl: appUrl(), indexed: process.env.NODE_ENV === "production" && process.env.SEARCH_INDEXING !== "off", nodeEnv: process.env.NODE_ENV ?? "development" },
+    environment: { appUrl: appUrl(), indexed: process.env.NODE_ENV === "production" && process.env.APP_SEARCH_INDEXING !== "off", nodeEnv: process.env.NODE_ENV ?? "development" },
     database: { name, host: new URL(databaseUrl()).hostname, sizeBytes: Number(info[0].size), serverVersion: info[0].version },
     history,
     tables,

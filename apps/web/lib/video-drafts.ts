@@ -11,7 +11,7 @@ import { parseStoredEdit, type StoredEdit } from "./video-edit-settings";
 /**
  * Editor drafts (AGENTS.md §3.A): the original clip goes straight to Bunny over Tus (drafts collection),
  * the settings and the form live in `video_drafts`, the music privately in storage. Only the owner sees,
- * resumes or deletes a draft; it expires after DRAFT_RETENTION_DAYS and is removed with its files.
+ * resumes or deletes a draft; it expires after MEDIA_DRAFT_RETENTION_DAYS and is removed with its files.
  */
 
 export const DRAFT_KINDS = ["VIDEO", "STORY"] as const;

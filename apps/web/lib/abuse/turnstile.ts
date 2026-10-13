@@ -7,8 +7,8 @@ import { HttpError } from "../http";
  * visitors, and the site key / secret are all it needs. The widget type ("Invisible") is chosen when the site key is
  * created in the Cloudflare dashboard.
  *
- * `BOT_CHALLENGE`:
- * - `auto` (default): on when `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` are both set, off otherwise (like a
+ * `ABUSE_BOT_CHALLENGE`:
+ * - `auto` (default): on when `ABUSE_BOT_CHALLENGE_SITE_KEY` and `ABUSE_BOT_CHALLENGE_SECRET_KEY` are both set, off otherwise (like a
  *   sign-in provider, a challenge exists only once configured — local development and CI need no key);
  * - `required`: in production, a missing key refuses the protected actions (503) instead of running without;
  * - `off`: never (a documented decision, e.g. while the keys are being created).
@@ -29,14 +29,14 @@ export interface ChallengeConfig {
 }
 
 export function challengeConfig(env: Record<string, string | undefined> = process.env): ChallengeConfig {
-  const raw = env.BOT_CHALLENGE?.trim().toLowerCase() || "auto";
+  const raw = env.ABUSE_BOT_CHALLENGE?.trim().toLowerCase() || "auto";
   const mode = raw === "off" || raw === "required" ? raw : "auto";
-  const siteKey = env.TURNSTILE_SITE_KEY?.trim() || null;
-  const secretKey = env.TURNSTILE_SECRET_KEY?.trim() || null;
+  const siteKey = env.ABUSE_BOT_CHALLENGE_SITE_KEY?.trim() || null;
+  const secretKey = env.ABUSE_BOT_CHALLENGE_SECRET_KEY?.trim() || null;
   if (mode === "off") return { mode, siteKey, secretKey, active: false };
   if (siteKey && secretKey) return { mode, siteKey, secretKey, active: true };
   if (mode === "required" && (env.NODE_ENV ?? process.env.NODE_ENV) === "production") {
-    throw new ConfigurationError("TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY", "are required when BOT_CHALLENGE=required");
+    throw new ConfigurationError("ABUSE_BOT_CHALLENGE_SITE_KEY and ABUSE_BOT_CHALLENGE_SECRET_KEY", "are required when ABUSE_BOT_CHALLENGE=required");
   }
   return { mode, siteKey, secretKey, active: false };
 }

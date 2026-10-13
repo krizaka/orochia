@@ -46,5 +46,5 @@ export function buildUrl(info: BuildInfo): string {
 export const BUILD_INFO: BuildInfo = describeBuild({
   version: process.env.NEXT_PUBLIC_APP_VERSION,
   env: process.env.NEXT_PUBLIC_APP_ENV,
-  sha: process.env.NEXT_PUBLIC_COMMIT_SHA,
+  sha: process.env.NEXT_PUBLIC_APP_COMMIT_SHA,
 });

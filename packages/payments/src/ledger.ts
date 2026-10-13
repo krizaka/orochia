@@ -33,12 +33,12 @@ export interface TipResult {
 /** The smallest payout a creator can request ($20.00); the payout route and the home read it from here. */
 export const PAYOUT_MINIMUM_CENTS = 20_00;
 
-/** The platform fee percentage (0–100), from PLATFORM_FEE_PERCENTAGE; 10 by default. */
+/** The platform fee percentage (0–100), from PAYMENTS_PLATFORM_FEE_PERCENTAGE; 10 by default. */
 export function platformFeePercent(env: Record<string, string | undefined> = process.env): number {
-  const raw = env.PLATFORM_FEE_PERCENTAGE;
+  const raw = env.PAYMENTS_PLATFORM_FEE_PERCENTAGE;
   const pct = raw === undefined || raw === "" ? 10 : Number(raw);
   if (!Number.isFinite(pct) || pct < 0 || pct > 100) {
-    throw new Error(`PLATFORM_FEE_PERCENTAGE must be between 0 and 100 (got ${raw})`);
+    throw new Error(`PAYMENTS_PLATFORM_FEE_PERCENTAGE must be between 0 and 100 (got ${raw})`);
   }
   return pct;
 }

@@ -30,7 +30,7 @@
 ## 1. Execution & developer experience
 
 - **One command to start**: `npm run setup` (checks Node ≥ 20 and Docker, writes `.env` with a generated
-  `SESSION_SECRET`, starts the databases, migrates, seeds). Then `npm run dev`.
+  `AUTH_SESSION_SECRET`, starts the databases, migrates, seeds). Then `npm run dev`.
 - **No shell scripts.** Tooling is Node (`scripts/*.mjs`, no dependencies) behind `npm run` — portable and reviewed
   like the code.
 - **One `.env` at the repository root**, read by the web app (`next.config.mjs`), drizzle-kit and the seed
@@ -66,7 +66,7 @@
   `DATABASE_URL`** (a worktree on its own database never touches the shared `orochia_db`).
 - On a deployment, the only destructive database operation is the operator's **factory reset** (admin console →
   Platform & Database, `/api/admin/platform/reset`), and the release job's rebuild of a database whose migration history
-  was squashed. Both require `OROCHIA_ALLOW_DATABASE_RESET=true`, are refused on the indexed production whatever it says,
+  was squashed. Both require `DATABASE_ALLOW_RESET=true`, are refused on the indexed production whatever it says,
   and share `packages/db/src/migrations.ts`. Backups (gzipped JSON in private storage) are taken first by default.
 
 ---
@@ -101,7 +101,7 @@ orochia/                           npm workspaces
 - Route handlers stay thin: **every rule that decides access lives in `lib/access.ts`, `lib/social.ts`,
   `lib/playlists.ts` or a package** — never inline in a route or a component.
 - `orochia-admin` never touches Orochia's database: it is a server-side BFF over `/api/admin/*`, calling as a service
-  (`Authorization: Bearer OROCHIA_ADMIN_API_TOKEN`, `lib/operator.ts`: ADMIN routes only, acting as the owner). It has
+  (`Authorization: Bearer OPERATOR_API_TOKEN`, `lib/operator.ts`: ADMIN routes only, acting as the owner). It has
   its own small database for its single operator account, sessions and operator log, and lets only `ADMIN_ALLOWED_IPS`
   in. Any new operator capability is an admin endpoint here first.
 - **Shared UI comes from npm, never from a copy.** `@krizaka/orochia-design-system` (repo `orochia-design-system`) is
@@ -131,7 +131,7 @@ orochia/                           npm workspaces
 - Engagement counters on `videos` (views, likes, comments, shares) move in the same transaction as the row that
   justifies them; a view counts once per viewer and day and never for the author (`lib/engagement.ts`).
 - **Stories** (`lib/stories.ts`) live 24 hours from the moment they are playable. Video stories are Bunny videos filed
-  in the stories collection (`BUNNY_STREAM_STORIES_COLLECTION_ID`), uploaded over Tus and moved to READY by the
+  in the stories collection (`MEDIA_STREAM_STORIES_COLLECTION_ID`), uploaded over Tus and moved to READY by the
   webhook — or, when it never comes, by the rail's reconciliation with the Stream API (`reconcileStoryVideos`); the
   author sees their own story while it is processing; image stories use a stored image whose URL the server derives from its reference — a client never
   chooses a story's media. Audience: PUBLIC · APPROVED_FOLLOWERS_ONLY · CONTACTS_ONLY · INVITED_ONLY (one of the
@@ -164,13 +164,13 @@ orochia/                           npm workspaces
   database counts what is kept at Bunny (`storage_bytes`, `duration_seconds` on videos, stories and drafts — declared at
   the session, Bunny's `storageSize` at the end of encoding, reconciled by `lib/storage-reconcile.ts`); never a Bunny
   call at upload time. Every upload session checks the per-file maximum, the creator's plan (`users.storage_plan` →
-  `QUOTA_PLANS`, `unlimited` allowed), the platform's cap and the daily / concurrent counts **before the Tus signature**,
+  `ABUSE_QUOTA_PLANS`, `unlimited` allowed), the platform's cap and the daily / concurrent counts **before the Tus signature**,
   refusing with a stable code (413 / 429 + `Retry-After`). A file over quota after encoding is **HELD** (kept, shown to
-  nobody but its author) and released when space is freed — **a quota never deletes anything**. `STORAGE_LIMITS=off`
-  is refused in production without `STORAGE_LIMITS_OFF_CONFIRMED=true`.
+  nobody but its author) and released when space is freed — **a quota never deletes anything**. `ABUSE_QUOTAS=off`
+  is refused in production without `ABUSE_QUOTAS_OFF_CONFIRMED=true`.
 - **Editor drafts** (`lib/video-drafts.ts`): the original clip goes to Bunny over Tus (drafts collection), the edit
   settings (validated by `parseStoredEdit`) and the form in `video_drafts`, the music under `private/audio/`. Owner-only,
-  removed with their files when published, deleted or expired (`DRAFT_RETENTION_DAYS`). Editing is non-destructive:
+  removed with their files when published, deleted or expired (`MEDIA_DRAFT_RETENTION_DAYS`). Editing is non-destructive:
   the original is kept and reopened with its settings; the in-browser render (ffmpeg.wasm) is what gets uploaded.
 
 ### C. Payments are confirmed by the gateway, never by the client
@@ -186,7 +186,7 @@ orochia/                           npm workspaces
   `PAYMENTS_CREDITS_MODE=test`, never on the indexed public deployment.
 - **Payouts** go to the creator's saved payout account (`payout_accounts`: IBAN, US/Canadian bank, PayPal, USDT,
   BTC), validated like a bank would (IBAN mod-97, ABA checksum) and **encrypted at rest** (AES-256-GCM,
-  `PAYOUT_ENCRYPTION_KEY`); only a masked hint is ever shown to the creator; a payout request keeps an encrypted
+  `PAYMENTS_PAYOUT_ENCRYPTION_KEY`); only a masked hint is ever shown to the creator; a payout request keeps an encrypted
   snapshot that the admin API decrypts for the operator. Minimum $20.
 - **Earnings** (`lib/earnings.ts`, `/earnings`) are read from the ledger only: period totals, views, per-video revenue,
   monthly trend, payments, payouts; CSV exports neutralise spreadsheet formulas.
@@ -231,7 +231,16 @@ orochia/                           npm workspaces
 
 ### F. Fail-closed configuration and sessions
 - Secrets are read through `apps/web/lib/env.ts`: mandatory in production (503 + logged name when missing),
-  development defaults otherwise. `OROCHIA_DEMO_MODE` is ignored in production.
+  development defaults otherwise. `APP_DEMO_MODE` is ignored in production.
+- **Environment variables are named by bounded context** (krizaka/.github#46): `<CONTEXT>_<THING>` with CONTEXT one of
+  `APP_` `DATABASE_` `AUTH_` `MEDIA_` `MAIL_` `PUSH_` `PAYMENTS_` `REALTIME_` `ABUSE_` `OBSERVABILITY_` `AI_` `OPERATOR_` —
+  never the product (`OROCHIA_…`) nor a vendor (`BUNNY_…`, `MAILGUN_…`): a vendor is a value (`MEDIA_STORAGE_PROVIDER=bunny`,
+  `MAIL_PROVIDER=resend`) and its settings sit under the context (`MEDIA_STREAM_LIBRARY_ID`, `MAIL_API_KEY`).
+  `NEXT_PUBLIC_` only where the browser needs the value, then the context (`NEXT_PUBLIC_APP_URL`). Every variable is
+  declared once in `ENV_VARS` (`apps/web/lib/env.ts`: context, need, secret, zod schema, what it does); `env.test.ts`
+  fails on an undeclared or misnamed one, `assertEnv()` stops a deployment whose environment is incomplete, and
+  `docs/DEPLOYMENT.md`'s table is generated from the list. A new variable: declare it, add it to `.env.example` and the
+  App Platform specs, `npm run docs:generate`.
 - **Sign in with Google / Facebook** (`lib/oauth.ts`): OAuth 2 code + PKCE, state in a signed 10-minute cookie, a
   provider offered only when its keys are set. The provider's user id is the key (`auth_identities`); an address the
   provider verified links to the existing account. A new person completes the account (username, 18+ certification,
@@ -284,7 +293,7 @@ orochia/                           npm workspaces
 - **Add or change one**: edit the files (and the registry and `preview.json` for a new id or variable) →
   `npm run mail:templates:preview` (renders every template and locale to `apps/web/.mail-preview/`) → `npm test` →
   merge → `npm run mail:templates:push` (dry run: what differs on Bunny) then `npm run mail:templates:push -- --apply`
-  with the production `BUNNY_STORAGE_*` values. An edit made only on Bunny is overwritten by the next push.
+  with the production `MEDIA_STORAGE_*` values. An edit made only on Bunny is overwritten by the next push.
 
 ---
 
@@ -302,7 +311,7 @@ orochia/                           npm workspaces
   `PRE_DEPLOY` job: a release never starts on an older schema.
 - The seed is **development data**, idempotent (natural keys), coherent with the ledger rules, and refuses
   `NODE_ENV=production`. Seed accounts never exist in production.
-- The **default user** is the platform owner, configured by environment (`OROCHIA_OWNER_EMAIL`, `_USERNAME`,
+- The **default user** is the platform owner, configured by environment (`AUTH_OWNER_EMAIL`, `_USERNAME`,
   `_NAME`, `_PASSWORD`) and applied by the release job after the migrations (and by the local seed): created or
   reactivated as ADMIN, verified — never hard-coded, never deleted, its password kept once set (`packages/db/src/owner.ts`).
 - Queries: parameterised through Drizzle; raw SQL fragments qualify their columns (`playlists.id`) and escape
@@ -319,12 +328,12 @@ orochia/                           npm workspaces
 - Mutations that can be abused are rate-limited **per account and per IP** (`limitAction` / `enforceRateLimit`,
   `lib/rate-limit.ts`), answered 429 with a stable `code` and `Retry-After`. The IP is `clientIp()` (`lib/client-ip.ts`),
   never the left end of `X-Forwarded-For`. Counters live in a `RateLimitStore`: `memory` (one instance) or `postgres`
-  (`RATE_LIMIT_STORE=postgres`, required before a second instance; Redis / Valkey later behind the same interface, #40).
+  (`ABUSE_RATE_LIMIT_STORE=postgres`, required before a second instance; Redis / Valkey later behind the same interface, #40).
 - Refusals a client acts on carry a stable `code` (`HttpError(status, message, { code }, headers)`); the UI words them
   through `lib/api-errors.ts` (`apiErrors.<code>` in `en.json`), never by parsing the English message.
 - **Realtime goes through `lib/realtime.ts` only** (`publish` / `subscribe` / `sseResponse`), over the `RealtimeBus` of
   `@krizaka/realtime` (npm) chosen by `REALTIME_BUS`: `postgres` (default — `NOTIFY` to every instance's `LISTEN`
-  connection, `packages/db/src/listen.ts`, no broker) or `redis` (Redis / Valkey, `REDIS_URL`); business code never
+  connection, `packages/db/src/listen.ts`, no broker) or `redis` (Redis / Valkey, `REALTIME_REDIS_URL`); business code never
   knows which ([ADR 0001](docs/adr/0001-realtime-transport.md)). Topics `user:<id>`, `presence:<id>`, `auction:<id>`
   and `challenge:<id>`; payloads are small facts (≤ 8 KB), never documents — what must not be lost is in the database
   and replayed from it. The NOTIFY channel is `orochia_events`, the Redis prefix `orochia:rt:` (`REALTIME_PREFIX`) — keep
@@ -487,7 +496,7 @@ orochia/                           npm workspaces
   origin is added there deliberately.
 - Webhooks: signature over the raw body, constant-time comparison, no lenient mode, idempotent effects.
 - **Bots** (`lib/abuse/`): sign-up needs a signed form token (minimal fill time, device cookie), an empty honeypot, a
-  non-disposable address, a browser-like client and — when `TURNSTILE_*` are set — Cloudflare Turnstile, which **fails
+  non-disposable address, a browser-like client and — when `ABUSE_BOT_CHALLENGE_*_KEY` are set — Cloudflare Turnstile, which **fails
   closed** for sign-up and password reset and is never asked for reading or for content reports (a report is never
   lost). Sign-in backs off then locks per identifier (`lib/abuse/login-throttle.ts`).
 - Uploads: type and size checked per kind; 2257 documents only for creators.

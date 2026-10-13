@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 
 /**
  * Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's
- * Read-Only API key (BUNNY_WEBHOOK_SECRET). Moves a video to PROCESSING / READY / FAILED; when it is
+ * Read-Only API key (MEDIA_STREAM_WEBHOOK_SECRET). Moves a video to PROCESSING / READY / FAILED; when it is
  * finished, reads its length, renditions and thumbnail from the Stream API (the webhook carries none).
  */
 export async function POST(req: NextRequest) {

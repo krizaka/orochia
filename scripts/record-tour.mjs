@@ -3,7 +3,7 @@
 //   npm run demo:seed                      # the official demo, in its own database (scripts/demo.mjs, cast.json)
 //   npm run build && npm run demo:start    # a production build on that database, on :3100 (no dev overlay)
 //   npm run record:tour                    # every clip; `-- alex-story elena-earnings` re-records some.
-//                                          # OROCHIA_URL, OUT (tour/). Re-run demo:seed before a new full take:
+//                                          # APP_URL, OUT (tour/). Re-run demo:seed before a new full take:
 //                                          # the clips pay, bid and back for real.
 //
 // Two people you can picture yourself as, never the operator: Elena Marlow, a singer-songwriter who films her songs
@@ -38,7 +38,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SHOWCASE = path.join(ROOT, "apps/web/public/showcase");
 const CAST = JSON.parse(readFileSync(path.join(ROOT, "scripts/demo/cast.json"), "utf8"));
-const BASE = (process.env.OROCHIA_URL || "http://localhost:3100").replace(/\/$/, "");
+const BASE = (process.env.APP_URL || "http://localhost:3100").replace(/\/$/, "");
 const OUT = path.resolve(process.env.OUT || "tour");
 const LOCAL_MEDIA = process.env.TOUR_LOCAL_MEDIA !== "0";
 const ONLY = process.argv.slice(2);
@@ -59,7 +59,7 @@ try {
   process.exit(2);
 }
 if (!(await fetch(BASE).then((r) => r.ok, () => false))) {
-  console.error(`✗ Nothing answers at ${BASE}: npm run demo:seed, npm run build, npm run demo:start (or set OROCHIA_URL).`);
+  console.error(`✗ Nothing answers at ${BASE}: npm run demo:seed, npm run build, npm run demo:start (or set APP_URL).`);
   process.exit(2);
 }
 

@@ -68,13 +68,13 @@ export async function applyMigrations(pool: Pool, migrations: Migration[]): Prom
 }
 
 /**
- * Whether this deployment's database may be wiped: only when OROCHIA_ALLOW_DATABASE_RESET=true, and never on the public
- * production deployment (one search engines index: NODE_ENV=production with SEARCH_INDEXING not "off"), whatever the
+ * Whether this deployment's database may be wiped: only when DATABASE_ALLOW_RESET=true, and never on the public
+ * production deployment (one search engines index: NODE_ENV=production with APP_SEARCH_INDEXING not "off"), whatever the
  * flag says. The same rule as test top-ups.
  */
 export function databaseResetAllowed(env: Record<string, string | undefined> = process.env): boolean {
-  const asked = env.OROCHIA_ALLOW_DATABASE_RESET === "true";
-  const publicProduction = env.NODE_ENV === "production" && env.SEARCH_INDEXING !== "off";
+  const asked = env.DATABASE_ALLOW_RESET === "true";
+  const publicProduction = env.NODE_ENV === "production" && env.APP_SEARCH_INDEXING !== "off";
   return asked && !publicProduction;
 }
 

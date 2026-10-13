@@ -8,7 +8,7 @@ import { searchVectorOf, tsvector } from "./search";
 
 /**
  * Stories: short images or videos that live 24 hours. A video story is a Bunny Stream video filed in
- * the stories collection (BUNNY_STREAM_STORIES_COLLECTION_ID), uploaded over Tus like any video and
+ * the stories collection (MEDIA_STREAM_STORIES_COLLECTION_ID), uploaded over Tus like any video and
  * moved to READY by the Bunny webhook; its 24 hours start when it is playable. Who sees a story uses
  * the video rules — public, approved followers, contacts, or one of the creator's audience lists
  * (INVITED_ONLY + audience_list_id, "close friends"). Paid unlocks do not apply to stories.

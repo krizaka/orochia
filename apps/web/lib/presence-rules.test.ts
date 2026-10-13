@@ -48,9 +48,9 @@ describe("realtime configuration", () => {
     expect(realtimeConfig({})).toMatchObject({ kind: "postgres", streamMaxSeconds: 300 });
   });
 
-  it("fails closed: redis without REDIS_URL, or an unknown bus, is a configuration error", () => {
-    expect(() => realtimeConfig({ REALTIME_BUS: "redis" })).toThrow(/REDIS_URL/);
+  it("fails closed: redis without REALTIME_REDIS_URL, or an unknown bus, is a configuration error", () => {
+    expect(() => realtimeConfig({ REALTIME_BUS: "redis" })).toThrow(/REALTIME_REDIS_URL/);
     expect(() => realtimeConfig({ REALTIME_BUS: "kafka" })).toThrow(/REALTIME_BUS/);
-    expect(realtimeConfig({ REALTIME_BUS: "redis", REDIS_URL: "rediss://cache:25061" })).toMatchObject({ kind: "redis", redisUrl: "rediss://cache:25061" });
+    expect(realtimeConfig({ REALTIME_BUS: "redis", REALTIME_REDIS_URL: "rediss://cache:25061" })).toMatchObject({ kind: "redis", redisUrl: "rediss://cache:25061" });
   });
 });

@@ -261,8 +261,8 @@ export async function renderMailTemplate<Id extends MailTemplateId>(id: Id, vars
   const values = vars as unknown as Values;
   if (mailTemplatesSource(env) === "bunny") {
     try {
-      const remote = options.remote ?? (env.BUNNY_STORAGE_API_KEY ? bunnyReader({ env }) : null);
-      if (!remote) throw new Error("BUNNY_STORAGE_API_KEY is not set");
+      const remote = options.remote ?? (env.MEDIA_STORAGE_API_KEY ? bunnyReader({ env }) : null);
+      if (!remote) throw new Error("MEDIA_STORAGE_API_KEY is not set");
       const loaded = await loadFiles(remote, id, locale);
       if (loaded) return { ...renderFiles(id, loaded.locale, loaded.files, values, options.appUrl, options.now), locale: loaded.locale, source: "bunny" };
       console.warn(`mail templates: ${id} (${locale}) not found on Bunny Storage, using the bundled template`);

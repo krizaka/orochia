@@ -346,7 +346,7 @@ export async function runSeed(): Promise<void> {
     ]);
   }
 
-  // The owner account from OROCHIA_OWNER_* (as in production, where the release job applies it).
+  // The owner account from AUTH_OWNER_* (as in production, where the release job applies it).
   const owner = ownerFromEnv();
   if (owner) {
     const outcome = await ensureOwner(db, owner);

@@ -46,7 +46,7 @@ ledger. Built-in 18+ compliance — on the web and on iOS and Android
 - 🪶 **Creator onboarding** ([docs/CREATOR_ONBOARDING.md](docs/CREATOR_ONBOARDING.md)): one account for everyone — a fan opens a creator space on the account they already have, then the 18 U.S.C. § 2257 identity and age review opens uploads; every call to action follows who is looking, and a signed-in person is never sent to sign up.
 - 📖 **Stories**: a complete viewer — sound, gestures, likes, private replies, tips and reports — opened from the ring on a creator's profile.
 - 🧭 **Explorer**: discovery that is never empty — sections, full-text search, normalised tags, public videos only.
-- 💸 **90 % to the creator**: the platform fee (10 % by default, `PLATFORM_FEE_PERCENTAGE`) and the creator's credit are written once, together, on the ledger.
+- 💸 **90 % to the creator**: the platform fee (10 % by default, `PAYMENTS_PLATFORM_FEE_PERCENTAGE`) and the creator's credit are written once, together, on the ledger.
 - 🤝 **Social graph**: creators approve their followers (followers-only videos), people become mutual contacts (contacts-only videos); public and private playlists.
 - 🧹 **Moderation**: operators take videos down with a recorded reason (and restore them), suspend accounts with immediate effect, change roles — from the admin console.
 - 📒 **Double-entry ledger**: platform fee and creator credit always add up to the gross; balances are computed from the ledger; concurrent payout requests are serialised.

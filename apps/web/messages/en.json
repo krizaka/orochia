@@ -1005,7 +1005,7 @@
     },
     "storageAlert": {
       "subject": "Platform storage at {percent}%",
-      "body": "Orochia's video storage is at {percent}% ({used} of {limit}). New uploads are refused at 100%: raise QUOTA_PLATFORM_GB or free space."
+      "body": "Orochia's video storage is at {percent}% ({used} of {limit}). New uploads are refused at 100%: raise ABUSE_QUOTA_PLATFORM_GB or free space."
     }
   },
   "notifications": {

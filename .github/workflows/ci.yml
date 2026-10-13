@@ -62,9 +62,9 @@ jobs:
       - name: Bundled production migrator
         run: |
           npm run build:migrator -w packages/db
-          MIGRATIONS_DIR=packages/db/drizzle node packages/db/dist/migrate.cjs
+          DATABASE_MIGRATIONS_DIR=packages/db/drizzle node packages/db/dist/migrate.cjs
       - name: Migrations are idempotent
-        run: MIGRATIONS_DIR=packages/db/drizzle node packages/db/dist/migrate.cjs
+        run: DATABASE_MIGRATIONS_DIR=packages/db/drizzle node packages/db/dist/migrate.cjs
       - name: Development seed loads
         run: npm run db:seed
 
@@ -89,23 +89,23 @@ jobs:
         options: --health-cmd "valkey-cli ping" --health-interval 5s --health-timeout 5s --health-retries 10
     env:
       DATABASE_URL: postgresql://orochia_user:orochia_secret@localhost:5432/orochia_db
-      SESSION_SECRET: ci-only-session-secret-0123456789abcdef0123456789
+      AUTH_SESSION_SECRET: ci-only-session-secret-0123456789abcdef0123456789
       # Shared by the app and the scenarios that sign Bunny webhooks (test values, not a real library).
-      BUNNY_WEBHOOK_SECRET: ci-only-bunny-read-only-key
-      BUNNY_STREAM_LIBRARY_ID: "1"
+      MEDIA_STREAM_WEBHOOK_SECRET: ci-only-bunny-read-only-key
+      MEDIA_STREAM_LIBRARY_ID: "1"
       PAYMENTS_CREDITS_MODE: test
       # The scenarios end with a factory reset of the database (development deployments only).
-      OROCHIA_ALLOW_DATABASE_RESET: "true"
+      DATABASE_ALLOW_RESET: "true"
       # The operator console's service token (test value), acting as the seeded owner.
-      OROCHIA_ADMIN_API_TOKEN: ci-only-operator-console-token-0123456789abcdef
-      OROCHIA_OWNER_EMAIL: admin@orochia.org
-      OROCHIA_OWNER_USERNAME: orochia_admin
-      OROCHIA_OWNER_NAME: Orochia Operator
-      OROCHIA_DEMO_MODE: "true"
+      OPERATOR_API_TOKEN: ci-only-operator-console-token-0123456789abcdef
+      AUTH_OWNER_EMAIL: admin@orochia.org
+      AUTH_OWNER_USERNAME: orochia_admin
+      AUTH_OWNER_NAME: Orochia Operator
+      APP_DEMO_MODE: "true"
       NEXT_PUBLIC_APP_URL: http://localhost:3000
       # Shared by the app and the scenarios: a 2 GB plan so one file can exceed it, and a 1 s minimal sign-up time.
-      QUOTA_CREATOR_DEFAULT_GB: "2"
-      SIGNUP_MIN_FILL_SECONDS: "1"
+      ABUSE_QUOTA_CREATOR_DEFAULT_GB: "2"
+      ABUSE_SIGNUP_MIN_FILL_SECONDS: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -118,7 +118,7 @@ jobs:
         run: npx vitest run apps/web/lib/realtime.integration.test.ts
         env:
           REALTIME_IT: "1"
-          REDIS_URL: redis://localhost:6379
+          REALTIME_REDIS_URL: redis://localhost:6379
       - run: npm run db:seed
       - name: Start the app (development server)
         run: |

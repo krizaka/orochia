@@ -3,19 +3,19 @@
  * to: its LEFT end is whatever the client sent (anyone can write `X-Forwarded-For: 1.2.3.4`), so a limit keyed on it
  * is a limit the attacker chooses. The address the last trusted proxy saw is read from the RIGHT:
  *
- * - `CLIENT_IP_HEADER` (e.g. `do-connecting-ip` on DigitalOcean App Platform, `cf-connecting-ip` behind Cloudflare):
+ * - `ABUSE_CLIENT_IP_HEADER` (e.g. `do-connecting-ip` on DigitalOcean App Platform, `cf-connecting-ip` behind Cloudflare):
  *   a header the edge sets and overwrites, read first when present;
- * - otherwise the entry `TRUSTED_PROXY_HOPS` (default 1: one proxy — App Platform, Caddy) from the right of
+ * - otherwise the entry `ABUSE_TRUSTED_PROXY_HOPS` (default 1: one proxy — App Platform, Caddy) from the right of
  *   `X-Forwarded-For`, then `X-Real-IP`;
  * - otherwise null (local development without a proxy).
  */
 export function clientIp(headers: Headers, env: Record<string, string | undefined> = process.env): string | null {
-  const custom = env.CLIENT_IP_HEADER?.trim().toLowerCase();
+  const custom = env.ABUSE_CLIENT_IP_HEADER?.trim().toLowerCase();
   if (custom) {
     const value = headers.get(custom)?.split(",")[0]?.trim();
     if (value && isIp(value)) return value;
   }
-  const hops = Math.max(1, Math.min(10, Number(env.TRUSTED_PROXY_HOPS) || 1));
+  const hops = Math.max(1, Math.min(10, Number(env.ABUSE_TRUSTED_PROXY_HOPS) || 1));
   const chain = (headers.get("x-forwarded-for") ?? "")
     .split(",")
     .map((part) => part.trim())
@@ -37,12 +37,12 @@ function isIp(value: string): boolean {
 }
 
 /**
- * The IP a playback token is bound to, when `BUNNY_TOKEN_BIND_IP=on` (off by default): Bunny then refuses the signed
+ * The IP a playback token is bound to, when `MEDIA_STREAM_TOKEN_BIND_IP=on` (off by default): Bunny then refuses the signed
  * URL from any other address, so a leaked link stops working elsewhere. Off by default because the address a viewer's
  * player uses can differ from the one the API saw (IPv4 vs IPv6, mobile networks switching mid-play, privacy relays),
  * which breaks playback for real viewers; turn it on once checked on the deployment's own traffic.
  */
 export function playbackIp(headers: Headers, env: Record<string, string | undefined> = process.env): string | undefined {
-  if (env.BUNNY_TOKEN_BIND_IP?.trim().toLowerCase() !== "on") return undefined;
+  if (env.MEDIA_STREAM_TOKEN_BIND_IP?.trim().toLowerCase() !== "on") return undefined;
   return clientIp(headers, env) ?? undefined;
 }

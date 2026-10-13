@@ -78,7 +78,7 @@
         "CCBill · Segpay · NowPayments · Stripe adapters",
         "Constant-time webhook signatures, no lenient mode",
         "Exactly-once settlement",
-        "Platform fee 10% (PLATFORM_FEE_PERCENTAGE)"
+        "Platform fee 10% (PAYMENTS_PLATFORM_FEE_PERCENTAGE)"
       ]
     },
     {
@@ -229,7 +229,7 @@
       "method": "POST",
       "path": "/api/admin/platform/reset",
       "access": "session · ADMIN",
-      "summary": "Factory reset: backs the database up first (unless asked not to), wipes it and rebuilds it from the migrations — development deployments only (OROCHIA_ALLOW_DATABASE_RESET, never the indexed production), after the operator typed “reset <database>”. The operator and the owner are kept."
+      "summary": "Factory reset: backs the database up first (unless asked not to), wipes it and rebuilds it from the migrations — development deployments only (DATABASE_ALLOW_RESET, never the indexed production), after the operator typed “reset <database>”. The operator and the owner are kept."
     },
     {
       "method": "GET",
@@ -259,7 +259,7 @@
       "method": "PATCH",
       "path": "/api/admin/storage/[userId]",
       "access": "session · ADMIN",
-      "summary": "Sets an account's storage plan (a name of QUOTA_PLANS, or null for the default); its held uploads go online if they fit."
+      "summary": "Sets an account's storage plan (a name of ABUSE_QUOTA_PLANS, or null for the default); its held uploads go online if they fit."
     },
     {
       "method": "GET",
@@ -877,7 +877,7 @@
       "method": "GET",
       "path": "/api/metrics",
       "access": "bearer token",
-      "summary": "Prometheus metrics, behind a bearer token (METRICS_AUTH_TOKEN)."
+      "summary": "Prometheus metrics, behind a bearer token (OBSERVABILITY_METRICS_TOKEN)."
     },
     {
       "method": "GET",
@@ -1147,7 +1147,7 @@
       "method": "POST",
       "path": "/api/webhooks/bunny",
       "access": "signed webhook",
-      "summary": "Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (BUNNY_WEBHOOK_SECRET)."
+      "summary": "Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (MEDIA_STREAM_WEBHOOK_SECRET)."
     },
     {
       "method": "POST",

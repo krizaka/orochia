@@ -12,7 +12,7 @@ import { execFileSync } from "node:child_process";
 const args = Object.fromEntries(
   process.argv.slice(2).reduce((pairs, arg, i, all) => (arg.startsWith("--") ? [...pairs, [arg.slice(2), all[i + 1]]] : pairs), []),
 );
-const B = (args.url ?? process.env.OROCHIA_URL ?? "http://localhost:3000").replace(/\/$/, "");
+const B = (args.url ?? process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
 const STREAMS = Number(args.streams ?? 500);
 const MESSAGES = Number(args.messages ?? 10);
 const SEND = (args["send-url"] ?? B).replace(/\/$/, "");

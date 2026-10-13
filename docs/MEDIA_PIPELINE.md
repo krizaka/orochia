@@ -18,7 +18,7 @@ vertical 9:16 and at most 60 seconds — a story clip goes through the editor be
 
 **Drafts.** *Save draft* keeps the original at Bunny (drafts collection, sent once over Tus), the settings and the form
 in `video_drafts` and the music privately in storage, so the edit continues on any device. Saving again only updates
-the settings. A draft is removed with its files when published, deleted, or after `DRAFT_RETENTION_DAYS` (30).
+the settings. A draft is removed with its files when published, deleted, or after `MEDIA_DRAFT_RETENTION_DAYS` (30).
 
 ## 2. Limits
 
@@ -33,7 +33,7 @@ One table, `packages/media/src/limits.ts`, read by the browser and the server:
 
 The browser refuses before sending; the upload session refuses a larger declared size; the webhook reads the encoded
 length and deletes at Bunny a video or story longer than allowed (status FAILED). These are hard ceilings: the
-deployment can lower them (`QUOTA_VIDEO_MAX_MB`, `QUOTA_VIDEO_MAX_MINUTES`, `QUOTA_STORY_MAX_MB`, `QUOTA_DRAFT_MAX_MB`),
+deployment can lower them (`ABUSE_QUOTA_VIDEO_MAX_MB`, `ABUSE_QUOTA_VIDEO_MAX_MINUTES`, `ABUSE_QUOTA_STORY_MAX_MB`, `ABUSE_QUOTA_DRAFT_MAX_MB`),
 never raise them — and every upload also has to fit the storage quotas of §6.
 
 ## 3. Direct-to-Bunny Tus upload
@@ -46,7 +46,7 @@ participant bunny: @bunny-stream
 
 creator -> api: POST /api/videos/create-upload-session (title, visibility, size…)
 api -> api: verified creator (2257) · limits · rate limit
-api -> bunny: create the video (in BUNNY_STREAM_COLLECTION_ID)
+api -> bunny: create the video (in MEDIA_STREAM_COLLECTION_ID)
 api -> api: Tus signature = sha256(libraryId + apiKey + expires + guid)
 api -> db: videos row, status PENDING_UPLOAD
 api --> creator: tusEndpoint and the signed headers
@@ -59,7 +59,7 @@ collections.
 ## 4. Encoding webhook
 
 `POST /api/webhooks/bunny` — signature v1 (HMAC-SHA256 over the raw body with the library's Read-Only key,
-`BUNNY_WEBHOOK_SECRET`), compared in constant time.
+`MEDIA_STREAM_WEBHOOK_SECRET`), compared in constant time.
 
 | Bunny status | Orochia |
 | :--- | :--- |
@@ -136,10 +136,10 @@ not stop a client from sending more bytes than it declared, so the declared size
 3. **At deletion**: a draft's row (and its Bunny file) goes; a video or story withdrawn by its creator stops counting
    for them — its file stays at Bunny for the record (§3.D) and still counts for the platform.
 4. **Reconciliation** (`lib/storage-reconcile.ts`): `npm run quota:reconcile`, `POST /api/admin/storage`, and the
-   background loop every `QUOTA_RECONCILE_INTERVAL_MINUTES` (360). It lists the library, corrects every row's bytes,
+   background loop every `ABUSE_QUOTA_RECONCILE_INTERVAL_MINUTES` (360). It lists the library, corrects every row's bytes,
    zeroes the rows whose video Bunny no longer has, counts the **orphans** (videos at Bunny no row knows — abandoned
    sessions, manual uploads, another environment sharing the library) and adds their bytes to the platform's usage,
-   records a `storage_snapshots` row (with the account totals when `BUNNY_ACCOUNT_API_KEY` is set), releases held files
+   records a `storage_snapshots` row (with the account totals when `MEDIA_ACCOUNT_API_KEY` is set), releases held files
    that fit and re-checks the alerts.
 
 ### What counts
@@ -152,14 +152,14 @@ not stop a client from sending more bytes than it declared, so the declared size
 | Expired or withdrawn stories | — | ✓ (still at Bunny) |
 | Draft originals | ✓ | ✓ |
 | Orphans found by the last reconciliation | — | ✓ |
-| Pictures (avatars, covers, thumbnails, story images) | per-file size + `QUOTA_IMAGE_UPLOADS_PER_DAY` | — (small; see the storage zone total) |
+| Pictures (avatars, covers, thumbnails, story images) | per-file size + `ABUSE_QUOTA_IMAGE_UPLOADS_PER_DAY` | — (small; see the storage zone total) |
 
 ### Plans and alerts
 
-A creator is on the `default` plan (`QUOTA_CREATOR_DEFAULT_GB`, `QUOTA_CREATOR_DEFAULT_MINUTES`); ADMIN accounts on
-`QUOTA_ADMIN_PLAN` (`unlimited`). An operator gives an account a named plan of `QUOTA_PLANS`
+A creator is on the `default` plan (`ABUSE_QUOTA_CREATOR_DEFAULT_GB`, `ABUSE_QUOTA_CREATOR_DEFAULT_MINUTES`); ADMIN accounts on
+`ABUSE_QUOTA_ADMIN_PLAN` (`unlimited`). An operator gives an account a named plan of `ABUSE_QUOTA_PLANS`
 (`PATCH /api/admin/storage/<userId>` `{ "plan": "pro" }`, `null` for the default); `unlimited` lifts the plan, never the
-platform's cap. The platform alerts every ADMIN account once per threshold crossed (`QUOTA_ALERT_THRESHOLDS`, 80 and 95 %:
+platform's cap. The platform alerts every ADMIN account once per threshold crossed (`ABUSE_QUOTA_ALERT_THRESHOLDS`, 80 and 95 %:
 bell, push, e-mail, log); a creator is told once a week when they pass 90 % (`storageLow`). The dashboard and the
 upload page show the gauge (`StorageMeter`, `GET /api/me/storage`); operators read `GET /api/admin/storage` (usage,
 plans, largest accounts, last reconciliation, the state of the abuse defences).

@@ -229,7 +229,7 @@ export function buildArchitectureMap(root, workspace, previous = null) {
   if (/fetch\(\s*[`"']\/api\//.test(webClient)) flow("orochia-web", "orochia-api", "http", "/api/* · session cookie");
   for (const r of siblings.filter((s) => !/design-system/.test(s.name))) {
     const code = textOf(["src", "app", "lib"].flatMap((d) => sources(path.join(sibling(r.name), d))));
-    if (/OROCHIA_API_URL/.test(code) && /\/api\/admin\//.test(code)) flow(r.name, "orochia-api", "http", "/api/admin/* · service token");
+    if (/OPERATOR_API_URL/.test(code) && /\/api\/admin\//.test(code)) flow(r.name, "orochia-api", "http", "/api/admin/* · service token");
     else if (/\/api\//.test(code)) flow(r.name, "orochia-api", "http", "/api/* · Bearer session");
     for (const s of streamUsedBy(code)) flow("orochia-api", r.name, "sse", s);
     if (/expo-video/.test(read(path.join(sibling(r.name), "package.json")))) flow(r.name, "bunny-stream", "http", "HLS playback · signed URL");

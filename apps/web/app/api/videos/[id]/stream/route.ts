@@ -35,7 +35,7 @@ export async function GET(req: NextRequest, props: { params: Promise<{ id: strin
     const signed = new BunnyStreamClient(bunnyStreamConfig()).getSignedStreamUrl(
       video.bunnyVideoId,
       STREAM_TOKEN_TTL_SECONDS,
-      // Bound to the viewer's address when BUNNY_TOKEN_BIND_IP=on (lib/client-ip.ts).
+      // Bound to the viewer's address when MEDIA_STREAM_TOKEN_BIND_IP=on (lib/client-ip.ts).
       playbackIp(req.headers),
     );
 

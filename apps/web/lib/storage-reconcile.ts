@@ -13,11 +13,11 @@ import { checkPlatformAlerts, platformUsage, releaseHeld, zeroRowsMissingFrom } 
  * - zeroes rows whose video Bunny no longer has;
  * - counts the videos at Bunny that no row knows (orphans: an abandoned session, a manual upload, another environment
  *   sharing the library) — their bytes are added to the platform's usage until the next run;
- * - with `BUNNY_ACCOUNT_API_KEY`, records the library's and the storage zone's own totals;
+ * - with `MEDIA_ACCOUNT_API_KEY`, records the library's and the storage zone's own totals;
  * - records a `storage_snapshots` row, re-checks the platform alerts and releases held files that fit again.
  *
  * Run by `npm run quota:reconcile`, by `POST /api/admin/storage` and by the background loop every
- * `QUOTA_RECONCILE_INTERVAL_MINUTES` (360; 0 turns it off). Nothing is ever deleted at Bunny.
+ * `ABUSE_QUOTA_RECONCILE_INTERVAL_MINUTES` (360; 0 turns it off). Nothing is ever deleted at Bunny.
  */
 export interface ReconcileResult {
   snapshotId: string;
@@ -95,14 +95,14 @@ export async function reconcileStorage(options: { client?: Lister; env?: Record<
 
   let libraryTotals: ReconcileResult["libraryTotals"] = null;
   let zone: ReconcileResult["zone"] = null;
-  const accountKey = env.BUNNY_ACCOUNT_API_KEY?.trim();
+  const accountKey = env.MEDIA_ACCOUNT_API_KEY?.trim();
   if (accountKey) {
     const fetchImpl = options.fetchImpl ?? fetch;
     libraryTotals = await getLibraryTotals(config.libraryId, accountKey, fetchImpl).catch((error: unknown) => {
       console.warn("quota: library totals unavailable", error instanceof Error ? error.message : error);
       return null;
     });
-    const zoneTotals = await getStorageZoneTotals({ id: env.BUNNY_STORAGE_ZONE_ID, name: env.BUNNY_STORAGE_ZONE }, accountKey, fetchImpl).catch((error: unknown) => {
+    const zoneTotals = await getStorageZoneTotals({ id: env.MEDIA_STORAGE_ZONE_ID, name: env.MEDIA_STORAGE_ZONE }, accountKey, fetchImpl).catch((error: unknown) => {
       console.warn("quota: storage zone totals unavailable", error instanceof Error ? error.message : error);
       return null;
     });
@@ -167,16 +167,16 @@ async function latestOrphanBytes() {
   return row?.orphanBytes ?? 0;
 }
 
-/** Minutes between two automatic reconciliations (QUOTA_RECONCILE_INTERVAL_MINUTES, 360; 0 = never). */
+/** Minutes between two automatic reconciliations (ABUSE_QUOTA_RECONCILE_INTERVAL_MINUTES, 360; 0 = never). */
 export function reconcileIntervalMinutes(env: Record<string, string | undefined> = process.env): number {
-  const raw = Number(env.QUOTA_RECONCILE_INTERVAL_MINUTES?.trim() || 360);
+  const raw = Number(env.ABUSE_QUOTA_RECONCILE_INTERVAL_MINUTES?.trim() || 360);
   return Number.isFinite(raw) && raw >= 0 ? Math.min(raw, 7 * 24 * 60) : 360;
 }
 
 /** True when the last reconciliation is older than the interval (so instances do not all run it). */
 export async function reconcileIsDue(now = new Date(), env: Record<string, string | undefined> = process.env): Promise<boolean> {
   const minutes = reconcileIntervalMinutes(env);
-  if (minutes === 0 || !env.BUNNY_STREAM_API_KEY?.trim()) return false;
+  if (minutes === 0 || !env.MEDIA_STREAM_API_KEY?.trim()) return false;
   const [last] = await db.select({ takenAt: storageSnapshots.takenAt }).from(storageSnapshots).orderBy(desc(storageSnapshots.takenAt)).limit(1);
   return !last || now.getTime() - last.takenAt.getTime() >= minutes * 60_000;
 }

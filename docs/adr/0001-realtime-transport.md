@@ -37,7 +37,7 @@ nothing worth a second protocol.
 2. **Put the transport behind one interface**, `RealtimeBus` (`publish` / `subscribe` by channel + `presence`), in a
    package that knows nothing of Orochia (`@orochia/realtime`). Adapters: `memory` (tests), **`postgres`**
    (LISTEN/NOTIFY, default — no extra service) and **`redis`** (Redis / Valkey pub/sub, subscribed per channel, presence
-   in Redis with Lua). Chosen by `REALTIME_BUS=postgres|redis` (`REDIS_URL`); a `redis` bus without a URL is a
+   in Redis with Lua). Chosen by `REALTIME_BUS=postgres|redis` (`REALTIME_REDIS_URL`); a `redis` bus without a URL is a
    configuration error, never a silent fallback. Business code (`lib/messaging.ts`, `lib/presence.ts`,
    `lib/chat-stream.ts`) only sees the interface.
 3. **Presence by heartbeat + TTL, never a database write per beat**: each open stream beats every 15 s (TTL 45 s); a

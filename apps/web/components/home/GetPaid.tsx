@@ -14,7 +14,7 @@ import { SOURCE_URL } from "@/lib/seo";
  * The worked examples, one per way of being paid. The amounts are the product's own defaults — a tip opens at $10
  * (TipModal), a creator's unlock minimum starts at $5 (profiles.min_tip_amount_cents), a pledge of $25 is one of the
  * suggested amounts (challenge-rules) — except the winning bid, an illustration; the split is the platform's
- * (`splitPlatformFee`, PLATFORM_FEE_PERCENTAGE).
+ * (`splitPlatformFee`, PAYMENTS_PLATFORM_FEE_PERCENTAGE).
  */
 const WAYS = [
   ["tips", TipIcon, 10_00],

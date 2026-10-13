@@ -24,12 +24,12 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/admin/platform/backups` | session · ADMIN | Backs the whole database up now (gzipped JSON of every table, in private storage). |
 | `DELETE` | `/api/admin/platform/backups/[name]` | session · ADMIN | Deletes a backup from private storage. |
 | `GET` | `/api/admin/platform/backups/[name]` | session · ADMIN | Downloads a backup file (`?download=1`), or describes it: tables, rows, migrations. |
-| `POST` | `/api/admin/platform/reset` | session · ADMIN | Factory reset: backs the database up first (unless asked not to), wipes it and rebuilds it from the migrations — development deployments only (OROCHIA_ALLOW_DATABASE_RESET, never the indexed production), after the operator typed “reset &lt;database&gt;”. The operator and the owner are kept. |
+| `POST` | `/api/admin/platform/reset` | session · ADMIN | Factory reset: backs the database up first (unless asked not to), wipes it and rebuilds it from the migrations — development deployments only (DATABASE_ALLOW_RESET, never the indexed production), after the operator typed “reset &lt;database&gt;”. The operator and the owner are kept. |
 | `GET` | `/api/admin/reports` | session · ADMIN | Content reports, newest first; `?status=` filters. |
 | `PATCH` | `/api/admin/reports/[id]` | session · ADMIN | Moves a report through triage (open → in review → resolved). |
 | `GET` | `/api/admin/storage` | session · ADMIN | Platform storage for operators: usage against the cap and alert thresholds, the plans, the largest accounts, the last reconciliation with Bunny, and the state of the abuse defences (rate-limit store, bot challenge). |
 | `POST` | `/api/admin/storage` | session · ADMIN | Reconciles the storage counters with Bunny now (lists the Stream library; at most a few times an hour). |
-| `PATCH` | `/api/admin/storage/[userId]` | session · ADMIN | Sets an account's storage plan (a name of QUOTA_PLANS, or null for the default); its held uploads go online if they fit. |
+| `PATCH` | `/api/admin/storage/[userId]` | session · ADMIN | Sets an account's storage plan (a name of ABUSE_QUOTA_PLANS, or null for the default); its held uploads go online if they fit. |
 | `GET` | `/api/admin/users` | session · ADMIN | Every account (filter by `?role=`, `?suspended=`, `?q=`): role, verification and suspension state. |
 | `PATCH` | `/api/admin/users/[id]` | session · ADMIN | Suspends an account (it can no longer sign in, and its open sessions are refused on their next request; its open auctions are cancelled and their bids released), reinstates it, or changes its role (a new creator waits for the 2257 review). |
 | `GET` | `/api/admin/videos` | session · ADMIN | The catalogue for moderation: every video with its creator, state and open reports; `?state=removed` lists takedowns. |
@@ -132,7 +132,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/me/tags` | session · CREATOR / ADMIN | The creator's tag suggestions for the publish form: the tags they used before (most used first) and the curated list. |
 | `GET` | `/api/me/wallet` | session · MEMBER / CREATOR / ADMIN | Your Orochia credits: balance (and what is held behind your leading bids and challenge pledges), the packs you can buy, how you can pay for them, and your history. |
 | `POST` | `/api/me/wallet/topups` | session · MEMBER / CREATOR / ADMIN | Buys credits: returns the gateway's hosted checkout (card, Apple Pay, Google Pay — card details never reach Orochia); the gateway's signed webhook adds the credits. |
-| `GET` | `/api/metrics` | bearer token | Prometheus metrics, behind a bearer token (METRICS_AUTH_TOKEN). |
+| `GET` | `/api/metrics` | bearer token | Prometheus metrics, behind a bearer token (OBSERVABILITY_METRICS_TOKEN). |
 | `GET` | `/api/payments/gateways` | public | The ways a buyer can pay on this deployment: credits (the wallet), then the external gateways. |
 | `GET` | `/api/platform/treasury` | session · ADMIN | Platform revenue, computed from the ledger only (administrators). |
 | `GET` | `/api/playlists` | session · MEMBER / CREATOR / ADMIN | Your playlists, most recently changed first. |
@@ -177,7 +177,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/videos/[id]/stream` | public · session-aware | Authorises a viewer and returns a short-lived signed HLS URL (AGENTS.md §2.A). |
 | `POST` | `/api/videos/create-upload-session` | public · session-aware | — |
 | `POST` | `/api/videos/unlock-video` | session · MEMBER / CREATOR / ADMIN | Starts the purchase of a video unlock. |
-| `POST` | `/api/webhooks/bunny` | signed webhook | Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (BUNNY_WEBHOOK_SECRET). |
+| `POST` | `/api/webhooks/bunny` | signed webhook | Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (MEDIA_STREAM_WEBHOOK_SECRET). |
 | `POST` | `/api/webhooks/payments/[gateway]` | signed webhook | Gateway payment notifications. |
 
 ## Database tables (46)

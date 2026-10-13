@@ -9,12 +9,12 @@ if (existsSync(rootEnv)) process.loadEnvFile(rootEnv);
 
 /**
  * What this build is, inlined at build time for the version badge next to the brand (components/BuildBadge.tsx):
- * the web app's package.json version, the short commit SHA — `COMMIT_SHA` when the builder provides it (App Platform:
+ * the web app's package.json version, the short commit SHA — `APP_COMMIT_SHA` when the builder provides it (App Platform:
  * `${_self.COMMIT_HASH}`, its Docker build has no .git), else `git rev-parse` — and NEXT_PUBLIC_APP_ENV
  * (local · dev · staging · production; the badge never shows in production).
  */
 function commitSha() {
-  const given = process.env.COMMIT_SHA?.trim();
+  const given = process.env.APP_COMMIT_SHA?.trim();
   if (given) return given.slice(0, 7);
   try {
     return execFileSync("git", ["rev-parse", "--short=7", "HEAD"], { stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
@@ -71,7 +71,7 @@ const nextConfig = {
   poweredByHeader: false,
   env: {
     NEXT_PUBLIC_APP_VERSION: appVersion,
-    NEXT_PUBLIC_COMMIT_SHA: commitSha(),
+    NEXT_PUBLIC_APP_COMMIT_SHA: commitSha(),
     NEXT_PUBLIC_APP_ENV: process.env.NEXT_PUBLIC_APP_ENV?.trim() || "local",
   },
   transpilePackages: ["@orochia/db", "@orochia/media", "@orochia/payments", "@orochia/config"],

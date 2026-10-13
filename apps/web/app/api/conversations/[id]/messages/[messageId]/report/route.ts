@@ -26,7 +26,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
     const report = await reportMessage({ conversationId: ids.data.id, messageId: ids.data.messageId, reporterId: user.id, ...input });
 
     // Persisted first; the e-mails only notify (best-effort).
-    const alertTo = process.env.COMPLIANCE_ALERT_EMAIL;
+    const alertTo = process.env.MAIL_COMPLIANCE_ALERT_TO;
     if (alertTo) {
       void sendTemplate("content-report-alert", {
         to: alertTo,

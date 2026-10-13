@@ -24,8 +24,8 @@ type Key = string;
 
 async function main() {
   if (process.env.NODE_ENV === "production") throw new Error("Refusing to seed the demo: NODE_ENV=production");
-  const { OROCHIA_DEMO_SEED } = process.env;
-  if (OROCHIA_DEMO_SEED !== "1") throw new Error("Run the demo seed through `npm run demo:seed` (it prepares a dedicated database).");
+  const { APP_DEMO_SEED } = process.env;
+  if (APP_DEMO_SEED !== "1") throw new Error("Run the demo seed through `npm run demo:seed` (it prepares a dedicated database).");
   // Only ever a dedicated demo database on this machine — never the shared development one.
   const target = new URL(process.env.DATABASE_URL ?? "");
   if (!["localhost", "127.0.0.1", "::1"].includes(target.hostname) || !/demo/.test(target.pathname)) {

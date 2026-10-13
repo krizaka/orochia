@@ -75,7 +75,7 @@ sign-up starts with `true`, which means "no review pending", so without this it 
 | **E-mail confirmed** | Before anything but the confirmation page | One reachable person per account; reviews and payouts write to it | `users.email_verified_at` |
 | **Identity and age records (18 U.S.C. § 2257)** | Between opening the creator space and the first upload | US law requires the producer of sexually explicit content to verify and keep proof that every performer is an adult, before publishing | Operator console → **2257 Creator Verification** (`/compliance`) → `PATCH /api/admin/creators/:id` → `users.is_verified`. Checked by `create-upload-session`, `stories` and `video-drafts` on every upload |
 | **Per-upload declarations** | Every upload | The creator confirms the people shown are adults, consented, and that the records are kept | A required step of the upload form (client side); not stored per video yet |
-| **Payout account** | Before the first payout (minimum $20) | Earnings go to a verified destination only | `payout_accounts`, validated like a bank would (IBAN mod-97, ABA) and **encrypted at rest** (AES-256-GCM, `PAYOUT_ENCRYPTION_KEY`); the creator only sees a masked hint |
+| **Payout account** | Before the first payout (minimum $20) | Earnings go to a verified destination only | `payout_accounts`, validated like a bank would (IBAN mod-97, ABA) and **encrypted at rest** (AES-256-GCM, `PAYMENTS_PAYOUT_ENCRYPTION_KEY`); the creator only sees a masked hint |
 
 ### What is not built yet
 

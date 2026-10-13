@@ -6,12 +6,12 @@
  * native sign-up (the app's device id, a bearer session), each checked through the HTTP API with real sessions.
  *
  *   npm run db:reset -- --yes && npm run dev      # in another terminal
- *   npm run test:e2e                              # OROCHIA_URL defaults to http://localhost:3000
+ *   npm run test:e2e                              # APP_URL defaults to http://localhost:3000
  *
  * The scenarios change data (they approve, accept, take down…) and end with a factory reset of the database (when the
  * deployment allows it): reset the database before re-running.
  */
-const B = (process.env.OROCHIA_URL || "http://localhost:3000").replace(/\/$/, "");
+const B = (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
 let failures = 0;
 const check = (name, cond, extra = "") => { console.log(`${cond ? "✓" : "✗"} ${name}${cond ? "" : "  " + extra}`); if (!cond) failures++; };
 async function session(identifier, password) {
@@ -26,8 +26,8 @@ async function session(identifier, password) {
 }
 const anon = { call: async (path) => { const r = await fetch(B + path); return { status: r.status, json: await r.json().catch(() => ({})) }; } };
 // Sign-up needs a form token (GET /api/auth/register: device cookie + signed issue time) at least
-// SIGNUP_MIN_FILL_SECONDS old. Each sign-up comes from its own address (the per-IP limit is 5 an hour).
-const MIN_FILL_MS = Number(process.env.SIGNUP_MIN_FILL_SECONDS ?? 3) * 1000 + 300;
+// ABUSE_SIGNUP_MIN_FILL_SECONDS old. Each sign-up comes from its own address (the per-IP limit is 5 an hour).
+const MIN_FILL_MS = Number(process.env.ABUSE_SIGNUP_MIN_FILL_SECONDS ?? 3) * 1000 + 300;
 const freshIp = () => `198.51.100.${1 + Math.floor(Math.random() * 250)}`;
 async function signupForm(ip = freshIp()) {
   const r = await fetch(B + "/api/auth/register", { headers: { "X-Forwarded-For": ip } });
@@ -351,8 +351,8 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   const envFile = new URL("../.env", import.meta.url);
   const fromFile = (name) =>
     existsSync(envFile) ? readFileSync(envFile, "utf8").match(new RegExp(`^${name}=(.*)$`, "m"))?.[1]?.trim() : undefined;
-  const key = process.env.BUNNY_WEBHOOK_SECRET || fromFile("BUNNY_WEBHOOK_SECRET");
-  const library = Number(process.env.BUNNY_STREAM_LIBRARY_ID || fromFile("BUNNY_STREAM_LIBRARY_ID") || 1);
+  const key = process.env.MEDIA_STREAM_WEBHOOK_SECRET || fromFile("MEDIA_STREAM_WEBHOOK_SECRET");
+  const library = Number(process.env.MEDIA_STREAM_LIBRARY_ID || fromFile("MEDIA_STREAM_LIBRARY_ID") || 1);
   const guid = "9b4d3eaa-6f5a-4c8b-0d1e-2f3a4b5c6d7e"; // "Afterhours", seeded PROCESSING
   const send = (status, { lib = library, signWith = key, version = "v1" } = {}) => {
     const body = JSON.stringify({ VideoLibraryId: lib, VideoGuid: guid, Status: status });
@@ -368,7 +368,7 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
     });
   };
   if (!key) {
-    check("bunny webhook scenarios need BUNNY_WEBHOOK_SECRET", false);
+    check("bunny webhook scenarios need MEDIA_STREAM_WEBHOOK_SECRET", false);
   } else {
     const listed = async () => (await anon.call("/api/feed?limit=60")).json.videos.some((v) => v.title.startsWith("Afterhours"));
     check("webhook signed with another key → 401", (await send(3, { signWith: "not-the-key" })).status === 401);
@@ -1171,7 +1171,7 @@ check("llms.txt served", (await fetch(`${B}/llms.txt`)).status === 200);
 // Storage quotas (lib/quotas.ts, lib/storage-usage.ts) and abuse defences (lib/abuse/*, lib/rate-limit.ts).
 {
   const GB = 1024 ** 3;
-  const QUOTA_GB = Number(process.env.QUOTA_CREATOR_DEFAULT_GB ?? 10);
+  const QUOTA_GB = Number(process.env.ABUSE_QUOTA_CREATOR_DEFAULT_GB ?? 10);
   const storage = await elena.call("/api/me/storage");
   check("a creator reads their storage against their plan", storage.status === 200 && storage.json.storage.plan === "default" && storage.json.storage.limit.bytes === QUOTA_GB * GB, JSON.stringify(storage.json));
   check("…a member has no storage to read", (await alex.call("/api/me/storage")).status === 403);
@@ -1182,7 +1182,7 @@ check("llms.txt served", (await fetch(`${B}/llms.txt`)).status === 200);
     check("…with a message the creator can act on", /space/i.test(refused.json.error ?? ""));
     check("…and no video was recorded", !(await elena.call("/api/me/dashboard")).json.data.uploads.some((v) => v.title === "Too big for the plan"));
   } else {
-    console.log("· QUOTA_CREATOR_DEFAULT_GB ≥ 4: the over-quota upload is checked with QUOTA_CREATOR_DEFAULT_GB=2 (CI)");
+    console.log("· ABUSE_QUOTA_CREATOR_DEFAULT_GB ≥ 4: the over-quota upload is checked with ABUSE_QUOTA_CREATOR_DEFAULT_GB=2 (CI)");
   }
   const page = await fetch(`${B}/creator/upload`, { headers: { Cookie: elena.cookie } });
   check("the upload page shows the space used against the plan", page.status === 200 && (await page.text()).includes(`of ${QUOTA_GB.toFixed(1)} GB used`));
@@ -1244,11 +1244,11 @@ check("llms.txt served", (await fetch(`${B}/llms.txt`)).status === 200);
 }
 
 // The operator console's service token: ADMIN routes only, never a member's.
-if (process.env.OROCHIA_ADMIN_API_TOKEN) {
+if (process.env.OPERATOR_API_TOKEN) {
   const bearer = (token) => ({ headers: { Authorization: `Bearer ${token}` } });
-  check("the console's token opens the admin API", (await fetch(`${B}/api/admin/auctions`, bearer(process.env.OROCHIA_ADMIN_API_TOKEN))).status === 200);
+  check("the console's token opens the admin API", (await fetch(`${B}/api/admin/auctions`, bearer(process.env.OPERATOR_API_TOKEN))).status === 200);
   check("…a wrong token is refused", (await fetch(`${B}/api/admin/auctions`, bearer("x".repeat(48)))).status === 401);
-  check("…and it opens no member route", (await fetch(`${B}/api/me/wallet`, bearer(process.env.OROCHIA_ADMIN_API_TOKEN))).status === 401);
+  check("…and it opens no member route", (await fetch(`${B}/api/me/wallet`, bearer(process.env.OPERATOR_API_TOKEN))).status === 401);
 }
 
 // Platform & database, for operators: status, backups, and — last, it wipes everything — the factory reset.

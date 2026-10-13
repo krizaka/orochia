@@ -24,7 +24,7 @@ Clone the admin console and the design system next to this repository with `npm 
 | App | Directory | Port | Start |
 | :--- | :--- | :--- | :--- |
 | Web app & API | `orochia/` | 3000 | `npm run dev` |
-| Admin console | `../orochia-admin/` | 3001 | `OROCHIA_API_URL=http://localhost:3000 npm run dev -- -p 3001` |
+| Admin console | `../orochia-admin/` | 3001 | `OPERATOR_API_URL=http://localhost:3000 npm run dev -- -p 3001` |
 | Design system showcase | `../orochia-design-system/` | 3002 | `npm run dev` |
 
 ## Accounts of the development seed
@@ -93,15 +93,15 @@ videos and stories play the licensed showcase clips in the recordings, e-mails a
 ```bash
 npm run check                    # lint + types + unit tests + generated docs up to date
 npm run db:reset -- --yes        # the scenarios change data: start them from the seed
-npm run test:e2e                 # needs the app running (npm run dev); OROCHIA_URL to target another one
+npm run test:e2e                 # needs the app running (npm run dev); APP_URL to target another one
 ```
 
 ## Environment
 
 One `.env` at the repository root (created by `npm run setup` from `.env.example`). Everything starts without any
 external account: the feed, profiles, followers, contacts, collections, comments, image stories and the seeded videos'
-pages work on the local database, files are stored on disk (`STORAGE_DRIVER=local`), e-mail is logged instead of
-sent, and with `OROCHIA_DEMO_MODE=true` unlocks settle immediately when no gateway is configured. In production every
+pages work on the local database, files are stored on disk (`MEDIA_STORAGE_PROVIDER=local`), e-mail is logged instead of
+sent, and with `APP_DEMO_MODE=true` unlocks settle immediately when no gateway is configured. In production every
 secret is mandatory (see [Deployment](DEPLOYMENT.md)).
 
 ### Video features locally (Bunny Stream)
@@ -113,8 +113,8 @@ the app. A free trial library is enough:
    (`vz-….b-cdn.net`).
 2. In **Security**, turn on CDN token authentication (copy its key) and add `localhost` to the allowed domains.
 3. In **Encoding**, keep **Keep original files** on (drafts reopen from the original).
-4. Fill `BUNNY_STREAM_API_KEY`, `BUNNY_STREAM_LIBRARY_ID`, `BUNNY_STREAM_HOSTNAME`, `BUNNY_STREAM_TOKEN_AUTH_KEY` and
-   `BUNNY_WEBHOOK_SECRET` (the Read-Only key), then restart `npm run dev`.
+4. Fill `MEDIA_STREAM_API_KEY`, `MEDIA_STREAM_LIBRARY_ID`, `MEDIA_STREAM_HOSTNAME`, `MEDIA_STREAM_TOKEN_AUTH_KEY` and
+   `MEDIA_STREAM_WEBHOOK_SECRET` (the Read-Only key), then restart `npm run dev`.
 
 Bunny cannot call `localhost`, and a library has **one** webhook URL — a library shared by several environments (local
 and dev) notifies only one of them. Without the webhook, **video stories still go live**: the stories rail asks the

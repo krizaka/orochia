@@ -2,7 +2,7 @@
 /**
  * One-command local setup: `npm run setup`.
  *   1. checks Node ≥ 20 and Docker
- *   2. creates .env from .env.example with a fresh SESSION_SECRET (an existing .env is kept)
+ *   2. creates .env from .env.example with a fresh AUTH_SESSION_SECRET (an existing .env is kept)
  *   3. starts PostgreSQL 16 (deploy/docker/docker-compose.dev.yml) and waits for it
  *   4. installs dependencies if needed, applies migrations, seeds the development data
  * Safe to run again at any time: every step is idempotent.
@@ -25,8 +25,8 @@ if (fs.existsSync(envFile)) {
   ok(".env already exists — kept as is");
 } else {
   const example = fs.readFileSync(path.join(ROOT, ".env.example"), "utf8");
-  fs.writeFileSync(envFile, example.replace(/^SESSION_SECRET=\s*$/m, `SESSION_SECRET=${crypto.randomBytes(32).toString("hex")}`));
-  ok(".env created from .env.example with a generated SESSION_SECRET");
+  fs.writeFileSync(envFile, example.replace(/^AUTH_SESSION_SECRET=\s*$/m, `AUTH_SESSION_SECRET=${crypto.randomBytes(32).toString("hex")}`));
+  ok(".env created from .env.example with a generated AUTH_SESSION_SECRET");
 }
 if (!isLocalDatabase()) fail(`DATABASE_URL points at ${new URL(databaseUrl()).hostname}: setup only provisions a local database`);
 

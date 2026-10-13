@@ -7,18 +7,18 @@ afterEach(() => {
 });
 
 const keys = () => {
-  vi.stubEnv("GOOGLE_CLIENT_ID", "gid");
-  vi.stubEnv("GOOGLE_CLIENT_SECRET", "gsecret");
-  vi.stubEnv("FACEBOOK_APP_ID", "fid");
-  vi.stubEnv("FACEBOOK_APP_SECRET", "fsecret");
+  vi.stubEnv("AUTH_GOOGLE_CLIENT_ID", "gid");
+  vi.stubEnv("AUTH_GOOGLE_CLIENT_SECRET", "gsecret");
+  vi.stubEnv("AUTH_FACEBOOK_APP_ID", "fid");
+  vi.stubEnv("AUTH_FACEBOOK_APP_SECRET", "fsecret");
   vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://dev.orochia.com");
 };
 
 describe("sign-in providers", () => {
   it("offers only the providers whose keys are set", () => {
     expect(configuredProviders({})).toEqual([]);
-    expect(configuredProviders({ GOOGLE_CLIENT_ID: "a", GOOGLE_CLIENT_SECRET: "b" })).toEqual(["google"]);
-    expect(configuredProviders({ FACEBOOK_APP_ID: "a" })).toEqual([]);
+    expect(configuredProviders({ AUTH_GOOGLE_CLIENT_ID: "a", AUTH_GOOGLE_CLIENT_SECRET: "b" })).toEqual(["google"]);
+    expect(configuredProviders({ AUTH_FACEBOOK_APP_ID: "a" })).toEqual([]);
   });
 
   it("seals state: tampering or expiry is refused", () => {

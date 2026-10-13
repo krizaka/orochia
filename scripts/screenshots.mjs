@@ -1,7 +1,7 @@
 // Screenshots of the main pages in the dark AND the light theme, for a UI review (a pull request, a migration).
 //
 //   npm run dev                      # or any running app: the script never starts one
-//   npm run screenshots              # OROCHIA_URL (default http://localhost:3000), OUT (default docs/screenshots/web)
+//   npm run screenshots              # APP_URL (default http://localhost:3000), OUT (default docs/screenshots/web)
 //
 // It signs in as a development seed account (SCREENSHOTS_LOGIN / SCREENSHOTS_PASSWORD, default the seed creator) for
 // the pages that need a session, picks the first video linked from the home page for /watch/<id>, sets the theme the
@@ -10,7 +10,7 @@
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
-const BASE = (process.env.OROCHIA_URL || "http://localhost:3000").replace(/\/$/, "");
+const BASE = (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
 const OUT = path.resolve(process.env.OUT || "docs/screenshots/web");
 const LOGIN = process.env.SCREENSHOTS_LOGIN || "elena@orochia.org";
 const PASSWORD = process.env.SCREENSHOTS_PASSWORD || "elena1234";
@@ -27,7 +27,7 @@ try {
 
 const up = await fetch(BASE).then((r) => r.ok, () => false);
 if (!up) {
-  console.error(`✗ Nothing answers at ${BASE}: start the app (npm run dev) or set OROCHIA_URL.`);
+  console.error(`✗ Nothing answers at ${BASE}: start the app (npm run dev) or set APP_URL.`);
   process.exit(2);
 }
 

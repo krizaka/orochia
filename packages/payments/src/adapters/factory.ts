@@ -20,39 +20,39 @@ export function getPaymentGateway(gateway: GatewayType, env: Env = process.env):
   switch (gateway) {
     case "CCBILL": {
       const c = required(env, gateway, [
-        "CCBILL_CLIENT_ACCOUNT",
-        "CCBILL_CLIENT_SUBACCOUNT",
-        "CCBILL_FORM_NAME",
-        "CCBILL_SALT",
-        "CCBILL_WEBHOOK_SECRET",
+        "PAYMENTS_CCBILL_CLIENT_ACCOUNT",
+        "PAYMENTS_CCBILL_CLIENT_SUBACCOUNT",
+        "PAYMENTS_CCBILL_FORM_NAME",
+        "PAYMENTS_CCBILL_SALT",
+        "PAYMENTS_CCBILL_WEBHOOK_SECRET",
       ]);
       return new CCBillAdapter({
-        clientAccount: c.CCBILL_CLIENT_ACCOUNT,
-        clientSubaccount: c.CCBILL_CLIENT_SUBACCOUNT,
-        formName: c.CCBILL_FORM_NAME,
-        salt: c.CCBILL_SALT,
-        webhookSecret: c.CCBILL_WEBHOOK_SECRET,
+        clientAccount: c.PAYMENTS_CCBILL_CLIENT_ACCOUNT,
+        clientSubaccount: c.PAYMENTS_CCBILL_CLIENT_SUBACCOUNT,
+        formName: c.PAYMENTS_CCBILL_FORM_NAME,
+        salt: c.PAYMENTS_CCBILL_SALT,
+        webhookSecret: c.PAYMENTS_CCBILL_WEBHOOK_SECRET,
       });
     }
     case "SEGPAY": {
-      const c = required(env, gateway, ["SEGPAY_MERCHANT_ID", "SEGPAY_PACKAGE_ID", "SEGPAY_SECRET_KEY"]);
+      const c = required(env, gateway, ["PAYMENTS_SEGPAY_MERCHANT_ID", "PAYMENTS_SEGPAY_PACKAGE_ID", "PAYMENTS_SEGPAY_SECRET_KEY"]);
       return new SegpayAdapter({
-        merchantId: c.SEGPAY_MERCHANT_ID,
-        packageId: c.SEGPAY_PACKAGE_ID,
-        secretKey: c.SEGPAY_SECRET_KEY,
+        merchantId: c.PAYMENTS_SEGPAY_MERCHANT_ID,
+        packageId: c.PAYMENTS_SEGPAY_PACKAGE_ID,
+        secretKey: c.PAYMENTS_SEGPAY_SECRET_KEY,
       });
     }
     case "CRYPTO": {
-      const c = required(env, gateway, ["NOWPAYMENTS_API_KEY", "NOWPAYMENTS_IPN_SECRET", "NEXT_PUBLIC_APP_URL"]);
+      const c = required(env, gateway, ["PAYMENTS_NOWPAYMENTS_API_KEY", "PAYMENTS_NOWPAYMENTS_IPN_SECRET", "NEXT_PUBLIC_APP_URL"]);
       return new CryptoGatewayAdapter({
-        apiKey: c.NOWPAYMENTS_API_KEY,
-        ipnSecret: c.NOWPAYMENTS_IPN_SECRET,
+        apiKey: c.PAYMENTS_NOWPAYMENTS_API_KEY,
+        ipnSecret: c.PAYMENTS_NOWPAYMENTS_IPN_SECRET,
         callbackUrl: `${c.NEXT_PUBLIC_APP_URL.replace(/\/$/, "")}/api/webhooks/payments/crypto`,
       });
     }
     case "STRIPE": {
-      const c = required(env, gateway, ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"]);
-      return new StripeAdapter({ secretKey: c.STRIPE_SECRET_KEY, webhookSecret: c.STRIPE_WEBHOOK_SECRET });
+      const c = required(env, gateway, ["PAYMENTS_STRIPE_SECRET_KEY", "PAYMENTS_STRIPE_WEBHOOK_SECRET"]);
+      return new StripeAdapter({ secretKey: c.PAYMENTS_STRIPE_SECRET_KEY, webhookSecret: c.PAYMENTS_STRIPE_WEBHOOK_SECRET });
     }
     case "CREDITS":
       // Credits have no checkout page and no webhook: they settle in-house (credits.ts).

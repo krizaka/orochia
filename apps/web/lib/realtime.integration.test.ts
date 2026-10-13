@@ -2,8 +2,8 @@
  * Orochia's realtime wiring against real servers: @krizaka/realtime's buses on Orochia's own LISTEN/NOTIFY primitives
  * (packages/db/src/listen.ts) and on Redis / Valkey, two buses in one process standing for two app instances. The
  * adapters themselves are tested in krizaka-ui; this proves the connection Orochia hands them.
- * Runs when REALTIME_IT=1: PostgreSQL from DATABASE_URL, Redis / Valkey from REDIS_URL (CI: the e2e job's services;
- * locally: `docker run -p 6390:6379 valkey/valkey:8-alpine`, REDIS_URL=redis://localhost:6390).
+ * Runs when REALTIME_IT=1: PostgreSQL from DATABASE_URL, Redis / Valkey from REALTIME_REDIS_URL (CI: the e2e job's services;
+ * locally: `docker run -p 6390:6379 valkey/valkey:8-alpine`, REALTIME_REDIS_URL=redis://localhost:6390).
  */
 import { randomUUID } from "node:crypto";
 import { afterAll, describe, expect, it } from "vitest";
@@ -93,7 +93,7 @@ contract("postgres", async () => {
 });
 
 contract("redis", async () => {
-  const url = process.env.REDIS_URL ?? "redis://localhost:6390";
+  const url = process.env.REALTIME_REDIS_URL ?? "redis://localhost:6390";
   const prefix = `it:${randomUUID()}:`;
   return [redisBus({ url, prefix, graceMs: 300 }), redisBus({ url, prefix, graceMs: 300 })];
 });

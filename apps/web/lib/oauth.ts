@@ -8,7 +8,7 @@ import { usernameBase } from "./usernames";
 
 /**
  * Sign in with Google or Facebook — OAuth 2 authorization code with PKCE, plain fetch, no SDK. A provider is
- * offered only when its keys are set (GOOGLE_CLIENT_ID/SECRET, FACEBOOK_APP_ID/SECRET). The provider's user id
+ * offered only when its keys are set (AUTH_GOOGLE_CLIENT_ID/SECRET, AUTH_FACEBOOK_APP_ID/SECRET). The provider's user id
  * is the key of an identity; a new person completes their account (username, date of birth, 18+ certification, terms) before
  * it is created, because those certifications are personal and cannot come from a provider.
  */
@@ -26,18 +26,18 @@ interface ProviderConfig {
 type Env = Record<string, string | undefined>;
 
 export function providerConfig(provider: OAuthProvider, env: Env = process.env): ProviderConfig | null {
-  if (provider === "google" && env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
+  if (provider === "google" && env.AUTH_GOOGLE_CLIENT_ID && env.AUTH_GOOGLE_CLIENT_SECRET) {
     return {
-      clientId: env.GOOGLE_CLIENT_ID,
-      clientSecret: env.GOOGLE_CLIENT_SECRET,
+      clientId: env.AUTH_GOOGLE_CLIENT_ID,
+      clientSecret: env.AUTH_GOOGLE_CLIENT_SECRET,
       authorizeUrl: "https://accounts.google.com/o/oauth2/v2/auth",
       scope: "openid email profile",
     };
   }
-  if (provider === "facebook" && env.FACEBOOK_APP_ID && env.FACEBOOK_APP_SECRET) {
+  if (provider === "facebook" && env.AUTH_FACEBOOK_APP_ID && env.AUTH_FACEBOOK_APP_SECRET) {
     return {
-      clientId: env.FACEBOOK_APP_ID,
-      clientSecret: env.FACEBOOK_APP_SECRET,
+      clientId: env.AUTH_FACEBOOK_APP_ID,
+      clientSecret: env.AUTH_FACEBOOK_APP_SECRET,
       authorizeUrl: "https://www.facebook.com/v19.0/dialog/oauth",
       scope: "email,public_profile",
     };

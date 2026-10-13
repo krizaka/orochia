@@ -8,11 +8,11 @@ import { setStoragePlan } from "@/lib/storage-usage";
 export const dynamic = "force-dynamic";
 
 const Body = z.object({
-  /** A plan of QUOTA_PLANS ("pro", "unlimited"…), or null for the role's default plan. */
+  /** A plan of ABUSE_QUOTA_PLANS ("pro", "unlimited"…), or null for the role's default plan. */
   plan: z.string().trim().max(40).nullable(),
 });
 
-/** Sets an account's storage plan (a name of QUOTA_PLANS, or null for the default); its held uploads go online if they fit. */
+/** Sets an account's storage plan (a name of ABUSE_QUOTA_PLANS, or null for the default); its held uploads go online if they fit. */
 export async function PATCH(req: NextRequest, props: { params: Promise<{ userId: string }> }) {
   try {
     await requireUserWithRole(["ADMIN"]);

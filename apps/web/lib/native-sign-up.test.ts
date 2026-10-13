@@ -30,7 +30,7 @@ describe("the device a sign-up comes from", () => {
 
 describe("GET /api/auth/register?client=native", () => {
   it("answers a form token bound to the app's device id, and sets no cookie", async () => {
-    vi.stubEnv("SESSION_SECRET", SECRET);
+    vi.stubEnv("AUTH_SESSION_SECRET", SECRET);
     const res = await openForm(new NextRequest("http://localhost/api/auth/register?client=native", { headers: { [DEVICE_HEADER]: DEVICE } }));
     const body = (await res.json()) as { formToken: string; challenge: unknown };
     expect(res.status).toBe(200);
@@ -55,17 +55,17 @@ describe("GET /api/auth/register?client=native", () => {
 
 describe("the native bot-challenge page", () => {
   it("says there is no challenge when none is configured", async () => {
-    vi.stubEnv("TURNSTILE_SITE_KEY", "");
-    vi.stubEnv("TURNSTILE_SECRET_KEY", "");
+    vi.stubEnv("ABUSE_BOT_CHALLENGE_SITE_KEY", "");
+    vi.stubEnv("ABUSE_BOT_CHALLENGE_SECRET_KEY", "");
     const html = await challengePage(new NextRequest("http://localhost/auth/native-challenge")).text();
     expect(html).toContain("var config = null;");
     expect(html).not.toContain("challenges.cloudflare.com");
   });
 
   it("renders the Turnstile widget with the public site key and the app's theme — never the secret", async () => {
-    vi.stubEnv("BOT_CHALLENGE", "auto");
-    vi.stubEnv("TURNSTILE_SITE_KEY", "1x00000000000000000000AA");
-    vi.stubEnv("TURNSTILE_SECRET_KEY", "1x0000000000000000000000000000000AA");
+    vi.stubEnv("ABUSE_BOT_CHALLENGE", "auto");
+    vi.stubEnv("ABUSE_BOT_CHALLENGE_SITE_KEY", "1x00000000000000000000AA");
+    vi.stubEnv("ABUSE_BOT_CHALLENGE_SECRET_KEY", "1x0000000000000000000000000000000AA");
     const res = challengePage(new NextRequest("http://localhost/auth/native-challenge?theme=light"));
     const html = await res.text();
     expect(res.headers.get("content-type")).toContain("text/html");

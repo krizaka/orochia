@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
 
     // Persisted first; the e-mails only notify (best-effort, never delay or fail the report).
     const urgent = input.reason === "UNDERAGE" || input.reason === "NON_CONSENSUAL";
-    const alertTo = process.env.COMPLIANCE_ALERT_EMAIL;
+    const alertTo = process.env.MAIL_COMPLIANCE_ALERT_TO;
     if (alertTo) {
       void sendTemplate("content-report-alert", {
         to: alertTo,
