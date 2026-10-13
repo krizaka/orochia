@@ -152,6 +152,60 @@ for (const [device, viewport] of Object.entries(VIEWPORTS)) {
     }
   }
 }
+// Keyboard only (WCAG 2.1.1, 2.4.1, 2.4.3) — what axe cannot see: the way past the navigation, and a dialog that
+// takes the focus, keeps it, and gives it back to the button that opened it.
+async function keyboard(name, run) {
+  const context = await open("dark", VIEWPORTS.desktop, { session: true });
+  const page = await context.newPage();
+  try {
+    const problem = await run(page);
+    if (problem) {
+      failures++;
+      console.log(`✗ keyboard · ${name} — ${problem}`);
+    } else console.log(`✓ keyboard · ${name}`);
+  } catch (error) {
+    failures++;
+    console.log(`✗ keyboard · ${name}  ${error.message.split("\n")[0]}`);
+  } finally {
+    await context.close();
+  }
+}
+const focused = (page) =>
+  page.evaluate(() => {
+    const e = document.activeElement;
+    return { tag: e?.tagName.toLowerCase(), name: (e?.getAttribute("aria-label") || e?.textContent || "").trim().slice(0, 40), inMain: !!e?.closest("main"), inDialog: !!e?.closest('[role="dialog"]') };
+  });
+
+await keyboard("the first Tab offers to skip to the content", async (page) => {
+  await page.goto(`${BASE}/explore`, { waitUntil: "networkidle" });
+  await page.keyboard.press("Tab");
+  const first = await focused(page);
+  if (first.tag !== "a" || !/skip/i.test(first.name)) return `the first stop is ${first.tag} "${first.name}", not a skip link`;
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Tab");
+  const next = await focused(page);
+  return next.inMain ? null : `after the skip link, focus is on ${next.tag} "${next.name}", outside <main>`;
+});
+
+if (watchId) {
+  await keyboard("the tip dialog takes the focus, keeps it, and gives it back", async (page) => {
+    await page.goto(`${BASE}/watch/${watchId}`, { waitUntil: "networkidle" });
+    const trigger = page.getByRole("button", { name: /^(Send a tip|Unlock)/i }).first();
+    await trigger.focus();
+    await page.keyboard.press("Enter");
+    await page.waitForSelector('[role="dialog"]');
+    await page.waitForTimeout(300);
+    if (!(await focused(page)).inDialog) return "focus did not move into the dialog";
+    for (let i = 0; i < 20; i++) await page.keyboard.press("Tab");
+    if (!(await focused(page)).inDialog) return "Tab left the open dialog";
+    await page.keyboard.press("Escape");
+    await page.waitForSelector('[role="dialog"]', { state: "detached" });
+    await page.waitForTimeout(200);
+    const back = await focused(page);
+    return /tip|unlock/i.test(back.name) ? null : `after Escape, focus is on ${back.tag} "${back.name}", not the button that opened it`;
+  });
+}
+
 await browser.close();
-console.log(`\n${failures === 0 ? "✓" : "✗"} ${checked} page views checked against WCAG 2.2 A/AA, ${failures} with violations`);
+console.log(`\n${failures === 0 ? "✓" : "✗"} ${checked} page views checked against WCAG 2.2 A/AA and the keyboard checks — ${failures} failing`);
 process.exit(failures === 0 ? 0 : 1);
