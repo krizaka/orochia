@@ -27,6 +27,8 @@ device.
 
 ![The 18+ gate on a fresh install](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/01-age-gate-dark.d726b8f556.webp)
 
+[![A fresh install: the 18+ gate, then the feed (12 s)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/clip-age-gate-poster.d1a1e47ae8.webp)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/clip-age-gate.77f0c10471.mp4)
+
 ### Home — stories and the feed
 
 The stories of the creators the viewer may see (a ring per creator, unseen ones in the signature gradient), then the
@@ -35,6 +37,8 @@ video asks (contacts only, approved followers, unlock). Pull to refresh. Signed 
 
 ![Home: stories rail and the feed (local seed)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/06-home-dark.79f01c0bf5.webp)
 ![Home in the light theme](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/06-home-light.9a3572b355.webp)
+
+[![Alex scrolls the feed, then opens Elena's story and watches it play (cut between the two, 27 s)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/clip-feed-stories-poster.fd7835fa74.webp)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/clip-feed-stories.084ce2fd8b.mp4)
 
 ### A story, full screen
 
@@ -48,18 +52,33 @@ then the next one — and the next creator's — follows.
 
 A video's page (`GET /api/videos/<id>/details`): the player, the title, the creator, the description and more from
 the same creator. The player plays only what `GET /api/videos/<id>/stream` answers, signed for the viewer — never a
-raw media URL. With the development seed, whose videos have no real media, the player shows the poster: playback of a
-real video was not part of this run.
+raw media URL. Recorded on the demo seed (`npm run demo:seed`), whose videos play licensed showcase clips: the stream
+URLs are signed by the server as in production and served by a local stand-in for the CDN (the demo's ids are not on
+Bunny), so what plays is the app's own player on a real HLS stream.
 
 ![Watch (local seed)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/08-watch-dark.c449b6ef16.webp)
+
+[!["Neon Rain — official music video" plays, then more from Elena (25 s)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/clip-watch-poster.9fc5d19c39.webp)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/clip-watch.104cc14dd3.mp4)
+
+A video that asks for an unlock shows its price and sends the viewer to the web to pay — the app does not sell.
+
+[!["Night Drive" asks for an unlock: the price, and "Unlock on orochia.com" (14 s)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/clip-unlock-poster.57e13fee5f.webp)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/clip-unlock.f6b20692fb.mp4)
 
 ### Challenges, auctions, messages
 
 Three tabs read their lists from the API (`/api/challenges`, `/api/auctions`, `/api/conversations`) and open a
-challenge (pledge), an auction (bid) or a conversation (live: presence, typing, receipts). In this run the server had
-none open, so each tab shows its empty state.
+challenge (pledge), an auction (bid) or a conversation (live: presence, typing, receipts). On the demo seed Alex backs
+Elena's goal with $10 — the ring moves from $150.00 to $160.00, the credits are held until delivery — then bids $31.00
+in her auction and leads; his wallet shows $69.00 with $41.00 held. He has no conversation yet: Messages shows its
+empty state.
 
-![Challenges with nothing open yet](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/09-challenges-dark.374c8264ed.webp)
+![A goal, funding: the ring, the backers, the time left, the pledge (demo seed)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/17-challenge-dark.41942ef84a.webp)
+![The same goal in the light theme](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/17-challenge-light.d884f3b360.webp)
+![An auction Alex leads at $31.00, the next bids offered](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/18-auction-dark.aaae35aaa5.webp)
+
+[![Alex pledges $10 to a goal, then bids $31.00 in an auction and leads (cuts between the screens, 15 s)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/clip-challenge-auction-poster.94c4d8e7e0.webp)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/clip-challenge-auction.11f5793055.mp4)
+
+[![Messages, with no conversation yet: the empty state (5 s)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/clip-messages-poster.4f50e13679.webp)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/clip-messages.d59c1961ff.mp4)
 
 ### Create an account
 
@@ -94,7 +113,9 @@ Sign in with an e-mail or a username and the password. Signed in: the wallet (cr
 pledges; credits are bought on the web), a creator's earnings over 30 days (charts), the notifications, the public
 page and sign-out.
 
-![Sign in](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/03-sign-in-dark.14250d077d.webp)
+![Sign in — and Create an account](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/16-sign-in-dark.21969a3622.webp)
+
+[![Alex signs in from the You tab and reads his wallet (typing cut, 22 s)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/clip-sign-in-poster.a3124e54ce.webp)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/clip-sign-in.45d8952d50.mp4)
 ![A creator's account: wallet and earnings (local seed, Elena)](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/05-account-earnings-dark.28ce17d1a1.webp)
 ![The account in the light theme](https://krizaka-assets.b-cdn.net/site/docs/orochia/mobile/04-account-light.85be02b33e.webp)
 
