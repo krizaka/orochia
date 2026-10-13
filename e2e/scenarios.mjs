@@ -423,6 +423,49 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("…and the new account signs in from the app", login.status === 200 && (await login.json()).emailVerified === true);
 }
 
+// krizaka/orochia#127 — on a shared phone, the next account must never land in the previous one. The exact sequence of
+// the report: A signs up in the app and confirms there (the app's bearer on every call), signs out, B signs in — while
+// the phone's native cookie jar still sends a session cookie of A. A bearer decides; sign-out revokes the token.
+{
+  const ip = freshIp();
+  const device = `e2eShared_${Date.now().toString(36)}_phone`;
+  const app = { "User-Agent": "Orochia/1 CFNetwork/3826 Darwin/25.0.0", "X-Forwarded-For": ip, "X-Orochia-Device": device };
+  const challenge = await fetch(`${B}/auth/native-challenge`, { headers: app });
+  check("shared phone: the native challenge page sets no cookie", challenge.status === 200 && !challenge.headers.get("set-cookie"));
+  const { formToken } = await (await fetch(`${B}/api/auth/register?client=native`, { headers: app })).json();
+  await sleep(MIN_FILL_MS);
+  const stamp = Date.now().toString(36);
+  const a = { username: `shared_${stamp}`, email: `shared_${stamp}@example.com`, displayName: "Phone Owner", password: "a-shared-phone-1", dateOfBirth: "1991-03-02", isAgeVerified: true, acceptTerms: true, client: "native", formToken };
+  const created = await fetch(`${B}/api/auth/register`, { method: "POST", headers: { "Content-Type": "application/json", ...app }, body: JSON.stringify(a) });
+  const reg = await created.json();
+  check("…A signs up in the app: a token, no cookie", created.status === 201 && typeof reg.token === "string" && !created.headers.get("set-cookie"));
+  const link = reg.devVerificationUrl ?? (await (await fetch(`${B}/api/auth/resend-verification`, { method: "POST", headers: { Authorization: `Bearer ${reg.token}` } })).json()).devVerificationUrl;
+  const confirmed = await fetch(`${B}/api/auth/verify-email`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${reg.token}` }, body: JSON.stringify({ token: new URL(link).searchParams.get("token") }) });
+  const confirmedBody = await confirmed.json();
+  check("…A confirms from the app: a refreshed token in the answer, never a cookie", confirmed.status === 200 && typeof confirmedBody.token === "string" && !confirmed.headers.get("set-cookie"), JSON.stringify(confirmedBody));
+  // The cookie a native jar may still hold for A (any route that ever set one): A's own browser session.
+  const web = await fetch(`${B}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ identifier: a.username, password: a.password }) });
+  const cookieOfA = (web.headers.get("set-cookie") || "").split(";")[0];
+  check("…(A's session cookie, as a native jar could keep it)", web.status === 200 && cookieOfA.startsWith("orochia_session="));
+  const tokenOfA = confirmedBody.token;
+  const out = await fetch(`${B}/api/auth/logout`, { method: "POST", headers: { Authorization: `Bearer ${tokenOfA}`, Cookie: cookieOfA } });
+  check("…A signs out in the app", out.status === 200);
+  const me = async (headers) => (await (await fetch(`${B}/api/auth/me`, { headers })).json()).user;
+  check("…A's signed-out token opens nothing any more", (await me({ Authorization: `Bearer ${tokenOfA}` })) === null && (await fetch(`${B}/api/me/wallet`, { headers: { Authorization: `Bearer ${tokenOfA}` } })).status === 401);
+  const loginB = await fetch(`${B}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json", Cookie: cookieOfA }, body: JSON.stringify({ identifier: "sam@sanctuary.io", password: "sam1234", client: "native" }) });
+  const tokenOfB = (await loginB.json()).token;
+  check("…B signs in on the same phone: a token, no cookie", loginB.status === 200 && typeof tokenOfB === "string" && !loginB.headers.get("set-cookie"));
+  const who = await me({ Authorization: `Bearer ${tokenOfB}`, Cookie: cookieOfA });
+  check("…with A's cookie still sent, the app is B — the bearer decides", who?.username === "sam_rivers", JSON.stringify(who));
+  const wallet = await (await fetch(`${B}/api/me/wallet`, { headers: { Authorization: `Bearer ${tokenOfB}`, Cookie: cookieOfA } })).json();
+  const samWallet = await sam.call("/api/me/wallet");
+  check("…and every call acts as B", JSON.stringify(wallet) === JSON.stringify(samWallet.json));
+  check("…a bad bearer never falls back to the cookie", (await me({ Authorization: "Bearer not-a-session", Cookie: cookieOfA })) === null);
+  check("…the browser's cookie alone still is A on the web", (await me({ Cookie: cookieOfA }))?.username === a.username);
+  const webOut = await fetch(`${B}/api/auth/logout`, { method: "POST", headers: { Cookie: cookieOfA } });
+  check("…and signing out on the web revokes that cookie's token too", webOut.status === 200 && (await me({ Cookie: cookieOfA })) === null);
+}
+
 // Accounts: an unverified e-mail can only sign in and ask for the link; links point to this origin
 {
   const stamp = Date.now().toString(36);

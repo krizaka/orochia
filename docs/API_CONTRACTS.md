@@ -44,7 +44,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/auth/challenge` | public | The public bot-challenge settings (provider and site key), or null when protected forms need no challenge. |
 | `POST` | `/api/auth/forgot-password` | public | E-mails a password-reset link (1 h) to the address, if an active account uses it. |
 | `POST` | `/api/auth/login` | public | Password login — a session cookie for the browser, a bearer token for a native app. |
-| `POST` | `/api/auth/logout` | public | — |
+| `POST` | `/api/auth/logout` | public | Signs out: the request's session token — a native app's bearer or the browser's cookie — is revoked on the server (krizaka/orochia#127), so no surviving copy of it opens the account again; the browser's cookie is cleared too. |
 | `GET` | `/api/auth/me` | public | The signed-in account (with whether its e-mail is verified), or `user: null`. |
 | `GET` | `/api/auth/oauth/[provider]/callback` | public | The provider's redirect: checks the state, exchanges the code, then signs in (linked account or same verified address) or sends a new person to complete their account. |
 | `GET` | `/api/auth/oauth/[provider]/start` | public | Sends the browser to the provider's consent page (state + PKCE kept in a signed 10-minute cookie). |
@@ -56,7 +56,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/auth/resend-verification` | public | E-mails a new verification link to the signed-in account (the previous link stops working). |
 | `POST` | `/api/auth/reset-password` | public | Sets a new password with the link's one-time token (1 h). |
 | `GET` | `/api/auth/username` | public | Whether a username is free (unique address orochia.com/@username), with a free one suggested when it is not. |
-| `POST` | `/api/auth/verify-email` | public | Verifies an e-mail address with the link's one-time token (48 h); refreshes the session of that account. |
+| `POST` | `/api/auth/verify-email` | public | Verifies an e-mail address with the link's one-time token (48 h); refreshes the session of that account — the cookie of a browser, or, for a native app's bearer session, a new `token` in the answer. |
 | `GET` | `/api/bunny/analytics` | session · ADMIN | Catalogue statistics for administrators, from the database. |
 | `GET` | `/api/challenges` | public · session-aware | Lists challenges by tab: open, calls (open calls), done (delivered), inbox (yours to answer or deliver), mine, backing. |
 | `POST` | `/api/challenges` | session · MEMBER / CREATOR / ADMIN | Opens a challenge: a creator's goal (pledges until the deadline, all or nothing), a request to one creator (the sender's offer is held at once; the creator has three days to answer) or an open call for any creator (the author's pot is held; creators apply and the author picks one). |
@@ -180,7 +180,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/webhooks/bunny` | signed webhook | Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (MEDIA_STREAM_WEBHOOK_SECRET). |
 | `POST` | `/api/webhooks/payments/[gateway]` | signed webhook | Gateway payment notifications. |
 
-## Database tables (46)
+## Database tables (47)
 
 | Table | Drizzle export | Defined in |
 | :--- | :--- | :--- |
@@ -193,6 +193,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `playlist_audience_lists` | `playlistAudienceLists` | `packages/db/src/schema/audiences.ts` |
 | `auth_identities` | `authIdentities` | `packages/db/src/schema/auth-identities.ts` |
 | `auth_tokens` | `authTokens` | `packages/db/src/schema/auth-tokens.ts` |
+| `revoked_sessions` | `revokedSessions` | `packages/db/src/schema/auth-tokens.ts` |
 | `challenges` | `challenges` | `packages/db/src/schema/challenges.ts` |
 | `challenge_pledges` | `challengePledges` | `packages/db/src/schema/challenges.ts` |
 | `challenge_applications` | `challengeApplications` | `packages/db/src/schema/challenges.ts` |

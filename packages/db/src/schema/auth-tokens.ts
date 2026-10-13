@@ -24,3 +24,19 @@ export const authTokens = pgTable(
     userPurposeIdx: index("auth_tokens_user_purpose_idx").on(table.userId, table.purpose),
   })
 );
+
+/**
+ * Sessions signed out before they expired (krizaka/orochia#127). A session is a stateless signed token, so signing out
+ * must remember it: the SHA-256 of the token is kept until the token would have expired anyway, and a revoked token
+ * opens nothing — even when a copy of it survives on the device (a native cookie jar, a backup).
+ */
+export const revokedSessions = pgTable(
+  "revoked_sessions",
+  {
+    tokenHash: varchar("token_hash", { length: 64 }).primaryKey(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  },
+  (table) => ({
+    expiresAtIdx: index("revoked_sessions_expires_at_idx").on(table.expiresAt),
+  })
+);

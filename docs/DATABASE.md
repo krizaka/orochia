@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 46 tables · 26 enums · 7 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 47 tables · 26 enums · 8 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -502,6 +502,15 @@ Every foreign key, read from the schema: what each table points to (through whic
 
 **Indexes:** `rate_limit_buckets_reset_at_idx` (reset_at)
 
+### `revoked_sessions`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `token_hash` | varchar(64) | no |  | primary key |
+| `expires_at` | timestamp with time zone | no |  |  |
+
+**Indexes:** `revoked_sessions_expires_at_idx` (expires_at)
+
 ### `storage_alerts`
 
 | Column | Type | Null | Default | Notes |
@@ -839,3 +848,4 @@ Every foreign key, read from the schema: what each table points to (through whic
 - `0004_explore_search.sql`
 - `0005_storage_quotas_abuse.sql`
 - `0006_realtime_chat_presence.sql`
+- `0007_revoked_sessions.sql`
