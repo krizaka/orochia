@@ -1,12 +1,12 @@
 "use client";
 
-import { KeyRound, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 
 import { BotChallenge, useBotChallenge } from "@/components/BotChallenge";
 import { Rich } from "@/components/Rich";
-import { Button, Input } from "@/components/ui";
+import { Button, Input, OrochiaLogo } from "@/components/ui";
 import { responseErrorMessage } from "@/lib/api-errors";
 import { t } from "@/lib/i18n";
 
@@ -40,8 +40,8 @@ export default function ForgotPasswordPage() {
   return (
     <div className="mx-auto max-w-md px-4 py-16">
       <div className="rounded-3xl border border-border-default bg-surface-1 p-6 sm:p-8">
-        <KeyRound className="h-8 w-8 text-fg-accent" />
-        <h1 className="mt-4 text-2xl font-black text-fg font-display">{t("auth.forgot.title")}</h1>
+        <OrochiaLogo size={56} />
+        <h1 className="mt-3 text-2xl font-black text-fg font-display">{t("auth.forgot.title")}</h1>
         {state === "sent" ? (
           <>
             <p className="mt-3 text-sm text-fg-secondary">

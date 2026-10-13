@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, Lock } from "lucide-react";
-import { Button, buttonVariants, Input } from "@/components/ui";
+import { Button, buttonVariants, Input, OrochiaLogo } from "@/components/ui";
 import { t } from "@/lib/i18n";
 
 /** The link e-mailed by "forgot password": /auth/reset-password?token=… sets a new password once. */
@@ -43,7 +43,8 @@ export default function ResetPasswordPage() {
           </div>
         ) : (
           <>
-            <h1 className="text-2xl font-black text-fg font-display">{t("auth.reset.title")}</h1>
+            <OrochiaLogo size={56} />
+            <h1 className="mt-3 text-2xl font-black text-fg font-display">{t("auth.reset.title")}</h1>
             <form onSubmit={submit} className="mt-5 space-y-4">
               {[
                 { value: password, set: setPassword, label: t("auth.reset.password") },

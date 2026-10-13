@@ -513,6 +513,9 @@ orochia/                           npm workspaces
 4. The invariants of §3 still hold; no credential, demo shortcut or showcase data reaches production code.
 5. UI changes are checked at mobile and desktop widths, with reduced motion.
 6. The change ships with its tests (§7) — a fix with the test that failed before it.
+7. A visible change passes `npm run test:a11y` (axe WCAG 2.2 AA + keyboard, both themes — `docs/ACCESSIBILITY.md`); a
+   notable experience choice adds its entry to `docs/UX_DECISIONS.md` (problem · principle and source · refused · cost ·
+   signal we are wrong).
 
 ---
 
