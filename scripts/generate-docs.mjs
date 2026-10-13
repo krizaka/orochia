@@ -217,7 +217,7 @@ const databaseMarkdown = buildDatabaseMarkdown(ROOT, schema);
 // ── Environment variables (docs/DEPLOYMENT.md) — from the typed env module, grouped by bounded context ─────
 const { ENV_VARS, ENV_CONTEXTS } = await tsImport(path.join(ROOT, "apps/web/lib/env.ts"), import.meta.url);
 // Inline code stays as written; elsewhere angle brackets and braces are escaped for MDX.
-const mdCell = (s) => s.split(/(`[^`]*`)/).map((part, i) => (i % 2 ? part : mdText(part))).join("").replace(/\|/g, "\\|");
+const mdCell = (s) => s.split(/(`[^`]*`)/).map((part, i) => (i % 2 ? part : mdText(part))).join("").replace(/[\\|]/g, (c) => `\\${c}`);
 const NEED = { required: "✓", recommended: "recommended", optional: "—" };
 const envMarkdown = [
   "## Environment variables",
