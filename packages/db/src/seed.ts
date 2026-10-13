@@ -1,4 +1,4 @@
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, like, sql } from "drizzle-orm";
 import { db } from "./client";
 import { hashPassword } from "./crypto";
 import {
@@ -24,6 +24,7 @@ import {
 } from "./schema";
 import { loadRootEnv } from "./load-env";
 import { ensureOwner, ownerFromEnv } from "./owner";
+import { portrait, RETIRED_AVATAR_PREFIX } from "./people";
 
 // The client connects lazily, so loading .env here still precedes the first query.
 loadRootEnv(__dirname);
@@ -53,13 +54,13 @@ interface SeedUser {
 const PEOPLE: SeedUser[] = [
   {
     email: "admin@orochia.org", username: "orochia_admin", password: "admin1234", role: "ADMIN", isVerified: true,
-    profile: { displayName: "Orochia Operator", bio: "Platform operator: 2257 records, moderation and treasury.", avatar: img("photo-1535713875002-d1d0cf377fde", 400) },
+    profile: { displayName: "Orochia Operator", bio: "Platform operator: 2257 records, moderation and treasury.", avatar: portrait("operator") },
   },
   {
     email: "elena@orochia.org", username: "elenavox", password: "elena1234", role: "CREATOR", isVerified: true,
     profile: {
       displayName: "Elena Vox", bio: "Visual artist, nocturnal producer & independent 4K cinema director.",
-      avatar: img("photo-1534528741775-53994a69daeb", 400), banner: img("photo-1503899036084-c55cdd92da26", 1600), minTip: 1000,
+      avatar: portrait("elena"), banner: img("photo-1503899036084-c55cdd92da26", 1600), minTip: 1000,
       payoutCrypto: "TLvQZ9oP3x84Ujk7Yv9LKm82qNx (USDT-TRC20)",
     },
   },
@@ -67,7 +68,7 @@ const PEOPLE: SeedUser[] = [
     email: "mia@orochia.org", username: "miasterling", password: "mia1234", role: "CREATOR", isVerified: true,
     profile: {
       displayName: "Mia Sterling", bio: "Acoustic lounge vocalist and late-night composer.",
-      avatar: img("photo-1517841905240-472988babdf9", 400), banner: img("photo-1470225620780-dba8ba36b745", 1600), minTip: 500,
+      avatar: portrait("mia"), banner: img("photo-1470225620780-dba8ba36b745", 1600), minTip: 500,
     },
   },
   {
@@ -76,11 +77,11 @@ const PEOPLE: SeedUser[] = [
   },
   {
     email: "alex@sanctuary.io", username: "alex_vance", password: "alex1234", role: "MEMBER", isVerified: true,
-    profile: { displayName: "Alex Vance", bio: "Patron of independent cinema and underground sound.", avatar: img("photo-1507003211169-0a1dd7228f2d", 400) },
+    profile: { displayName: "Alex Vance", bio: "Patron of independent cinema and underground sound.", avatar: portrait("alex") },
   },
   {
     email: "sam@sanctuary.io", username: "sam_rivers", password: "sam1234", role: "MEMBER", isVerified: true,
-    profile: { displayName: "Sam Rivers", bio: "Late-night listener." },
+    profile: { displayName: "Sam Rivers", bio: "Late-night listener.", avatar: portrait("sam") },
   },
 ];
 
@@ -179,6 +180,14 @@ export async function runSeed(): Promise<void> {
         payoutAddressCrypto: p.profile.payoutCrypto ?? null,
       })
       .onConflictDoNothing();
+    // A profile seeded before the portraits still shows a stock photo of a real person: give it its own portrait.
+    // A photo the person chose themselves is never touched.
+    if (p.profile.avatar) {
+      await db
+        .update(profiles)
+        .set({ avatarUrl: p.profile.avatar })
+        .where(and(eq(profiles.userId, row.id), like(profiles.avatarUrl, `${RETIRED_AVATAR_PREFIX}%`)));
+    }
   }
 
   const video: Record<string, string> = {};
