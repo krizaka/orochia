@@ -249,7 +249,7 @@ orochia/                           npm workspaces
   the server (`profileImageUrl`); links are stored as handles of known networks and turned into URLs by the server
   (`socialLinksView`), the website must be http(s). Every active account has a public page; e-mail and date of birth
   are never on it.
-- **Notifications** (`lib/notifications.ts`, `docs/NOTIFICATIONS.md`): each event is written to `notifications` (the bell,
+- **Notifications** (`lib/notifications.ts`, `docs/NOTIFICATIONS.md`; live: `docs/REALTIME.md`; UX choices: `docs/UX_DECISIONS.md`): each event is written to `notifications` (the bell,
   `/notifications`), pushed live to open pages over SSE (a toast + the bell), pushed to the account's phones
   (`lib/push.ts` → `@krizaka/push`, Expo Push → FCM / APNs, only in production or with `PUSH_DELIVERY=on`; a message is
   not pushed to someone whose presence is `online` — it is on their screen already) and e-mailed; both channels are on by default and each event can be turned off on either
@@ -330,7 +330,7 @@ orochia/                           npm workspaces
   and replayed from it. The NOTIFY channel is `orochia_events`, the Redis prefix `orochia:rt:` (`REALTIME_PREFIX`) — keep
   them: instances of two versions share them during a deploy. `DATABASE_URL` must be a direct connection (not a transaction pooler). Background loops start
   in `instrumentation.ts` and share work with `FOR UPDATE SKIP LOCKED`.
-- **Chat and presence** (`docs/NOTIFICATIONS.md` §5): one stream per tab or app (`/api/conversations/stream`,
+- **Chat and presence** (`docs/REALTIME.md`): one stream per tab or app (`/api/conversations/stream`,
   resumable with `Last-Event-ID: m<seq>`); a message is ordered by `seq` (assigned under the conversation's row lock)
   and idempotent per sender `clientId`; receipts sent → delivered → read; typing is never stored. Presence is a
   heartbeat with a TTL (never a database write per beat) and is shown only where `lib/presence-rules.ts` allows it —
