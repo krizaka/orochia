@@ -842,6 +842,14 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("…typing is not relayed", typingSeen() === typingBefore);
   await mia.call("/api/users/elenavox/block", "POST");
 
+  // A notification reaches the account's open stream live (the bell and the toast; the phone's app holds the same stream).
+  const comment = await alex.call(`/api/videos/${diaries.id}/comments`, "POST", { body: "Front row for this one." });
+  check("a comment is posted on elena's video", comment.status === 201 || comment.status === 200, String(comment.status));
+  const note = await elenaStream.next(isType("notification", (d) => d.notification?.event === "newComment"), 3000);
+  check("…its notification reaches her open stream live", Boolean(note), note ? "" : "never");
+  check("…with the text and the path the tap opens", typeof note?.data.notification.text === "string" && note.data.notification.path.startsWith(`/watch/${diaries.id}`));
+  check("…and nobody else's stream hears it", !resumed.events.some((e) => e.data?.type === "notification" && e.data.notification?.id === note?.data.notification.id));
+
   resumed.close();
   elenaStream.close();
 }
@@ -996,11 +1004,44 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("the creator cannot back their own goal", (await pledge(elena, g, 500)).status === 403);
   const alexBefore = (await wallet(alex)).balanceCents;
   check("a pledge under $1 is refused", (await pledge(alex, g, 50)).status === 400);
+  // The live feed of a challenge: every viewer hears each pledge, in order, without names.
+  const live = new AbortController();
+  const liveFrames = [];
+  const liveStream = await fetch(`${B}/api/challenges/${g}/stream`, { signal: live.signal });
+  check("anyone can follow a challenge live", liveStream.status === 200 && liveStream.headers.get("content-type")?.startsWith("text/event-stream"));
+  (async () => {
+    const reader = liveStream.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    try {
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let cut;
+        while ((cut = buffer.indexOf("\n\n")) >= 0) {
+          const data = buffer.slice(0, cut).split("\n").find((l) => l.startsWith("data: "));
+          buffer = buffer.slice(cut + 2);
+          if (data) liveFrames.push(JSON.parse(data.slice(6)));
+        }
+      }
+    } catch {
+      /* closed */
+    }
+  })();
+  const livePledges = async (n) => {
+    for (let i = 0; i < 150 && liveFrames.filter((f) => f.type === "pledge").length < n; i++) await sleep(20);
+    return liveFrames.filter((f) => f.type === "pledge");
+  };
   const p1 = await pledge(alex, g, 500);
   check("alex backs it with $5 (Backer 1)", p1.status === 200 && p1.json.alias === 1, JSON.stringify(p1.json));
   check("…his credits are held", (await wallet(alex)).heldCents >= 500);
   const p2 = await pledge(sam, g, 1500);
   check("sam's $15 reaches the goal", p2.json.reachedGoal === true);
+  const heard = await livePledges(2);
+  live.abort();
+  check("…both pledges reached the open stream, in order", heard.length === 2 && heard[0].pledge.amountCents === 500 && heard[1].pledge.amountCents === 1500, JSON.stringify(heard));
+  check("…with the running total and aliases, never a name", heard[1].pledgedCents === 2000 && heard[0].pledge.alias === 1 && heard[1].pledge.alias === 2 && !JSON.stringify(heard).includes("sam_rivers") && !JSON.stringify(heard).includes("alex_vance"));
   const seen = await view(alex, g);
   check("backers are aliases, the stage says the goal is reached", seen.stage === "GOAL_REACHED" && seen.recentPledges[0].alias === 2 && !JSON.stringify(seen).includes("sam_rivers"));
   check("only its creator starts it", (await alex.call(`/api/challenges/${g}/start`, "POST")).status === 403);

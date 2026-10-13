@@ -14,8 +14,8 @@ import { streamTimings, subscribe } from "./realtime";
  * web and native alike.
  *
  * - **Resume**: message events carry `id: m<seq>`; a reconnection sends `Last-Event-ID` (or `?after=<seq>` from an
- *   app that keeps its own cursor) and the messages it missed are replayed from the database before the live ones —
- *   the client drops duplicates by id. More than REPLAY_LIMIT missed: a `resync` event asks it to reload.
+ *   app that keeps its own cursor) and the messages it missed are replayed from the database before the live ones,
+ *   each once (a message both replayed and published meanwhile is sent once); clients still drop duplicates by id. More than REPLAY_LIMIT missed: a `resync` event asks it to reload.
  * - **Presence**: the connection is a heartbeat (`online` at open, refreshed every 15 s, `away` when the app says it
  *   is hidden or idle — `POST /api/presence`); closing it starts the grace period.
  * - **Delivery**: a message handed to one of the recipient's streams is marked delivered.
@@ -78,6 +78,8 @@ export function userStream(userId: string, options: { cursor: number | null }): 
       const offs: (() => void)[] = [];
       let replaying = options.cursor !== null;
       const held: UserEvent[] = [];
+      /** Messages sent by the replay: their live event (published while the replay ran, or late) is not sent twice. */
+      const replayed = new Set<string>();
 
       const deliver = (event: UserEvent) => {
         if (event.type === "conn_state") {
@@ -90,6 +92,7 @@ export function userStream(userId: string, options: { cursor: number | null }): 
         }
         if (event.type === "circle_changed") void follow();
         if ((event.type === "new_message" || event.type === "message_sent") && event.message) {
+          if (replayed.has(event.message.id)) return;
           send({ id: `m${event.message.seq}`, data: event });
           if (event.type === "new_message" && !event.message.deliveredAt) deliverOnce(event.message.id);
           return;
@@ -137,7 +140,11 @@ export function userStream(userId: string, options: { cursor: number | null }): 
       if (options.cursor !== null) {
         const missed = await missedMessages(userId, options.cursor);
         if (missed.length > REPLAY_LIMIT) send({ data: { type: "resync" } });
-        else for (const message of missed) deliver({ type: message.senderId === userId ? "message_sent" : "new_message", message });
+        else
+          for (const message of missed) {
+            deliver({ type: message.senderId === userId ? "message_sent" : "new_message", message });
+            replayed.add(message.id);
+          }
         replaying = false;
         for (const event of held.splice(0)) deliver(event);
       }

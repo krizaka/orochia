@@ -11,6 +11,12 @@ import { and, eq, inArray } from "drizzle-orm";
  * app's tokens. Like e-mail, pushes leave only in production, or elsewhere with PUSH_DELIVERY=on (local runs and CI never
  * call the push service).
  */
+/**
+ * The Android channel the app creates at start with high importance (orochia-mobile `src/lib/push.ts`). Without it the
+ * push service falls back to a channel of default importance: no heads-up banner. `sound` makes iOS ring as well.
+ */
+export const ANDROID_CHANNEL = "default";
+
 export function pushDeliveryEnabled(env: NodeJS.ProcessEnv = process.env): boolean {
   return env.PUSH_DELIVERY === "on" || (env.NODE_ENV === "production" && env.PUSH_DELIVERY !== "off");
 }
@@ -21,7 +27,7 @@ export async function pushToUser(userId: string, message: { title: string; body:
     const devices = await db.select({ token: pushDevices.token }).from(pushDevices).where(eq(pushDevices.userId, userId));
     if (devices.length === 0) return;
     const outcome = await sendExpoPush(
-      devices.map((d) => ({ to: d.token, title: message.title, body: message.body, data: { path: message.path } })),
+      devices.map((d) => ({ to: d.token, title: message.title, body: message.body, data: { path: message.path }, channelId: ANDROID_CHANNEL, sound: "default" as const })),
       { fetch: (url, init) => fetch(url, init), accessToken: process.env.EXPO_ACCESS_TOKEN || undefined },
     );
     if (outcome.deadTokens.length > 0) await db.delete(pushDevices).where(inArray(pushDevices.token, outcome.deadTokens));
