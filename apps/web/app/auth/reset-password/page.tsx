@@ -34,7 +34,7 @@ export default function ResetPasswordPage() {
       <div className="rounded-3xl border border-border-default bg-surface-1 p-6 sm:p-8">
         {state === "done" ? (
           <div className="text-center">
-            <CheckCircle2 className="mx-auto h-12 w-12 text-success" />
+            <CheckCircle2 className="mx-auto h-12 w-12 text-fg-success" />
             <h1 className="mt-4 text-2xl font-black text-fg font-display">{t("auth.reset.done")}</h1>
             <p className="mt-2 text-sm text-fg-secondary">{t("auth.reset.doneBody")}</p>
             <Link href="/auth/login" className={buttonVariants({ variant: "primary", shape: "rounded", className: "mt-6 rounded-xl px-6 font-bold" })}>
@@ -57,7 +57,7 @@ export default function ResetPasswordPage() {
                   </div>
                 </label>
               ))}
-              {error && <p role="alert" className="text-xs text-danger">{error}</p>}
+              {error && <p role="alert" className="text-xs text-fg-danger">{error}</p>}
               <Button type="submit" variant="primary" size="lg" shape="rounded" loading={state === "saving"} className="w-full rounded-xl font-bold">
                 {t("auth.reset.submit")}
               </Button>

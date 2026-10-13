@@ -36,7 +36,7 @@ export function OpenCreatorSpaceButton({ disabled = false }: { disabled?: boolea
         {state === "working" ? t("creatorSpace.apply.working") : t("creatorSpace.apply.cta")}
       </Button>
       {error && (
-        <p role="alert" className="text-xs text-danger">
+        <p role="alert" className="text-xs text-fg-danger">
           {error}
         </p>
       )}

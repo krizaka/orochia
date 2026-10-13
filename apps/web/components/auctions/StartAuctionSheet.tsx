@@ -144,7 +144,7 @@ export function StartAuctionSheet({ video, open, onClose }: { video: { id: strin
                 })}
               </p>
             )}
-            {error && <p role="alert" className="text-xs text-danger">{error}</p>}
+            {error && <p role="alert" className="text-xs text-fg-danger">{error}</p>}
           </form>
         </Dialog.Body>
         <Dialog.Footer>

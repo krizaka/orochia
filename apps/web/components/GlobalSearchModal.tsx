@@ -110,7 +110,7 @@ export function GlobalSearchModal({
   const show = (tab: "creators" | "videos" | "tags") => activeTab === "all" || activeTab === tab;
   const heading = (Icon: typeof Users, text: string) => (
     <span className="flex items-center gap-2">
-      <Icon className="h-3.5 w-3.5 text-accent" aria-hidden />
+      <Icon className="h-3.5 w-3.5 text-fg-accent" aria-hidden />
       {text}
     </span>
   );
@@ -134,7 +134,7 @@ export function GlobalSearchModal({
               <Kbd size="sm">↵</Kbd> {t("search.select")}
             </span>
           </div>
-          <Link href={`/explore?q=${encodeURIComponent(query)}`} onClick={onClose} className="inline-flex items-center gap-1 text-accent hover:underline">
+          <Link href={`/explore?q=${encodeURIComponent(query)}`} onClick={onClose} className="inline-flex items-center gap-1 text-fg-accent hover:underline">
             <span>{t("search.full")}</span>
             <ArrowRight className="h-3 w-3" aria-hidden />
           </Link>
@@ -182,7 +182,7 @@ export function GlobalSearchModal({
           <Command.Group heading={heading(Sparkles, t("search.popular"))}>
             {tags.map((entry) => (
               <Command.Item key={`popular-${entry.tag}`} value={`popular-${entry.tag}`} onSelect={() => setQuery(entry.tag)}>
-                <Hash className="h-3.5 w-3.5 text-accent" aria-hidden />
+                <Hash className="h-3.5 w-3.5 text-fg-accent" aria-hidden />
                 <span className="flex-1">{entry.tag}</span>
                 <span className="font-mono text-[11px] text-fg-secondary">{entry.count}</span>
               </Command.Item>
@@ -198,7 +198,7 @@ export function GlobalSearchModal({
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-1.5">
                     <span className="truncate text-xs font-bold text-fg">{c.displayName}</span>
-                    {c.isVerified && <CheckCircle2 className="h-3 w-3 shrink-0 text-success" aria-hidden />}
+                    {c.isVerified && <CheckCircle2 className="h-3 w-3 shrink-0 text-fg-success" aria-hidden />}
                   </span>
                   <span className="block font-mono text-[11px] text-fg-secondary">@{c.username}</span>
                 </span>
@@ -216,7 +216,7 @@ export function GlobalSearchModal({
                   {v.thumbnailUrl && !v.isBlurred ? (
                     <img src={v.thumbnailUrl} alt="" className="h-full w-full object-cover" />
                   ) : (
-                    <span className="flex h-full w-full items-center justify-center bg-linear-to-br from-accent/15 to-media text-accent">
+                    <span className="flex h-full w-full items-center justify-center bg-linear-to-br from-accent/15 to-media text-fg-accent">
                       <Tv className="h-5 w-5" aria-hidden />
                     </span>
                   )}
@@ -257,7 +257,7 @@ export function GlobalSearchModal({
           <Command.Group heading={heading(Hash, t("search.tags", { count: tags.length }))}>
             {tags.map((entry) => (
               <Command.Item key={entry.tag} value={`tag-${entry.tag}`} onSelect={() => handleSelect(`/explore?tag=${encodeURIComponent(entry.tag)}`)}>
-                <Hash className="h-3.5 w-3.5 text-accent" aria-hidden />
+                <Hash className="h-3.5 w-3.5 text-fg-accent" aria-hidden />
                 <span className="flex-1">{entry.tag}</span>
                 <span className="font-mono text-[11px] text-fg-secondary">{entry.count}</span>
               </Command.Item>

@@ -289,7 +289,7 @@ async function Results({ q, tag, page, all, user }: { q: string; tag: string | n
           {r.creators.length > 0 && page === 1 && (
             <section aria-labelledby="results-creators" className="space-y-4">
               <h3 id="results-creators" className="flex items-center gap-2 text-sm font-bold text-fg">
-                <CreatorIcon size={16} className="text-accent" /> {t("explore.results.creators", { count: r.creators.length })}
+                <CreatorIcon size={16} className="text-fg-accent" /> {t("explore.results.creators", { count: r.creators.length })}
               </h3>
               <CardRail label={t("explore.sections.creators.title")}>
                 {r.creators.map((creator, i) => (
@@ -302,7 +302,7 @@ async function Results({ q, tag, page, all, user }: { q: string; tag: string | n
           {r.stories.length > 0 && page === 1 && (
             <section aria-labelledby="results-stories" className="space-y-4">
               <h3 id="results-stories" className="flex items-center gap-2 text-sm font-bold text-fg">
-                <StoryIcon size={16} className="text-accent" /> {t("explore.results.stories", { count: r.stories.length })}
+                <StoryIcon size={16} className="text-fg-accent" /> {t("explore.results.stories", { count: r.stories.length })}
               </h3>
               <CardRail columns={6} label={t("explore.sections.stories.title")}>
                 {r.stories.map((story, i) => (
@@ -314,7 +314,7 @@ async function Results({ q, tag, page, all, user }: { q: string; tag: string | n
 
           <section aria-labelledby="results-videos" className="space-y-4">
             <h3 id="results-videos" className="flex items-center gap-2 text-sm font-bold text-fg">
-              <VideoIcon size={16} className="text-accent" /> {t("explore.results.videos")}
+              <VideoIcon size={16} className="text-fg-accent" /> {t("explore.results.videos")}
             </h3>
             {r.videos.length === 0 ? (
               <EmptyState icon={<VideoIcon size={22} />} title={t("explore.results.noVideos")} description={t("explore.noMatchHint")} className="rounded-3xl bg-surface-1/40 py-10" />

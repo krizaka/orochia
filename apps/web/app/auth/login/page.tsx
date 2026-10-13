@@ -64,8 +64,8 @@ export default function LoginPage() {
         {/* Demo accounts — only in demo mode (never in production) */}
         {demoMode && (
         <div className="mb-6 rounded-2xl border border-accent/20 bg-accent/5 p-3.5">
-          <p className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold text-accent">
-            <Sparkles className="h-3.5 w-3.5 text-accent" />
+          <p className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold text-fg-accent">
+            <Sparkles className="h-3.5 w-3.5 text-fg-accent" />
             <span>{t("auth.login.demo")}</span>
           </p>
           <div className="grid grid-cols-2 gap-2">
@@ -121,7 +121,7 @@ export default function LoginPage() {
               <Field.Label htmlFor="password" className="uppercase tracking-wider">
                 {t("auth.login.password")}
               </Field.Label>
-              <Link href="/auth/forgot-password" className="text-xs text-accent hover:underline">
+              <Link href="/auth/forgot-password" className="text-xs text-fg-accent hover:underline">
                 {t("auth.login.forgot")}
               </Link>
             </div>
@@ -141,7 +141,7 @@ export default function LoginPage() {
           </Field.Root>
 
           {error && (
-            <p role="alert" className="rounded-xl border border-danger/30 bg-danger/10 px-3.5 py-2.5 text-xs text-danger">
+            <p role="alert" className="rounded-xl border border-danger/30 bg-danger/10 px-3.5 py-2.5 text-xs text-fg-danger">
               {error}
             </p>
           )}
@@ -154,7 +154,7 @@ export default function LoginPage() {
 
         <p className="mt-6 text-center text-xs text-fg-secondary">
           {t("auth.login.new")}{" "}
-          <Link href={signUpHref(next ?? undefined)} className="font-semibold text-accent hover:underline">
+          <Link href={signUpHref(next ?? undefined)} className="font-semibold text-fg-accent hover:underline">
             {t("auth.login.register")}
           </Link>
         </p>

@@ -106,13 +106,13 @@ export function PictureQuickEdit({
           isAvatar ? "left-0" : "right-0"
         )}>
           <button role="menuitem" type="button" className={item} onClick={() => { setOpen(false); input.current?.click(); }}>
-            <ImagePlus className="h-4 w-4 text-accent" /> {t("settings.pictures.upload")}
+            <ImagePlus className="h-4 w-4 text-fg-accent" /> {t("settings.pictures.upload")}
           </button>
           <button role="menuitem" type="button" className={item} onClick={() => { setOpen(false); setChoosing(true); void loadPresets().then((p) => setPresets(isAvatar ? p.avatars : p.banners)); }}>
-            <Palette className="h-4 w-4 text-accent" /> {t("settings.pictures.choose")}
+            <Palette className="h-4 w-4 text-fg-accent" /> {t("settings.pictures.choose")}
           </button>
           {hasPicture && (
-            <button role="menuitem" type="button" className={cn(item, "text-danger")} onClick={() => { setOpen(false); void save(null, null); }}>
+            <button role="menuitem" type="button" className={cn(item, "text-fg-danger")} onClick={() => { setOpen(false); void save(null, null); }}>
               <Trash2 className="h-4 w-4" /> {t("settings.pictures.remove")}
             </button>
           )}

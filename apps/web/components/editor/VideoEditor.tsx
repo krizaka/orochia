@@ -163,7 +163,7 @@ export function VideoEditor({
       {tool === "format" && <FormatPanel edit={edit} locked={story} onFormat={(format) => patch({ format, focusX: 0.5, focusY: 0.5 })} />}
       {tool === "sound" && <SoundPanel edit={edit} set={set} />}
       {error && (
-        <p role="alert" className="mt-4 rounded-xl border border-danger/30 bg-danger/10 px-3 py-2 text-xs text-danger">
+        <p role="alert" className="mt-4 rounded-xl border border-danger/30 bg-danger/10 px-3 py-2 text-xs text-fg-danger">
           {error}
         </p>
       )}

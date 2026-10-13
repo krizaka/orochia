@@ -69,7 +69,7 @@ function DeliverSheet({ c, open, onClose, onDone }: { c: ChallengeView; open: bo
             </RadioGroup.Root>
           )}
           {error && (
-            <p role="alert" className="mt-3 text-xs text-danger">
+            <p role="alert" className="mt-3 text-xs text-fg-danger">
               {error}
             </p>
           )}
@@ -195,7 +195,7 @@ export function ChallengeActions({ c, onChanged }: { c: ChallengeView; onChanged
                     {a.creator.name}
                   </Link>
                   {a.note && <p className="mt-0.5 text-xs text-fg-secondary">{a.note}</p>}
-                  <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent">
+                  <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-fg-accent">
                     {t(`challenge.application.${a.status as "PENDING"}`)}
                   </p>
                 </div>
@@ -223,7 +223,7 @@ export function ChallengeActions({ c, onChanged }: { c: ChallengeView; onChanged
         </div>
       )}
       {error && (
-        <p role="alert" className="text-xs text-danger">
+        <p role="alert" className="text-xs text-fg-danger">
           {error}
         </p>
       )}

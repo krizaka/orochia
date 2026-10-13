@@ -26,7 +26,7 @@ export function ErrorReference({ digest }: { digest: string }) {
       <span className="text-fg-muted">{t("errorPages.reference")}</span>
       <code className="select-all font-mono text-fg">{digest}</code>
       <IconButton size="sm" label={copied ? t("errorPages.copied") : t("errorPages.copyReference")} onClick={copy}>
-        {copied ? <CheckIcon size={14} className="text-success" /> : <CopyIcon size={14} />}
+        {copied ? <CheckIcon size={14} className="text-fg-success" /> : <CopyIcon size={14} />}
       </IconButton>
       <span className="sr-only" role="status">
         {copied ? t("errorPages.copied") : ""}

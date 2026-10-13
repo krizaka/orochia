@@ -91,11 +91,11 @@ function Rail({ liked, pulseTip }: { liked: boolean; pulseTip?: boolean }) {
     <div className="absolute bottom-20 right-3 z-20 flex flex-col items-center gap-4 text-white">
       <Heart className={cn(
         "h-6 w-6 drop-shadow-md transition-colors",
-        liked ? "fill-accent text-accent" : ""
+        liked ? "fill-accent text-fg-accent" : ""
       )} />
       <MessageCircle className="h-6 w-6 drop-shadow-md" />
       <span className={cn(
-        "flex h-9 w-9 items-center justify-center rounded-full bg-linear-to-br from-warning to-warning text-warning shadow-lg",
+        "flex h-9 w-9 items-center justify-center rounded-full bg-linear-to-br from-warning to-warning text-fg-warning shadow-lg",
         pulseTip ? "sc-pulse" : ""
       )}>
         <Coins className="h-4.5 w-4.5" />
@@ -130,7 +130,7 @@ function Feed({ still }: { still: boolean }) {
           <div className={shade} />
           <CreatorLine caption={t("home.showcase.ui.caption1")} />
           <Rail liked={step >= 1} />
-          {step === 1 && <Heart aria-hidden className="sc-burst absolute left-1/2 top-[42%] h-20 w-20 -translate-x-1/2 -translate-y-1/2 fill-accent text-accent" />}
+          {step === 1 && <Heart aria-hidden className="sc-burst absolute left-1/2 top-[42%] h-20 w-20 -translate-x-1/2 -translate-y-1/2 fill-accent text-fg-accent" />}
         </div>
         <div className="absolute inset-0 translate-y-full">
           <Video name="feed-2" still={still} />
@@ -224,7 +224,7 @@ function Tip({ still, share }: { still: boolean; share: number }) {
       </div>
       {step >= 5 &&
         [0, 1, 2, 3, 4].map((i) => (
-          <span key={i} aria-hidden className="sc-coin absolute bottom-24 z-30 flex h-7 w-7 items-center justify-center rounded-full bg-linear-to-br from-warning to-warning text-warning shadow-lg" style={{ left: `${30 + i * 10}%`, animationDelay: `${i * 90}ms` }}>
+          <span key={i} aria-hidden className="sc-coin absolute bottom-24 z-30 flex h-7 w-7 items-center justify-center rounded-full bg-linear-to-br from-warning to-warning text-fg-warning shadow-lg" style={{ left: `${30 + i * 10}%`, animationDelay: `${i * 90}ms` }}>
             <Coins className="h-3.5 w-3.5" />
           </span>
         ))}
@@ -233,7 +233,7 @@ function Tip({ still, share }: { still: boolean; share: number }) {
           <Coins className="h-3.5 w-3.5" />
         </span>
         <span>
-          {t("home.showcase.ui.tipSent")} · <span className="text-success">{t("home.showcase.ui.tipKeep", { share })}</span>
+          {t("home.showcase.ui.tipSent")} · <span className="text-fg-success">{t("home.showcase.ui.tipKeep", { share })}</span>
         </span>
       </Toast>
       <Tap x="calc(100% - 1.85rem)" y="58%" show={!still && step === 1} />
@@ -340,14 +340,14 @@ function Auction({ still }: { still: boolean }) {
                 r.mine ? "bg-accent/25 font-bold" : "bg-white/6"
               )}>
                 <span className="flex items-center gap-1.5">
-                  {r.mine && <Trophy className="h-3 w-3 text-success" />}
+                  {r.mine && <Trophy className="h-3 w-3 text-fg-success" />}
                   {r.who}
                 </span>
                 <span className="font-mono tabular-nums">${(r.amount / 100).toFixed(0)}</span>
               </li>
             ))}
         </ul>
-        {extended && <p className="sc-row mt-2 text-[10px] font-semibold text-warning">{t("home.showcase.ui.extended")}</p>}
+        {extended && <p className="sc-row mt-2 text-[10px] font-semibold text-fg-warning">{t("home.showcase.ui.extended")}</p>}
         <span className="mt-auto mb-5 flex items-center justify-center gap-1.5 rounded-xl bg-linear-to-r from-accent via-accent-2 to-accent-2 py-3 text-[12px] font-bold">
           <Gavel className="h-3.5 w-3.5" /> {t("home.showcase.ui.bidCta", { amount: `$${(price / 100 + 15).toFixed(0)}` })}
         </span>
@@ -387,7 +387,7 @@ function Challenge({ still }: { still: boolean }) {
           </div>
         </div>
         {reached ? (
-          <p className="sc-row mt-3 flex items-center gap-1.5 rounded-xl bg-success/15 px-3 py-2.5 text-[11px] font-bold text-success">
+          <p className="sc-row mt-3 flex items-center gap-1.5 rounded-xl bg-success/15 px-3 py-2.5 text-[11px] font-bold text-fg-success">
             <Trophy className="h-3.5 w-3.5" /> {t("home.showcase.ui.goalReached")}
           </p>
         ) : (

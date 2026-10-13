@@ -302,7 +302,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="space-y-4">
           {errorMessage && (
-            <div role="alert" className="flex items-start gap-3 rounded-2xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
+            <div role="alert" className="flex items-start gap-3 rounded-2xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-fg-danger">
               <X className="mt-0.5 h-4 w-4 shrink-0" /> {errorMessage}
             </div>
           )}
@@ -374,7 +374,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 <p className="text-sm font-semibold text-fg">{isDragging ? t("publish.drop.dragging") : t("publish.drop.title")}</p>
                 {!isDragging && (
                   <p className="mt-1 text-sm text-fg-secondary">
-                    {t("publish.drop.or")} <span className="font-semibold text-accent underline-offset-4 group-hover:underline">{t("publish.drop.browse")}</span>
+                    {t("publish.drop.or")} <span className="font-semibold text-fg-accent underline-offset-4 group-hover:underline">{t("publish.drop.browse")}</span>
                   </p>
                 )}
                 <p className="mt-3 text-[11px] text-fg-muted">{t("upload.limits", { size: size(LIMIT.maxBytes), duration: hours(LIMIT.maxSeconds) })}</p>
@@ -398,7 +398,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 <span className={label}>{t("publish.fields.tags")}</span>
                 <div className={cn(field, "flex flex-wrap items-center gap-1.5 py-2")} onClick={(e) => (e.currentTarget.querySelector("input") as HTMLInputElement | null)?.focus()}>
                   {tags.map((tag) => (
-                    <span key={tag} className="flex items-center gap-1 rounded-full bg-accent/15 py-0.5 pl-2.5 pr-1 text-xs font-semibold text-accent">
+                    <span key={tag} className="flex items-center gap-1 rounded-full bg-accent/15 py-0.5 pl-2.5 pr-1 text-xs font-semibold text-fg-accent">
                       #{tag}
                       <IconButton label={t("publish.removeTag", { tag })} onClick={() => setTags(tags.filter((x) => x !== tag))} className="h-5 w-5 text-current hover:bg-surface-3">
                         <X className="h-3 w-3" aria-hidden />
@@ -475,7 +475,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                   ].map((c) => (
                     <div key={c.k} className={cn("rounded-xl p-2.5", c.strong ? "bg-success/15 ring-1 ring-success/30" : "bg-surface-2")}>
                       <span className="block text-fg-secondary">{c.k}</span>
-                      <span className={cn("font-mono text-sm font-bold", c.strong ? "text-success" : "text-fg")}>{c.v}</span>
+                      <span className={cn("font-mono text-sm font-bold", c.strong ? "text-fg-success" : "text-fg")}>{c.v}</span>
                     </div>
                   ))}
                 </div>
@@ -530,7 +530,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
 
           <Step n={5} title={t("publish.steps.declarations")} done={certified}>
             <p className="-mt-2 mb-3 flex items-center gap-2 text-xs text-fg-secondary">
-              <ShieldAlert className="h-3.5 w-3.5 text-accent" /> {t("publish.declarations.intro")}
+              <ShieldAlert className="h-3.5 w-3.5 text-fg-accent" /> {t("publish.declarations.intro")}
             </p>
             <div className="space-y-2">
               {(["age", "records", "rights"] as const).map((k) => (
@@ -543,7 +543,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                   <span className="text-sm leading-relaxed text-fg">
                     {t(`publish.declarations.${k}`)}
                     {k === "records" && (
-                      <Link href="/legal/2257" target="_blank" className="ml-1 text-accent underline">
+                      <Link href="/legal/2257" target="_blank" className="ml-1 text-fg-accent underline">
                         2257
                       </Link>
                     )}

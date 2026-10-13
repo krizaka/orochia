@@ -71,7 +71,7 @@ function MessagesContent() {
       <div className="mb-4 hidden items-end justify-between gap-4 sm:flex">
         <div>
           <h1 className="flex items-center gap-2.5 font-display text-2xl font-bold text-fg">
-            <MessageIcon size={24} className="text-accent" />
+            <MessageIcon size={24} className="text-fg-accent" />
             {t("inbox.title")}
           </h1>
           <p className="mt-1 text-xs text-fg-secondary">{t("inbox.intro")}</p>
@@ -113,7 +113,7 @@ function MessagesContent() {
               </IconButton>
             </form>
             {startError && (
-              <p role="alert" className="mt-2 text-xs text-danger">
+              <p role="alert" className="mt-2 text-xs text-fg-danger">
                 {startError}
               </p>
             )}

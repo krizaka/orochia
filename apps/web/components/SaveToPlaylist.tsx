@@ -97,7 +97,7 @@ export function SaveToPlaylist({ videoId }: { videoId: string }) {
                   {React.createElement(audienceOf(p.visibility).icon, { className: "h-3 w-3 shrink-0 text-fg-muted", "aria-label": audienceOf(p.visibility).label })}
                   {p.title}
                 </span>
-                {saved.has(p.id) ? <Check className="h-4 w-4 text-success" /> : <span className="font-mono text-[10px] text-fg-muted">{p.itemsCount}</span>}
+                {saved.has(p.id) ? <Check className="h-4 w-4 text-fg-success" /> : <span className="font-mono text-[10px] text-fg-muted">{p.itemsCount}</span>}
               </button>
             ))}
           </div>

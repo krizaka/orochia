@@ -14,7 +14,7 @@ import { type Conversation, type PresenceView, receiptOf } from "./types";
 /** Two ticks for delivered, two in the accent for seen — the label says it for screen readers. */
 export function Ticks({ receipt, className }: { receipt: "sent" | "delivered" | "read"; className?: string }) {
   return (
-    <span className={cn("inline-flex shrink-0 items-center", receipt === "read" ? "text-accent" : "text-fg-muted", className)} aria-hidden>
+    <span className={cn("inline-flex shrink-0 items-center", receipt === "read" ? "text-fg-accent" : "text-fg-muted", className)} aria-hidden>
       <CheckIcon size={12} strokeWidth={2.5} />
       {receipt !== "sent" && <CheckIcon size={12} strokeWidth={2.5} className="-ml-[7px]" />}
     </span>

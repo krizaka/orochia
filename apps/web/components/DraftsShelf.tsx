@@ -52,7 +52,7 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
 
   return (
     <section aria-labelledby={`drafts-${kind}`} className="rounded-2xl border border-accent/25 bg-accent/6 p-3">
-      <h3 id={`drafts-${kind}`} className="mb-2 px-1 text-xs font-bold uppercase tracking-wider text-accent">
+      <h3 id={`drafts-${kind}`} className="mb-2 px-1 text-xs font-bold uppercase tracking-wider text-fg-accent">
         {t("editor.drafts.title")} · {drafts.length}
       </h3>
       <ul className="flex gap-2.5 overflow-x-auto pb-1">
@@ -99,7 +99,7 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
                 shape="rounded"
                 onClick={() => void remove(d.id)}
                 onBlur={() => setConfirming(null)}
-                className={cn("mt-1.5 h-7 w-full gap-1 text-[11px]", confirming !== d.id && "hover:bg-transparent hover:text-danger")}
+                className={cn("mt-1.5 h-7 w-full gap-1 text-[11px]", confirming !== d.id && "hover:bg-transparent hover:text-fg-danger")}
               >
                 <Trash2 className="h-3 w-3" aria-hidden /> {confirming === d.id ? t("editor.drafts.deleteConfirm") : t("editor.drafts.delete")}
               </Button>
@@ -107,7 +107,7 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
           );
         })}
       </ul>
-      {error && <p role="alert" className="mt-2 px-1 text-xs text-danger">{error}</p>}
+      {error && <p role="alert" className="mt-2 px-1 text-xs text-fg-danger">{error}</p>}
     </section>
   );
 }

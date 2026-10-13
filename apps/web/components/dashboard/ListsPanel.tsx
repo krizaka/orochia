@@ -72,7 +72,7 @@ function Members({ list, onChange }: { list: List; onChange: () => void }) {
           <UserPlus className="h-3.5 w-3.5" aria-hidden /> {t("common.add")}
         </Button>
       </form>
-      {error && <p className="text-[11px] text-danger">{error}</p>}
+      {error && <p className="text-[11px] text-fg-danger">{error}</p>}
       {members === null ? (
         <p className="text-[11px] text-fg-muted">{t("lists.loading")}</p>
       ) : members.length === 0 ? (
@@ -82,7 +82,7 @@ function Members({ list, onChange }: { list: List; onChange: () => void }) {
           {members.map((m) => (
             <li key={m.userId} className="inline-flex items-center gap-1 rounded-full bg-surface-2 py-1 pl-3 pr-1 text-[11px] text-fg">
               @{m.username}
-              <IconButton disabled={busy} onClick={() => remove(m.userId)} className="h-5 w-5 hover:bg-transparent hover:text-danger" label={t("lists.removeMember", { username: m.username })}>
+              <IconButton disabled={busy} onClick={() => remove(m.userId)} className="h-5 w-5 hover:bg-transparent hover:text-fg-danger" label={t("lists.removeMember", { username: m.username })}>
                 <X className="h-3 w-3" aria-hidden />
               </IconButton>
             </li>
@@ -143,7 +143,7 @@ export function ListsPanel() {
       <p className="-mt-3 text-[11px] text-fg-muted">
         {t("lists.intro")}
       </p>
-      {error && <p className="text-xs text-danger">{error}</p>}
+      {error && <p className="text-xs text-fg-danger">{error}</p>}
 
       {shown === null ? (
         <p className="text-xs text-fg-muted">{t("lists.loading")}</p>

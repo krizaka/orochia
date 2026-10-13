@@ -123,7 +123,7 @@ export function StoryInsights({
             {figures.map(({ id, icon: Icon, value }) => (
               <div key={id} className="rounded-2xl border border-border-default bg-surface-2/60 p-3">
                 <dt className="flex items-center gap-1.5 text-[11px] font-semibold text-fg-secondary">
-                  <Icon size={14} className="text-accent" />
+                  <Icon size={14} className="text-fg-accent" />
                   {t(`stories.insights.figures.${id}`)}
                 </dt>
                 <dd className="mt-1 font-mono text-lg font-black text-fg">{value}</dd>
@@ -138,7 +138,7 @@ export function StoryInsights({
             </Tabs.List>
             <Tabs.Content value="viewers" className="pt-3">
               {failed ? (
-                <p role="alert" className="text-xs text-danger">{t("stories.insights.failed")}</p>
+                <p role="alert" className="text-xs text-fg-danger">{t("stories.insights.failed")}</p>
               ) : !data ? (
                 <div className="space-y-2">{Array.from({ length: 3 }, (_, i) => <Skeleton key={i} className="h-12 w-full rounded-xl" />)}</div>
               ) : data.viewers.length === 0 ? (
@@ -148,7 +148,7 @@ export function StoryInsights({
                   <ul className="max-h-72 overflow-y-auto">
                     {data.viewers.map((v) => (
                       <li key={v.username}>
-                        <PersonRow person={v}>{v.liked && <HeartIcon size={16} className="shrink-0 fill-current text-danger" aria-label={t("stories.insights.liked")} />}</PersonRow>
+                        <PersonRow person={v}>{v.liked && <HeartIcon size={16} className="shrink-0 fill-current text-fg-danger" aria-label={t("stories.insights.liked")} />}</PersonRow>
                       </li>
                     ))}
                   </ul>
@@ -158,7 +158,7 @@ export function StoryInsights({
             </Tabs.Content>
             <Tabs.Content value="tips" className="pt-3">
               {failed ? (
-                <p role="alert" className="text-xs text-danger">{t("stories.insights.failed")}</p>
+                <p role="alert" className="text-xs text-fg-danger">{t("stories.insights.failed")}</p>
               ) : !data ? (
                 <Skeleton className="h-12 w-full rounded-xl" />
               ) : data.tips.length === 0 ? (
@@ -168,7 +168,7 @@ export function StoryInsights({
                   {data.tips.map((tip, i) => (
                     <li key={`${tip.username}-${tip.at}-${i}`}>
                       <PersonRow person={tip}>
-                        <span className="shrink-0 font-mono text-sm font-bold text-success">{money(tip.amountCents)}</span>
+                        <span className="shrink-0 font-mono text-sm font-bold text-fg-success">{money(tip.amountCents)}</span>
                       </PersonRow>
                     </li>
                   ))}

@@ -12,9 +12,9 @@
  * Read-only: it signs in, opens pages and dialogs, never submits anything.
  */
 const BASE = (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
-const MEMBER = { identifier: process.env.A11Y_LOGIN || "elena@orochia.org", password: process.env.A11Y_PASSWORD || "elena1234" };
+const MEMBER = { identifier: "alex@sanctuary.io", password: "alex1234" }; // a seed member (npm run db:seed)
 const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
-const THEMES = (process.env.A11Y_THEMES || "dark,light").split(",");
+const THEMES = ["dark", "light"];
 const VIEWPORTS = { desktop: { width: 1440, height: 900 }, phone: { width: 390, height: 844 } };
 
 let chromium, AxeBuilder;
@@ -32,7 +32,7 @@ if (home === null) {
   process.exit(2);
 }
 const watchId = /href="\/watch\/([0-9a-f-]{36})"/.exec(home)?.[1];
-const creator = /href="\/creators\/([A-Za-z0-9_.-]+)"/.exec(home)?.[1];
+const creator = /href="\/@([A-Za-z0-9_.-]+)"/.exec(home)?.[1];
 
 /** Each page: its path, whether it needs a session, and an optional step that opens what must be checked too. */
 const PAGES = [
@@ -43,7 +43,7 @@ const PAGES = [
   { name: "challenges", url: "/challenges" },
   { name: "sign-in", url: "/auth/login" },
   { name: "sign-up", url: "/auth/register" },
-  ...(creator ? [{ name: "creator profile", url: `/creators/${creator}` }] : []),
+  ...(creator ? [{ name: "creator profile", url: `/@${creator}` }] : []),
   ...(watchId
     ? [
         { name: "watch", url: `/watch/${watchId}` },
@@ -54,7 +54,7 @@ const PAGES = [
   { name: "dashboard", url: "/dashboard", session: true },
   { name: "wallet · add credits", url: "/wallet", session: true },
 ];
-for (const [what, found] of [["/watch/<id>", watchId], ["/creators/<username>", creator]]) {
+for (const [what, found] of [["/watch/<id>", watchId], ["/@<username>", creator]]) {
   if (!found) console.warn(`! no ${what} link on the home page (seed the database): that page is skipped.`);
 }
 
@@ -62,8 +62,23 @@ const browser = await chromium.launch();
 let failures = 0;
 let checked = 0;
 
+// One sign-in for the whole run (sign-ins are rate-limited): its cookie is reused by every signed-in page.
+const signIn = await browser.newContext();
+const res = await signIn.request.post(`${BASE}/api/auth/login`, { data: MEMBER });
+if (!res.ok()) {
+  console.error(`✗ sign-in as ${MEMBER.identifier} failed (${res.status()}): seed the database (npm run db:seed)`);
+  process.exit(2);
+}
+const signedIn = await signIn.storageState();
+await signIn.close();
+
 async function open(theme, viewport, { session, gate }) {
-  const context = await browser.newContext({ viewport, colorScheme: theme, reducedMotion: "reduce" });
+  const context = await browser.newContext({
+    viewport,
+    colorScheme: theme,
+    reducedMotion: "reduce",
+    ...(session ? { storageState: signedIn } : {}),
+  });
   await context.addInitScript(
     ([mode, answered]) => {
       try {
@@ -73,53 +88,67 @@ async function open(theme, viewport, { session, gate }) {
     },
     [theme, !gate],
   );
-  if (session) {
-    const res = await context.request.post(`${BASE}/api/auth/login`, { data: MEMBER });
-    if (!res.ok()) throw new Error(`sign-in as ${MEMBER.identifier} failed (${res.status()}): seed the database`);
-  }
   return context;
 }
 
 /** Opens what the page hides behind a click (a dialog), so axe sees it too. */
 async function reveal(page, step) {
   if (step === "watch-tip") {
-    await page.getByRole("button", { name: /^(Tip|Unlock)/ }).first().click();
+    await page.getByRole("button", { name: /^(Send a tip|Unlock)/i }).first().click();
   }
 }
+
+/** Opens a page (and what it hides behind a click), then runs axe on it — or on its dialog alone. */
+async function audit(p, theme, viewport) {
+  const context = await open(theme, viewport, p);
+  try {
+    const page = await context.newPage();
+    await page.goto(`${BASE}${p.url}`, { waitUntil: "networkidle", timeout: 60_000 }).catch(() => page.waitForLoadState("load"));
+    if (p.open) await reveal(page, p.open);
+    if (p.wait) await page.waitForSelector(p.wait, { timeout: 10_000 });
+    await page.waitForTimeout(300);
+    const builder = new AxeBuilder({ page }).withTags(TAGS);
+    // A dialog is checked on its own: what is behind it is inert and checked by its own page.
+    if (p.wait) builder.include(p.wait);
+    return (await builder.analyze()).violations;
+  } finally {
+    await context.close();
+  }
+}
+
+// A development server compiles each route on its first request (and may reload the page meanwhile): warm them up.
+for (const p of PAGES) await fetch(`${BASE}${p.url}`).catch(() => {});
 
 for (const [device, viewport] of Object.entries(VIEWPORTS)) {
   for (const theme of THEMES) {
     for (const p of PAGES) {
-      const context = await open(theme, viewport, p);
-      const page = await context.newPage();
       const label = `${p.name} · ${theme} · ${device}`;
-      try {
-        await page.goto(`${BASE}${p.url}`, { waitUntil: "networkidle", timeout: 60_000 }).catch(() => page.waitForLoadState("load"));
-        if (p.open) await reveal(page, p.open);
-        if (p.wait) await page.waitForSelector(p.wait, { timeout: 10_000 });
-        await page.waitForTimeout(300);
-        const builder = new AxeBuilder({ page }).withTags(TAGS);
-        // A dialog is checked on its own: what is behind it is inert and checked by its own page.
-        if (p.wait) builder.include(p.wait);
-        const { violations } = await builder.analyze();
-        checked++;
-        if (violations.length === 0) {
-          console.log(`✓ ${label}`);
-        } else {
-          failures++;
-          console.log(`✗ ${label}`);
-          for (const v of violations) {
-            const criteria = v.tags.filter((t) => /^wcag\d{3,}$/.test(t)).join(" ");
-            console.log(`    ${v.id} (${v.impact}; ${criteria}) — ${v.help}\n      ${v.helpUrl}`);
-            for (const n of v.nodes.slice(0, 5)) console.log(`      · ${n.target.join(" ")}  ${n.failureSummary?.split("\n")[1]?.trim() ?? ""}`);
-            if (v.nodes.length > 5) console.log(`      … ${v.nodes.length - 5} more`);
-          }
+      let violations;
+      for (let attempt = 1; attempt <= 2 && !violations; attempt++) {
+        try {
+          violations = await audit(p, theme, viewport);
+        } catch (error) {
+          // A navigation in the middle (a recompile) is retried once; anything else is a failure.
+          if (attempt === 2) console.log(`✗ ${label}  ${error.message.split("\n")[0]}`);
         }
-      } catch (error) {
-        failures++;
-        console.log(`✗ ${label}  ${error.message.split("\n")[0]}`);
       }
-      await context.close();
+      if (!violations) {
+        failures++;
+        continue;
+      }
+      checked++;
+      if (violations.length === 0) {
+        console.log(`✓ ${label}`);
+        continue;
+      }
+      failures++;
+      console.log(`✗ ${label}`);
+      for (const v of violations) {
+        const criteria = v.tags.filter((t) => /^wcag\d{3,}$/.test(t)).join(" ");
+        console.log(`    ${v.id} (${v.impact}; ${criteria}) — ${v.help}\n      ${v.helpUrl}`);
+        for (const n of v.nodes.slice(0, 5)) console.log(`      · ${n.target.join(" ")}  ${n.failureSummary?.split("\n")[1]?.trim() ?? ""}`);
+        if (v.nodes.length > 5) console.log(`      … ${v.nodes.length - 5} more`);
+      }
     }
   }
 }

@@ -20,7 +20,7 @@ export function ShareProfileButton({ username, displayName }: { username: string
   };
   return (
     <Button variant="outline" shape="rounded" onClick={() => void share()} className="rounded-xl px-3.5 text-xs hover:bg-accent/10 hover:text-fg">
-      {copied ? <Check className="h-4 w-4 text-success" /> : <Share2 className="h-4 w-4" />}
+      {copied ? <Check className="h-4 w-4 text-fg-success" /> : <Share2 className="h-4 w-4" />}
       {copied ? t("profile.copied") : t("profile.share")}
     </Button>
   );

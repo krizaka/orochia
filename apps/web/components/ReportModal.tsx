@@ -68,7 +68,7 @@ export function ReportModal({ videoId, storyId, videoTitle, isOpen, onClose }: R
         <Dialog.Body>
       {sent ? (
         <div className="py-6 text-center">
-          <CheckCircle2 className="mx-auto h-12 w-12 text-success" />
+          <CheckCircle2 className="mx-auto h-12 w-12 text-fg-success" />
           <p className="mx-auto mt-3 max-w-sm text-sm text-fg-secondary">{t("report.sentBody")}</p>
           <Button className="mt-6" onClick={close}>
             {t("report.close")}
@@ -77,7 +77,7 @@ export function ReportModal({ videoId, storyId, videoTitle, isOpen, onClose }: R
       ) : (
         <form onSubmit={submit} className="space-y-4">
           <p className="flex items-start gap-2 pt-1 text-xs text-fg-secondary">
-            <Flag className="mt-0.5 h-3.5 w-3.5 shrink-0 text-danger" />
+            <Flag className="mt-0.5 h-3.5 w-3.5 shrink-0 text-fg-danger" />
             <span>
               {t("report.subtitle")} <span className="italic text-fg-secondary">{t("report.about", { title: videoTitle })}</span>
             </span>
@@ -105,7 +105,7 @@ export function ReportModal({ videoId, storyId, videoTitle, isOpen, onClose }: R
             <span className="mt-1 block text-[11px] text-fg-muted">{t("report.emailHint")}</span>
           </label>
 
-          {error && <p role="alert" className="rounded-xl border border-danger/30 bg-danger/10 px-3 py-2 text-xs text-danger">{error}</p>}
+          {error && <p role="alert" className="rounded-xl border border-danger/30 bg-danger/10 px-3 py-2 text-xs text-fg-danger">{error}</p>}
 
           <div className="flex justify-end gap-2 pt-1">
             <Button variant="ghost" onClick={close}>

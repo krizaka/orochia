@@ -92,7 +92,7 @@ export function CreatorProfileClient({
                   <div className="flex items-start gap-3 border-t border-border-subtle pt-4">
                     <span className={cn(
                       "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
-                      creator.isVerified ? "bg-success/15 text-success" : "bg-warning/15 text-warning"
+                      creator.isVerified ? "bg-success/15 text-fg-success" : "bg-warning/15 text-fg-warning"
                     )}>
                       <Shield className="h-5 w-5" />
                     </span>

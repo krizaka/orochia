@@ -207,7 +207,7 @@ export function VideoPlayer({
       {/* Sensitive Content Gate Overlay */}
       {isBlurred && !revealed && (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-scrim-strong backdrop-blur-lg p-6 text-center">
-          <div className="h-14 w-14 rounded-2xl bg-danger/20 border border-danger/30 flex items-center justify-center text-danger mb-3">
+          <div className="h-14 w-14 rounded-2xl bg-danger/20 border border-danger/30 flex items-center justify-center text-fg-danger mb-3">
             <span className="font-mono font-black text-xl">18+</span>
           </div>
           <h3 className="text-lg font-bold text-white mb-1">{t("player.sensitiveTitle")}</h3>
@@ -224,7 +224,7 @@ export function VideoPlayer({
       {isPaywalled && (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-scrim-strong backdrop-blur-md p-6 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-accent/30 to-accent-2/30 border border-accent/30 mb-4 shadow-lg shadow-accent/20">
-            <Lock className="h-8 w-8 text-accent" />
+            <Lock className="h-8 w-8 text-fg-accent" />
           </div>
           <h3 className="text-xl font-bold text-white mb-1">{t("player.paidTitle")}</h3>
           <p className="text-sm text-fg-secondary max-w-md mb-6">
@@ -241,7 +241,7 @@ export function VideoPlayer({
       {!isPaywalled && isGated && (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-scrim-strong backdrop-blur-md p-6 text-center">
           <div className="flex h-11 w-11 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-scrim-strong border border-fg-on-media/20 mb-2 sm:mb-4">
-            {isAuction ? <Gavel className="h-5 w-5 sm:h-8 sm:w-8 text-accent" /> : <Users className="h-5 w-5 sm:h-8 sm:w-8 text-fg-on-media/80" />}
+            {isAuction ? <Gavel className="h-5 w-5 sm:h-8 sm:w-8 text-fg-accent" /> : <Users className="h-5 w-5 sm:h-8 sm:w-8 text-fg-on-media/80" />}
           </div>
           <h3 className="text-base sm:text-xl font-bold text-white mb-1">
             {t(isAuction ? "player.auctionTitle" : isChallenge ? "player.challengeTitle" : isInvitedOnly ? "player.invitedTitle" : isFollowersOnly ? "player.followersTitle" : "player.contactsTitle")}
@@ -278,13 +278,13 @@ export function VideoPlayer({
           <div className="flex items-center justify-between text-white text-sm">
             <div className="flex items-center gap-4">
               {/* Play / Pause Button */}
-              <IconButton onClick={togglePlay} className="h-8 w-8 text-current hover:bg-white/10 hover:text-accent" label={isPlaying ? t("player.pause") : t("player.play")}>
+              <IconButton onClick={togglePlay} className="h-8 w-8 text-current hover:bg-white/10 hover:text-fg-accent" label={isPlaying ? t("player.pause") : t("player.play")}>
                 {isPlaying ? <Pause className="h-5 w-5" aria-hidden /> : <Play className="h-5 w-5" aria-hidden />}
               </IconButton>
 
               {/* Volume Controls */}
               <div className="flex items-center gap-2 group/vol">
-                <IconButton onClick={toggleMute} className="h-8 w-8 text-current hover:bg-white/10 hover:text-accent" label={isMuted || volume === 0 ? t("player.unmute") : t("player.mute")}>
+                <IconButton onClick={toggleMute} className="h-8 w-8 text-current hover:bg-white/10 hover:text-fg-accent" label={isMuted || volume === 0 ? t("player.unmute") : t("player.mute")}>
                   {isMuted || volume === 0 ? (
                     <VolumeX className="h-5 w-5" />
                   ) : (
@@ -311,7 +311,7 @@ export function VideoPlayer({
 
             <div className="flex items-center gap-3">
               {/* Fullscreen Button */}
-              <IconButton onClick={toggleFullscreen} className="h-8 w-8 text-current hover:bg-white/10 hover:text-accent" label={t("player.fullscreen")}>
+              <IconButton onClick={toggleFullscreen} className="h-8 w-8 text-current hover:bg-white/10 hover:text-fg-accent" label={t("player.fullscreen")}>
                 <Maximize className="h-5 w-5" aria-hidden />
               </IconButton>
             </div>

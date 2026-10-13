@@ -43,7 +43,7 @@ function Stat({ icon: Icon, label, value, hint, action, extra }: { icon: React.E
   return (
     <div className={card}>
       <div className="flex items-center gap-2 text-xs font-semibold text-fg-secondary">
-        <Icon className="h-4 w-4 text-accent" /> {label}
+        <Icon className="h-4 w-4 text-fg-accent" /> {label}
       </div>
       <p className="mt-2 font-display text-2xl font-black tabular-nums tracking-tight text-fg sm:text-3xl">{value}</p>
       {hint && <p className="mt-1 text-[11px] text-fg-muted">{hint}</p>}
@@ -276,7 +276,7 @@ function EarningsPage() {
                 <p className="mb-2 text-xs font-semibold text-fg-secondary">{t("earnings.payoutAccount")}</p>
                 {data!.payoutAccount ? (
                   <div className="flex items-center gap-3 rounded-2xl border border-border-default p-4">
-                    <Landmark className="h-5 w-5 shrink-0 text-accent" />
+                    <Landmark className="h-5 w-5 shrink-0 text-fg-accent" />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate font-mono text-sm text-fg">{data!.payoutAccount.hint}</span>
                       <span className="block text-[11px] text-fg-muted">{data!.payoutAccount.holderName}</span>

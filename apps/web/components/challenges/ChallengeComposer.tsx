@@ -134,7 +134,7 @@ export function ChallengeComposer({
             <RadioGroup.Root label={t("challenge.compose.kind")} value={kind} onValueChange={(k) => pickKind(k as Kind)} className="grid gap-2 sm:grid-cols-3">
               {KINDS.filter((k) => isCreator || !k.creatorsOnly).map(({ kind: k, icon: Icon }) => (
                 <RadioGroup.Card key={k} value={k} className="gap-1.5 rounded-2xl">
-                  <Icon className="h-4 w-4 text-accent" aria-hidden />
+                  <Icon className="h-4 w-4 text-fg-accent" aria-hidden />
                   <span className="text-xs font-bold text-fg">{t(`challenge.kind.${k}`)}</span>
                   <span className="text-[11px] leading-snug text-fg-secondary">{t(`challenge.compose.kindHint.${k}`)}</span>
                 </RadioGroup.Card>
@@ -272,7 +272,7 @@ export function ChallengeComposer({
               </p>
             )}
             {error && (
-              <p role="alert" className="text-xs text-danger">
+              <p role="alert" className="text-xs text-fg-danger">
                 {error}
               </p>
             )}

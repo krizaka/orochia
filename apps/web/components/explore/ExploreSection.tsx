@@ -43,7 +43,7 @@ export function ExploreSection({
     <section id={id} aria-labelledby={`${id}-title`} className="scroll-mt-24" data-reveal style={{ ["--kz-delay" as string]: `${Math.min(index, 4) * 60}ms` }}>
       <div className="mb-4 flex items-end justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
-          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-accent/25 bg-accent/10 text-accent" aria-hidden>
+          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-accent/25 bg-accent/10 text-fg-accent" aria-hidden>
             {icon}
           </span>
           <div className="min-w-0">

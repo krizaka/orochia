@@ -26,7 +26,7 @@ export function CreatorsCallToAction({ share }: { share: number }) {
         <ul className="mt-6 flex flex-col flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-fg-secondary sm:flex-row">
           {(["upload", "audience", "paid"] as const).map((i) => (
             <li key={i} className="flex items-center justify-center gap-2">
-              <CheckIcon size={16} className="text-success" /> {t(`home.creators.points.${i}`, { share })}
+              <CheckIcon size={16} className="text-fg-success" /> {t(`home.creators.points.${i}`, { share })}
             </li>
           ))}
         </ul>

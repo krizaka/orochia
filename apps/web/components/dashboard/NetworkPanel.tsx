@@ -78,7 +78,7 @@ export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
           people={pendingFollowers}
           render={(p) => (
             <Row key={p.id} p={p}>
-              <IconButton size="sm" shape="rounded" className="h-8 w-8" label={t("network.approve")} onClick={() => act(`/api/me/followers/${p.id}`, "PATCH", { action: "approve" })}><Check className="h-4 w-4 text-success" aria-hidden /></IconButton>
+              <IconButton size="sm" shape="rounded" className="h-8 w-8" label={t("network.approve")} onClick={() => act(`/api/me/followers/${p.id}`, "PATCH", { action: "approve" })}><Check className="h-4 w-4 text-fg-success" aria-hidden /></IconButton>
               <IconButton size="sm" shape="rounded" className="h-8 w-8" label={t("network.decline")} onClick={() => act(`/api/me/followers/${p.id}`, "PATCH", { action: "remove" })}><X className="h-4 w-4" aria-hidden /></IconButton>
             </Row>
           )}
@@ -90,9 +90,9 @@ export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
         people={data.incoming}
         render={(p) => (
           <Row key={p.id} p={p}>
-            <IconButton size="sm" shape="rounded" className="h-8 w-8" label={t("network.accept")} onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "accept" })}><Check className="h-4 w-4 text-success" aria-hidden /></IconButton>
+            <IconButton size="sm" shape="rounded" className="h-8 w-8" label={t("network.accept")} onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "accept" })}><Check className="h-4 w-4 text-fg-success" aria-hidden /></IconButton>
             <IconButton size="sm" shape="rounded" className="h-8 w-8" label={t("network.reject")} onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "reject" })}><X className="h-4 w-4" aria-hidden /></IconButton>
-            <IconButton size="sm" shape="rounded" className="h-8 w-8" label={t("network.block")} onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "block" })}><Ban className="h-4 w-4 text-danger" aria-hidden /></IconButton>
+            <IconButton size="sm" shape="rounded" className="h-8 w-8" label={t("network.block")} onClick={() => act(`/api/contacts/${p.id}`, "PATCH", { action: "block" })}><Ban className="h-4 w-4 text-fg-danger" aria-hidden /></IconButton>
           </Row>
         )}
       />

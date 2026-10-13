@@ -37,7 +37,7 @@ export function LegalDocument({ id, icon: Icon }: { id: LegalDocId; icon: Lucide
   const { badge, title, subtitle, sections } = doc(id);
   const slots = {
     dmca: (
-      <Link href="/legal/dmca" className="font-semibold text-accent underline-offset-2 hover:underline">
+      <Link href="/legal/dmca" className="font-semibold text-fg-accent underline-offset-2 hover:underline">
         {t("legal.dmcaLink")}
       </Link>
     ),
@@ -49,7 +49,7 @@ export function LegalDocument({ id, icon: Icon }: { id: LegalDocId; icon: Lucide
       </Link>
 
       <header className="mb-10" data-reveal>
-        <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+        <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold text-fg-accent">
           <Icon className="h-3.5 w-3.5" aria-hidden /> {badge}
         </span>
         <h1 className="font-display text-3xl font-black text-fg sm:text-4xl">{title}</h1>
@@ -74,7 +74,7 @@ export function LegalDocument({ id, icon: Icon }: { id: LegalDocId; icon: Lucide
               <div className="mt-4 space-y-3">
                 {Object.entries(s.points).map(([k, point]) => (
                   <div key={k} className="flex items-start gap-3">
-                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-accent" aria-hidden />
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-fg-accent" aria-hidden />
                     <p>
                       <strong className="text-fg">{point.lead}</strong> {point.text}
                     </p>
@@ -84,7 +84,7 @@ export function LegalDocument({ id, icon: Icon }: { id: LegalDocId; icon: Lucide
             )}
             {s.contact && (
               <div className="mt-3 flex items-center gap-3 rounded-xl border border-border-subtle bg-surface-2/60 p-4">
-                <Mail className="h-5 w-5 text-accent" aria-hidden />
+                <Mail className="h-5 w-5 text-fg-accent" aria-hidden />
                 <div>
                   <p className="text-xs font-semibold text-fg">{s.contact.name}</p>
                   <p className="text-xs text-fg-secondary">{s.contact.emails}</p>

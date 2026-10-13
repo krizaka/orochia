@@ -11,11 +11,11 @@ import { amountChoices, money } from "@/lib/money";
 type Gateway = "CREDITS" | "CCBILL" | "SEGPAY" | "CRYPTO" | "STRIPE";
 /** The ways to pay, in display order (only those the deployment offers are shown). */
 const METHODS: { id: Gateway; icon: React.ElementType; tone: string }[] = [
-  { id: "CREDITS", icon: Sparkles, tone: "text-accent" },
-  { id: "CCBILL", icon: CreditCard, tone: "text-accent" },
-  { id: "SEGPAY", icon: ShieldCheck, tone: "text-success" },
-  { id: "STRIPE", icon: CreditCard, tone: "text-info" },
-  { id: "CRYPTO", icon: Bitcoin, tone: "text-warning" },
+  { id: "CREDITS", icon: Sparkles, tone: "text-fg-accent" },
+  { id: "CCBILL", icon: CreditCard, tone: "text-fg-accent" },
+  { id: "SEGPAY", icon: ShieldCheck, tone: "text-fg-success" },
+  { id: "STRIPE", icon: CreditCard, tone: "text-fg-info" },
+  { id: "CRYPTO", icon: Bitcoin, tone: "text-fg-warning" },
 ];
 
 interface TipModalProps {
@@ -120,7 +120,7 @@ export function TipModal({
         </Dialog.Header>
         <Dialog.Body className="pt-3">
           {errorMsg && (
-            <div role="alert" className="mb-4 rounded-xl border border-danger/30 bg-danger/10 p-3 text-xs text-danger">
+            <div role="alert" className="mb-4 rounded-xl border border-danger/30 bg-danger/10 p-3 text-xs text-fg-danger">
               {errorMsg}
             </div>
           )}
@@ -155,25 +155,25 @@ export function TipModal({
                   <span className="block text-sm font-semibold text-fg">{id === "CREDITS" ? t("payments.credits.title") : t(`payments.gateways.${id}.title`)}</span>
                   <span className="block text-xs text-fg-secondary">{id === "CREDITS" ? t("payments.credits.hint") : t(`payments.gateways.${id}.hint`)}</span>
                 </span>
-                <CheckCircle2 className="hidden h-5 w-5 shrink-0 text-accent group-data-[state=checked]/method:block" />
+                <CheckCircle2 className="hidden h-5 w-5 shrink-0 text-fg-accent group-data-[state=checked]/method:block" />
               </RadioGroup.Card>
             ))}
           </RadioGroup.Root>
         </Dialog.Body>
         <Dialog.Footer className="flex-col items-stretch gap-0">
           {creditsShort !== null && (
-            <div role="alert" className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-warning/30 bg-warning/10 px-4 py-3 text-xs text-warning">
+            <div role="alert" className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-warning/30 bg-warning/10 px-4 py-3 text-xs text-fg-warning">
               <span>{t("wallet.short", { balance: money(creditsShort) })}</span>
               <Link href="/wallet" className="shrink-0 rounded-full bg-warning px-3 py-1.5 font-bold text-surface-0">
                 {t("wallet.add")}
               </Link>
             </div>
           )}
-          {unavailable && <p className="mb-3 text-xs text-warning">{t("payments.unavailable")}</p>}
+          {unavailable && <p className="mb-3 text-xs text-fg-warning">{t("payments.unavailable")}</p>}
           <Button variant="sensual" size="lg" shape="rounded" className="w-full" disabled={unavailable} loading={isProcessing} onClick={() => void handleProcessTip()}>
             {isProcessing ? t("payments.processing") : t("payments.pay", { amount: money(selectedAmount) })}
           </Button>
-          <p className="mt-3 text-center text-[11px] text-fg-muted">{t("payments.discreet")}</p>
+          <p className="mt-3 text-center text-[11px] text-fg-secondary">{t("payments.discreet")}</p>
         </Dialog.Footer>
       </Sheet>
     </Dialog.Root>

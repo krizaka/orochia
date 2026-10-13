@@ -51,7 +51,7 @@ export function WithdrawSheet({ open, onClose, availableCents, destinationHint, 
         <Dialog.Body>
           {done ? (
             <div className="py-6 text-center">
-              <CheckCircle2 className="mx-auto h-12 w-12 text-success" />
+              <CheckCircle2 className="mx-auto h-12 w-12 text-fg-success" />
               <p className="mt-3 text-sm text-fg-secondary">{t("earnings.request.done")}</p>
             </div>
           ) : availableCents < MIN ? (
@@ -86,7 +86,7 @@ export function WithdrawSheet({ open, onClose, availableCents, destinationHint, 
                 })}
               </Chip.Group>
               <p className="rounded-2xl border border-border-default bg-surface-2 px-4 py-3 text-sm text-fg-secondary">{t("earnings.request.to", { hint: destinationHint })}</p>
-              {error && <p role="alert" className="text-xs text-danger">{error}</p>}
+              {error && <p role="alert" className="text-xs text-fg-danger">{error}</p>}
             </div>
           )}
         </Dialog.Body>

@@ -37,7 +37,7 @@ export default async function ChallengesPage(props: { searchParams: Promise<{ ta
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <header className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between" data-reveal>
         <div>
-          <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-accent">
+          <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-fg-accent">
             <Flame className="h-3.5 w-3.5" /> {t("challenges.eyebrow")}
           </p>
           <h1 className="mt-2 font-display text-2xl font-black text-fg sm:text-3xl">{t("challenges.title")}</h1>
@@ -83,7 +83,7 @@ export default async function ChallengesPage(props: { searchParams: Promise<{ ta
 
       {items.length === 0 ? (
         <div className="kz-fade rounded-3xl border border-dashed border-border-default px-6 py-16 text-center">
-          <Flame className="mx-auto h-8 w-8 text-accent/70" aria-hidden />
+          <Flame className="mx-auto h-8 w-8 text-fg-accent/70" aria-hidden />
           <p className="mt-3 text-sm font-semibold text-fg">{t(`challenges.empty.${tab}.title`)}</p>
           <p className="mx-auto mt-1 max-w-md text-xs text-fg-secondary">{t(`challenges.empty.${tab}.body`)}</p>
           {tab !== "open" && (
