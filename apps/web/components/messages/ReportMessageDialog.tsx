@@ -53,7 +53,7 @@ export function ReportMessageDialog({ conversationId, message, onClose }: { conv
         <Dialog.Body>
           {sent ? (
             <div className="py-6 text-center">
-              <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-success/15 text-success">
+              <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-success/15 text-fg-success">
                 <CheckIcon size={24} />
               </span>
               <p className="mx-auto mt-3 max-w-sm text-sm text-fg-secondary">{t("inbox.report.sentBody")}</p>
@@ -64,7 +64,7 @@ export function ReportMessageDialog({ conversationId, message, onClose }: { conv
           ) : (
             <form onSubmit={submit} className="space-y-4">
               <p className="flex items-start gap-2 pt-1 text-xs text-fg-secondary">
-                <FlagIcon size={14} className="mt-0.5 shrink-0 text-danger" />
+                <FlagIcon size={14} className="mt-0.5 shrink-0 text-fg-danger" />
                 <span>{t("inbox.report.subtitle")}</span>
               </p>
               {message && <blockquote className="line-clamp-3 rounded-xl border border-border-default bg-surface-2 px-3 py-2 text-sm text-fg">{message.content}</blockquote>}
@@ -86,7 +86,7 @@ export function ReportMessageDialog({ conversationId, message, onClose }: { conv
                 <Textarea value={details} onChange={(e) => setDetails(e.target.value)} rows={3} maxLength={2000} placeholder={t("inbox.report.detailsPlaceholder")} className="w-full resize-y rounded-xl px-3.5 py-2.5 text-sm" />
               </label>
               {error && (
-                <p role="alert" className="rounded-xl border border-danger/30 bg-danger/10 px-3 py-2 text-xs text-danger">
+                <p role="alert" className="rounded-xl border border-danger/30 bg-danger/10 px-3 py-2 text-xs text-fg-danger">
                   {error}
                 </p>
               )}

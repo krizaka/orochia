@@ -108,7 +108,7 @@ export function PayoutAccountSheet({ open, onClose, onSaved }: { open: boolean; 
                 <Chip value="savings">{t("earnings.account.savings")}</Chip>
               </Chip.Group>
             )}
-            {error && <p role="alert" className="rounded-xl border border-danger/30 bg-danger/10 px-3 py-2 text-xs text-danger">{error}</p>}
+            {error && <p role="alert" className="rounded-xl border border-danger/30 bg-danger/10 px-3 py-2 text-xs text-fg-danger">{error}</p>}
           </div>
         </Dialog.Body>
         <Dialog.Footer className="flex-col items-stretch gap-0">

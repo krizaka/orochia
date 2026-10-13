@@ -85,7 +85,7 @@ export default function CompleteSignUpPage() {
           <h1 className="font-display text-2xl font-black text-fg">{t("auth.complete.title")}</h1>
           <p className="mt-1.5 text-sm text-fg-secondary">{t("auth.complete.subtitle", { provider: providerName })}</p>
         </div>
-        {error && <p role="alert" className="rounded-xl border border-danger/30 bg-danger/10 p-3 text-xs text-danger">{error}</p>}
+        {error && <p role="alert" className="rounded-xl border border-danger/30 bg-danger/10 p-3 text-xs text-fg-danger">{error}</p>}
         <UsernameField value={username} onChange={setUsername} />
         <Field.Root>
           <Field.Label htmlFor="displayName" className="uppercase tracking-wider">{t("auth.register.displayName")}</Field.Label>
@@ -109,8 +109,8 @@ export default function CompleteSignUpPage() {
             <Rich
               text={t("auth.register.acceptTerms")}
               slots={{
-                terms: <Link href="/legal/terms" target="_blank" className="text-accent underline">{t("auth.register.terms")}</Link>,
-                notice: <Link href="/legal/2257" target="_blank" className="text-accent underline">{t("auth.register.notice")}</Link>,
+                terms: <Link href="/legal/terms" target="_blank" className="text-fg-accent underline">{t("auth.register.terms")}</Link>,
+                notice: <Link href="/legal/2257" target="_blank" className="text-fg-accent underline">{t("auth.register.notice")}</Link>,
               }}
             />
           </span>

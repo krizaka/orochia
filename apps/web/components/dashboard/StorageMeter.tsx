@@ -26,9 +26,9 @@ export interface StorageView {
 const TONE: Record<StorageView["level"], string> = {
   ok: "text-fg-secondary",
   unlimited: "text-fg-secondary",
-  warning: "text-warning",
-  critical: "text-danger",
-  full: "text-danger",
+  warning: "text-fg-warning",
+  critical: "text-fg-danger",
+  full: "text-fg-danger",
 };
 
 /** The meter turns amber from 80 %, red from 95 % — the same steps as the messages (`storage-usage.ts` levels). */
@@ -114,19 +114,19 @@ export function StorageMeter({ initial, compact = false, className }: { initial?
       </p>
 
       {storage.platformPaused && (
-        <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-danger" role="status">
+        <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-fg-danger" role="status">
           <WarningIcon size={14} className="mt-0.5 shrink-0" />
           <span>{t("quota.paused")}</span>
         </p>
       )}
-      {storage.held > 0 && <p className="mt-2 text-xs leading-relaxed text-warning">{t("quota.held", { count: storage.held })}</p>}
+      {storage.held > 0 && <p className="mt-2 text-xs leading-relaxed text-fg-warning">{t("quota.held", { count: storage.held })}</p>}
 
       {!compact && (
         <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-fg-muted">
           <span>{minutesLine}</span>
           {storage.uploadsPerDay !== null && <span>{t("quota.today", { count: storage.uploadsToday, max: storage.uploadsPerDay })}</span>}
           {alarming && (
-            <Link href="/dashboard?tab=uploads" className="font-semibold text-accent hover:underline focus-visible:underline">
+            <Link href="/dashboard?tab=uploads" className="font-semibold text-fg-accent hover:underline focus-visible:underline">
               {t("quota.manage")}
             </Link>
           )}

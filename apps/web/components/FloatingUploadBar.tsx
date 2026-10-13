@@ -92,7 +92,7 @@ export function FloatingUploadBar() {
           <span className="text-xs font-semibold">
             {activeCount > 0 ? t("uploads.uploading", { progress: totalProgress }) : t("uploads.complete")}
           </span>
-          <span className="text-[10px] bg-accent/30 text-accent font-mono px-2 py-0.5 rounded-full">
+          <span className="text-[10px] bg-accent/30 text-fg-accent font-mono px-2 py-0.5 rounded-full">
             {uploads.length}
           </span>
           <ChevronUp className="h-3.5 w-3.5 text-fg-secondary group-hover:text-fg transition-colors" />
@@ -139,9 +139,9 @@ export function FloatingUploadBar() {
             <div className="flex items-start justify-between gap-2 mb-1.5">
               <div className="flex items-center gap-2 min-w-0">
                 {item.type === "story" ? (
-                  <Sparkles className="h-3.5 w-3.5 text-accent shrink-0" />
+                  <Sparkles className="h-3.5 w-3.5 text-fg-accent shrink-0" />
                 ) : (
-                  <Film className="h-3.5 w-3.5 text-accent shrink-0" />
+                  <Film className="h-3.5 w-3.5 text-fg-accent shrink-0" />
                 )}
                 <span className="text-xs font-semibold text-fg truncate">
                   {item.title}
@@ -164,7 +164,7 @@ export function FloatingUploadBar() {
                   <IconButton
                     onClick={() => resumeUpload(item.id)}
                     shape="rounded"
-                    className="h-6 w-6 text-success hover:bg-success/10 hover:text-success"
+                    className="h-6 w-6 text-fg-success hover:bg-success/10 hover:text-fg-success"
                     label={t("uploads.resume")}
                   >
                     <Play className="h-3 w-3" aria-hidden />
@@ -174,7 +174,7 @@ export function FloatingUploadBar() {
                   <IconButton
                     onClick={() => cancelUpload(item.id)}
                     shape="rounded"
-                    className="h-6 w-6 hover:bg-danger/10 hover:text-danger"
+                    className="h-6 w-6 hover:bg-danger/10 hover:text-fg-danger"
                     label={t("uploads.cancel")}
                   >
                     <X className="h-3 w-3" aria-hidden />
@@ -214,15 +214,15 @@ export function FloatingUploadBar() {
                   </>
                 )}
                 {item.status === "paused" && (
-                  <span className="text-warning font-medium">{t("uploads.paused", { progress: item.progress })}</span>
+                  <span className="text-fg-warning font-medium">{t("uploads.paused", { progress: item.progress })}</span>
                 )}
                 {item.status === "completed" && (
-                  <span className="text-success font-medium flex items-center gap-1">
+                  <span className="text-fg-success font-medium flex items-center gap-1">
                     <CheckCircle className="h-3 w-3 inline" /> {t("uploads.processing")}
                   </span>
                 )}
                 {item.status === "error" && (
-                  <span className="text-danger font-medium flex items-center gap-1 truncate max-w-[200px]">
+                  <span className="text-fg-danger font-medium flex items-center gap-1 truncate max-w-[200px]">
                     <AlertCircle className="h-3 w-3 inline shrink-0" />{" "}
                     {item.errorMessage || t("uploads.failed")}
                   </span>
@@ -238,7 +238,7 @@ export function FloatingUploadBar() {
               <div className="mt-2 pt-2 border-t border-border-subtle flex justify-end">
                 <Link
                   href={`/watch/${item.videoId}`}
-                  className="text-[11px] text-accent hover:text-accent font-semibold transition-colors"
+                  className="text-[11px] text-fg-accent hover:text-fg-accent font-semibold transition-colors"
                 >
                   {t("uploads.view")}
                 </Link>

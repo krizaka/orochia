@@ -126,7 +126,7 @@ export function VideoComments({
       <Avatar size="sm" src={c.authorAvatar || AVATAR_PLACEHOLDER} fallback={c.authorName.charAt(0)} />
       <div className="min-w-0 flex-1">
         <p className="text-xs">
-          <Link href={`/@${c.authorUsername}`} className="font-semibold text-fg hover:text-accent">
+          <Link href={`/@${c.authorUsername}`} className="font-semibold text-fg hover:text-fg-accent">
             {c.authorName}
           </Link>{" "}
           <span className="font-mono text-[10px] text-fg-muted">
@@ -141,14 +141,14 @@ export function VideoComments({
         </p>
         <div className="mt-1 flex gap-3 text-[11px] text-fg-muted">
           {user && enabled && !isReply && !c.removed && (
-            <Button variant="ghost" size="sm" onClick={() => setReplyTo(replyTo === c.id ? null : c.id)} className="h-auto gap-1 px-0 text-[inherit] font-normal hover:bg-transparent hover:text-accent">
+            <Button variant="ghost" size="sm" onClick={() => setReplyTo(replyTo === c.id ? null : c.id)} className="h-auto gap-1 px-0 text-[inherit] font-normal hover:bg-transparent hover:text-fg-accent">
               <Reply className="h-3 w-3" aria-hidden /> {t("comments.reply")}
             </Button>
           )}
           {c.canRemove && (
             <Button variant="ghost" size="sm" onClick={() => remove(c.id)} onBlur={() => setConfirming(null)} className={cn(
-              "h-auto gap-1 px-0 text-[inherit] font-normal hover:bg-transparent hover:text-danger",
-              confirming === c.id && "font-semibold text-danger"
+              "h-auto gap-1 px-0 text-[inherit] font-normal hover:bg-transparent hover:text-fg-danger",
+              confirming === c.id && "font-semibold text-fg-danger"
             )}>
               <Trash2 className="h-3 w-3" aria-hidden /> {confirming === c.id ? t("comments.removeConfirm") : t("comments.remove")}
             </Button>
@@ -168,7 +168,7 @@ export function VideoComments({
     <section className="mt-8" aria-labelledby="comments-title">
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 id="comments-title" className="flex items-center gap-2 text-sm font-bold text-fg">
-          <MessageSquare className="h-4 w-4 text-accent" /> {t("comments.title")}
+          <MessageSquare className="h-4 w-4 text-fg-accent" /> {t("comments.title")}
         </h2>
         {isCreator && (
           <Button variant="outline" size="sm" shape="rounded" onClick={toggle} className="h-7 px-3 text-[11px] text-fg-secondary">
@@ -186,7 +186,7 @@ export function VideoComments({
               text={t("comments.signInToComment")}
               slots={{
                 signIn: (
-                  <Link href={`/auth/login?next=/watch/${videoId}`} className="text-accent hover:underline">
+                  <Link href={`/auth/login?next=/watch/${videoId}`} className="text-fg-accent hover:underline">
                     {t("comments.signIn")}
                   </Link>
                 ),
@@ -197,7 +197,7 @@ export function VideoComments({
       ) : (
         <p className="text-xs text-fg-muted">{t("comments.closed")}</p>
       )}
-      {error && <p className="mt-2 text-xs text-danger">{error}</p>}
+      {error && <p className="mt-2 text-xs text-fg-danger">{error}</p>}
 
       <div className="mt-6 space-y-5">
         {comments === null ? (

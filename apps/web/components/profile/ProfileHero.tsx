@@ -106,7 +106,7 @@ export function ProfileHero({
             <div className="text-center sm:pb-1 sm:text-left">
               <h1 className="flex items-center justify-center gap-2 font-display text-2xl font-black tracking-tight text-fg sm:justify-start sm:text-4xl">
                 {displayName}
-                {verified && <BadgeCheck className="h-6 w-6 shrink-0 text-accent" aria-label={t("profile.verified")} />}
+                {verified && <BadgeCheck className="h-6 w-6 shrink-0 text-fg-accent" aria-label={t("profile.verified")} />}
               </h1>
               <p className="mt-0.5 font-mono text-xs text-fg-secondary">
                 @{username}

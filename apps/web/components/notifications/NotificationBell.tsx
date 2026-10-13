@@ -55,7 +55,7 @@ export function NotificationBell() {
             <h2 className="text-sm font-bold text-fg">{t("notifications.title")}</h2>
             <div className="flex items-center gap-1">
               {unread > 0 && (
-                <Button variant="ghost" size="sm" shape="rounded" onClick={() => void markRead("all")} className="h-7 gap-1 px-2 text-[11px] text-accent hover:bg-accent/10 hover:text-accent">
+                <Button variant="ghost" size="sm" shape="rounded" onClick={() => void markRead("all")} className="h-7 gap-1 px-2 text-[11px] text-fg-accent hover:bg-accent/10 hover:text-fg-accent">
                   <CheckCheck className="h-3.5 w-3.5" aria-hidden /> {t("notifications.markAll")}
                 </Button>
               )}
@@ -83,7 +83,7 @@ export function NotificationBell() {
               ))
             )}
           </div>
-          <Link href="/notifications" onClick={() => setOpen(false)} className="block border-t border-border-subtle py-2.5 text-center text-xs font-semibold text-accent hover:bg-surface-2">
+          <Link href="/notifications" onClick={() => setOpen(false)} className="block border-t border-border-subtle py-2.5 text-center text-xs font-semibold text-fg-accent hover:bg-surface-2">
             {t("notifications.seeAll")}
           </Link>
         </Popover.Content>

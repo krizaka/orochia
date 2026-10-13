@@ -143,7 +143,7 @@ export function FeedFilterTabs({ initialVideos, viewer, unavailable = false }: F
                 >
                   <Avatar src={video.creatorAvatar || "/avatar-placeholder.svg"} alt={video.creatorName} fallback={video.creatorName.charAt(0)} className="h-10 w-10 rounded-xl border border-accent/40" />
                   <div>
-                    <h4 className="text-xs sm:text-sm font-bold text-fg group-hover:text-accent transition-colors">
+                    <h4 className="text-xs sm:text-sm font-bold text-fg group-hover:text-fg-accent transition-colors">
                       {video.creatorName}
                     </h4>
                     <span className="text-[11px] text-fg-secondary font-mono">
@@ -168,8 +168,8 @@ export function FeedFilterTabs({ initialVideos, viewer, unavailable = false }: F
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-accent/15 via-media to-accent-2/15 text-accent">
-                    <span className="font-display text-sm font-bold text-accent">{t("feed.noThumbnail")}</span>
+                  <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-accent/15 via-media to-accent-2/15 text-fg-accent">
+                    <span className="font-display text-sm font-bold text-fg-accent">{t("feed.noThumbnail")}</span>
                   </div>
                 )}
                 <div className="absolute inset-0 bg-linear-to-t from-scrim-strong via-transparent to-transparent flex items-end p-6">
@@ -196,7 +196,7 @@ export function FeedFilterTabs({ initialVideos, viewer, unavailable = false }: F
                 </Link>
 
                 {video.visibility === "TIPPED_UNLOCKED" && (
-                  <span className="text-xs font-bold text-accent font-mono">
+                  <span className="text-xs font-bold text-fg-accent font-mono">
                     {t("feed.unlockFor", { price: `$${(video.minTipAmountCents / 100).toFixed(2)}` })}
                   </span>
                 )}
@@ -215,7 +215,7 @@ export function FeedFilterTabs({ initialVideos, viewer, unavailable = false }: F
         <Tabs.List aria-label={t("feed.label")} className="max-w-full touch-pan-x">
           {tabs.map(({ id, label, icon: Icon }) => (
             <Tabs.Trigger key={id} value={id} className="font-bold">
-              <Icon className="h-3.5 w-3.5 text-accent" aria-hidden />
+              <Icon className="h-3.5 w-3.5 text-fg-accent" aria-hidden />
               <span>{label}</span>
             </Tabs.Trigger>
           ))}

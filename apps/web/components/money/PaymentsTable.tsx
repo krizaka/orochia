@@ -84,7 +84,7 @@ export function PaymentsTable({ lines }: { lines: PaymentLine[] }) {
           header: t("earnings.cols.net"),
           sortable: true,
           align: "end",
-          cell: (l) => <span className="whitespace-nowrap font-mono font-semibold tabular-nums text-success">+{money(l.netCents)}</span>,
+          cell: (l) => <span className="whitespace-nowrap font-mono font-semibold tabular-nums text-fg-success">+{money(l.netCents)}</span>,
         },
       ]}
       footer={

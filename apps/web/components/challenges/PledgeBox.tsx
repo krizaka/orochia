@@ -106,7 +106,7 @@ export function PledgeBox({ c, onPledged }: { c: ChallengeView; onPledged: (bala
         {t("challenge.pledge.submit", { amount: money(Math.max(cents || 0, 0)) })}
       </Button>
       {error && (
-        <p role="alert" className="text-xs text-danger">
+        <p role="alert" className="text-xs text-fg-danger">
           {error}{" "}
           {error && c.viewer.balanceCents !== null && (
             <Link href="/wallet" className="font-semibold underline">
@@ -129,7 +129,7 @@ export function PledgeBox({ c, onPledged }: { c: ChallengeView; onPledged: (bala
         )}
       </p>
       {c.viewer.pledgedCents > 0 && (
-        <p className="text-xs font-semibold text-success">{t("challenge.pledge.yours", { amount: money(c.viewer.pledgedCents) })}</p>
+        <p className="text-xs font-semibold text-fg-success">{t("challenge.pledge.yours", { amount: money(c.viewer.pledgedCents) })}</p>
       )}
     </div>
   );

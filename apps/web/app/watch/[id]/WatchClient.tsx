@@ -189,7 +189,7 @@ export default function WatchClient() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       {paymentState === "success" && !stream?.allowed && (
-        <div className="mb-6 flex items-center gap-2 rounded-2xl border border-success/30 bg-success/10 px-4 py-3 text-xs text-success">
+        <div className="mb-6 flex items-center gap-2 rounded-2xl border border-success/30 bg-success/10 px-4 py-3 text-xs text-fg-success">
           <CheckCircle2 className="h-4 w-4" />
           {t("watch.paymentReceived")}
         </div>
@@ -261,7 +261,7 @@ export default function WatchClient() {
                         disabled={likeBusy}
                         aria-pressed={liked}
                         aria-label={liked ? t("watch.unlike") : t("watch.like")}
-                        className={cn(liked && "border-accent/40 bg-accent/10 text-accent hover:bg-accent/15")}
+                        className={cn(liked && "border-accent/40 bg-accent/10 text-fg-accent hover:bg-accent/15")}
                       >
                         <Heart className={cn("h-4 w-4", liked && "fill-current")} aria-hidden />
                         <span>{details.likesCount.toLocaleString("en-US")}</span>
@@ -277,7 +277,7 @@ export default function WatchClient() {
                     <Share2 className="h-4 w-4" aria-hidden />
                     <span>{copied ? t("watch.copied") : t("watch.share")}</span>
                   </Button>
-                  <Button size="sm" shape="rounded" onClick={() => setIsReportModalOpen(true)} className="hover:border-danger/40 hover:bg-danger/10 hover:text-danger">
+                  <Button size="sm" shape="rounded" onClick={() => setIsReportModalOpen(true)} className="hover:border-danger/40 hover:bg-danger/10 hover:text-fg-danger">
                     <Flag className="h-3.5 w-3.5" aria-hidden />
                     <span>{t("watch.report")}</span>
                   </Button>
@@ -313,7 +313,7 @@ export default function WatchClient() {
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-bold text-fg">{details.creatorName}</span>
-                      <ShieldCheck className="h-4 w-4 text-accent" aria-label={t("watch.verified")} />
+                      <ShieldCheck className="h-4 w-4 text-fg-accent" aria-label={t("watch.verified")} />
                     </div>
                     <span className="text-xs text-fg-secondary">@{details.creatorUsername}</span>
                   </div>
@@ -376,7 +376,7 @@ export default function WatchClient() {
                       )}
                     </div>
                     <div>
-                      <h4 className="text-xs font-semibold text-fg group-hover:text-accent line-clamp-1">{video.title}</h4>
+                      <h4 className="text-xs font-semibold text-fg group-hover:text-fg-accent line-clamp-1">{video.title}</h4>
                       <span className="block text-[10px] text-fg-muted font-mono">
                         {formatDuration(video.durationSeconds)} • {video.visibility === "PUBLIC" ? t("watch.free") : t("watch.members")}
                       </span>

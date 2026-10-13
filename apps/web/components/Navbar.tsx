@@ -159,9 +159,9 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                         className="mx-1 mb-1 mt-0.5 flex items-center justify-between rounded-xl bg-linear-to-r from-success/10 to-transparent px-3 py-2.5 ring-1 ring-success/20 transition-colors hover:from-success/20"
                       >
                         <span className="flex items-center gap-2 text-xs font-semibold text-fg">
-                          <Wallet className="h-4 w-4 text-success" /> {t("nav.earnings")}
+                          <Wallet className="h-4 w-4 text-fg-success" /> {t("nav.earnings")}
                         </span>
-                        <span className="font-mono text-sm font-black text-success">${(user.balanceCents / 100).toFixed(2)}</span>
+                        <span className="font-mono text-sm font-black text-fg-success">${(user.balanceCents / 100).toFixed(2)}</span>
                       </Link>
                     )}
                     <div className="my-1 h-px bg-surface-2" />
@@ -174,7 +174,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                     <button
                       role="menuitem"
                       onClick={() => void logout()}
-                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-fg-secondary transition-colors hover:bg-danger/10 hover:text-danger"
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-fg-secondary transition-colors hover:bg-danger/10 hover:text-fg-danger"
                     >
                       <LogOut className="h-4 w-4" /> {t("nav.signOut")}
                     </button>

@@ -155,7 +155,7 @@ function StoryVideo({ story, paused, sound, onProgress, onEnded, onAutoplayMuted
 function PlaybackFailed({ failure, onRetry }: { failure: PlaybackFailure; onRetry: () => void }) {
   return (
     <div role="alert" className="flex max-w-xs flex-col items-center gap-3 px-6 text-center">
-      <span className="flex h-11 w-11 items-center justify-center rounded-full bg-scrim text-warning">
+      <span className="flex h-11 w-11 items-center justify-center rounded-full bg-scrim text-fg-warning">
         <WarningIcon size={22} />
       </span>
       <p className="text-sm font-semibold text-fg-on-media">{t(`stories.viewer.errors.${failure.kind}.title`)}</p>

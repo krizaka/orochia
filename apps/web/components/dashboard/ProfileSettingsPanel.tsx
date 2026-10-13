@@ -115,7 +115,7 @@ function Section({ id, icon, title, children }: { id: string; icon: React.ReactN
   return (
     <section id={`settings-${id}`} aria-labelledby={`settings-${id}-title`} className="glass-panel scroll-mt-24 rounded-3xl p-5 sm:p-7">
       <h3 id={`settings-${id}-title`} className="mb-5 flex items-center gap-2 text-sm font-bold text-fg">
-        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent/15 text-accent">{icon}</span>
+        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent/15 text-fg-accent">{icon}</span>
         {title}
       </h3>
       {children}
@@ -131,11 +131,11 @@ function SaveRow({ state, error, onSave }: { state: "idle" | "saving" | "saved";
         {state === "saving" ? t("settings.saving") : t("settings.save")}
       </Button>
       {state === "saved" && (
-        <span role="status" className="flex items-center gap-1 text-xs font-semibold text-success">
+        <span role="status" className="flex items-center gap-1 text-xs font-semibold text-fg-success">
           <Check className="h-3.5 w-3.5" /> {t("settings.saved")}
         </span>
       )}
-      {error && <span role="alert" className="text-xs text-danger">{error}</span>}
+      {error && <span role="alert" className="text-xs text-fg-danger">{error}</span>}
     </div>
   );
 }
@@ -244,7 +244,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
               <a
                 href={`#settings-${id}`}
                 aria-current={hash === `#settings-${id}` ? "location" : undefined}
-                className="block whitespace-nowrap rounded-xl px-3.5 py-2 text-xs font-semibold text-fg-secondary transition-colors hover:bg-surface-2 hover:text-fg aria-[current=location]:bg-accent/15 aria-[current=location]:text-accent"
+                className="block whitespace-nowrap rounded-xl px-3.5 py-2 text-xs font-semibold text-fg-secondary transition-colors hover:bg-surface-2 hover:text-fg aria-[current=location]:bg-accent/15 aria-[current=location]:text-fg-accent"
               >
                 {t(`settings.sections.${id}`)}
               </a>
@@ -267,7 +267,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
                 "flex items-center justify-between gap-2 font-mono text-fg-secondary"
               )}>
                 @{profile.username}
-                <Link href={`/@${profile.username}`} className="inline-flex items-center gap-1 font-sans text-[11px] font-semibold text-accent hover:underline">
+                <Link href={`/@${profile.username}`} className="inline-flex items-center gap-1 font-sans text-[11px] font-semibold text-fg-accent hover:underline">
                   {t("settings.identity.viewProfile")} <ExternalLink className="h-3 w-3" />
                 </Link>
               </div>
@@ -317,7 +317,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
                 </div>
               )}
               <span className={hint}>{t("settings.identity.birthDateHint")}</span>
-              {birth.error && <span role="alert" className="mt-1 block text-xs text-danger">{birth.error}</span>}
+              {birth.error && <span role="alert" className="mt-1 block text-xs text-fg-danger">{birth.error}</span>}
             </div>
           </div>
         </Section>
@@ -466,7 +466,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
           </Chip.Group>
           <span className={hint}>{t("settings.notifications.frequencyHint")}</span>
           {(prefs.state === "saved" || prefs.error) && (
-            <p role="status" className={cn("mt-2 text-xs", prefs.error ? "text-danger" : "text-success")}>
+            <p role="status" className={cn("mt-2 text-xs", prefs.error ? "text-fg-danger" : "text-fg-success")}>
               {prefs.error ?? t("settings.saved")}
             </p>
           )}
@@ -502,7 +502,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
                       const res = await fetch(`/api/me/identities/${id.id}`, { method: "DELETE" });
                       if (res.ok) setIdentities((all) => all.filter((x) => x.id !== id.id));
                     }}
-                    className="rounded-xl hover:border-danger/60 hover:text-danger"
+                    className="rounded-xl hover:border-danger/60 hover:text-fg-danger"
                   >
                     {t("settings.accounts.unlink")}
                   </Button>

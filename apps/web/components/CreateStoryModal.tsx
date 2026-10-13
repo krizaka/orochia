@@ -214,7 +214,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && closeAll()}>
       <Sheet size="md">
         <Dialog.Header className="flex-row items-center gap-2.5 border-b border-border-default pb-4">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent/20 text-accent">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent/20 text-fg-accent">
             <Sparkles className="h-4 w-4" aria-hidden />
           </div>
           <div>
@@ -225,7 +225,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
         <Dialog.Body>
         {state === "done" ? (
           <div className="py-10 text-center">
-            <CheckCircle2 className="mx-auto h-12 w-12 text-success" />
+            <CheckCircle2 className="mx-auto h-12 w-12 text-fg-success" />
             <p className="mt-4 text-sm text-fg-secondary">{doneMessage}</p>
             <Button variant="primary" shape="rounded" onClick={closeAll} className="mt-6 rounded-xl px-6 font-bold">
               {t("common.close")}
@@ -273,13 +273,13 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
                 onClick={() => input.current?.click()}
                 className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border-default bg-surface-2/40 px-4 py-10 text-center hover:border-accent/50"
               >
-                <UploadCloud className="h-9 w-9 text-accent" />
+                <UploadCloud className="h-9 w-9 text-fg-accent" />
                 <span className="text-sm font-semibold">{t("stories.create.choose")}</span>
                 <span className="text-xs text-fg-muted">{t("stories.create.chooseHint")}</span>
               </button>
               </>
             )}
-            {file && !isImage && !edited && <p className="text-xs text-warning">{t("stories.create.editFirst")}</p>}
+            {file && !isImage && !edited && <p className="text-xs text-fg-warning">{t("stories.create.editFirst")}</p>}
 
             <label className="block text-xs font-semibold uppercase tracking-wider text-fg-secondary">
               {t("stories.create.caption")} <span className="normal-case tracking-normal text-fg-muted">— {t("common.optional")}</span>
@@ -346,7 +346,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
               </Checkbox>
             </div>
 
-            {error && <p role="alert" className="text-xs text-danger">{error}</p>}
+            {error && <p role="alert" className="text-xs text-fg-danger">{error}</p>}
 
             <Button
               type="submit"

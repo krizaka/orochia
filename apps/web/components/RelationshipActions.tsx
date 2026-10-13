@@ -89,7 +89,7 @@ export function RelationshipActions({
             title={t("relationship.unfollow")}
             onClick={() => call(`/api/creators/${username}/follow`, { method: "DELETE" })}
           >
-            {follow === "APPROVED" ? <UserCheck className="h-4 w-4 text-success" /> : <Clock className="h-4 w-4 text-warning" />}
+            {follow === "APPROVED" ? <UserCheck className="h-4 w-4 text-fg-success" /> : <Clock className="h-4 w-4 text-fg-warning" />}
             {follow === "APPROVED" ? t("relationship.following") : t("relationship.requested")}
           </Button>
         ))}
@@ -101,7 +101,7 @@ export function RelationshipActions({
           </Button>
         ) : contact.status === "ACCEPTED" ? (
           <span className={cn(ghost, "cursor-default hover:bg-surface-2")}>
-            <Check className="h-4 w-4 text-success" /> {t("relationship.contact")}
+            <Check className="h-4 w-4 text-fg-success" /> {t("relationship.contact")}
           </span>
         ) : contact.status === "PENDING" && contact.direction === "incoming" ? (
           <Button
@@ -120,7 +120,7 @@ export function RelationshipActions({
             title={t("relationship.withdraw")}
             onClick={() => call(`/api/contacts/${contact.id}`, { method: "DELETE" })}
           >
-            <Clock className="h-4 w-4 text-warning" /> {t("relationship.requestSent")}
+            <Clock className="h-4 w-4 text-fg-warning" /> {t("relationship.requestSent")}
           </Button>
         ) : null)}
 
@@ -130,11 +130,11 @@ export function RelationshipActions({
           className={ghost}
           title={t("relationship.message")}
         >
-          <MessageSquare className="h-4 w-4 text-accent" /> {t("relationship.message")}
+          <MessageSquare className="h-4 w-4 text-fg-accent" /> {t("relationship.message")}
         </Link>
       )}
 
-      {error && <span className="text-[11px] text-danger">{error}</span>}
+      {error && <span className="text-[11px] text-fg-danger">{error}</span>}
     </div>
   );
 }

@@ -86,7 +86,7 @@ export function PlaylistsPanel() {
       <p className="-mt-3 text-[11px] text-fg-muted">
         {audienceOf(visibility).hint} {t("playlistsPanel.perVideo")}
       </p>
-      {error && <p className="text-xs text-danger">{error}</p>}
+      {error && <p className="text-xs text-fg-danger">{error}</p>}
 
       {shown === null ? (
         <p className="text-xs text-fg-muted">{t("playlistsPanel.loading")}</p>
@@ -98,7 +98,7 @@ export function PlaylistsPanel() {
             <li key={p.id} className="py-3.5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Link href={`/playlists/${p.id}`} className="min-w-0">
-                  <span className="block truncate text-sm font-semibold text-fg hover:text-accent">{p.title}</span>
+                  <span className="block truncate text-sm font-semibold text-fg hover:text-fg-accent">{p.title}</span>
                   <span className="text-[11px] font-mono text-fg-muted">
                     {t("playlistsPanel.videos", { count: p.itemsCount })}
                     {p.visibility === "INVITED_ONLY" && t("playlistsPanel.invitedMeta", { members: p.membersCount, lists: p.listsCount })}
@@ -144,7 +144,7 @@ export function PlaylistsPanel() {
             {shared.map((p) => (
               <li key={p.id} className="flex items-center justify-between gap-3 py-3.5">
                 <Link href={`/playlists/${p.id}`} className="min-w-0">
-                  <span className="block truncate text-sm font-semibold text-fg hover:text-accent">{p.title}</span>
+                  <span className="block truncate text-sm font-semibold text-fg hover:text-fg-accent">{p.title}</span>
                   <span className="text-[11px] font-mono text-fg-muted">
                     {t("playlistsPanel.sharedMeta", { owner: p.ownerUsername, count: p.itemsCount })}
                   </span>

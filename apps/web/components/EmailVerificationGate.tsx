@@ -42,7 +42,7 @@ export function EmailVerificationGate({ children }: { children: React.ReactNode 
 
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-md flex-col items-center justify-center px-4 py-16 text-center">
-      <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/15 text-accent">
+      <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/15 text-fg-accent">
         <MailCheck className="h-8 w-8" />
       </div>
       <h1 className="text-2xl font-black text-fg font-display">{t("verifyGate.title")}</h1>
@@ -59,10 +59,10 @@ export function EmailVerificationGate({ children }: { children: React.ReactNode 
           {t("verifyGate.done")}
         </Button>
       </div>
-      {message && <p role="alert" className="mt-4 text-xs text-danger">{message}</p>}
+      {message && <p role="alert" className="mt-4 text-xs text-fg-danger">{message}</p>}
       {devLink && (
         <p className="mt-4 break-all text-[11px] text-fg-muted">
-          {t("verifyGate.demo")} <a href={devLink} className="text-accent underline">{devLink}</a>
+          {t("verifyGate.demo")} <a href={devLink} className="text-fg-accent underline">{devLink}</a>
         </p>
       )}
       <p className="mt-6 text-xs text-fg-muted">{t("verifyGate.spam")}</p>

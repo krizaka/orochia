@@ -133,7 +133,7 @@ function LedgerTable({ lines, isCreator }: { lines: LedgerLine[]; isCreator: boo
               <td className="py-2.5 pr-4 text-fg-secondary">{tx.gateway}</td>
               <td className={cn(
                 "py-2.5 text-right font-mono font-bold",
-                tx.amountCents < 0 ? "text-danger" : "text-success"
+                tx.amountCents < 0 ? "text-fg-danger" : "text-fg-success"
               )}>
                 {money(tx.amountCents)}
               </td>
@@ -217,7 +217,7 @@ function DashboardContent() {
             {isCreator && (
               <div className="rounded-2xl border border-border-default bg-surface-2/70 px-4 py-2 text-right">
                 <span className="block text-[10px] font-semibold uppercase tracking-wider text-fg-secondary">{t("profile.balance")}</span>
-                <span className="font-mono text-lg font-black text-success">{money(user.balanceCents)}</span>
+                <span className="font-mono text-lg font-black text-fg-success">{money(user.balanceCents)}</span>
               </div>
             )}
             <Link
@@ -257,7 +257,7 @@ function DashboardContent() {
           {/* Earnings is its own page, not a tab: a link after the tabs. */}
           {isCreator && (
             <Link href="/earnings" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-fg-secondary hover:text-fg hover:bg-surface-2 transition-all">
-              <CreditCard className="h-3.5 w-3.5 text-success" />
+              <CreditCard className="h-3.5 w-3.5 text-fg-success" />
               <span>{t("dashboard.tabs.earnings")}</span>
             </Link>
           )}
@@ -342,7 +342,7 @@ function DashboardContent() {
               ].map(([label, value, hint]) => (
                 <div key={label} className="glass-panel rounded-2xl p-5">
                   <span className="text-[11px] font-mono uppercase text-fg-secondary">{label}</span>
-                  <p className="mt-2 text-2xl font-black text-success font-mono">{value}</p>
+                  <p className="mt-2 text-2xl font-black text-fg-success font-mono">{value}</p>
                   <span className="text-[11px] text-fg-muted">{hint}</span>
                 </div>
               ))}

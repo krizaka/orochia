@@ -49,7 +49,7 @@ export default function VerifyEmailPage() {
       {state === "working" && <Spinner size="lg" label={t("auth.verify.working")} />}
       {state === "done" && (
         <>
-          <CheckCircle2 className="h-12 w-12 text-success" />
+          <CheckCircle2 className="h-12 w-12 text-fg-success" />
           <h1 className="mt-4 text-2xl font-black text-fg font-display">{t("auth.verify.done")}</h1>
           <p className="mt-2 text-sm text-fg-secondary">{t("auth.verify.doneBody")}</p>
           <Link href={next} className="mt-6 rounded-xl bg-accent px-6 py-2.5 text-sm font-bold text-white">
@@ -59,7 +59,7 @@ export default function VerifyEmailPage() {
       )}
       {state === "failed" && (
         <>
-          <XCircle className="h-12 w-12 text-danger" />
+          <XCircle className="h-12 w-12 text-fg-danger" />
           <h1 className="mt-4 text-2xl font-black text-fg font-display">{t("auth.verify.failed")}</h1>
           <p className="mt-2 text-sm text-fg-secondary">{error}</p>
           <Link href="/" className="mt-6 rounded-xl border border-border-default px-6 py-2.5 text-sm font-semibold text-fg">

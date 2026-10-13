@@ -115,16 +115,16 @@ export function InvitationsPanel() {
           </Button>
         </form>
 
-        {error && <p className="mt-3 text-xs text-danger">{error}</p>}
+        {error && <p className="mt-3 text-xs text-fg-danger">{error}</p>}
 
         {lastCreatedCode && (
           <div className="mt-4 rounded-2xl border border-success/30 bg-success/10 p-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-success">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-fg-success">
                   {t("invites.ready")}
                 </span>
-                <p className="text-xs font-mono text-success mt-0.5 select-all">
+                <p className="text-xs font-mono text-fg-success mt-0.5 select-all">
                   <Rich text={t("invites.code")} slots={{ code: <strong className="text-fg">{lastCreatedCode}</strong> }} />
                 </p>
               </div>
@@ -182,7 +182,7 @@ export function InvitationsPanel() {
               <tbody className="divide-y divide-border-subtle">
                 {invitations.map((inv) => (
                   <tr key={inv.id} className="text-fg-secondary">
-                    <td className="py-3 pr-4 font-mono font-bold text-accent">{inv.code}</td>
+                    <td className="py-3 pr-4 font-mono font-bold text-fg-accent">{inv.code}</td>
                     <td className="py-3 pr-4">
                       {inv.email ? inv.email : <span className="text-fg-muted">{t("invites.openLink")}</span>}
                     </td>
@@ -219,8 +219,8 @@ export function InvitationsPanel() {
                       >
                         {copiedCode === inv.code ? (
                           <>
-                            <Check className="h-3 w-3 text-success" />
-                            <span className="text-success">{t("common.copied")}</span>
+                            <Check className="h-3 w-3 text-fg-success" />
+                            <span className="text-fg-success">{t("common.copied")}</span>
                           </>
                         ) : (
                           <>

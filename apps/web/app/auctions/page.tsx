@@ -27,7 +27,7 @@ export default async function AuctionsPage(props: { searchParams: Promise<{ tab?
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <header className="mb-8 grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end" data-reveal>
         <div>
-          <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-accent">
+          <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-fg-accent">
             <Gavel className="h-3.5 w-3.5" /> {t("auctions.eyebrow")}
           </p>
           <h1 className="mt-2 font-display text-2xl font-black text-fg sm:text-3xl">{t("auctions.title")}</h1>
@@ -40,7 +40,7 @@ export default async function AuctionsPage(props: { searchParams: Promise<{ tab?
             { icon: Trophy, key: "win" },
           ].map(({ icon: Icon, key }, i) => (
             <li key={key} data-reveal style={{ "--kz-delay": `${i * 70}ms` } as React.CSSProperties} className="flex items-start gap-2 rounded-2xl border border-border-default bg-surface-2 p-3">
-              <Icon className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden />
+              <Icon className="mt-0.5 h-4 w-4 shrink-0 text-fg-accent" aria-hidden />
               <span>{t(`auctions.steps.${key}` as "auctions.steps.held")}</span>
             </li>
           ))}
@@ -65,7 +65,7 @@ export default async function AuctionsPage(props: { searchParams: Promise<{ tab?
 
       {items.length === 0 ? (
         <div className="kz-fade rounded-3xl border border-dashed border-border-default px-6 py-16 text-center">
-          <Gavel className="mx-auto h-8 w-8 text-accent/70" aria-hidden />
+          <Gavel className="mx-auto h-8 w-8 text-fg-accent/70" aria-hidden />
           <p className="mt-3 text-sm font-semibold text-fg">{t(`auctions.empty.${tab}.title`)}</p>
           <p className="mx-auto mt-1 max-w-md text-xs text-fg-secondary">{t(`auctions.empty.${tab}.body`)}</p>
           {tab === "selling" && (

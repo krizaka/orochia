@@ -133,7 +133,7 @@ export function AuctionPanel({
 
         <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-accent">{priceLabel}</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-fg-accent">{priceLabel}</p>
             {/* The current bid rolls digit by digit to each new bid (SSE), and is announced once; still under reduced motion. */}
             <p data-pulse={pulse} className="font-display text-4xl font-black tabular-nums tracking-tight text-fg">
               <MoneyTicker cents={price} trigger="change" announce={open} align="start" />
@@ -221,7 +221,7 @@ export function AuctionPanel({
             <p className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-fg-muted">
               <span>{t("auction.minimum", { amount: money(a.minimumNextBidCents) })}</span>
               {viewer.balanceCents !== null && (
-                <Link href="/wallet" className="inline-flex items-center gap-1 font-semibold text-accent hover:text-accent">
+                <Link href="/wallet" className="inline-flex items-center gap-1 font-semibold text-fg-accent hover:text-fg-accent">
                   <Wallet className="h-3 w-3" aria-hidden /> {t("auction.balance", { amount: money(viewer.balanceCents) })}
                 </Link>
               )}
@@ -276,12 +276,12 @@ export function AuctionPanel({
         )}
 
         {placed && !error && (
-          <p role="status" className="kz-fade flex items-center gap-1.5 text-xs font-semibold text-success">
+          <p role="status" className="kz-fade flex items-center gap-1.5 text-xs font-semibold text-fg-success">
             <CheckCircle2 className="h-3.5 w-3.5" aria-hidden /> {t("auction.placed")}
           </p>
         )}
         {error && (
-          <p role="alert" className="text-xs text-danger">
+          <p role="alert" className="text-xs text-fg-danger">
             {error.text}{" "}
             {error.topUp && (
               <Link href="/wallet" className="font-semibold underline underline-offset-2">
@@ -309,7 +309,7 @@ export function AuctionPanel({
                     <span className="block text-sm font-medium text-fg">{bidderName(b.alias, b.mine)}</span>
                     <span className="block text-[11px] text-fg-muted">{timeAgo(b.createdAt)}</span>
                   </span>
-                  {i === 0 && a.status !== "DECLINED" && a.status !== "CANCELLED" && <Trophy className="h-3.5 w-3.5 text-warning" aria-label={t("auction.leading")} />}
+                  {i === 0 && a.status !== "DECLINED" && a.status !== "CANCELLED" && <Trophy className="h-3.5 w-3.5 text-fg-warning" aria-label={t("auction.leading")} />}
                   <span className="font-mono text-sm font-semibold tabular-nums text-fg">{money(b.amountCents)}</span>
                 </li>
               ))}
@@ -323,10 +323,10 @@ export function AuctionPanel({
             <Info className="h-3.5 w-3.5" aria-hidden /> {t("auction.howTitle")}
           </summary>
           <ul className="mt-2 space-y-1.5">
-            <li className="flex gap-2"><ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" aria-hidden />{t("auction.how.held")}</li>
-            <li className="flex gap-2"><Clock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" aria-hidden />{t("auction.how.softClose")}</li>
-            <li className="flex gap-2"><Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" aria-hidden />{t(`auction.how.${a.settlement}`)}</li>
-            <li className="flex gap-2"><Trophy className="mt-0.5 h-3.5 w-3.5 shrink-0 text-warning" aria-hidden />{t(`auction.how.rights.${a.rights}`)}</li>
+            <li className="flex gap-2"><ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-fg-accent" aria-hidden />{t("auction.how.held")}</li>
+            <li className="flex gap-2"><Clock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-fg-accent" aria-hidden />{t("auction.how.softClose")}</li>
+            <li className="flex gap-2"><Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-fg-accent" aria-hidden />{t(`auction.how.${a.settlement}`)}</li>
+            <li className="flex gap-2"><Trophy className="mt-0.5 h-3.5 w-3.5 shrink-0 text-fg-warning" aria-hidden />{t(`auction.how.rights.${a.rights}`)}</li>
           </ul>
         </details>
       </div>
@@ -359,8 +359,8 @@ function Standing({ auction: a }: { auction: Auction }) {
   }
   if (!text) return null;
   const styles = {
-    ok: "border-success/30 bg-success/10 text-success",
-    warn: "border-warning/30 bg-warning/10 text-warning",
+    ok: "border-success/30 bg-success/10 text-fg-success",
+    warn: "border-warning/30 bg-warning/10 text-fg-warning",
     info: "border-border-default bg-surface-2 text-fg-secondary",
   }[tone];
   return (

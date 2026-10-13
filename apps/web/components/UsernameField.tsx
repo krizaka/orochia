@@ -54,7 +54,7 @@ export function UsernameField({ value, onChange, className }: { value: string; o
           className="rounded-xl pl-9 pr-9"
         />
         <span className="absolute right-3 top-3.5">
-          {checking ? <Spinner size="sm" className="text-fg-muted" /> : status?.available ? <Check className="h-4 w-4 text-success" aria-hidden /> : null}
+          {checking ? <Spinner size="sm" className="text-fg-muted" /> : status?.available ? <Check className="h-4 w-4 text-fg-success" aria-hidden /> : null}
         </span>
       </div>
       {taken && status ? (
@@ -64,7 +64,7 @@ export function UsernameField({ value, onChange, className }: { value: string; o
               ? t("auth.register.usernameFormat")
               : t(status.reason === "reserved" ? "auth.register.usernameReserved" : "auth.register.usernameTaken", { suggestion: `@${status.suggestion}` })}{" "}
             {status.reason !== "format" && (
-              <button type="button" onClick={() => onChange(status.suggestion!)} className="font-semibold text-accent underline">
+              <button type="button" onClick={() => onChange(status.suggestion!)} className="font-semibold text-fg-accent underline">
                 {t("auth.register.useSuggestion")}
               </button>
             )}

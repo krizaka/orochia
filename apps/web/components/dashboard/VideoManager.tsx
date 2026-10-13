@@ -164,7 +164,7 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
               <>
                 <Link href={`/watch/${v.id}`} className="text-fg hover:text-fg-accent">{v.title}</Link>
                 {v.removedAt && v.removalReason && (
-                  <span className="mt-1 flex items-center gap-1 text-[11px] text-danger">
+                  <span className="mt-1 flex items-center gap-1 text-[11px] text-fg-danger">
                     <AlertTriangle className="h-3 w-3" /> {v.removalReason}
                   </span>
                 )}
@@ -260,7 +260,7 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
                   {t("studio.tags")}
                   <Input name="tags" defaultValue={editing.tags.join(", ")} maxLength={500} className="mt-1 rounded-xl" />
                 </label>
-                {error && <p role="alert" className="text-xs text-danger">{error}</p>}
+                {error && <p role="alert" className="text-xs text-fg-danger">{error}</p>}
               </form>
             )}
             {/* Outside the form: the audience editor saves on its own (and has its own form). */}

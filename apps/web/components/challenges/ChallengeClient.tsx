@@ -50,7 +50,7 @@ export function ChallengeClient({ id }: { id: string }) {
         <div className="min-w-0 space-y-5">
           <header className="space-y-3" data-reveal>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-accent">
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-fg-accent">
                 <KindIcon className="h-3.5 w-3.5" aria-hidden /> {t(`challenge.kind.${c.kind}`)}
               </span>
               <ChallengeStageBadge stage={c.stage} />
@@ -92,7 +92,7 @@ export function ChallengeClient({ id }: { id: string }) {
 
           {c.delivered && (
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-success/30 bg-success/[0.07] p-4">
-              <p className="text-sm font-semibold text-success">
+              <p className="text-sm font-semibold text-fg-success">
                 {t(c.delivered.canWatch ? "challenge.delivered.watch" : "challenge.delivered.locked")}
               </p>
               {c.delivered.canWatch && c.delivered.videoId && (
@@ -146,7 +146,7 @@ export function ChallengeClient({ id }: { id: string }) {
             {c.stage === "IN_PROGRESS" && c.deliveryDeadline && (
               <Countdown label={t("challenge.deliverIn")} target={c.deliveryDeadline} skewMs={skewMs} size="md" />
             )}
-            {c.stage === "GOAL_REACHED" && <p className="text-xs font-semibold text-success">{t("challenge.goalReachedHint")}</p>}
+            {c.stage === "GOAL_REACHED" && <p className="text-xs font-semibold text-fg-success">{t("challenge.goalReachedHint")}</p>}
             {!ticking && c.stage !== "IN_PROGRESS" && (
               <p className="inline-flex items-center gap-1 text-xs text-fg-secondary">
                 <Clock className="h-3.5 w-3.5" aria-hidden /> {t(`challenge.final.${c.stage as "DELIVERED"}`)}
@@ -163,7 +163,7 @@ export function ChallengeClient({ id }: { id: string }) {
           {c.topBackers.length > 0 && (
             <section className={panel}>
               <h2 className="mb-3 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-fg-secondary">
-                <Crown className="h-3.5 w-3.5 text-warning" aria-hidden /> {t("challenge.leaderboard")}
+                <Crown className="h-3.5 w-3.5 text-fg-warning" aria-hidden /> {t("challenge.leaderboard")}
               </h2>
               <ol className="space-y-1.5">
                 {c.topBackers.map((b, i) => (
@@ -171,7 +171,7 @@ export function ChallengeClient({ id }: { id: string }) {
                     <span
                       className={cn(
                         "flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-black",
-                        i === 0 ? "bg-warning text-warning" : "bg-surface-3 text-fg-secondary"
+                        i === 0 ? "bg-warning text-fg-warning" : "bg-surface-3 text-fg-secondary"
                       )}
                     >
                       {i + 1}

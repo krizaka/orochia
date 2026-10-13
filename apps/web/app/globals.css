@@ -1,7 +1,7 @@
 /* The Krizaka platform, in this order (orochia-design-system 3.0 README):
    1. Tailwind CSS v4;
    2. @krizaka/tailwind — the --kz-* tokens, the role utilities (bg-surface-1, text-fg-secondary, border-border-default,
-      text-accent, text-danger…), the `light:` / `dark:` variants (`.theme-dark` islands stay dark) and the motion signature;
+      text-fg-accent, text-fg-danger…), the `light:` / `dark:` variants (`.theme-dark` islands stay dark) and the motion signature;
    3. @krizaka/ui/tailwind.css — Tailwind scans the @krizaka/ui primitives;
    4. the Orochia identity — the --kz-* roles with the Obsidian Velvet Noir values, the kit's composites. */
 @import "tailwindcss";

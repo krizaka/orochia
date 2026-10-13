@@ -96,7 +96,7 @@ export default function RegisterPage() {
         </div>
 
         {error && (
-          <div role="alert" className="mb-4 rounded-xl border border-danger/30 bg-danger/10 p-3 text-xs text-danger">
+          <div role="alert" className="mb-4 rounded-xl border border-danger/30 bg-danger/10 p-3 text-xs text-fg-danger">
             {error}
           </div>
         )}
@@ -173,12 +173,12 @@ export default function RegisterPage() {
                   text={t("auth.register.acceptTerms")}
                   slots={{
                     terms: (
-                      <Link href="/legal/terms" target="_blank" className="text-accent underline">
+                      <Link href="/legal/terms" target="_blank" className="text-fg-accent underline">
                         {t("auth.register.terms")}
                       </Link>
                     ),
                     notice: (
-                      <Link href="/legal/2257" target="_blank" className="text-accent underline">
+                      <Link href="/legal/2257" target="_blank" className="text-fg-accent underline">
                         {t("auth.register.notice")}
                       </Link>
                     ),
@@ -204,7 +204,7 @@ export default function RegisterPage() {
 
         <p className="relative mt-6 text-center text-xs text-fg-secondary">
           {t("auth.register.haveAccount")}{" "}
-          <Link href={signInHref(next ?? undefined)} className="font-semibold text-accent hover:underline">
+          <Link href={signInHref(next ?? undefined)} className="font-semibold text-fg-accent hover:underline">
             {t("auth.register.signIn")}
           </Link>
         </p>

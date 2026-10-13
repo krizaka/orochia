@@ -95,9 +95,9 @@ function WalletPage() {
           role="status"
           className={cn(
             "mb-6 flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm",
-            notice.tone === "ok" && "border-success/30 bg-success/10 text-success",
+            notice.tone === "ok" && "border-success/30 bg-success/10 text-fg-success",
             notice.tone === "info" && "border-border-default bg-surface-2 text-fg",
-            notice.tone === "error" && "border-danger/30 bg-danger/10 text-danger",
+            notice.tone === "error" && "border-danger/30 bg-danger/10 text-fg-danger",
           )}
         >
           {notice.tone === "ok" ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> : <XCircle className="mt-0.5 h-4 w-4 shrink-0" />}
@@ -109,10 +109,10 @@ function WalletPage() {
         {/* Balance + buy */}
         <section className="overflow-hidden rounded-[1.75rem] border border-border-default bg-surface-1/60 shadow-xl shadow-accent/5">
           <div className="relative overflow-hidden bg-linear-to-br from-accent/30 via-transparent to-accent-2/25 px-6 py-7">
-            <p className="text-xs font-semibold uppercase tracking-wider text-accent">{t("wallet.balance")}</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-fg-accent">{t("wallet.balance")}</p>
             <p className="mt-1 font-display text-5xl font-black tabular-nums tracking-tight text-fg">{wallet ? money(wallet.balanceCents) : "—"}</p>
             {wallet && wallet.heldCents > 0 && (
-              <Link href="/auctions?tab=bidding" className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-border-strong bg-surface-1/60 px-3 py-1 text-[11px] font-semibold text-accent transition-colors hover:border-accent hover:text-fg">
+              <Link href="/auctions?tab=bidding" className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-border-strong bg-surface-1/60 px-3 py-1 text-[11px] font-semibold text-fg-accent transition-colors hover:border-accent hover:text-fg">
                 <Gavel className="h-3 w-3" aria-hidden /> {t("wallet.held", { amount: money(wallet.heldCents) })}
               </Link>
             )}
@@ -127,7 +127,7 @@ function WalletPage() {
                   <RadioGroup.Card key={p.id} value={p.id} className="gap-0 rounded-2xl p-4 data-[state=checked]:shadow-lg data-[state=checked]:shadow-accent/20">
                     {p.id === POPULAR && <Badge size="sm" className="absolute -top-2.5 left-3 bg-linear-to-r from-accent to-accent-2 normal-case tracking-normal text-on-accent ring-0">{t("wallet.popular")}</Badge>}
                     <span className="font-display text-xl font-black text-fg">{money(p.priceCents)}</span>
-                    <span className="mt-0.5 text-[11px] font-semibold text-success">{bonus > 0 ? t("wallet.bonus", { amount: money(bonus) }) : " "}</span>
+                    <span className="mt-0.5 text-[11px] font-semibold text-fg-success">{bonus > 0 ? t("wallet.bonus", { amount: money(bonus) }) : " "}</span>
                   </RadioGroup.Card>
                 );
               })}
@@ -144,7 +144,7 @@ function WalletPage() {
                     <span className="flex h-4 w-4 items-center justify-center rounded-full border-2 border-fg-muted group-data-[state=checked]/pay:border-accent">
                       <span className="hidden h-1.5 w-1.5 rounded-full bg-accent group-data-[state=checked]/pay:block" />
                     </span>
-                    {g === "TEST" ? <Sparkles className="h-4 w-4 text-warning" /> : <Lock className="h-4 w-4 text-fg-secondary" />}
+                    {g === "TEST" ? <Sparkles className="h-4 w-4 text-fg-warning" /> : <Lock className="h-4 w-4 text-fg-secondary" />}
                     {t(`wallet.gateways.${g}` as MessageKey)}
                   </RadioGroup.Card>
                 ))}
@@ -173,14 +173,14 @@ function WalletPage() {
                 const Icon = TYPE_ICON[h.type];
                 return (
                   <li key={h.id} className="flex items-center gap-3 py-3">
-                    <span className={cn("flex h-9 w-9 items-center justify-center rounded-full", h.amountCents >= 0 ? "bg-success/15 text-success" : "bg-surface-2 text-fg-secondary")}>
+                    <span className={cn("flex h-9 w-9 items-center justify-center rounded-full", h.amountCents >= 0 ? "bg-success/15 text-fg-success" : "bg-surface-2 text-fg-secondary")}>
                       <Icon className="h-4 w-4" />
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block text-sm font-medium text-fg">{t(`wallet.types.${h.type}`)}</span>
                       <span className="block text-[11px] text-fg-muted">{new Date(h.createdAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>
                     </span>
-                    <span className={cn("font-mono text-sm font-semibold tabular-nums", h.amountCents >= 0 ? "text-success" : "text-fg-secondary")}>
+                    <span className={cn("font-mono text-sm font-semibold tabular-nums", h.amountCents >= 0 ? "text-fg-success" : "text-fg-secondary")}>
                       {h.amountCents >= 0 ? "+" : "−"}
                       {money(Math.abs(h.amountCents))}
                     </span>

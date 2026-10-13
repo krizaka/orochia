@@ -107,7 +107,7 @@ export function ProfileStoriesRow() {
   return (
     <section aria-label={t("stories.profile.title")} className="mt-5">
       <h2 className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-fg-secondary">
-        <Story24hIcon size={14} className="text-accent" />
+        <Story24hIcon size={14} className="text-fg-accent" />
         {t("stories.profile.title")}
       </h2>
       <ul className="flex gap-2.5 overflow-x-auto pb-1 scrollbar-none">
@@ -116,7 +116,7 @@ export function ProfileStoriesRow() {
             <button
               type="button"
               onClick={stories.add}
-              className="flex h-28 w-[4.5rem] flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-accent/50 bg-accent/5 text-accent outline-none transition-colors hover:bg-accent/10 focus-visible:ring-2 focus-visible:ring-accent"
+              className="flex h-28 w-[4.5rem] flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-accent/50 bg-accent/5 text-fg-accent outline-none transition-colors hover:bg-accent/10 focus-visible:ring-2 focus-visible:ring-accent"
             >
               <PlusIcon size={20} />
               <span className="px-1 text-center text-[10px] font-semibold leading-tight">{t("stories.add")}</span>

@@ -146,7 +146,7 @@ export function SoundPanel({ edit, set }: { edit: VideoEdit; set: Setter }) {
     <div className="space-y-5">
       <div className="flex items-end gap-2">
         <IconButton label={muted ? t("editor.sound.unmute") : t("editor.sound.mute")} onClick={() => set("volume", muted ? 1 : 0)} className="mb-[-2px] border border-white/10">
-          {muted ? <VolumeX className="h-4 w-4 text-danger" /> : <Volume2 className="h-4 w-4" />}
+          {muted ? <VolumeX className="h-4 w-4 text-fg-danger" /> : <Volume2 className="h-4 w-4" />}
         </IconButton>
         <div className="flex-1">
           <Slider
@@ -172,14 +172,14 @@ export function SoundPanel({ edit, set }: { edit: VideoEdit; set: Setter }) {
       </div>
       <div className="rounded-2xl border border-white/10 bg-white/3 p-4">
         <p className="mb-3 flex items-center gap-2 text-xs font-semibold text-fg-secondary">
-          <Music2 className="h-4 w-4 text-accent" /> {t("editor.sound.music")}
+          <Music2 className="h-4 w-4 text-fg-accent" /> {t("editor.sound.music")}
         </p>
         {edit.music ? (
           <div className="space-y-4">
             <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2">
               <Music2 className="h-4 w-4 shrink-0 text-fg-secondary" />
               <span className="min-w-0 flex-1 truncate text-sm font-medium text-white">{edit.music.name}</span>
-              <IconButton label={t("editor.sound.removeMusic")} onClick={() => set("music", null)} className="h-8 w-8 hover:text-danger">
+              <IconButton label={t("editor.sound.removeMusic")} onClick={() => set("music", null)} className="h-8 w-8 hover:text-fg-danger">
                 <Trash2 className="h-4 w-4" />
               </IconButton>
             </div>
@@ -196,7 +196,7 @@ export function SoundPanel({ edit, set }: { edit: VideoEdit; set: Setter }) {
             />
           </div>
         ) : (
-          <label className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-white/20 text-sm font-semibold text-accent transition-colors hover:border-accent hover:bg-accent/10 focus-within:ring-2 focus-within:ring-ring">
+          <label className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-white/20 text-sm font-semibold text-fg-accent transition-colors hover:border-accent hover:bg-accent/10 focus-within:ring-2 focus-within:ring-ring">
             <Music2 className="h-4 w-4" /> {t("editor.sound.addMusic")}
             <input type="file" accept="audio/*" className="sr-only" onChange={(e) => e.target.files?.[0] && set("music", e.target.files[0])} />
           </label>

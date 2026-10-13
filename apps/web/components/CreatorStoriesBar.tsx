@@ -42,7 +42,7 @@ function StoriesRail() {
           {isCreator && (
             <button type="button" onClick={() => setIsCreateOpen(true)} className="group flex shrink-0 flex-col items-center gap-1.5 rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-accent">
               <div className="relative flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border-2 border-dashed border-accent/60 bg-accent/10 transition-transform group-hover:scale-105">
-                <PlusIcon size={22} className="text-accent transition-transform duration-300 group-hover:rotate-90" />
+                <PlusIcon size={22} className="text-fg-accent transition-transform duration-300 group-hover:rotate-90" />
               </div>
               <span className="text-[11px] font-semibold text-fg-secondary">{t("stories.add")}</span>
             </button>
@@ -75,7 +75,7 @@ function StoriesRail() {
                   </span>
                 )}
               </div>
-              <span className="max-w-[72px] truncate text-[11px] font-medium text-fg group-hover:text-accent">
+              <span className="max-w-[72px] truncate text-[11px] font-medium text-fg group-hover:text-fg-accent">
                 {r.isOwn ? t("stories.yours") : r.displayName}
               </span>
             </button>

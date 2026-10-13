@@ -69,7 +69,7 @@ export default function NotificationsPage() {
         )}
       </div>
       {loaded && all.length >= 25 && more && (
-        <Button variant="ghost" size="sm" shape="rounded" onClick={() => void loadOlder()} loading={loadingMore} className="mx-auto mt-4 flex rounded-xl text-accent hover:bg-accent/10 hover:text-accent">
+        <Button variant="ghost" size="sm" shape="rounded" onClick={() => void loadOlder()} loading={loadingMore} className="mx-auto mt-4 flex rounded-xl text-fg-accent hover:bg-accent/10 hover:text-fg-accent">
           {t("notifications.loadMore")}
         </Button>
       )}

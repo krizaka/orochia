@@ -115,7 +115,7 @@ export default async function CreatorApplyPage() {
               <ul className="mt-3 space-y-2">
                 {items.map((item) => (
                   <li key={item} className="flex items-start gap-2 text-sm text-fg-secondary">
-                    <Icon className={cn("mt-0.5 h-4 w-4 shrink-0", key === "after" ? "text-success" : "text-fg-muted")} aria-hidden />
+                    <Icon className={cn("mt-0.5 h-4 w-4 shrink-0", key === "after" ? "text-fg-success" : "text-fg-muted")} aria-hidden />
                     {t(item)}
                   </li>
                 ))}

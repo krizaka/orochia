@@ -62,7 +62,7 @@ export function AgeVerificationModal() {
         <ul className="my-6 space-y-2.5 rounded-2xl border border-border-subtle bg-surface-2 p-4 text-left text-xs text-fg-secondary">
           {(["age", "terms", "consent"] as const).map((key) => (
             <li key={key} className="flex items-start gap-2.5">
-              <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden />
+              <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-fg-accent" aria-hidden />
               <span>{t(`ageGate.${key}`)}</span>
             </li>
           ))}

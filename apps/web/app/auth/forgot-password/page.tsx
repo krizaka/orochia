@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="mx-auto max-w-md px-4 py-16">
       <div className="rounded-3xl border border-border-default bg-surface-1 p-6 sm:p-8">
-        <KeyRound className="h-8 w-8 text-accent" />
+        <KeyRound className="h-8 w-8 text-fg-accent" />
         <h1 className="mt-4 text-2xl font-black text-fg font-display">{t("auth.forgot.title")}</h1>
         {state === "sent" ? (
           <>
@@ -49,7 +49,7 @@ export default function ForgotPasswordPage() {
             </p>
             {devLink && (
               <p className="mt-4 break-all text-[11px] text-fg-muted">
-                {t("auth.forgot.demo")} <a href={devLink} className="text-accent underline">{devLink}</a>
+                {t("auth.forgot.demo")} <a href={devLink} className="text-fg-accent underline">{devLink}</a>
               </p>
             )}
           </>
@@ -69,7 +69,7 @@ export default function ForgotPasswordPage() {
                 />
               </div>
             </label>
-            {error && <p role="alert" className="text-xs text-danger">{error}</p>}
+            {error && <p role="alert" className="text-xs text-fg-danger">{error}</p>}
             <BotChallenge key={challengeKey} challenge={challenge} action="password_reset" onToken={setChallengeToken} />
             <Button type="submit" variant="primary" size="lg" shape="rounded" loading={state === "sending"} className="w-full rounded-xl font-bold">
               {t("auth.forgot.submit")}

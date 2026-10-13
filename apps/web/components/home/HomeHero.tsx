@@ -74,7 +74,7 @@ export function HomeHero({ share, stats }: { share: number; stats: { videos: num
           <ul className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-xs text-fg-secondary">
             {[t("home.trust.free"), t("home.trust.private"), t("home.trust.share", { share })].map((item) => (
               <li key={item} className="flex items-center gap-1.5">
-                <CheckIcon size={14} className="text-success" /> {item}
+                <CheckIcon size={14} className="text-fg-success" /> {item}
               </li>
             ))}
           </ul>

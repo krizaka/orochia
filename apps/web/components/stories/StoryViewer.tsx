@@ -533,7 +533,7 @@ export function StoryViewer({
                       aria-label={story.liked ? t("stories.viewer.unlike") : t("stories.viewer.like")}
                       className={cn(
                         "flex h-11 shrink-0 items-center gap-1.5 rounded-full px-3 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-fg-on-media/80",
-                        story.liked ? "bg-danger/25 text-danger" : "bg-scrim text-fg-on-media hover:bg-scrim-strong",
+                        story.liked ? "bg-danger/25 text-fg-danger" : "bg-scrim text-fg-on-media hover:bg-scrim-strong",
                       )}
                     >
                       <HeartIcon key={likePulse} size={20} className={cn(story.liked && "orochia-like-pop fill-current")} />

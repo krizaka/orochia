@@ -70,7 +70,7 @@ export function VideoCard(props: VideoCardProps) {
                 <Link href={profile} className="truncate text-xs text-fg-secondary transition-colors hover:text-fg">
                   {creatorName}
                 </Link>
-                <CheckCircle2 className="h-3 w-3 shrink-0 text-success" aria-hidden />
+                <CheckCircle2 className="h-3 w-3 shrink-0 text-fg-success" aria-hidden />
               </div>
             </div>
           </div>
@@ -89,7 +89,7 @@ export function VideoCard(props: VideoCardProps) {
           )}
           <Card.Footer className="mt-3 justify-between pt-2.5 font-mono text-[11px] text-fg-muted">
             <VideoCardCounts viewsCount={viewsCount} tipsCount={tipsCount} />
-            <Button size="sm" shape="rounded" onClick={only(() => setTipping(true))} className="h-6 gap-1 border-accent/30 bg-accent/10 px-2 text-[10px] text-accent hover:border-accent hover:bg-accent hover:text-on-accent">
+            <Button size="sm" shape="rounded" onClick={only(() => setTipping(true))} className="h-6 gap-1 border-accent/30 bg-accent/10 px-2 text-[10px] text-fg-accent hover:border-accent hover:bg-accent hover:text-on-accent">
               <Sparkles className="h-2.5 w-2.5" aria-hidden />
               <span>{t("card.tip")}</span>
             </Button>
@@ -121,7 +121,7 @@ function VideoCardMedia({ hovered, thumbnailUrl, previewAnimationUrl, durationSe
       <Card.Image ref={picture} src={src} onError={() => setBroken(true)} fallback={<Play className="h-10 w-10" />} className={cn(veiled && "scale-110 blur-xl")} />
       {veiled && (
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-scrim p-4 text-center backdrop-blur-md">
-          <span className="mb-1 text-[10px] font-bold uppercase tracking-wider text-accent">{t("card.sensitive")}</span>
+          <span className="mb-1 text-[10px] font-bold uppercase tracking-wider text-fg-accent">{t("card.sensitive")}</span>
           <Button size="sm" onClick={only(() => setRevealed(true))} className="h-7 border-0 bg-scrim-strong px-3 text-[11px] text-fg-on-media hover:bg-scrim">
             {t("card.reveal")}
           </Button>
@@ -200,7 +200,7 @@ function VideoCardCounts({ viewsCount, tipsCount }: { viewsCount: number; tipsCo
         {viewsCount.toLocaleString()}
       </span>
       {tipsCount > 0 && (
-        <span className="flex items-center gap-1 font-semibold text-accent">
+        <span className="flex items-center gap-1 font-semibold text-fg-accent">
           <Sparkles className="h-3 w-3" aria-hidden />
           {tipsCount}
         </span>

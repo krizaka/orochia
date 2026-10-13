@@ -175,7 +175,7 @@ export function Thread({ conversation, myId, presence, messages, state, typing, 
             ))}
           </div>
         ) : state.error ? (
-          <p role="alert" className="mx-auto mt-6 flex max-w-sm items-center gap-2 rounded-xl border border-danger/30 bg-danger/10 p-3 text-xs text-danger">
+          <p role="alert" className="mx-auto mt-6 flex max-w-sm items-center gap-2 rounded-xl border border-danger/30 bg-danger/10 p-3 text-xs text-fg-danger">
             <WarningIcon size={16} /> {state.error}
           </p>
         ) : messages.length === 0 ? (
@@ -235,7 +235,7 @@ export function Thread({ conversation, myId, presence, messages, state, typing, 
                       </div>
                     </div>
                     {mine && m.local === "failed" && (
-                      <p role="alert" className="mt-1 flex items-center justify-end gap-2 text-[11px] text-danger">
+                      <p role="alert" className="mt-1 flex items-center justify-end gap-2 text-[11px] text-fg-danger">
                         <span>{m.error ?? t("inbox.status.failed")}</span>
                         <Button variant="ghost" size="sm" className="h-6 px-2 text-[11px]" onClick={() => onRetry(m.clientId!)}>
                           {t("inbox.retry")}
