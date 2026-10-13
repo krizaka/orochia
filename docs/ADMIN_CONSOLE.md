@@ -60,9 +60,9 @@ Four gates, each enforced in code:
    stored as a salted scrypt hash and compared in constant time. Sessions are random tokens stored hashed, valid
    8 hours, in an `httpOnly`, `SameSite=Strict` cookie. Changing the password in the environment revokes every open
    session.
-3. **A service token.** The console calls Orochia as a service: `Authorization: Bearer OROCHIA_ADMIN_API_TOKEN`
+3. **A service token.** The console calls Orochia as a service: `Authorization: Bearer OPERATOR_API_TOKEN`
    (32 characters or more, shared by the two deployments only), compared in constant time. Orochia accepts it on its
-   ADMIN routes only, and acts as the platform owner (`OROCHIA_OWNER_EMAIL`), who must exist, be an administrator and
+   ADMIN routes only, and acts as the platform owner (`AUTH_OWNER_EMAIL`), who must exist, be an administrator and
    not be suspended — otherwise every call is refused. Without the variable, no token is accepted.
 4. **Armed confirmations.** Every decision opens a dialog that says what will happen before it does. A decision that
    affects someone requires a **recorded reason** (a takedown, a suspension, a failed payout, a cancelled auction) or
@@ -79,13 +79,13 @@ Every decision — done or refused, with its target and detail — is written to
 - **Factory reset** deletes every account, video, payment, auction and setting and rebuilds the schema from the
   release's migrations — the state of a fresh install. Orochia's owner account is kept; the console, its account
   and its log live in their own database and are not affected; media files at Bunny are not deleted. It is
-  available **only** where `OROCHIA_ALLOW_DATABASE_RESET=true` and **never** on the public, indexed production,
+  available **only** where `DATABASE_ALLOW_RESET=true` and **never** on the public, indexed production,
   whatever the flag says. The operator must type `reset <database name>`; "back up first" is on by default, and if
   that backup fails nothing is deleted.
 
 ## Run it locally
 
-Start Orochia first, with the same `OROCHIA_ADMIN_API_TOKEN` in its `.env`, then:
+Start Orochia first, with the same `OPERATOR_API_TOKEN` in its `.env`, then:
 
 ```bash
 git clone https://github.com/krizaka/orochia-admin.git && cd orochia-admin
@@ -96,4 +96,4 @@ npm run dev                     # http://localhost:3001 — sign in with ADMIN_E
 ```
 
 Locally (outside production) an empty `ADMIN_ALLOWED_IPS` lets every address in. On a deployment, `deploy/Dockerfile`
-builds a standalone image (port 3001); `ADMIN_PASSWORD` and `OROCHIA_ADMIN_API_TOKEN` are app secrets, never in git.
+builds a standalone image (port 3001); `ADMIN_PASSWORD` and `OPERATOR_API_TOKEN` are app secrets, never in git.

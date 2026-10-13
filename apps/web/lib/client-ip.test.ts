@@ -10,12 +10,12 @@ describe("clientIp", () => {
   });
 
   it("skips as many proxies as configured", () => {
-    expect(clientIp(h({ "x-forwarded-for": "6.6.6.6, 198.51.100.4, 10.0.0.2" }), { TRUSTED_PROXY_HOPS: "2" })).toBe("198.51.100.4");
+    expect(clientIp(h({ "x-forwarded-for": "6.6.6.6, 198.51.100.4, 10.0.0.2" }), { ABUSE_TRUSTED_PROXY_HOPS: "2" })).toBe("198.51.100.4");
   });
 
   it("prefers the edge's own header when configured, and ignores garbage", () => {
-    expect(clientIp(h({ "do-connecting-ip": "203.0.113.9", "x-forwarded-for": "1.1.1.1" }), { CLIENT_IP_HEADER: "do-connecting-ip" })).toBe("203.0.113.9");
-    expect(clientIp(h({ "do-connecting-ip": "not-an-ip", "x-forwarded-for": "1.1.1.1" }), { CLIENT_IP_HEADER: "do-connecting-ip" })).toBe("1.1.1.1");
+    expect(clientIp(h({ "do-connecting-ip": "203.0.113.9", "x-forwarded-for": "1.1.1.1" }), { ABUSE_CLIENT_IP_HEADER: "do-connecting-ip" })).toBe("203.0.113.9");
+    expect(clientIp(h({ "do-connecting-ip": "not-an-ip", "x-forwarded-for": "1.1.1.1" }), { ABUSE_CLIENT_IP_HEADER: "do-connecting-ip" })).toBe("1.1.1.1");
     expect(clientIp(h({ "x-forwarded-for": "999.1.1.1" }), {})).toBeNull();
     expect(clientIp(h({ "x-forwarded-for": "2001:db8::1" }), {})).toBe("2001:db8::1");
     expect(clientIp(h({}), {})).toBeNull();
@@ -24,6 +24,6 @@ describe("clientIp", () => {
   it("binds playback tokens to the address only when asked", () => {
     const headers = h({ "x-forwarded-for": "198.51.100.4" });
     expect(playbackIp(headers, {})).toBeUndefined();
-    expect(playbackIp(headers, { BUNNY_TOKEN_BIND_IP: "on" })).toBe("198.51.100.4");
+    expect(playbackIp(headers, { MEDIA_STREAM_TOKEN_BIND_IP: "on" })).toBe("198.51.100.4");
   });
 });

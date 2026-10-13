@@ -5,6 +5,7 @@
  * Reads the Drizzle schema and the Next.js API route tree and writes:
  *   - docs/_generated/orochia-architecture.json   (repositories, modules, tables, endpoints)
  *   - docs/API_CONTRACTS.md                        (endpoint reference with its access rule)
+ *   - docs/DEPLOYMENT.md, "Environment variables"   (from apps/web/lib/env.ts ENV_VARS, grouped by context)
  * and, when this repository is cloned inside krizaka-com (products/orochia), syncs them to the site:
  *   - app/data/orochia-architecture.json
  *   - orochia-content/docs/*.md                    (published through lib/docs-manifest.ts)
@@ -21,6 +22,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildDatabaseMarkdown, readSchema } from "./database-doc.mjs";
 import { buildArchitectureMap } from "./architecture-map.mjs";
+import { tsImport } from "tsx/esm/api";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteArg = process.argv.indexOf("--site");
@@ -159,7 +161,7 @@ const model = {
         "CCBill · Segpay · NowPayments · Stripe adapters",
         "Constant-time webhook signatures, no lenient mode",
         "Exactly-once settlement",
-        `Platform fee ${feePct ?? "10"}% (PLATFORM_FEE_PERCENTAGE)`,
+        `Platform fee ${feePct ?? "10"}% (PAYMENTS_PLATFORM_FEE_PERCENTAGE)`,
       ],
     },
     {
@@ -212,7 +214,49 @@ ${tables.map((t) => `| \`${t.table}\` | \`${t.export}\` | \`${t.file}\` |`).join
 // ── Database reference (docs/DATABASE.md) — read from the Drizzle schema objects ─────────
 const databaseMarkdown = buildDatabaseMarkdown(ROOT, schema);
 
+// ── Environment variables (docs/DEPLOYMENT.md) — from the typed env module, grouped by bounded context ─────
+const { ENV_VARS, ENV_CONTEXTS } = await tsImport(path.join(ROOT, "apps/web/lib/env.ts"), import.meta.url);
+// Inline code stays as written; elsewhere angle brackets and braces are escaped for MDX.
+const mdCell = (s) => s.split(/(`[^`]*`)/).map((part, i) => (i % 2 ? part : mdText(part))).join("").replace(/\|/g, "\\|");
+const NEED = { required: "✓", recommended: "recommended", optional: "—" };
+const envMarkdown = [
+  "## Environment variables",
+  "",
+  "> Generated from `apps/web/lib/env.ts` (`ENV_VARS`) by `scripts/generate-docs.mjs` — do not hand-edit this section.",
+  "",
+  `Every variable is named \`<CONTEXT>_<THING>\` after the part of the platform it configures — never after the product or`,
+  "a vendor: a vendor is a value (`MEDIA_STORAGE_PROVIDER=bunny`, `MAIL_PROVIDER=resend`). `NEXT_PUBLIC_` marks the few the",
+  "browser needs. **Production** ✓ = a deployment refuses to start without it (`assertEnv`, `apps/web/lib/env.ts`); **Secret**",
+  "= a `SECRET` on App Platform. Build-time variables are marked *(build)*.",
+  "",
+  ...Object.entries(ENV_CONTEXTS).flatMap(([context, label]) => {
+    const vars = ENV_VARS.filter((e) => e.context === context);
+    if (!vars.length) return [];
+    return [
+      `### ${label.split(" — ")[0]} — \`${context}_\``,
+      "",
+      `${label.includes(" — ") ? label.split(" — ").slice(1).join(" — ").replace(/^./, (c) => c.toUpperCase()) + "." : ""}`,
+      "",
+      "| Variable | Production | Secret | Default | What it does |",
+      "| :--- | :---: | :---: | :--- | :--- |",
+      ...vars.map(
+        (e) =>
+          `| \`${e.name}\`${e.build ? " *(build)*" : ""} | ${NEED[e.need]} | ${e.secret ? "✓" : ""} | ${e.default ? mdCell(`\`${e.default}\``) : ""} | ${mdCell(e.doc)} |`,
+      ),
+      "",
+    ];
+  }),
+  "",
+].join("\n");
+const deploymentPath = path.join(ROOT, "docs/DEPLOYMENT.md");
+const deploymentSrc = read(deploymentPath);
+// The whole "## Environment variables" section, up to the paragraph that follows its tables.
+const envBlock = /## Environment variables\n[\s\S]*?\n(?=A missing required value)/;
+if (!envBlock.test(deploymentSrc)) throw new Error('docs/DEPLOYMENT.md has no "## Environment variables" section');
+const deploymentMarkdown = deploymentSrc.replace(envBlock, () => envMarkdown);
+
 const outputs = {
+  [deploymentPath]: deploymentMarkdown,
   [path.join(ROOT, "docs/_generated/orochia-architecture.json")]: JSON.stringify(model, null, 2) + "\n",
   [path.join(ROOT, "docs/API_CONTRACTS.md")]: apiMarkdown,
   [path.join(ROOT, "docs/DATABASE.md")]: databaseMarkdown,

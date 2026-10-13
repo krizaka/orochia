@@ -51,7 +51,7 @@ configuration:
 | `REALTIME_BUS` | Crossing instances | Presence | When |
 | :--- | :--- | :--- | :--- |
 | `postgres` (default) | `NOTIFY orochia_events` → each instance's dedicated `LISTEN` connection (`packages/db/src/listen.ts`), filtered by topic | each instance's memory, replicated over the same channel (changes + a snapshot every 30 s) | one to ~3 instances — no extra service |
-| `redis` + `REDIS_URL` | Redis / Valkey pub/sub, one subscription per topic an instance needs (prefix `orochia:rt:`) | in Redis (one Lua script per beat, keys that expire) | more instances, ~10 k+ streams, or NOTIFY weighing on the database |
+| `redis` + `REALTIME_REDIS_URL` | Redis / Valkey pub/sub, one subscription per topic an instance needs (prefix `orochia:rt:`) | in Redis (one Lua script per beat, keys that expire) | more instances, ~10 k+ streams, or NOTIFY weighing on the database |
 | `memory` | none (one process) | memory | tests |
 
 - `publish` never throws (realtime is best-effort); payloads are small facts (≤ 8 KB — the NOTIFY limit), never
@@ -186,7 +186,7 @@ curl -N -H "Authorization: Bearer <token>" -H "Last-Event-ID: m42" http://localh
 App Platform has no session affinity and cuts requests idle for 100 s: the heartbeat (15 s) and the stream's own end
 (300 s, then an immediate reconnection that resumes) make that invisible, and no affinity is needed. Each instance holds
 one `LISTEN` connection on top of its pool — counted in the connection budget ([DEPLOYMENT.md](DEPLOYMENT.md)). Before
-a second instance: `RATE_LIMIT_STORE=postgres`; past ~3 instances, `REALTIME_BUS=redis` (DigitalOcean Managed Caching,
+a second instance: `ABUSE_RATE_LIMIT_STORE=postgres`; past ~3 instances, `REALTIME_BUS=redis` (DigitalOcean Managed Caching,
 Valkey). Nothing else changes.
 
 ## 10. Where the code is

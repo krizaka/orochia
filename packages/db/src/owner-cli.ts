@@ -2,7 +2,7 @@
  * npm run db:owner [-- --email … --username … --name "…"] [--reset-password]
  *
  * Applies the owner account (src/owner.ts) to DATABASE_URL — local or production. Flags override
- * the OROCHIA_OWNER_* variables. Without OROCHIA_OWNER_PASSWORD a password is generated and
+ * the AUTH_OWNER_* variables. Without AUTH_OWNER_PASSWORD a password is generated and
  * printed once (only when one has to be set).
  */
 import crypto from "node:crypto";
@@ -36,7 +36,7 @@ async function main(): Promise<void> {
   );
   console.log(`✓ Owner account ${outcome.created ? "created" : "up to date"} (ADMIN, verified, active) — ${outcome.id}`);
   if (outcome.passwordSet && generated) console.log(`  Password (shown once, change it after signing in): ${generated}`);
-  else if (!outcome.passwordSet) console.log("  Password unchanged (--reset-password sets OROCHIA_OWNER_PASSWORD or a generated one).");
+  else if (!outcome.passwordSet) console.log("  Password unchanged (--reset-password sets AUTH_OWNER_PASSWORD or a generated one).");
 }
 
 main()

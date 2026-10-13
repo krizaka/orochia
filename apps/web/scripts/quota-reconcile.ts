@@ -14,8 +14,8 @@ if (fs.existsSync(rootEnv)) process.loadEnvFile(rootEnv);
 const gb = (bytes: number | null | undefined) => (bytes == null ? "—" : `${(bytes / 1024 ** 3).toFixed(2)} GB`);
 
 async function main(): Promise<number> {
-  if (!process.env.BUNNY_STREAM_API_KEY?.trim()) {
-    console.error("BUNNY_STREAM_API_KEY is not set: nothing to reconcile with.");
+  if (!process.env.MEDIA_STREAM_API_KEY?.trim()) {
+    console.error("MEDIA_STREAM_API_KEY is not set: nothing to reconcile with.");
     return 1;
   }
   const { reconcileStorage } = await import("../lib/storage-reconcile");

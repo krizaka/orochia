@@ -113,8 +113,8 @@ describe("POST /api/videos/create-upload-session — quotas before the signature
     expect(bunny.createTusUploadSession).not.toHaveBeenCalled();
   });
 
-  it("refuses a lowered per-file maximum (QUOTA_VIDEO_MAX_MB)", async () => {
-    vi.stubEnv("QUOTA_VIDEO_MAX_MB", "100");
+  it("refuses a lowered per-file maximum (ABUSE_QUOTA_VIDEO_MAX_MB)", async () => {
+    vi.stubEnv("ABUSE_QUOTA_VIDEO_MAX_MB", "100");
     const res = await POST(body(200 * 1024 ** 2));
     expect(res.status).toBe(413);
     expect((await res.json()).code).toBe("FILE_TOO_LARGE");

@@ -1,7 +1,7 @@
 /**
  * npm run mail:templates:preview [-- --out <dir>]   renders every template and locale to apps/web/.mail-preview/
  * npm run mail:templates:push [-- --apply]          compares the repository's templates with Bunny Storage
- *                                                   (`mail-templates/` in BUNNY_STORAGE_ZONE); --apply writes them
+ *                                                   (`mail-templates/` in MEDIA_STORAGE_ZONE); --apply writes them
  *
  * The repository is the reference: push checks every template first and refuses to publish a broken one. Without
  * --apply nothing is written (dry run). Reads the root .env; real environment variables win.
@@ -43,11 +43,11 @@ async function main(): Promise<number> {
     }
     const bunny = bunnyStorageCredentials();
     if (!bunny && values.apply) {
-      console.error("✗ BUNNY_STORAGE_API_KEY (and BUNNY_STORAGE_ZONE, BUNNY_STORAGE_ENDPOINT) are required to publish.");
+      console.error("✗ MEDIA_STORAGE_API_KEY (and MEDIA_STORAGE_ZONE, MEDIA_STORAGE_ENDPOINT) are required to publish.");
       return 1;
     }
     const plan = await planPush(dir, bunny ? (key) => getBunnyConfigObject(key, { timeoutMs: 15_000 }) : null);
-    const zone = process.env.BUNNY_STORAGE_ZONE || "orochia-media";
+    const zone = process.env.MEDIA_STORAGE_ZONE || "orochia-media";
     console.log(bunny ? `Bunny Storage zone ${zone}, prefix mail-templates/:` : "No Bunny credentials: showing what would be published.");
     for (const entry of plan) console.log(`  ${entry.status.padEnd(9)} ${entry.key}`);
     const pending = plan.filter((e) => e.status !== "unchanged").length;

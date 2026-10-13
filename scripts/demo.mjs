@@ -6,10 +6,10 @@
  *   npm run demo:start    a production build of the app on that database, on :3100, ready for `npm run record:tour`
  *                         (run `npm run build` first)
  *
- * The demo lives in its own database, `orochia_demo` on the dev container (DEMO_DATABASE_URL to choose another
+ * The demo lives in its own database, `orochia_demo` on the dev container (DATABASE_DEMO_URL to choose another
  * local one whose name contains "demo"): the shared development database is never touched. Both commands refuse
  * NODE_ENV=production and any database that is not on this machine. The server never sends mail or push (their
- * keys are blanked, PUSH_DELIVERY=off), keeps test top-ups (SEARCH_INDEXING=off) and seals payout accounts with a
+ * keys are blanked, PUSH_DELIVERY=off), keeps test top-ups (APP_SEARCH_INDEXING=off) and seals payout accounts with a
  * local key shared with the seed.
  */
 import { spawn } from "node:child_process";
@@ -19,10 +19,10 @@ import { ROOT, c, ok, run, step, fail, databaseUrl, isLocalDatabase } from "./li
 
 const [command] = process.argv.slice(2);
 const CONTAINER = "orochia-postgres-dev";
-const PORT = process.env.PORT_DEMO || "3100";
+const PORT = process.env.APP_DEMO_PORT || "3100";
 
 function demoUrl() {
-  if (process.env.DEMO_DATABASE_URL) return process.env.DEMO_DATABASE_URL;
+  if (process.env.DATABASE_DEMO_URL) return process.env.DATABASE_DEMO_URL;
   const url = new URL(databaseUrl());
   url.pathname = "/orochia_demo";
   return url.toString();
@@ -37,13 +37,12 @@ if (!/demo/.test(name)) fail(`Refusing the demo: the database "${name}" is not a
 /** The demo's environment: the dedicated database, nothing that leaves the machine. */
 const env = {
   DATABASE_URL: url,
-  PAYOUT_ENCRYPTION_KEY: process.env.PAYOUT_ENCRYPTION_KEY || "orochia-demo-local-payout-key-never-in-production",
+  PAYMENTS_PAYOUT_ENCRYPTION_KEY: process.env.PAYMENTS_PAYOUT_ENCRYPTION_KEY || "orochia-demo-local-payout-key-never-in-production",
   PAYMENTS_CREDITS_MODE: "test",
-  SEARCH_INDEXING: "off",
+  APP_SEARCH_INDEXING: "off",
   PUSH_DELIVERY: "off",
   MAIL_DELIVERY: "off",
-  RESEND_API_KEY: "",
-  MAILGUN_API_KEY: "",
+  MAIL_API_KEY: "",
   NEXT_PUBLIC_APP_URL: `http://localhost:${PORT}`,
   PORT,
 };
@@ -77,7 +76,7 @@ switch (command) {
     run("npm", ["run", "db:migrate", "--silent"], { env, quiet: true });
     ok("Applied");
     step("Elena, Alex and the people around them");
-    run("npx", ["tsx", "apps/web/scripts/demo-seed.ts"], { env: { ...env, OROCHIA_DEMO_SEED: "1" } });
+    run("npx", ["tsx", "apps/web/scripts/demo-seed.ts"], { env: { ...env, APP_DEMO_SEED: "1" } });
     console.log(`\n  Next: ${c.bold("npm run build && npm run demo:start")}, then ${c.bold("npm run record:tour")}`);
     break;
   }

@@ -28,16 +28,16 @@ ENV NODE_ENV=production
 # Build-time values (App Platform passes RUN_AND_BUILD_TIME variables as build args): the public
 # origin inlined in the client bundle and in prerendered pages, and whether search engines may index.
 ARG NEXT_PUBLIC_APP_URL
-ARG SEARCH_INDEXING
+ARG APP_SEARCH_INDEXING
 ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
-ENV SEARCH_INDEXING=$SEARCH_INDEXING
+ENV APP_SEARCH_INDEXING=$APP_SEARCH_INDEXING
 # The build badge next to the brand (lib/build-info.ts): the environment (local · dev · staging · production — hidden in
 # production) and the commit built — .git is not in the build context, so the builder passes it (App Platform:
-# COMMIT_SHA = ${_self.COMMIT_HASH}).
+# APP_COMMIT_SHA = ${_self.COMMIT_HASH}).
 ARG NEXT_PUBLIC_APP_ENV
-ARG COMMIT_SHA
+ARG APP_COMMIT_SHA
 ENV NEXT_PUBLIC_APP_ENV=$NEXT_PUBLIC_APP_ENV
-ENV COMMIT_SHA=$COMMIT_SHA
+ENV APP_COMMIT_SHA=$APP_COMMIT_SHA
 
 # Generate build output for Next.js standalone
 RUN npm run build --workspace=@orochia/web

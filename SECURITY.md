@@ -24,7 +24,7 @@ Content that may involve minors or non-consensual material must be reported thro
 - **Abuse**: rate limits per account and per IP with `Retry-After`, counted on the address the trusted proxy saw (never
   the client's `X-Forwarded-For`); sign-up behind a signed form token with a minimal fill time, a honeypot, a
   disposable-domain block list, a scripted-client refusal and Cloudflare Turnstile (fail closed); sign-in with
-  progressive back-off and temporary lock-out per identifier. Multi-instance deployments use `RATE_LIMIT_STORE=postgres`.
+  progressive back-off and temporary lock-out per identifier. Multi-instance deployments use `ABUSE_RATE_LIMIT_STORE=postgres`.
 - **Configuration**: production refuses to run on missing secrets (503) and has no demo mode.
 - **HTTP**: Content-Security-Policy (`object-src 'none'`, `frame-ancestors 'none'`, `base-uri 'self'`, scripts from
   this origin, Turnstile and the ffmpeg core CDN), HSTS, `nosniff`, `X-Frame-Options: DENY`, COOP `same-origin`, strict

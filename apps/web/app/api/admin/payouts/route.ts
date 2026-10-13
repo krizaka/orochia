@@ -11,7 +11,7 @@ function readableDestination(value: string): string {
     const details = openDetails(value);
     return typeof details === "string" ? details : Object.entries(details).map(([k, v]) => `${k}: ${v}`).join(" · ");
   } catch {
-    return "(cannot be decrypted with this PAYOUT_ENCRYPTION_KEY)";
+    return "(cannot be decrypted with this PAYMENTS_PAYOUT_ENCRYPTION_KEY)";
   }
 }
 

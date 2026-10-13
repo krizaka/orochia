@@ -5,7 +5,7 @@ import { checkPlatformAlerts } from "./storage-usage";
 /**
  * Background housekeeping of the quotas and limits, run by every instance (started by instrumentation.ts) every
  * 10 minutes: expired rate-limit windows are swept (postgres store), the platform alerts re-checked, and the storage
- * reconciled with Bunny when the last reconciliation is older than QUOTA_RECONCILE_INTERVAL_MINUTES (360; 0 = never).
+ * reconciled with Bunny when the last reconciliation is older than ABUSE_QUOTA_RECONCILE_INTERVAL_MINUTES (360; 0 = never).
  * The interval check reads the last snapshot, so instances do not all reconcile; if two do, the result is the same.
  */
 const INTERVAL_MS = 10 * 60_000;

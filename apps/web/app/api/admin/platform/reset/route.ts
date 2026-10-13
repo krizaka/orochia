@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 const Reset = z.object({ confirm: z.string().max(200), backup: z.boolean().default(true) });
 
 /**
- * Factory reset: backs the database up first (unless asked not to), wipes it and rebuilds it from the migrations — development deployments only (OROCHIA_ALLOW_DATABASE_RESET,
+ * Factory reset: backs the database up first (unless asked not to), wipes it and rebuilds it from the migrations — development deployments only (DATABASE_ALLOW_RESET,
  * never the indexed production), after the operator typed “reset <database>”. The operator and the owner are kept.
  */
 export async function POST(req: NextRequest) {

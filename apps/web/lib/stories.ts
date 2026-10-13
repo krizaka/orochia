@@ -382,7 +382,7 @@ export function reconcileDecision(
 export async function reconcileStoryVideos(
   options: { creatorId?: string; limit?: number; client?: Pick<BunnyStreamClient, "getVideo" | "deleteVideo"> } = {},
 ): Promise<{ checked: number; settled: number }> {
-  if (!process.env.BUNNY_STREAM_API_KEY?.trim()) return { checked: 0, settled: 0 };
+  if (!process.env.MEDIA_STREAM_API_KEY?.trim()) return { checked: 0, settled: 0 };
   const stale = new Date(Date.now() - STORY_RECHECK_AFTER_MS);
   const candidates = await db
     .select({ id: stories.id, bunnyVideoId: stories.bunnyVideoId, status: stories.status, createdAt: stories.createdAt })

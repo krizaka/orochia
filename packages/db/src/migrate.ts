@@ -1,7 +1,7 @@
 /**
  * Applies the SQL migrations in packages/db/drizzle to DATABASE_URL (rebuilding a development database whose history
  * was squashed — src/migrations.ts), then the owner account
- * (OROCHIA_OWNER_*, see src/owner.ts) when it is configured, and exits.
+ * (AUTH_OWNER_*, see src/owner.ts) when it is configured, and exits.
  * Bundled into the production image as /app/migrate.cjs (see deploy/docker/Dockerfile) and run as
  * the DigitalOcean PRE_DEPLOY job, so a release never starts against an older schema.
  */
@@ -15,7 +15,7 @@ import { applyMigrations, databaseResetAllowed, dropPublicObjects, historyState,
 async function main(): Promise<void> {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) throw new Error("DATABASE_URL is required");
-  const migrationsFolder = process.env.MIGRATIONS_DIR ?? path.resolve(__dirname, "drizzle");
+  const migrationsFolder = process.env.DATABASE_MIGRATIONS_DIR ?? path.resolve(__dirname, "drizzle");
   const pool = new Pool({ ...connectionConfig(connectionString), application_name: "orochia-migrate", max: 1 });
   try {
     const migrations = loadMigrations(migrationsFolder);
@@ -25,7 +25,7 @@ async function main(): Promise<void> {
       if (!databaseResetAllowed()) {
         throw new Error(
           "This database's migration history was rewritten (new baseline). It cannot migrate forward. On a development " +
-            "deployment set OROCHIA_ALLOW_DATABASE_RESET=true to rebuild it; production data is never dropped.",
+            "deployment set DATABASE_ALLOW_RESET=true to rebuild it; production data is never dropped.",
         );
       }
       console.warn(`Migration history rewritten (${state.applied} applied, not all shipped by this release): rebuilding the database.`);

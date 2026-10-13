@@ -2,7 +2,7 @@ import { pgTable, timestamp, integer, varchar, bigint, jsonb, uuid, index } from
 import { sql } from "drizzle-orm";
 
 /**
- * Rate-limit windows shared by every instance (RATE_LIMIT_STORE=postgres, apps/web/lib/rate-limit.ts): one row per
+ * Rate-limit windows shared by every instance (ABUSE_RATE_LIMIT_STORE=postgres, apps/web/lib/rate-limit.ts): one row per
  * key and fixed window, counted with a single upsert. Expired rows are swept by the background loop.
  */
 export const rateLimitBuckets = pgTable(

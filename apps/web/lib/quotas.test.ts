@@ -73,26 +73,26 @@ describe("configuration", () => {
     expect(config.concurrentUploads).toBe(3);
   });
 
-  it("refuses STORAGE_LIMITS=off in production without an explicit decision", () => {
-    expect(() => quotaConfig({ NODE_ENV: "production", STORAGE_LIMITS: "off" })).toThrow(ConfigurationError);
-    expect(quotaConfig({ NODE_ENV: "production", STORAGE_LIMITS: "off", STORAGE_LIMITS_OFF_CONFIRMED: "true" }).enabled).toBe(false);
-    expect(quotaConfig({ NODE_ENV: "development", STORAGE_LIMITS: "off" }).enabled).toBe(false);
-    expect(() => quotaConfig({ STORAGE_LIMITS: "maybe" })).toThrow(ConfigurationError);
+  it("refuses ABUSE_QUOTAS=off in production without an explicit decision", () => {
+    expect(() => quotaConfig({ NODE_ENV: "production", ABUSE_QUOTAS: "off" })).toThrow(ConfigurationError);
+    expect(quotaConfig({ NODE_ENV: "production", ABUSE_QUOTAS: "off", ABUSE_QUOTAS_OFF_CONFIRMED: "true" }).enabled).toBe(false);
+    expect(quotaConfig({ NODE_ENV: "development", ABUSE_QUOTAS: "off" }).enabled).toBe(false);
+    expect(() => quotaConfig({ ABUSE_QUOTAS: "maybe" })).toThrow(ConfigurationError);
   });
 
   it("never raises a per-file maximum above the hard limit, and lowers it on request", () => {
-    expect(quotaConfig({ QUOTA_VIDEO_MAX_MB: "999999" }).perFile.video.maxBytes).toBe(4 * GB);
-    expect(quotaConfig({ QUOTA_VIDEO_MAX_MB: "500" }).perFile.video.maxBytes).toBe(500 * MB);
-    expect(quotaConfig({ QUOTA_VIDEO_MAX_MINUTES: "30" }).perFile.video.maxSeconds).toBe(1800);
+    expect(quotaConfig({ ABUSE_QUOTA_VIDEO_MAX_MB: "999999" }).perFile.video.maxBytes).toBe(4 * GB);
+    expect(quotaConfig({ ABUSE_QUOTA_VIDEO_MAX_MB: "500" }).perFile.video.maxBytes).toBe(500 * MB);
+    expect(quotaConfig({ ABUSE_QUOTA_VIDEO_MAX_MINUTES: "30" }).perFile.video.maxSeconds).toBe(1800);
   });
 
   it("answers a configuration error for an invalid value or an unknown admin plan", () => {
-    expect(() => quotaConfig({ QUOTA_PLATFORM_GB: "a lot" })).toThrow(ConfigurationError);
-    expect(() => quotaConfig({ QUOTA_ADMIN_PLAN: "gold" })).toThrow(ConfigurationError);
+    expect(() => quotaConfig({ ABUSE_QUOTA_PLATFORM_GB: "a lot" })).toThrow(ConfigurationError);
+    expect(() => quotaConfig({ ABUSE_QUOTA_ADMIN_PLAN: "gold" })).toThrow(ConfigurationError);
   });
 
   it("gives each account its plan: the operator's choice, else its role's default", () => {
-    const config = quotaConfig({ QUOTA_PLANS: "pro=200GB" });
+    const config = quotaConfig({ ABUSE_QUOTA_PLANS: "pro=200GB" });
     expect(planFor({ role: "CREATOR" }, config).name).toBe("default");
     expect(planFor({ role: "ADMIN" }, config)).toEqual({ name: "unlimited", allowance: { bytes: null, seconds: null } });
     expect(planFor({ role: "CREATOR", storagePlan: "PRO" }, config).allowance.bytes).toBe(200 * GB);
@@ -150,7 +150,7 @@ describe("an upload session, before it is signed", () => {
   });
 
   it("lets everything through when the limits are off", () => {
-    const off = ctx({ creator: { usage: { bytes: 99 * GB, seconds: 0 }, allowance: { bytes: GB, seconds: null } }, concurrent: 99 }, { STORAGE_LIMITS: "off" });
+    const off = ctx({ creator: { usage: { bytes: 99 * GB, seconds: 0 }, allowance: { bytes: GB, seconds: null } }, concurrent: 99 }, { ABUSE_QUOTAS: "off" });
     expect(evaluateUpload({ kind: "video", sizeBytes: 3 * GB }, off)).toEqual({ ok: true });
   });
 });

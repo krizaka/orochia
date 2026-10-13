@@ -91,7 +91,7 @@ The client is never trusted to say it paid.
    transaction. The viewer's next `/stream` call is authorised.
 
 A gateway is offered only when all of its credentials are configured (`configuredGateways()`); there
-are no placeholder keys. In **demo mode** (`OROCHIA_DEMO_MODE=true`, never in production) with no
+are no placeholder keys. In **demo mode** (`APP_DEMO_MODE=true`, never in production) with no
 gateway configured, the intent is settled immediately so the showcase works without merchant accounts.
 
 ---

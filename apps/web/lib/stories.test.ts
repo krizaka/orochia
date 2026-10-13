@@ -73,7 +73,7 @@ beforeEach(() => {
   selects.length = 0;
   updates.length = 0;
   claimRows = [{ id: "story-1" }];
-  process.env.BUNNY_STREAM_API_KEY = "test-key";
+  process.env.MEDIA_STREAM_API_KEY = "test-key";
   vi.spyOn(console, "info").mockImplementation(() => undefined);
   vi.spyOn(console, "warn").mockImplementation(() => undefined);
 });
@@ -155,7 +155,7 @@ describe("reconcileStoryVideos — the webhook never came", () => {
   });
 
   it("does nothing without a Bunny library (CI, local without video)", async () => {
-    delete process.env.BUNNY_STREAM_API_KEY;
+    delete process.env.MEDIA_STREAM_API_KEY;
     const client = bunny({ status: 4, length: 8 });
     await expect(reconcileStoryVideos({ client })).resolves.toEqual({ checked: 0, settled: 0 });
     expect(client.getVideo).not.toHaveBeenCalled();

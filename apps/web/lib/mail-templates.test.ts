@@ -24,7 +24,7 @@ import { applyPush, listTemplateFiles, planPush, previewVars, renderAll } from "
 const DIR = path.resolve(__dirname, "..", "mail-templates");
 const APP = "https://orochia.test";
 const localEnv = { MAIL_TEMPLATES_SOURCE: "local", MAIL_TEMPLATES_DIR: DIR } as unknown as NodeJS.ProcessEnv;
-const bunnyEnv = { MAIL_TEMPLATES_SOURCE: "bunny", MAIL_TEMPLATES_DIR: DIR, BUNNY_STORAGE_API_KEY: "key", BUNNY_STORAGE_ZONE: "zone" } as unknown as NodeJS.ProcessEnv;
+const bunnyEnv = { MAIL_TEMPLATES_SOURCE: "bunny", MAIL_TEMPLATES_DIR: DIR, MEDIA_STORAGE_API_KEY: "key", MEDIA_STORAGE_ZONE: "zone" } as unknown as NodeJS.ProcessEnv;
 const resetVars: MailVars<"password-reset"> = { username: "elena", link: "https://orochia.test/auth/reset-password?token=abc" };
 
 beforeEach(() => clearMailTemplateCache());
@@ -180,7 +180,7 @@ describe("mail templates — Bunny source", () => {
     const fetch = vi.fn();
     vi.stubGlobal("fetch", fetch);
     vi.spyOn(console, "warn").mockImplementation(() => {});
-    const mail = await renderMailTemplate("password-reset", resetVars, { appUrl: APP, env: { ...bunnyEnv, BUNNY_STORAGE_API_KEY: "" } });
+    const mail = await renderMailTemplate("password-reset", resetVars, { appUrl: APP, env: { ...bunnyEnv, MEDIA_STORAGE_API_KEY: "" } });
     expect(mail.source).toBe("local");
     expect(fetch).not.toHaveBeenCalled();
   });
@@ -267,7 +267,7 @@ describe("sendTemplate", () => {
   it("posts HTML and text in production", async () => {
     const fetch = vi.fn().mockResolvedValue(new Response("{}", { status: 200 }));
     vi.stubGlobal("fetch", fetch);
-    const env = { ...localEnv, NODE_ENV: "production", RESEND_API_KEY: "re_key", NEXT_PUBLIC_APP_URL: APP } as unknown as NodeJS.ProcessEnv;
+    const env = { ...localEnv, NODE_ENV: "production", MAIL_PROVIDER: "resend", MAIL_API_KEY: "re_key", NEXT_PUBLIC_APP_URL: APP } as unknown as NodeJS.ProcessEnv;
     vi.stubEnv("NEXT_PUBLIC_APP_URL", APP);
     expect(await sendTemplate("email-verification", { to: "a@example.com", locale: "fr", vars: { username: "a", link: `${APP}/auth/verify?token=x` } }, env)).toBe(true);
     const body = JSON.parse((fetch.mock.calls[0] as unknown as [string, RequestInit])[1].body as string);

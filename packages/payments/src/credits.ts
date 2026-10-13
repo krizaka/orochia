@@ -32,11 +32,11 @@ export function creditsEnabled(_env: Env = process.env): boolean {
 
 /**
  * Top-ups that add credits without a payment — local, CI and the dev deployment. Never on the public production
- * deployment: one that search engines index (SEARCH_INDEXING not "off") ignores the setting, whatever it says.
+ * deployment: one that search engines index (APP_SEARCH_INDEXING not "off") ignores the setting, whatever it says.
  */
 export function testTopupsEnabled(env: Env = process.env): boolean {
   const asked = env.PAYMENTS_CREDITS_MODE === "test" || env.PAYMENTS_CREDITS_MODE === "always-approve";
-  const publicProduction = env.NODE_ENV === "production" && env.SEARCH_INDEXING !== "off";
+  const publicProduction = env.NODE_ENV === "production" && env.APP_SEARCH_INDEXING !== "off";
   return asked && !publicProduction;
 }
 

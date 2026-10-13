@@ -31,26 +31,26 @@ export async function uploadMediaFile(
   originalFilename: string,
   category: "avatars" | "banners" | "thumbnails" | "stories" | "videos" | "documents" | "audio" = "videos"
 ): Promise<UploadResult> {
-  const driver = process.env.STORAGE_DRIVER === "bunny" ? "bunny" : "local";
+  const driver = process.env.MEDIA_STORAGE_PROVIDER === "bunny" ? "bunny" : "local";
   // Container filesystems are ephemeral: production stores media on Bunny Edge Storage only.
-  if (process.env.NODE_ENV === "production" && (driver !== "bunny" || !process.env.BUNNY_STORAGE_API_KEY)) {
-    throw new ConfigurationError("STORAGE_DRIVER=bunny and BUNNY_STORAGE_API_KEY");
+  if (process.env.NODE_ENV === "production" && (driver !== "bunny" || !process.env.MEDIA_STORAGE_API_KEY)) {
+    throw new ConfigurationError("MEDIA_STORAGE_PROVIDER=bunny and MEDIA_STORAGE_API_KEY");
   }
   const ext = path.extname(originalFilename) || (category === "videos" ? ".mp4" : ".jpg");
   const sanitizedName = `${crypto.randomUUID()}${ext}`;
   const isPrivate = PRIVATE.has(category);
   const remotePath = `${isPrivate ? "private/" : ""}${category}/${sanitizedName}`;
 
-  if (driver === "bunny" && process.env.BUNNY_STORAGE_API_KEY) {
+  if (driver === "bunny" && process.env.MEDIA_STORAGE_API_KEY) {
     // Production/Staging: Bunny Storage API
-    const storageZone = process.env.BUNNY_STORAGE_ZONE || "orochia-media";
-    const regionHost = process.env.BUNNY_STORAGE_ENDPOINT || "storage.bunnycdn.com";
+    const storageZone = process.env.MEDIA_STORAGE_ZONE || "orochia-media";
+    const regionHost = process.env.MEDIA_STORAGE_ENDPOINT || "storage.bunnycdn.com";
     const bunnyUrl = `https://${regionHost}/${storageZone}/${remotePath}`;
 
     const res = await fetch(bunnyUrl, {
       method: "PUT",
       headers: {
-        AccessKey: process.env.BUNNY_STORAGE_API_KEY,
+        AccessKey: process.env.MEDIA_STORAGE_API_KEY,
         "Content-Type": "application/octet-stream",
       },
       body: new Uint8Array(fileBuffer),
@@ -60,7 +60,7 @@ export async function uploadMediaFile(
       throw new Error(`Bunny storage upload failed: ${res.statusText}`);
     }
 
-    const cdnHostname = process.env.BUNNY_PULL_ZONE_HOSTNAME || `${storageZone}.b-cdn.net`;
+    const cdnHostname = process.env.MEDIA_CDN_HOSTNAME || `${storageZone}.b-cdn.net`;
     return {
       url: isPrivate ? null : `https://${cdnHostname}/${remotePath}`,
       ref: remotePath,
@@ -92,9 +92,9 @@ export async function uploadMediaFile(
 
 /** The public URL of a stored (non-private) file, from its reference — never from a client-supplied URL. */
 export function publicUrlForRef(ref: string): string {
-  if (process.env.STORAGE_DRIVER === "bunny" && process.env.BUNNY_STORAGE_API_KEY) {
-    const storageZone = process.env.BUNNY_STORAGE_ZONE || "orochia-media";
-    return `https://${process.env.BUNNY_PULL_ZONE_HOSTNAME || `${storageZone}.b-cdn.net`}/${ref}`;
+  if (process.env.MEDIA_STORAGE_PROVIDER === "bunny" && process.env.MEDIA_STORAGE_API_KEY) {
+    const storageZone = process.env.MEDIA_STORAGE_ZONE || "orochia-media";
+    return `https://${process.env.MEDIA_CDN_HOSTNAME || `${storageZone}.b-cdn.net`}/${ref}`;
   }
   return `/uploads/${ref}`;
 }
@@ -107,10 +107,10 @@ export async function readPrivateFile(ref: string): Promise<{ body: Buffer; mime
   if (!match) return null;
   const [, category, name] = match;
   const mimeType = getMimeType(path.extname(name));
-  if (process.env.STORAGE_DRIVER === "bunny" && process.env.BUNNY_STORAGE_API_KEY) {
-    const storageZone = process.env.BUNNY_STORAGE_ZONE || "orochia-media";
-    const regionHost = process.env.BUNNY_STORAGE_ENDPOINT || "storage.bunnycdn.com";
-    const res = await fetch(`https://${regionHost}/${storageZone}/${ref}`, { headers: { AccessKey: process.env.BUNNY_STORAGE_API_KEY } });
+  if (process.env.MEDIA_STORAGE_PROVIDER === "bunny" && process.env.MEDIA_STORAGE_API_KEY) {
+    const storageZone = process.env.MEDIA_STORAGE_ZONE || "orochia-media";
+    const regionHost = process.env.MEDIA_STORAGE_ENDPOINT || "storage.bunnycdn.com";
+    const res = await fetch(`https://${regionHost}/${storageZone}/${ref}`, { headers: { AccessKey: process.env.MEDIA_STORAGE_API_KEY } });
     if (res.status === 404) return null;
     if (!res.ok) throw new Error(`Bunny storage read failed: ${res.status}`);
     return { body: Buffer.from(await res.arrayBuffer()), mimeType };
@@ -123,10 +123,10 @@ export async function readPrivateFile(ref: string): Promise<{ body: Buffer; mime
 export async function deletePrivateFile(ref: string): Promise<void> {
   const match = PRIVATE_REF.exec(ref);
   if (!match) return;
-  if (process.env.STORAGE_DRIVER === "bunny" && process.env.BUNNY_STORAGE_API_KEY) {
-    const storageZone = process.env.BUNNY_STORAGE_ZONE || "orochia-media";
-    const regionHost = process.env.BUNNY_STORAGE_ENDPOINT || "storage.bunnycdn.com";
-    const res = await fetch(`https://${regionHost}/${storageZone}/${ref}`, { method: "DELETE", headers: { AccessKey: process.env.BUNNY_STORAGE_API_KEY } });
+  if (process.env.MEDIA_STORAGE_PROVIDER === "bunny" && process.env.MEDIA_STORAGE_API_KEY) {
+    const storageZone = process.env.MEDIA_STORAGE_ZONE || "orochia-media";
+    const regionHost = process.env.MEDIA_STORAGE_ENDPOINT || "storage.bunnycdn.com";
+    const res = await fetch(`https://${regionHost}/${storageZone}/${ref}`, { method: "DELETE", headers: { AccessKey: process.env.MEDIA_STORAGE_API_KEY } });
     if (!res.ok && res.status !== 404) throw new Error(`Bunny storage delete failed: ${res.status}`);
     return;
   }
@@ -153,16 +153,16 @@ function getMimeType(ext: string): string {
 
 // ── Private objects by key (operator files: database backups) ─────────────────────────────────
 
-/** The Bunny Edge Storage zone (`BUNNY_STORAGE_*`), whatever STORAGE_DRIVER says — null without an access key. */
+/** The Bunny Edge Storage zone (`MEDIA_STORAGE_*`), whatever MEDIA_STORAGE_PROVIDER says — null without an access key. */
 export function bunnyStorageCredentials(env: NodeJS.ProcessEnv = process.env): { base: string; key: string } | null {
-  if (!env.BUNNY_STORAGE_API_KEY) return null;
-  const storageZone = env.BUNNY_STORAGE_ZONE || "orochia-media";
-  const regionHost = env.BUNNY_STORAGE_ENDPOINT || "storage.bunnycdn.com";
-  return { base: `https://${regionHost}/${storageZone}`, key: env.BUNNY_STORAGE_API_KEY };
+  if (!env.MEDIA_STORAGE_API_KEY) return null;
+  const storageZone = env.MEDIA_STORAGE_ZONE || "orochia-media";
+  const regionHost = env.MEDIA_STORAGE_ENDPOINT || "storage.bunnycdn.com";
+  return { base: `https://${regionHost}/${storageZone}`, key: env.MEDIA_STORAGE_API_KEY };
 }
 
 function bunnyStorage(): { base: string; key: string } | null {
-  return process.env.STORAGE_DRIVER === "bunny" ? bunnyStorageCredentials() : null;
+  return process.env.MEDIA_STORAGE_PROVIDER === "bunny" ? bunnyStorageCredentials() : null;
 }
 
 const PRIVATE_KEY = /^private\/[a-z]+\/[A-Za-z0-9._-]+$/;
@@ -174,7 +174,7 @@ function checkKey(key: string) {
 export async function putPrivateObject(key: string, body: Buffer): Promise<void> {
   checkKey(key);
   const bunny = bunnyStorage();
-  if (!bunny && process.env.NODE_ENV === "production") throw new ConfigurationError("STORAGE_DRIVER=bunny and BUNNY_STORAGE_API_KEY");
+  if (!bunny && process.env.NODE_ENV === "production") throw new ConfigurationError("MEDIA_STORAGE_PROVIDER=bunny and MEDIA_STORAGE_API_KEY");
   if (bunny) {
     const res = await fetch(`${bunny.base}/${key}`, { method: "PUT", headers: { AccessKey: bunny.key, "Content-Type": "application/octet-stream" }, body: new Uint8Array(body) });
     if (!res.ok) throw new Error(`Bunny storage upload failed: ${res.status}`);
@@ -247,7 +247,7 @@ function checkConfigKey(key: string) {
 export async function getBunnyConfigObject(key: string, options: { env?: NodeJS.ProcessEnv; timeoutMs?: number } = {}): Promise<string | null> {
   checkConfigKey(key);
   const bunny = bunnyStorageCredentials(options.env);
-  if (!bunny) throw new ConfigurationError("BUNNY_STORAGE_API_KEY", "is required to read from Bunny Storage");
+  if (!bunny) throw new ConfigurationError("MEDIA_STORAGE_API_KEY", "is required to read from Bunny Storage");
   const res = await fetch(`${bunny.base}/${key}`, { headers: { AccessKey: bunny.key }, signal: AbortSignal.timeout(options.timeoutMs ?? 3000) });
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`Bunny storage read failed: ${res.status}`);
@@ -258,7 +258,7 @@ export async function getBunnyConfigObject(key: string, options: { env?: NodeJS.
 export async function putBunnyConfigObject(key: string, body: string, options: { env?: NodeJS.ProcessEnv } = {}): Promise<void> {
   checkConfigKey(key);
   const bunny = bunnyStorageCredentials(options.env);
-  if (!bunny) throw new ConfigurationError("BUNNY_STORAGE_API_KEY", "is required to write to Bunny Storage");
+  if (!bunny) throw new ConfigurationError("MEDIA_STORAGE_API_KEY", "is required to write to Bunny Storage");
   const contentType = key.endsWith(".html") ? "text/html; charset=utf-8" : key.endsWith(".json") ? "application/json" : "text/plain; charset=utf-8";
   const res = await fetch(`${bunny.base}/${key}`, { method: "PUT", headers: { AccessKey: bunny.key, "Content-Type": contentType }, body });
   if (!res.ok) throw new Error(`Bunny storage upload failed: ${res.status}`);

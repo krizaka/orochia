@@ -305,7 +305,7 @@ export async function adminStorageOverview(options: { top?: number } = {}) {
   };
 }
 
-/** Sets (or clears, with null) an account's storage plan — operators only; the plan must exist in QUOTA_PLANS. */
+/** Sets (or clears, with null) an account's storage plan — operators only; the plan must exist in ABUSE_QUOTA_PLANS. */
 export async function setStoragePlan(userId: string, plan: string | null) {
   const config = quotaConfig();
   const name = plan?.trim().toLowerCase() || null;

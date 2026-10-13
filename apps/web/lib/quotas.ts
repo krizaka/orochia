@@ -7,19 +7,19 @@ import { ConfigurationError } from "./env";
  * applies them; this file decides. Units: bytes and seconds; `null` means unlimited.
  *
  * Variables (documented in `.env.example` and docs/DEPLOYMENT.md):
- * - `STORAGE_LIMITS` on (default) | off — off disables every quota below (not the rate limits). Refused in production
- *   unless `STORAGE_LIMITS_OFF_CONFIRMED=true` records the decision (uploads answer 503 otherwise).
- * - `QUOTA_PLATFORM_GB` (100), `QUOTA_PLATFORM_MINUTES` (unlimited) — the whole platform: past it, new uploads are refused.
- * - `QUOTA_ALERT_THRESHOLDS` (80,95) — percentages of the platform cap that alert the operators once each.
- * - `QUOTA_CREATOR_DEFAULT_GB` (10), `QUOTA_CREATOR_DEFAULT_MINUTES` (600) — a creator's plan when none is set.
- * - `QUOTA_PLANS` (pro=100GB/3000min,unlimited=unlimited) — named plans an operator gives an account
+ * - `ABUSE_QUOTAS` on (default) | off — off disables every quota below (not the rate limits). Refused in production
+ *   unless `ABUSE_QUOTAS_OFF_CONFIRMED=true` records the decision (uploads answer 503 otherwise).
+ * - `ABUSE_QUOTA_PLATFORM_GB` (100), `ABUSE_QUOTA_PLATFORM_MINUTES` (unlimited) — the whole platform: past it, new uploads are refused.
+ * - `ABUSE_QUOTA_ALERT_THRESHOLDS` (80,95) — percentages of the platform cap that alert the operators once each.
+ * - `ABUSE_QUOTA_CREATOR_DEFAULT_GB` (10), `ABUSE_QUOTA_CREATOR_DEFAULT_MINUTES` (600) — a creator's plan when none is set.
+ * - `ABUSE_QUOTA_PLANS` (pro=100GB/3000min,unlimited=unlimited) — named plans an operator gives an account
  *   (`users.storage_plan`); a size is `500MB`, `200GB`, `1TB` or `unlimited`, minutes optional (`/6000min`).
- * - `QUOTA_ADMIN_PLAN` (unlimited) — the plan of ADMIN accounts (the owner) when none is set.
- * - `QUOTA_VIDEO_MAX_MB`, `QUOTA_VIDEO_MAX_MINUTES`, `QUOTA_STORY_MAX_MB`, `QUOTA_DRAFT_MAX_MB` — per-file maxima, lower
+ * - `ABUSE_QUOTA_ADMIN_PLAN` (unlimited) — the plan of ADMIN accounts (the owner) when none is set.
+ * - `ABUSE_QUOTA_VIDEO_MAX_MB`, `ABUSE_QUOTA_VIDEO_MAX_MINUTES`, `ABUSE_QUOTA_STORY_MAX_MB`, `ABUSE_QUOTA_DRAFT_MAX_MB` — per-file maxima, lower
  *   than (never above) the hard limits of packages/media/src/limits.ts.
- * - `QUOTA_UPLOADS_PER_DAY` (50) — upload sessions (videos, video stories, drafts) per account and 24 hours.
- * - `QUOTA_CONCURRENT_UPLOADS` (3) — upload sessions still waiting for their bytes, per account.
- * - `QUOTA_IMAGE_UPLOADS_PER_DAY` (100) — pictures (avatars, covers, thumbnails, story images) per account and day.
+ * - `ABUSE_QUOTA_UPLOADS_PER_DAY` (50) — upload sessions (videos, video stories, drafts) per account and 24 hours.
+ * - `ABUSE_QUOTA_CONCURRENT_UPLOADS` (3) — upload sessions still waiting for their bytes, per account.
+ * - `ABUSE_QUOTA_IMAGE_UPLOADS_PER_DAY` (100) — pictures (avatars, covers, thumbnails, story images) per account and day.
  */
 
 export interface Allowance {
@@ -94,28 +94,28 @@ const count = (v: string) => {
 
 /** The quota configuration from the environment. Throws a ConfigurationError (→ 503) for an invalid value. */
 export function quotaConfig(env: Record<string, string | undefined> = process.env): QuotaConfig {
-  const switchValue = env.STORAGE_LIMITS?.trim().toLowerCase() || "on";
-  if (switchValue !== "on" && switchValue !== "off") throw new ConfigurationError("STORAGE_LIMITS", 'must be "on" or "off"');
+  const switchValue = env.ABUSE_QUOTAS?.trim().toLowerCase() || "on";
+  if (switchValue !== "on" && switchValue !== "off") throw new ConfigurationError("ABUSE_QUOTAS", 'must be "on" or "off"');
   const enabled = switchValue === "on";
-  if (!enabled && env.NODE_ENV === "production" && env.STORAGE_LIMITS_OFF_CONFIRMED?.trim() !== "true") {
-    throw new ConfigurationError("STORAGE_LIMITS=off", "is refused in production without STORAGE_LIMITS_OFF_CONFIRMED=true (an explicit decision)");
+  if (!enabled && env.NODE_ENV === "production" && env.ABUSE_QUOTAS_OFF_CONFIRMED?.trim() !== "true") {
+    throw new ConfigurationError("ABUSE_QUOTAS=off", "is refused in production without ABUSE_QUOTAS_OFF_CONFIRMED=true (an explicit decision)");
   }
 
   let plans: Record<string, Allowance>;
   try {
-    plans = parsePlans(env.QUOTA_PLANS?.trim() || "pro=100GB/3000min,unlimited=unlimited");
+    plans = parsePlans(env.ABUSE_QUOTA_PLANS?.trim() || "pro=100GB/3000min,unlimited=unlimited");
   } catch (error) {
-    throw new ConfigurationError("QUOTA_PLANS", error instanceof Error ? error.message : "is invalid");
+    throw new ConfigurationError("ABUSE_QUOTA_PLANS", error instanceof Error ? error.message : "is invalid");
   }
   plans[DEFAULT_PLAN] = {
-    bytes: readNumber(env, "QUOTA_CREATOR_DEFAULT_GB", 10 * GB, (v) => parseSize(v, "GB")),
-    seconds: readNumber(env, "QUOTA_CREATOR_DEFAULT_MINUTES", 600 * 60, parseMinutes),
+    bytes: readNumber(env, "ABUSE_QUOTA_CREATOR_DEFAULT_GB", 10 * GB, (v) => parseSize(v, "GB")),
+    seconds: readNumber(env, "ABUSE_QUOTA_CREATOR_DEFAULT_MINUTES", 600 * 60, parseMinutes),
   };
   plans[UNLIMITED_PLAN] ??= { bytes: null, seconds: null };
-  const adminPlan = env.QUOTA_ADMIN_PLAN?.trim().toLowerCase() || UNLIMITED_PLAN;
-  if (!plans[adminPlan]) throw new ConfigurationError("QUOTA_ADMIN_PLAN", `names no plan of QUOTA_PLANS ("${adminPlan}")`);
+  const adminPlan = env.ABUSE_QUOTA_ADMIN_PLAN?.trim().toLowerCase() || UNLIMITED_PLAN;
+  if (!plans[adminPlan]) throw new ConfigurationError("ABUSE_QUOTA_ADMIN_PLAN", `names no plan of ABUSE_QUOTA_PLANS ("${adminPlan}")`);
 
-  const thresholds = (env.QUOTA_ALERT_THRESHOLDS?.trim() || "80,95")
+  const thresholds = (env.ABUSE_QUOTA_ALERT_THRESHOLDS?.trim() || "80,95")
     .split(",")
     .map((t) => Number(t.trim()))
     .filter((t) => Number.isFinite(t) && t > 0 && t <= 100)
@@ -129,20 +129,20 @@ export function quotaConfig(env: Record<string, string | undefined> = process.en
   return {
     enabled,
     platform: {
-      bytes: readNumber(env, "QUOTA_PLATFORM_GB", 100 * GB, (v) => parseSize(v, "GB")),
-      seconds: readNumber(env, "QUOTA_PLATFORM_MINUTES", null, parseMinutes),
+      bytes: readNumber(env, "ABUSE_QUOTA_PLATFORM_GB", 100 * GB, (v) => parseSize(v, "GB")),
+      seconds: readNumber(env, "ABUSE_QUOTA_PLATFORM_MINUTES", null, parseMinutes),
     },
     alertThresholds: [...new Set(thresholds)],
     plans,
     adminPlan,
     perFile: {
-      video: { maxBytes: capped("QUOTA_VIDEO_MAX_MB", UPLOAD_LIMITS.video.maxBytes, "MB"), maxSeconds: capped("QUOTA_VIDEO_MAX_MINUTES", UPLOAD_LIMITS.video.maxSeconds, "MIN") },
-      story: { maxBytes: capped("QUOTA_STORY_MAX_MB", UPLOAD_LIMITS.story.maxBytes, "MB"), maxSeconds: UPLOAD_LIMITS.story.maxSeconds },
-      draft: { maxBytes: capped("QUOTA_DRAFT_MAX_MB", UPLOAD_LIMITS.draft.maxBytes, "MB"), maxSeconds: UPLOAD_LIMITS.draft.maxSeconds },
+      video: { maxBytes: capped("ABUSE_QUOTA_VIDEO_MAX_MB", UPLOAD_LIMITS.video.maxBytes, "MB"), maxSeconds: capped("ABUSE_QUOTA_VIDEO_MAX_MINUTES", UPLOAD_LIMITS.video.maxSeconds, "MIN") },
+      story: { maxBytes: capped("ABUSE_QUOTA_STORY_MAX_MB", UPLOAD_LIMITS.story.maxBytes, "MB"), maxSeconds: UPLOAD_LIMITS.story.maxSeconds },
+      draft: { maxBytes: capped("ABUSE_QUOTA_DRAFT_MAX_MB", UPLOAD_LIMITS.draft.maxBytes, "MB"), maxSeconds: UPLOAD_LIMITS.draft.maxSeconds },
     },
-    uploadsPerDay: readNumber(env, "QUOTA_UPLOADS_PER_DAY", 50, count),
-    concurrentUploads: readNumber(env, "QUOTA_CONCURRENT_UPLOADS", 3, count),
-    imageUploadsPerDay: readNumber(env, "QUOTA_IMAGE_UPLOADS_PER_DAY", 100, count),
+    uploadsPerDay: readNumber(env, "ABUSE_QUOTA_UPLOADS_PER_DAY", 50, count),
+    concurrentUploads: readNumber(env, "ABUSE_QUOTA_CONCURRENT_UPLOADS", 3, count),
+    imageUploadsPerDay: readNumber(env, "ABUSE_QUOTA_IMAGE_UPLOADS_PER_DAY", 100, count),
   };
 }
 

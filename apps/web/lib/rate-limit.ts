@@ -8,7 +8,7 @@ import { HttpError } from "./http";
 /**
  * Fixed-window rate limits for abuse prevention (sign-in, sign-up, uploads, payments, messages, bids, search…).
  *
- * The counters live in a {@link RateLimitStore}, chosen by `RATE_LIMIT_STORE`:
+ * The counters live in a {@link RateLimitStore}, chosen by `ABUSE_RATE_LIMIT_STORE`:
  * - `memory` (default): per instance — counters reset on restart and are NOT shared, so with N instances every limit
  *   is N times looser. Fine for one instance only.
  * - `postgres`: one upsert per check on `rate_limit_buckets`, shared by every instance (the database the app already
@@ -107,11 +107,11 @@ export function postgresStore(): RateLimitStore {
 
 let store: RateLimitStore | null = null;
 
-/** The configured store (RATE_LIMIT_STORE=memory|postgres), created once per instance. */
+/** The configured store (ABUSE_RATE_LIMIT_STORE=memory|postgres), created once per instance. */
 export function rateLimitStore(env: Record<string, string | undefined> = process.env): RateLimitStore {
   if (store) return store;
-  const kind = env.RATE_LIMIT_STORE?.trim().toLowerCase() || "memory";
-  if (kind !== "memory" && kind !== "postgres") throw new Error(`RATE_LIMIT_STORE must be "memory" or "postgres", not "${kind}"`);
+  const kind = env.ABUSE_RATE_LIMIT_STORE?.trim().toLowerCase() || "memory";
+  if (kind !== "memory" && kind !== "postgres") throw new Error(`ABUSE_RATE_LIMIT_STORE must be "memory" or "postgres", not "${kind}"`);
   store = kind === "postgres" ? postgresStore() : memoryStore();
   return store;
 }

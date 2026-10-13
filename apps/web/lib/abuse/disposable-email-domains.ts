@@ -3,7 +3,7 @@
  * https://github.com/disposable-email-domains/disposable-email-domains (CC0). Subdomains are refused with their domain.
  *
  * Maintain it here (one lower-case domain per entry, sorted), or without a release through the environment:
- * `BLOCKED_EMAIL_DOMAINS` adds domains, `ALLOWED_EMAIL_DOMAINS` lets one through (lib/abuse/signup-guard.ts).
+ * `ABUSE_BLOCKED_EMAIL_DOMAINS` adds domains, `ABUSE_ALLOWED_EMAIL_DOMAINS` lets one through (lib/abuse/signup-guard.ts).
  */
 export const DISPOSABLE_EMAIL_DOMAINS: readonly string[] = [
   "10minutemail.com",

@@ -13,7 +13,7 @@ function authorised(req: NextRequest, token: string | null): boolean {
   return given.length === expected.length && crypto.timingSafeEqual(given, expected);
 }
 
-/** Prometheus metrics, behind a bearer token (METRICS_AUTH_TOKEN). */
+/** Prometheus metrics, behind a bearer token (OBSERVABILITY_METRICS_TOKEN). */
 export async function GET(req: NextRequest) {
   try {
     if (!authorised(req, metricsToken())) return jsonError(401, "Unauthorized");

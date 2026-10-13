@@ -21,11 +21,11 @@ packages — `db` (Drizzle schema, migrations, seed), `media` (Bunny Stream, Tus
 ```bash
 git clone https://github.com/krizaka/orochia.git && cd orochia
 npm install
-npm run setup     # .env (generated SESSION_SECRET) · PostgreSQL 16 · migrations · seed
+npm run setup     # .env (generated AUTH_SESSION_SECRET) · PostgreSQL 16 · migrations · seed
 npm run dev       # http://localhost:3000
 ```
 
-`npm run setup` is idempotent. `OROCHIA_DEMO_MODE=true` (the `.env.example` default, ignored in production) lets
+`npm run setup` is idempotent. `APP_DEMO_MODE=true` (the `.env.example` default, ignored in production) lets
 the login page offer the seeded accounts and settles unlocks immediately when no payment gateway is configured.
 
 No external account is needed to start: storage is local and e-mail goes to the log. Uploading and playing videos,
@@ -53,7 +53,7 @@ The operator console is a separate repository, [`krizaka/orochia-admin`](https:/
 ```bash
 git clone https://github.com/krizaka/orochia-admin.git && cd orochia-admin
 npm install
-OROCHIA_API_URL=http://localhost:3000 npm run dev -- -p 3001     # sign in with the administrator account
+OPERATOR_API_URL=http://localhost:3000 npm run dev -- -p 3001     # sign in with the administrator account
 ```
 
 ## 5. Quality gates

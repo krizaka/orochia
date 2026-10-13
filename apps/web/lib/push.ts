@@ -7,7 +7,7 @@ import { and, eq, inArray } from "drizzle-orm";
  * is written, so a push only ever repeats what the bell already shows; it follows the in-app preference of the event.
  * Best-effort: never throws, and forgets the tokens the push service reports as dead.
  *
- * EXPO_ACCESS_TOKEN (optional): with "enhanced push security" on in the Expo project, only this server may push to the
+ * PUSH_ACCESS_TOKEN (optional): with "enhanced push security" on in the Expo project, only this server may push to the
  * app's tokens. Like e-mail, pushes leave only in production, or elsewhere with PUSH_DELIVERY=on (local runs and CI never
  * call the push service).
  */
@@ -28,7 +28,7 @@ export async function pushToUser(userId: string, message: { title: string; body:
     if (devices.length === 0) return;
     const outcome = await sendExpoPush(
       devices.map((d) => ({ to: d.token, title: message.title, body: message.body, data: { path: message.path }, channelId: ANDROID_CHANNEL, sound: "default" as const })),
-      { fetch: (url, init) => fetch(url, init), accessToken: process.env.EXPO_ACCESS_TOKEN || undefined },
+      { fetch: (url, init) => fetch(url, init), accessToken: process.env.PUSH_ACCESS_TOKEN || undefined },
     );
     if (outcome.deadTokens.length > 0) await db.delete(pushDevices).where(inArray(pushDevices.token, outcome.deadTokens));
     if (outcome.errors.length > 0) console.warn(`push: ${outcome.errors.length} failed for ${userId}: ${outcome.errors[0]}`);

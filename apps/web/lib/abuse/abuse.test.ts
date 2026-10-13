@@ -76,8 +76,8 @@ describe("the honeypot and disposable addresses", () => {
     expect(isDisposableEmail("a@YOPMAIL.fr", {})).toBe(true);
     expect(isDisposableEmail("a@gmail.com", {})).toBe(false);
     expect(isDisposableEmail("a@notmailinator.com", {})).toBe(false);
-    expect(isDisposableEmail("a@spam.test", { BLOCKED_EMAIL_DOMAINS: "spam.test, other.test" })).toBe(true);
-    expect(isDisposableEmail("a@yopmail.com", { ALLOWED_EMAIL_DOMAINS: "yopmail.com" })).toBe(false);
+    expect(isDisposableEmail("a@spam.test", { ABUSE_BLOCKED_EMAIL_DOMAINS: "spam.test, other.test" })).toBe(true);
+    expect(isDisposableEmail("a@yopmail.com", { ABUSE_ALLOWED_EMAIL_DOMAINS: "yopmail.com" })).toBe(false);
     expect(() => assertEmailDomainAllowed("x@guerrillamail.com")).toThrow(/Disposable/);
   });
 });
@@ -113,20 +113,20 @@ describe("sign-in back-off and lock-out", () => {
 });
 
 describe("the bot challenge (Cloudflare Turnstile)", () => {
-  const keys = { TURNSTILE_SITE_KEY: "1x00000000000000000000AA", TURNSTILE_SECRET_KEY: "1x0000000000000000000000000000000AA" };
+  const keys = { ABUSE_BOT_CHALLENGE_SITE_KEY: "1x00000000000000000000AA", ABUSE_BOT_CHALLENGE_SECRET_KEY: "1x0000000000000000000000000000000AA" };
   const answer = (body: unknown, status = 200) => vi.fn(async () => new Response(JSON.stringify(body), { status })) as unknown as typeof fetch;
 
   it("is on only when both keys are set, unless turned off", () => {
     expect(challengeConfig({}).active).toBe(false);
     expect(challengeConfig(keys).active).toBe(true);
-    expect(challengeConfig({ ...keys, BOT_CHALLENGE: "off" }).active).toBe(false);
-    expect(publicChallenge(keys)).toEqual({ provider: "turnstile", siteKey: keys.TURNSTILE_SITE_KEY });
+    expect(challengeConfig({ ...keys, ABUSE_BOT_CHALLENGE: "off" }).active).toBe(false);
+    expect(publicChallenge(keys)).toEqual({ provider: "turnstile", siteKey: keys.ABUSE_BOT_CHALLENGE_SITE_KEY });
     expect(publicChallenge({})).toBeNull();
   });
 
-  it("is mandatory in production with BOT_CHALLENGE=required", () => {
-    expect(() => challengeConfig({ BOT_CHALLENGE: "required", NODE_ENV: "production" })).toThrow(/TURNSTILE/);
-    expect(challengeConfig({ BOT_CHALLENGE: "required", NODE_ENV: "development" }).active).toBe(false);
+  it("is mandatory in production with ABUSE_BOT_CHALLENGE=required", () => {
+    expect(() => challengeConfig({ ABUSE_BOT_CHALLENGE: "required", NODE_ENV: "production" })).toThrow(/ABUSE_BOT_CHALLENGE_SITE_KEY/);
+    expect(challengeConfig({ ABUSE_BOT_CHALLENGE: "required", NODE_ENV: "development" }).active).toBe(false);
   });
 
   it("skips the check when no challenge is configured", async () => {
@@ -152,8 +152,8 @@ describe("the bot challenge (Cloudflare Turnstile)", () => {
   });
 
   it("answers 400 CHALLENGE_FAILED or 503 CHALLENGE_UNAVAILABLE", async () => {
-    vi.stubEnv("TURNSTILE_SITE_KEY", keys.TURNSTILE_SITE_KEY);
-    vi.stubEnv("TURNSTILE_SECRET_KEY", keys.TURNSTILE_SECRET_KEY);
+    vi.stubEnv("ABUSE_BOT_CHALLENGE_SITE_KEY", keys.ABUSE_BOT_CHALLENGE_SITE_KEY);
+    vi.stubEnv("ABUSE_BOT_CHALLENGE_SECRET_KEY", keys.ABUSE_BOT_CHALLENGE_SECRET_KEY);
     await expect(requireChallenge(undefined, { failMode: "closed" })).rejects.toMatchObject({ status: 400, extra: { code: "CHALLENGE_FAILED" } });
     vi.spyOn(console, "error").mockImplementation(() => {});
     vi.spyOn(globalThis, "fetch").mockRejectedValue(new TypeError("fetch failed"));

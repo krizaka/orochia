@@ -18,7 +18,7 @@ const CRAWLERS = [
   "DuckDuckBot",
 ];
 
-// Read on request: the environment (dev / production origin, SEARCH_INDEXING) decides, not the build.
+// Read on request: the environment (dev / production origin, APP_SEARCH_INDEXING) decides, not the build.
 export const dynamic = "force-dynamic";
 
 const DISALLOW = ["/api/", "/dashboard", "/creator/", "/profile", "/auth/"];

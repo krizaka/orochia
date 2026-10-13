@@ -52,7 +52,7 @@ export const walletLedger = pgTable(
 
 /**
  * Where a creator's earnings are sent. The details (IBAN, routing and account numbers, PayPal address, wallet
- * address) are encrypted at rest (AES-256-GCM, PAYOUT_ENCRYPTION_KEY); the app only ever shows `display_hint`
+ * address) are encrypted at rest (AES-256-GCM, PAYMENTS_PAYOUT_ENCRYPTION_KEY); the app only ever shows `display_hint`
  * (e.g. "IBAN •••• 4321"). One account per creator; changing it replaces it.
  */
 export const payoutAccounts = pgTable("payout_accounts", {

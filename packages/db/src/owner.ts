@@ -1,13 +1,13 @@
 /**
  * The platform owner's account — the default user, configured by environment:
  *
- *   OROCHIA_OWNER_EMAIL, OROCHIA_OWNER_USERNAME, OROCHIA_OWNER_NAME   who it is
- *   OROCHIA_OWNER_PASSWORD                                            its password at creation (10+ characters)
+ *   AUTH_OWNER_EMAIL, AUTH_OWNER_USERNAME, AUTH_OWNER_NAME   who it is
+ *   AUTH_OWNER_PASSWORD                                            its password at creation (10+ characters)
  *
  * `ensureOwner` creates the account, or brings it back to an active state: operator (ADMIN),
  * age-verified, 2257-verified, not suspended. It never deletes anything and keeps an existing
  * password (unless asked to reset it), so it is safe on every start. The release job (migrate.cjs)
- * runs it after the migrations whenever OROCHIA_OWNER_EMAIL is set.
+ * runs it after the migrations whenever AUTH_OWNER_EMAIL is set.
  */
 import { eq, or, sql } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -23,19 +23,19 @@ export interface OwnerConfig {
 }
 
 /**
- * The default test user described by the environment (OROCHIA_DEFAULT_USER_* or OROCHIA_OWNER_*).
+ * The default test user described by the environment (AUTH_OWNER_*).
  * Note: this is a standard user used for testing and validating the app, not a super-admin backdoor.
  */
 export function ownerFromEnv(env: NodeJS.ProcessEnv = process.env): OwnerConfig | null {
-  const email = (env.OROCHIA_DEFAULT_USER_EMAIL ?? env.OROCHIA_OWNER_EMAIL)?.trim();
+  const email = env.AUTH_OWNER_EMAIL?.trim();
   if (!email) return null;
-  const rawRole = (env.OROCHIA_DEFAULT_USER_ROLE ?? env.OROCHIA_OWNER_ROLE)?.trim().toUpperCase();
+  const rawRole = env.AUTH_OWNER_ROLE?.trim().toUpperCase();
   const role = rawRole === "MEMBER" || rawRole === "CREATOR" || rawRole === "ADMIN" ? rawRole : "ADMIN";
   return {
     email,
-    username: (env.OROCHIA_DEFAULT_USER_USERNAME ?? env.OROCHIA_OWNER_USERNAME)?.trim() ?? "",
-    name: (env.OROCHIA_DEFAULT_USER_NAME ?? env.OROCHIA_OWNER_NAME)?.trim() ?? "",
-    password: (env.OROCHIA_DEFAULT_USER_PASSWORD ?? env.OROCHIA_OWNER_PASSWORD) || undefined,
+    username: env.AUTH_OWNER_USERNAME?.trim() ?? "",
+    name: env.AUTH_OWNER_NAME?.trim() ?? "",
+    password: env.AUTH_OWNER_PASSWORD || undefined,
     role,
   };
 }
@@ -73,7 +73,7 @@ export async function ensureOwner(
     throw new Error(`Another account already uses this ${field} (@${existing.username} / ${existing.email})`);
   }
   const setPassword = !existing || Boolean(options.resetPassword);
-  if (setPassword && !owner.password) throw new Error("OROCHIA_OWNER_PASSWORD is required to create the owner account");
+  if (setPassword && !owner.password) throw new Error("AUTH_OWNER_PASSWORD is required to create the owner account");
 
   const active = { role: owner.role ?? "ADMIN", isVerified: true, isAgeVerified: true, suspendedAt: null, suspensionReason: null, updatedAt: new Date() };
   // The operator configures this address; it is verified by definition (an existing date is kept).

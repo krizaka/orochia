@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
 
     const user = await requireUserWithRole([...rule.roles]);
     await enforceRateLimit(`upload:${user.id}`, 30, 60 * 60, "Too many uploads. Try again later.");
-    // Pictures count per day too (QUOTA_IMAGE_UPLOADS_PER_DAY) and per IP: each is small, but the zone is billed by size.
+    // Pictures count per day too (ABUSE_QUOTA_IMAGE_UPLOADS_PER_DAY) and per IP: each is small, but the zone is billed by size.
     const perDay = quotaConfig().imageUploadsPerDay;
     await limitAction("image-upload", req, perDay === null ? null : user.id, { perUser: [perDay ?? 0, 24 * 60 * 60], perIp: [120, 60 * 60] }, "Too many pictures uploaded today. Try again tomorrow.");
 

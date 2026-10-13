@@ -1,7 +1,7 @@
 /**
  * Bunny's account API (https://api.bunny.net, `AccessKey` = the ACCOUNT API key, not a library or zone key): the
  * totals Bunny bills on. Optional — the reconciliation works from the Stream API alone; with
- * `BUNNY_ACCOUNT_API_KEY` it also records the library's and the storage zone's own totals.
+ * `MEDIA_ACCOUNT_API_KEY` it also records the library's and the storage zone's own totals.
  *
  * - `GET /videolibrary/{id}` → `StorageUsage` (bytes, the whole library), `TrafficUsage`, `VideoCount`;
  * - `GET /storagezone/{id}` → `StorageUsed` (bytes), `FilesStored` — for the media zone (avatars, covers, story

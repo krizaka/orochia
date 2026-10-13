@@ -68,7 +68,7 @@ beforeEach(() => {
   sent.calls = [];
   sent.outcome = { sent: 0, deadTokens: [], errors: [] };
   vi.stubEnv("PUSH_DELIVERY", "on");
-  vi.stubEnv("EXPO_ACCESS_TOKEN", "");
+  vi.stubEnv("PUSH_ACCESS_TOKEN", "");
 });
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -118,7 +118,7 @@ describe("pushToUser", () => {
     store.devices = [{ token: TOKEN_A }];
     await pushToUser("u1", message);
     expect(sent.calls[0].accessToken).toBeUndefined();
-    vi.stubEnv("EXPO_ACCESS_TOKEN", "expo-token-for-tests");
+    vi.stubEnv("PUSH_ACCESS_TOKEN", "expo-token-for-tests");
     await pushToUser("u1", message);
     expect(sent.calls[1].accessToken).toBe("expo-token-for-tests");
   });
