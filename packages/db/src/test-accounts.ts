@@ -6,9 +6,9 @@
  * (app/api/me/become-creator). Sign-up stays closed; nothing here is reachable from the web app.
  *
  * Configured by environment only (passwords are never in the code, never printed):
- *   TEST_FAN_EMAIL, TEST_FAN_USERNAME, TEST_FAN_PASSWORD
- *   TEST_CREATOR_EMAIL, TEST_CREATOR_USERNAME, TEST_CREATOR_PASSWORD
- *   TEST_ACCOUNT_DATE_OF_BIRTH   YYYY-MM-DD, an adult (18+); default 1990-01-01
+ *   AUTH_TEST_FAN_EMAIL, AUTH_TEST_FAN_USERNAME, AUTH_TEST_FAN_PASSWORD
+ *   AUTH_TEST_CREATOR_EMAIL, AUTH_TEST_CREATOR_USERNAME, AUTH_TEST_CREATOR_PASSWORD
+ *   AUTH_TEST_DATE_OF_BIRTH   YYYY-MM-DD, an adult (18+); default 1990-01-01
  *
  * Idempotent: an existing account with the same e-mail and username keeps its password unless --reset-password is given.
  * The creator is marked verified (the 18 U.S.C. § 2257 review an operator does by hand), so its uploads can be tested.
@@ -44,11 +44,11 @@ function isAdult(isoDate: string, today: Date): boolean {
 
 /** The two QA accounts described by the environment; throws when one is missing or invalid. */
 export function testAccountsFromEnv(env: NodeJS.ProcessEnv = process.env, today: Date = new Date()): TestAccount[] {
-  const dateOfBirth = env.TEST_ACCOUNT_DATE_OF_BIRTH?.trim() || DEFAULT_DATE_OF_BIRTH;
-  if (!isAdult(dateOfBirth, today)) throw new Error("TEST_ACCOUNT_DATE_OF_BIRTH must be a YYYY-MM-DD date, 18 or older");
+  const dateOfBirth = env.AUTH_TEST_DATE_OF_BIRTH?.trim() || DEFAULT_DATE_OF_BIRTH;
+  if (!isAdult(dateOfBirth, today)) throw new Error("AUTH_TEST_DATE_OF_BIRTH must be a YYYY-MM-DD date, 18 or older");
   const accounts: TestAccount[] = ([
-    { role: "MEMBER", prefix: "TEST_FAN", displayName: "QA Fan" },
-    { role: "CREATOR", prefix: "TEST_CREATOR", displayName: "QA Creator" },
+    { role: "MEMBER", prefix: "AUTH_TEST_FAN", displayName: "QA Fan" },
+    { role: "CREATOR", prefix: "AUTH_TEST_CREATOR", displayName: "QA Creator" },
   ] as const).map(({ role, prefix, displayName }) => {
     const email = env[`${prefix}_EMAIL`]?.trim().toLowerCase() ?? "";
     const username = env[`${prefix}_USERNAME`]?.trim().toLowerCase() ?? "";
