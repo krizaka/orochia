@@ -60,7 +60,7 @@ export function PaymentsTable({ lines }: { lines: PaymentLine[] }) {
       caption={t("earnings.transactions")}
       rows={rows}
       getRowId={(l) => l.id}
-      manualSort
+      manual={{ sorting: true }}
       sort={sort}
       onSortChange={(s) => router.replace(href({ txsort: s ? `${s.column}-${s.direction === "ascending" ? "asc" : "desc"}` : null, txpage: null }), { scroll: false })}
       density="compact"

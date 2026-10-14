@@ -312,20 +312,16 @@
     "mobile": "Mobile"
   },
   "footer": {
-    "tagline": "The video platform independent creators own.",
     "explore": "Explore",
     "terms": "Terms",
     "privacy": "Privacy",
     "compliance": "2257",
     "dmca": "DMCA",
-    "madeBy": "A Krizaka product",
-    "version": "Version {version}",
-    "versionWithCommit": "Version {version} · {sha}",
-    "copyright": "© {year} Orochia · Apache-2.0",
     "adults": "All performers depicted are 18 years of age or older.",
     "howItWorks": "How it works",
     "docs": "Docs",
-    "mobile": "Mobile"
+    "mobile": "Mobile",
+    "label": "Footer"
   },
   "home": {
     "eyebrow": "18+ · Independent creators",

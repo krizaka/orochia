@@ -1,40 +1,48 @@
+"use client";
+
+import { SiteFooter as FamilyFooter } from "@krizaka/ui/site-footer";
 import Link from "next/link";
 import React from "react";
 
 import { BUILD_INFO } from "@/lib/build-info";
 import { t } from "@/lib/i18n";
 
-/** A quiet footer: brand line, the few links people look for, and the 18+ statement. */
+/**
+ * The footer of the Krizaka family (NAV-SYS) is @krizaka/ui's SiteFooter: Orochia's own column, the family in
+ * columns (@krizaka/ui/sites), « A Krizaka product », the environment and the version, Montréal. The legal links and
+ * the 18+ statement end the signature line. On a phone it is where the family is — the bottom tab bar keeps the app.
+ */
 export function SiteFooter() {
-  const link = "transition-colors hover:text-fg";
+  const link = (href: string, label: string) => (
+    <FamilyFooter.Link asChild>
+      <Link href={href}>{label}</Link>
+    </FamilyFooter.Link>
+  );
   return (
-    <footer className="mb-16 border-t border-border-subtle py-10 text-xs text-fg-muted md:mb-0">
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 px-4 sm:px-6 md:flex-row">
-        <div className="text-center md:text-left">
-          <span className="font-display text-sm font-black tracking-wider text-fg">
-            OROCHIA<span className="text-fg-accent">.</span>
-          </span>
-          <p className="mt-1 text-fg-secondary">{t("footer.tagline")}</p>
-        </div>
-        <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-          <Link href="/explore" className={link}>{t("footer.explore")}</Link>
-          <Link href="/how-it-works" className={link}>{t("footer.howItWorks")}</Link>
-          <Link href="/mobile" className={link}>{t("footer.mobile")}</Link>
-          <Link href="/docs" className={link}>{t("footer.docs")}</Link>
-          <a href="https://www.krizaka.com" target="_blank" rel="noopener" className={link}>{t("footer.madeBy")}</a>
-          <Link href="/legal/terms" className={link}>{t("footer.terms")}</Link>
-          <Link href="/legal/privacy" className={link}>{t("footer.privacy")}</Link>
-          <Link href="/legal/2257" className={link}>{t("footer.compliance")}</Link>
-          <Link href="/legal/dmca" className={link}>{t("footer.dmca")}</Link>
-        </nav>
-      </div>
-      <div className="mx-auto mt-6 max-w-7xl px-4 text-center text-[11px] text-fg-muted sm:px-6 md:text-left">
-        {t("footer.copyright", { year: new Date().getFullYear() })} · {t("footer.adults")}
-        {" · "}
-        <span data-testid="app-version" className="font-mono">
-          {t(BUILD_INFO.sha ? "footer.versionWithCommit" : "footer.version", { version: BUILD_INFO.version, sha: BUILD_INFO.sha ?? "" })}
-        </span>
-      </div>
-    </footer>
+    <div className="mb-16 md:mb-0">
+      <FamilyFooter
+        current="orochia"
+        aria-label={t("footer.label")}
+        version={BUILD_INFO.sha ? `${BUILD_INFO.version}+${BUILD_INFO.sha}` : BUILD_INFO.version}
+        env={BUILD_INFO.env === "production" ? undefined : BUILD_INFO.env}
+        data-testid="app-version"
+        legal={
+          <>
+            <span>{t("footer.adults")}</span>
+            {link("/legal/terms", t("footer.terms"))}
+            {link("/legal/privacy", t("footer.privacy"))}
+            {link("/legal/2257", t("footer.compliance"))}
+            {link("/legal/dmca", t("footer.dmca"))}
+          </>
+        }
+      >
+        <FamilyFooter.Column title="Orochia">
+          {link("/explore", t("footer.explore"))}
+          {link("/how-it-works", t("footer.howItWorks"))}
+          {link("/mobile", t("footer.mobile"))}
+          {link("/docs", t("footer.docs"))}
+        </FamilyFooter.Column>
+      </FamilyFooter>
+    </div>
   );
 }
