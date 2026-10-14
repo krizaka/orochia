@@ -65,3 +65,47 @@ describe("the database pool", () => {
     expect(String(errors.mock.calls[0][0])).toMatch(/^\[db\] database unavailable: ECONNREFUSED/);
   });
 });
+
+describe("connection loss", () => {
+  it("recognises a connection that died or went silent", async () => {
+    const { isDatabaseUnavailable } = await freshModule();
+    for (const message of ["Connection terminated unexpectedly", "Query read timeout", "Client has encountered a connection error and is not queryable"]) {
+      expect(isDatabaseUnavailable(new Error(message))).toBe(true);
+    }
+    for (const code of ["ECONNRESET", "EPIPE", "57P01", "08006"]) {
+      expect(isDatabaseUnavailable(new Error("Failed query", { cause: Object.assign(new Error("x"), { code }) }))).toBe(true);
+    }
+    expect(isDatabaseUnavailable(Object.assign(new Error("duplicate key"), { code: "23505" }))).toBe(false);
+  });
+
+  it("only replays plain reads", async () => {
+    const { isIdempotentRead } = await freshModule();
+    for (const text of ["select 1", "  SELECT * from users where id = $1", "-- why\nselect 1", 'show server_version', "explain select 1"]) {
+      expect(isIdempotentRead(text), text).toBe(true);
+    }
+    for (const text of [
+      "insert into t values (1)",
+      "update t set a = 1",
+      "delete from t",
+      "with x as (delete from t returning *) select * from x",
+      "select * from t for update",
+      "select nextval('s')",
+      "select pg_notify('c', 'p')",
+      "select * into new_t from t",
+      "do $$ begin end $$",
+      "begin",
+      "explain analyze select 1",
+    ]) {
+      expect(isIdempotentRead(text), text).toBe(false);
+    }
+    expect(isIdempotentRead(undefined)).toBe(false);
+  });
+
+  it("is configured to notice a dead peer and to rotate connections", async () => {
+    const { getPool, QUERY_TIMEOUT_MS, MAX_CONNECTION_LIFETIME_SECONDS } = await freshModule();
+    const options = getPool().options as Record<string, unknown>;
+    expect(options.keepAlive).toBe(true);
+    expect(options.query_timeout).toBe(QUERY_TIMEOUT_MS);
+    expect(options.maxLifetimeSeconds).toBe(MAX_CONNECTION_LIFETIME_SECONDS);
+  });
+});
