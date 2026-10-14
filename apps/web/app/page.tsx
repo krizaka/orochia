@@ -27,6 +27,7 @@ import { GetPaid } from "@/components/home/GetPaid";
 import { HomeHero } from "@/components/home/HomeHero";
 import { HomeSectionHeader } from "@/components/home/HomeSectionHeader";
 import { StoriesRail } from "@/components/home/StoriesRail";
+import { MobileSection } from "@/components/mobile/MobileSection";
 import { RelationshipActions } from "@/components/RelationshipActions";
 import { buttonVariants, cn, SectionBackdrop } from "@/components/ui";
 import { listAuctions } from "@/lib/auctions";
@@ -238,6 +239,7 @@ export default async function HomePage() {
 
       {feedAndFeatured}
 
+      <MobileSection />
       <CreatorsCallToAction share={share} />
     </div>
   );

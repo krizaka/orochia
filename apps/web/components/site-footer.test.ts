@@ -14,4 +14,7 @@ describe("the footer", () => {
     expect(html).toContain('href="https://www.krizaka.com"');
     expect(html).toContain("A Krizaka product");
   });
+  it("links the mobile recordings", () => {
+    expect(html).toContain('href="/mobile"');
+  });
 });

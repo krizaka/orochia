@@ -308,7 +308,8 @@
     "wallet": "Wallet",
     "uploadHint": "Publish a video",
     "auctions": "Auctions",
-    "challenges": "Challenges"
+    "challenges": "Challenges",
+    "mobile": "Mobile"
   },
   "footer": {
     "tagline": "The video platform independent creators own.",
@@ -323,7 +324,8 @@
     "copyright": "© {year} Orochia · Apache-2.0",
     "adults": "All performers depicted are 18 years of age or older.",
     "howItWorks": "How it works",
-    "docs": "Docs"
+    "docs": "Docs",
+    "mobile": "Mobile"
   },
   "home": {
     "eyebrow": "18+ · Independent creators",
@@ -2876,5 +2878,68 @@
     "editOnGithub": "Edit this page on GitHub",
     "back": "All documentation",
     "navLabel": "Documentation pages"
+  },
+  "mobile": {
+    "meta": {
+      "title": "The Orochia mobile app",
+      "description": "The Orochia iOS and Android app recorded on a phone: the 18+ gate, the feed and stories, watching, unlocking, a goal and an auction, messages, sign-in."
+    },
+    "eyebrow": "On your phone",
+    "title": "The Orochia app, recorded on a phone",
+    "lead": "The iOS and Android app talks to the same Orochia as this site. Every clip is the real app on the demo seed — Alex, a fan, and Elena, a creator, are invented people. Adults only: a fresh install starts with the 18+ gate. Press play; nothing starts by itself.",
+    "recordedOn": "Recorded on the iOS 27 simulator (typing sped up or cut where a caption says so) and the Android 16 emulator.",
+    "all": "Every clip and screenshot",
+    "clipsTitle": "Recordings",
+    "shotsTitle": "Screens",
+    "frameLabel": "orochia · mobile",
+    "platforms": {
+      "ios": "iOS",
+      "android": "Android"
+    },
+    "clips": {
+      "age-gate": {
+        "label": "18+ gate",
+        "caption": "A fresh install: the 18+ gate, then the feed (12 s)."
+      },
+      "feed-stories": {
+        "label": "Feed and stories",
+        "caption": "Alex scrolls the feed, then opens Elena's story and watches it play (cut between the two, 27 s)."
+      },
+      "watch": {
+        "label": "Watch",
+        "caption": "“Neon Rain — official music video” plays, then more from Elena (25 s)."
+      },
+      "unlock": {
+        "label": "Unlock",
+        "caption": "“Night Drive” asks for an unlock: the price, and “Unlock on orochia.com” (14 s)."
+      },
+      "challenge-auction": {
+        "label": "A goal and an auction",
+        "caption": "Alex pledges $10 to a goal, then bids $31.00 in an auction and leads (cuts between the screens, 15 s)."
+      },
+      "messages": {
+        "label": "Messages",
+        "caption": "Messages, with no conversation yet: the empty state (5 s)."
+      },
+      "sign-in": {
+        "label": "Sign in",
+        "caption": "Alex signs in from the You tab and reads his wallet (typing cut, 22 s)."
+      }
+    },
+    "shots": {
+      "01-age-gate-dark": "The 18+ gate on a fresh install.",
+      "06-home-dark": "Home: stories rail and the feed (local seed).",
+      "06-home-light": "Home in the light theme.",
+      "07-story-dark": "A story, full screen.",
+      "08-watch-dark": "Watch (local seed).",
+      "17-challenge-dark": "A goal, funding: the ring, the backers, the time left, the pledge (demo seed).",
+      "17-challenge-light": "The same goal in the light theme.",
+      "18-auction-dark": "An auction Alex leads at $31.00, the next bids offered.",
+      "16-sign-in-dark": "Sign in.",
+      "05-account-earnings-dark": "A creator's account: wallet and earnings (local seed, Elena).",
+      "04-account-light": "The account in the light theme.",
+      "android-home": "Home on Android.",
+      "android-account": "A creator's account on Android."
+    }
   }
 }
