@@ -1,31 +1,48 @@
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
+import { MobileStepCard } from "@/components/mobile/MobileStepCard";
+
 import { messages } from "./i18n";
-import { MOBILE_CLIPS, MOBILE_SHOTS, mobileClip, mobileShot } from "./mobile-media";
+import { MOBILE_STEPS, mobileClip } from "./mobile-media";
 
 const CDN = /^https:\/\/krizaka-assets\.b-cdn\.net\/site\/products\/orochia\/mobile\/[a-z0-9-]+\.[0-9a-f]{10}\.(webm|mp4|webp)$/;
 
-describe("the mobile app recordings", () => {
-  it("point at the CDN under products/orochia/mobile, with a content hash", () => {
-    for (const id of MOBILE_CLIPS) {
+describe("the mobile journey", () => {
+  it("is a few clear steps in the order a fan meets them, the 18+ gate first", () => {
+    expect(MOBILE_STEPS).toEqual(["age-gate", "feed-stories", "unlock", "challenge-auction"]);
+  });
+
+  it("points every step at the CDN under products/orochia/mobile, with a content hash", () => {
+    for (const id of MOBILE_STEPS) {
       const c = mobileClip(id);
       expect([c.webm, c.mp4, c.poster].every((u) => CDN.test(u))).toBe(true);
     }
-    for (const s of MOBILE_SHOTS) expect(mobileShot(s.id)).toMatch(CDN);
   });
 
-  it("have a label and a caption for every clip and a caption for every screenshot", () => {
+  it("has a goal, a purpose, an alt and three things to notice for every step", () => {
     const m = messages("mobile");
-    for (const id of MOBILE_CLIPS) {
-      expect(m.clips[id].label.length).toBeGreaterThan(0);
-      expect(m.clips[id].caption.length).toBeGreaterThan(0);
+    expect(Object.keys(m.steps).sort()).toEqual([...MOBILE_STEPS].sort());
+    for (const id of MOBILE_STEPS) {
+      const s = m.steps[id];
+      for (const text of [s.goal, s.short, s.purpose, s.alt]) expect(text.trim().length).toBeGreaterThan(0);
+      expect(s.notice).toHaveLength(3);
     }
-    for (const s of MOBILE_SHOTS) expect(m.shots[s.id].length).toBeGreaterThan(0);
   });
 
-  it("never claims anything is live, and keeps the age gate in the series", () => {
-    const text = JSON.stringify(messages("mobile")).toLowerCase();
-    expect(text).not.toMatch(/\blive\b/);
-    expect(MOBILE_CLIPS[0]).toBe("age-gate");
+  it("never claims anything is live", () => {
+    expect(JSON.stringify(messages("mobile")).toLowerCase()).not.toMatch(/\blive\b/);
+  });
+
+  it("renders a step with its recording (on demand, with a text alternative), purpose and things to notice", () => {
+    const html = renderToStaticMarkup(React.createElement(MobileStepCard, { id: "unlock", index: 2 }));
+    const s = messages("mobile").steps.unlock;
+    expect(html).toContain('preload="none"');
+    expect(html).not.toContain("autoplay");
+    expect(html).toMatch(/aria-label="[^"]+"/);
+    expect(html).toContain("<h3");
+    expect(html).toContain(s.purpose);
+    for (const n of s.notice) expect(html).toContain(n.replaceAll("\"", "&quot;"));
   });
 });
