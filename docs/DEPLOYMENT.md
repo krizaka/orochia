@@ -44,6 +44,13 @@ Sessions, owner account, sign-in providers.
 | `AUTH_OWNER_NAME` | recommended |  |  | The owner's display name. |
 | `AUTH_OWNER_PASSWORD` | — | ✓ |  | Only to create the owner (10+ characters); an existing account keeps its password. |
 | `AUTH_OWNER_ROLE` | — |  | `ADMIN` | The owner's role. |
+| `AUTH_TEST_FAN_EMAIL` | — |  |  | QA fan account, injected by `npm run db:test-accounts` (packages/db) — e-mail. |
+| `AUTH_TEST_FAN_USERNAME` | — |  |  | QA fan account — username. |
+| `AUTH_TEST_FAN_PASSWORD` | — | ✓ |  | QA fan account — password (12+ characters). Never printed. |
+| `AUTH_TEST_CREATOR_EMAIL` | — |  |  | QA creator account, injected by `npm run db:test-accounts` — e-mail. |
+| `AUTH_TEST_CREATOR_USERNAME` | — |  |  | QA creator account — username. |
+| `AUTH_TEST_CREATOR_PASSWORD` | — | ✓ |  | QA creator account — password (12+ characters). Never printed. |
+| `AUTH_TEST_DATE_OF_BIRTH` | — |  |  | QA accounts' date of birth (YYYY-MM-DD, 18+); default 1990-01-01. |
 | `AUTH_SIGNUP_ENABLED` | — |  | `false` | Opens sign-up (the form, `/api/auth/register`, new Google / Facebook accounts). Off by default: a development deployment is closed to newcomers (403 `signup_disabled`), existing accounts still sign in. Read at request time; `/api/auth/providers` and `/api/auth/me` expose it as `signupEnabled`. |
 | `AUTH_GOOGLE_CLIENT_ID` | — |  |  | Sign in with Google — offered only with its secret too. See *Sign-in providers*. |
 | `AUTH_GOOGLE_CLIENT_SECRET` | — | ✓ |  | Sign in with Google: the OAuth client secret. |
