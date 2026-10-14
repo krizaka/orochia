@@ -1561,7 +1561,7 @@
         "repository": "krizaka-ui",
         "path": "node_modules/@krizaka/tailwind",
         "runtime": "library",
-        "version": "2.4.0",
+        "version": "3.10.0",
         "published": true,
         "description": "The Krizaka Tailwind CSS v4 preset: the semantic --kz-* tokens as utilities (bg-surface-1, text-fg-secondary, border-border-default, text-accent, rounded-xl…), illustration-only light/dark variants and the Krizaka easing."
       },
@@ -1573,9 +1573,9 @@
         "repository": "krizaka-ui",
         "path": "node_modules/@krizaka/tokens",
         "runtime": "library",
-        "version": "2.4.0",
+        "version": "3.10.0",
         "published": true,
-        "description": "The Krizaka semantic design tokens (--kz-*) and the brand themes (Krizaka, Orazaka, Orochia): one DTCG source compiled to CSS (dark, light, media invariants), typed constants and React Native themes."
+        "description": "The Krizaka semantic design tokens (--kz-*) and the brand themes (Krizaka, Orazaka, Orochia, Yasakia, Yororis): one DTCG source compiled to CSS (dark, light, media invariants), typed constants and React Native themes."
       },
       {
         "id": "krizaka-ui",
@@ -1585,9 +1585,9 @@
         "repository": "krizaka-ui",
         "path": "node_modules/@krizaka/ui",
         "runtime": "library",
-        "version": "2.4.0",
+        "version": "3.10.0",
         "published": true,
-        "description": "The Krizaka front-end platform's components: the primitives (button, card, dialog, toast, menu, field, tabs, chip, switch, slider, command palette, theme, countdown…) on the semantic --kz-* tokens, the animated marks (Krizaka, Orazaka, Orochia) and the motion signature — web and /native."
+        "description": "The Krizaka front-end platform's components: the primitives (button, card, dialog, toast, menu, field, tabs, chip, switch, slider, command palette, theme, countdown…) on the semantic --kz-* tokens, the animated marks (Krizaka, Orazaka, Orochia, Yasakia, Yororis) and the motion signature — web and /native."
       },
       {
         "id": "admin-postgresql",
@@ -1834,17 +1834,17 @@
       {
         "from": "orochia-web",
         "to": "krizaka-tailwind",
-        "version": "2.4.0"
+        "version": "3.10.0"
       },
       {
         "from": "orochia-web",
         "to": "krizaka-tokens",
-        "version": "2.4.0"
+        "version": "3.10.0"
       },
       {
         "from": "orochia-web",
         "to": "krizaka-ui",
-        "version": "2.4.0"
+        "version": "3.10.0"
       },
       {
         "from": "orochia-web",
