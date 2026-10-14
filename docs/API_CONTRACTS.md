@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (168)
+## Endpoints (169)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -50,7 +50,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/auth/oauth/[provider]/start` | public | Sends the browser to the provider's consent page (state + PKCE kept in a signed 10-minute cookie). |
 | `POST` | `/api/auth/oauth/complete` | public | Creates the account of a new Google / Facebook sign-in after the person gives a date of birth (18+), certifies it and accepts the terms. |
 | `GET` | `/api/auth/oauth/pending` | public | The provider sign-in waiting to become an account: what the completion form can prefill. |
-| `GET` | `/api/auth/providers` | public | The sign-in providers this deployment offers (only those whose keys are configured). |
+| `GET` | `/api/auth/providers` | public | The public configuration the web app and the native app read: the sign-in providers this deployment offers (only those whose keys are configured) and whether sign-up is open (`signupEnabled` — `AUTH_SIGNUP_ENABLED`). |
 | `GET` | `/api/auth/register` | public | Opens a sign-up form: a signed form token (bound to this browser's device cookie, set here when missing — or, with `?client=native`, to the app's device id header) and the public bot-challenge settings — the form cannot be posted without them. |
 | `POST` | `/api/auth/register` | public | Creates an account (a member — creators are opened later, never an administrator), signs it in and e-mails the link that verifies its address — until then the account can do nothing else. |
 | `POST` | `/api/auth/resend-verification` | public | E-mails a new verification link to the signed-in account (the previous link stops working). |
@@ -163,6 +163,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/uploads` | session · role depends on the request | Stores an avatar or a profile banner (any account), a thumbnail, a story image or a 2257 document (creators); size and type checked per kind. |
 | `DELETE` | `/api/users/[username]/block` | session · ADMIN / CREATOR / MEMBER | Unblocks a previously blocked user. |
 | `POST` | `/api/users/[username]/block` | session · ADMIN / CREATOR / MEMBER | Blocks or unblocks a user: toggles block state on POST. |
+| `GET` | `/api/version` | public | What is deployed: the package version, the short commit and the environment (inlined at build). |
 | `DELETE` | `/api/videos/[id]` | session · CREATOR | The creator deletes their video (refused while it is in an auction, and for a video its challenge's backers paid for). |
 | `PATCH` | `/api/videos/[id]` | session · CREATOR | The creator edits their video (an auctioned or challenge video keeps its audience): title, description, visibility, unlock price, tags, comments open. |
 | `GET` | `/api/videos/[id]/auction` | public · session-aware | The auction a video is in (open, awaiting its decision or sold), as the viewer sees it; null when there is none. |

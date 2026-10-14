@@ -102,6 +102,7 @@ jobs:
       AUTH_OWNER_USERNAME: orochia_admin
       AUTH_OWNER_NAME: Orochia Operator
       APP_DEMO_MODE: "true"
+      AUTH_SIGNUP_ENABLED: "true"
       NEXT_PUBLIC_APP_URL: http://localhost:3000
       # Shared by the app and the scenarios: a 2 GB plan so one file can exceed it, and a 1 s minimal sign-up time.
       ABUSE_QUOTA_CREATOR_DEFAULT_GB: "2"

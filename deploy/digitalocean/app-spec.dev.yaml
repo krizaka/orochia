@@ -98,6 +98,10 @@ services:
       - key: AUTH_SESSION_SECRET
         scope: RUN_TIME
         type: SECRET
+      # Sign-up is closed on dev while Orochia is in development (403 signup_disabled; existing accounts sign in).
+      - key: AUTH_SIGNUP_ENABLED
+        scope: RUN_TIME
+        value: "false"
       # Credits settle in-house; until the wallet exists every credits payment is approved (dev only).
       - key: PAYMENTS_CREDITS_MODE
         scope: RUN_TIME

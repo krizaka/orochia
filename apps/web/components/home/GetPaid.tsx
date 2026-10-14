@@ -6,6 +6,7 @@ import React from "react";
 import { BackdropMedia } from "@/components/home/BackdropMedia";
 import { Button, buttonVariants, cn, IsoHub, SectionBackdrop } from "@/components/ui";
 import { CREATOR_APPLY_PATH, signUpHref } from "@/lib/creator-journey";
+import { signupEnabled } from "@/lib/features";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
 import { SOURCE_URL } from "@/lib/seo";
@@ -154,11 +155,13 @@ export function GetPaid({ fee }: { fee: number }) {
         </ul>
 
         <div data-reveal className="mt-12 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Button asChild variant="primary" size="lg" shimmer className="w-full gap-2 sm:w-auto">
-            <Link href={signUpHref(CREATOR_APPLY_PATH)}>
-              <PayoutIcon size={18} /> {t("home.paid.cta")}
-            </Link>
-          </Button>
+          {signupEnabled() && (
+            <Button asChild variant="primary" size="lg" shimmer className="w-full gap-2 sm:w-auto">
+              <Link href={signUpHref(CREATOR_APPLY_PATH)}>
+                <PayoutIcon size={18} /> {t("home.paid.cta")}
+              </Link>
+            </Button>
+          )}
           <Link href="/challenges" className={cn(buttonVariants({ variant: "outline", size: "lg", shape: "pill" }), "w-full gap-2 bg-surface-1/60 backdrop-blur-md sm:w-auto")}>
             {t("home.paid.ctaChallenges")}
           </Link>

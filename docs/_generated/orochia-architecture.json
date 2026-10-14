@@ -386,7 +386,7 @@
       "method": "GET",
       "path": "/api/auth/providers",
       "access": "public",
-      "summary": "The sign-in providers this deployment offers (only those whose keys are configured)."
+      "summary": "The public configuration the web app and the native app read: the sign-in providers this deployment offers (only those whose keys are configured) and whether sign-up is open (`signupEnabled` — `AUTH_SIGNUP_ENABLED`)."
     },
     {
       "method": "GET",
@@ -1061,6 +1061,12 @@
       "summary": "Blocks or unblocks a user: toggles block state on POST."
     },
     {
+      "method": "GET",
+      "path": "/api/version",
+      "access": "public",
+      "summary": "What is deployed: the package version, the short commit and the environment (inlined at build)."
+    },
+    {
       "method": "DELETE",
       "path": "/api/videos/[id]",
       "access": "session · CREATOR",
@@ -1413,7 +1419,7 @@
         "runtime": "node",
         "version": "1.0.0",
         "published": false,
-        "description": "The API: 131 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
+        "description": "The API: 132 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
       },
       {
         "id": "orochia-config",

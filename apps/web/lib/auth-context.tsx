@@ -46,6 +46,8 @@ interface AuthContextType {
   isLoading: boolean;
   /** Seeded showcase accounts can be switched to (never in production). */
   demoMode: boolean;
+  /** Sign-up is open on this deployment (`AUTH_SIGNUP_ENABLED`); false until the server says so. */
+  signupEnabled: boolean;
   login: (identifier: string, password: string) => Promise<void>;
   register: (data: RegisterInput) => Promise<void>;
   logout: () => Promise<void>;
@@ -63,6 +65,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   isLoading: true,
   demoMode: false,
+  signupEnabled: false,
   login: async () => {},
   register: async () => {},
   logout: async () => {},
@@ -84,12 +87,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [demoMode, setDemoMode] = useState(false);
+  const [signupEnabled, setSignupEnabled] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
       const res = await fetch("/api/auth/me", { cache: "no-store" });
-      const data = (await res.json()) as { user: (Omit<UserProfile, "avatarUrl"> & { avatarUrl: string | null }) | null; demoMode?: boolean };
+      const data = (await res.json()) as { user: (Omit<UserProfile, "avatarUrl"> & { avatarUrl: string | null }) | null; demoMode?: boolean; signupEnabled?: boolean };
       setDemoMode(Boolean(data.demoMode));
+      setSignupEnabled(Boolean(data.signupEnabled));
       setUser(data.user ? { ...data.user, avatarUrl: data.user.avatarUrl || AVATAR_PLACEHOLDER } : null);
     } catch {
       setUser(null);
@@ -125,7 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, demoMode, login, register, logout, refresh, switchProfile }}>
+    <AuthContext.Provider value={{ user, isLoading, demoMode, signupEnabled, login, register, logout, refresh, switchProfile }}>
       {children}
     </AuthContext.Provider>
   );

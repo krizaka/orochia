@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { checkDbHealth } from "@orochia/db";
 
+import { BUILD_INFO } from "@/lib/build-info";
+
 export const dynamic = "force-dynamic";
 
 export async function GET() {
@@ -16,7 +18,8 @@ export async function GET() {
       services: {
         database: dbHealthy ? "up" : "down",
       },
-      version: process.env.npm_package_version || "1.0.0",
+      version: BUILD_INFO.version,
+      commit: BUILD_INFO.sha,
     },
     { status }
   );

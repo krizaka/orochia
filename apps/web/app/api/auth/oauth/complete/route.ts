@@ -4,6 +4,7 @@ import { setSessionCookie } from "@/lib/auth";
 import { sendVerificationEmail } from "@/lib/account-tokens";
 import { OAUTH_PENDING_COOKIE, type ProviderProfile, completeSignUp, unseal } from "@/lib/oauth";
 import { clearShortCookie } from "@/lib/oauth-cookies";
+import { assertSignupEnabled } from "@/lib/features";
 import { errorResponse, isUniqueViolation, jsonError } from "@/lib/http";
 import { checkDateOfBirth } from "@/lib/profile";
 import { isReserved } from "@/lib/usernames";
@@ -22,6 +23,7 @@ const Complete = z.object({
 /** Creates the account of a new Google / Facebook sign-in after the person gives a date of birth (18+), certifies it and accepts the terms. */
 export async function POST(req: NextRequest) {
   try {
+    assertSignupEnabled();
     const pending = unseal<{ profile: ProviderProfile; next: string }>(req.cookies.get(OAUTH_PENDING_COOKIE)?.value);
     if (!pending) return jsonError(410, "This sign-in expired. Start again.");
     const input = Complete.parse(await req.json());

@@ -175,6 +175,9 @@
   },
   "auth": {
     "register": {
+      "closedTitle": "Sign-ups are closed while Orochia is in development",
+      "closedBody": "We are building Orochia in the open and are not taking new accounts yet. If you already have an account, you can still sign in.",
+      "closedSignIn": "Sign in",
       "title": "Create your account",
       "subtitle": "Watch, follow and support creators. Publishing comes later, from your dashboard.",
       "username": "Username",
@@ -314,9 +317,13 @@
     "privacy": "Privacy",
     "compliance": "2257",
     "dmca": "DMCA",
-    "madeBy": "Krizaka",
+    "madeBy": "A Krizaka product",
+    "version": "Version {version}",
+    "versionWithCommit": "Version {version} · {sha}",
     "copyright": "© {year} Orochia · Apache-2.0",
-    "adults": "All performers depicted are 18 years of age or older."
+    "adults": "All performers depicted are 18 years of age or older.",
+    "howItWorks": "How it works",
+    "docs": "Docs"
   },
   "home": {
     "eyebrow": "18+ · Independent creators",
@@ -2791,5 +2798,83 @@
         "body": "Uploads open once your identity and age records (18 U.S.C. § 2257) are approved."
       }
     }
+  },
+  "howItWorks": {
+    "meta": {
+      "title": "How Orochia works",
+      "description": "Orochia is a video platform for independent creators: fans pay them directly — tips, paid unlocks, auctions and funded goals — and creators keep 90 %. Watch the real application at work."
+    },
+    "eyebrow": "How Orochia works",
+    "title": "One creator, one fan. Every payment on screen.",
+    "lead": "Meet Elena, a singer-songwriter who films her own music videos, and Alex, who plays them on repeat. He finds her, tips her story, unlocks a session, bids on a cut and backs her next shoot; she publishes and withdraws 90 % of what she earns. Every clip below is the real Orochia.",
+    "ctaExplore": "Explore creators",
+    "ctaDocs": "Read the docs",
+    "ways": {
+      "title": "Four ways to pay a creator",
+      "tip": "Tip",
+      "tipBody": "A tip on a video or a story goes straight to the creator, 90 % of it.",
+      "unlock": "Paid unlock",
+      "unlockBody": "A fan unlocks a video in two taps with credits; the server grants the access.",
+      "auction": "Auction",
+      "auctionBody": "An exclusive cut goes to the highest bidder; credits are held only while a bid leads.",
+      "goal": "Funded goal",
+      "goalBody": "Fans back the next video in escrow: paid on delivery, returned if not."
+    },
+    "fanTitle": "A fan's day",
+    "creatorTitle": "A creator's day",
+    "showcaseTitle": "The whole day in one clip",
+    "frameLabel": "orochia · web",
+    "clips": {
+      "alex-discover": {
+        "label": "Discover",
+        "caption": "Explore: today's stories, a search for “rain”, and Elena's music video playing at once."
+      },
+      "alex-story": {
+        "label": "A story that pays",
+        "caption": "Elena's story, sound on: Alex likes it and tips $5 — straight to her."
+      },
+      "alex-unlock": {
+        "label": "Unlock a session",
+        "caption": "Her acoustic session costs $8: paid in credits, the access is granted by the server and it plays."
+      },
+      "alex-bid": {
+        "label": "Bid on a cut",
+        "caption": "The director's cut is up for auction: Alex bids and leads. His credits are held only while he leads."
+      },
+      "alex-back": {
+        "label": "Back the next shoot",
+        "caption": "Elena's goal is at 60 %: Alex pledges $25, held until she delivers, returned if she does not."
+      },
+      "elena-publish": {
+        "label": "Publish",
+        "caption": "A new video, a title, “Paid unlock” at $6 — the form shows she keeps $5.40 — then straight to the CDN."
+      },
+      "elena-story": {
+        "label": "Who paid",
+        "caption": "Her story's activity, for her only: who watched, who liked it and who tipped."
+      },
+      "elena-earnings": {
+        "label": "Withdraw 90 %",
+        "caption": "Her earnings, read from the ledger — 90 % of every payment — then everything to her bank in two taps."
+      },
+      "showcase": {
+        "label": "A day on Orochia",
+        "caption": "Alex discovers Elena, tips her story and unlocks her session; Elena is paid and withdraws 90 %."
+      }
+    },
+    "persona": "Elena Marlow and Alex Carter are demo personas; their videos play licensed stock footage. Nobody shown is a real account."
+  },
+  "docs": {
+    "meta": {
+      "title": "Documentation",
+      "description": "How Orochia is built and how to run it: getting started, architecture, creator onboarding, auctions, challenges, the media pipeline, realtime, the mobile app, accessibility and deployment."
+    },
+    "eyebrow": "Documentation",
+    "title": "Orochia, documented",
+    "lead": "Orochia is open source. These pages are the repository's own documentation — how it works, why it is built that way, and how to run it yourself.",
+    "source": "Read the source on GitHub",
+    "editOnGithub": "Edit this page on GitHub",
+    "back": "All documentation",
+    "navLabel": "Documentation pages"
   }
 }

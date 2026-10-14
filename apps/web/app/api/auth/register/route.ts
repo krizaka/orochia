@@ -21,6 +21,7 @@ import { sendVerificationEmail } from "@/lib/account-tokens";
 import { SESSION_TTL_SECONDS, setSessionCookie, signSessionToken } from "@/lib/auth";
 import { clientIp } from "@/lib/client-ip";
 import { isDemoMode } from "@/lib/env";
+import { assertSignupEnabled } from "@/lib/features";
 import { errorResponse, isUniqueViolation, jsonError } from "@/lib/http";
 import { acceptInvitation } from "@/lib/invitations";
 import { checkDateOfBirth } from "@/lib/profile";
@@ -62,6 +63,7 @@ const RegisterSchema = z.object({
  */
 export async function GET(req: NextRequest) {
   try {
+    assertSignupEnabled();
     if (req.nextUrl.searchParams.get("client") === "native") {
       const deviceId = req.headers.get(DEVICE_HEADER)?.trim();
       if (!isDeviceId(deviceId)) return jsonError(400, "Please try again.", { code: "DEVICE_ID_INVALID" });
@@ -96,6 +98,7 @@ export async function GET(req: NextRequest) {
  */
 export async function POST(req: NextRequest) {
   try {
+    assertSignupEnabled();
     // Cheap checks first, the paid one (Cloudflare) last: an automated client, the per-IP and per-device limits,
     // the honeypot, the form token, a disposable address — then the bot challenge (fail closed).
     refuseAutomation(req.headers);

@@ -77,10 +77,11 @@ export interface Cta {
  * creator space of their own account; a pending creator sees the status of the review; a creator uploads.
  * A suspended account is offered nothing.
  */
-export function creatorSpaceCta(state: ViewerState): Cta | null {
+export function creatorSpaceCta(state: ViewerState, signupOpen = true): Cta | null {
   switch (state) {
     case "anonymous":
-      return { href: signUpHref(CREATOR_APPLY_PATH), label: "creatorSpace.cta.anonymous" };
+      // Sign-up closed (`AUTH_SIGNUP_ENABLED`): a visitor is only offered to sign in — never a sign-up link.
+      return { href: signupOpen ? signUpHref(CREATOR_APPLY_PATH) : signInHref(CREATOR_APPLY_PATH), label: "creatorSpace.cta.anonymous" };
     case "member":
       return { href: CREATOR_APPLY_PATH, label: "creatorSpace.cta.member" };
     case "creator-pending":
@@ -102,12 +103,16 @@ export type FeedEmptyKind = "platform" | "tab";
  * The next steps under an empty home feed. Signed in, never the sign-up form: a fan explores, finds people or opens
  * their creator space; a pending creator follows their review; a creator publishes.
  */
-export function feedEmptyActions(state: ViewerState, kind: FeedEmptyKind, tab: FeedTab): Cta[] {
-  const creator = creatorSpaceCta(state);
+export function feedEmptyActions(state: ViewerState, kind: FeedEmptyKind, tab: FeedTab, signupOpen = true): Cta[] {
+  const creator = creatorSpaceCta(state, signupOpen);
   const explore: Cta = { href: "/explore", label: "feed.actions.explore" };
   if (state === "suspended") return [];
   if (kind === "platform") {
-    if (state === "anonymous") return [{ href: signUpHref(), label: "feed.actions.join", primary: true }, creator!];
+    if (state === "anonymous") {
+      return signupOpen
+        ? [{ href: signUpHref(), label: "feed.actions.join", primary: true }, creator!]
+        : [{ href: signInHref(), label: "feed.actions.signIn", primary: true }];
+    }
     if (state === "creator") return [{ ...creator!, primary: true }, explore];
     // A fan or a pending creator: look around, and the creator space (open it / its review).
     return [{ ...explore, primary: true }, creator!];

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React from "react";
 
+import { BUILD_INFO } from "@/lib/build-info";
 import { t } from "@/lib/i18n";
 
 /** A quiet footer: brand line, the few links people look for, and the 18+ statement. */
@@ -17,7 +18,9 @@ export function SiteFooter() {
         </div>
         <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
           <Link href="/explore" className={link}>{t("footer.explore")}</Link>
-          <a href="https://krizaka.com" target="_blank" rel="noopener" className={link}>{t("footer.madeBy")}</a>
+          <Link href="/how-it-works" className={link}>{t("footer.howItWorks")}</Link>
+          <Link href="/docs" className={link}>{t("footer.docs")}</Link>
+          <a href="https://www.krizaka.com" target="_blank" rel="noopener" className={link}>{t("footer.madeBy")}</a>
           <Link href="/legal/terms" className={link}>{t("footer.terms")}</Link>
           <Link href="/legal/privacy" className={link}>{t("footer.privacy")}</Link>
           <Link href="/legal/2257" className={link}>{t("footer.compliance")}</Link>
@@ -26,6 +29,10 @@ export function SiteFooter() {
       </div>
       <div className="mx-auto mt-6 max-w-7xl px-4 text-center text-[11px] text-fg-muted sm:px-6 md:text-left">
         {t("footer.copyright", { year: new Date().getFullYear() })} · {t("footer.adults")}
+        {" · "}
+        <span data-testid="app-version" className="font-mono">
+          {t(BUILD_INFO.sha ? "footer.versionWithCommit" : "footer.version", { version: BUILD_INFO.version, sha: BUILD_INFO.sha ?? "" })}
+        </span>
       </div>
     </footer>
   );

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSession, SESSION_TTL_SECONDS, sessionTransport, setSessionCookie, signSessionToken } from "@/lib/auth";
 import { accountProfile } from "@/lib/queries";
 import { isDemoMode } from "@/lib/env";
+import { signupEnabled } from "@/lib/features";
 import { errorResponse } from "@/lib/http";
 
 export const dynamic = "force-dynamic";
@@ -21,6 +22,7 @@ export async function GET() {
     const response = NextResponse.json({
       user,
       demoMode: isDemoMode(),
+      signupEnabled: signupEnabled(),
       ...(bearer && refreshed ? { token: signSessionToken(refreshed), expiresIn: SESSION_TTL_SECONDS } : {}),
     });
     if (stale && !bearer && refreshed) setSessionCookie(response, refreshed);
