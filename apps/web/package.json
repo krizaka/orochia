@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "predev": "node scripts/copy-ffmpeg.mjs",
+    "predev": "node scripts/copy-ffmpeg.mjs && node scripts/gen-docs-bundle.mjs",
     "dev": "next dev",
-    "prebuild": "node scripts/copy-ffmpeg.mjs",
+    "prebuild": "node scripts/copy-ffmpeg.mjs && node scripts/gen-docs-bundle.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint ."
@@ -31,6 +31,7 @@
     "hls.js": "^1.5.15",
     "ioredis": "^5.11.1",
     "lucide-react": "^1.55.0",
+    "marked": "^16.4.2",
     "next": "^16.4.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

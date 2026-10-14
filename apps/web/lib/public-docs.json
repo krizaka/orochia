@@ -1,0 +1,15 @@
+[
+  { "slug": "getting-started", "file": "GETTING_STARTED.md" },
+  { "slug": "architecture", "file": "ARCHITECTURE.md" },
+  { "slug": "creator-onboarding", "file": "CREATOR_ONBOARDING.md" },
+  { "slug": "auctions", "file": "AUCTIONS.md" },
+  { "slug": "challenges", "file": "CHALLENGES.md" },
+  { "slug": "media-pipeline", "file": "MEDIA_PIPELINE.md" },
+  { "slug": "notifications", "file": "NOTIFICATIONS.md" },
+  { "slug": "realtime", "file": "REALTIME.md" },
+  { "slug": "mobile", "file": "MOBILE.md" },
+  { "slug": "accessibility", "file": "ACCESSIBILITY.md" },
+  { "slug": "ux-decisions", "file": "UX_DECISIONS.md" },
+  { "slug": "development", "file": "DEVELOPMENT.md" },
+  { "slug": "deployment", "file": "DEPLOYMENT.md" }
+]
