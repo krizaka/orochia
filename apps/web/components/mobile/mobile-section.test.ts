@@ -6,7 +6,7 @@ import { MobileSection } from "./MobileSection";
 
 describe("the home page's mobile section", () => {
   const html = renderToStaticMarkup(React.createElement(MobileSection));
-  it("shows four phone recordings, played on demand — none autoplays", () => {
+  it("shows the four steps as phone recordings, played on demand — none autoplays", () => {
     expect((html.match(/<video/g) ?? []).length).toBe(4);
     expect(html).not.toContain("autoplay");
     expect(html).toContain('preload="none"');

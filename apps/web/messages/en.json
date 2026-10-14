@@ -2882,64 +2882,62 @@
   "mobile": {
     "meta": {
       "title": "The Orochia mobile app",
-      "description": "The Orochia iOS and Android app recorded on a phone: the 18+ gate, the feed and stories, watching, unlocking, a goal and an auction, messages, sign-in."
+      "description": "The Orochia app on a phone in four explained steps: the 18+ gate, the feed and stories, unlocking a video, a goal and an auction."
     },
     "eyebrow": "On your phone",
-    "title": "The Orochia app, recorded on a phone",
-    "lead": "The iOS and Android app talks to the same Orochia as this site. Every clip is the real app on the demo seed — Alex, a fan, and Elena, a creator, are invented people. Adults only: a fresh install starts with the 18+ gate. Press play; nothing starts by itself.",
-    "recordedOn": "Recorded on the iOS 27 simulator (typing sped up or cut where a caption says so) and the Android 16 emulator.",
-    "all": "Every clip and screenshot",
-    "clipsTitle": "Recordings",
-    "shotsTitle": "Screens",
+    "title": "Orochia in your pocket: four steps",
+    "lead": "The app is for fans: follow the creators you like, watch their stories and videos, unlock what they make for you and back their goals and auctions — from your phone, adults only. Four screens, in the order you meet them. Every clip is the real app on the demo seed — Alex, a fan, and Elena, a creator, are invented people. Press play; nothing starts by itself.",
+    "recordedOn": "Recorded on the iOS 27 simulator (typing sped up or cut where a step says so).",
+    "all": "Follow the four steps",
+    "stepsTitle": "The four steps",
+    "step": "Step",
+    "notice": "What to notice",
     "frameLabel": "orochia · mobile",
-    "platforms": {
-      "ios": "iOS",
-      "android": "Android"
-    },
-    "clips": {
+    "steps": {
       "age-gate": {
-        "label": "18+ gate",
-        "caption": "A fresh install: the 18+ gate, then the feed (12 s)."
+        "goal": "Confirm you are an adult",
+        "short": "A fresh install: the 18+ gate, then the feed (12 s).",
+        "purpose": "Orochia is for adults only, so the very first screen asks you to confirm you are 18 or older before anything is shown. It is the rule of the house, said once, up front.",
+        "alt": "A fresh install opens on the Orochia mark and the words Adults only; Alex taps “I am 18 or older — enter” and the feed appears.",
+        "notice": [
+          "The gate comes before everything else: no video, creator or price is visible until it is confirmed.",
+          "Entering means confirming you are 18 or older, or the age of majority where you are, and accepting the terms.",
+          "“Read the terms” sits right under the button, so the terms are one tap away before you accept."
+        ]
       },
       "feed-stories": {
-        "label": "Feed and stories",
-        "caption": "Alex scrolls the feed, then opens Elena's story and watches it play (cut between the two, 27 s)."
-      },
-      "watch": {
-        "label": "Watch",
-        "caption": "“Neon Rain — official music video” plays, then more from Elena (25 s)."
+        "goal": "See what your creators posted today",
+        "short": "Alex scrolls the feed, then opens Elena's story (cut between the two, 27 s).",
+        "purpose": "The home screen puts the creators you follow first: a row of stories on top, the feed of videos under it. You catch up in a minute and tap what you want to watch.",
+        "alt": "Alex scrolls the home feed, taps Elena's ring in the stories row and watches her story full screen.",
+        "notice": [
+          "One ring per creator in the stories row; a creator you have not seen yet is circled in the signature gradient.",
+          "A story opens full screen and plays through; a photo stays on screen for five seconds.",
+          "A video that is not free wears a lock badge naming its access (Followers, Unlock, Auction, Backers), so you know before you tap."
+        ]
       },
       "unlock": {
-        "label": "Unlock",
-        "caption": "“Night Drive” asks for an unlock: the price, and “Unlock on orochia.com” (14 s)."
+        "goal": "Unlock a video a creator priced",
+        "short": "“Night Drive” asks for an unlock: the price, and “Unlock on orochia.com” (14 s).",
+        "purpose": "Some videos are paid. The screen tells you why you cannot watch yet and what it costs, then sends you to the website to unlock it, where the creator is paid.",
+        "alt": "Alex opens the video “Night Drive”; instead of playing, the screen shows the price to unlock it and a button, Unlock on orochia.com.",
+        "notice": [
+          "The reason is said in plain words: unlock this video from its price to watch it.",
+          "The app never takes a payment itself: the button opens orochia.com on that video.",
+          "Other locks are named too — followers only, contacts, an auction or a challenge — each with its own sentence."
+        ]
       },
       "challenge-auction": {
-        "label": "A goal and an auction",
-        "caption": "Alex pledges $10 to a goal, then bids $31.00 in an auction and leads (cuts between the screens, 15 s)."
-      },
-      "messages": {
-        "label": "Messages",
-        "caption": "Messages, with no conversation yet: the empty state (5 s)."
-      },
-      "sign-in": {
-        "label": "Sign in",
-        "caption": "Alex signs in from the You tab and reads his wallet (typing cut, 22 s)."
+        "goal": "Back a goal and bid in an auction",
+        "short": "Alex pledges $10 to a goal, then bids $31.00 and leads (cuts between the screens, 15 s).",
+        "purpose": "Two ways to take part in what a creator makes: fund a goal together with other fans, or bid for a video that only the winner watches. Both are held in credits until the creator delivers.",
+        "alt": "Alex pledges ten dollars to a goal and sees the ring and the backers update, then bids thirty-one dollars in an auction and sees that he leads.",
+        "notice": [
+          "A goal shows the ring, what is raised so far, the backers and the time left; credits are held until delivery and come back if it is not delivered.",
+          "An auction shows the current bid, the bids so far and the next amounts to offer, and says “You lead” when you do.",
+          "Countdowns follow the server's clock, so a phone set a few minutes off still counts down right."
+        ]
       }
-    },
-    "shots": {
-      "01-age-gate-dark": "The 18+ gate on a fresh install.",
-      "06-home-dark": "Home: stories rail and the feed (local seed).",
-      "06-home-light": "Home in the light theme.",
-      "07-story-dark": "A story, full screen.",
-      "08-watch-dark": "Watch (local seed).",
-      "17-challenge-dark": "A goal, funding: the ring, the backers, the time left, the pledge (demo seed).",
-      "17-challenge-light": "The same goal in the light theme.",
-      "18-auction-dark": "An auction Alex leads at $31.00, the next bids offered.",
-      "16-sign-in-dark": "Sign in.",
-      "05-account-earnings-dark": "A creator's account: wallet and earnings (local seed, Elena).",
-      "04-account-light": "The account in the light theme.",
-      "android-home": "Home on Android.",
-      "android-account": "A creator's account on Android."
     }
   }
 }
