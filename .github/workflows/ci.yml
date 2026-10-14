@@ -120,6 +120,10 @@ jobs:
         env:
           REALTIME_IT: "1"
           REALTIME_REDIS_URL: redis://localhost:6379
+      - name: Database failover — the pool and the LISTEN connection recover from resets, outages and silent peers
+        run: npx vitest run packages/db/src/client.reconnect.integration.test.ts
+        env:
+          DATABASE_RECONNECT_IT: "1"
       - run: npm run db:seed
       - name: Start the app (development server)
         run: |

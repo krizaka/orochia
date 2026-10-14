@@ -1,4 +1,3 @@
-import { sql } from "drizzle-orm";
 import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { connectionConfig } from "./connection";
@@ -48,14 +47,17 @@ export function poolSize(value: string | undefined = process.env.DATABASE_MAX_CO
  * query is wrong": too many connections (53300), starting up / shutting down (57P01-57P03), refused, unreachable,
  * timed out.
  */
-const UNAVAILABLE_CODES = new Set(["53300", "53400", "57P01", "57P02", "57P03", "08001", "08004", "08006", "ECONNREFUSED", "ECONNRESET", "ETIMEDOUT", "ENOTFOUND", "EAI_AGAIN"]);
+const UNAVAILABLE_CODES = new Set(["53300", "53400", "57P01", "57P02", "57P03", "08000", "08001", "08003", "08004", "08006", "ECONNREFUSED", "ECONNRESET", "ECONNABORTED", "EPIPE", "ETIMEDOUT", "ENOTFOUND", "EAI_AGAIN", "EHOSTUNREACH", "ENETUNREACH"]);
+
+/** Messages node-postgres gives a connection that died (or went silent) without a code. */
+const LOST_MESSAGE = /timeout exceeded when trying to connect|Connection terminated|Query read timeout|Client has encountered a connection error|Connection ended unexpectedly|terminating connection|server closed the connection/i;
 
 /** True when the error (or its cause — Drizzle wraps the driver's error) means the database is unavailable. */
 export function isDatabaseUnavailable(error: unknown): boolean {
   for (let current: unknown = error, depth = 0; current && depth < 5; depth++) {
     const { code, message, cause } = current as { code?: unknown; message?: unknown; cause?: unknown };
     if (typeof code === "string" && UNAVAILABLE_CODES.has(code)) return true;
-    if (typeof message === "string" && /timeout exceeded when trying to connect|Connection terminated (unexpectedly|due to connection timeout)/i.test(message)) return true;
+    if (typeof message === "string" && LOST_MESSAGE.test(message)) return true;
     current = cause;
   }
   return false;
@@ -77,6 +79,44 @@ interface DbHolder {
 const holder = globalThis as unknown as { __orochiaDb?: DbHolder; __orochiaDbCreated?: number };
 
 const UNAVAILABLE_LOG_EVERY_MS = 30_000;
+
+/** A query that gets no answer for this long is abandoned and its connection destroyed (the longest legitimate query is far below). */
+export const QUERY_TIMEOUT_MS = 30_000;
+/** The health check must answer fast: a load balancer waits for it. */
+export const HEALTH_TIMEOUT_MS = 3_000;
+/** A pooled connection is replaced after this long, so a failover or a maintenance never finds an old one. */
+export const MAX_CONNECTION_LIFETIME_SECONDS = 1_800;
+/** Pause before the single retry of a read: the pool opens a fresh connection meanwhile. */
+const READ_RETRY_DELAY_MS = 150;
+
+/** The statement without the whitespace and SQL comments before it (a linear scan: no backtracking on hostile input). */
+function skipLeadingComments(text: string): string {
+  let i = 0;
+  for (;;) {
+    while (i < text.length && /\s/.test(text[i])) i++;
+    if (text.startsWith("--", i)) {
+      const end = text.indexOf("\n", i);
+      i = end === -1 ? text.length : end + 1;
+    } else if (text.startsWith("/*", i)) {
+      const end = text.indexOf("*/", i + 2);
+      i = end === -1 ? text.length : end + 2;
+    } else return text.slice(i);
+  }
+}
+
+/**
+ * True for a statement that only reads and may therefore be replayed when its connection died under it: a plain
+ * SELECT / SHOW / EXPLAIN, without row locks and without the functions that have effects (sequences, notifications,
+ * advisory locks). Everything else — writes, DO blocks, CTEs (which may modify), transactions — is never retried.
+ */
+export function isIdempotentRead(text: unknown): boolean {
+  if (typeof text !== "string") return false;
+  const sqlText = skipLeadingComments(text);
+  if (!/^(select|show|explain\s+(?!analyze))\b/i.test(sqlText)) return false;
+  return !/\bfor\s+(no\s+key\s+)?(update|share|key\s+share)\b|\b(nextval|setval|pg_notify|pg_advisory\w*|pg_terminate_backend|pg_cancel_backend)\s*\(|\binto\s+\w/i.test(sqlText);
+}
+
+const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 /** One clear line when the database refuses connections, at most every 30 s, with how many were not logged. */
 function reportUnavailable(state: DbHolder["unavailable"], error: unknown, max: number): void {
@@ -101,6 +141,13 @@ function createHolder(): DbHolder {
     // Idle connections go back to the database quickly: a quiet instance holds none, the next one deploying has room.
     idleTimeoutMillis: 10_000,
     connectionTimeoutMillis: 5_000,
+    // A connection that silently went away (failover, a firewall dropping idle flows) never errors by itself: TCP
+    // keep-alive makes the kernel notice, the query timeout bounds a query that waits for a dead peer (the client is
+    // then destroyed, not returned to the pool), and no connection outlives a managed-database maintenance window.
+    keepAlive: true,
+    keepAliveInitialDelayMillis: 10_000,
+    query_timeout: QUERY_TIMEOUT_MS,
+    maxLifetimeSeconds: MAX_CONNECTION_LIFETIME_SECONDS,
     // A script that only imports the client (seed, owner CLI) exits when its work is done.
     allowExitOnIdle: true,
   });
@@ -126,6 +173,21 @@ function createHolder(): DbHolder {
     return (connect() as Promise<unknown>).catch((error: unknown) => {
       if (isDatabaseUnavailable(error)) reportUnavailable(state.unavailable, error, max);
       throw error;
+    });
+  };
+
+  // A read whose connection died under it (reset, failover, silence) is replayed once on a fresh connection; a write
+  // never is — it may have been applied. Transactions use a checked-out client and are not affected.
+  const query = pool.query.bind(pool) as (...args: unknown[]) => unknown;
+  (pool as unknown as { query: typeof query }).query = (...args: unknown[]) => {
+    const first = args[0] as string | { text?: string } | undefined;
+    const text = typeof first === "string" ? first : first?.text;
+    const hasCallback = typeof args[args.length - 1] === "function";
+    if (hasCallback || !isIdempotentRead(text)) return query(...args);
+    return (query(...args) as Promise<unknown>).catch(async (error: unknown) => {
+      if (!isDatabaseUnavailable(error)) throw error;
+      await sleep(READ_RETRY_DELAY_MS);
+      return query(...args);
     });
   };
   return state;
@@ -171,7 +233,19 @@ export const db: NodePgDatabase<typeof schema> = new Proxy({} as NodePgDatabase<
 
 export async function checkDbHealth(): Promise<boolean> {
   try {
-    await getDb().execute(sql`SELECT 1`);
+    // On the pool itself, with its own short timeout: the answer reflects "can a query be served now", and a pool
+    // full of dead connections cannot hold the health check hostage.
+    let timer: NodeJS.Timeout | undefined;
+    const deadline = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => reject(Object.assign(new Error("Query read timeout (health check)"), { code: "ETIMEDOUT" })), HEALTH_TIMEOUT_MS);
+    });
+    const ping = getPool().query("SELECT 1");
+    ping.catch(() => undefined); // the loser of the race must not become an unhandled rejection
+    try {
+      await Promise.race([ping, deadline]);
+    } finally {
+      clearTimeout(timer);
+    }
     return true;
   } catch (error) {
     if (isDatabaseUnavailable(error)) console.error(`[db] health check: database unavailable (${(error as { code?: string }).code ?? "error"})`);

@@ -24,13 +24,26 @@ export interface ChannelListener {
   close(): Promise<void>;
 }
 
-export function listenChannel(channel: string, onMessage: (payload: string) => void, onState?: (connected: boolean) => void): ChannelListener {
+export interface ListenOptions {
+  /** How often the LISTEN connection is checked with a round trip (default 20 s) — a silent drop emits no event. */
+  pingMs?: number;
+  /** How long a check may take before the connection is declared dead (default 5 s). */
+  pingTimeoutMs?: number;
+  /** First reconnection delay, doubled up to 30 s (default 1 s). */
+  retryMs?: number;
+}
+
+export function listenChannel(channel: string, onMessage: (payload: string) => void, onState?: (connected: boolean) => void, options: ListenOptions = {}): ChannelListener {
   if (!/^[a-z_][a-z0-9_]*$/.test(channel)) throw new Error(`invalid channel name ${channel}`);
   let client: Client | null = null;
   let closed = false;
   let connected = false;
-  let delay = 1000;
+  const pingMs = options.pingMs ?? 20_000;
+  const pingTimeoutMs = options.pingTimeoutMs ?? 5_000;
+  const firstDelay = options.retryMs ?? 1000;
+  let delay = firstDelay;
   let timer: NodeJS.Timeout | null = null;
+  let pinger: NodeJS.Timeout | null = null;
 
   const setState = (value: boolean) => {
     if (connected === value) return;
@@ -38,10 +51,22 @@ export function listenChannel(channel: string, onMessage: (payload: string) => v
     onState?.(value);
   };
 
+  const stopPinger = () => {
+    if (pinger) clearInterval(pinger);
+    pinger = null;
+  };
+
   const retry = () => {
     setState(false);
-    client?.removeAllListeners();
-    client?.end().catch(() => undefined);
+    stopPinger();
+    if (client) {
+      client.removeAllListeners();
+      // A dead socket may still emit "error" while it is torn down: without a listener that would crash the process.
+      client.on("error", () => undefined);
+      client.end().catch(() => undefined);
+      // end() waits for a goodbye a silent peer never sends: drop the socket itself.
+      (client as unknown as { connection?: { stream?: { destroy(): void } } }).connection?.stream?.destroy();
+    }
     client = null;
     if (closed || timer) return;
     timer = setTimeout(() => {
@@ -54,7 +79,7 @@ export function listenChannel(channel: string, onMessage: (payload: string) => v
   const connect = async () => {
     let next: Client;
     try {
-      next = new Client({ ...connectionConfig(databaseUrl()), application_name: "orochia-listen" });
+      next = new Client({ ...connectionConfig(databaseUrl()), application_name: "orochia-listen", keepAlive: true, keepAliveInitialDelayMillis: 10_000, connectionTimeoutMillis: 5_000 });
     } catch (error) {
       console.warn(`[listen] ${channel}: ${(error as Error).message}`);
       return retry();
@@ -68,8 +93,30 @@ export function listenChannel(channel: string, onMessage: (payload: string) => v
     try {
       await next.connect();
       await next.query(`LISTEN ${channel}`);
-      delay = 1000;
+      delay = firstDelay;
       setState(true);
+      // A connection that went silent (failover without a reset, a firewall dropping the flow) emits nothing: ask it.
+      pinger = setInterval(() => {
+        if (client !== next) return;
+        let answered = false;
+        const deadline = setTimeout(() => {
+          if (answered || client !== next) return;
+          console.warn(`[listen] ${channel}: no answer in ${Math.round(pingTimeoutMs / 1000)} s — reconnecting`);
+          retry();
+        }, pingTimeoutMs);
+        next.query("SELECT 1").then(
+          () => {
+            answered = true;
+            clearTimeout(deadline);
+          },
+          () => {
+            answered = true;
+            clearTimeout(deadline);
+            if (client === next) retry();
+          },
+        );
+      }, pingMs);
+      pinger.unref?.();
     } catch (error) {
       const reason = isDatabaseUnavailable(error) ? `database unavailable (${(error as { code?: string }).code ?? "error"})` : (error as Error).message;
       console.warn(`[listen] ${channel}: ${reason} — retrying in ${Math.round(delay / 1000)} s`);
@@ -84,6 +131,7 @@ export function listenChannel(channel: string, onMessage: (payload: string) => v
     },
     async close() {
       closed = true;
+      stopPinger();
       if (timer) clearTimeout(timer);
       setState(false);
       await client?.end().catch(() => undefined);
