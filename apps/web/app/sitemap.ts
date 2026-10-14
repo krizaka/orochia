@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { sitemapEntries } from "@/lib/queries";
+import { DOCS } from "@/lib/docs";
 import { absolute } from "@/lib/seo";
 
 // Read from the database on request (cached an hour): the build never needs one.
@@ -21,7 +22,10 @@ const STATIC: { path: string; priority: number; changeFrequency: "daily" | "week
 /** Public pages only: listed videos, their creators, public collections. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
-  const statics = STATIC.map((s) => ({ url: absolute(s.path), lastModified: now, changeFrequency: s.changeFrequency, priority: s.priority }));
+  const statics = [
+    ...STATIC.map((s) => ({ url: absolute(s.path), lastModified: now, changeFrequency: s.changeFrequency, priority: s.priority })),
+    ...DOCS.map((d) => ({ url: absolute(`/docs/${d.slug}`), lastModified: now, changeFrequency: "weekly" as const, priority: 0.5 })),
+  ];
   try {
     const { videos, creators, collections } = await sitemapEntries();
     return [

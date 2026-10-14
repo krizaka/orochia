@@ -527,3 +527,10 @@ orochia/                           npm workspaces
 - Never weaken an invariant to make a test pass; never commit secrets, dumps or `.env`.
 - PR captures (screenshots, recordings, metrics) are never committed: they go to Bunny Storage under `pr-assets/<repo>/<pr-or-topic>/` with [`scripts/pr-assets.mjs`](https://github.com/krizaka/krizaka-com/blob/main/scripts/pr-assets.mjs) of krizaka-com (its AGENTS.md §5.1), and the PR body links their CDN URLs. `docs/screenshots/` is git-ignored.
 - Run `npm run check` (and the e2e suite for behaviour changes) before declaring a task complete.
+
+## Search engines & AI assistants (Krizaka family contract)
+
+The contract is defined once, in krizaka-com `AGENTS.md` §2.4, and checked here by `scripts/check-seo-family.mjs` (a copy of
+the same dependency-free file in every site's repository — keep the copies identical; its unit test sits beside it).
+
+dev.orochia.com is **noindex** (`APP_SEARCH_INDEXING=off`: robots `Disallow: /`, robots meta and `X-Robots-Tag`) but serves correct `robots.txt`, `sitemap.xml`, `llms.txt` and `llms-full.txt` (`apps/web/lib/llms.ts`, rendered with the deployment's origin) for the day it opens. The JSON-LD of the application is neutral (the age rating is `contentRating`), and every node leads back to the Krizaka Organization on www. `scripts/seo-orochia.test.mjs` renders both modes.

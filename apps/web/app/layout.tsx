@@ -7,7 +7,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { SiteFooter } from "@/components/SiteFooter";
 import { cn,MotionObserver, ThemeProvider, ThemeScript } from "@/components/ui";
 import { AuthProvider } from "@/lib/auth-context";
-import { INDEXABLE, NOINDEX, SITE_DESCRIPTION, SITE_NAME, SITE_URL, siteGraph } from "@/lib/seo";
+import { INDEXABLE, KRIZAKA_URL, NOINDEX, SITE_DESCRIPTION, SITE_NAME, SITE_URL, siteGraph } from "@/lib/seo";
 
 import { jakarta, outfit } from "./fonts";
 
@@ -38,7 +38,9 @@ export const metadata: Metadata = {
     "2257 compliance",
     "Bunny Stream",
   ],
-  authors: [{ name: "Krizaka", url: "https://krizaka.com" }],
+  authors: [{ name: "Krizaka", url: KRIZAKA_URL }],
+  // Every page is canonical to itself (relative to metadataBase); a page with its own `alternates` overrides it.
+  alternates: { canonical: "./" },
   creator: "Krizaka",
   publisher: "Krizaka",
   openGraph: { type: "website", siteName: SITE_NAME, url: "/", title: "Orochia — the platform independent creators own", description: SITE_DESCRIPTION, locale: "en_US" },
