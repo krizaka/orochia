@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 /**
  * Sign-up from the native app (krizaka/orochia-mobile): the same rules as the web form, carried without a browser —
@@ -17,6 +17,7 @@ import { DEVICE_HEADER, formTokenProblem, signupDeviceId } from "./abuse/signup-
 const DEVICE = "AppInstall_0123456789abcdef";
 const SECRET = "test-secret-0123456789-0123456789-abcdef";
 
+beforeEach(() => vi.stubEnv("AUTH_SIGNUP_ENABLED", "true"));
 afterEach(() => vi.unstubAllEnvs());
 
 describe("the device a sign-up comes from", () => {

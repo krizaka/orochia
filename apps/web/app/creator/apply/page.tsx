@@ -10,7 +10,8 @@ import React from "react";
 import { OpenCreatorSpaceButton } from "@/components/creator/OpenCreatorSpaceButton";
 import { buttonVariants, cn, EmptyState, SectionBackdrop, Stepper } from "@/components/ui";
 import { getSession } from "@/lib/auth";
-import { CREATOR_APPLY_PATH, CREATOR_STUDIO_PATH, signUpHref } from "@/lib/creator-journey";
+import { CREATOR_APPLY_PATH, CREATOR_STUDIO_PATH, signInHref, signUpHref } from "@/lib/creator-journey";
+import { signupEnabled } from "@/lib/features";
 import { t } from "@/lib/i18n";
 import { getViewer } from "@/lib/viewer";
 
@@ -27,7 +28,7 @@ export default async function CreatorApplyPage() {
   if (!user) {
     // Signed up but the e-mail is not confirmed yet: the verification gate (EmailVerificationGate) shows instead.
     if (await getSession()) return null;
-    redirect(signUpHref(CREATOR_APPLY_PATH));
+    redirect(signupEnabled() ? signUpHref(CREATOR_APPLY_PATH) : signInHref(CREATOR_APPLY_PATH));
   }
   if (state === "creator") redirect(CREATOR_STUDIO_PATH);
 

@@ -17,10 +17,10 @@ import { t } from "@/lib/i18n";
  */
 export function MobileBottomNav() {
   const pathname = usePathname();
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, signupEnabled } = useAuth();
   // Create: upload (verified creator), the creator application of this account (member, pending), sign up first (visitor).
   // While the session is read, /creator/upload: the server sends each viewer to their own step.
-  const create = creatorSpaceCta(viewerStateOf(user ? { role: user.role, isVerified: user.isVerified ?? true } : null));
+  const create = creatorSpaceCta(viewerStateOf(user ? { role: user.role, isVerified: user.isVerified ?? true } : null), signupEnabled);
   const tab = (active: boolean) =>
     `flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors ${
       active ? "text-fg-accent" : "text-fg-secondary"

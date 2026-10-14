@@ -1,214 +1,27 @@
-"use client";
-
-import { Lock, Mail, UserPlus } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { useCallback, useEffect, useState } from "react";
 
-import { BirthDateField, isAdultBirthDate } from "@/components/BirthDateField";
-import { BotChallenge, type PublicChallenge } from "@/components/BotChallenge";
-import { Rich } from "@/components/Rich";
-import { SocialSignIn } from "@/components/SocialSignIn";
-import { Button, Checkbox, Field, Input, OrochiaLogo } from "@/components/ui";
-import { UsernameField } from "@/components/UsernameField";
-import { useAuth } from "@/lib/auth-context";
-import { NEXT_AFTER_VERIFY_KEY, safeNext, signInHref } from "@/lib/creator-journey";
+import { RegisterForm } from "@/components/RegisterForm";
+import { buttonVariants, cn, EmptyState } from "@/components/ui";
+import { signupEnabled } from "@/lib/features";
 import { t } from "@/lib/i18n";
 
+export const dynamic = "force-dynamic";
 
-/**
- * One kind of account: everyone joins to watch, follow, tip and unlock. Publishing is opened later on the same account
- * (`/creator/apply`), behind the 2257 verification — `?next=/creator/apply` brings a new creator there once the e-mail
- * is confirmed. A signed-in person never stays here: they go on to `next` (docs/CREATOR_ONBOARDING.md).
- */
+/** The sign-up form — or, while `AUTH_SIGNUP_ENABLED` is off, a calm note that sign-ups are closed. */
 export default function RegisterPage() {
-  const router = useRouter();
-  const { register, user, isLoading: sessionLoading } = useAuth();
-  const [next, setNext] = useState<string | null>(null);
-  useEffect(() => setNext(safeNext(new URLSearchParams(window.location.search).get("next"))), []);
-  useEffect(() => {
-    if (!sessionLoading && user?.emailVerified) router.replace(safeNext(new URLSearchParams(window.location.search).get("next")) ?? "/");
-  }, [sessionLoading, user, router]);
-  const [username, setUsername] = useState("");
-  const [displayName, setDisplayName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("");
-  const [isAgeVerified, setIsAgeVerified] = useState(false);
-  const [acceptTerms, setAcceptTerms] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  // Anti-bot: a signed form token (asked for when the form opens), a honeypot, and the bot challenge when configured.
-  const [formToken, setFormToken] = useState<string | undefined>();
-  const [challenge, setChallenge] = useState<PublicChallenge | null>(null);
-  const [challengeToken, setChallengeToken] = useState<string | null>(null);
-  const [challengeKey, setChallengeKey] = useState(0);
-  const [website, setWebsite] = useState("");
-
-  const openForm = useCallback(async () => {
-    const res = await fetch("/api/auth/register", { cache: "no-store" }).catch(() => null);
-    const body = res?.ok ? ((await res.json()) as { formToken: string; challenge: PublicChallenge | null }) : null;
-    setFormToken(body?.formToken);
-    setChallenge(body?.challenge ?? null);
-  }, []);
-  useEffect(() => {
-    void openForm();
-  }, [openForm]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    if (!isAdultBirthDate(dateOfBirth)) return setError(t("auth.register.errors.birthDate"));
-    if (!isAgeVerified) return setError(t("auth.register.errors.age"));
-    if (password.length < 10) return setError(t("auth.register.errors.password"));
-    if (!acceptTerms) return setError(t("auth.register.errors.terms"));
-    setIsLoading(true);
-    try {
-      await register({ username, displayName: displayName || username, email, password, dateOfBirth, isAgeVerified, acceptTerms, formToken, website, challengeToken });
-      if (next) {
-        try {
-          localStorage.setItem(NEXT_AFTER_VERIFY_KEY, next);
-        } catch {
-          // Storage refused (private window): the verification page falls back to the dashboard.
-        }
-      }
-      router.push(next ?? "/");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t("auth.register.errors.failed"));
-      // A token is good once: a new form token and a new challenge for the next try.
-      setChallengeToken(null);
-      setChallengeKey((k) => k + 1);
-      void openForm();
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  if (signupEnabled()) return <RegisterForm />;
   return (
-    <div className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-lg items-center justify-center px-4 py-12">
-      <div className="relative w-full overflow-hidden rounded-3xl border border-border-default bg-surface-1 p-6 shadow-2xl sm:p-8">
-        <div className="pointer-events-none absolute -top-20 left-1/2 h-44 w-44 -translate-x-1/2 rounded-full bg-accent/25 blur-3xl" />
-
-        <div className="relative mb-6 text-center">
-          <OrochiaLogo size={64} className="mx-auto mb-3" />
-          <h1 className="font-display text-2xl font-black text-fg">{t("auth.register.title")}</h1>
-          <p className="mt-1.5 text-sm text-fg-secondary">{t("auth.register.subtitle")}</p>
-        </div>
-
-        {error && (
-          <div role="alert" className="mb-4 rounded-xl border border-danger/30 bg-danger/10 p-3 text-xs text-fg-danger">
-            {error}
-          </div>
-        )}
-
-        <div className="relative mb-4"><SocialSignIn /></div>
-        <form onSubmit={handleSubmit} className="relative space-y-4">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <UsernameField value={username} onChange={setUsername} />
-            <Field.Root>
-              <Field.Label htmlFor="displayName" className="uppercase tracking-wider">
-                {t("auth.register.displayName")}
-              </Field.Label>
-              <Input
-                id="displayName"
-                required
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder={t("auth.register.displayNamePlaceholder")}
-                className="rounded-xl px-3.5"
-              />
-            </Field.Root>
-          </div>
-
-          <Field.Root>
-            <Field.Label htmlFor="email" className="uppercase tracking-wider">
-              {t("auth.register.email")}
-            </Field.Label>
-            <div className="relative">
-              <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-fg-muted" aria-hidden />
-              <Input
-                id="email"
-                type="email"
-                required
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t("auth.register.emailPlaceholder")}
-                className="rounded-xl pl-10"
-              />
-            </div>
-          </Field.Root>
-
-          <Field.Root>
-            <Field.Label htmlFor="password" className="uppercase tracking-wider">
-              {t("auth.register.password")}
-            </Field.Label>
-            <div className="relative">
-              <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-fg-muted" aria-hidden />
-              <Input
-                id="password"
-                type="password"
-                autoComplete="new-password"
-                minLength={10}
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder={t("auth.register.passwordHint")}
-                className="rounded-xl pl-10"
-              />
-            </div>
-          </Field.Root>
-
-          <BirthDateField value={dateOfBirth} onChange={setDateOfBirth} />
-
-          <div className="space-y-2.5 border-t border-border-subtle pt-3">
-            <Checkbox checked={isAgeVerified} onCheckedChange={(on) => setIsAgeVerified(on === true)} className="gap-2.5 text-xs text-fg-secondary">
-              <span>
-                <Rich text={t("auth.register.ageCertify")} />
-              </span>
-            </Checkbox>
-            <Checkbox checked={acceptTerms} onCheckedChange={(on) => setAcceptTerms(on === true)} className="gap-2.5 text-xs text-fg-secondary">
-              <span>
-                <Rich
-                  text={t("auth.register.acceptTerms")}
-                  slots={{
-                    terms: (
-                      <Link href="/legal/terms" target="_blank" className="text-fg-accent underline">
-                        {t("auth.register.terms")}
-                      </Link>
-                    ),
-                    notice: (
-                      <Link href="/legal/2257" target="_blank" className="text-fg-accent underline">
-                        {t("auth.register.notice")}
-                      </Link>
-                    ),
-                  }}
-                />
-              </span>
-            </Checkbox>
-          </div>
-
-          {/* The honeypot: invisible and unreachable for people (and assistive technology); bots fill every field. */}
-          <div aria-hidden="true" className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden">
-            <label htmlFor="website">{t("auth.register.honeypot")}</label>
-            <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
-          </div>
-
-          <BotChallenge key={challengeKey} challenge={challenge} action="signup" onToken={setChallengeToken} />
-
-          <Button type="submit" variant="sensual" size="lg" shape="rounded" loading={isLoading} className="mt-2 w-full rounded-xl font-bold">
-            {!isLoading && <UserPlus className="h-4 w-4" aria-hidden />}
-            {isLoading ? t("auth.register.submitting") : t("auth.register.submit")}
-          </Button>
-        </form>
-
-        <p className="relative mt-6 text-center text-xs text-fg-secondary">
-          {t("auth.register.haveAccount")}{" "}
-          <Link href={signInHref(next ?? undefined)} className="font-semibold text-fg-accent hover:underline">
-            {t("auth.register.signIn")}
+    <div className="mx-auto max-w-lg px-4 py-24" data-testid="signup-closed">
+      <EmptyState
+        bird="owl"
+        title={t("auth.register.closedTitle")}
+        description={t("auth.register.closedBody")}
+        action={
+          <Link href="/auth/login" className={cn(buttonVariants({ variant: "secondary", size: "md", shape: "pill" }))}>
+            {t("auth.register.closedSignIn")}
           </Link>
-        </p>
-      </div>
+        }
+      />
     </div>
   );
 }

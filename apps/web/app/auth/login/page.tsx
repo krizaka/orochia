@@ -12,7 +12,7 @@ import { Button, Field, Input, OrochiaLogo } from "@/components/ui";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, switchProfile, demoMode, user, isLoading: sessionLoading } = useAuth();
+  const { login, switchProfile, demoMode, signupEnabled, user, isLoading: sessionLoading } = useAuth();
   // ?next= — where to go once signed in; a signed-in person is sent there at once (same-site paths only).
   const [next, setNext] = useState<string | null>(null);
   useEffect(() => setNext(safeNext(new URLSearchParams(window.location.search).get("next"))), []);
@@ -152,12 +152,14 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-xs text-fg-secondary">
-          {t("auth.login.new")}{" "}
-          <Link href={signUpHref(next ?? undefined)} className="font-semibold text-fg-accent hover:underline">
-            {t("auth.login.register")}
-          </Link>
-        </p>
+        {signupEnabled && (
+          <p className="mt-6 text-center text-xs text-fg-secondary">
+            {t("auth.login.new")}{" "}
+            <Link href={signUpHref(next ?? undefined)} className="font-semibold text-fg-accent hover:underline">
+              {t("auth.login.register")}
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );

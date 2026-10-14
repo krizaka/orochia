@@ -17,6 +17,7 @@ import { type SessionUser } from "@/lib/auth";
 import { creatorSpaceCta, type ViewerState } from "@/lib/creator-journey";
 import { unlessUnavailable } from "@/lib/degrade";
 import { discoverableTags, exploreResults, exploreSectionsSettled, exploreTag, type ExploreVideo } from "@/lib/explore";
+import { signupEnabled } from "@/lib/features";
 import { t } from "@/lib/i18n";
 import { getViewer } from "@/lib/viewer";
 
@@ -44,9 +45,9 @@ function exploreHref(p: Params): string {
  */
 function ctas(user: SessionUser | null, state: ViewerState) {
   const isCreator = state === "creator";
-  const space = creatorSpaceCta(state);
+  const space = creatorSpaceCta(state, signupEnabled());
   const publish: SectionCta = space
-    ? { href: space.href, label: isCreator ? t("explore.cta.publish") : state === "anonymous" ? t("explore.cta.join") : t(space.label) }
+    ? { href: space.href, label: isCreator ? t("explore.cta.publish") : state === "anonymous" ? t(signupEnabled() ? "explore.cta.join" : "feed.actions.signIn") : t(space.label) }
     : { href: "/explore", label: t("explore.cta.backToExplore") };
   return {
     publish,

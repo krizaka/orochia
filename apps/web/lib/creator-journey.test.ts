@@ -93,3 +93,11 @@ describe("next", () => {
     expect(signUpHref()).toBe("/auth/register");
   });
 });
+
+describe("with sign-up closed (AUTH_SIGNUP_ENABLED off)", () => {
+  it("never offers a sign-up link to a visitor — only to sign in", () => {
+    const all = [creatorSpaceCta("anonymous", false), ...KINDS.flatMap((kind) => TABS.flatMap((tab) => feedEmptyActions("anonymous", kind, tab, false)))];
+    for (const cta of all) expect(cta!.href).not.toContain("/auth/register");
+    expect(creatorSpaceCta("anonymous", false)!.href).toBe(`/auth/login?next=${encodeURIComponent(CREATOR_APPLY_PATH)}`);
+  });
+});

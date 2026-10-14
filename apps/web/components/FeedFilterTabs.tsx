@@ -7,6 +7,7 @@ import React, { useMemo,useState } from "react";
 
 import { Avatar, Badge, buttonVariants, Chip, EmptyState, orochiaButton, Tabs } from "@/components/ui";
 import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
+import { useAuth } from "@/lib/auth-context";
 import { feedEmptyActions, type FeedEmptyKind, type FeedTab, type ViewerState } from "@/lib/creator-journey";
 import { t } from "@/lib/i18n";
 
@@ -23,7 +24,8 @@ interface FeedFilterTabsProps {
  * it never offers the sign-up form — a fan explores or opens their creator space, a creator publishes.
  */
 function FeedEmpty({ viewer, kind, tab }: { viewer: ViewerState; kind: FeedEmptyKind; tab: FeedTab }) {
-  const actions = feedEmptyActions(viewer, kind, tab);
+  const { signupEnabled } = useAuth();
+  const actions = feedEmptyActions(viewer, kind, tab, signupEnabled);
   return (
     <div
       data-testid="feed-empty"

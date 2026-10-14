@@ -30,7 +30,7 @@ import { t } from "@/lib/i18n";
  * (MobileBottomNav), so each action exists once on a phone.
  */
 export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
-  const { user, isLoading, logout } = useAuth();
+  const { user, isLoading, logout, signupEnabled } = useAuth();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -50,7 +50,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
   const isCreator = user?.role === "CREATOR" || user?.role === "ADMIN";
   // Publishing, for this viewer: upload (verified), the creator application (member, pending), sign up first (visitor).
   const viewerState = viewerStateOf(user ? { role: user.role, isVerified: user.isVerified ?? true } : null);
-  const creatorSpace = creatorSpaceCta(viewerState);
+  const creatorSpace = creatorSpaceCta(viewerState, signupEnabled);
   const navLink = (href: string, label: string) => (
     <Link
       href={href}
@@ -186,7 +186,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
             // While the session is read, nothing: a signed-in person never sees "Join" flash by.
             <>
               <Link
-                href={creatorSpace?.href ?? "/auth/register"}
+                href={creatorSpace?.href ?? "/auth/login"}
                 className="hidden lg:flex items-center gap-1.5 rounded-full border border-border-default bg-accent-soft px-3.5 py-1.5 text-xs font-semibold text-fg-accent transition-colors hover:border-border-strong focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
                 title={t("nav.uploadHint")}
               >
@@ -201,12 +201,14 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                 >
                   {t("nav.signIn")}
                 </Link>
-                <Link
-                  href="/auth/register"
-                  className="whitespace-nowrap rounded-full bg-accent px-3 sm:px-4 py-1 sm:py-1.5 text-xs font-bold text-on-accent shadow-xs transition-colors hover:bg-accent-hover active:scale-95 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  {t("nav.join")}
-                </Link>
+                {signupEnabled && (
+                  <Link
+                    href="/auth/register"
+                    className="whitespace-nowrap rounded-full bg-accent px-3 sm:px-4 py-1 sm:py-1.5 text-xs font-bold text-on-accent shadow-xs transition-colors hover:bg-accent-hover active:scale-95 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {t("nav.join")}
+                  </Link>
+                )}
               </div>
             </>
           )}

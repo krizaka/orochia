@@ -44,6 +44,7 @@ Sessions, owner account, sign-in providers.
 | `AUTH_OWNER_NAME` | recommended |  |  | The owner's display name. |
 | `AUTH_OWNER_PASSWORD` | — | ✓ |  | Only to create the owner (10+ characters); an existing account keeps its password. |
 | `AUTH_OWNER_ROLE` | — |  | `ADMIN` | The owner's role. |
+| `AUTH_SIGNUP_ENABLED` | — |  | `false` | Opens sign-up (the form, `/api/auth/register`, new Google / Facebook accounts). Off by default: a development deployment is closed to newcomers (403 `signup_disabled`), existing accounts still sign in. Read at request time; `/api/auth/providers` and `/api/auth/me` expose it as `signupEnabled`. |
 | `AUTH_GOOGLE_CLIENT_ID` | — |  |  | Sign in with Google — offered only with its secret too. See *Sign-in providers*. |
 | `AUTH_GOOGLE_CLIENT_SECRET` | — | ✓ |  | Sign in with Google: the OAuth client secret. |
 | `AUTH_FACEBOOK_APP_ID` | — |  |  | Sign in with Facebook — offered only with its secret too. |

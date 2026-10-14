@@ -96,6 +96,7 @@ export const ENV_VARS: readonly EnvVar[] = [
   v("AUTH_OWNER_NAME", "AUTH", "recommended", text, "The owner's display name."),
   v("AUTH_OWNER_PASSWORD", "AUTH", "optional", z.string().min(10), "Only to create the owner (10+ characters); an existing account keeps its password.", { secret: true }),
   v("AUTH_OWNER_ROLE", "AUTH", "optional", z.string().regex(/^(admin|creator|member)$/i, "must be ADMIN, CREATOR or MEMBER"), "The owner's role.", { default: "ADMIN" }),
+  v("AUTH_SIGNUP_ENABLED", "AUTH", "optional", bool, "Opens sign-up (the form, `/api/auth/register`, new Google / Facebook accounts). Off by default: a development deployment is closed to newcomers (403 `signup_disabled`), existing accounts still sign in. Read at request time; `/api/auth/providers` and `/api/auth/me` expose it as `signupEnabled`.", { default: "false" }),
   v("AUTH_GOOGLE_CLIENT_ID", "AUTH", "optional", text, "Sign in with Google — offered only with its secret too. See *Sign-in providers*."),
   v("AUTH_GOOGLE_CLIENT_SECRET", "AUTH", "optional", text, "Sign in with Google: the OAuth client secret.", { secret: true }),
   v("AUTH_FACEBOOK_APP_ID", "AUTH", "optional", text, "Sign in with Facebook — offered only with its secret too."),

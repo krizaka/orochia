@@ -175,6 +175,9 @@
   },
   "auth": {
     "register": {
+      "closedTitle": "Sign-ups are closed while Orochia is in development",
+      "closedBody": "We are building Orochia in the open and are not taking new accounts yet. If you already have an account, you can still sign in.",
+      "closedSignIn": "Sign in",
       "title": "Create your account",
       "subtitle": "Watch, follow and support creators. Publishing comes later, from your dashboard.",
       "username": "Username",
@@ -314,7 +317,9 @@
     "privacy": "Privacy",
     "compliance": "2257",
     "dmca": "DMCA",
-    "madeBy": "Krizaka",
+    "madeBy": "A Krizaka product",
+    "version": "Version {version}",
+    "versionWithCommit": "Version {version} · {sha}",
     "copyright": "© {year} Orochia · Apache-2.0",
     "adults": "All performers depicted are 18 years of age or older."
   },
