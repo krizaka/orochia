@@ -13,7 +13,7 @@ packages — `db` (Drizzle schema, migrations, seed), `media` (Bunny Stream, Tus
 
 | Tool | Version |
 | :--- | :--- |
-| Node.js | 20 or later |
+| Node.js | 22 or later |
 | Docker + Docker Compose | for PostgreSQL 16 |
 
 ## 2. Run it

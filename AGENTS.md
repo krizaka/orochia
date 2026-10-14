@@ -29,7 +29,7 @@
 
 ## 1. Execution & developer experience
 
-- **One command to start**: `npm run setup` (checks Node ≥ 20 and Docker, writes `.env` with a generated
+- **One command to start**: `npm run setup` (checks Node ≥ 22 and Docker, writes `.env` with a generated
   `AUTH_SESSION_SECRET`, starts the databases, migrates, seeds). Then `npm run dev`.
 - **No shell scripts.** Tooling is Node (`scripts/*.mjs`, no dependencies) behind `npm run` — portable and reviewed
   like the code.

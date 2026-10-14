@@ -12,7 +12,7 @@
     "owner": "tsx src/owner-cli.ts",
     "typecheck": "tsc --noEmit",
     "lint": "tsc --noEmit",
-    "build:migrator": "esbuild src/migrate.ts --bundle --platform=node --target=node20 --external:pg-native --outfile=dist/migrate.cjs",
+    "build:migrator": "esbuild src/migrate.ts --bundle --platform=node --target=node22 --external:pg-native --outfile=dist/migrate.cjs",
     "check": "drizzle-kit check",
     "studio": "drizzle-kit studio"
   },
