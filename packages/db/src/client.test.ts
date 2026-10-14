@@ -80,7 +80,7 @@ describe("connection loss", () => {
 
   it("only replays plain reads", async () => {
     const { isIdempotentRead } = await freshModule();
-    for (const text of ["select 1", "  SELECT * from users where id = $1", "-- why\nselect 1", 'show server_version', "explain select 1"]) {
+    for (const text of ["select 1", "  SELECT * from users where id = $1", "-- why\nselect 1", "/* a */ -- b\n select 1", 'show server_version', "explain select 1"]) {
       expect(isIdempotentRead(text), text).toBe(true);
     }
     for (const text of [

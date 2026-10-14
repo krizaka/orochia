@@ -89,6 +89,21 @@ export const MAX_CONNECTION_LIFETIME_SECONDS = 1_800;
 /** Pause before the single retry of a read: the pool opens a fresh connection meanwhile. */
 const READ_RETRY_DELAY_MS = 150;
 
+/** The statement without the whitespace and SQL comments before it (a linear scan: no backtracking on hostile input). */
+function skipLeadingComments(text: string): string {
+  let i = 0;
+  for (;;) {
+    while (i < text.length && /\s/.test(text[i])) i++;
+    if (text.startsWith("--", i)) {
+      const end = text.indexOf("\n", i);
+      i = end === -1 ? text.length : end + 1;
+    } else if (text.startsWith("/*", i)) {
+      const end = text.indexOf("*/", i + 2);
+      i = end === -1 ? text.length : end + 2;
+    } else return text.slice(i);
+  }
+}
+
 /**
  * True for a statement that only reads and may therefore be replayed when its connection died under it: a plain
  * SELECT / SHOW / EXPLAIN, without row locks and without the functions that have effects (sequences, notifications,
@@ -96,7 +111,7 @@ const READ_RETRY_DELAY_MS = 150;
  */
 export function isIdempotentRead(text: unknown): boolean {
   if (typeof text !== "string") return false;
-  const sqlText = text.replace(/^(\s|--[^\n]*\n|\/\*[\s\S]*?\*\/)+/, "");
+  const sqlText = skipLeadingComments(text);
   if (!/^(select|show|explain\s+(?!analyze))\b/i.test(sqlText)) return false;
   return !/\bfor\s+(no\s+key\s+)?(update|share|key\s+share)\b|\b(nextval|setval|pg_notify|pg_advisory\w*|pg_terminate_backend|pg_cancel_backend)\s*\(|\binto\s+\w/i.test(sqlText);
 }

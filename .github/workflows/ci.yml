@@ -123,7 +123,7 @@ jobs:
       - name: Database failover — the pool and the LISTEN connection recover from resets, outages and silent peers
         run: npx vitest run packages/db/src/client.reconnect.integration.test.ts
         env:
-          DB_IT: "1"
+          DATABASE_RECONNECT_IT: "1"
       - run: npm run db:seed
       - name: Start the app (development server)
         run: |

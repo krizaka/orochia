@@ -2,14 +2,14 @@
  * The pool and the LISTEN connection survive what a managed PostgreSQL does — failover, restart, maintenance — without
  * the process restarting (ORO-DBRECONNECT: dev.orochia.com stayed on 504 after the 16 → 18 upgrade until a redeploy).
  * Every connection goes through a small TCP proxy so the test can do to them what a managed service does: reset them,
- * stop answering (no RST — a dead peer), refuse them, and bring the database back. Runs when DB_IT=1 against the
+ * stop answering (no RST — a dead peer), refuse them, and bring the database back. Runs when DATABASE_RECONNECT_IT=1 against the
  * PostgreSQL of DATABASE_URL (CI: the e2e job's service; locally: `npm run db:up`).
  */
 import net from "node:net";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { Client } from "pg";
 
-const enabled = process.env.DB_IT === "1";
+const enabled = process.env.DATABASE_RECONNECT_IT === "1";
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const real = new URL(process.env.DATABASE_URL ?? "postgresql://orochia_user:orochia_secret@localhost:5432/orochia_db?sslmode=disable");
 
