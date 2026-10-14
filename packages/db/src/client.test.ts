@@ -103,7 +103,7 @@ describe("connection loss", () => {
 
   it("is configured to notice a dead peer and to rotate connections", async () => {
     const { getPool, QUERY_TIMEOUT_MS, MAX_CONNECTION_LIFETIME_SECONDS } = await freshModule();
-    const options = getPool().options as Record<string, unknown>;
+    const options = getPool().options as unknown as Record<string, unknown>;
     expect(options.keepAlive).toBe(true);
     expect(options.query_timeout).toBe(QUERY_TIMEOUT_MS);
     expect(options.maxLifetimeSeconds).toBe(MAX_CONNECTION_LIFETIME_SECONDS);
