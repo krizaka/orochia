@@ -46,7 +46,7 @@ export function ProductShowcase({ share }: { share: number }) {
       aria-label={t("home.showcase.label")}
       role="region"
     >
-      <Tabs.Content value={scene} tabIndex={-1} className="relative flex-none rounded-none">
+      <Tabs.Content value={scene} tabIndex={-1} className="relative flex-none rounded-none focus:outline-none focus-visible:ring-0">
         <div aria-hidden className="sc-aura absolute -inset-12 -z-10 rounded-full bg-linear-to-tr from-accent/45 via-accent-2/30 to-accent-2/35 blur-3xl" />
         <div className="sc-float relative h-[560px] w-[264px] rounded-[3rem] bg-linear-to-b from-device-edge via-device-core to-device-edge p-[3px] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.85)] sm:h-[600px] sm:w-[284px]">
           <div className="theme-dark relative h-full w-full overflow-hidden rounded-[2.85rem] border-[7px] border-black bg-black">
