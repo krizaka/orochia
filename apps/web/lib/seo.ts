@@ -19,7 +19,9 @@ export const SITE_DESCRIPTION =
  */
 export const INDEXABLE = process.env.APP_SEARCH_INDEXING !== "off";
 // (the Dockerfile passes APP_SEARCH_INDEXING and NEXT_PUBLIC_APP_URL as build args; robots.txt reads them on request.)
-export const KRIZAKA_URL = "https://krizaka.com";
+export const KRIZAKA_URL = "https://www.krizaka.com";
+/** The Krizaka Organization, defined by www.krizaka.com: every JSON-LD node of the family points back to it. */
+export const ORG_ID = `${KRIZAKA_URL}/#organization`;
 export const SOURCE_URL = "https://github.com/krizaka/orochia";
 
 export const absolute = (path: string) => `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
@@ -32,11 +34,15 @@ export const isoDuration = (seconds: number) => `PT${Math.floor(seconds / 60)}M$
 
 const ORGANIZATION = {
   "@type": "Organization",
-  "@id": `${KRIZAKA_URL}/#organization`,
+  "@id": ORG_ID,
   name: "Krizaka",
   url: KRIZAKA_URL,
   sameAs: ["https://github.com/krizaka"],
 };
+
+/** What the family-wide JSON-LD says of the application: neutral, the age rating is `contentRating`. */
+const APP_DESCRIPTION =
+  "Orochia is an open-source video platform for independent creators: 4K HLS streaming with signed links, followers, collections, tips and paid unlocks confirmed by the payment gateway.";
 
 /** The sitewide graph: the site with its search, the application, and who makes it. */
 export function siteGraph() {
@@ -59,18 +65,19 @@ export function siteGraph() {
         },
       },
       {
-        "@type": "WebApplication",
+        "@type": ["SoftwareApplication", "WebApplication"],
         "@id": `${SITE_URL}/#app`,
         name: SITE_NAME,
         url: SITE_URL,
         applicationCategory: "MultimediaApplication",
         operatingSystem: "Web",
-        description: SITE_DESCRIPTION,
+        description: APP_DESCRIPTION,
         isAccessibleForFree: true,
         contentRating: "adult",
         license: "https://www.apache.org/licenses/LICENSE-2.0",
         codeRepository: SOURCE_URL,
         author: { "@id": ORGANIZATION["@id"] },
+        publisher: { "@id": ORGANIZATION["@id"] },
         offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
       },
     ],

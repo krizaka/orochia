@@ -95,7 +95,10 @@ const nextConfig = {
     ];
   },
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    // A site that is not indexed (APP_SEARCH_INDEXING=off: dev, preview) says so on every response, as well as in robots.txt and
+    // the pages' robots meta. Read at build time, like lib/seo.ts INDEXABLE.
+    const robotsHeader = process.env.APP_SEARCH_INDEXING === "off" ? [{ key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" }] : [];
+    return [{ source: "/:path*", headers: [...securityHeaders, ...robotsHeader] }];
   },
 };
 
