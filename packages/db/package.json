@@ -10,6 +10,7 @@
     "migrate": "drizzle-kit migrate",
     "seed": "tsx src/seed.ts",
     "owner": "tsx src/owner-cli.ts",
+    "test-accounts": "tsx src/test-accounts.ts",
     "typecheck": "tsc --noEmit",
     "lint": "tsc --noEmit",
     "build:migrator": "esbuild src/migrate.ts --bundle --platform=node --target=node22 --external:pg-native --outfile=dist/migrate.cjs",
