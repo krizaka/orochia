@@ -117,7 +117,7 @@ export function MoneyTicker({ cents, ...props }: Omit<NumberTickerProps, "locale
 }
 
 /** A table of records (sort, cards on a phone, loading / empty states) with the app's words. */
-export function DataTable<T>(props: DataTableProps<T>) {
+export function DataTable<T extends object>(props: DataTableProps<T>) {
   return (
     <UiDataTable
       {...props}
