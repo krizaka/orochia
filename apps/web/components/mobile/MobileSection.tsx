@@ -14,7 +14,7 @@ export function MobileSection() {
         <p className="text-xs font-semibold uppercase tracking-wider text-fg-accent">{t("mobile.eyebrow")}</p>
         <h2 id="home-mobile" className="mt-2 max-w-3xl font-display text-3xl font-black tracking-tight text-fg sm:text-4xl">{t("mobile.title")}</h2>
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-fg-secondary">{t("mobile.lead")}</p>
-        <ul className="-mx-4 mt-8 flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0 lg:grid lg:grid-cols-4 lg:overflow-visible">
+        <ul tabIndex={0} aria-label={t("mobile.clipsTitle")} className="-mx-4 mt-8 flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0 lg:grid lg:grid-cols-4 lg:overflow-visible focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent">
           {MOBILE_CLIPS.slice(0, 4).map((id) => (
             <li key={id} className="w-[70vw] max-w-[15rem] shrink-0 snap-center sm:w-[15rem] lg:w-auto lg:max-w-none">
               <PhoneClip id={id} label={t(`mobile.clips.${id}.label`)} caption={t(`mobile.clips.${id}.caption`)} />
