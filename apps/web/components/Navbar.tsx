@@ -21,7 +21,7 @@ import { BuildBadge } from "@/components/BuildBadge";
 import { MessagesButton } from "@/components/messages/MessagesButton";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { Avatar, cn,IconButton, OrochiaLogo, ThemeToggle } from "@/components/ui";
-import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
+import { useAuth } from "@/lib/auth-context";
 import { creatorSpaceCta, viewerStateOf } from "@/lib/creator-journey";
 import { t } from "@/lib/i18n";
 
@@ -135,7 +135,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                   aria-haspopup="menu"
                   className="flex items-center gap-2 rounded-full border border-border-default bg-surface-2/90 py-1 pl-1 pr-3 hover:border-accent/40"
                 >
-                  <Avatar size="sm" src={user.avatarUrl || AVATAR_PLACEHOLDER} fallback={user.displayName.charAt(0)} />
+                  <Avatar size="sm" src={user.avatarUrl} defaultAvatar={{ brand: "orochia", seed: user.displayName }} fallback={user.displayName.charAt(0)} />
                   <span className="max-w-36 truncate text-xs font-bold text-fg">{user.displayName}</span>
                   <ChevronDown className="h-3.5 w-3.5 text-fg-secondary" />
                 </button>
@@ -147,7 +147,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                       href={`/@${user.username}`}
                       className="group flex items-center gap-3 rounded-xl p-2.5 transition-colors hover:bg-surface-2"
                     >
-                      <Avatar src={user.avatarUrl || AVATAR_PLACEHOLDER} fallback={user.displayName.charAt(0)} className="h-11 w-11 rounded-2xl ring-2 ring-accent/30" />
+                      <Avatar src={user.avatarUrl} defaultAvatar={{ brand: "orochia", seed: user.displayName }} fallback={user.displayName.charAt(0)} className="h-11 w-11 rounded-2xl ring-2 ring-accent/30" />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-bold text-fg">{user.displayName}</span>
                         <span className="block truncate text-[11px] text-fg-secondary group-hover:text-fg-accent">

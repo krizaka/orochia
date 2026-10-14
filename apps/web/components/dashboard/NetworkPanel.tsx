@@ -3,7 +3,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Ban, Check, UserMinus, X } from "lucide-react";
-import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 import { Avatar, Badge, IconButton } from "@/components/ui";
 
@@ -28,7 +27,7 @@ function Row({ p, children }: { p: Person; children?: React.ReactNode }) {
   return (
     <li className="flex items-center justify-between gap-3 py-2.5">
       <Link href={`/@${p.username}`} className="flex min-w-0 items-center gap-3">
-        <Avatar src={p.avatarUrl || AVATAR_PLACEHOLDER} fallback={p.displayName.charAt(0)} className="h-9 w-9 border border-border-default" />
+        <Avatar src={p.avatarUrl} defaultAvatar={{ brand: "orochia", seed: p.displayName }} fallback={p.displayName.charAt(0)} className="h-9 w-9 border border-border-default" />
         <span className="min-w-0">
           <span className="block truncate text-sm font-semibold text-fg">{p.displayName}</span>
           <span className="block text-[11px] font-mono text-fg-muted">@{p.username}</span>

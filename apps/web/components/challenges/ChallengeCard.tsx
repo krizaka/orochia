@@ -5,7 +5,6 @@ import Link from "next/link";
 import React from "react";
 
 import { Avatar, Card, Countdown } from "@/components/ui";
-import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import type { ChallengeCardView } from "@/lib/challenges";
 import { t } from "@/lib/i18n";
 
@@ -42,7 +41,7 @@ export function ChallengeCard({ challenge: c, index = 0 }: { challenge: Challeng
           <Card.Footer className="justify-between gap-3">
             {c.creator ? (
               <span className="flex min-w-0 items-center gap-2">
-                <Avatar size="xs" src={c.creator.avatarUrl || AVATAR_PLACEHOLDER} fallback={c.creator.name.charAt(0)} />
+                <Avatar size="xs" src={c.creator.avatarUrl} defaultAvatar={{ brand: "orochia", seed: c.creator.name }} fallback={c.creator.name.charAt(0)} />
                 <span className="truncate">{c.creator.name}</span>
               </span>
             ) : (

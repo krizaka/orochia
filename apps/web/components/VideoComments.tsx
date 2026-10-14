@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { MessageSquare, Reply, Trash2 } from "lucide-react";
-import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
+import { useAuth } from "@/lib/auth-context";
 import { Rich } from "@/components/Rich";
 import { t } from "@/lib/i18n";
 import { Avatar, Button, cn, Textarea } from "@/components/ui";
@@ -123,7 +123,7 @@ export function VideoComments({
 
   const item = (c: Comment, isReply = false) => (
     <div key={c.id} className={cn("flex gap-3", isReply ? "mt-3" : "")}>
-      <Avatar size="sm" src={c.authorAvatar || AVATAR_PLACEHOLDER} fallback={c.authorName.charAt(0)} />
+      <Avatar size="sm" src={c.authorAvatar} defaultAvatar={{ brand: "orochia", seed: c.authorName }} fallback={c.authorName.charAt(0)} />
       <div className="min-w-0 flex-1">
         <p className="text-xs">
           <Link href={`/@${c.authorUsername}`} className="font-semibold text-fg hover:text-fg-accent">

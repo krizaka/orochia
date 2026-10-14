@@ -5,7 +5,6 @@ import Link from "next/link";
 import React from "react";
 
 import { Avatar, cn } from "@/components/ui";
-import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 
 import { type NotificationItem, timeAgo } from "./useNotifications";
 
@@ -54,7 +53,7 @@ export function NotificationRow({ n, onOpen, compact = false }: { n: Notificatio
     >
       <span className="relative shrink-0">
         {n.actorAvatar !== undefined && n.actorAvatar !== null ? (
-          <Avatar src={n.actorAvatar || AVATAR_PLACEHOLDER} fallback={<Icon className="h-4 w-4" aria-hidden />} />
+          <Avatar src={n.actorAvatar} fallback={<Icon className="h-4 w-4" aria-hidden />} />
         ) : (
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-surface-3">
             <Icon className="h-4 w-4 text-fg" />

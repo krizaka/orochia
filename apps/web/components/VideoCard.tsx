@@ -60,7 +60,7 @@ export function VideoCard(props: VideoCardProps) {
         <Card.Body className="justify-between gap-0">
           <div className="flex gap-3">
             <Link href={profile} className="shrink-0 transition-transform hover:scale-105">
-              <Avatar src={creatorAvatar || "/avatar-placeholder.svg"} alt={creatorName} fallback={creatorName.charAt(0)} className="h-10 w-10 rounded-xl border border-border-default" />
+              <Avatar src={creatorAvatar} defaultAvatar={{ brand: "orochia", seed: creatorName }} alt={creatorName} fallback={creatorName.charAt(0)} className="h-10 w-10 rounded-xl border border-border-default" />
             </Link>
             <div className="min-w-0 flex-1">
               <Link href={`/watch/${id}`}>
