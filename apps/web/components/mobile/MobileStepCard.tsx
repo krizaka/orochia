@@ -11,7 +11,7 @@ export function MobileStepCard({ id, index }: { id: MobileStep; index: number })
   const notice = messages("mobile").steps[id].notice;
   return (
     <li>
-      <article aria-labelledby={titleId} className="grid items-center gap-8 md:grid-cols-[15rem_1fr] md:gap-14">
+      <article aria-labelledby={titleId} className={cn("grid items-center gap-8 md:gap-14", index % 2 === 1 ? "md:grid-cols-[1fr_15rem]" : "md:grid-cols-[15rem_1fr]")}>
         <div className={cn(index % 2 === 1 && "md:order-2")}>
           <PhoneClip id={id} label={t(`mobile.steps.${id}.goal`)} alt={t(`mobile.steps.${id}.alt`)} />
         </div>
