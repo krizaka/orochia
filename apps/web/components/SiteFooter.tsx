@@ -19,6 +19,7 @@ export function SiteFooter() {
         <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
           <Link href="/explore" className={link}>{t("footer.explore")}</Link>
           <Link href="/how-it-works" className={link}>{t("footer.howItWorks")}</Link>
+          <Link href="/mobile" className={link}>{t("footer.mobile")}</Link>
           <Link href="/docs" className={link}>{t("footer.docs")}</Link>
           <a href="https://www.krizaka.com" target="_blank" rel="noopener" className={link}>{t("footer.madeBy")}</a>
           <Link href="/legal/terms" className={link}>{t("footer.terms")}</Link>

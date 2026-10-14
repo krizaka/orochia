@@ -104,6 +104,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
           {navLink("/explore", t("nav.explore"))}
           {navLink("/auctions", t("nav.auctions"))}
           {navLink("/challenges", t("nav.challenges"))}
+          {navLink("/mobile", t("nav.mobile"))}
         </nav>
 
         <div className="flex items-center gap-2">
