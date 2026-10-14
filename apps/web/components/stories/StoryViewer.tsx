@@ -25,7 +25,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ReportModal } from "@/components/ReportModal";
 import { TipModal } from "@/components/TipModal";
 import { AlertDialog, Avatar, Badge, cn, Dialog, DropdownMenu, IconButton, toast } from "@/components/ui";
-import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
+import { useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
 import {
   autoAdvances,
@@ -382,7 +382,7 @@ export function StoryViewer({
                 href={`/@${ring.username}`}
                 className="pointer-events-auto flex min-w-0 items-center gap-2.5 rounded-xl pr-2 outline-none focus-visible:ring-2 focus-visible:ring-fg-on-media/80"
               >
-                <Avatar src={ring.avatarUrl || AVATAR_PLACEHOLDER} alt="" fallback={ring.displayName.charAt(0)} className="h-9 w-9 shrink-0 rounded-xl border border-fg-on-media/30" />
+                <Avatar src={ring.avatarUrl} defaultAvatar={{ brand: "orochia", seed: ring.displayName }} alt="" fallback={ring.displayName.charAt(0)} className="h-9 w-9 shrink-0 rounded-xl border border-fg-on-media/30" />
                 <span className="min-w-0">
                   <span className="flex items-center gap-1.5">
                     <span className="truncate text-sm font-bold text-fg-on-media drop-shadow-sm">{ring.isOwn ? t("stories.yours") : ring.displayName}</span>

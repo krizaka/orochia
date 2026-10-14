@@ -11,7 +11,7 @@ import { SaveToPlaylist } from "@/components/SaveToPlaylist";
 import { VideoComments } from "@/components/VideoComments";
 import { AuctionPanel } from "@/components/auctions/AuctionPanel";
 import { useAuctionStream } from "@/components/auctions/useAuctionStream";
-import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
+import { useAuth } from "@/lib/auth-context";
 import { Sparkles, Eye, ShieldCheck, Share2, Flag, CheckCircle2, Heart, MessageSquare, Gavel } from "lucide-react";
 import { Avatar, Button, buttonVariants, cn, orochiaButton, Skeleton } from "@/components/ui";
 import { t } from "@/lib/i18n";
@@ -309,7 +309,7 @@ export default function WatchClient() {
 
               <div className="mt-6 flex items-center justify-between rounded-2xl border border-border-subtle bg-surface-2/60 p-4 shadow-xs">
                 <div className="flex items-center gap-3">
-                  <Avatar src={details.creatorAvatar || AVATAR_PLACEHOLDER} alt={details.creatorName} fallback={details.creatorName.charAt(0)} className="h-12 w-12 border border-accent/30" />
+                  <Avatar src={details.creatorAvatar} defaultAvatar={{ brand: "orochia", seed: details.creatorName }} alt={details.creatorName} fallback={details.creatorName.charAt(0)} className="h-12 w-12 border border-accent/30" />
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-bold text-fg">{details.creatorName}</span>

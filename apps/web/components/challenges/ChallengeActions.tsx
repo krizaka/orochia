@@ -5,7 +5,6 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 import { Avatar, Button, cn, ConfirmButton, Dialog, RadioGroup, Sheet, Skeleton, Textarea } from "@/components/ui";
-import { AVATAR_PLACEHOLDER } from "@/lib/auth-context";
 import type { ChallengeView } from "@/lib/challenges";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
@@ -189,7 +188,7 @@ export function ChallengeActions({ c, onChanged }: { c: ChallengeView; onChanged
           <ul className="space-y-2">
             {c.applications.map((a) => (
               <li key={a.id} className="flex items-start gap-3 rounded-xl border border-border-default p-3">
-                <Avatar src={a.creator.avatarUrl || AVATAR_PLACEHOLDER} fallback={a.creator.name.charAt(0)} className="h-9 w-9" />
+                <Avatar src={a.creator.avatarUrl} defaultAvatar={{ brand: "orochia", seed: a.creator.name }} fallback={a.creator.name.charAt(0)} className="h-9 w-9" />
                 <div className="min-w-0 flex-1">
                   <Link href={`/@${a.creator.username}`} className="text-sm font-semibold text-fg hover:underline">
                     {a.creator.name}

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import React from "react";
 
 import { Avatar, cn } from "@/components/ui";
-import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
+import { useAuth } from "@/lib/auth-context";
 import { creatorSpaceCta, viewerStateOf } from "@/lib/creator-journey";
 import { t } from "@/lib/i18n";
 
@@ -49,7 +49,7 @@ export function MobileBottomNav() {
           <span aria-hidden className={tab(false)} />
         ) : user ? (
           <Link href="/dashboard" className={tab(accountActive)}>
-            <Avatar size="xs" src={user.avatarUrl || AVATAR_PLACEHOLDER} fallback={user.displayName.charAt(0)} className={cn("h-6 w-6", accountActive && "ring-2 ring-ring")} />
+            <Avatar size="xs" src={user.avatarUrl} defaultAvatar={{ brand: "orochia", seed: user.displayName }} fallback={user.displayName.charAt(0)} className={cn("h-6 w-6", accountActive && "ring-2 ring-ring")} />
             {t("nav.account")}
           </Link>
         ) : (

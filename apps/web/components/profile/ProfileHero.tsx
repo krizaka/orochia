@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 import { Avatar, Badge, SocialIcon } from "@/components/ui";
-import { AVATAR_PLACEHOLDER, useAuth } from "@/lib/auth-context";
+import { useAuth } from "@/lib/auth-context";
 import { type MessageKey,t } from "@/lib/i18n";
 
 import { ProfileStoriesRow, StoryAvatarRing } from "@/components/stories/ProfileStories";
@@ -88,7 +88,7 @@ export function ProfileHero({
               {/* Inside a ProfileStories (the public page), the picture carries the story ring and opens the stories. */}
               <StoryAvatarRing>
                 <div className="h-28 w-28 overflow-hidden rounded-4xl bg-surface-3 ring-4 ring-border-subtle shadow-2xl shadow-accent/30 sm:h-36 sm:w-36">
-                  <Avatar src={avatar || AVATAR_PLACEHOLDER} alt={displayName} fallback={displayName.charAt(0)} className="h-full w-full rounded-none text-3xl" />
+                  <Avatar src={avatar} defaultAvatar={{ brand: "orochia", seed: displayName }} alt={displayName} fallback={displayName.charAt(0)} className="h-full w-full rounded-none text-3xl" />
                 </div>
               </StoryAvatarRing>
               {editable && (

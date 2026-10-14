@@ -38,7 +38,7 @@ export function PresenceAvatar({
   const state = presence?.state;
   return (
     <span className={cn("relative inline-flex shrink-0", className)}>
-      <Avatar src={src} alt="" size={size} fallback={name ? name.charAt(0).toUpperCase() : <UserIcon size={16} />} className="border border-border-default" />
+      <Avatar src={src} defaultAvatar={{ brand: "orochia", seed: name }} alt="" size={size} fallback={name ? name.charAt(0).toUpperCase() : <UserIcon size={16} />} className="border border-border-default" />
       {(state === "online" || state === "away") && (
         <span
           aria-hidden

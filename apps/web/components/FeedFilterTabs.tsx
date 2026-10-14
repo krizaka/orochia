@@ -143,7 +143,7 @@ export function FeedFilterTabs({ initialVideos, viewer, unavailable = false }: F
                   href={video.creatorUsername ? `/@${video.creatorUsername}` : "#"}
                   className="flex items-center gap-3 group"
                 >
-                  <Avatar src={video.creatorAvatar || "/avatar-placeholder.svg"} alt={video.creatorName} fallback={video.creatorName.charAt(0)} className="h-10 w-10 rounded-xl border border-accent/40" />
+                  <Avatar src={video.creatorAvatar} defaultAvatar={{ brand: "orochia", seed: video.creatorName }} alt={video.creatorName} fallback={video.creatorName.charAt(0)} className="h-10 w-10 rounded-xl border border-accent/40" />
                   <div>
                     <h4 className="text-xs sm:text-sm font-bold text-fg group-hover:text-fg-accent transition-colors">
                       {video.creatorName}

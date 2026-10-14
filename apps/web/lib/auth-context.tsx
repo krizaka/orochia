@@ -5,7 +5,6 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import { responseErrorMessage } from "./api-errors";
 import { t } from "./i18n";
 
-export const AVATAR_PLACEHOLDER = "/avatar-placeholder.svg";
 
 export interface UserProfile {
   id: string;
@@ -13,7 +12,7 @@ export interface UserProfile {
   displayName: string;
   email: string;
   role: "CREATOR" | "MEMBER" | "ADMIN";
-  avatarUrl: string;
+  avatarUrl: string | null;
   bannerUrl?: string | null;
   bio?: string | null;
   payoutAddressCrypto?: string | null;
@@ -95,7 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = (await res.json()) as { user: (Omit<UserProfile, "avatarUrl"> & { avatarUrl: string | null }) | null; demoMode?: boolean; signupEnabled?: boolean };
       setDemoMode(Boolean(data.demoMode));
       setSignupEnabled(Boolean(data.signupEnabled));
-      setUser(data.user ? { ...data.user, avatarUrl: data.user.avatarUrl || AVATAR_PLACEHOLDER } : null);
+      setUser(data.user ? { ...data.user, avatarUrl: data.user.avatarUrl } : null);
     } catch {
       setUser(null);
     } finally {
