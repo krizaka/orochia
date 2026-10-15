@@ -11,9 +11,11 @@ describe("the footer (@krizaka/ui's SiteFooter, NAV-SYS)", () => {
     expect(html).toContain('data-testid="app-version"');
     expect(html).toContain(`v${BUILD_INFO.version}`);
   });
-  it("is the family's: « A Krizaka product », the other sites, none of them as a hand-made link", () => {
+  it("signs « A Krizaka product » (→ www.krizaka.com) and links no other site: no family columns", () => {
     expect(html).toContain("A Krizaka product");
-    for (const host of ["https://www.krizaka.com", "https://dev.orazaka.com", "https://ui.krizaka.com"]) expect(html).toContain(`href="${host}`);
+    expect(html).toContain('href="https://www.krizaka.com"');
+    expect(html).not.toContain("Krizaka family");
+    for (const host of ["orazaka", "yasakia", "yororis", "ui.krizaka.com", "java.krizaka.com"]) expect(html).not.toContain(host);
   });
   it("links the mobile recordings and the legal pages, and keeps the 18+ statement", () => {
     expect(html).toContain('href="/mobile"');
@@ -23,9 +25,9 @@ describe("the footer (@krizaka/ui's SiteFooter, NAV-SYS)", () => {
 });
 
 describe("the bar", () => {
-  it("carries the family switcher next to the brand, current = orochia", () => {
+  it("carries no family switcher (a deployed product is independent) but the build badge", () => {
     const src = readFileSync(new URL("./Navbar.tsx", import.meta.url), "utf8");
-    expect(src).toContain('<NavBar.Family current="orochia"');
+    expect(src).not.toContain("NavBar.Family");
     expect(src).toContain("<BuildBadge />");
   });
 });

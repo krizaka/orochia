@@ -8,9 +8,9 @@ import { BUILD_INFO } from "@/lib/build-info";
 import { t } from "@/lib/i18n";
 
 /**
- * The footer of the Krizaka family (NAV-SYS) is @krizaka/ui's SiteFooter: Orochia's own column, the family in
- * columns (@krizaka/ui/sites), « A Krizaka product », the environment and the version, Montréal. The legal links and
- * the 18+ statement end the signature line. On a phone it is where the family is — the bottom tab bar keeps the app.
+ * Orochia is independent once deployed: its footer is @krizaka/ui's SiteFooter in product mode (`family={false}`) —
+ * Orochia's own column, the publisher line « A Krizaka product » (→ www.krizaka.com), the environment and the version,
+ * Montréal. No family columns, no link to another product. The legal links and the 18+ statement end the signature line.
  */
 export function SiteFooter() {
   const link = (href: string, label: string) => (
@@ -22,6 +22,7 @@ export function SiteFooter() {
     <div className="mb-16 md:mb-0">
       <FamilyFooter
         current="orochia"
+        family={false}
         aria-label={t("footer.label")}
         version={BUILD_INFO.sha ? `${BUILD_INFO.version}+${BUILD_INFO.sha}` : BUILD_INFO.version}
         env={BUILD_INFO.env === "production" ? undefined : BUILD_INFO.env}

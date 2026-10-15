@@ -9,15 +9,6 @@ import { absolute, KRIZAKA_URL, SOURCE_URL } from "./seo";
 /** The repository's public docs (the bundle lib/docs.ts renders), read here as plain markdown. */
 const DOCS = bundle as { slug: string; title: string; markdown: string }[];
 
-const FAMILY = [
-  ["Krizaka", KRIZAKA_URL, "the company, an open-source software studio in Montréal"],
-  ["Orazaka", "https://dev.orazaka.com", "sovereign, on-premise AI orchestration"],
-  ["Yasakia", "https://dev.yasakia.com", "a mobile dating app where you talk first"],
-  ["Yororis", "https://dev.yororis.com", "a listening space with a face and a voice"],
-  ["Krizaka UI", "https://ui.krizaka.com", "the design system, web and native"],
-  ["Krizaka Java", "https://java.krizaka.com", "the Spring Boot building blocks"],
-] as const;
-
 const SUMMARY = `> Orochia is an open-source (Apache-2.0), adult-friendly video platform for independent creators,
 > made by Krizaka (Montréal). Creators publish 4K videos and decide exactly who watches each one;
 > viewers follow, comment, like, share, tip and unlock. Every playback link is signed for five
@@ -52,10 +43,9 @@ ${SUMMARY}
 - Self-hostable: Docker Compose or DigitalOcean App Platform; Bunny Stream for video delivery.
 - Full text of the documentation: ${absolute("/llms-full.txt")}
 
-## The Krizaka family
+## Publisher
 
-${FAMILY.map(([name, url, line]) => `- [${name}](${url}): ${line}`).join("\n")}
-- [GitHub](https://github.com/krizaka): every repository, public
+- [Krizaka](${KRIZAKA_URL}): the company that publishes Orochia, an open-source software studio in Montréal
 
 Sitemap: ${absolute("/sitemap.xml")}
 `;
@@ -63,7 +53,7 @@ Sitemap: ${absolute("/sitemap.xml")}
 
 export function llmsFullText(): string {
   const docs = DOCS.map((d) => `\n---\n\n# ${d.title}\n\nURL: ${absolute(`/docs/${d.slug}`)}\n\n${d.markdown.trim()}\n`).join("");
-  return `${llmsText().replace(/\n## The Krizaka family[\s\S]*$/, "")}\n## Documentation (full text)\n${docs}\n---\n\n## The Krizaka family\n\n${FAMILY.map(([name, url, line]) => `- [${name}](${url}): ${line}`).join("\n")}\n\nSitemap: ${absolute("/sitemap.xml")}\n`;
+  return `${llmsText().replace(/\n## Publisher[\s\S]*$/, "")}\n## Documentation (full text)\n${docs}\n---\n\n## Publisher\n\n- [Krizaka](${KRIZAKA_URL}): the company that publishes Orochia\n\nSitemap: ${absolute("/sitemap.xml")}\n`;
 }
 
 export const LLMS_HEADERS = { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=3600" };
