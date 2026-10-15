@@ -1751,23 +1751,28 @@
     "dependencies": [
       {
         "from": "orochia-admin",
+        "to": "krizaka-charts",
+        "version": "0.1.0"
+      },
+      {
+        "from": "orochia-admin",
         "to": "krizaka-tailwind",
-        "version": "2.0.0-beta.1"
+        "version": "2.3.0"
       },
       {
         "from": "orochia-admin",
         "to": "krizaka-tokens",
-        "version": "2.0.0-beta.1"
+        "version": "2.3.0"
       },
       {
         "from": "orochia-admin",
         "to": "krizaka-ui",
-        "version": "2.0.0-beta.1"
+        "version": "2.3.0"
       },
       {
         "from": "orochia-admin",
         "to": "orochia-design-system",
-        "version": "3.0.0"
+        "version": "4.1.1"
       },
       {
         "from": "orochia-api",
@@ -1798,18 +1803,23 @@
       },
       {
         "from": "orochia-mobile",
+        "to": "krizaka-charts",
+        "version": "0.1.0"
+      },
+      {
+        "from": "orochia-mobile",
         "to": "krizaka-tokens",
-        "version": "2.0.0-beta.4"
+        "version": "2.4.0"
       },
       {
         "from": "orochia-mobile",
         "to": "krizaka-ui",
-        "version": "2.0.0-beta.4"
+        "version": "2.4.0"
       },
       {
         "from": "orochia-mobile",
         "to": "orochia-design-system",
-        "version": "4.0.0"
+        "version": "4.1.1"
       },
       {
         "from": "orochia-payments",

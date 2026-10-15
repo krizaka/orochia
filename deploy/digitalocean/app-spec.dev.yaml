@@ -36,6 +36,9 @@ services:
       - key: APP_SEARCH_INDEXING
         scope: RUN_AND_BUILD_TIME
         value: "off"
+      - key: APP_PUBLIC_ACTIONS
+        scope: RUN_TIME
+        value: "off"
       # Factory reset from the admin console (backup first). Never honoured on the indexed production.
       - key: DATABASE_ALLOW_RESET
         scope: RUN_TIME
@@ -285,6 +288,9 @@ jobs:
         scope: RUN_TIME
         value: "true"
       - key: APP_SEARCH_INDEXING
+        scope: RUN_TIME
+        value: "off"
+      - key: APP_PUBLIC_ACTIONS
         scope: RUN_TIME
         value: "off"
       # The default user (owner, ADMIN), created or reactivated after the migrations.
