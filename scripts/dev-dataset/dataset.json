@@ -457,6 +457,90 @@
         "terrace",
         "morning"
       ]
+    },
+    {
+      "creator": "noah",
+      "file": "tea-pour.mp4",
+      "orientation": "horizontal",
+      "title": "Pouring mint tea in golden light",
+      "description": "Amber mint tea from a silver teapot into an engraved glass, steam curling through the afternoon sun.",
+      "tags": [
+        "food",
+        "tea",
+        "slow-motion"
+      ]
+    },
+    {
+      "creator": "lena",
+      "file": "studio-night.mp4",
+      "orientation": "horizontal",
+      "title": "A creator's studio at night, neon and haze",
+      "description": "A camera sliding past violet and magenta neon in a hazy studio after dark.",
+      "tags": [
+        "music",
+        "studio",
+        "neon"
+      ]
+    },
+    {
+      "creator": "lena",
+      "file": "microphone.mp4",
+      "orientation": "horizontal",
+      "title": "A vintage ribbon microphone in a quiet room",
+      "description": "Sunlight dust and a soft breeze around a ribbon microphone waiting for a voice.",
+      "tags": [
+        "music",
+        "microphone",
+        "studio"
+      ]
+    },
+    {
+      "creator": "mira",
+      "file": "old-port.mp4",
+      "orientation": "horizontal",
+      "title": "The Old Port of Montréal at blue hour",
+      "description": "A drone glide over the cobblestone quay and the Clock Tower lit against a deep blue sky.",
+      "tags": [
+        "travel",
+        "montreal",
+        "blue-hour"
+      ]
+    },
+    {
+      "creator": "mira",
+      "file": "chefchaouen.mp4",
+      "orientation": "horizontal",
+      "title": "Chefchaouen from above, then a riad courtyard",
+      "description": "Golden hour over the blue alleys into the Rif mountains, then a zellige fountain among orange trees.",
+      "tags": [
+        "travel",
+        "morocco",
+        "chefchaouen"
+      ]
+    },
+    {
+      "creator": "mira",
+      "file": "grenoble.mp4",
+      "orientation": "horizontal",
+      "title": "Dawn over Grenoble and the Bastille cable-car",
+      "description": "The spherical cabins gliding above the city with pink Alps behind.",
+      "tags": [
+        "travel",
+        "grenoble",
+        "alps"
+      ]
+    },
+    {
+      "creator": "aiko",
+      "file": "plateau-snow.mp4",
+      "orientation": "horizontal",
+      "title": "Plateau staircases on a snowy night",
+      "description": "A slow track along a snowy Montréal street of outside spiral staircases and warm windows.",
+      "tags": [
+        "art",
+        "montreal",
+        "architecture"
+      ]
     }
   ],
   "generate": {
