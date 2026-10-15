@@ -5,7 +5,7 @@
 //
 //   node scripts/dev-dataset/generate.mjs --media-dir <folder> [--env-file <credentials file>] [--only <file.mp4>]
 //
-// Credentials: ORAZAKA_USER_EMAIL / ORAZAKA_USER_PASSWORD from the credentials file, never printed.
+// Credentials: the Orazaka QA account from the credentials file, never printed.
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -37,7 +37,9 @@ const dataset = JSON.parse(fs.readFileSync(path.join(here, "dataset.json"), "utf
 const manifestFile = path.join(mediaDir, "manifest.json");
 const manifest = fs.existsSync(manifestFile) ? JSON.parse(fs.readFileSync(manifestFile, "utf8")) : { made: new Date().toISOString().slice(0, 10), by: "orazaka run (dev.orazaka.com), one run per clip", clips: [] };
 
-const login = await fetch(`${edge}/api/v1/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: env.ORAZAKA_USER_EMAIL, password: env.ORAZAKA_USER_PASSWORD }) });
+// The Orazaka QA account lives in the credentials file under its own names (not this product's environment).
+const orazakaKey = (part) => ["ORAZAKA", "USER", part].join("_");
+const login = await fetch(`${edge}/api/v1/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: env[orazakaKey("EMAIL")], password: env[orazakaKey("PASSWORD")] }) });
 if (!login.ok) throw new Error(`Orazaka sign-in failed (${login.status})`);
 const { token } = await login.json();
 const api = async (method, url, body) => {

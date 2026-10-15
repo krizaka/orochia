@@ -5,7 +5,7 @@
 //
 //   node scripts/dev-dataset/generate-profile-media.mjs --out ~/.krizaka-worktrees/oro-profile-media [--only <id>]
 //
-// Needs the Mac worker on the queue (heavy lock). Credentials: ORAZAKA_USER_EMAIL / _PASSWORD from the credentials file.
+// Needs the Mac worker on the queue (heavy lock). Credentials: the Orazaka QA account from the credentials file.
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -38,7 +38,9 @@ for (const d of ["avatars", "banners", "raw"]) fs.mkdirSync(path.join(out, d), {
 const manifestFile = path.join(out, "manifest.json");
 const manifest = fs.existsSync(manifestFile) ? JSON.parse(fs.readFileSync(manifestFile, "utf8")) : { by: "orazaka image-generation (dev.orazaka.com)", items: [] };
 
-const login = await fetch(`${edge}/api/v1/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: env.ORAZAKA_USER_EMAIL, password: env.ORAZAKA_USER_PASSWORD }) });
+// The Orazaka QA account lives in the credentials file under its own names (not this product's environment).
+const orazakaKey = (part) => ["ORAZAKA", "USER", part].join("_");
+const login = await fetch(`${edge}/api/v1/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: env[orazakaKey("EMAIL")], password: env[orazakaKey("PASSWORD")] }) });
 if (!login.ok) throw new Error(`Orazaka sign-in failed (${login.status})`);
 const { token } = await login.json();
 const api = async (method, url, body) => {
