@@ -90,7 +90,7 @@ describe.skipIf(!enabled)("Explorer index (pgvector)", () => {
   it("finds by meaning what the words alone would miss, nearest first", async () => {
     const q = await queryVector("neon alley tokyo night", { embed: stub });
     if (q.status !== "ok") throw new Error(`query vector: ${q.status}`);
-    const found = await nearestVideoIds(q.vector, q.model, 10, 0.9);
+    const found = await nearestVideoIds(q.vector, q.model, 10, 0.9, Infinity);
     expect(found[0]).toBe(ids.tokyo);
     expect(found).toContain(ids.osaka);
     expect(found).not.toContain(ids.garden);
@@ -99,21 +99,21 @@ describe.skipIf(!enabled)("Explorer index (pgvector)", () => {
   it("never matches a video Explore would not show: not public, not ready, taken down, held for a report", async () => {
     const q = await queryVector("tokyo neon alley night private cut", { embed: stub });
     if (q.status !== "ok") throw new Error("no vector");
-    expect(await nearestVideoIds(q.vector, q.model, 10, 0.99)).not.toContain(ids.secret);
-    expect(await nearestVideoIds(q.vector, q.model, 10, 0.99)).not.toContain(ids.pending);
+    expect(await nearestVideoIds(q.vector, q.model, 10, 0.99, Infinity)).not.toContain(ids.secret);
+    expect(await nearestVideoIds(q.vector, q.model, 10, 0.99, Infinity)).not.toContain(ids.pending);
 
     await db.update(videos).set({ removedAt: new Date(), removalReason: "test" }).where(eq(videos.id, ids.osaka));
-    expect(await nearestVideoIds(q.vector, q.model, 10, 0.99)).not.toContain(ids.osaka);
+    expect(await nearestVideoIds(q.vector, q.model, 10, 0.99, Infinity)).not.toContain(ids.osaka);
     await db.update(videos).set({ removedAt: null, removalReason: null }).where(eq(videos.id, ids.osaka));
-    expect(await nearestVideoIds(q.vector, q.model, 10, 0.99)).toContain(ids.osaka);
+    expect(await nearestVideoIds(q.vector, q.model, 10, 0.99, Infinity)).toContain(ids.osaka);
 
     await db.insert(complianceReports).values({ videoId: ids.osaka, videoTitle: "t", reason: "UNDERAGE", details: "test", reporterEmail: "it@example.org", status: "OPEN" });
-    expect(await nearestVideoIds(q.vector, q.model, 10, 0.99)).not.toContain(ids.osaka);
+    expect(await nearestVideoIds(q.vector, q.model, 10, 0.99, Infinity)).not.toContain(ids.osaka);
     await db.delete(complianceReports).where(eq(complianceReports.videoId, ids.osaka));
   });
 
   it("'more like this' is the nearest discoverable videos to a video's own vector, never itself", async () => {
-    const related = await relatedVideoIds(ids.tokyo, 5, 0.95);
+    const related = await relatedVideoIds(ids.tokyo, 5, 0.95, Infinity);
     expect(related).toContain(ids.osaka);
     if (related.includes(ids.garden)) expect(related.indexOf(ids.osaka)).toBeLessThan(related.indexOf(ids.garden));
     expect(related).not.toContain(ids.tokyo);
@@ -122,7 +122,7 @@ describe.skipIf(!enabled)("Explorer index (pgvector)", () => {
 
     // Once a video stops being public, what is related to it is no longer told, though its old vector is still kept.
     await db.update(videos).set({ visibility: "INVITED_ONLY" }).where(eq(videos.id, ids.garden));
-    expect(await relatedVideoIds(ids.garden, 5, 0.99)).toEqual([]);
+    expect(await relatedVideoIds(ids.garden, 5, 0.99, Infinity)).toEqual([]);
     await db.update(videos).set({ visibility: "PUBLIC" }).where(eq(videos.id, ids.garden));
   });
 

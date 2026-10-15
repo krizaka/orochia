@@ -2,7 +2,7 @@ import { aiRuns, db, EXPLORER_DIMENSIONS, explorerEmbeddings, users, videos } fr
 import { and, desc, eq, inArray, isNull, lt, or, sql } from "drizzle-orm";
 
 import { discoverableVideo } from "./explore";
-import { documentHash, INDEX_BATCH, MAX_DISTANCE, normalizeQuery, SEMANTIC_CANDIDATES, VectorCache, videoDocument } from "./explorer";
+import { documentHash, INDEX_BATCH, MAX_DISTANCE, NEIGHBOUR_MARGIN, normalizeQuery, SEMANTIC_CANDIDATES, VectorCache, videoDocument, withinMargin } from "./explorer";
 import { breakerState, type EmbedResult, embedTexts, orazakaConfigured,OrazakaUnavailableError } from "./orazaka";
 import { checkRateLimit } from "./rate-limit";
 
@@ -153,31 +153,31 @@ export async function queryVector(q: string, { embed = embedTexts }: { embed?: E
 }
 
 /** Ids of the discoverable videos nearest to a vector, nearest first. */
-export async function nearestVideoIds(vector: number[], model: string, limit = SEMANTIC_CANDIDATES, maxDistance = MAX_DISTANCE): Promise<string[]> {
+export async function nearestVideoIds(vector: number[], model: string, limit = SEMANTIC_CANDIDATES, maxDistance = MAX_DISTANCE, margin = NEIGHBOUR_MARGIN): Promise<string[]> {
   const distance = sql<number>`(${explorerEmbeddings.embedding} <=> ${`[${vector.join(",")}]`}::vector)`;
   const rows = await db
-    .select({ id: videos.id })
+    .select({ id: videos.id, distance })
     .from(explorerEmbeddings)
     .innerJoin(videos, eq(videos.id, explorerEmbeddings.videoId))
     .innerJoin(users, eq(users.id, videos.creatorId))
     .where(and(discoverableVideo(), eq(explorerEmbeddings.model, model), sql`${distance} < ${maxDistance}`))
     .orderBy(distance)
     .limit(limit);
-  return rows.map((r) => r.id);
+  return withinMargin(rows, margin).map((r) => r.id);
 }
 
 /**
  * "More like this": the discoverable videos nearest to a video's own stored vector, never the video itself. No Orazaka
  * call at read time — the meaning was kept when the video was indexed. Empty when the video has no vector yet.
  */
-export async function relatedVideoIds(videoId: string, limit = 6, maxDistance = MAX_DISTANCE): Promise<string[]> {
+export async function relatedVideoIds(videoId: string, limit = 6, maxDistance = MAX_DISTANCE, margin = NEIGHBOUR_MARGIN): Promise<string[]> {
   // What is related to a video Explore would not show is never told — a vector kept from when it was public does not change that.
   const [visible] = await db.select({ id: videos.id }).from(videos).innerJoin(users, eq(users.id, videos.creatorId)).where(and(eq(videos.id, videoId), discoverableVideo())).limit(1);
   if (!visible) return [];
   const seed = db.select({ embedding: explorerEmbeddings.embedding, model: explorerEmbeddings.model }).from(explorerEmbeddings).where(eq(explorerEmbeddings.videoId, videoId)).as("seed");
   const distance = sql<number>`(${explorerEmbeddings.embedding} <=> ${seed.embedding})`;
   const rows = await db
-    .select({ id: videos.id })
+    .select({ id: videos.id, distance })
     .from(explorerEmbeddings)
     .innerJoin(seed, eq(seed.model, explorerEmbeddings.model))
     .innerJoin(videos, eq(videos.id, explorerEmbeddings.videoId))
@@ -185,7 +185,7 @@ export async function relatedVideoIds(videoId: string, limit = 6, maxDistance = 
     .where(and(discoverableVideo(), sql`${videos.id} <> ${videoId}`, sql`${distance} < ${maxDistance}`))
     .orderBy(distance)
     .limit(limit);
-  return rows.map((r) => r.id);
+  return withinMargin(rows, margin).map((r) => r.id);
 }
 
 // ── The operator's view ───────────────────────────────────────────────────────────────────────

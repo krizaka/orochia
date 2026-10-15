@@ -188,7 +188,7 @@ The Orazaka engine the Explorer calls (embeddings), never a model provider.
 
 | Variable | Production | Secret | Default | What it does |
 | :--- | :---: | :---: | :--- | :--- |
-| `AI_ENGINE_URL` | — |  |  | Base URL of the Orazaka edge (`https://dev.orazaka.com/edge`): the Explorer's semantic search and recommendations. Unset: the Explorer runs on full-text search alone. |
+| `AI_ENGINE_URL` | — |  |  | Base URL of the Orazaka edge (its `/edge` path): the Explorer's semantic search and recommendations. Unset: the Explorer runs on full-text search alone. |
 | `AI_ENGINE_API_KEY` | — | ✓ |  | The Orazaka API key of the Explorer, scoped `ai:embed` (embeddings only). Without it the Explorer does not call Orazaka. |
 
 ### Operator console — `OPERATOR_`

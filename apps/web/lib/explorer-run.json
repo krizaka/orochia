@@ -1,0 +1,9 @@
+{
+  "runId": "f9b8f811-d15d-457e-8fbf-25c9be23772e",
+  "model": "gte-large-en-v1.5",
+  "inputs": 8,
+  "dimensions": 1024,
+  "promptTokens": 222,
+  "loggedAt": "2026-10-15T01:57:12.726201974Z",
+  "source": "Orazaka dev: the embedding.run line of the core's logs"
+}

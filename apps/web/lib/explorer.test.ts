@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { documentHash, fuseRankings, MAX_DOCUMENT_CHARS, normalizeQuery, VectorCache, vectorLiteral, videoDocument } from "./explorer";
+import { documentHash, fuseRankings, MAX_DOCUMENT_CHARS, normalizeQuery, VectorCache, vectorLiteral, videoDocument, withinMargin } from "./explorer";
 
 describe("videoDocument — what leaves for Orazaka", () => {
   it("is the title, the tags and the description, and nothing else", () => {
@@ -39,6 +39,20 @@ describe("documentHash / normalizeQuery / vectorLiteral", () => {
 
   it("writes a vector the way pgvector reads it", () => {
     expect(vectorLiteral([0.5, -1, 2])).toBe("[0.5,-1,2]");
+  });
+});
+
+describe("withinMargin — the nearest neighbours, not the next best", () => {
+  const n = (distance: number, id = String(distance)) => ({ id, distance });
+
+  it("keeps what is close to the nearest and drops the rest (measured on dev: 'cooking dinner' → pasta only)", () => {
+    expect(withinMargin([n(0.328), n(0.51), n(0.529)]).map((x) => x.id)).toEqual(["0.328"]);
+    expect(withinMargin([n(0.454), n(0.465), n(0.624)]).map((x) => x.id)).toEqual(["0.454", "0.465"]);
+  });
+
+  it("is empty for no neighbour, and takes any margin", () => {
+    expect(withinMargin([])).toEqual([]);
+    expect(withinMargin([n(0.3), n(0.9)], Infinity)).toHaveLength(2);
   });
 });
 
