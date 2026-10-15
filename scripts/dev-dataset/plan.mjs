@@ -38,11 +38,13 @@ export function validateDataset(ds) {
     if (!list.some((v) => v.orientation === "vertical")) problems.push(`creator ${key}: at least one vertical clip`);
   }
   const clips = ds.generate?.clips ?? {};
-  for (const [file, prompt] of Object.entries(clips)) {
+  for (const [file, spec] of Object.entries(clips)) {
+    const prompt = typeof spec === "string" ? spec : spec.prompt;
     if (!files.has(file)) problems.push(`generate: ${file} is in no video`);
+    if (/nud|naked|topless|erotic|sexual/i.test(prompt.replace(/\bno (nudity|nude)\b/gi, ""))) problems.push(`generate: ${file} must stay within the provider's guardrails (fashion, swimwear, dance only)`);
     if (!/no (people|faces|hands)|faces?/i.test(prompt)) problems.push(`generate: ${file} must say there is no face`);
   }
-  for (const v of ds.videos ?? []) if (v.orientation === "vertical" && !clips[v.file]) problems.push(`video "${v.title}": a vertical clip needs its generation prompt`);
+  for (const v of ds.videos ?? []) if (!clips[v.file] && v.orientation === "vertical") problems.push(`video "${v.title}": a vertical clip needs its generation prompt`);
   return problems;
 }
 

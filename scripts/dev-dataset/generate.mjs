@@ -23,6 +23,10 @@ fs.mkdirSync(mediaDir, { recursive: true });
 const credentialsFile = opt("env-file", path.join(os.homedir(), "Documents", "krizaka", ["qa", "env"].join(".")));
 const edge = opt("edge", "https://dev.orazaka.com/edge");
 const only = opt("only");
+// --model <id> makes only the clips of that model (the summer batch is wan2-2-t2v-a14b: paid, ~$0.6 a clip), --max <n> stops after n.
+const onlyModel = opt("model");
+const max = Number(opt("max", "999"));
+let made = 0;
 const MODEL = "wan2.1-t2v-1.3b";
 
 const env = Object.fromEntries(
@@ -49,8 +53,13 @@ const api = async (method, url, body) => {
 };
 
 let failed = 0;
-for (const [file, prompt] of Object.entries(dataset.generate.clips)) {
+for (const [file, spec] of Object.entries(dataset.generate.clips)) {
+  const prompt = typeof spec === "string" ? spec : spec.prompt;
+  const model = typeof spec === "string" ? MODEL : spec.model;
+  const aspect = typeof spec === "string" ? dataset.generate.aspect : spec.aspect;
   if (only && only !== file) continue;
+  if (onlyModel && model !== onlyModel) continue;
+  if (made >= max) break;
   if (manifest.clips.some((c) => c.file === file) && fs.existsSync(path.join(mediaDir, file))) {
     console.log(`= ${file}: already made`);
     continue;
@@ -58,7 +67,7 @@ for (const [file, prompt] of Object.entries(dataset.generate.clips)) {
   const seed = String(20261015 + Object.keys(dataset.generate.clips).indexOf(file));
   try {
     const started = Date.now();
-    let run = await (await api("POST", "/api/v1/studios/video-generation/runs", { inputs: { prompt, aspect: dataset.generate.aspect, durationSeconds: 5, model: MODEL, seed } })).json();
+    let run = await (await api("POST", "/api/v1/studios/video-generation/runs", { inputs: { prompt, aspect, durationSeconds: 5, model, seed } })).json();
     console.log(`> ${file}: run ${run.id}`);
     while (!["SUCCEEDED", "FAILED", "CANCELLED"].includes(run.status)) {
       await new Promise((r) => setTimeout(r, 15_000));
@@ -69,8 +78,9 @@ for (const [file, prompt] of Object.entries(dataset.generate.clips)) {
     const bytes = Buffer.from(await (await api("GET", out.value)).arrayBuffer());
     fs.writeFileSync(path.join(mediaDir, file), bytes);
     manifest.clips = manifest.clips.filter((c) => c.file !== file);
-    manifest.clips.push({ title: file.replace(/\.mp4$/, ""), file, prompt, model: "Wan 2.1 T2V 1.3B (wan2.1-t2v-1.3b) — Mac worker (Metal), routed by Orazaka", seed, orazakaRunId: run.id, studio: `video-generation ${run.blueprintVersion}`, width: 480, height: 832, runSeconds: Math.round((Date.now() - started) / 1000), bytes: bytes.length });
+    manifest.clips.push({ title: file.replace(/\.mp4$/, ""), file, prompt, model: model === MODEL ? "Wan 2.1 T2V 1.3B (wan2.1-t2v-1.3b) — Mac worker (Metal), routed by Orazaka" : "Wan 2.2 A14B (wan2-2-t2v-a14b) — DigitalOcean serverless inference, routed by Orazaka", seed, orazakaRunId: run.id, studio: `video-generation ${run.blueprintVersion}`, width: model === MODEL ? 480 : 832, height: model === MODEL ? 832 : 480, runSeconds: Math.round((Date.now() - started) / 1000), bytes: bytes.length });
     fs.writeFileSync(manifestFile, `${JSON.stringify(manifest, null, 2)}\n`);
+    made++;
     console.log(`+ ${file}: ${bytes.length} bytes in ${Math.round((Date.now() - started) / 1000)} s`);
   } catch (error) {
     failed++;
