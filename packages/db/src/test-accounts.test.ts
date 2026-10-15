@@ -27,4 +27,18 @@ describe("the QA accounts injected from the environment", () => {
   it("refuses the same e-mail or username for both accounts", () => {
     expect(() => testAccountsFromEnv({ ...env, AUTH_TEST_CREATOR_USERNAME: "qa_fan" }, today)).toThrow(/different/);
   });
+
+  it("adds a viewer whose age was never checked (no date of birth) when AUTH_TEST_VIEWER_* is set", () => {
+    const withViewer = {
+      ...env,
+      AUTH_TEST_VIEWER_EMAIL: "qa+viewer@orochia.com",
+      AUTH_TEST_VIEWER_USERNAME: "qa_viewer",
+      AUTH_TEST_VIEWER_PASSWORD: "viewer-password-123",
+    };
+    const accounts = testAccountsFromEnv(withViewer, today);
+    expect(accounts).toHaveLength(3);
+    expect(accounts[2]).toMatchObject({ role: "MEMBER", username: "qa_viewer", dateOfBirth: null, ageChecked: false });
+    expect(accounts[0]).toMatchObject({ ageChecked: true });
+    expect(testAccountsFromEnv(env, today)).toHaveLength(2);
+  });
 });

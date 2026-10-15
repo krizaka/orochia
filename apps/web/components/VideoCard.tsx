@@ -9,6 +9,7 @@ import { TipModal } from "@/components/TipModal";
 import { Badge, Button, cn } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
+import { isAdultRating } from "@/lib/content-ratings";
 import { frameOf, orientationOf } from "@/lib/video-aspect";
 import type { VideoVisibility } from "@/lib/visibility";
 
@@ -100,7 +101,7 @@ export function VideoCard({ aspect, layout, ...props }: VideoCardProps & { aspec
 
 /** Who may watch: 18+, the unlock price, contacts, auction, backers — or free. */
 function AccessBadges({ visibility, minTipAmountCents, contentRatingId, isAdult = false }: Pick<VideoCardProps, "visibility" | "minTipAmountCents" | "contentRatingId" | "isAdult">) {
-  const adult = isAdult || contentRatingId === "MATURE_18" || contentRatingId === "ADULT_EXPLICIT";
+  const adult = isAdult || isAdultRating(contentRatingId);
   const ACCESS = {
     TIPPED_UNLOCKED: { icon: Lock, label: t("card.unlockFor", { price: money(minTipAmountCents) }) },
     CONTACTS_ONLY: { icon: Users, label: t("card.contacts") },
