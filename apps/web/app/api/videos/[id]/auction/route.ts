@@ -13,7 +13,7 @@ export async function GET(_req: NextRequest, props: { params: Promise<{ id: stri
     if (!id.success) return jsonError(404, "Video not found");
     const auctionId = await auctionIdForVideo(id.data);
     const user = auctionId ? await getCurrentUser() : null;
-    const auction = auctionId ? await auctionView(auctionId, user?.id ?? null) : null;
+    const auction = auctionId ? await auctionView(auctionId, user?.id ?? null, user?.isAgeVerified === true) : null;
     return NextResponse.json({ success: true, auction });
   } catch (error) {
     return errorResponse(error, "videos/auction");

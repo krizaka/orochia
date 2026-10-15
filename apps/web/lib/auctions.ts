@@ -1,4 +1,4 @@
-import { db, auctions, auctionBids, follows, profiles, users, videos, videoAccessGrants } from "@orochia/db";
+import { contentRatings, db, auctions, auctionBids, follows, profiles, users, videos, videoAccessGrants } from "@orochia/db";
 import { and, asc, desc, eq, gt, inArray, isNull, lte, sql, type SQL } from "drizzle-orm";
 import {
   AuctionError,
@@ -17,6 +17,7 @@ import { HttpError } from "./http";
 import { signMediaUrl } from "./media-urls";
 import { notify } from "./notifications";
 import { publish } from "./realtime";
+import { unveiledThumbnail } from "./video-veil";
 
 /**
  * Auctions in the web app: read models, the public live feed and the notifications. The rules and the money are in
@@ -94,7 +95,7 @@ async function settleIfDue(row: AuctionRow, now: Date): Promise<AuctionRow> {
 }
 
 /** The auction as a viewer sees it, or null when it does not exist (or its video was taken down). */
-export async function auctionView(auctionId: string, viewerId: string | null): Promise<AuctionView | null> {
+export async function auctionView(auctionId: string, viewerId: string | null, viewerAgeChecked = false): Promise<AuctionView | null> {
   const now = new Date();
   const [found] = await db.select().from(auctions).where(eq(auctions.id, auctionId)).limit(1);
   if (!found) return null;
@@ -104,6 +105,9 @@ export async function auctionView(auctionId: string, viewerId: string | null): P
     .select({
       title: videos.title,
       thumbnailUrl: videos.thumbnailUrl,
+      isBlurred: videos.isBlurred,
+      ratingRequiresBlur: sql<boolean>`coalesce(${contentRatings.requiresBlur}, false)`,
+      ratingIsAdult: sql<boolean>`coalesce(${contentRatings.isAdult}, false)`,
       durationSeconds: videos.durationSeconds,
       removedAt: videos.removedAt,
       username: users.username,
@@ -114,6 +118,7 @@ export async function auctionView(auctionId: string, viewerId: string | null): P
     .from(videos)
     .innerJoin(users, eq(users.id, videos.creatorId))
     .leftJoin(profiles, eq(profiles.userId, users.id))
+    .leftJoin(contentRatings, eq(contentRatings.id, videos.contentRatingId))
     .where(eq(videos.id, row.videoId))
     .limit(1);
   const isCreator = viewerId === row.creatorId;
@@ -151,7 +156,7 @@ export async function auctionView(auctionId: string, viewerId: string | null): P
     scheduledEndsAt: row.scheduledEndsAt.toISOString(),
     decisionDeadline: row.decisionDeadline?.toISOString() ?? null,
     serverNow: now.toISOString(),
-    video: { id: row.videoId, title: meta.title, thumbnailUrl: signMediaUrl(meta.thumbnailUrl), durationSeconds: meta.durationSeconds },
+    video: { id: row.videoId, title: meta.title, thumbnailUrl: signMediaUrl(unveiledThumbnail(meta.thumbnailUrl, meta, viewerAgeChecked || isCreator)), durationSeconds: meta.durationSeconds },
     creator: { username: meta.username, name: meta.displayName || meta.username, avatarUrl: meta.avatarUrl },
     leaderAlias: row.leaderId ? (alias.get(row.leaderId) ?? null) : null,
     leaderUsername: leader[0]?.username ?? null,
@@ -207,7 +212,7 @@ export interface AuctionCardView {
  * A tab of the auctions page. open — ending soonest first; upcoming — starting soonest; ended — sold recently;
  * bidding — the viewer's auctions (where they bid); selling — the viewer's own auctions, every state.
  */
-export async function listAuctions(tab: AuctionTab, viewerId: string | null, limit = 24): Promise<AuctionCardView[]> {
+export async function listAuctions(tab: AuctionTab, viewerId: string | null, limit = 24, viewerAgeChecked = false): Promise<AuctionCardView[]> {
   const now = new Date();
   const visible = and(isNull(videos.removedAt), isNull(users.suspendedAt)) as SQL;
   let where: SQL | undefined;
@@ -240,12 +245,16 @@ export async function listAuctions(tab: AuctionTab, viewerId: string | null, lim
       a: auctions,
       title: videos.title,
       thumbnailUrl: videos.thumbnailUrl,
+      isBlurred: videos.isBlurred,
+      ratingRequiresBlur: sql<boolean>`coalesce(${contentRatings.requiresBlur}, false)`,
+      ratingIsAdult: sql<boolean>`coalesce(${contentRatings.isAdult}, false)`,
       creatorUsername: users.username,
       creatorName: sql<string>`coalesce(${profiles.displayName}, ${users.username})`,
       creatorAvatar: profiles.avatarUrl,
     })
     .from(auctions)
     .innerJoin(videos, eq(videos.id, auctions.videoId))
+    .leftJoin(contentRatings, eq(contentRatings.id, videos.contentRatingId))
     .innerJoin(users, eq(users.id, auctions.creatorId))
     .leftJoin(profiles, eq(profiles.userId, users.id))
     .where(and(where, tab === "selling" ? isNull(videos.removedAt) : visible))
@@ -263,7 +272,7 @@ export async function listAuctions(tab: AuctionTab, viewerId: string | null, lim
     endsAt: a.endsAt.toISOString(),
     videoId: a.videoId,
     title: v.title,
-    thumbnailUrl: signMediaUrl(v.thumbnailUrl),
+    thumbnailUrl: signMediaUrl(unveiledThumbnail(v.thumbnailUrl, v, viewerAgeChecked || tab === "selling")),
     creatorUsername: v.creatorUsername,
     creatorName: v.creatorName,
     creatorAvatar: v.creatorAvatar,

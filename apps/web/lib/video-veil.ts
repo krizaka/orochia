@@ -16,3 +16,8 @@ export function veilSummary<T extends RatingFacts>(row: T, viewerAgeChecked: boo
   const { ratingRequiresBlur, ratingIsAdult, ...rest } = row;
   return { ...rest, isBlurred: isVeiled(row, viewerAgeChecked), isAdult: ratingIsAdult };
 }
+
+/** For a card with no blur of its own: the picture, or null (the card's fallback) while the veil applies to this viewer. */
+export function unveiledThumbnail(url: string | null, facts: RatingFacts, viewerAgeChecked: boolean): string | null {
+  return isVeiled(facts, viewerAgeChecked) ? null : url;
+}

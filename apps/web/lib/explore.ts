@@ -506,7 +506,7 @@ export async function exploreSections(viewer: ExploreViewer | null): Promise<Exp
     newVideos(viewer),
     liveStories(viewer),
     creatorsToFollow(viewer),
-    listAuctions("open", viewer?.id ?? null, 8),
+    listAuctions("open", viewer?.id ?? null, 8, ageChecked(viewer)),
     listChallenges("open", viewer?.id ?? null, 8),
     discoverableTags(20),
   ]);
@@ -530,7 +530,7 @@ export async function exploreSectionsSettled(viewer: ExploreViewer | null): Prom
     part("fresh", () => newVideos(viewer)),
     part("stories", () => liveStories(viewer)),
     part("creators", () => creatorsToFollow(viewer)),
-    part("auctions", () => listAuctions("open", viewer?.id ?? null, 8)),
+    part("auctions", () => listAuctions("open", viewer?.id ?? null, 8, ageChecked(viewer))),
     part("challenges", () => listChallenges("open", viewer?.id ?? null, 8)),
     part("tags", () => discoverableTags(20)),
   ]);

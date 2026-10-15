@@ -21,7 +21,7 @@ export default async function AuctionsPage(props: { searchParams: Promise<{ tab?
   const user = await getCurrentUser();
   const tabs = AUCTION_TABS.filter((id) => (id === "bidding" ? Boolean(user) : id === "selling" ? user?.role === "CREATOR" : true));
   const tab: AuctionTab = (tabs as readonly string[]).includes(asked ?? "") ? (asked as AuctionTab) : "open";
-  const items = await listAuctions(tab, user?.id ?? null);
+  const items = await listAuctions(tab, user?.id ?? null, 24, user?.isAgeVerified === true);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">

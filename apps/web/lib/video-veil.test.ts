@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { veilSummary } from "./video-veil";
+import { unveiledThumbnail, veilSummary } from "./video-veil";
 
 const row = { id: "v", title: "t", isBlurred: false, ratingRequiresBlur: false, ratingIsAdult: true };
 
@@ -24,5 +24,17 @@ describe("an 18+ video in a list is veiled for whoever the server has not checke
     expect(out).toMatchObject({ isBlurred: false, isAdult: false });
     expect(out).not.toHaveProperty("ratingIsAdult");
     expect(out).not.toHaveProperty("ratingRequiresBlur");
+  });
+});
+
+describe("a surface that has no blur (auction cards) withholds the picture instead", () => {
+  const url = "https://cdn.example/t.jpg";
+  it("an 18+ picture is withheld from a visitor or an unchecked viewer, given to a checked one", () => {
+    expect(unveiledThumbnail(url, row, false)).toBeNull();
+    expect(unveiledThumbnail(url, row, true)).toBe(url);
+  });
+  it("a general picture is always given, a missing one stays missing", () => {
+    expect(unveiledThumbnail(url, { ...row, ratingIsAdult: false }, false)).toBe(url);
+    expect(unveiledThumbnail(null, row, true)).toBeNull();
   });
 });

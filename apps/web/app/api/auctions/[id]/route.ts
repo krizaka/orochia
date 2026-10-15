@@ -12,7 +12,7 @@ export async function GET(_req: NextRequest, props: { params: Promise<{ id: stri
   try {
     const id = auctionIdOr404((await props.params).id);
     const user = await getCurrentUser();
-    const auction = await auctionView(id, user?.id ?? null);
+    const auction = await auctionView(id, user?.id ?? null, user?.isAgeVerified === true);
     if (!auction) return jsonError(404, "Auction not found");
     return NextResponse.json({ success: true, auction });
   } catch (error) {
