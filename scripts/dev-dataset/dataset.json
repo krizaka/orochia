@@ -18,6 +18,33 @@
       "bio": "Kitchen, trails and the workshop: what I cook, where I walk, what I make with my hands.",
       "niche": "food, travel & craft",
       "websiteUrl": "https://example.com/noah-rivera"
+    },
+    {
+      "key": "mira",
+      "credentials": "OROCHIA_FAN2",
+      "username": "qa_fan2",
+      "displayName": "Mira Castellanos",
+      "bio": "Trails, harbours and deserts: slow travel, filmed where the signal ends.",
+      "niche": "travel & outdoors",
+      "websiteUrl": "https://example.com/mira-castellanos"
+    },
+    {
+      "key": "kofi",
+      "credentials": "OROCHIA_FAN3",
+      "username": "qa_fan3",
+      "displayName": "Kofi Mensah",
+      "bio": "Strength and mobility, five minutes at a time, before the city wakes up.",
+      "niche": "fitness & wellness",
+      "websiteUrl": "https://example.com/kofi-mensah"
+    },
+    {
+      "key": "aiko",
+      "credentials": "OROCHIA_FAN4",
+      "username": "qa_fan4",
+      "displayName": "Aiko Tanaka",
+      "bio": "Ink, paint and walls: process clips from a Montreal studio.",
+      "niche": "art & design",
+      "websiteUrl": "https://example.com/aiko-tanaka"
     }
   ],
   "videos": [
@@ -120,7 +147,7 @@
       ]
     },
     {
-      "creator": "noah",
+      "creator": "mira",
       "file": "hiking-clouds.mp4",
       "orientation": "horizontal",
       "title": "Hiking above the clouds",
@@ -132,7 +159,7 @@
       ]
     },
     {
-      "creator": "noah",
+      "creator": "mira",
       "file": "harbour-sunrise.mp4",
       "orientation": "horizontal",
       "title": "Sunrise over the harbour",
@@ -144,7 +171,7 @@
       ]
     },
     {
-      "creator": "noah",
+      "creator": "kofi",
       "file": "yoga-sunrise.mp4",
       "orientation": "horizontal",
       "title": "Morning yoga flow for beginners",
@@ -180,7 +207,7 @@
       ]
     },
     {
-      "creator": "noah",
+      "creator": "mira",
       "file": "waterfall-forest.mp4",
       "orientation": "vertical",
       "title": "Waterfall in the forest, tilt down",
@@ -189,6 +216,102 @@
         "travel",
         "nature",
         "waterfall"
+      ]
+    },
+    {
+      "creator": "mira",
+      "file": "desert-dunes.mp4",
+      "orientation": "vertical",
+      "title": "Dunes at golden hour, wind on the ridge",
+      "description": "Sand streaming off a ridge line in the last light.",
+      "tags": [
+        "travel",
+        "desert",
+        "sunset"
+      ]
+    },
+    {
+      "creator": "kofi",
+      "file": "kettlebell-dawn.mp4",
+      "orientation": "vertical",
+      "title": "Kettlebell swings at dawn, silhouette",
+      "description": "A kettlebell arcing against a pale sunrise.",
+      "tags": [
+        "fitness",
+        "strength",
+        "morning"
+      ]
+    },
+    {
+      "creator": "kofi",
+      "file": "trail-run.mp4",
+      "orientation": "vertical",
+      "title": "Trail run through the forest, low camera",
+      "description": "Shoes hitting a leafy path, light flickering through the trees.",
+      "tags": [
+        "fitness",
+        "running",
+        "trail"
+      ]
+    },
+    {
+      "creator": "kofi",
+      "file": "stretch-mat.mp4",
+      "orientation": "vertical",
+      "title": "Stretching on the mat, sunlight on the floor",
+      "description": "A mat, a window and a slow sequence, hands and feet only.",
+      "tags": [
+        "fitness",
+        "mobility",
+        "yoga"
+      ]
+    },
+    {
+      "creator": "aiko",
+      "file": "painting-brush.mp4",
+      "orientation": "vertical",
+      "title": "Brush loaded with violet paint, macro",
+      "description": "Bristles dragging a thick stroke across canvas.",
+      "tags": [
+        "art",
+        "painting",
+        "macro"
+      ]
+    },
+    {
+      "creator": "aiko",
+      "file": "ink-wash.mp4",
+      "orientation": "vertical",
+      "title": "Ink bleeding into wet paper",
+      "description": "Black ink blooming into soft clouds on paper.",
+      "tags": [
+        "art",
+        "ink",
+        "process"
+      ]
+    },
+    {
+      "creator": "aiko",
+      "file": "sketchbook.mp4",
+      "orientation": "vertical",
+      "title": "Pages of a sketchbook turning",
+      "description": "Pencil studies of hands and plants, flipped by a thumb.",
+      "tags": [
+        "art",
+        "sketchbook",
+        "drawing"
+      ]
+    },
+    {
+      "creator": "aiko",
+      "file": "mural-wall.mp4",
+      "orientation": "vertical",
+      "title": "A mural wall in the morning, camera rising",
+      "description": "Colour blocks and geometric shapes on a brick wall, no lettering.",
+      "tags": [
+        "art",
+        "mural",
+        "montreal"
       ]
     }
   ],
@@ -201,7 +324,15 @@
       "dj-hands.mp4": "Close-up of hands sliding the faders of a DJ mixer, coloured stage lights pulsing in the background, shallow depth of field. Hands only, no faces, no text.",
       "latte-pour.mp4": "Top-down view of milk being poured into an espresso cup forming a leaf pattern, soft daylight on a wooden table, slow motion. Hands not visible, no faces, no text.",
       "pottery-wheel.mp4": "A lump of wet clay spinning on a potter's wheel while two hands shape it into a bowl, warm workshop light, close-up. Hands only, no faces, no text.",
-      "waterfall-forest.mp4": "A waterfall in a green forest, camera tilting down from the crest to the misty pool, moss on the rocks, soft light through the trees. No people, no text."
+      "waterfall-forest.mp4": "A waterfall in a green forest, camera tilting down from the crest to the misty pool, moss on the rocks, soft light through the trees. No people, no text.",
+      "desert-dunes.mp4": "Sand streaming off a desert dune ridge at golden hour, wind lifting grains, slow push along the crest, warm light. No people, no faces, no text.",
+      "kettlebell-dawn.mp4": "A kettlebell swinging in an arc against a pale orange sunrise, strong backlight, only a dark silhouette of hands and the bell. No faces, no text.",
+      "trail-run.mp4": "Low camera on a forest trail, running shoes hitting a leafy path, sunlight flickering through trees, motion blur. Feet only, no faces, no text.",
+      "stretch-mat.mp4": "A yoga mat on a wooden floor with a window's sunlight stripe, a slow stretching sequence shown by bare hands and feet only. No faces, no text.",
+      "painting-brush.mp4": "Macro of a brush loaded with thick violet paint dragging a stroke across canvas, shallow depth of field, studio light. No people, no faces, no text.",
+      "ink-wash.mp4": "Black ink blooming into wet paper in soft clouds, top-down macro, slow motion. No people, no faces, no text.",
+      "sketchbook.mp4": "A thumb flipping the pages of a sketchbook filled with pencil studies of plants and hands, desk light. Hands only, no faces, no text.",
+      "mural-wall.mp4": "A brick wall painted with colour blocks and geometric shapes in violet, coral and gold, camera slowly rising in morning light. No people, no faces, no lettering."
     }
   }
 }

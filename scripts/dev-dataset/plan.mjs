@@ -35,7 +35,7 @@ export function validateDataset(ds) {
   }
   for (const [key, list] of perCreator) {
     if (list.length < 4) problems.push(`creator ${key}: ${list.length} videos, 4 at least`);
-    if (!list.some((v) => v.orientation === "vertical") || !list.some((v) => v.orientation === "horizontal")) problems.push(`creator ${key}: a mix of vertical and horizontal`);
+    if (!list.some((v) => v.orientation === "vertical")) problems.push(`creator ${key}: at least one vertical clip`);
   }
   const clips = ds.generate?.clips ?? {};
   for (const [file, prompt] of Object.entries(clips)) {
