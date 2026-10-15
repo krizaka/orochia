@@ -86,6 +86,13 @@ lost delivery used to leave a story PENDING_UPLOAD forever — invisible, even t
   The API numbers states differently from the webhook: 0 created · 1–3, 7, 8 processing · 4 finished · 5–6 failed
   (`mapBunnyApiStatusToOrochia`); a video Bunny no longer has, or holds no bytes for after the 2-hour Tus window, fails.
 
+### When the webhook never comes (videos)
+
+Same catch-up for videos (`reconcileVideos`, `lib/video-reconcile.ts`): a creator's page asks the Stream API about their
+videos that are unsettled, or READY without a poster, and applies the answer as the webhook would (poster, preview,
+length, renditions, READY/FAILED, quota hold). A video whose id is not a Bunny GUID (seed placeholders) holds no media
+and is never asked about.
+
 ## 5. Signed playback
 
 The library has **CDN token authentication** on and only allows the app's domains, so an unsigned URL answers 403.
