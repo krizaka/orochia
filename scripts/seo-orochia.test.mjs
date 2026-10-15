@@ -9,7 +9,7 @@ const HOST = "https://orochia.test";
 /** MetadataRoute.Robots as the text Next serves. */
 function robotsText(r) {
   const groups = [].concat(r.rules).map((rule) => [`User-Agent: ${rule.userAgent}`, ...[].concat(rule.allow ?? []).map((a) => `Allow: ${a}`), ...[].concat(rule.disallow ?? []).map((d) => `Disallow: ${d}`)].join("\n"));
-  return `${groups.join("\n\n")}\n\nSitemap: ${r.sitemap}\n`;
+  return `${groups.join("\n\n")}\n${r.sitemap ? `\nSitemap: ${r.sitemap}\n` : ""}`;
 }
 
 async function load(env) {
@@ -28,9 +28,18 @@ describe("orochia: the family SEO contract", () => {
     for (const bot of AI_CRAWLERS) expect(robotsText(robots())).toContain(`User-Agent: ${bot}\nAllow: /`);
   });
 
-  it("a deployment that is not indexed (dev) shuts the door but still names its sitemap", async () => {
+  it("a deployment that is not indexed (dev) shuts the door and advertises no sitemap", async () => {
     const { robots } = await load("off");
-    expect(auditRobots(robotsText(robots()), { host: HOST, index: false })).toEqual([]);
+    const text = robotsText(robots());
+    expect(auditRobots(text, { host: HOST, index: false })).toEqual([]);
+    expect(text).not.toMatch(/sitemap/i);
+  });
+
+  it("a deployment that is not indexed lists no page in its sitemap", async () => {
+    vi.resetModules();
+    vi.stubEnv("APP_SEARCH_INDEXING", "off");
+    const sitemap = (await import("../apps/web/app/sitemap.ts")).default;
+    expect(await sitemap()).toEqual([]);
   });
 
   it("llms.txt and llms-full.txt follow llmstxt.org, use the deployment's origin and link the family", async () => {
