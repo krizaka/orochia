@@ -128,6 +128,8 @@ export interface ExploreVideo {
   tags: string[];
   /** The 18+ veil (lib/discoverable.ts `isVeiled`): blurred until the viewer reveals it. */
   isBlurred: boolean;
+  /** The rating is 18+ (reference data): the card says so, whether or not the picture is veiled. */
+  isAdult: boolean;
   createdAt: string;
   /** In a search: found by its words, by its meaning (lib/explore-semantic.ts), or both. Absent elsewhere. */
   via?: "text" | "meaning" | "both";
@@ -180,8 +182,8 @@ function videoQuery() {
     .leftJoin(contentRatings, eq(contentRatings.id, videos.contentRatingId));
 }
 
-function toExploreVideo(row: VideoRow, viewer: ExploreViewer | null): ExploreVideo {
-  const r = row as unknown as Omit<ExploreVideo, "isBlurred" | "createdAt" | "tags"> & VideoRow;
+export function toExploreVideo(row: VideoRow, viewer: ExploreViewer | null): ExploreVideo {
+  const r = row as unknown as Omit<ExploreVideo, "isBlurred" | "isAdult" | "createdAt" | "tags"> & VideoRow;
   return {
     id: r.id,
     title: r.title,
@@ -201,6 +203,7 @@ function toExploreVideo(row: VideoRow, viewer: ExploreViewer | null): ExploreVid
     commentsCount: r.commentsCount,
     tags: r.tags ?? [],
     isBlurred: isVeiled({ isBlurred: r.isBlurred, ratingRequiresBlur: r.ratingRequiresBlur, ratingIsAdult: r.ratingIsAdult }, ageChecked(viewer)),
+    isAdult: r.ratingIsAdult,
     createdAt: r.createdAt.toISOString(),
   };
 }

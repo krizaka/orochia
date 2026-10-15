@@ -9,6 +9,9 @@
  *   AUTH_TEST_FAN_EMAIL, AUTH_TEST_FAN_USERNAME, AUTH_TEST_FAN_PASSWORD
  *   AUTH_TEST_CREATOR_EMAIL, AUTH_TEST_CREATOR_USERNAME, AUTH_TEST_CREATOR_PASSWORD
  *   AUTH_TEST_DATE_OF_BIRTH   YYYY-MM-DD, an adult (18+); default 1990-01-01
+ *   AUTH_TEST_VIEWER_EMAIL, AUTH_TEST_VIEWER_USERNAME, AUTH_TEST_VIEWER_PASSWORD   (optional) a third MEMBER whose age
+ *   was never checked — no date of birth, `isAgeVerified` false, like an account that came through an OAuth provider
+ *   and has not completed it — to test the 18+ veil for a signed-in viewer who has not opted in.
  *
  * Idempotent: an existing account with the same e-mail and username keeps its password unless --reset-password is given.
  * The creator is marked verified (the 18 U.S.C. § 2257 review an operator does by hand), so its uploads can be tested.
@@ -26,7 +29,10 @@ export interface TestAccount {
   username: string;
   displayName: string;
   password: string;
-  dateOfBirth: string;
+  /** null for the viewer whose age was never checked. */
+  dateOfBirth: string | null;
+  /** The server checked the age (date of birth, 18+). */
+  ageChecked: boolean;
 }
 
 const DEFAULT_DATE_OF_BIRTH = "1990-01-01";
@@ -46,20 +52,22 @@ function isAdult(isoDate: string, today: Date): boolean {
 export function testAccountsFromEnv(env: NodeJS.ProcessEnv = process.env, today: Date = new Date()): TestAccount[] {
   const dateOfBirth = env.AUTH_TEST_DATE_OF_BIRTH?.trim() || DEFAULT_DATE_OF_BIRTH;
   if (!isAdult(dateOfBirth, today)) throw new Error("AUTH_TEST_DATE_OF_BIRTH must be a YYYY-MM-DD date, 18 or older");
-  const accounts: TestAccount[] = ([
-    { role: "MEMBER", prefix: "AUTH_TEST_FAN", displayName: "QA Fan" },
-    { role: "CREATOR", prefix: "AUTH_TEST_CREATOR", displayName: "QA Creator" },
-  ] as const).map(({ role, prefix, displayName }) => {
+  const wanted = [
+    { role: "MEMBER" as const, prefix: "AUTH_TEST_FAN", displayName: "QA Fan", ageChecked: true },
+    { role: "CREATOR" as const, prefix: "AUTH_TEST_CREATOR", displayName: "QA Creator", ageChecked: true },
+    ...(env.AUTH_TEST_VIEWER_EMAIL?.trim() ? [{ role: "MEMBER" as const, prefix: "AUTH_TEST_VIEWER", displayName: "QA Viewer", ageChecked: false }] : []),
+  ];
+  const accounts: TestAccount[] = wanted.map(({ role, prefix, displayName, ageChecked }) => {
     const email = env[`${prefix}_EMAIL`]?.trim().toLowerCase() ?? "";
     const username = env[`${prefix}_USERNAME`]?.trim().toLowerCase() ?? "";
     const password = env[`${prefix}_PASSWORD`] ?? "";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error(`${prefix}_EMAIL is missing or not an e-mail address`);
     if (!/^[a-z0-9_]{3,30}$/.test(username)) throw new Error(`${prefix}_USERNAME: 3–30 letters, digits, underscore`);
     if (password.length < 12) throw new Error(`${prefix}_PASSWORD needs 12+ characters`);
-    return { role, email, username, displayName, password, dateOfBirth };
+    return { role, email, username, displayName, password, dateOfBirth: ageChecked ? dateOfBirth : null, ageChecked };
   });
-  if (accounts[0].email === accounts[1].email || accounts[0].username === accounts[1].username) {
-    throw new Error("The fan and the creator need different e-mails and usernames");
+  if (new Set(accounts.map((a) => a.email)).size !== accounts.length || new Set(accounts.map((a) => a.username)).size !== accounts.length) {
+    throw new Error("The test accounts need different e-mails and usernames");
   }
   return accounts;
 }
@@ -82,7 +90,7 @@ export async function ensureTestAccount(
   const active = {
     role: account.role,
     isVerified: true,
-    isAgeVerified: true,
+    isAgeVerified: account.ageChecked,
     dateOfBirth: account.dateOfBirth,
     suspendedAt: null,
     suspensionReason: null,

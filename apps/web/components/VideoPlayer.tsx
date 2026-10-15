@@ -6,6 +6,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { Badge, Button, cn, IconButton, Slider } from "@/components/ui";
 import { t } from "@/lib/i18n";
+import { isAdultRating } from "@/lib/content-ratings";
 import { money } from "@/lib/money";
 import { orientationOf } from "@/lib/video-aspect";
 
@@ -194,7 +195,7 @@ export function VideoPlayer({
       onMouseLeave={() => isPlaying && setShowControls(false)}
     >
       {/* 18+ Rating Badge Top Left */}
-      {(isAdult || contentRatingId === "MATURE_18" || contentRatingId === "ADULT_EXPLICIT") && (
+      {(isAdult || isAdultRating(contentRatingId)) && (
         <div className="absolute top-4 left-4 z-20">
           <Badge size="sm" className="bg-danger/90 font-mono font-black text-white shadow-md ring-0 backdrop-blur-md">
             18+
