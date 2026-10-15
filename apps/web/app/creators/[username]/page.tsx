@@ -15,6 +15,7 @@ import { ShareProfileButton } from "@/components/profile/ShareProfileButton";
 import { StartChallengeButton } from "@/components/challenges/StartChallengeButton";
 import { creatorSpaceCta, viewerStateOf } from "@/lib/creator-journey";
 import { t } from "@/lib/i18n";
+import { reconcileVideos } from "@/lib/video-reconcile";
 
 export const dynamic = "force-dynamic";
 
@@ -45,6 +46,8 @@ export default async function CreatorPage(props: { params: Promise<{ username: s
       ? creatorSpaceCta(viewerStateOf({ role: creator.isCreator ? "CREATOR" : "MEMBER", isVerified: creator.isVerified }))
       : null;
   const ownEmptyAction = ownCta ? { href: ownCta.href, label: t(ownCta.label) } : undefined;
+  // A lost Bunny webhook must not leave posters empty: ask the Stream API about this creator's unsettled videos first.
+  await reconcileVideos({ creatorId: creator.id, limit: 10 }).catch(() => undefined);
   const [videos, playlists] = await Promise.all([
     creatorVideos(creator.id),
     visiblePlaylists(creator.id, viewer?.id ?? null),
