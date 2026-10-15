@@ -71,6 +71,13 @@
       "when": 1792049113157,
       "tag": "0009_video_dimensions",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792094263082,
+      "tag": "0010_sessions_valid_after",
+      "breakpoints": true
     }
   ]
 }

@@ -14,6 +14,8 @@ export interface SessionUser {
   isAgeVerified: boolean;
   /** The address was confirmed. Until then the account can only sign in and ask for the link again. */
   emailVerified: boolean;
+  /** When the token was issued, ms since epoch (its expiry minus the lifetime): "end all sessions" refuses what was issued before. */
+  issuedAt?: number;
 }
 
 interface SessionPayload extends SessionUser {
@@ -73,6 +75,7 @@ export function verifySessionToken(
       role: payload.role,
       isAgeVerified: payload.isAgeVerified === true,
       emailVerified: payload.emailVerified === true,
+      issuedAt: (payload.exp - SESSION_TTL_SECONDS) * 1000,
     };
   } catch {
     return null;
@@ -131,8 +134,9 @@ export async function getSession(): Promise<SessionUser | null> {
   const token = (await currentSessionToken())?.token;
   const session = token ? verifySessionToken(token) : null;
   if (!session) return null;
-  const { isSessionRevoked } = await import("./session-revocation");
-  return (await isSessionRevoked(token!)) ? null : session;
+  const { isSessionRevoked, sessionsEndedByOperator } = await import("./session-revocation");
+  if (await isSessionRevoked(token!)) return null;
+  return (await sessionsEndedByOperator(session.id, session.issuedAt)) ? null : session;
 }
 
 /** How the request's session travels: a native app's bearer token (which then decides), the browser's cookie, or none. */
@@ -192,12 +196,15 @@ export async function requireUserWithRole(roles: Role[], options: { allowUnverif
   const { db, users } = await import("@orochia/db");
   const { eq } = await import("drizzle-orm");
   const [account] = await db
-    .select({ role: users.role, suspendedAt: users.suspendedAt, emailVerifiedAt: users.emailVerifiedAt })
+    .select({ role: users.role, suspendedAt: users.suspendedAt, emailVerifiedAt: users.emailVerifiedAt, sessionsValidAfter: users.sessionsValidAfter })
     .from(users)
     .where(eq(users.id, user.id))
     .limit(1);
   if (!account) throw new HttpError(401, "Authentication required");
   if (account.suspendedAt) throw new HttpError(403, "Account suspended");
+  // An operator ended every session of this account: a token issued before that moment is no session.
+  const { issuedBefore } = await import("./session-revocation");
+  if (issuedBefore(user.issuedAt, account.sessionsValidAfter)) throw new HttpError(401, "Authentication required");
   // The database decides, not the cookie: verifying in another browser counts at once.
   if (!account.emailVerifiedAt && !options.allowUnverifiedEmail) throw new HttpError(403, "Email not verified");
   // The role is the account's current one, not the one frozen in the cookie.

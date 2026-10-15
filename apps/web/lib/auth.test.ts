@@ -7,7 +7,7 @@ const user = { id: "u1", username: "ada", email: "ada@example.com", role: "MEMBE
 describe("session tokens", () => {
   it("round-trips a session", () => {
     const now = Date.now();
-    expect(verifySessionToken(signSessionToken(user, SECRET, now), SECRET, now)).toEqual(user);
+    expect(verifySessionToken(signSessionToken(user, SECRET, now), SECRET, now)).toEqual({ ...user, issuedAt: expect.any(Number) });
   });
 
   it("refuses a forged or tampered token", () => {
