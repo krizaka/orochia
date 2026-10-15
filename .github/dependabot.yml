@@ -40,7 +40,7 @@ updates:
       # zod 4 with PS5 (krizaka/orochia#138)
       - dependency-name: "zod"
         versions: [">=4"]
-      # with yazakia, krizaka/yazakia#19
+      # with yasakia, krizaka/yasakia#19
       - dependency-name: "ioredis"
         versions: [">=6"]
       # types of the Node LTS we run (22/24), never a non-LTS line

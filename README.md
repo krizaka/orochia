@@ -15,17 +15,16 @@ The creator video platform: direct-to-CDN 4K streaming, server-side access contr
 [![CI](https://github.com/krizaka/orochia/actions/workflows/ci.yml/badge.svg)](https://github.com/krizaka/orochia/actions/workflows/ci.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/krizaka/orochia/badge)](https://scorecard.dev/viewer/?uri=github.com/krizaka/orochia)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Orochia](https://img.shields.io/badge/part%20of-Orochia-7c3aed)](https://www.krizaka.com/en/products/orochia#guarantees)
+[![Orochia](https://img.shields.io/badge/part%20of-Orochia-7c3aed)](https://dev.orochia.com)
 [![Docs](https://img.shields.io/badge/docs-krizaka.com%2Fdocs%2Forochia-7c3aed)](https://www.krizaka.com/docs/orochia)
 
-[Try it](https://dev.orochia.com) · [Documentation](https://www.krizaka.com/docs/orochia) · [Video tour](https://www.krizaka.com/en/products/orochia/demos) · [Website](https://www.krizaka.com) · [Krizaka on GitHub](https://github.com/krizaka)
+[Try it](https://dev.orochia.com) · [Documentation](https://www.krizaka.com/docs/orochia) · [Video tour](https://dev.orochia.com) · [Website](https://www.krizaka.com) · [Krizaka on GitHub](https://github.com/krizaka)
 
 </div>
 <!-- /krizaka-header -->
 
 <p align="center">
-  <a href="https://www.krizaka.com/en/products/orochia/demos"><img src="https://raw.githubusercontent.com/krizaka/.github/main/profile/assets/orochia-tour.gif" alt="Orochia, signed in as Alex: Elena's story opened from the ring on her profile, sound on, a like, a private reply and a $10 tip" width="760"></a>
-  <br><sub>Alex opens Elena's story from her profile, likes it, replies privately and tips her — Elena keeps 90 % of it. More in the tour: Explore, unlocks, auctions, challenges, payouts. <a href="https://www.krizaka.com/en/products/orochia/demos">Full tour</a></sub>
+  <br><sub>Alex opens Elena's story from her profile, likes it, replies privately and tips her — Elena keeps 90 % of it. More in the tour: Explore, unlocks, auctions, challenges, payouts. <a href="https://dev.orochia.com">Full tour</a></sub>
 </p>
 
 Direct-to-CDN 4K streaming, an **Explorer** that is never empty,
@@ -183,3 +182,7 @@ doctl apps create --spec deploy/digitalocean/app-spec.dev.yaml
 
 Licensed under the [Apache License, Version 2.0](LICENSE).  
 Copyright (c) 2026 Krizaka Organization.
+
+---
+
+<sub>A Krizaka product · [krizaka.com](https://www.krizaka.com) · Apache-2.0</sub>

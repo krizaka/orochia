@@ -76,5 +76,5 @@ locally (NOTIFY needs no LISTEN — it now always notifies).
   reloaded on reconnect.
 - `@orochia/realtime` was the candidate `@krizaka/realtime` brick ([krizaka/krizaka-ui#75](https://github.com/krizaka/krizaka-ui/issues/75):
   a TypeScript package beside `@krizaka/i18n`; `krizaka-platform-kit` is the JVM side). **2026-10-11**: a second
-  product (Yazakia) needs it — published as `@krizaka/realtime` (and `packages/push` as `@krizaka/push`); Orochia
+  product (Yasakia) needs it — published as `@krizaka/realtime` (and `packages/push` as `@krizaka/push`); Orochia
   consumes the npm versions, same API, its channel and prefix passed explicitly. The presence dot is local until `Avatar` has a status ([krizaka/krizaka-ui#74](https://github.com/krizaka/krizaka-ui/issues/74)).
