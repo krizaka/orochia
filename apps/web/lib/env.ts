@@ -84,6 +84,7 @@ export const ENV_VARS: readonly EnvVar[] = [
   v("NEXT_PUBLIC_APP_ENV", "APP", "optional", z.enum(["local", "dev", "staging", "production"]), "The build badge next to the brand (`v<version> · <env> · <commit>`), never shown with `production`.", { build: true, default: "local" }),
   v("APP_COMMIT_SHA", "APP", "optional", text, "The commit the image is built from (App Platform: `${_self.COMMIT_HASH}`, its Docker build has no `.git`); else `git rev-parse`.", { build: true }),
   v("APP_SEARCH_INDEXING", "APP", "optional", onOff, "`off` on dev and preview deployments: every page noindex, robots.txt disallows all. Only production is indexed.", { build: true, default: "on" }),
+  v("APP_PUBLIC_ACTIONS", "APP", "optional", onOff, "`off` on dev: a signed-out visitor's story views and shares are answered but not counted; sign-in stays as it is.", { default: "on" }),
   v("APP_DEMO_MODE", "APP", "optional", bool, "Local only: the login page switches between seeded demo accounts; payments settle without a gateway. Ignored in production."),
   // ── DATABASE ──
   v("DATABASE_URL", "DATABASE", "required", text, "PostgreSQL 16 connection string."),
