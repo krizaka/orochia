@@ -51,20 +51,19 @@ export default async function ChallengesPage(props: { searchParams: Promise<{ ta
         <StartChallengeButton signedIn={Boolean(user)} isCreator={user?.role === "CREATOR"} />
       </header>
 
-      <CardGrid as="ul" min={240} className="mb-8">
+      <CardGrid min={240} className="mb-8">
         {CHALLENGE_STARTS.map(({ slug, kind, messageKey }) => {
           const Icon = ICONS[kind];
           return (
-            <li key={kind}>
-              <LinkCard
-                href={challengeStartHref(slug)}
-                linkAs={Link}
-                icon={<Icon className="h-4 w-4" aria-hidden />}
-                title={t(`challenge.kind.${kind}`)}
-                description={t(`challenges.how.${kind}`)}
-                cta={t("challenges.startCta")}
-              />
-            </li>
+            <LinkCard
+              key={kind}
+              href={challengeStartHref(slug)}
+              linkAs={Link}
+              icon={<Icon className="h-4 w-4" aria-hidden />}
+              title={t(`challenge.kind.${kind}`)}
+              description={t(`challenges.how.${kind}`)}
+              cta={t("challenges.startCta")}
+            />
           );
         })}
       </CardGrid>
