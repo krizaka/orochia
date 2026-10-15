@@ -12,7 +12,6 @@ import {
   UploadIcon as Upload,
   WalletIcon as Wallet,
 } from "@krizaka/icons";
-import { NavBar } from "@krizaka/ui/nav-bar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
@@ -89,8 +88,6 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
               OROCHIA<span className="text-fg-accent">.</span>
             </span>
           </Link>
-          {/* The family switcher (NAV-SYS, @krizaka/ui/sites): desktop only — on a phone the family is in the footer. */}
-          <NavBar.Family current="orochia" className="relative" />
           <BuildBadge />
         </div>
 
