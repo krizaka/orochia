@@ -56,12 +56,16 @@ export async function embedPending({ limit = 64, embed = embedTexts }: { limit?:
   const summary: SyncSummary = { configured: orazakaConfigured(), candidates: 0, embedded: 0, unchanged: 0, runs: 0, failure: null };
   if (!summary.configured) return summary;
 
+  // The catalogue's embedding model can change (an administrator picks another default): vectors of another model never
+  // match a query, so they are re-embedded, a round at a time. The current model is the one Orazaka last answered with.
+  const [last] = await db.select({ model: aiRuns.model }).from(aiRuns).where(and(eq(aiRuns.status, "OK"), sql`${aiRuns.model} is not null`)).orderBy(desc(aiRuns.createdAt)).limit(1);
+  const stale = last?.model ? sql`${explorerEmbeddings.model} <> ${last.model}` : sql`false`;
   const rows = await db
-    .select({ id: videos.id, title: videos.title, tags: videos.tags, description: videos.description, hash: explorerEmbeddings.contentHash })
+    .select({ id: videos.id, title: videos.title, tags: videos.tags, description: videos.description, hash: explorerEmbeddings.contentHash, model: explorerEmbeddings.model })
     .from(videos)
     .innerJoin(users, eq(users.id, videos.creatorId))
     .leftJoin(explorerEmbeddings, eq(explorerEmbeddings.videoId, videos.id))
-    .where(and(discoverableVideo(), or(isNull(explorerEmbeddings.videoId), sql`${explorerEmbeddings.embeddedAt} < ${videos.updatedAt}`)))
+    .where(and(discoverableVideo(), or(isNull(explorerEmbeddings.videoId), sql`${explorerEmbeddings.embeddedAt} < ${videos.updatedAt}`, stale)))
     .orderBy(desc(videos.createdAt))
     .limit(limit);
   summary.candidates = rows.length;
@@ -72,7 +76,8 @@ export async function embedPending({ limit = 64, embed = embedTexts }: { limit?:
     const document = videoDocument(row);
     if (!document) continue;
     const hash = documentHash(document);
-    if (row.hash === hash) touched.push(row.id);
+    // Same words and same model: nothing to ask Orazaka. Same words, another model: embed again.
+    if (row.hash === hash && (!last?.model || row.model === last.model)) touched.push(row.id);
     else todo.push({ id: row.id, document, hash });
   }
   summary.unchanged = touched.length;

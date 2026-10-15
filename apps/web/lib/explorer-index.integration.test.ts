@@ -54,6 +54,8 @@ describe.skipIf(!enabled)("Explorer index (pgvector)", () => {
 
   afterAll(async () => {
     await db.delete(videos).where(like(videos.bunnyVideoId, `${TAG}-%`));
+    // The seeded videos were embedded too: leave the database as it was found (the e2e scenarios run on it next).
+    await db.delete(explorerEmbeddings).where(eq(explorerEmbeddings.model, "stub-embed"));
     await db.delete(aiRuns).where(eq(aiRuns.model, "stub-embed"));
   });
 
@@ -74,6 +76,15 @@ describe.skipIf(!enabled)("Explorer index (pgvector)", () => {
     const summary = await embedPending({ embed: counting, limit: 200 });
     expect(calls).toBe(0);
     expect(summary.unchanged).toBeGreaterThanOrEqual(1);
+  });
+
+  it("embeds again when the catalogue's embedding model changes", async () => {
+    await db.update(explorerEmbeddings).set({ model: "stub-embed-old" }).where(inArray(explorerEmbeddings.videoId, [ids.tokyo, ids.osaka]));
+    // Orazaka last answered with "stub-embed": vectors of another model are stale, even though their words did not change.
+    const again = await embedPending({ embed: stub, limit: 200 });
+    expect(again.embedded).toBe(2);
+    const rows = await db.select({ model: explorerEmbeddings.model }).from(explorerEmbeddings).where(inArray(explorerEmbeddings.videoId, [ids.tokyo, ids.osaka]));
+    expect(rows.every((r) => r.model === "stub-embed")).toBe(true);
   });
 
   it("finds by meaning what the words alone would miss, nearest first", async () => {
