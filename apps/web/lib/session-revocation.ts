@@ -21,3 +21,20 @@ export async function revokeSession(token: string, expiresAt: Date): Promise<voi
   await db.insert(revokedSessions).values({ tokenHash: hash(token), expiresAt }).onConflictDoNothing();
   await db.delete(revokedSessions).where(lt(revokedSessions.expiresAt, new Date()));
 }
+
+/** True when a token issued at `issuedAt` (ms) predates the moment an operator ended the account's sessions. Pure. */
+export function issuedBefore(issuedAt: number | undefined, validAfter: Date | null | undefined): boolean {
+  if (!validAfter) return false;
+  // A token carries its expiry in whole seconds, so its issue time is known to the second: it is refused only when its
+  // whole second lies before the revocation (a person who signs in the very second after the operator acted gets in).
+  // A token whose issue time is unknown cannot be shown to postdate the revocation.
+  return issuedAt === undefined || issuedAt + 1000 <= validAfter.getTime();
+}
+
+/** Whether an operator ended this account's sessions after the token was issued (one indexed read of the user). */
+export async function sessionsEndedByOperator(userId: string, issuedAt: number | undefined): Promise<boolean> {
+  const { db, users } = await import("@orochia/db");
+  const { eq } = await import("drizzle-orm");
+  const [row] = await db.select({ validAfter: users.sessionsValidAfter }).from(users).where(eq(users.id, userId)).limit(1);
+  return issuedBefore(issuedAt, row?.validAfter);
+}

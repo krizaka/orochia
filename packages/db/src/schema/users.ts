@@ -18,6 +18,8 @@ export const users = pgTable("users", {
   /** Set by an administrator: a suspended account can neither sign in nor publish. */
   suspendedAt: timestamp("suspended_at", { withTimezone: true }),
   suspensionReason: text("suspension_reason"),
+  /** Set by an operator ("end all sessions"): a session token issued before this moment opens nothing. */
+  sessionsValidAfter: timestamp("sessions_valid_after", { withTimezone: true }),
   /** Storage plan set by an operator (a name of ABUSE_QUOTA_PLANS, e.g. "pro" or "unlimited"); null = the role's default plan. */
   storagePlan: varchar("storage_plan", { length: 40 }),
   /** When the account's last app closed (written once per visit, never per heartbeat) — the "seen 5 min ago". */

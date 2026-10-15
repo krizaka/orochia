@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (171)
+## Endpoints (173)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -34,6 +34,8 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `PATCH` | `/api/admin/storage/[userId]` | session · ADMIN | Sets an account's storage plan (a name of ABUSE_QUOTA_PLANS, or null for the default); its held uploads go online if they fit. |
 | `GET` | `/api/admin/users` | session · ADMIN | Every account (filter by `?role=`, `?suspended=`, `?q=`): role, verification and suspension state. |
 | `PATCH` | `/api/admin/users/[id]` | session · ADMIN | Suspends an account (it can no longer sign in, and its open sessions are refused on their next request; its open auctions are cancelled and their bids released), reinstates it, or changes its role (a new creator waits for the 2257 review). |
+| `GET` | `/api/admin/users/[id]/export` | session · ADMIN | Law 25 portability: everything held about an account, as one JSON document (never a password hash, a destination or a token). |
+| `DELETE` | `/api/admin/users/[id]/sessions` | session · ADMIN | Ends every session of an account without suspending it (a lost phone, a doubt): a session token issued before this moment opens nothing, on the web and in the app. |
 | `GET` | `/api/admin/videos` | session · ADMIN | The catalogue for moderation: every video with its creator, state and open reports; `?state=removed` lists takedowns. |
 | `PATCH` | `/api/admin/videos/[id]` | session · ADMIN | Takes a video down (DMCA, terms, a confirmed report) with a recorded reason — cancelling its auction — or restores it. |
 | `GET` | `/api/auctions` | public · session-aware | Lists auctions by tab: open, upcoming, ended (sold), bidding (yours) or selling (your own). |

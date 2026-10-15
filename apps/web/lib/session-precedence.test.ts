@@ -17,6 +17,8 @@ vi.mock("next/headers", () => ({
 vi.mock("./session-revocation", () => ({
   isSessionRevoked: async (token: string) => revoked.has(token),
   revokeSession: async (token: string) => void revoked.add(token),
+  sessionsEndedByOperator: async () => false,
+  issuedBefore: () => false,
 }));
 vi.mock("./account-tokens", () => ({ consumeToken: async () => "jordan", markEmailVerified: async () => undefined }));
 vi.mock("./rate-limit", () => ({ enforceRateLimit: async () => undefined }));

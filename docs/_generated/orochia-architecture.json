@@ -290,6 +290,18 @@
     },
     {
       "method": "GET",
+      "path": "/api/admin/users/[id]/export",
+      "access": "session · ADMIN",
+      "summary": "Law 25 portability: everything held about an account, as one JSON document (never a password hash, a destination or a token)."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/admin/users/[id]/sessions",
+      "access": "session · ADMIN",
+      "summary": "Ends every session of an account without suspending it (a lost phone, a doubt): a session token issued before this moment opens nothing, on the web and in the app."
+    },
+    {
+      "method": "GET",
       "path": "/api/admin/videos",
       "access": "session · ADMIN",
       "summary": "The catalogue for moderation: every video with its creator, state and open reports; `?state=removed` lists takedowns."
@@ -1433,7 +1445,7 @@
         "runtime": "node",
         "version": "1.0.0",
         "published": false,
-        "description": "The API: 134 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
+        "description": "The API: 136 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
       },
       {
         "id": "orochia-config",
@@ -1757,17 +1769,17 @@
       {
         "from": "orochia-admin",
         "to": "krizaka-tailwind",
-        "version": "2.3.0"
+        "version": "3.10.0"
       },
       {
         "from": "orochia-admin",
         "to": "krizaka-tokens",
-        "version": "2.3.0"
+        "version": "3.10.0"
       },
       {
         "from": "orochia-admin",
         "to": "krizaka-ui",
-        "version": "2.3.0"
+        "version": "3.10.0"
       },
       {
         "from": "orochia-admin",

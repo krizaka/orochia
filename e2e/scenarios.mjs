@@ -46,7 +46,7 @@ async function register(body, { form, wait = true, headers = {} } = {}) {
 }
 
 const alex = await session("alex@sanctuary.io", "alex1234");
-const sam = await session("sam@sanctuary.io", "sam1234");
+let sam = await session("sam@sanctuary.io", "sam1234");
 const elena = await session("elena@orochia.org", "elena1234");
 const mia = await session("mia@orochia.org", "mia1234");
 const admin = await session("admin@orochia.org", "admin1234");
@@ -372,6 +372,21 @@ check("new role effective without re-login", (await sam.call("/api/creator/payou
 check("…a member made creator by an operator still waits for the 2257 review", (await sam.call("/api/stories/upload-session", "POST", { sizeBytes: 1000 })).json.error?.includes("pending"));
 await admin.call(`/api/admin/users/${samUser.id}`, "PATCH", { action: "set-role", role: "MEMBER" });
 check("demotion effective too", (await sam.call("/api/creator/payouts")).status === 403);
+
+// An operator ends every session of an account (a lost phone); the person signs in again.
+check("a member cannot end anyone's sessions", (await alex.call(`/api/admin/users/${samUser.id}/sessions`, "DELETE")).status === 403);
+check("an administrator cannot end their own sessions here", (await admin.call(`/api/admin/users/${adminUser.id}/sessions`, "DELETE")).status === 400);
+check("sam's session works before", (await sam.call("/api/me/network")).status === 200);
+check("the operator ends every session of sam", (await admin.call(`/api/admin/users/${samUser.id}/sessions`, "DELETE")).status === 200);
+check("sam's old session is refused at once", (await sam.call("/api/me/network")).status === 401);
+await sleep(1100);
+sam = await session("sam@sanctuary.io", "sam1234"); // the later scenarios go on with the new session
+check("sam signs in again and works", sam.status === 200 && (await sam.call("/api/me/network")).status === 200);
+// Law 25 portability, for an operator who received the request.
+check("a member cannot export an account", (await alex.call(`/api/admin/users/${samUser.id}/export`)).status === 403);
+const exported = await admin.call(`/api/admin/users/${samUser.id}/export`);
+check("the export carries the account, no password hash", exported.status === 200 && exported.json.export?.account?.username === "sam_rivers" && !JSON.stringify(exported.json).match(/password|passwordHash/i));
+check("the export of an unknown account is a 404", (await admin.call("/api/admin/users/00000000-0000-4000-8000-000000000000/export")).status === 404);
 
 // Pages render
 for (const p of ["/", "/explore", "/explore?q=tokyo", "/explore?tag=acoustic", "/creators/elenavox", "/dashboard", "/watch/" + diaries.id]) {
