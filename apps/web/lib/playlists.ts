@@ -151,6 +151,8 @@ export async function playlistWithItems(playlistId: string, viewerId: string | n
       creatorAvatar: sql<string | null>`(select p.avatar_url from profiles p where p.user_id = videos.creator_id)`,
       thumbnailUrl: videos.thumbnailUrl,
       previewAnimationUrl: videos.previewAnimationUrl,
+      width: videos.width,
+      height: videos.height,
       durationSeconds: videos.durationSeconds,
       visibility: videos.visibility,
       minTipAmountCents: videos.minTipAmountCents,

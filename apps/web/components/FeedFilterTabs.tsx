@@ -5,11 +5,12 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useMemo,useState } from "react";
 
-import { Avatar, Badge, buttonVariants, Chip, EmptyState, orochiaButton, Tabs } from "@/components/ui";
+import { Avatar, Badge, buttonVariants, Chip, cn, EmptyState, orochiaButton, Tabs } from "@/components/ui";
 import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
 import { useAuth } from "@/lib/auth-context";
 import { feedEmptyActions, type FeedEmptyKind, type FeedTab, type ViewerState } from "@/lib/creator-journey";
 import { t } from "@/lib/i18n";
+import { aspectClassOf, orientationOf } from "@/lib/video-aspect";
 
 interface FeedFilterTabsProps {
   initialVideos: VideoCardProps[];
@@ -162,7 +163,7 @@ export function FeedFilterTabs({ initialVideos, viewer, unavailable = false }: F
               </div>
 
               {/* Large Media Preview */}
-              <Link href={`/watch/${video.id}`} className="relative block aspect-video w-full overflow-hidden bg-media group">
+              <Link href={`/watch/${video.id}`} className={cn("relative block w-full overflow-hidden bg-media group", aspectClassOf(video.width, video.height), orientationOf(video.width, video.height) === "vertical" && "mx-auto max-w-sm")}>
                 {video.thumbnailUrl ? (
                   <img
                     src={video.thumbnailUrl}

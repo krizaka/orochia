@@ -20,6 +20,9 @@ export interface VideoSummary {
   creatorAvatar: string | null;
   thumbnailUrl: string | null;
   previewAnimationUrl: string | null;
+  /** The source picture's size (null until encoded): the card keeps the clip's orientation (lib/video-aspect.ts). */
+  width: number | null;
+  height: number | null;
   durationSeconds: number;
   visibility: VideoVisibility;
   minTipAmountCents: number;
@@ -37,6 +40,8 @@ const videoSummaryColumns = {
   creatorAvatar: profiles.avatarUrl,
   thumbnailUrl: videos.thumbnailUrl,
   previewAnimationUrl: videos.previewAnimationUrl,
+  width: videos.width,
+  height: videos.height,
   durationSeconds: videos.durationSeconds,
   visibility: videos.visibility,
   minTipAmountCents: videos.minTipAmountCents,

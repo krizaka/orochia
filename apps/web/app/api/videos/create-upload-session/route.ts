@@ -9,6 +9,7 @@ import { errorResponse } from "@/lib/http";
 import { limitAction } from "@/lib/rate-limit";
 import { assertUploadAllowed, checkPlatformAlerts } from "@/lib/storage-usage";
 import { normalizeTags } from "@/lib/tags";
+import { reconcileVideos } from "@/lib/video-reconcile";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +47,9 @@ export async function POST(req: NextRequest) {
     }
 
     const input = parseResult.data;
+
+    // A finished upload whose Bunny webhook never came still counts as "in progress": settle it first (lib/video-reconcile.ts).
+    await reconcileVideos({ creatorId: user.id, limit: 5 }).catch(() => undefined);
 
     // 3b. Storage quotas, BEFORE anything is signed: the declared size (and length) against the per-file maximum,
     // the creator's plan, the platform's cap and the daily / concurrent counts (lib/storage-usage.ts).

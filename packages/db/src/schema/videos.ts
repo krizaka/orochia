@@ -45,6 +45,9 @@ export const videos = pgTable(
     contentRatingId: varchar("content_rating_id", { length: 30 }).references(() => contentRatings.id, { onDelete: "set null" }),
     isBlurred: boolean("is_blurred").default(false).notNull(),
     resolutions: text("resolutions").array(),
+    /** The source picture's size in pixels, read from the Stream API once encoded: a vertical clip is shown vertical, never letterboxed (lib/video-aspect.ts). Null until then. */
+    width: integer("width"),
+    height: integer("height"),
     tags: text("tags").array(),
     /** Taken down by an operator (DMCA, terms): hidden everywhere and never signed for playback. */
     removedAt: timestamp("removed_at", { withTimezone: true }),

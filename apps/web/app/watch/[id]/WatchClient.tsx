@@ -41,6 +41,8 @@ interface VideoDetails {
   creatorAvatar: string | null;
   creatorBio: string | null;
   thumbnailUrl: string | null;
+  width?: number | null;
+  height?: number | null;
   durationSeconds: number;
   visibility: string;
   minTipAmountCents: number;
@@ -214,6 +216,8 @@ export default function WatchClient() {
               videoId={videoId}
               streamUrl={stream?.streamUrl}
               posterUrl={details.thumbnailUrl ?? undefined}
+              width={details.width}
+              height={details.height}
               title={title}
               isPaywalled={isPaywalled}
               minTipAmountCents={minTipAmountCents}
