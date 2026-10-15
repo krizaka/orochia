@@ -127,6 +127,13 @@ for (const creator of dataset.creators) {
     for (const h of prune ? remove : []) console.log(`  - ${h.title}`);
     continue;
   }
+  // A QA fan listed as a creator opens their space the way the app does (birth date, then "become a creator");
+  // an operator approves it in the console (2257 verification) — there is no other way and no SQL.
+  const opened = await call("/api/me/become-creator", { method: "POST" });
+  if (opened.status === 403) {
+    await call("/api/me/birth-date", { method: "POST", body: JSON.stringify({ dateOfBirth: "1990-01-01" }) });
+    await call("/api/me/become-creator", { method: "POST" });
+  }
   const links = creator.websiteUrl ? { websiteUrl: creator.websiteUrl } : {};
   const profile = await call("/api/me/profile", { method: "PUT", body: JSON.stringify({ displayName: creator.displayName, bio: `${creator.bio} — ${creator.niche}`, ...links }) });
   console.log(`  profile ${profile.ok ? "set" : `refused (${profile.status})`}`);

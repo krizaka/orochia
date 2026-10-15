@@ -7,7 +7,7 @@
       "username": "qa_creator",
       "displayName": "Lena Voss",
       "bio": "Night sessions: live jazz, rainy city streets and fires with a guitar. New clip every week.",
-      "niche": "music & nightlife",
+      "niche": "nightlife & music",
       "websiteUrl": "https://example.com/lena-voss"
     },
     {
@@ -15,9 +15,36 @@
       "credentials": "OROCHIA_CREATOR2",
       "username": "qa_creator2",
       "displayName": "Noah Rivera",
-      "bio": "Kitchen, trails and the workshop: what I cook, where I walk, what I make with my hands.",
-      "niche": "food, travel & craft",
+      "bio": "Kitchen, beach days and summer evenings: what I cook, where we dance, what we wear.",
+      "niche": "food & summer lifestyle",
       "websiteUrl": "https://example.com/noah-rivera"
+    },
+    {
+      "key": "mira",
+      "credentials": "OROCHIA_FAN2",
+      "username": "qa_fan2",
+      "displayName": "Mira Castellanos",
+      "bio": "Trails, harbours and deserts: slow travel, filmed where the signal ends.",
+      "niche": "travel & riverside",
+      "websiteUrl": "https://example.com/mira-castellanos"
+    },
+    {
+      "key": "kofi",
+      "credentials": "OROCHIA_FAN3",
+      "username": "qa_fan3",
+      "displayName": "Kofi Mensah",
+      "bio": "Strength and mobility, five minutes at a time, before the city wakes up.",
+      "niche": "wellness & fitness",
+      "websiteUrl": "https://example.com/kofi-mensah"
+    },
+    {
+      "key": "aiko",
+      "credentials": "OROCHIA_FAN4",
+      "username": "qa_fan4",
+      "displayName": "Aiko Tanaka",
+      "bio": "Ink, paint and walls: process clips from a Montreal studio.",
+      "niche": "art & design",
+      "websiteUrl": "https://example.com/aiko-tanaka"
     }
   ],
   "videos": [
@@ -120,7 +147,7 @@
       ]
     },
     {
-      "creator": "noah",
+      "creator": "mira",
       "file": "hiking-clouds.mp4",
       "orientation": "horizontal",
       "title": "Hiking above the clouds",
@@ -132,7 +159,7 @@
       ]
     },
     {
-      "creator": "noah",
+      "creator": "mira",
       "file": "harbour-sunrise.mp4",
       "orientation": "horizontal",
       "title": "Sunrise over the harbour",
@@ -144,7 +171,7 @@
       ]
     },
     {
-      "creator": "noah",
+      "creator": "kofi",
       "file": "yoga-sunrise.mp4",
       "orientation": "horizontal",
       "title": "Morning yoga flow for beginners",
@@ -180,7 +207,7 @@
       ]
     },
     {
-      "creator": "noah",
+      "creator": "mira",
       "file": "waterfall-forest.mp4",
       "orientation": "vertical",
       "title": "Waterfall in the forest, tilt down",
@@ -189,6 +216,246 @@
         "travel",
         "nature",
         "waterfall"
+      ]
+    },
+    {
+      "creator": "mira",
+      "file": "desert-dunes.mp4",
+      "orientation": "vertical",
+      "title": "Dunes at golden hour, wind on the ridge",
+      "description": "Sand streaming off a ridge line in the last light.",
+      "tags": [
+        "travel",
+        "desert",
+        "sunset"
+      ]
+    },
+    {
+      "creator": "kofi",
+      "file": "kettlebell-dawn.mp4",
+      "orientation": "vertical",
+      "title": "Kettlebell swings at dawn, silhouette",
+      "description": "A kettlebell arcing against a pale sunrise.",
+      "tags": [
+        "fitness",
+        "strength",
+        "morning"
+      ]
+    },
+    {
+      "creator": "kofi",
+      "file": "trail-run.mp4",
+      "orientation": "vertical",
+      "title": "Trail run through the forest, low camera",
+      "description": "Shoes hitting a leafy path, light flickering through the trees.",
+      "tags": [
+        "fitness",
+        "running",
+        "trail"
+      ]
+    },
+    {
+      "creator": "kofi",
+      "file": "stretch-mat.mp4",
+      "orientation": "vertical",
+      "title": "Stretching on the mat, sunlight on the floor",
+      "description": "A mat, a window and a slow sequence, hands and feet only.",
+      "tags": [
+        "fitness",
+        "mobility",
+        "yoga"
+      ]
+    },
+    {
+      "creator": "aiko",
+      "file": "painting-brush.mp4",
+      "orientation": "vertical",
+      "title": "Brush loaded with violet paint, macro",
+      "description": "Bristles dragging a thick stroke across canvas.",
+      "tags": [
+        "art",
+        "painting",
+        "macro"
+      ]
+    },
+    {
+      "creator": "aiko",
+      "file": "ink-wash.mp4",
+      "orientation": "vertical",
+      "title": "Ink bleeding into wet paper",
+      "description": "Black ink blooming into soft clouds on paper.",
+      "tags": [
+        "art",
+        "ink",
+        "process"
+      ]
+    },
+    {
+      "creator": "aiko",
+      "file": "sketchbook.mp4",
+      "orientation": "vertical",
+      "title": "Pages of a sketchbook turning",
+      "description": "Pencil studies of hands and plants, flipped by a thumb.",
+      "tags": [
+        "art",
+        "sketchbook",
+        "drawing"
+      ]
+    },
+    {
+      "creator": "aiko",
+      "file": "mural-wall.mp4",
+      "orientation": "vertical",
+      "title": "A mural wall in the morning, camera rising",
+      "description": "Colour blocks and geometric shapes on a brick wall, no lettering.",
+      "tags": [
+        "art",
+        "mural",
+        "montreal"
+      ]
+    },
+    {
+      "creator": "lena",
+      "file": "rooftop-party.mp4",
+      "orientation": "horizontal",
+      "title": "Rooftop summer party at dusk",
+      "description": "Friends in light summer outfits dancing on a city rooftop while the sky turns pink.",
+      "tags": [
+        "nightlife",
+        "party",
+        "summer"
+      ]
+    },
+    {
+      "creator": "lena",
+      "file": "beach-club-sunset.mp4",
+      "orientation": "horizontal",
+      "title": "Beach-club sunset, DJ and dancing crowd",
+      "description": "A generic beach club at sunset: a DJ booth, palms and a crowd dancing in the warm light.",
+      "tags": [
+        "nightlife",
+        "beach",
+        "dj"
+      ]
+    },
+    {
+      "creator": "lena",
+      "file": "sparkler-night.mp4",
+      "orientation": "horizontal",
+      "title": "Sparklers on the beach after dark",
+      "description": "Friends waving sparklers by the water, long light trails in the dark.",
+      "tags": [
+        "party",
+        "beach",
+        "night"
+      ]
+    },
+    {
+      "creator": "noah",
+      "file": "beach-dance.mp4",
+      "orientation": "horizontal",
+      "title": "Dancing on the beach at golden hour",
+      "description": "A group dancing barefoot on the sand in light summer outfits, sand kicking up in the low sun.",
+      "tags": [
+        "summer",
+        "beach",
+        "dance"
+      ]
+    },
+    {
+      "creator": "noah",
+      "file": "summer-dress-boardwalk.mp4",
+      "orientation": "horizontal",
+      "title": "Summer dresses on the boardwalk",
+      "description": "Three friends in flowing summer dresses walking a seaside boardwalk, laughing in the breeze.",
+      "tags": [
+        "summer",
+        "fashion",
+        "seaside"
+      ]
+    },
+    {
+      "creator": "noah",
+      "file": "poolside-friends.mp4",
+      "orientation": "horizontal",
+      "title": "Poolside afternoon with friends",
+      "description": "Friends in swimwear lounging and toasting with iced drinks by a sunlit pool.",
+      "tags": [
+        "summer",
+        "pool",
+        "friends"
+      ]
+    },
+    {
+      "creator": "mira",
+      "file": "riverside-picnic.mp4",
+      "orientation": "horizontal",
+      "title": "Riverside picnic, slow summer afternoon",
+      "description": "A blanket, fruit and a guitar on a grassy riverbank under willow trees.",
+      "tags": [
+        "travel",
+        "riverside",
+        "picnic"
+      ]
+    },
+    {
+      "creator": "mira",
+      "file": "river-kayak.mp4",
+      "orientation": "horizontal",
+      "title": "Kayaking down a summer river",
+      "description": "Two kayaks gliding over green water between wooded banks.",
+      "tags": [
+        "travel",
+        "kayak",
+        "river"
+      ]
+    },
+    {
+      "creator": "mira",
+      "file": "riverside-bikes.mp4",
+      "orientation": "horizontal",
+      "title": "Cycling the riverside path at sunset",
+      "description": "Cyclists in light clothes riding along the river in warm sunset light.",
+      "tags": [
+        "travel",
+        "cycling",
+        "sunset"
+      ]
+    },
+    {
+      "creator": "kofi",
+      "file": "spa-lounge.mp4",
+      "orientation": "horizontal",
+      "title": "A spa-like lounge, towels and steam",
+      "description": "A calm wellness lounge: white towels, candles, herbal tea and soft steam.",
+      "tags": [
+        "wellness",
+        "spa",
+        "relax"
+      ]
+    },
+    {
+      "creator": "kofi",
+      "file": "beach-yoga.mp4",
+      "orientation": "horizontal",
+      "title": "Yoga on the beach at sunrise",
+      "description": "A small group in light activewear flowing through poses on the sand.",
+      "tags": [
+        "wellness",
+        "yoga",
+        "beach"
+      ]
+    },
+    {
+      "creator": "kofi",
+      "file": "wellness-terrace.mp4",
+      "orientation": "horizontal",
+      "title": "Wellness terrace, tea and morning light",
+      "description": "A terrace with loungers, linen and a tea tray in the morning light.",
+      "tags": [
+        "wellness",
+        "terrace",
+        "morning"
       ]
     }
   ],
@@ -201,7 +468,75 @@
       "dj-hands.mp4": "Close-up of hands sliding the faders of a DJ mixer, coloured stage lights pulsing in the background, shallow depth of field. Hands only, no faces, no text.",
       "latte-pour.mp4": "Top-down view of milk being poured into an espresso cup forming a leaf pattern, soft daylight on a wooden table, slow motion. Hands not visible, no faces, no text.",
       "pottery-wheel.mp4": "A lump of wet clay spinning on a potter's wheel while two hands shape it into a bowl, warm workshop light, close-up. Hands only, no faces, no text.",
-      "waterfall-forest.mp4": "A waterfall in a green forest, camera tilting down from the crest to the misty pool, moss on the rocks, soft light through the trees. No people, no text."
+      "waterfall-forest.mp4": "A waterfall in a green forest, camera tilting down from the crest to the misty pool, moss on the rocks, soft light through the trees. No people, no text.",
+      "desert-dunes.mp4": "Sand streaming off a desert dune ridge at golden hour, wind lifting grains, slow push along the crest, warm light. No people, no faces, no text.",
+      "kettlebell-dawn.mp4": "A kettlebell swinging in an arc against a pale orange sunrise, strong backlight, only a dark silhouette of hands and the bell. No faces, no text.",
+      "trail-run.mp4": "Low camera on a forest trail, running shoes hitting a leafy path, sunlight flickering through trees, motion blur. Feet only, no faces, no text.",
+      "stretch-mat.mp4": "A yoga mat on a wooden floor with a window's sunlight stripe, a slow stretching sequence shown by bare hands and feet only. No faces, no text.",
+      "painting-brush.mp4": "Macro of a brush loaded with thick violet paint dragging a stroke across canvas, shallow depth of field, studio light. No people, no faces, no text.",
+      "ink-wash.mp4": "Black ink blooming into wet paper in soft clouds, top-down macro, slow motion. No people, no faces, no text.",
+      "sketchbook.mp4": "A thumb flipping the pages of a sketchbook filled with pencil studies of plants and hands, desk light. Hands only, no faces, no text.",
+      "mural-wall.mp4": "A brick wall painted with colour blocks and geometric shapes in violet, coral and gold, camera slowly rising in morning light. No people, no faces, no lettering.",
+      "rooftop-party.mp4": {
+        "prompt": "A rooftop summer party at dusk with friends dancing, string lights, a pink sunset over the city skyline, handheld, lively. Fictional adults in their late twenties and thirties, medium-wide framing, no extreme close-up of faces, light summer clothing, tasteful, no text, no logos.",
+        "model": "wan2-2-t2v-a14b",
+        "aspect": "16:9"
+      },
+      "beach-club-sunset.mp4": {
+        "prompt": "A beach club at sunset with a DJ booth, palm trees and a crowd dancing in light summer clothes, warm golden light, wide shot, lively. Fictional adults in their late twenties and thirties, medium-wide framing, no extreme close-up of faces, light summer clothing, tasteful, no text, no logos.",
+        "model": "wan2-2-t2v-a14b",
+        "aspect": "16:9"
+      },
+      "sparkler-night.mp4": {
+        "prompt": "Friends waving sparklers on a beach after dark, long light trails, waves in the background, medium-wide, joyful. Fictional adults in their late twenties and thirties, medium-wide framing, no extreme close-up of faces, light summer clothing, tasteful, no text, no logos.",
+        "model": "wan2-2-t2v-a14b",
+        "aspect": "16:9"
+      },
+      "beach-dance.mp4": {
+        "prompt": "A group of friends dancing barefoot on a sunlit beach at golden hour in swimwear and light summer outfits, sand kicking up, handheld, joyful. Fictional adults in their late twenties and thirties, medium-wide framing, no extreme close-up of faces, light summer clothing, tasteful, no text, no logos.",
+        "model": "wan2-2-t2v-a14b",
+        "aspect": "16:9"
+      },
+      "summer-dress-boardwalk.mp4": {
+        "prompt": "Three friends in flowing summer dresses walking along a seaside boardwalk, laughing, breeze moving the fabric, sunny, medium-wide tracking shot. Fictional adults in their late twenties and thirties, medium-wide framing, no extreme close-up of faces, light summer clothing, tasteful, no text, no logos.",
+        "model": "wan2-2-t2v-a14b",
+        "aspect": "16:9"
+      },
+      "poolside-friends.mp4": {
+        "prompt": "Friends in swimwear lounging by a sunlit pool with iced drinks, laughing, sparkling water, summer afternoon, medium-wide. Fictional adults in their late twenties and thirties, medium-wide framing, no extreme close-up of faces, light summer clothing, tasteful, no text, no logos.",
+        "model": "wan2-2-t2v-a14b",
+        "aspect": "16:9"
+      },
+      "riverside-picnic.mp4": {
+        "prompt": "A picnic on a grassy riverbank under willow trees, blanket, fruit and a guitar, friends relaxing in summer clothes, medium-wide, soft sun. Fictional adults in their late twenties and thirties, medium-wide framing, no extreme close-up of faces, light summer clothing, tasteful, no text, no logos.",
+        "model": "wan2-2-t2v-a14b",
+        "aspect": "16:9"
+      },
+      "river-kayak.mp4": {
+        "prompt": "Two kayakers in summer clothes paddling down a calm green river between wooded banks, sparkling water, drone-like wide shot. Fictional adults in their late twenties and thirties, medium-wide framing, no extreme close-up of faces, light summer clothing, tasteful, no text, no logos.",
+        "model": "wan2-2-t2v-a14b",
+        "aspect": "16:9"
+      },
+      "riverside-bikes.mp4": {
+        "prompt": "Cyclists in light summer clothes riding along a riverside path at sunset, long shadows, river glittering, wide tracking shot. Fictional adults in their late twenties and thirties, medium-wide framing, no extreme close-up of faces, light summer clothing, tasteful, no text, no logos.",
+        "model": "wan2-2-t2v-a14b",
+        "aspect": "16:9"
+      },
+      "spa-lounge.mp4": {
+        "prompt": "A calm spa-like wellness lounge with folded white towels, candles, a steaming herbal tea and soft daylight, slow camera push, no people. Fictional adults in their late twenties and thirties, medium-wide framing, no extreme close-up of faces, light summer clothing, tasteful, no text, no logos.",
+        "model": "wan2-2-t2v-a14b",
+        "aspect": "16:9"
+      },
+      "beach-yoga.mp4": {
+        "prompt": "A small group of adults in light activewear practising yoga on a beach at sunrise, calm sea, soft pink light, wide shot, no close-ups. Fictional adults in their late twenties and thirties, medium-wide framing, no extreme close-up of faces, light summer clothing, tasteful, no text, no logos.",
+        "model": "wan2-2-t2v-a14b",
+        "aspect": "16:9"
+      },
+      "wellness-terrace.mp4": {
+        "prompt": "A sunny wellness clinic terrace with wooden loungers, linen towels and a tea tray, a person in a robe seen from behind walking to a lounger, calm, no close-ups. Fictional adults in their late twenties and thirties, medium-wide framing, no extreme close-up of faces, light summer clothing, tasteful, no text, no logos.",
+        "model": "wan2-2-t2v-a14b",
+        "aspect": "16:9"
+      }
     }
   }
 }

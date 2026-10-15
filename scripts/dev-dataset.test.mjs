@@ -6,7 +6,7 @@ import { credit, diffCreator, validateDataset } from "./dev-dataset/plan.mjs";
 const dataset = JSON.parse(readFileSync(new URL("./dev-dataset/dataset.json", import.meta.url), "utf8"));
 
 describe("the dev dataset", () => {
-  it("is curated: distinct footage and titles, a mix of shapes, prompts without faces", () => {
+  it("is curated: distinct footage and titles, vertical clips, prompts without faces", () => {
     expect(validateDataset(dataset)).toEqual([]);
   });
   it("catches the duplicates it exists to prevent", () => {
