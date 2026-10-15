@@ -1,14 +1,15 @@
 "use client";
 
-import { Bookmark, CheckCircle2, Eye, Flame, Gavel, Heart, Lock, Play, Sparkles, Users } from "lucide-react";
+import { VideoCard as KitVideoCard } from "@krizaka/ui/media-grid";
+import { Flame, Gavel, Lock, Play, Sparkles, Users } from "lucide-react";
 import Link from "next/link";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 
 import { TipModal } from "@/components/TipModal";
-import { Avatar, Badge, Button, Card, cn, IconButton } from "@/components/ui";
+import { Badge, Button, cn } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
-import { aspectClassOf } from "@/lib/video-aspect";
+import { frameOf, orientationOf } from "@/lib/video-aspect";
 import type { VideoVisibility } from "@/lib/visibility";
 
 export interface VideoCardProps {
@@ -43,115 +44,57 @@ export const formatDuration = (secs: number) => `${Math.floor(secs / 60)}:${Stri
 /** Badges on a picture sit on the strong veil, light text in both themes (the overlay is a `.theme-dark` island). */
 const ON_MEDIA = "bg-scrim-strong normal-case tracking-normal backdrop-blur-md";
 
-/** Stops a click on a control inside the card's link from following the link. */
-const only = (fn: () => void) => (e: React.MouseEvent) => {
-  e.preventDefault();
-  e.stopPropagation();
-  fn();
-};
-
-/** A video in a grid: picture (animated preview on hover), who may watch it, quick like / save, creator, counts and a tip. */
-export function VideoCard(props: VideoCardProps) {
-  const { id, title, creatorName, creatorUsername, creatorAvatar, viewsCount, tipsCount, minTipAmountCents, tags = [] } = props;
-  const [hovered, setHovered] = useState(false);
+/**
+ * A video in a grid or on the Shorts shelf: the kit's aspect-aware `VideoCard` (one body height, one stretched link),
+ * with Orochia's own parts in its slots — who may watch it, the sensitive veil, a tip.
+ */
+export function VideoCard({ aspect, layout, ...props }: VideoCardProps & { aspect?: "portrait" | "landscape"; layout?: "stack" | "row" }) {
+  const { id, title, creatorName, creatorUsername, creatorAvatar, thumbnailUrl, previewAnimationUrl, width, height, durationSeconds, viewsCount, minTipAmountCents, isBlurred = false } = props;
   const [tipping, setTipping] = useState(false);
-  const profile = creatorUsername ? `/@${creatorUsername}` : "#";
-
+  const [revealed, setRevealed] = useState(!isBlurred);
+  const frame = aspect ?? frameOf(width, height);
+  const square = orientationOf(width, height) === "square";
   return (
     <>
-      <Card.Root interactive tone="glass" className="w-full max-w-full" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
-        <Link href={`/watch/${id}`} className="block">
-          <VideoCardMedia {...props} hovered={hovered} />
-        </Link>
-        <Card.Body className="justify-between gap-0">
-          <div className="flex gap-3">
-            <Link href={profile} className="shrink-0 transition-transform hover:scale-105">
-              <Avatar src={creatorAvatar} defaultAvatar={{ brand: "orochia", seed: creatorName }} alt={creatorName} fallback={creatorName.charAt(0)} className="h-10 w-10 rounded-xl border border-border-default" />
-            </Link>
-            <div className="min-w-0 flex-1">
-              <Link href={`/watch/${id}`}>
-                <Card.Title className="line-clamp-2 text-xs sm:text-sm">{title}</Card.Title>
-              </Link>
-              <div className="mt-1 flex items-center gap-1.5">
-                <Link href={profile} className="truncate text-xs text-fg-secondary transition-colors hover:text-fg">
-                  {creatorName}
-                </Link>
-                <CheckCircle2 className="h-3 w-3 shrink-0 text-fg-success" aria-hidden />
-              </div>
+      <KitVideoCard
+        href={`/watch/${id}`}
+        linkAs={Link}
+        title={title}
+        aspect={frame}
+        layout={layout}
+        poster={thumbnailUrl}
+        previewSrc={previewAnimationUrl}
+        fit={square ? "contain" : "cover"}
+        duration={formatDuration(durationSeconds)}
+        badges={<AccessBadges {...props} />}
+        blurred={isBlurred && !revealed}
+        overlay={
+          isBlurred && !revealed ? (
+            <div className="flex w-full flex-col items-center justify-center bg-scrim p-3 text-center backdrop-blur-md">
+              <span className="mb-1 text-[10px] font-bold uppercase tracking-wider text-fg-accent">{t("card.sensitive")}</span>
+              <Button size="sm" onClick={() => setRevealed(true)} className="h-7 border-0 bg-scrim-strong px-3 text-[11px] text-fg-on-media hover:bg-scrim">
+                {t("card.reveal")}
+              </Button>
             </div>
-          </div>
-          {props.via === "meaning" && (
-            <p className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-fg-accent">
-              <Sparkles className="h-3 w-3" aria-hidden />
-              {t("card.related")}
-            </p>
-          )}
-          {tags.length > 0 && (
-            <div className="mt-2.5 flex flex-wrap gap-1.5">
-              {tags.slice(0, 3).map((tag) => (
-                <Link
-                  key={tag}
-                  href={`/explore?tag=${encodeURIComponent(tag)}`}
-                  className="inline-flex h-6 items-center rounded-full border border-border-default bg-surface-1 px-2.5 text-[11px] font-semibold text-fg-secondary transition-colors hover:border-accent/60 hover:text-fg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  #{tag}
-                </Link>
-              ))}
-            </div>
-          )}
-          <Card.Footer className="mt-3 justify-between pt-2.5 font-mono text-[11px] text-fg-muted">
-            <VideoCardCounts viewsCount={viewsCount} tipsCount={tipsCount} />
-            <Button size="sm" shape="rounded" onClick={only(() => setTipping(true))} className="h-6 gap-1 border-accent/30 bg-accent/10 px-2 text-[10px] text-fg-accent hover:border-accent hover:bg-accent hover:text-on-accent">
-              <Sparkles className="h-2.5 w-2.5" aria-hidden />
-              <span>{t("card.tip")}</span>
-            </Button>
-          </Card.Footer>
-        </Card.Body>
-      </Card.Root>
-
+          ) : null
+        }
+        fallback={<Play className="h-10 w-10" />}
+        creator={{
+          name: creatorName,
+          avatarSrc: creatorAvatar,
+          href: creatorUsername ? `/@${creatorUsername}` : undefined,
+          defaultAvatar: { brand: "orochia", seed: creatorName },
+        }}
+        meta={t("feed.views", { count: viewsCount.toLocaleString("en-US") })}
+        action={
+          <Button size="sm" shape="rounded" onClick={() => setTipping(true)} className="h-6 gap-1 border-accent/30 bg-accent/10 px-2 text-[10px] text-fg-accent hover:border-accent hover:bg-accent hover:text-on-accent">
+            <Sparkles className="h-2.5 w-2.5" aria-hidden />
+            <span>{t("card.tip")}</span>
+          </Button>
+        }
+      />
       <TipModal isOpen={tipping} onClose={() => setTipping(false)} videoId={id} creatorName={creatorName} minTipAmountCents={minTipAmountCents} onUnlockedSuccess={() => setTipping(false)} />
     </>
-  );
-}
-
-/** The picture: the thumbnail (the animated preview while hovered), the sensitive veil, the play hint and the badges. */
-function VideoCardMedia({ hovered, thumbnailUrl, previewAnimationUrl, width, height, durationSeconds, isBlurred = false, ...video }: VideoCardProps & { hovered: boolean }) {
-  const [revealed, setRevealed] = useState(!isBlurred);
-  // A video still encoding has no picture yet: show the placeholder rather than a broken image.
-  const [broken, setBroken] = useState(false);
-  const picture = useRef<HTMLImageElement>(null);
-  // The image may fail before hydration, when React is not listening yet.
-  useEffect(() => {
-    const img = picture.current;
-    if (img?.complete && img.naturalWidth === 0) setBroken(true);
-  }, []);
-  const src = broken ? null : (hovered && previewAnimationUrl) || thumbnailUrl;
-  const veiled = isBlurred && !revealed;
-
-  return (
-    <Card.Media className={aspectClassOf(width, height)}>
-      <Card.Image ref={picture} src={src} onError={() => setBroken(true)} fallback={<Play className="h-10 w-10" />} className={cn(veiled && "scale-110 blur-xl")} />
-      {veiled && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-scrim p-4 text-center backdrop-blur-md">
-          <span className="mb-1 text-[10px] font-bold uppercase tracking-wider text-fg-accent">{t("card.sensitive")}</span>
-          <Button size="sm" onClick={only(() => setRevealed(true))} className="h-7 border-0 bg-scrim-strong px-3 text-[11px] text-fg-on-media hover:bg-scrim">
-            {t("card.reveal")}
-          </Button>
-        </div>
-      )}
-      <div className="absolute inset-0 flex items-center justify-center bg-scrim/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" aria-hidden>
-        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/90 text-on-accent shadow-xl shadow-accent/40 backdrop-blur-md transition-transform duration-300 group-hover:scale-110">
-          <Play className="ml-0.5 h-5 w-5 fill-current" />
-        </span>
-      </div>
-      <Card.Overlay corner="bottom-right">
-        <Badge tone="scrim" className="rounded-sm font-mono font-medium normal-case tracking-normal">{formatDuration(durationSeconds)}</Badge>
-      </Card.Overlay>
-      <Card.Overlay corner="top-left" className="theme-dark flex-wrap">
-        <AccessBadges {...video} />
-      </Card.Overlay>
-      <QuickActions />
-    </Card.Media>
   );
 }
 
@@ -182,41 +125,5 @@ function AccessBadges({ visibility, minTipAmountCents, contentRatingId, isAdult 
         </Badge>
       )}
     </>
-  );
-}
-
-/** Like and save, on the picture: shown on hover with a mouse, always on touch. */
-function QuickActions() {
-  const [liked, setLiked] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const base = "h-8 w-8 rounded-xl backdrop-blur-md active:scale-90";
-  const idle = "bg-scrim text-fg-on-media hover:bg-scrim-strong hover:text-fg-on-media";
-  return (
-    <Card.Overlay corner="top-right" className="transition-opacity duration-200 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-focus-within:opacity-100 [@media(hover:hover)]:group-hover:opacity-100">
-      <IconButton onClick={only(() => setLiked((v) => !v))} label={liked ? t("card.unlike") : t("card.like")} aria-pressed={liked} shape="rounded" className={cn(base, liked ? "bg-danger text-fg-on-media shadow-md shadow-danger/40 hover:bg-danger hover:text-fg-on-media" : idle)}>
-        <Heart className={cn("h-4 w-4", liked && "fill-current")} aria-hidden />
-      </IconButton>
-      <IconButton onClick={only(() => setSaved((v) => !v))} label={saved ? t("card.saved") : t("card.save")} aria-pressed={saved} shape="rounded" className={cn(base, saved ? "bg-accent text-on-accent shadow-md shadow-accent/40 hover:bg-accent hover:text-on-accent" : idle)}>
-        <Bookmark className={cn("h-4 w-4", saved && "fill-current")} aria-hidden />
-      </IconButton>
-    </Card.Overlay>
-  );
-}
-
-/** Views, and tips when there are some. */
-function VideoCardCounts({ viewsCount, tipsCount }: { viewsCount: number; tipsCount: number }) {
-  return (
-    <div className="flex items-center gap-3">
-      <span className="flex items-center gap-1">
-        <Eye className="h-3 w-3" aria-hidden />
-        {viewsCount.toLocaleString()}
-      </span>
-      {tipsCount > 0 && (
-        <span className="flex items-center gap-1 font-semibold text-fg-accent">
-          <Sparkles className="h-3 w-3" aria-hidden />
-          {tipsCount}
-        </span>
-      )}
-    </div>
   );
 }

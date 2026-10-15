@@ -21,3 +21,6 @@ export const ASPECT_CLASS: Record<VideoOrientation, string> = {
 };
 
 export const aspectClassOf = (width?: number | null, height?: number | null) => ASPECT_CLASS[orientationOf(width, height)];
+
+/** The kit's frame for a source: a vertical clip fills 9:16 (the Shorts shelf), anything else 16:9 (a square one is drawn whole over a blurred copy). */
+export const frameOf = (width?: number | null, height?: number | null): "portrait" | "landscape" => (orientationOf(width, height) === "vertical" ? "portrait" : "landscape");

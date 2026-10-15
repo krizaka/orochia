@@ -8,7 +8,7 @@ import React from "react";
 
 import { CollectionAudienceBadge } from "@/components/CollectionAudience";
 import { Rich } from "@/components/Rich";
-import { VideoCard } from "@/components/VideoCard";
+import { VideoGrid } from "@/components/VideoGrid";
 import { getCurrentUser } from "@/lib/auth";
 import { HttpError } from "@/lib/http";
 import { t } from "@/lib/i18n";
@@ -75,11 +75,7 @@ export default async function PlaylistPage(props: { params: Promise<{ id: string
           {t("collectionPage.empty")}
         </div>
       ) : (
-        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {playlist.items.map((video) => (
-            <VideoCard key={video.id} {...video} />
-          ))}
-        </div>
+        <VideoGrid className="mt-8" videos={playlist.items} />
       )}
     </div>
   );

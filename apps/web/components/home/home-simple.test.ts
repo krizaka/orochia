@@ -7,15 +7,17 @@ describe("the visitor's home reads in five seconds", () => {
   it("the phone has four tabs: watch, stories, support, auction", () => {
     expect(read("./showcase/Scenes.tsx")).toContain('export const SCENES = ["feed", "stories", "support", "auction"] as const;');
   });
-  it("the hero is the kit's PageHero with one primary and one quiet action, no counter, no chip row", () => {
-    const hero = read("./HomeHero.tsx");
-    expect(hero).toContain("@krizaka/ui/page-hero");
-    expect(hero).toContain('shape="cut"');
-    expect(hero).not.toMatch(/home\.stats|home\.ways|home\.trust|home\.eyebrow|RotatingWord/);
-  });
-  it("the page carries no marquee and builds its features from the kit's blocks", () => {
+  it("the home is the feed: three tabs, a shelf and a grid, one intro line for a visitor and no pitch", () => {
     const page = read("../../app/page.tsx");
-    expect(page).not.toMatch(/kz-marquee|home\.marquee/);
+    expect(page).toContain("FeedFilterTabs");
+    expect(page).toContain("home-intro");
+    expect(page).not.toMatch(/HomeHero|GetPaid|MobileSection|CreatorsCallToAction|kz-marquee|home\.marquee/);
+    expect(read("../VideoGrid.tsx")).toContain("@krizaka/ui/media-grid");
+  });
+  it("the pitch lives on /how-it-works, built from the kit's blocks", () => {
+    const page = read("../../app/how-it-works/page.tsx");
+    expect(page).toContain("GetPaid");
+    expect(page).toContain("MobileSection");
     expect(page).toContain("@krizaka/ui/argument-card");
   });
   it("makes no 4K promise (the ladder tops out at 1080p)", () => {
