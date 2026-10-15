@@ -140,6 +140,16 @@ jobs:
         run: |
           npx playwright install --with-deps chromium
           npm run test:a11y
+      - name: Smoke — the production build answers 200 on the key pages (a Server Component error is a 500)
+        run: |
+          npm run build
+          PORT=3100 npm run start > web-prod.log 2>&1 &
+          for i in $(seq 1 60); do curl -s -o /dev/null http://localhost:3100/api/health && break; sleep 2; done
+          for path in / /explore; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:3100$path")
+            echo "$path -> $code"
+            [ "$code" -lt 500 ] || { tail -100 web-prod.log; exit 1; }
+          done
       - name: Scenarios
         run: npm run test:e2e
       - if: failure()
