@@ -31,7 +31,7 @@ import { MobileSection } from "@/components/mobile/MobileSection";
 import { RelationshipActions } from "@/components/RelationshipActions";
 import { buttonVariants, cn, SectionBackdrop } from "@/components/ui";
 import { listAuctions } from "@/lib/auctions";
-import { defaultAvatarUrl } from "@krizaka/ui/avatar";
+import { Avatar } from "@krizaka/ui/avatar";
 import { listChallenges } from "@/lib/challenges";
 import { t } from "@/lib/i18n";
 import { featuredCreator, listFeed, platformStats } from "@/lib/queries";
@@ -140,7 +140,7 @@ export default async function HomePage() {
           aria-labelledby="home-featured"
           className="kz-spotlight flex flex-col items-center gap-6 overflow-hidden rounded-3xl border border-border-default bg-surface-1/70 p-6 text-center backdrop-blur-xl sm:flex-row sm:p-8 sm:text-left"
         >
-          <img src={featured.avatarUrl || defaultAvatarUrl({ brand: "orochia", seed: featured.displayName }, { size: 512 })} alt="" className="h-24 w-24 shrink-0 rounded-2xl border-2 border-accent object-cover shadow-lg" />
+          <Avatar src={featured.avatarUrl} defaultAvatar={{ brand: "orochia", seed: featured.displayName }} alt="" fallback={featured.displayName.charAt(0)} className="h-24 w-24 shrink-0 rounded-2xl border-2 border-accent object-cover shadow-lg" />
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-fg-accent">{t("home.featured")}</p>
             <h2 id="home-featured" className="mt-1 text-xl font-bold text-fg">{featured.displayName}</h2>
