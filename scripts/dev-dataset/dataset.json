@@ -1,0 +1,207 @@
+{
+  "$comment": "The curated development dataset of dev.orochia.com (npm run dev:dataset). Fictional creators, one niche each, titles that say what the footage shows. Every clip is made by Orazaka (its run id is read from the media folder's manifest.json at seed time and written in the video's description); nothing here is a real person, and the clips show no face. More creators = more entries here, each with its own QA credentials (key names of the QA env file).",
+  "creators": [
+    {
+      "key": "lena",
+      "credentials": "OROCHIA_CREATOR",
+      "username": "qa_creator",
+      "displayName": "Lena Voss",
+      "bio": "Night sessions: live jazz, rainy city streets and fires with a guitar. New clip every week.",
+      "niche": "music & nightlife",
+      "websiteUrl": "https://example.com/lena-voss"
+    },
+    {
+      "key": "noah",
+      "credentials": "OROCHIA_CREATOR2",
+      "username": "qa_creator2",
+      "displayName": "Noah Rivera",
+      "bio": "Kitchen, trails and the workshop: what I cook, where I walk, what I make with my hands.",
+      "niche": "food, travel & craft",
+      "websiteUrl": "https://example.com/noah-rivera"
+    }
+  ],
+  "videos": [
+    {
+      "creator": "lena",
+      "file": "slow-jazz.mp4",
+      "orientation": "horizontal",
+      "title": "Slow jazz in a small club",
+      "description": "A double bass and a muted trumpet resting on a dim stage, smoke in the amber light.",
+      "tags": [
+        "music",
+        "jazz",
+        "live"
+      ]
+    },
+    {
+      "creator": "lena",
+      "file": "city-neon-rain.mp4",
+      "orientation": "horizontal",
+      "title": "City at night, neon in the rain",
+      "description": "A slow tracking shot along a wet street, magenta and cyan signs blurred into bokeh.",
+      "tags": [
+        "nightlife",
+        "city",
+        "neon"
+      ]
+    },
+    {
+      "creator": "lena",
+      "file": "guitar-fire.mp4",
+      "orientation": "horizontal",
+      "title": "Acoustic guitar by the fire",
+      "description": "Sparks rising while the chords ring out.",
+      "tags": [
+        "music",
+        "guitar",
+        "acoustic"
+      ]
+    },
+    {
+      "creator": "lena",
+      "file": "vinyl-spin.mp4",
+      "orientation": "vertical",
+      "title": "Vinyl on the turntable, close up",
+      "description": "A record spinning under the needle, the groove catching the light.",
+      "tags": [
+        "music",
+        "vinyl",
+        "dj"
+      ]
+    },
+    {
+      "creator": "lena",
+      "file": "neon-alley.mp4",
+      "orientation": "vertical",
+      "title": "Neon sign flickering in a rainy alley",
+      "description": "A pink sign buzzing above wet cobblestones.",
+      "tags": [
+        "nightlife",
+        "neon",
+        "city"
+      ]
+    },
+    {
+      "creator": "lena",
+      "file": "dj-hands.mp4",
+      "orientation": "vertical",
+      "title": "Hands on the mixer, last track of the night",
+      "description": "Faders sliding up while the lights pulse.",
+      "tags": [
+        "music",
+        "dj",
+        "nightlife"
+      ]
+    },
+    {
+      "creator": "noah",
+      "file": "fresh-pasta.mp4",
+      "orientation": "horizontal",
+      "title": "Fresh pasta from scratch",
+      "description": "Flour, eggs and a rolling pin: the dough comes together on the counter.",
+      "tags": [
+        "food",
+        "cooking",
+        "pasta"
+      ],
+      "visibility": "TIPPED_UNLOCKED",
+      "minTipAmountCents": 300
+    },
+    {
+      "creator": "noah",
+      "file": "tokyo-street-food.mp4",
+      "orientation": "horizontal",
+      "title": "Street food tour in Tokyo",
+      "description": "Steam, skewers and lanterns along a narrow evening street.",
+      "tags": [
+        "food",
+        "travel",
+        "tokyo"
+      ]
+    },
+    {
+      "creator": "noah",
+      "file": "hiking-clouds.mp4",
+      "orientation": "horizontal",
+      "title": "Hiking above the clouds",
+      "description": "A ridge path at sunrise with the valley fog below.",
+      "tags": [
+        "travel",
+        "hiking",
+        "outdoors"
+      ]
+    },
+    {
+      "creator": "noah",
+      "file": "harbour-sunrise.mp4",
+      "orientation": "horizontal",
+      "title": "Sunrise over the harbour",
+      "description": "Fishing boats at rest while the sky turns gold.",
+      "tags": [
+        "travel",
+        "sunrise",
+        "sea"
+      ]
+    },
+    {
+      "creator": "noah",
+      "file": "yoga-sunrise.mp4",
+      "orientation": "horizontal",
+      "title": "Morning yoga flow for beginners",
+      "description": "A calm sequence on a mat facing the first light.",
+      "tags": [
+        "fitness",
+        "yoga",
+        "morning"
+      ]
+    },
+    {
+      "creator": "noah",
+      "file": "latte-pour.mp4",
+      "orientation": "vertical",
+      "title": "Pouring a latte, top-down",
+      "description": "Milk meeting espresso, the pattern forming in the cup.",
+      "tags": [
+        "food",
+        "coffee",
+        "latte"
+      ]
+    },
+    {
+      "creator": "noah",
+      "file": "pottery-wheel.mp4",
+      "orientation": "vertical",
+      "title": "Clay on the wheel, hands only",
+      "description": "A bowl rising from a lump of wet clay.",
+      "tags": [
+        "art",
+        "pottery",
+        "craft"
+      ]
+    },
+    {
+      "creator": "noah",
+      "file": "waterfall-forest.mp4",
+      "orientation": "vertical",
+      "title": "Waterfall in the forest, tilt down",
+      "description": "Mist and moss from the crest to the pool.",
+      "tags": [
+        "travel",
+        "nature",
+        "waterfall"
+      ]
+    }
+  ],
+  "generate": {
+    "$comment": "Prompts of the vertical clips (Wan 2.1 1.3B, 480x832, through Orazaka's video-generation Studio): no face, no text, SFW.",
+    "aspect": "9:16",
+    "clips": {
+      "vinyl-spin.mp4": "A vinyl record spinning on a turntable, close-up of the needle in the groove, warm side light, shallow depth of field, cinematic. No people, no faces, no text.",
+      "neon-alley.mp4": "A pink neon sign flickering above a narrow rainy alley, wet cobblestones reflecting the glow, steam rising, slow push-in, cinematic. No people, no faces, no lettering.",
+      "dj-hands.mp4": "Close-up of hands sliding the faders of a DJ mixer, coloured stage lights pulsing in the background, shallow depth of field. Hands only, no faces, no text.",
+      "latte-pour.mp4": "Top-down view of milk being poured into an espresso cup forming a leaf pattern, soft daylight on a wooden table, slow motion. Hands not visible, no faces, no text.",
+      "pottery-wheel.mp4": "A lump of wet clay spinning on a potter's wheel while two hands shape it into a bowl, warm workshop light, close-up. Hands only, no faces, no text.",
+      "waterfall-forest.mp4": "A waterfall in a green forest, camera tilting down from the crest to the misty pool, moss on the rocks, soft light through the trees. No people, no text."
+    }
+  }
+}
