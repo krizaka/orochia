@@ -18,6 +18,7 @@ import { eq } from "drizzle-orm";
 import { appUrl } from "./env";
 import { HttpError } from "./http";
 import { createBackup } from "./backups";
+import { connectionLimit, type ConnectionBudget } from "./db-budget";
 
 /**
  * The platform as operators see it: environment, database, migration history — and, on a development deployment only,
@@ -50,6 +51,7 @@ export interface PlatformStatus {
   database: { name: string; host: string; sizeBytes: number; serverVersion: string };
   history: Awaited<ReturnType<typeof historyState>>;
   tables: { name: string; rows: number }[];
+  connections: ConnectionBudget;
   reset: { allowed: boolean; confirmPhrase: string; ownerConfigured: boolean };
 }
 
@@ -66,11 +68,21 @@ export async function platformStatus(): Promise<PlatformStatus> {
     tables.push({ name: tablename, rows: Number(rows[0].n) });
   }
   const name = info[0].name;
+  const { rows: budget } = await pool.query<{ open: string; role_limit: number; server_limit: string }>(
+    `SELECT (SELECT count(*) FROM pg_stat_activity WHERE datname = current_database()) AS open,
+            (SELECT rolconnlimit FROM pg_roles WHERE rolname = current_user) AS role_limit,
+            current_setting('max_connections') AS server_limit`,
+  );
   return {
     environment: { appUrl: appUrl(), indexed: process.env.NODE_ENV === "production" && process.env.APP_SEARCH_INDEXING !== "off", nodeEnv: process.env.NODE_ENV ?? "development" },
     database: { name, host: new URL(databaseUrl()).hostname, sizeBytes: Number(info[0].size), serverVersion: info[0].version },
     history,
     tables,
+    connections: {
+      pool: { max: pool.options.max ?? 10, total: pool.totalCount, idle: pool.idleCount, waiting: pool.waitingCount },
+      open: Number(budget[0].open),
+      limit: connectionLimit(Number(budget[0].role_limit), Number(budget[0].server_limit)),
+    },
     reset: { allowed: databaseResetAllowed(), confirmPhrase: `reset ${name}`, ownerConfigured: ownerFromEnv() !== null },
   };
 }
