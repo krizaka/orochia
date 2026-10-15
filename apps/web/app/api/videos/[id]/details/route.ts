@@ -4,6 +4,7 @@ import { videoDetails } from "@/lib/queries";
 import { getCurrentUser } from "@/lib/auth";
 import { hasLiked } from "@/lib/engagement";
 import { evaluateVideoAccess } from "@/lib/access";
+import { similarVideos } from "@/lib/explore-semantic";
 import { errorResponse, jsonError } from "@/lib/http";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +25,8 @@ export async function GET(_req: NextRequest, props: { params: Promise<{ id: stri
     if (video.visibility === "INVITED_ONLY" && !(await evaluateVideoAccess(video.id, viewer?.id)).allowed) {
       return jsonError(404, "Video not found");
     }
-    return NextResponse.json({ success: true, video, liked: await hasLiked(viewer?.id ?? null, video.id) });
+    const [liked, similar] = await Promise.all([hasLiked(viewer?.id ?? null, video.id), similarVideos(video.id, viewer)]);
+    return NextResponse.json({ success: true, video: { ...video, similar }, liked });
   } catch (error) {
     return errorResponse(error, "videos/details");
   }

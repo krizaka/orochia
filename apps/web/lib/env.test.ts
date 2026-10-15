@@ -57,7 +57,7 @@ describe("requireBunnyStream", () => {
 describe("ENV_VARS — every variable named by its bounded context (krizaka/.github#46)", () => {
   // The runtime's and the framework's own variables, and the tooling's (scripts, not the app).
   const FRAMEWORK = new Set(["NODE_ENV", "PORT", "HOSTNAME", "NEXT_PHASE", "NEXT_RUNTIME", "NEXT_PUBLIC_APP_VERSION", "NEXT_PUBLIC_APP_COMMIT_SHA", "CI", "GITHUB_TOKEN"]);
-  const TOOLING = new Set(["APP_URL", "APP_DEMO_SEED", "APP_DEMO_PORT", "DATABASE_DEMO_URL", "DATABASE_MIGRATIONS_DIR", "DATABASE_RECONNECT_IT", "SCREENSHOTS_LOGIN", "SCREENSHOTS_PASSWORD", "TOUR_LOCAL_MEDIA", "OUT", "REALTIME_IT"]);
+  const TOOLING = new Set(["APP_URL", "APP_DEMO_SEED", "APP_DEMO_PORT", "DATABASE_DEMO_URL", "DATABASE_MIGRATIONS_DIR", "DATABASE_RECONNECT_IT", "SCREENSHOTS_LOGIN", "SCREENSHOTS_PASSWORD", "TOUR_LOCAL_MEDIA", "OUT", "REALTIME_IT", "EXPLORER_IT"]);
   const CONTEXT = /^(NEXT_PUBLIC_)?(APP|DATABASE|AUTH|MEDIA|MAIL|PUSH|PAYMENTS|REALTIME|ABUSE|OBSERVABILITY|AI|OPERATOR)_[A-Z0-9_]+$/;
   const VENDOR_OR_PRODUCT = /^(NEXT_PUBLIC_|EXPO_PUBLIC_)?(OROCHIA|KRIZAKA|BUNNY|MAILGUN|RESEND|STRIPE|CCBILL|SEGPAY|NOWPAYMENTS|TURNSTILE|CLOUDFLARE|EXPO|GOOGLE|FACEBOOK|VERCEL|REDIS|DO|DIGITALOCEAN)_/;
 
@@ -95,7 +95,7 @@ describe("ENV_VARS — every variable named by its bounded context (krizaka/.git
     }
     const undeclared = [...used].filter(([name]) => !declared.has(name) && !FRAMEWORK.has(name) && !TOOLING.has(name)).map(([n, f]) => `${n} (${f})`);
     expect(undeclared.join(", ")).toBe("");
-    for (const name of TOOLING) if (!["SCREENSHOTS_LOGIN", "SCREENSHOTS_PASSWORD", "TOUR_LOCAL_MEDIA", "OUT", "REALTIME_IT"].includes(name)) expect(name).toMatch(CONTEXT);
+    for (const name of TOOLING) if (!["SCREENSHOTS_LOGIN", "SCREENSHOTS_PASSWORD", "TOUR_LOCAL_MEDIA", "OUT", "REALTIME_IT", "EXPLORER_IT"].includes(name)) expect(name).toMatch(CONTEXT);
   });
 
   it("lists every declared variable in .env.example", async () => {

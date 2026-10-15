@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (169)
+## Endpoints (171)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -16,6 +16,8 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `GET` | `/api/admin/creators` | session · ADMIN | Creator accounts with their verification state; `?verified=false` lists the review queue. |
 | `PATCH` | `/api/admin/creators/[id]` | session · ADMIN | Records the outcome of a creator's 18 U.S.C. § 2257 review. |
 | `GET` | `/api/admin/documents` | session · ADMIN | A creator's 2257 document (`?ref=private/documents/&lt;uuid&gt;.&lt;ext&gt;`), for operators only; never cached. |
+| `GET` | `/api/admin/explorer` | session · ADMIN | Operator view of the Explorer — the proof that Orochia's AI runs on Orazaka: whether the engine is configured (its host, never its key), the circuit breaker, how many discoverable videos have a vector, and the latest calls to Orazaka with the run id Orazaka answered (find `embedding.run runId=…` in its logs). |
+| `POST` | `/api/admin/explorer/sync` | session · ADMIN | Embeds the discoverable videos that have no vector yet, now (the scheduler does it every ten minutes). |
 | `GET` | `/api/admin/overview` | session · ADMIN | Operator overview: money, catalogue, the three queues that need a human, and 12 months of revenue and reports. |
 | `GET` | `/api/admin/payouts` | session · ADMIN | Payout requests with their creator; `?status=` filters. |
 | `PATCH` | `/api/admin/payouts/[id]` | session · ADMIN | Advances a payout. |
@@ -181,7 +183,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/webhooks/bunny` | signed webhook | Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (MEDIA_STREAM_WEBHOOK_SECRET). |
 | `POST` | `/api/webhooks/payments/[gateway]` | signed webhook | Gateway payment notifications. |
 
-## Database tables (47)
+## Database tables (49)
 
 | Table | Drizzle export | Defined in |
 | :--- | :--- | :--- |
@@ -206,6 +208,8 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `video_likes` | `videoLikes` | `packages/db/src/schema/engagement.ts` |
 | `video_comments` | `videoComments` | `packages/db/src/schema/engagement.ts` |
 | `video_shares` | `videoShares` | `packages/db/src/schema/engagement.ts` |
+| `explorer_embeddings` | `explorerEmbeddings` | `packages/db/src/schema/explorer.ts` |
+| `ai_runs` | `aiRuns` | `packages/db/src/schema/explorer.ts` |
 | `user_invitations` | `userInvitations` | `packages/db/src/schema/invitations.ts` |
 | `tips_ledger` | `tipsLedger` | `packages/db/src/schema/ledger.ts` |
 | `payment_intents` | `paymentIntents` | `packages/db/src/schema/ledger.ts` |

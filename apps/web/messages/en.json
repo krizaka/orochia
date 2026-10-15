@@ -1495,6 +1495,7 @@
       "confirmed": "Unlocks are granted only after the payment provider confirms the payment."
     },
     "more": "More from {name}",
+    "similar": "Similar videos",
     "free": "Free",
     "members": "Members"
   },
@@ -1563,6 +1564,7 @@
     "failed": "Something went wrong. Try again."
   },
   "card": {
+    "related": "Related to your search",
     "unlockFor": "Unlock · {price}",
     "contacts": "Contacts only",
     "free": "Free",

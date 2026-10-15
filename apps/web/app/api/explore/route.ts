@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/auth";
-import { exploreResults, exploreSections, exploreTag } from "@/lib/explore";
+import { exploreSections, exploreTag } from "@/lib/explore";
+import { exploreResultsByMeaning } from "@/lib/explore-semantic";
 import { errorResponse } from "@/lib/http";
 import { limitAction } from "@/lib/rate-limit";
 
@@ -27,7 +28,8 @@ export async function GET(req: NextRequest) {
     await limitAction("explore", req, viewer?.id, { perIp: [120, 60], perUser: [120, 60] }, "Too many requests. Slow down.");
     const tag = exploreTag(query.tag);
     if (query.q || tag || query.view === "all") {
-      const results = await exploreResults(viewer, { q: query.q, tag, page: query.page });
+      // `meaning` (why the Explorer did or did not add videos) is for the operator's view, not for visitors.
+      const { meaning: _meaning, ...results } = await exploreResultsByMeaning(viewer, { q: query.q, tag, page: query.page });
       return NextResponse.json({ success: true, tag, ...results });
     }
     return NextResponse.json({ success: true, sections: await exploreSections(viewer) });

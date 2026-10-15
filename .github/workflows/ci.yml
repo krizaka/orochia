@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16-alpine
+        image: pgvector/pgvector:pg16
         env:
           POSTGRES_USER: orochia_user
           POSTGRES_PASSWORD: orochia_secret
@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16-alpine
+        image: pgvector/pgvector:pg16
         env:
           POSTGRES_USER: orochia_user
           POSTGRES_PASSWORD: orochia_secret
@@ -107,6 +107,9 @@ jobs:
       # Shared by the app and the scenarios: a 2 GB plan so one file can exceed it, and a 1 s minimal sign-up time.
       ABUSE_QUOTA_CREATOR_DEFAULT_GB: "2"
       ABUSE_SIGNUP_MIN_FILL_SECONDS: "1"
+      # The Explorer's engine is a stand-in started by the scenarios (e2e/orazaka-stub.mjs): same contract as Orazaka's embeddings.
+      AI_ENGINE_URL: http://127.0.0.1:4599
+      AI_ENGINE_API_KEY: oz_live_ci-only-explorer-key
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -125,6 +128,10 @@ jobs:
         env:
           DATABASE_RECONNECT_IT: "1"
       - run: npm run db:seed
+      - name: Explorer index — pgvector, the discovery rules for meaning, the engine's failure
+        run: npx vitest run apps/web/lib/explorer-index.integration.test.ts
+        env:
+          EXPLORER_IT: "1"
       - name: Start the app (development server)
         run: |
           npm run dev > web.log 2>&1 &
