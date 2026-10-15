@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 47 tables · 26 enums · 8 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 49 tables · 26 enums · 9 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -32,6 +32,7 @@ Every foreign key, read from the schema: what each table points to (through whic
 | `conversations` | `users` (`participant1_id`) · `users` (`participant2_id`) | `direct_messages` |
 | `credit_topups` | `users` (`user_id`) | — |
 | `direct_messages` | `conversations` (`conversation_id`) · `users` (`sender_id`) · `users` (`recipient_id`) · `stories` (`story_id`) | `compliance_reports` |
+| `explorer_embeddings` | `videos` (`video_id`) | — |
 | `follows` | `users` (`follower_id`) · `users` (`creator_id`) | — |
 | `notifications` | `users` (`user_id`) · `users` (`actor_id`) | — |
 | `payment_intents` | `users` (`sender_id`) · `users` (`creator_id`) · `videos` (`video_id`) · `stories` (`story_id`) | — |
@@ -57,10 +58,26 @@ Every foreign key, read from the schema: what each table points to (through whic
 | `video_shares` | `videos` (`video_id`) · `users` (`user_id`) | — |
 | `video_viewers` | `videos` (`video_id`) · `users` (`user_id`) | — |
 | `video_views` | `videos` (`video_id`) · `users` (`viewer_id`) | — |
-| `videos` | `users` (`creator_id`) · `content_ratings` (`content_rating_id`) | `auctions` · `challenges` · `compliance_reports` · `payment_intents` · `playlist_items` · `tips_ledger` · `video_access_grants` · `video_audience_lists` · `video_comments` · `video_likes` · `video_shares` · `video_viewers` · `video_views` |
+| `videos` | `users` (`creator_id`) · `content_ratings` (`content_rating_id`) | `auctions` · `challenges` · `compliance_reports` · `explorer_embeddings` · `payment_intents` · `playlist_items` · `tips_ledger` · `video_access_grants` · `video_audience_lists` · `video_comments` · `video_likes` · `video_shares` · `video_viewers` · `video_views` |
 | `wallet_ledger` | `users` (`user_id`) | — |
 
 ## Tables
+
+### `ai_runs`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `kind` | varchar(16) | no |  |  |
+| `orazaka_run_id` | varchar(80) | yes |  |  |
+| `model` | varchar(80) | yes |  |  |
+| `inputs` | integer | no | `0` |  |
+| `prompt_tokens` | integer | no | `0` |  |
+| `status` | varchar(24) | no |  |  |
+| `duration_ms` | integer | no | `0` |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `ai_runs_created_idx` (created_at)
 
 ### `auction_bids`
 
@@ -319,6 +336,19 @@ Every foreign key, read from the schema: what each table points to (through whic
 | `created_at` | timestamp with time zone | no | `now()` |  |
 
 **Indexes:** `direct_messages_conversation_idx` (conversation_id) · `direct_messages_sender_idx` (sender_id) · `direct_messages_recipient_idx` (recipient_id) · `direct_messages_created_at_idx` (created_at) · `direct_messages_seq_idx` (unique, seq) · `direct_messages_conversation_seq_idx` (conversation_id, seq) · `direct_messages_sender_client_idx` (unique, sender_id, client_id) · `direct_messages_unread_idx` (recipient_id, partial)
+
+### `explorer_embeddings`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `video_id` | uuid | no |  | primary key · → `videos.id` (on delete cascade) |
+| `model` | varchar(80) | no |  |  |
+| `content_hash` | varchar(64) | no |  |  |
+| `embedding` | vector(1024) | no |  |  |
+| `run_id` | varchar(80) | no |  |  |
+| `embedded_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `explorer_embeddings_embedding_idx` (embedding)
 
 ### `follows`
 
@@ -849,3 +879,4 @@ Every foreign key, read from the schema: what each table points to (through whic
 - `0005_storage_quotas_abuse.sql`
 - `0006_realtime_chat_presence.sql`
 - `0007_revoked_sessions.sql`
+- `0008_explorer_embeddings.sql`

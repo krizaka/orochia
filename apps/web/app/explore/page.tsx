@@ -16,7 +16,8 @@ import { VideoCard } from "@/components/VideoCard";
 import { type SessionUser } from "@/lib/auth";
 import { creatorSpaceCta, type ViewerState } from "@/lib/creator-journey";
 import { unlessUnavailable } from "@/lib/degrade";
-import { discoverableTags, exploreResults, exploreSectionsSettled, exploreTag, type ExploreVideo } from "@/lib/explore";
+import { discoverableTags, exploreSectionsSettled, exploreTag, type ExploreVideo } from "@/lib/explore";
+import { exploreResultsByMeaning } from "@/lib/explore-semantic";
 import { signupEnabled } from "@/lib/features";
 import { t } from "@/lib/i18n";
 import { getViewer } from "@/lib/viewer";
@@ -257,7 +258,7 @@ async function Sections({ user, state }: { user: SessionUser | null; state: View
 
 /** A search, a tag, or every video: creators and stories first (when they match), then the videos, paged. */
 async function Results({ q, tag, page, all, user }: { q: string; tag: string | null; page: number; all: boolean; user: SessionUser | null }) {
-  const loaded = await unlessUnavailable(() => exploreResults(user, { q, tag, page }));
+  const loaded = await unlessUnavailable(() => exploreResultsByMeaning(user, { q, tag, page }));
   if (!loaded.ok) return <SectionUnavailable />;
   const r = loaded.value;
   const base = { q: q || undefined, tag: tag ?? undefined, view: all && !q && !tag ? "all" : undefined };

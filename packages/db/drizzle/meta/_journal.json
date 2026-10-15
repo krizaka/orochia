@@ -57,6 +57,13 @@
       "when": 1791872714634,
       "tag": "0007_revoked_sessions",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792024003933,
+      "tag": "0008_explorer_embeddings",
+      "breakpoints": true
     }
   ]
 }

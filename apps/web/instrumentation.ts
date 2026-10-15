@@ -8,4 +8,6 @@ export async function register() {
   startAuctionScheduler();
   const { startStorageScheduler } = await import("./lib/storage-scheduler");
   startStorageScheduler();
+  const { startExplorerScheduler } = await import("./lib/explorer-scheduler");
+  startExplorerScheduler();
 }

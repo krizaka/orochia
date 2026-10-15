@@ -146,6 +146,13 @@ services:
       - key: OBSERVABILITY_METRICS_TOKEN
         scope: RUN_TIME
         type: SECRET
+      # The Explorer runs on Orazaka's dev edge; the key (scoped ai:embed) is a SECRET set with `doctl apps update`.
+      - key: AI_ENGINE_URL
+        scope: RUN_TIME
+        value: https://dev.orazaka.com/edge
+      - key: AI_ENGINE_API_KEY
+        scope: RUN_TIME
+        type: SECRET
       # Sign in with Google / Facebook (offered only when both values of a provider are set).
       - key: AUTH_GOOGLE_CLIENT_ID
         scope: RUN_TIME

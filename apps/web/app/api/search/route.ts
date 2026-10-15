@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/auth";
-import { discoverableTags, exploreResults, newVideos } from "@/lib/explore";
+import { discoverableTags, newVideos } from "@/lib/explore";
+import { exploreResultsByMeaning } from "@/lib/explore-semantic";
 import { errorResponse } from "@/lib/http";
 import { limitAction } from "@/lib/rate-limit";
 import { normalizeTag } from "@/lib/tags";
@@ -25,7 +26,7 @@ export async function GET(req: NextRequest) {
       const [videos, tags] = await Promise.all([newVideos(viewer, 6), discoverableTags(8)]);
       return NextResponse.json({ success: true, creators: [], videos, stories: [], tags });
     }
-    const [results, allTags] = await Promise.all([exploreResults(viewer, { q }), discoverableTags(60)]);
+    const [results, allTags] = await Promise.all([exploreResultsByMeaning(viewer, { q }), discoverableTags(60)]);
     const wanted = normalizeTag(q);
     const tags = allTags.filter((entry) => entry.tag.includes(q.toLowerCase().replace(/^#/, "")) || (wanted !== null && entry.tag.includes(wanted)));
     return NextResponse.json({

@@ -51,6 +51,8 @@ interface VideoDetails {
   commentsEnabled: boolean;
   createdAt: string;
   moreFromCreator: RelatedVideo[];
+  /** The Explorer: videos near this one in meaning (tags when it has no vector yet). */
+  similar?: RelatedVideo[];
 }
 
 // The auction panel sits beside the player on large screens and right under it on phones (mounted once, in one place).
@@ -363,6 +365,29 @@ export default function WatchClient() {
               </li>
             </ul>
           </div>
+
+          {details?.similar && details.similar.length > 0 && (
+            <div className="rounded-2xl border border-border-subtle bg-surface-2/30 p-5 shadow-xs">
+              <h3 className="text-sm font-bold text-fg mb-3">{t("watch.similar")}</h3>
+              <div className="space-y-3">
+                {details.similar.map((video) => (
+                  <Link key={video.id} href={`/watch/${video.id}`} className="flex gap-3 items-center group">
+                    <div className="h-16 w-24 rounded-lg bg-surface-3 overflow-hidden shrink-0">
+                      {video.thumbnailUrl && (
+                        <img src={video.thumbnailUrl} alt="" className="h-full w-full object-cover group-hover:scale-105 transition-transform" />
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-semibold text-fg group-hover:text-fg-accent line-clamp-2">{video.title}</h4>
+                      <span className="block text-[10px] text-fg-muted font-mono">
+                        {video.creatorName} • {formatDuration(video.durationSeconds)}
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
 
           {details && details.moreFromCreator.length > 0 && (
             <div className="rounded-2xl border border-border-subtle bg-surface-2/30 p-5 shadow-xs">

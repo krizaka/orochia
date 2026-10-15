@@ -39,7 +39,7 @@ services:
       - orochia-internal
 
   postgres:
-    image: postgres:16-alpine
+    image: pgvector/pgvector:pg16
     container_name: orochia-postgres-prod
     restart: always
     environment:

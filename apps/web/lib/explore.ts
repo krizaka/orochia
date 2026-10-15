@@ -126,6 +126,8 @@ export interface ExploreVideo {
   /** The 18+ veil (lib/discoverable.ts `isVeiled`): blurred until the viewer reveals it. */
   isBlurred: boolean;
   createdAt: string;
+  /** In a search: found by its words, by its meaning (lib/explore-semantic.ts), or both. Absent elsewhere. */
+  via?: "text" | "meaning" | "both";
 }
 
 const videoColumns = {
@@ -233,11 +235,34 @@ async function videoEngagement(): Promise<(EngagementBucket & { creatorId: strin
 }
 
 /** The videos in the given order (ids from a ranking). */
-async function videosByIds(ids: string[], viewer: ExploreViewer | null): Promise<ExploreVideo[]> {
+export async function videosByIds(ids: string[], viewer: ExploreViewer | null): Promise<ExploreVideo[]> {
   if (ids.length === 0) return [];
   const rows = await videoQuery().where(and(discoverableVideo(), inArray(videos.id, ids)));
   const byId = new Map(rows.map((r) => [r.id, toExploreVideo(r as VideoRow, viewer)]));
   return ids.map((id) => byId.get(id)).filter((v): v is ExploreVideo => Boolean(v));
+}
+
+/**
+ * "Similar videos" without AI: the discoverable videos that share the most tags with a discoverable video, newest first.
+ * The answer when the Explorer has no vector for a video or Orazaka is out of reach. Empty for a video Explore would not
+ * show itself — what is related to a private video is never told.
+ */
+export async function similarByTags(videoId: string, viewer: ExploreViewer | null, limit = 4): Promise<ExploreVideo[]> {
+  const [source] = await db
+    .select({ tags: videos.tags })
+    .from(videos)
+    .innerJoin(users, eq(users.id, videos.creatorId))
+    .where(and(eq(videos.id, videoId), discoverableVideo()))
+    .limit(1);
+  const tags = source?.tags ?? [];
+  if (tags.length === 0) return [];
+  const wanted = sql`array[${sql.join(tags.map((tag) => sql`${tag}`), sql`, `)}]::text[]`;
+  const shared = sql<number>`(select count(*) from unnest(${videos.tags}) as t(tag) where t.tag = any(${wanted}))`;
+  const rows = await videoQuery()
+    .where(and(discoverableVideo(), ne(videos.id, videoId), sql`${videos.tags} && ${wanted}`))
+    .orderBy(desc(shared), desc(videos.createdAt))
+    .limit(limit);
+  return rows.map((r) => toExploreVideo(r as VideoRow, viewer));
 }
 
 /** "Trending this week": views, likes and tips, time-decayed, two places per creator at most (lib/ranking.ts). */

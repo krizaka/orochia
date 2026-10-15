@@ -115,6 +115,12 @@ services:
       - key: OBSERVABILITY_METRICS_TOKEN
         scope: RUN_TIME
         type: SECRET
+      # The Explorer on Orazaka (optional: unset, it is full-text search alone). Orazaka has no production yet.
+      - key: AI_ENGINE_URL
+        scope: RUN_TIME
+      - key: AI_ENGINE_API_KEY
+        scope: RUN_TIME
+        type: SECRET
       # Sign in with Google / Facebook (offered only when both values of a provider are set).
       - key: AUTH_GOOGLE_CLIENT_ID
         scope: RUN_TIME

@@ -85,7 +85,7 @@
       "id": "data",
       "name": "Data persistence",
       "path": "packages/db",
-      "tablesCount": 47,
+      "tablesCount": 49,
       "tables": [
         "auctions",
         "auction_bids",
@@ -108,6 +108,8 @@
         "video_likes",
         "video_comments",
         "video_shares",
+        "explorer_embeddings",
+        "ai_runs",
         "user_invitations",
         "tips_ledger",
         "payment_intents",
@@ -177,6 +179,18 @@
       "path": "/api/admin/documents",
       "access": "session · ADMIN",
       "summary": "A creator's 2257 document (`?ref=private/documents/<uuid>.<ext>`), for operators only; never cached."
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/explorer",
+      "access": "session · ADMIN",
+      "summary": "Operator view of the Explorer — the proof that Orochia's AI runs on Orazaka: whether the engine is configured (its host, never its key), the circuit breaker, how many discoverable videos have a vector, and the latest calls to Orazaka with the run id Orazaka answered (find `embedding.run runId=…` in its logs)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/explorer/sync",
+      "access": "session · ADMIN",
+      "summary": "Embeds the discoverable videos that have no vector yet, now (the scheduler does it every ten minutes)."
     },
     {
       "method": "GET",
@@ -1419,7 +1433,7 @@
         "runtime": "node",
         "version": "1.0.0",
         "published": false,
-        "description": "The API: 132 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
+        "description": "The API: 134 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
       },
       {
         "id": "orochia-config",

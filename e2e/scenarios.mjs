@@ -76,6 +76,40 @@ const byTitle = (t) => feed.find((v) => v.title.startsWith(t));
 const diaries = byTitle("Studio Diaries"), rehearsal = byTitle("Rehearsal Tapes"), noir = byTitle("Midnight Noir"), neon = byTitle("Tokyo Neon");
 check("feed lists ready videos only (processing hidden)", feed.length === 5 && !byTitle("Afterhours"), `got ${feed.length}`);
 
+// The Explorer on Orazaka: semantic search and "similar videos" through the engine's embeddings, the operator's proof of use,
+// and the full-text answer — unchanged — when the engine is out of reach. The engine is a stand-in (e2e/orazaka-stub.mjs).
+if (process.env.AI_ENGINE_URL === "http://127.0.0.1:4599") {
+  const { startOrazakaStub } = await import("./orazaka-stub.mjs");
+  const engine = await startOrazakaStub(4599);
+  const sync = await admin.call("/api/admin/explorer/sync", "POST");
+  check("the operator indexes the public videos through Orazaka", sync.status === 200 && sync.json.data.summary.embedded >= 2 && sync.json.data.summary.failure === null, JSON.stringify(sync.json));
+  check("…members cannot", (await alex.call("/api/admin/explorer/sync", "POST")).status === 403 && (await alex.call("/api/admin/explorer")).status === 403);
+  const status = (await admin.call("/api/admin/explorer")).json.data;
+  check("the operator sees the proof: configured, vectors, and the run id Orazaka answered", status.configured && status.embedded >= 2 && status.runs.some((r) => engine.runs.some((e) => e.runId === r.orazakaRunId)), JSON.stringify(status.runs.slice(0, 2)));
+  check("…never the key", !JSON.stringify(status).includes("oz_live"));
+
+  const words = (await anon.call("/api/search?q=tokyo")).json;
+  check("a search by its words finds the video", words.videos?.some((v) => v.title.startsWith("Tokyo Neon")));
+  const meaning = (await anon.call("/api/search?q=japan%20capital%20neon%20alley")).json;
+  const found = meaning.videos?.find((v) => v.title.startsWith("Tokyo Neon"));
+  check("a search by meaning finds it though no word matches", Boolean(found) && found.via === "meaning", JSON.stringify(meaning.videos?.map((v) => v.title)));
+  check("…and never what Explore does not show (followers-only, invited, contacts, paid)", !meaning.videos?.some((v) => /Studio Diaries|Rehearsal Tapes/.test(v.title)));
+  const explore = (await anon.call("/api/explore?q=japan%20capital%20neon%20alley")).json;
+  check("Explore's results get the same", explore.videos?.some((v) => v.title.startsWith("Tokyo Neon") && v.via === "meaning") && explore.meaning === undefined);
+
+  const details = (await anon.call(`/api/videos/${neon.id}/details`)).json.video;
+  check("a video's page offers similar videos, never itself nor what is not public", Array.isArray(details.similar) && !details.similar.some((v) => v.id === neon.id || v.id === diaries.id || v.id === rehearsal.id));
+
+  engine.down();
+  const down = await anon.call("/api/search?q=japan%20capital%20neon%20alley%20again");
+  check("Orazaka out of reach: the search still answers, from full-text alone", down.status === 200 && !down.json.videos?.some((v) => v.via));
+  const still = await anon.call("/api/search?q=tokyo");
+  check("…and the words still find the video", still.status === 200 && still.json.videos?.some((v) => v.title.startsWith("Tokyo Neon")));
+  const failed = (await admin.call("/api/admin/explorer")).json.data;
+  check("…the failure is on record for the operator", failed.runs.some((r) => r.status === "unreachable"), JSON.stringify(failed.runs.slice(0, 3)));
+  await engine.close();
+}
+
 // Followers-only
 check("anonymous → followers-only refused", (await anon.call(`/api/videos/${diaries.id}/stream`)).json.reason === "FOLLOWERS_ONLY");
 check("approved follower (alex) → allowed", (await alex.call(`/api/videos/${diaries.id}/stream`)).json.allowed === true);
