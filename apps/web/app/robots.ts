@@ -15,8 +15,8 @@ export const dynamic = "force-dynamic";
 const DISALLOW = ["/api/", "/dashboard", "/creator/", "/profile", "/auth/"];
 
 export default function robots(): MetadataRoute.Robots {
-  // A site that is not indexed (dev, preview) shuts the door but still names its sitemap, for the day it opens.
-  if (!INDEXABLE) return { rules: [{ userAgent: "*", disallow: "/" }], sitemap: `${SITE_URL}/sitemap.xml` };
+  // A site that is not indexed (dev, preview) shuts the door and advertises nothing: no sitemap line.
+  if (!INDEXABLE) return { rules: [{ userAgent: "*", disallow: "/" }] };
   return {
     rules: CRAWLERS.map((userAgent) => ({ userAgent, allow: "/", disallow: DISALLOW })),
     sitemap: `${SITE_URL}/sitemap.xml`,

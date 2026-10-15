@@ -90,18 +90,22 @@ if (process.env.AI_ENGINE_URL === "http://127.0.0.1:4599") {
 
   const words = (await anon.call("/api/search?q=tokyo")).json;
   check("a search by its words finds the video", words.videos?.some((v) => v.title.startsWith("Tokyo Neon")));
-  const meaning = (await anon.call("/api/search?q=japan%20capital%20neon%20alley")).json;
+  // A visitor never triggers a paid embedding: the full-text answer, and Orazaka is not called.
+  const runsBefore = engine.runs.length;
+  const visitor = (await anon.call("/api/search?q=japan%20capital%20neon%20alley")).json;
+  check("a signed-out search is full-text only — no meaning, no call to Orazaka", !visitor.videos?.some((v) => v.via === "meaning") && engine.runs.length === runsBefore);
+  const meaning = (await alex.call("/api/search?q=japan%20capital%20neon%20alley")).json;
   const found = meaning.videos?.find((v) => v.title.startsWith("Tokyo Neon"));
   check("a search by meaning finds it though no word matches", Boolean(found) && found.via === "meaning", JSON.stringify(meaning.videos?.map((v) => v.title)));
   check("…and never what Explore does not show (followers-only, invited, contacts, paid)", !meaning.videos?.some((v) => /Studio Diaries|Rehearsal Tapes/.test(v.title)));
-  const explore = (await anon.call("/api/explore?q=japan%20capital%20neon%20alley")).json;
+  const explore = (await alex.call("/api/explore?q=japan%20capital%20neon%20alley")).json;
   check("Explore's results get the same", explore.videos?.some((v) => v.title.startsWith("Tokyo Neon") && v.via === "meaning") && explore.meaning === undefined);
 
   const details = (await anon.call(`/api/videos/${neon.id}/details`)).json.video;
   check("a video's page offers similar videos, never itself nor what is not public", Array.isArray(details.similar) && !details.similar.some((v) => v.id === neon.id || v.id === diaries.id || v.id === rehearsal.id));
 
   engine.down();
-  const down = await anon.call("/api/search?q=japan%20capital%20neon%20alley%20again");
+  const down = await alex.call("/api/search?q=japan%20capital%20neon%20alley%20again");
   check("Orazaka out of reach: the search still answers, from full-text alone", down.status === 200 && !down.json.videos?.some((v) => v.via));
   const still = await anon.call("/api/search?q=tokyo");
   check("…and the words still find the video", still.status === 200 && still.json.videos?.some((v) => v.title.startsWith("Tokyo Neon")));

@@ -28,6 +28,8 @@ export async function exploreResultsByMeaning(viewer: ExploreViewer | null, quer
   const term = query.q?.trim() ?? "";
   // A tag is an exact filter and later pages continue the text ranking: meaning only widens the first page of a plain search.
   if (!term || query.tag || (query.page ?? 1) > 1) return { ...base, meaning: { status: "off", found: 0 } };
+  // Meaning costs an embedding at Orazaka (a paid call): only a signed-in account triggers one. A visitor gets the full-text answer.
+  if (!viewer) return { ...base, meaning: { status: "off", found: 0 } };
 
   try {
     const vector = await deps.vector(term);

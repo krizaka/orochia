@@ -5,6 +5,7 @@ import type { Metadata, Viewport } from "next";
 
 import { ClientLayoutShell } from "@/components/ClientLayoutShell";
 import { JsonLd } from "@/components/JsonLd";
+import { DevEnvironmentNotice } from "@/components/DevEnvironmentNotice";
 import { SiteFooter } from "@/components/SiteFooter";
 import { cn,MotionObserver, ThemeProvider, ThemeScript } from "@/components/ui";
 import { AuthProvider } from "@/lib/auth-context";
@@ -69,6 +70,7 @@ export default function RootLayout({
             <ClientLayoutShell>{children}</ClientLayoutShell>
             <MotionObserver />
             <SiteFooter />
+            {!INDEXABLE && <DevEnvironmentNotice />}
           </AuthProvider>
         </ThemeProvider>
       </body>
