@@ -10,7 +10,7 @@ import { absolute, KRIZAKA_URL, SOURCE_URL } from "./seo";
 const DOCS = bundle as { slug: string; title: string; markdown: string }[];
 
 const SUMMARY = `> Orochia is an open-source (Apache-2.0), adult-friendly video platform for independent creators,
-> made by Krizaka (Montréal). Creators publish 4K videos and decide exactly who watches each one;
+> made by Krizaka (Montréal). Creators publish HD videos and decide exactly who watches each one;
 > viewers follow, comment, like, share, tip and unlock. Every playback link is signed for five
 > minutes, payments are confirmed by the payment gateway and settled exactly once into a
 > double-entry ledger, and creators are verified under 18 U.S.C. § 2257 before they upload.

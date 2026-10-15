@@ -1,6 +1,6 @@
 "use client";
 
-import { AuctionIcon, ChallengeIcon, type Icon,PlayIcon, Story24hIcon, TipIcon, UnlockIcon } from "@krizaka/icons";
+import { AuctionIcon, type Icon, PlayIcon, Story24hIcon, TipIcon } from "@krizaka/icons";
 import React, { useEffect, useRef, useState } from "react";
 
 import { Tabs } from "@/components/ui";
@@ -8,10 +8,10 @@ import { t } from "@/lib/i18n";
 
 import { type Scene,SCENE_MS, SCENE_STYLES, SCENES, Screen } from "./showcase/Scenes";
 
-const ICONS: Record<Scene, Icon> = { feed: PlayIcon, stories: Story24hIcon, tip: TipIcon, unlock: UnlockIcon, auction: AuctionIcon, challenge: ChallengeIcon };
+const ICONS: Record<Scene, Icon> = { feed: PlayIcon, stories: Story24hIcon, support: TipIcon, auction: AuctionIcon };
 
 /**
- * How Orochia works, on a phone: six real flows (watch, stories, tip, unlock, auctions, challenges) played one after
+ * How Orochia works, on a phone: four real flows (watch, stories, support, auctions) played one after
  * the other on vertical footage — a finger taps, sheets slide, prices move — with the tabs under it to jump to one
  * (@krizaka/ui's Tabs: arrows, Home and End move between them; the phone is their panel).
  * Pauses off-screen; under prefers-reduced-motion every screen shows its final state, still.
@@ -67,7 +67,7 @@ export function ProductShowcase({ share }: { share: number }) {
 
       <Tabs.List
         aria-label={t("home.showcase.label")}
-        className="mt-7 grid w-full max-w-[420px] grid-cols-3 gap-1.5 overflow-visible data-[orientation=horizontal]:pb-0 sm:max-w-none sm:grid-cols-6"
+        className="mt-7 grid w-full max-w-[420px] grid-cols-4 gap-1.5 overflow-visible data-[orientation=horizontal]:pb-0 sm:max-w-none"
       >
         {SCENES.map((s) => {
           const Icon = ICONS[s];
@@ -75,7 +75,7 @@ export function ProductShowcase({ share }: { share: number }) {
             <Tabs.Trigger
               key={s}
               value={s}
-              className="relative h-auto gap-1.5 overflow-hidden rounded-xl bg-surface-1/40 px-2.5 py-2 text-[11px] data-[state=active]:border-border-strong data-[state=active]:bg-surface-3 sm:text-xs"
+              className="relative h-auto gap-1 overflow-hidden rounded-xl bg-surface-1/40 px-1.5 py-2 text-[11px] data-[state=active]:border-border-strong data-[state=active]:bg-surface-3 sm:text-xs"
             >
               <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
               <span className="truncate">{t(`home.showcase.scenes.${s}`)}</span>

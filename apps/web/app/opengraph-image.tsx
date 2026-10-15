@@ -28,7 +28,7 @@ export default function OpengraphImage() {
           The video platform independent creators own.
         </div>
         <div style={{ marginTop: 36, display: "flex", gap: 18, fontSize: 24, color: "#d4d4d8" }}>
-          <span>Signed 4K streams</span>
+          <span>Signed HD streams</span>
           <span style={{ color: "#d946ef" }}>·</span>
           <span>Gateway-confirmed payments</span>
           <span style={{ color: "#d946ef" }}>·</span>

@@ -10,7 +10,7 @@ import type { Metadata } from "next";
 export const SITE_URL = (process.env.NEXT_PUBLIC_APP_URL || "https://orochia.com").replace(/\/$/, "");
 export const SITE_NAME = "Orochia";
 export const SITE_DESCRIPTION =
-  "Orochia is an open-source, adult-friendly video platform for independent creators: 4K HLS streaming with signed links, " +
+  "Orochia is an open-source, adult-friendly video platform for independent creators: HD HLS streaming with signed links, " +
   "followers, contacts, invited audiences and collections, tips and paid unlocks confirmed by the payment gateway, " +
   "and 18 U.S.C. § 2257 creator verification.";
 /**
@@ -42,7 +42,7 @@ const ORGANIZATION = {
 
 /** What the family-wide JSON-LD says of the application: neutral, the age rating is `contentRating`. */
 const APP_DESCRIPTION =
-  "Orochia is an open-source video platform for independent creators: 4K HLS streaming with signed links, followers, collections, tips and paid unlocks confirmed by the payment gateway.";
+  "Orochia is an open-source video platform for independent creators: HD HLS streaming with signed links, followers, collections, tips and paid unlocks confirmed by the payment gateway.";
 
 /** The sitewide graph: the site with its search, the application, and who makes it. */
 export function siteGraph() {

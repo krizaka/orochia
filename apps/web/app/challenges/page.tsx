@@ -1,5 +1,10 @@
 import React from "react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { CardGrid } from "@krizaka/ui/card-grid";
+import { LinkCard } from "@krizaka/ui/link-card";
+import { ChallengeAutoStart } from "@/components/challenges/ChallengeAutoStart";
+import { challengeKindFromSlug, challengeStartHref, CHALLENGE_STARTS } from "@/lib/challenge-kinds";
 import { Flame, Megaphone, Target } from "lucide-react";
 import { ChallengeCard } from "@/components/challenges/ChallengeCard";
 import { StartChallengeButton } from "@/components/challenges/StartChallengeButton";
@@ -16,19 +21,19 @@ export const metadata = {
   alternates: { canonical: "/challenges" },
 };
 
-const KINDS = [
-  { kind: "GOAL", icon: Target },
-  { kind: "REQUEST", icon: Flame },
-  { kind: "OPEN_CALL", icon: Megaphone },
-] as const;
+const ICONS = { GOAL: Target, REQUEST: Flame, OPEN_CALL: Megaphone } as const;
 
 /**
  * Challenges: what is taking pledges (ending soonest first), open calls creators can take, what was delivered, and —
  * signed in — the creator's inbox, what the viewer wrote and what they back. The three kinds are explained up top.
  */
-export default async function ChallengesPage(props: { searchParams: Promise<{ tab?: string }> }) {
-  const { tab: asked } = await props.searchParams;
+export default async function ChallengesPage(props: { searchParams: Promise<{ tab?: string; new?: string }> }) {
+  const { tab: asked, new: startSlug } = await props.searchParams;
   const user = await getCurrentUser();
+  // A card said "start this kind": a visitor signs in and comes back here; only a creator sets a goal.
+  const startKind = challengeKindFromSlug(startSlug);
+  if (startKind && !user) redirect(`/auth/login?next=${encodeURIComponent(challengeStartHref(startSlug as "goal" | "dare" | "call"))}`);
+  if (startKind === "GOAL" && user && user.role !== "CREATOR") redirect("/creator/apply");
   const tabs = CHALLENGE_TABS.filter((id) => (id === "inbox" ? user?.role === "CREATOR" : PERSONAL_CHALLENGE_TABS.includes(id) ? Boolean(user) : true));
   const tab: ChallengeTab = (tabs as readonly string[]).includes(asked ?? "") ? (asked as ChallengeTab) : "open";
   const items = await listChallenges(tab, user?.id ?? null);
@@ -46,22 +51,23 @@ export default async function ChallengesPage(props: { searchParams: Promise<{ ta
         <StartChallengeButton signedIn={Boolean(user)} isCreator={user?.role === "CREATOR"} />
       </header>
 
-      <ol className="mb-8 grid gap-3 sm:grid-cols-3">
-        {KINDS.map(({ kind, icon: Icon }, i) => (
-          <li
-            key={kind}
-            data-reveal
-            style={{ "--kz-delay": `${i * 80}ms` } as React.CSSProperties}
-            className="kz-spotlight rounded-2xl border border-border-default bg-surface-2 p-4"
-          >
-            <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-accent to-accent-2 text-white shadow-lg shadow-accent/20">
-              <Icon className="h-4 w-4" aria-hidden />
-            </span>
-            <p className="text-sm font-bold text-fg">{t(`challenge.kind.${kind}`)}</p>
-            <p className="mt-1 text-xs leading-relaxed text-fg-secondary">{t(`challenges.how.${kind}`)}</p>
-          </li>
-        ))}
-      </ol>
+      <CardGrid min={240} className="mb-8">
+        {CHALLENGE_STARTS.map(({ slug, kind, messageKey }) => {
+          const Icon = ICONS[kind];
+          return (
+            <LinkCard
+              key={kind}
+              href={challengeStartHref(slug)}
+              linkAs={Link}
+              icon={<Icon className="h-4 w-4" aria-hidden />}
+              title={t(`challenge.kind.${kind}`)}
+              description={t(`challenges.how.${kind}`)}
+              cta={t("challenges.startCta")}
+            />
+          );
+        })}
+      </CardGrid>
+      {startKind && user && <ChallengeAutoStart kind={startKind} isCreator={user.role === "CREATOR"} />}
 
       <nav aria-label={t("challenges.tabsLabel")} className="mb-6 flex gap-1 overflow-x-auto border-b border-border-default">
         {tabs.map((id) => (

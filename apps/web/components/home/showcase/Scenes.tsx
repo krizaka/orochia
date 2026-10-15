@@ -6,10 +6,8 @@ import {
   CheckIcon as Trophy,
   ClockIcon as Clock,
   ForwardIcon as Send,
-  GoalIcon as Target,
   HeartIcon as Heart,
   LinkIcon as Share2,
-  LockIcon as Lock,
   MessageIcon as MessageCircle,
   PlayIcon as Play,
   TipIcon as Coins,
@@ -25,7 +23,8 @@ import { t } from "@/lib/i18n";
  * names, no handles, no profiles (AGENTS.md §3.F).
  */
 
-export const SCENES = ["feed", "stories", "tip", "unlock", "auction", "challenge"] as const;
+/** Four tabs, one idea each: watch, stories, support (a tip — an unlock or a challenge backing is the same gesture), auction. */
+export const SCENES = ["feed", "stories", "support", "auction"] as const;
 export type Scene = (typeof SCENES)[number];
 export const SCENE_MS = 7000;
 
@@ -243,54 +242,6 @@ function Tip({ still, share }: { still: boolean; share: number }) {
   );
 }
 
-/** Unlock: a paid video stays blurred until the payment provider confirms — then it plays. */
-function Unlock({ still }: { still: boolean }) {
-  const step = useSteps(4, 1500, still);
-  const open = step >= 3;
-  return (
-    <div className="absolute inset-0 overflow-hidden bg-black">
-      <Video name="unlock" still={still} className={cn(
-        "transition-[filter,transform] duration-1000",
-        open ? "" : "scale-110 blur-xl brightness-75"
-      )} />
-      <div className={shade} />
-      {!open && (
-        <div className="absolute inset-x-6 top-1/2 z-20 -translate-y-1/2 rounded-3xl border border-white/15 bg-black/45 p-5 text-center text-white backdrop-blur-xl">
-          <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-linear-to-br from-accent to-accent-2">
-            <Lock className="h-5 w-5" />
-          </span>
-          <p className="mt-3 text-[13px] font-bold">{t("home.showcase.ui.unlockBadge")}</p>
-          <span className={cn(
-            "mt-3 flex items-center justify-center gap-1.5 rounded-xl bg-fg py-2.5 text-[12px] font-bold text-surface-0 transition-transform",
-            step === 1 ? "scale-95" : ""
-          )}>
-            {step >= 2 ? <Spinner size="sm" className="text-current" /> : <Play className="h-3.5 w-3.5 fill-current" />}
-            {step >= 2 ? t("home.showcase.ui.confirming") : t("home.showcase.ui.unlockCta", { amount: "$15" })}
-          </span>
-        </div>
-      )}
-      {open && (
-        <div className="absolute inset-x-4 bottom-6 z-20">
-          <div className="h-1 overflow-hidden rounded-full bg-white/25">
-            <span className="sc-progress block h-full rounded-full bg-white" />
-          </div>
-          <div className="mt-2 flex justify-between font-mono text-[10px] text-white/80">
-            <span>{t("home.showcase.ui.elapsed")}</span>
-            <span>{t("home.showcase.ui.length")}</span>
-          </div>
-        </div>
-      )}
-      <Toast show={open}>
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-success">
-          <Play className="h-3 w-3 fill-current" />
-        </span>
-        {t("home.showcase.ui.unlocked")}
-      </Toast>
-      <Tap x="50%" y="58%" show={!still && step === 1} />
-    </div>
-  );
-}
-
 const BIDS = [12000, 13500, 15000, 16500];
 
 /** Auction: bids land by alias, the price climbs, a last-minute bid pushes the clock back. */
@@ -357,74 +308,16 @@ function Auction({ still }: { still: boolean }) {
   );
 }
 
-/** Challenge: fans pledge towards a goal; when it is reached, the creator makes it. */
-function Challenge({ still }: { still: boolean }) {
-  const step = useSteps(5, 1250, still);
-  const pledged = [310, 360, 410, 475, 500][step];
-  const ratio = pledged / 500;
-  const reached = step >= 4;
-  return (
-    <div className="absolute inset-0 overflow-hidden bg-black">
-      <Video name="challenge" still={still} />
-      <div className="absolute inset-0 bg-linear-to-b from-black/40 via-black/30 to-surface-0" />
-      <span className="absolute left-4 top-11 z-20 flex items-center gap-1 rounded-full bg-accent px-2.5 py-1 text-[10px] font-bold text-white shadow-lg">
-        <Target className="h-3 w-3" /> {t("home.showcase.ui.challengeBadge")}
-      </span>
-      <div className="absolute inset-x-3 bottom-5 z-20 rounded-3xl border border-white/10 bg-surface-0/85 p-4 text-white backdrop-blur-xl">
-        <p className="text-[13px] font-bold leading-snug">{t("home.showcase.ui.challengeTitle")}</p>
-        <div className="mt-3 flex items-center gap-3">
-          <svg viewBox="0 0 100 100" className="h-16 w-16 shrink-0 -rotate-90" aria-hidden>
-            <circle cx="50" cy="50" r="42" fill="none" strokeWidth="10" className="stroke-white/10" />
-            <circle cx="50" cy="50" r="42" fill="none" strokeWidth="10" strokeLinecap="round" pathLength={100} strokeDasharray="100" strokeDashoffset={100 - ratio * 100} className={cn(
-              "transition-[stroke-dashoffset] duration-700",
-              reached ? "stroke-success" : "stroke-accent"
-            )} />
-          </svg>
-          <div>
-            <p key={pledged} className="sc-pop font-display text-2xl font-black tabular-nums">${pledged}</p>
-            <p className="text-[10px] text-fg-secondary">{t("home.showcase.ui.pledged", { goal: "$500" })}</p>
-            <p className="text-[10px] text-fg-secondary">{t("home.showcase.ui.backers", { count: 18 + step * 4 })}</p>
-          </div>
-        </div>
-        {reached ? (
-          <p className="sc-row mt-3 flex items-center gap-1.5 rounded-xl bg-success/15 px-3 py-2.5 text-[11px] font-bold text-fg-success">
-            <Trophy className="h-3.5 w-3.5" /> {t("home.showcase.ui.goalReached")}
-          </p>
-        ) : (
-          <span className={cn(
-            "mt-3 flex items-center justify-center rounded-xl bg-linear-to-r from-accent via-accent-2 to-accent-2 py-2.5 text-[12px] font-bold transition-transform",
-            step === 2 ? "scale-95" : ""
-          )}>
-            {t("home.showcase.ui.pledgeCta", { amount: "$25" })}
-          </span>
-        )}
-      </div>
-      {reached && (
-        <div aria-hidden className="pointer-events-none absolute inset-0 z-30">
-          {Array.from({ length: 14 }, (_, i) => (
-            <span key={i} className="sc-confetti absolute top-0 h-2 w-1.5 rounded-sm" style={{ left: `${(i * 37) % 100}%`, animationDelay: `${(i % 7) * 80}ms`, background: ["#a78bfa", "#f472b6", "#34d399", "#fbbf24"][i % 4] }} />
-          ))}
-        </div>
-      )}
-      <Tap x="50%" y="calc(100% - 3.3rem)" show={!still && step === 2} />
-    </div>
-  );
-}
-
 export function Screen({ scene, share, still }: { scene: Scene; share: number; still: boolean }) {
   switch (scene) {
     case "feed":
       return <Feed still={still} />;
     case "stories":
       return <Stories still={still} />;
-    case "tip":
+    case "support":
       return <Tip still={still} share={share} />;
-    case "unlock":
-      return <Unlock still={still} />;
     case "auction":
       return <Auction still={still} />;
-    case "challenge":
-      return <Challenge still={still} />;
   }
 }
 
