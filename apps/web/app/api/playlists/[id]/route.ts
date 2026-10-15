@@ -19,7 +19,7 @@ export async function GET(_req: NextRequest, props: { params: Promise<{ id: stri
     const id = z.string().uuid().safeParse(params.id);
     if (!id.success) return jsonError(404, "Playlist not found");
     const viewer = await getCurrentUser();
-    return NextResponse.json({ success: true, playlist: await playlistWithItems(id.data, viewer?.id ?? null) });
+    return NextResponse.json({ success: true, playlist: await playlistWithItems(id.data, viewer?.id ?? null, viewer?.isAgeVerified === true) });
   } catch (error) {
     return errorResponse(error, "playlists/id/get");
   }

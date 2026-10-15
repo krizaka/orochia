@@ -41,7 +41,7 @@ export default async function PlaylistPage(props: { params: Promise<{ id: string
   const params = await props.params;
   if (!/^[0-9a-f-]{36}$/i.test(params.id)) notFound();
   const viewer = await getCurrentUser();
-  const playlist = await playlistWithItems(params.id, viewer?.id ?? null).catch((e) => {
+  const playlist = await playlistWithItems(params.id, viewer?.id ?? null, viewer?.isAgeVerified === true).catch((e) => {
     if (e instanceof HttpError && e.status === 404) return null;
     throw e;
   });

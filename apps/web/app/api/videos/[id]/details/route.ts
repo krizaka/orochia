@@ -18,9 +18,9 @@ export async function GET(_req: NextRequest, props: { params: Promise<{ id: stri
   try {
     const id = z.string().uuid().safeParse(params.id);
     if (!id.success) return jsonError(404, "Video not found");
-    const video = await videoDetails(id.data);
-    if (!video) return jsonError(404, "Video not found");
     const viewer = await getCurrentUser();
+    const video = await videoDetails(id.data, viewer?.isAgeVerified === true);
+    if (!video) return jsonError(404, "Video not found");
     // An invited-only video does not exist for those it was not shared with.
     if (video.visibility === "INVITED_ONLY" && !(await evaluateVideoAccess(video.id, viewer?.id)).allowed) {
       return jsonError(404, "Video not found");

@@ -19,9 +19,9 @@ export const dynamic = "force-dynamic";
  * — how it works, the 90 %, the four ways to support — lives on /how-it-works. Everything shown is read from the database:
  * an empty platform shows empty states, never invented creators or figures (AGENTS.md §3.F).
  */
-async function loadHome(viewerId: string | null) {
+async function loadHome(viewerId: string | null, viewerAgeChecked: boolean) {
   try {
-    const [videos, following] = await Promise.all([listFeed(48), viewerId ? listFollowingFeed(viewerId, 48) : Promise.resolve([])]);
+    const [videos, following] = await Promise.all([listFeed(48, viewerAgeChecked), viewerId ? listFollowingFeed(viewerId, 48, viewerAgeChecked) : Promise.resolve([])]);
     return { videos, following, unavailable: false };
   } catch (error) {
     // Said as such under the feed ("could not load"), never as an empty platform.
@@ -32,7 +32,7 @@ async function loadHome(viewerId: string | null) {
 
 export default async function HomePage() {
   const { user: viewer, state: viewerState } = await getViewer();
-  const { videos, following, unavailable } = await loadHome(viewer?.id ?? null);
+  const { videos, following, unavailable } = await loadHome(viewer?.id ?? null, viewer?.isAgeVerified === true);
   const container = "mx-auto w-full max-w-7xl px-4 sm:px-6";
   return (
     <div className="w-full overflow-x-clip">
