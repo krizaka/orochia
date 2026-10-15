@@ -193,7 +193,7 @@ export const ENV_VARS: readonly EnvVar[] = [
   // ── OBSERVABILITY ──
   v("OBSERVABILITY_METRICS_TOKEN", "OBSERVABILITY", "required", text, "Bearer token for `/api/metrics`.", { secret: true }),
   // ── AI ──
-  v("AI_ENGINE_URL", "AI", "optional", url, "Base URL of the Orazaka edge (`https://dev.orazaka.com/edge`): the Explorer's semantic search and recommendations. Unset: the Explorer runs on full-text search alone."),
+  v("AI_ENGINE_URL", "AI", "optional", url, "Base URL of the Orazaka edge (its `/edge` path): the Explorer's semantic search and recommendations. Unset: the Explorer runs on full-text search alone."),
   v("AI_ENGINE_API_KEY", "AI", "optional", z.string().regex(/^oz_/, "an Orazaka API key (oz_…)"), "The Orazaka API key of the Explorer, scoped `ai:embed` (embeddings only). Without it the Explorer does not call Orazaka.", { secret: true }),
   // ── OPERATOR ──
   v("OPERATOR_API_TOKEN", "OPERATOR", "recommended", secret32, "Service token of the operator console (32+ characters, the same value on both deployments): opens ADMIN routes only, acting as the owner. Unset: refused.", { secret: true }),

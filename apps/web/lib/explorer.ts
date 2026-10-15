@@ -12,10 +12,14 @@ export const MAX_DOCUMENT_CHARS = 1_000;
 /** Videos embedded per Orazaka call (Orazaka accepts 128). */
 export const INDEX_BATCH = 32;
 /**
- * Cosine distance beyond which a neighbour is not "related" any more (0 = same meaning, 1 = unrelated). Measured on the
- * dev catalogue with BGE-M3: unrelated titles sit at 0.55+, a paraphrase under 0.35.
+ * Cosine distance beyond which a neighbour is not "related" any more (0 = same meaning, 1 = unrelated). Measured on the dev
+ * catalogue with GTE Large (en) v1.5 through Orazaka: the right videos sit at 0.33–0.47, the rest at 0.5 and more, and a
+ * query about nothing the catalogue holds ("football match") has no neighbour under 0.52. It is a property of the model:
+ * a new embedding default in Orazaka's catalogue is measured again before it is trusted.
  */
 export const MAX_DISTANCE = 0.5;
+/** A neighbour must also be within this of the nearest one: the second best of a clear answer is not an answer. */
+export const NEIGHBOUR_MARGIN = 0.1;
 /** Neighbours asked of the index for one search. */
 export const SEMANTIC_CANDIDATES = 24;
 
@@ -50,6 +54,13 @@ export function documentHash(document: string): string {
 /** A search as it is compared and cached: lower case, one space between words, at most 100 characters. */
 export function normalizeQuery(q: string): string {
   return q.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim().slice(0, 100);
+}
+
+/** The neighbours (nearest first) that stay close to the nearest: `distance ≤ nearest + margin`. */
+export function withinMargin<T extends { distance: number }>(neighbours: readonly T[], margin = NEIGHBOUR_MARGIN): T[] {
+  if (neighbours.length === 0) return [];
+  const limit = neighbours[0].distance + margin;
+  return neighbours.filter((n) => n.distance <= limit);
 }
 
 /** The pgvector text form of a vector, for a bound parameter (`$1::vector`). */
