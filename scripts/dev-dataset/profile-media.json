@@ -2,32 +2,123 @@
   "$comment": "Orochia's default avatars and banners, made by Orazaka (image-generation Studio, FLUX.2 [klein] on the Mac). Inclusive of every identity — skin tones, ages (adults), genders incl. non-binary, bodies, hair, disabilities — never stereotyped, never sexualised, no real-person likeness, no text or logo. Violet to magenta accents, premium and next-gen, readable on light and dark. Stored under public/defaults/avatars and public/defaults/banners of the product's zone.",
   "style": "Palette: deep violet to magenta accents with warm skin-tone variety. Clean premium composition, soft studio light, no text, no lettering, no logos, fully clothed, wholesome.",
   "avatars": [
-    { "id": "aurora-1", "style": "abstract", "prompt": "Abstract aurora gradient orb in violet and magenta with soft grain, centred, smooth glowing shapes, square avatar" },
-    { "id": "aurora-2", "style": "abstract", "prompt": "Abstract flowing ribbons of magenta, indigo and peach light on a deep violet background, square avatar" },
-    { "id": "painterly-1", "style": "painterly", "prompt": "Painterly oil portrait of an adult woman with deep brown skin and short natural curls, violet and magenta rim light, loose brushwork, shoulders-up, no real person" },
-    { "id": "painterly-2", "style": "painterly", "prompt": "Painterly portrait of an older adult man with silver beard and light brown skin, warm magenta backlight, expressive brush strokes, shoulders-up, no real person" },
-    { "id": "painterly-3", "style": "painterly", "prompt": "Painterly portrait of an adult wearing a hijab, olive skin, calm gaze, violet and rose background, soft brush strokes, shoulders-up, no real person" },
-    { "id": "graphic-1", "style": "graphic-novel", "prompt": "Graphic-novel illustration of a non-binary adult with an undercut and freckles, bold ink lines, flat violet and magenta colours, shoulders-up" },
-    { "id": "graphic-2", "style": "graphic-novel", "prompt": "Graphic-novel illustration of an adult woman in a wheelchair seen from the chest up, dark skin, braids, bold ink lines, magenta and violet palette" },
-    { "id": "graphic-3", "style": "graphic-novel", "prompt": "Graphic-novel illustration of an adult East Asian man with glasses and a warm smile, bold ink lines, violet halftone background, shoulders-up" },
-    { "id": "clay-1", "style": "3d-clay", "prompt": "3D soft clay render of a smiling adult with a shaved head and tan skin, pastel violet background, soft studio light, round friendly shapes" },
-    { "id": "clay-2", "style": "3d-clay", "prompt": "3D soft clay render of an androgynous adult with long wavy hair and a hearing aid, medium brown skin, magenta background, soft light" },
-    { "id": "clay-3", "style": "3d-clay", "prompt": "3D soft clay render of a plus-size adult woman with curly red hair and pale freckled skin, lavender background, soft studio light" },
-    { "id": "line-1", "style": "line-art", "prompt": "Minimal continuous line-art portrait of an adult with a prosthetic arm raised in a wave, single magenta line on deep violet, elegant" },
-    { "id": "line-2", "style": "line-art", "prompt": "Minimal line-art portrait of an older adult woman with a headscarf, single violet line on soft cream, elegant" },
-    { "id": "zine-1", "style": "collage", "prompt": "Paper-collage zine portrait of a young adult with an afro and round glasses, torn paper textures in magenta, violet and yellow, shoulders-up" },
-    { "id": "zine-2", "style": "collage", "prompt": "Paper-collage zine portrait of an Indigenous adult with long black hair and beaded earrings, torn paper textures in violet and coral, shoulders-up" },
-    { "id": "painterly-4", "style": "painterly", "prompt": "Painterly portrait of a South Asian adult with a nose stud and a short bob, violet and gold light, loose brushwork, shoulders-up, no real person" }
+    {
+      "id": "aurora-1",
+      "style": "abstract",
+      "prompt": "Abstract aurora gradient orb in violet and magenta with soft grain, centred, smooth glowing shapes, square avatar"
+    },
+    {
+      "id": "aurora-2",
+      "style": "abstract",
+      "prompt": "Abstract flowing ribbons of magenta, indigo and peach light around a smooth bust portrait of an adult woman with long dark hair, head and shoulders only, deep violet background, square avatar"
+    },
+    {
+      "id": "painterly-1",
+      "style": "painterly",
+      "prompt": "Painterly oil portrait of an adult woman with deep brown skin and short natural curls, violet and magenta rim light, loose brushwork, shoulders-up, no real person"
+    },
+    {
+      "id": "painterly-2",
+      "style": "painterly",
+      "prompt": "Painterly portrait of an older adult man with silver beard and light brown skin, warm magenta backlight, expressive brush strokes, shoulders-up, no real person"
+    },
+    {
+      "id": "painterly-3",
+      "style": "painterly",
+      "prompt": "Painterly portrait of an adult wearing a hijab, olive skin, calm gaze, violet and rose background, soft brush strokes, shoulders-up, no real person"
+    },
+    {
+      "id": "graphic-1",
+      "style": "graphic-novel",
+      "prompt": "Graphic-novel illustration of a non-binary adult with an undercut and freckles, bold ink lines, flat violet and magenta colours, shoulders-up"
+    },
+    {
+      "id": "graphic-2",
+      "style": "graphic-novel",
+      "prompt": "Graphic-novel illustration, tight head-and-shoulders crop of an adult woman with dark skin and braids, the top of a wheelchair's push handles and wheel rim visible at the bottom edge of the frame, bold ink lines, magenta and violet palette"
+    },
+    {
+      "id": "graphic-3",
+      "style": "graphic-novel",
+      "prompt": "Graphic-novel illustration of an adult East Asian man with glasses and a warm smile, bold ink lines, violet halftone background, shoulders-up"
+    },
+    {
+      "id": "clay-1",
+      "style": "3d-clay",
+      "prompt": "3D soft clay render of a clearly adult man in his forties with a shaved head, grey stubble, laugh lines and broad shoulders, tan skin, pastel violet background, soft studio light, adult proportions and adult features"
+    },
+    {
+      "id": "clay-2",
+      "style": "3d-clay",
+      "prompt": "3D soft clay render of an androgynous adult with long wavy hair and a hearing aid, medium brown skin, magenta background, soft light"
+    },
+    {
+      "id": "clay-3",
+      "style": "3d-clay",
+      "prompt": "3D soft clay render of a plus-size adult woman with curly red hair and pale freckled skin, lavender background, soft studio light"
+    },
+    {
+      "id": "line-1",
+      "style": "line-art",
+      "prompt": "Minimal continuous line-art portrait of an adult with a prosthetic arm raised in a wave, single magenta line on deep violet, elegant"
+    },
+    {
+      "id": "line-2",
+      "style": "line-art",
+      "prompt": "Minimal line-art portrait of an older adult woman with a headscarf, single violet line on soft cream, elegant"
+    },
+    {
+      "id": "zine-1",
+      "style": "collage",
+      "prompt": "Paper-collage zine portrait of a young adult with an afro and round glasses, torn paper textures in magenta, violet and yellow, shoulders-up"
+    },
+    {
+      "id": "zine-2",
+      "style": "collage",
+      "prompt": "Paper-collage zine portrait of an Indigenous adult with long black hair and beaded earrings, torn paper textures in violet and coral, shoulders-up"
+    },
+    {
+      "id": "painterly-4",
+      "style": "painterly",
+      "prompt": "Painterly portrait of a South Asian adult with a nose stud and a short bob, violet and gold light, loose brushwork, shoulders-up, no real person"
+    }
   ],
   "banners": [
-    { "id": "light-1", "prompt": "Abstract wide banner of soft violet and magenta light streaks with fine grain, calm and premium, wide panoramic composition" },
-    { "id": "light-2", "prompt": "Abstract wide banner of glowing indigo waves and magenta bokeh, smooth gradients, panoramic composition" },
-    { "id": "texture-1", "prompt": "Wide banner of layered translucent violet paper textures with soft shadows, panoramic composition" },
-    { "id": "mural-1", "prompt": "Wide banner of a colourful street mural wall in Montreal in violet, magenta and teal, abstract shapes, no lettering, no logos, panoramic" },
-    { "id": "stairs-1", "prompt": "Wide banner of Plateau Mont-Royal outdoor spiral staircases at night under warm streetlights, violet dusk sky, no signs, no text, panoramic" },
-    { "id": "neon-1", "prompt": "Wide banner of Mile-End alley at night with abstract magenta and cyan neon glows reflected on wet pavement, no readable text, no logos, panoramic" },
-    { "id": "skyline-1", "prompt": "Wide banner of the Montreal skyline at dusk from Mount Royal in violet and magenta gradients, no text, panoramic" },
-    { "id": "mural-2", "prompt": "Wide banner of an abstract geometric mural in violet, coral and gold on a brick wall, no lettering, panoramic" },
-    { "id": "aurora-3", "prompt": "Wide banner of a northern-lights-style aurora in violet and magenta over a calm dark horizon, panoramic" }
+    {
+      "id": "light-1",
+      "prompt": "Abstract wide banner of soft violet and magenta light streaks with fine grain, calm and premium, wide panoramic composition"
+    },
+    {
+      "id": "light-2",
+      "prompt": "Abstract wide banner of glowing indigo waves and magenta bokeh, smooth gradients, panoramic composition"
+    },
+    {
+      "id": "texture-1",
+      "prompt": "Wide banner of layered translucent violet and magenta paper textures with soft shadows, only paper and light, no people, panoramic composition"
+    },
+    {
+      "id": "mural-1",
+      "prompt": "Wide banner of a colourful street mural wall in Montreal in violet, magenta and teal, abstract shapes only, no people, no lettering, no logos, panoramic"
+    },
+    {
+      "id": "stairs-1",
+      "prompt": "Wide banner of Plateau Mont-Royal outdoor spiral staircases at night under warm streetlights, violet dusk sky, no signs, no text, panoramic"
+    },
+    {
+      "id": "neon-1",
+      "prompt": "Wide banner of an empty Mile-End alley at night with abstract magenta and cyan neon glows reflected on wet pavement, no people at all, no readable text, no logos, panoramic"
+    },
+    {
+      "id": "skyline-1",
+      "prompt": "Wide banner of the Montreal skyline at dusk from Mount Royal in violet and magenta gradients, no text, panoramic"
+    },
+    {
+      "id": "mural-2",
+      "prompt": "Wide banner of an abstract geometric mural in violet, coral and gold on a brick wall, no lettering, panoramic"
+    },
+    {
+      "id": "aurora-3",
+      "prompt": "Wide banner of a northern-lights-style aurora in violet and magenta over a calm dark horizon, panoramic"
+    }
   ]
 }
