@@ -12,7 +12,7 @@ import { CardRail, ExploreSection, type SectionCta } from "@/components/explore/
 import { StoryTile } from "@/components/explore/StoryTile";
 import { TagChip } from "@/components/explore/TagChip";
 import { Button, buttonVariants, EmptyState, Input, SectionBackdrop } from "@/components/ui";
-import { VideoCard } from "@/components/VideoCard";
+import { VideoGrid as VideoGridView } from "@/components/VideoGrid";
 import { type SessionUser } from "@/lib/auth";
 import { creatorSpaceCta, type ViewerState } from "@/lib/creator-journey";
 import { unlessUnavailable } from "@/lib/degrade";
@@ -58,14 +58,9 @@ function ctas(user: SessionUser | null, state: ViewerState) {
   };
 }
 
-function VideoGrid({ videos, label }: { videos: ExploreVideo[]; label: string }) {
-  return (
-    <CardRail label={label}>
-      {videos.map((video) => (
-        <VideoCard key={video.id} {...video} />
-      ))}
-    </CardRail>
-  );
+/** A section's videos: the Shorts shelf for the vertical ones, one uniform 16:9 grid for the rest. */
+function VideoGrid({ videos }: { videos: ExploreVideo[]; label: string }) {
+  return <VideoGridView videos={videos} />;
 }
 
 /**
@@ -321,13 +316,7 @@ async function Results({ q, tag, page, all, user }: { q: string; tag: string | n
             {r.videos.length === 0 ? (
               <EmptyState icon={<VideoIcon size={22} />} title={t("explore.results.noVideos")} description={t("explore.noMatchHint")} className="rounded-3xl bg-surface-1/40 py-10" />
             ) : (
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                {r.videos.map((video, i) => (
-                  <div key={video.id} data-reveal style={{ ["--kz-delay" as string]: `${(i % 4) * 60}ms` }}>
-                    <VideoCard {...video} />
-                  </div>
-                ))}
-              </div>
+              <VideoGridView videos={r.videos} />
             )}
           </section>
 

@@ -1,12 +1,13 @@
 "use client";
 
-import { Clapperboard, Flame, Gift, LayoutGrid, Lock, Rows3,Sparkles, Users } from "lucide-react";
+import { Clapperboard, Flame, LayoutGrid, Rows3, Sparkles, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useMemo,useState } from "react";
 
 import { Avatar, Badge, buttonVariants, Chip, cn, EmptyState, orochiaButton, Tabs } from "@/components/ui";
-import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
+import type { VideoCardProps } from "@/components/VideoCard";
+import { VideoGrid } from "@/components/VideoGrid";
 import { useAuth } from "@/lib/auth-context";
 import { feedEmptyActions, type FeedEmptyKind, type FeedTab, type ViewerState } from "@/lib/creator-journey";
 import { t } from "@/lib/i18n";
@@ -14,6 +15,8 @@ import { aspectClassOf, orientationOf } from "@/lib/video-aspect";
 
 interface FeedFilterTabsProps {
   initialVideos: VideoCardProps[];
+  /** The newest videos of the creators the viewer follows (empty when signed out). */
+  followingVideos?: VideoCardProps[];
   /** Who is looking: each one gets their own next step under an empty feed (lib/creator-journey.ts). */
   viewer: ViewerState;
   /** The feed could not be read (the database did not answer): say so, never "no video yet". */
@@ -59,13 +62,13 @@ function FeedEmpty({ viewer, kind, tab }: { viewer: ViewerState; kind: FeedEmpty
   );
 }
 
-export function FeedFilterTabs({ initialVideos, viewer, unavailable = false }: FeedFilterTabsProps) {
+export function FeedFilterTabs({ initialVideos, followingVideos = [], viewer, unavailable = false }: FeedFilterTabsProps) {
   // The open tab lives in the address (?feed=…), so a shared link opens the same feed.
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
   const asked = params.get("feed");
-  const activeTab: FeedTab = asked === "trending" || asked === "vip" || asked === "free" || asked === "contacts" ? asked : "foryou";
+  const activeTab: FeedTab = asked === "trending" || asked === "following" ? asked : "foryou";
   const setActiveTab = (tab: FeedTab) => {
     const next = new URLSearchParams(params.toString());
     if (tab === "foryou") next.delete("feed");
@@ -78,24 +81,18 @@ export function FeedFilterTabs({ initialVideos, viewer, unavailable = false }: F
     switch (activeTab) {
       case "trending":
         return [...initialVideos].sort((a, b) => b.viewsCount - a.viewsCount);
-      case "vip":
-        return initialVideos.filter((v) => v.visibility === "TIPPED_UNLOCKED");
-      case "free":
-        return initialVideos.filter((v) => v.visibility === "PUBLIC");
-      case "contacts":
-        return initialVideos.filter((v) => v.visibility === "CONTACTS_ONLY");
+      case "following":
+        return followingVideos;
       case "foryou":
       default:
         return initialVideos;
     }
-  }, [activeTab, initialVideos]);
+  }, [activeTab, initialVideos, followingVideos]);
 
   const tabs = [
     { id: "foryou", label: t("feed.tabs.foryou"), icon: Flame },
+    { id: "following", label: t("feed.tabs.following"), icon: Users },
     { id: "trending", label: t("feed.tabs.trending"), icon: Sparkles },
-    { id: "vip", label: t("feed.tabs.vip"), icon: Lock },
-    { id: "free", label: t("feed.tabs.free"), icon: Gift },
-    { id: "contacts", label: t("feed.tabs.contacts"), icon: Users },
   ] as const;
 
   const empty = filteredVideos.length === 0 && (
@@ -122,14 +119,8 @@ export function FeedFilterTabs({ initialVideos, viewer, unavailable = false }: F
       {empty ? (
         empty
       ) : viewMode === "grid" ? (
-        /* Grid Layout */
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 kz-fade">
-          {filteredVideos.map((video, i) => (
-            <div key={video.id} data-reveal style={{ ["--kz-delay" as string]: `${(i % 4) * 70}ms` }}>
-              <VideoCard {...video} />
-            </div>
-          ))}
-        </div>
+        /* Shorts shelf for the 9:16, uniform 16:9 grid for the rest */
+        <VideoGrid videos={filteredVideos} className="kz-fade" />
       ) : (
         /* Cinematic Immersive Stream Feed */
         <div className="max-w-3xl mx-auto space-y-8 kz-fade">

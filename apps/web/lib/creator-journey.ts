@@ -94,7 +94,7 @@ export function creatorSpaceCta(state: ViewerState, signupOpen = true): Cta | nu
 }
 
 /** The tabs of the home feed (`?feed=`). */
-export type FeedTab = "foryou" | "trending" | "vip" | "free" | "contacts";
+export type FeedTab = "foryou" | "following" | "trending";
 
 /** Which empty state the home feed shows: nothing listed on the platform, or nothing in this tab. */
 export type FeedEmptyKind = "platform" | "tab";
@@ -117,13 +117,13 @@ export function feedEmptyActions(state: ViewerState, kind: FeedEmptyKind, tab: F
     // A fan or a pending creator: look around, and the creator space (open it / its review).
     return [{ ...explore, primary: true }, creator!];
   }
-  if (tab === "contacts") {
-    if (state === "anonymous") return [{ href: signInHref("/?feed=contacts"), label: "feed.actions.signIn", primary: true }];
+  if (tab === "following") {
+    if (state === "anonymous") return [{ href: signInHref("/?feed=following"), label: "feed.actions.signIn", primary: true }];
     return [
       { href: "/explore", label: "feed.actions.findPeople", primary: true },
       { href: "/dashboard?tab=network", label: "feed.actions.network" },
     ];
   }
-  // "Paid" or "Free" with nothing in it: the other videos are one tap away.
+  // Another tab with nothing in it: the other videos are one tap away.
   return [{ href: "/", label: "feed.actions.allVideos", primary: true }, explore];
 }

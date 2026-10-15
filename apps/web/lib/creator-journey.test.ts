@@ -17,7 +17,7 @@ import {
 
 const STATES: ViewerState[] = ["anonymous", "member", "creator-pending", "creator", "suspended"];
 const SIGNED_IN: ViewerState[] = ["member", "creator-pending", "creator", "suspended"];
-const TABS: FeedTab[] = ["foryou", "trending", "vip", "free", "contacts"];
+const TABS: FeedTab[] = ["foryou", "following", "trending"];
 const KINDS: FeedEmptyKind[] = ["platform", "tab"];
 
 /** Every call to action a viewer can meet: the creator space and the empty feed, in every tab. */
@@ -67,9 +67,9 @@ describe("calls to action per viewer", () => {
     expect(everyCta("suspended")).toEqual([]);
   });
 
-  it("an empty Contacts tab: find people when signed in, sign in otherwise", () => {
-    expect(feedEmptyActions("member", "tab", "contacts")[0]).toMatchObject({ href: "/explore", label: "feed.actions.findPeople" });
-    expect(feedEmptyActions("anonymous", "tab", "contacts")[0].href).toBe("/auth/login?next=%2F%3Ffeed%3Dcontacts");
+  it("an empty Following tab: find people when signed in, sign in otherwise", () => {
+    expect(feedEmptyActions("member", "tab", "following")[0]).toMatchObject({ href: "/explore", label: "feed.actions.findPeople" });
+    expect(feedEmptyActions("anonymous", "tab", "following")[0].href).toBe("/auth/login?next=%2F%3Ffeed%3Dfollowing");
   });
 
   it("each block has one primary action at most", () => {

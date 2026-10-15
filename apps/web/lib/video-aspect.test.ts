@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { aspectClassOf, orientationOf } from "./video-aspect";
+import { aspectClassOf, frameOf, orientationOf } from "./video-aspect";
 
 describe("video orientation", () => {
   it("keeps 9:16 and 4:5 vertical, 1:1 square, 16:9 horizontal", () => {
@@ -20,5 +20,12 @@ describe("video orientation", () => {
     expect(aspectClassOf(540, 960)).toBe("aspect-[9/16]");
     expect(aspectClassOf(1080, 1080)).toBe("aspect-square");
     expect(aspectClassOf(1920, 1080)).toBe("aspect-video");
+  });
+  it("routes a feed: verticals to the Shorts shelf, everything else to the 16:9 grid", () => {
+    expect(frameOf(480, 832)).toBe("portrait");
+    expect(frameOf(1080, 1350)).toBe("portrait");
+    expect(frameOf(832, 480)).toBe("landscape");
+    expect(frameOf(1080, 1080)).toBe("landscape");
+    expect(frameOf(null, null)).toBe("landscape");
   });
 });

@@ -529,6 +529,11 @@
     },
     "trendingAll": "Explore",
     "market": "Auctions and challenges",
+    "intro": {
+      "line": "Watch creators you love, and support them directly.",
+      "sub": "They keep most of every payment.",
+      "join": "Create your account"
+    },
     "member": {
       "title": "Welcome back, @{name}",
       "body": "Today's stories, what is up for auction and what fans are funding."
@@ -1185,11 +1190,12 @@
   "feed": {
     "tabs": {
       "foryou": "For you",
-      "trending": "Trending",
-      "vip": "Paid",
-      "free": "Free",
-      "contacts": "Contacts"
+      "following": "Following",
+      "trending": "Trending"
     },
+    "shorts": "Shorts",
+    "shortsPrevious": "Previous shorts",
+    "shortsNext": "Next shorts",
     "grid": "Grid view",
     "cinematic": "Large view",
     "views": "{count} views",
@@ -1233,17 +1239,9 @@
           "title": "Nothing trending yet",
           "body": "Videos climb here as people watch them."
         },
-        "vip": {
-          "title": "No paid video yet",
-          "body": "Creators unlock some videos for a tip — they will appear here."
-        },
-        "free": {
-          "title": "No free video yet",
-          "body": "Videos anyone can watch will appear here."
-        },
-        "contacts": {
-          "title": "No contacts-only video yet",
-          "body": "Creators keep some videos for their accepted contacts. Find people and ask to be someone’s contact to see theirs."
+        "following": {
+          "title": "Nobody followed yet",
+          "body": "Follow creators and their new videos land here first. Find people to follow in Explore."
         }
       },
       "unavailable": {

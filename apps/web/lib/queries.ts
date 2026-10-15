@@ -1,4 +1,4 @@
-import { db, payoutRequests, playlists, profiles, stories,tipsLedger, users, videoAccessGrants, videos } from "@orochia/db";
+import { db, follows, payoutRequests, playlists, profiles, stories,tipsLedger, users, videoAccessGrants, videos } from "@orochia/db";
 import { getCreatorAvailableBalanceCents } from "@orochia/payments";
 import { and, desc, eq, gt, ilike, isNull, ne, or, type SQL,sql } from "drizzle-orm";
 
@@ -61,6 +61,20 @@ const listable = () =>
 /** Ready videos, newest first. Locked videos are listed — their stream is what is protected. */
 export async function listFeed(limit = 12): Promise<VideoSummary[]> {
   return searchVideos({ limit });
+}
+
+/** The newest videos of the creators this person follows (a pending request counts: they asked to see them). */
+export async function listFollowingFeed(viewerId: string, limit = 24): Promise<VideoSummary[]> {
+  return db
+    .select(videoSummaryColumns)
+    .from(videos)
+    .innerJoin(users, eq(users.id, videos.creatorId))
+    .innerJoin(follows, and(eq(follows.creatorId, videos.creatorId), eq(follows.followerId, viewerId)))
+    .leftJoin(profiles, eq(profiles.userId, videos.creatorId))
+    .where(listable())
+    .orderBy(desc(videos.createdAt))
+    .limit(Math.min(Math.max(limit, 1), 60))
+    .then((rows) => rows.map(withSignedMedia));
 }
 
 export interface VideoSearch {

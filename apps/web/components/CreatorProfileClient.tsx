@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Sparkles, Check, Crown, Flame, Shield, Play, Lock, Film, Heart, Share2, Layers } from "lucide-react";
-import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
+import type { VideoCardProps } from "@/components/VideoCard";
+import { VideoGrid } from "@/components/VideoGrid";
 import { PlaylistCard, type PlaylistCardProps } from "@/components/PlaylistCard";
 import { TipModal } from "@/components/TipModal";
 import { t } from "@/lib/i18n";
@@ -115,11 +116,7 @@ export function CreatorProfileClient({
                   )}
                 </div>
               ) : (
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                  {filteredVideos.map((video) => (
-                    <VideoCard key={video.id} {...video} />
-                  ))}
-                </div>
+                <VideoGrid videos={filteredVideos} />
               )}
                 </>
               )}
