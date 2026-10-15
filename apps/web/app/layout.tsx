@@ -1,4 +1,5 @@
 import "./globals.css";
+import "@krizaka/ui/blocks.css";
 
 import type { Metadata, Viewport } from "next";
 

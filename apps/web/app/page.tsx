@@ -1,17 +1,4 @@
-import {
-  AuctionIcon,
-  ChallengeIcon,
-  EditIcon,
-  GlobeIcon,
-  HeartIcon,
-  LockIcon,
-  MessageIcon,
-  Share90Icon,
-  Story24hIcon,
-  TipIcon,
-  UsersIcon,
-  VideoIcon,
-} from "@krizaka/icons";
+import { AuctionIcon, ChallengeIcon, EditIcon, HeartIcon, LockIcon, Story24hIcon, TipIcon, UsersIcon, VideoIcon } from "@krizaka/icons";
 import { platformFeePercent } from "@orochia/payments";
 import Link from "next/link";
 import React from "react";
@@ -32,25 +19,25 @@ import { RelationshipActions } from "@/components/RelationshipActions";
 import { buttonVariants, cn, SectionBackdrop } from "@/components/ui";
 import { listAuctions } from "@/lib/auctions";
 import { Avatar } from "@krizaka/ui/avatar";
+import { ArgumentCard } from "@krizaka/ui/argument-card";
+import { CardGrid } from "@krizaka/ui/card-grid";
+import { Section } from "@krizaka/ui/page";
 import { listChallenges } from "@/lib/challenges";
 import { t } from "@/lib/i18n";
-import { featuredCreator, listFeed, platformStats } from "@/lib/queries";
+import { featuredCreator, listFeed } from "@/lib/queries";
 import { getViewer } from "@/lib/viewer";
 
 export const metadata = { alternates: { canonical: "/" } };
 export const dynamic = "force-dynamic";
 
-/** The feature band under the hero, each with its signature icon (words: home.marquee.<id>). */
-const MARQUEE = [
-  ["a", Story24hIcon],
-  ["b", VideoIcon],
-  ["c", TipIcon],
-  ["i", ChallengeIcon],
-  ["d", UsersIcon],
-  ["e", EditIcon],
-  ["f", MessageIcon],
-  ["g", Share90Icon],
-  ["h", GlobeIcon],
+/** What the platform offers, in one compact section lower on the page (words: home.features.<id>). */
+const FEATURES = [
+  ["stories", Story24hIcon],
+  ["streaming", VideoIcon],
+  ["support", TipIcon],
+  ["challenges", ChallengeIcon],
+  ["circles", UsersIcon],
+  ["editor", EditIcon],
 ] as const;
 
 const WHY = [
@@ -68,17 +55,17 @@ const WHY = [
  */
 async function loadHome() {
   try {
-    const [videos, featured, stats, auctions, challenges] = await Promise.all([listFeed(24), featuredCreator(), platformStats(), listAuctions("open", null, 3), listChallenges("open", null, 3)]);
-    return { videos, featured, stats, auctions, challenges, unavailable: false };
+    const [videos, featured, auctions, challenges] = await Promise.all([listFeed(24), featuredCreator(), listAuctions("open", null, 3), listChallenges("open", null, 3)]);
+    return { videos, featured, auctions, challenges, unavailable: false };
   } catch (error) {
     // Said as such under the feed ("could not load"), never as an empty platform.
     console.error("[home] feed unavailable:", error);
-    return { videos: [], featured: null, stats: { videos: 0, creators: 0 }, auctions: [], challenges: [], unavailable: true };
+    return { videos: [], featured: null, auctions: [], challenges: [], unavailable: true };
   }
 }
 
 export default async function HomePage() {
-  const [{ user: viewer, state: viewerState }, { videos, featured, stats, auctions, challenges, unavailable }] = await Promise.all([getViewer(), loadHome()]);
+  const [{ user: viewer, state: viewerState }, { videos, featured, auctions, challenges, unavailable }] = await Promise.all([getViewer(), loadHome()]);
   const fee = platformFeePercent();
   const share = 100 - fee;
   const container = "mx-auto w-full max-w-7xl px-4 sm:px-6";
@@ -183,21 +170,7 @@ export default async function HomePage() {
 
   return (
     <div className="w-full overflow-x-clip">
-      <HomeHero share={share} stats={stats} />
-
-      <div aria-hidden className="relative -mt-6 overflow-hidden py-3 mask-[linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
-        <div className="kz-marquee gap-3" style={{ ["--kz-marquee-duration" as string]: "60s" }}>
-          {[0, 1].map((copy) => (
-            <div key={copy} className="flex gap-3 pr-3">
-              {MARQUEE.map(([k, Icon]) => (
-                <span key={k} className="flex items-center gap-2 whitespace-nowrap rounded-full border border-border-default bg-surface-1/80 px-4 py-2 text-sm font-semibold text-fg-secondary backdrop-blur-md">
-                  <Icon size={16} className="text-fg-accent" nodeColor="var(--kz-accent-2)" /> {t(`home.marquee.${k}`, { share })}
-                </span>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
+      <HomeHero share={share} />
 
       <GetPaid fee={fee} />
 
@@ -238,6 +211,20 @@ export default async function HomePage() {
       </SectionBackdrop>
 
       {feedAndFeatured}
+
+      <Section id="features" title={t("home.features.title")} lead={t("home.features.lead")} reveal>
+        <CardGrid min={240}>
+          {FEATURES.map(([id, Icon]) => (
+            <ArgumentCard
+              key={id}
+              id={`feature-${id}`}
+              title={t(`home.features.${id}.title`)}
+              icon={<Icon size={20} nodeColor="var(--kz-accent-2)" />}
+              hook={{ label: t(`home.features.${id}.title`), text: t(`home.features.${id}.hook`, { share }) }}
+            />
+          ))}
+        </CardGrid>
+      </Section>
 
       <MobileSection />
       <CreatorsCallToAction share={share} />

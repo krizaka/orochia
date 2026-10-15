@@ -309,7 +309,7 @@
     "uploadHint": "Publish a video",
     "auctions": "Auctions",
     "challenges": "Challenges",
-    "mobile": "Mobile"
+    "mobile": "The app"
   },
   "footer": {
     "explore": "Explore",
@@ -320,22 +320,11 @@
     "adults": "All performers depicted are 18 years of age or older.",
     "howItWorks": "How it works",
     "docs": "Docs",
-    "mobile": "Mobile",
+    "mobile": "The app",
     "label": "Footer"
   },
   "home": {
-    "eyebrow": "18+ · Independent creators",
-    "title": "The creators you love.",
-    "titleAccent": "Closer than ever.",
-    "body": "Watch their videos and 24-hour stories, follow them and support them directly — a tip, an unlock, a winning bid or a challenge they make for you. Creators decide who sees what, and keep {share}% of every payment.",
-    "ctaJoin": "Create your free account",
     "ctaExplore": "Explore creators",
-    "stats": "{videos} videos · {creators} creators",
-    "trust": {
-      "free": "Free to join",
-      "private": "Private by design",
-      "share": "Creators keep {share}%"
-    },
     "why": {
       "title": "Why people stay",
       "stories": {
@@ -356,7 +345,7 @@
     "creators": {
       "eyebrow": "For creators",
       "title": "Your fans. Your rules. Your income.",
-      "body": "Publish videos and stories in 4K, decide who watches each one, set your prices, and get paid — on an open-source platform you can trust.",
+      "body": "Publish videos and stories in HD, decide who watches each one, set your prices, and get paid — on an open-source platform you can trust.",
       "cta": "Start creating",
       "points": {
         "upload": "Direct upload to a global video network",
@@ -372,28 +361,19 @@
       "views": "{count} views",
       "videos": "{count} videos"
     },
-    "titleLead": "The creators you love,",
-    "rotating": {
-      "a": "closer than ever.",
-      "b": "every single day.",
-      "c": "in stunning 4K.",
-      "d": "on their terms."
-    },
     "showcase": {
       "label": "How Orochia works, on a phone",
       "scenes": {
         "feed": "Watch",
         "stories": "Stories",
-        "tip": "Tip",
-        "unlock": "Unlock",
         "auction": "Auction",
-        "challenge": "Challenge"
+        "support": "Support"
       },
       "ui": {
         "following": "Following",
         "forYou": "For you",
         "creator": "Verified creator",
-        "caption1": "Front-row set, shot in 4K",
+        "caption1": "Front-row set, shot in HD",
         "caption2": "Neon session — tonight's cut",
         "storyBadge": "Story",
         "storyExpires": "Up for 24 h",
@@ -402,10 +382,6 @@
         "tipSend": "Send {amount}",
         "tipSent": "Tip sent",
         "tipKeep": "The creator keeps {share}%",
-        "unlockBadge": "Paid unlock",
-        "unlockCta": "Unlock for {amount}",
-        "confirming": "Confirming with the payment provider…",
-        "unlocked": "Unlocked — playing in 4K",
         "auctionBadge": "Auction · open",
         "currentBid": "Current bid",
         "endsIn": "Ends in",
@@ -414,12 +390,6 @@
         "lead": "You lead",
         "bidCta": "Bid {amount}",
         "extended": "+2:00 · a last-minute bid extends the clock",
-        "challengeBadge": "Challenge · goal",
-        "challengeTitle": "Midnight dance battle, one take",
-        "pledged": "pledged of {goal}",
-        "backers": "{count} backers",
-        "pledgeCta": "Back it with {amount}",
-        "goalReached": "Goal reached — the creator makes it",
         "tabs": {
           "home": "Home",
           "explore": "Explore",
@@ -429,19 +399,8 @@
         },
         "clock": "9:41",
         "elapsed": "0:04",
-        "length": "4K · 12:48"
+        "length": "HD · 12:48"
       }
-    },
-    "marquee": {
-      "a": "24-hour stories",
-      "b": "4K streaming",
-      "c": "Tips & unlocks",
-      "d": "Close-friends lists",
-      "e": "In-browser editor",
-      "f": "Private messages",
-      "g": "Creators keep {share}%",
-      "h": "Open source",
-      "i": "Challenges & dares"
     },
     "auctions": "Auctions",
     "auctionsAll": "All auctions",
@@ -572,7 +531,39 @@
     "member": {
       "title": "Welcome back, @{name}",
       "body": "Today's stories, what is up for auction and what fans are funding."
-    }
+    },
+    "heroTitle": "The creators you love, every single day.",
+    "heroLead": "Watch, follow and support them directly — they keep {share}% of every payment.",
+    "ctaHow": "How it works",
+    "features": {
+      "title": "Everything in one place",
+      "lead": "The tools fans and creators use every day.",
+      "stories": {
+        "title": "24-hour stories",
+        "hook": "Short videos and photos that stay up for a day."
+      },
+      "streaming": {
+        "title": "HD streaming",
+        "hook": "Signed HLS playback on a global video network."
+      },
+      "support": {
+        "title": "Tips & unlocks",
+        "hook": "Creators keep {share}% of every payment."
+      },
+      "challenges": {
+        "title": "Challenges & dares",
+        "hook": "Fund a video you want made, credits held until it is delivered."
+      },
+      "circles": {
+        "title": "Close-friends lists",
+        "hook": "Choose exactly who sees each video."
+      },
+      "editor": {
+        "title": "In-browser editor",
+        "hook": "Trim and polish before you publish."
+      }
+    },
+    "ctaCreate": "Create your free account"
   },
   "payments": {
     "method": "Pay with",
@@ -1204,7 +1195,7 @@
     "minutes": "{count} min",
     "watch": "Watch",
     "noThumbnail": "Orochia",
-    "hd": "4K",
+    "hd": "HD",
     "creatorFallback": "creator",
     "unlockFor": "Unlock for {price}",
     "label": "Feeds",
@@ -1358,7 +1349,7 @@
     "untitled": "Your title here",
     "done": {
       "title": "Your video is on its way",
-      "body": "It is uploading and then processing in up to 4K. We will notify you the moment it is online — you can keep browsing meanwhile.",
+      "body": "It is uploading and then processing for every screen, up to 1080p. We will notify you the moment it is online — you can keep browsing meanwhile.",
       "watch": "Open the video",
       "another": "Publish another"
     },
@@ -1504,7 +1495,7 @@
     "sensitiveBody": "The creator marked this video as sensitive. Viewer discretion is advised.",
     "reveal": "Show the video",
     "paidTitle": "Unlock this video",
-    "paidBody": "Support the creator to watch it — the unlock is yours to keep, in up to 4K.",
+    "paidBody": "Support the creator to watch it — the unlock is yours to keep, in up to 1080p.",
     "paidCta": "Unlock for {price}",
     "invitedTitle": "Invited viewers only",
     "invitedBody": "The creator shares this video with the people they invite. Your invitation is not active.",
@@ -2597,7 +2588,8 @@
         "body": "Challenges you pledge on show up here."
       }
     },
-    "seeOpen": "See open challenges"
+    "seeOpen": "See open challenges",
+    "startCta": "Start one"
   },
   "quota": {
     "title": "Storage",
@@ -2884,8 +2876,8 @@
     },
     "eyebrow": "On your phone",
     "title": "Orochia in your pocket: four steps",
-    "lead": "The app is for fans: follow the creators you like, watch their stories and videos, unlock what they make for you and back their goals and auctions — from your phone, adults only. Four screens, in the order you meet them. Every clip is the real app on the demo seed — Alex, a fan, and Elena, a creator, are invented people. Press play; nothing starts by itself.",
-    "recordedOn": "Recorded on the iOS 27 simulator (typing sped up or cut where a step says so).",
+    "lead": "Follow the creators you like, watch, unlock and back what they make — from your phone, adults only. Four steps, as the real app shows them.",
+    "recordedOn": "Recorded on the iOS simulator with invented people. Press play; nothing starts by itself.",
     "all": "Follow the four steps",
     "stepsTitle": "The four steps",
     "step": "Step",

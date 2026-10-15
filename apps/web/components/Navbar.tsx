@@ -6,6 +6,7 @@ import {
   CreatorIcon as LayoutDashboard,
   CreditsIcon as Coins,
   LogoutIcon as LogOut,
+  PlayIcon as AppIcon,
   MessageIcon as MessageSquare,
   SearchIcon as Search,
   SettingsIcon as Settings,
@@ -104,7 +105,6 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
           {navLink("/explore", t("nav.explore"))}
           {navLink("/auctions", t("nav.auctions"))}
           {navLink("/challenges", t("nav.challenges"))}
-          {navLink("/mobile", t("nav.mobile"))}
         </nav>
 
         <div className="flex items-center gap-2">
@@ -170,6 +170,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                     {creatorSpace && viewerState !== "creator" && menuItem(creatorSpace.href, <Upload className="h-4 w-4" />, t(creatorSpace.label))}
                     {menuItem("/messages", <MessageSquare className="h-4 w-4" />, t("nav.messages"))}
                     {menuItem("/wallet", <Coins className="h-4 w-4" />, t("nav.wallet"))}
+                    {menuItem("/mobile", <AppIcon className="h-4 w-4" />, t("nav.mobile"))}
                     {menuItem("/dashboard?tab=settings", <Settings className="h-4 w-4" />, t("nav.settings"))}
                     <div className="my-1 h-px bg-surface-2" />
                     <button
