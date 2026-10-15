@@ -1,10 +1,11 @@
-import { audienceListMembers, audienceLists, db, profiles, stories, storyLikes, storyViews, tipsLedger,users } from "@orochia/db";
+import { audienceListMembers, audienceLists, contentRatings, db, profiles, stories, storyLikes, storyViews, tipsLedger,users } from "@orochia/db";
 import { BunnyApiError, BunnyStreamClient, exceedsLength, generateBunnyStreamToken, mapBunnyApiStatusToOrochia, signBunnyFileUrl } from "@orochia/media";
 import { and, asc, desc, eq, gt, inArray, isNotNull, isNull, lt, or, sql } from "drizzle-orm";
 
 import { areContacts, isApprovedFollower, paidForChallengeStory } from "./access";
 import { viewerKey } from "./engagement";
 import { bunnyStreamConfig, requireBunnyStream } from "./env";
+import { isVeiled } from "./discoverable";
 import { HttpError } from "./http";
 import { t } from "./i18n";
 import { signMediaUrl } from "./media-urls";
@@ -122,7 +123,7 @@ function playable(story: StoryRow): { url: string; thumbnailUrl: string | null }
  * "processing" until Bunny has encoded them (or "failed"): an author always finds what they just shared.
  * Opt-in, because a client that predates `state` would try to play them (the mobile app, for now).
  */
-export async function storyRail(viewerId: string | null, options: { includeOwnPending?: boolean; creatorId?: string } = {}): Promise<StoryRing[]> {
+export async function storyRail(viewerId: string | null, options: { includeOwnPending?: boolean; creatorId?: string; viewerAgeChecked?: boolean } = {}): Promise<StoryRing[]> {
   const shown = viewerId && options.includeOwnPending
     ? or(eq(stories.status, "READY"), and(eq(stories.creatorId, viewerId), eq(stories.mediaType, "VIDEO")))
     : eq(stories.status, "READY");
@@ -134,11 +135,14 @@ export async function storyRail(viewerId: string | null, options: { includeOwnPe
       avatarUrl: profiles.avatarUrl,
       minTipCents: profiles.minTipAmountCents,
       listName: audienceLists.name,
+      ratingRequiresBlur: sql<boolean>`coalesce(${contentRatings.requiresBlur}, false)`,
+      ratingIsAdult: sql<boolean>`coalesce(${contentRatings.isAdult}, false)`,
     })
     .from(stories)
     .innerJoin(users, eq(users.id, stories.creatorId))
     .leftJoin(profiles, eq(profiles.userId, stories.creatorId))
     .leftJoin(audienceLists, eq(audienceLists.id, stories.audienceListId))
+    .leftJoin(contentRatings, eq(contentRatings.id, stories.contentRatingId))
     .where(
       and(
         shown,
@@ -200,7 +204,8 @@ export async function storyRail(viewerId: string | null, options: { includeOwnPe
       liked: liked.has(r.story.id),
       audience: r.story.visibility,
       audienceListName: ring.isOwn ? (r.listName ?? null) : null,
-      isBlurred: r.story.isBlurred,
+      // The same veil as Explore (lib/discoverable.ts): an 18+ story is blurred for a visitor or an unchecked viewer; never for its author.
+      isBlurred: ring.isOwn ? r.story.isBlurred : isVeiled({ isBlurred: r.story.isBlurred, ratingRequiresBlur: r.ratingRequiresBlur, ratingIsAdult: r.ratingIsAdult }, options.viewerAgeChecked === true),
       tipsCount: ring.isOwn ? r.story.tipsCount : 0,
     };
     ring.stories.push(item);
