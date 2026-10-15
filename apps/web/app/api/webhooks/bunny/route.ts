@@ -78,6 +78,10 @@ export async function POST(req: NextRequest) {
         update.storageBytes = Math.max(0, Math.round(details.storageSize || 0));
         update.resolutions = details.availableResolutions ? details.availableResolutions.split(",").filter(Boolean) : video.resolutions;
         if (details.thumbnailFileName) update.thumbnailUrl = `${base}/${details.thumbnailFileName}`;
+        if (details.width > 0 && details.height > 0) {
+          update.width = Math.round(details.width);
+          update.height = Math.round(details.height);
+        }
       } catch (error) {
         // The video is playable either way; its length and renditions are filled on the next event.
         console.error("bunny webhook: could not read the video details", error);

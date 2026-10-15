@@ -115,6 +115,9 @@ export interface ExploreVideo {
   creatorAvatar: string | null;
   thumbnailUrl: string | null;
   previewAnimationUrl: string | null;
+  /** The source picture's size (null until encoded): lib/video-aspect.ts. */
+  width: number | null;
+  height: number | null;
   durationSeconds: number;
   visibility: VideoVisibility;
   minTipAmountCents: number;
@@ -139,6 +142,8 @@ const videoColumns = {
   creatorAvatar: profiles.avatarUrl,
   thumbnailUrl: videos.thumbnailUrl,
   previewAnimationUrl: videos.previewAnimationUrl,
+  width: videos.width,
+  height: videos.height,
   durationSeconds: videos.durationSeconds,
   visibility: videos.visibility,
   minTipAmountCents: videos.minTipAmountCents,
@@ -185,6 +190,8 @@ function toExploreVideo(row: VideoRow, viewer: ExploreViewer | null): ExploreVid
     creatorAvatar: signMediaUrl(r.creatorAvatar),
     thumbnailUrl: signMediaUrl(r.thumbnailUrl),
     previewAnimationUrl: signMediaUrl(r.previewAnimationUrl),
+    width: r.width,
+    height: r.height,
     durationSeconds: r.durationSeconds,
     visibility: r.visibility,
     minTipAmountCents: r.minTipAmountCents,

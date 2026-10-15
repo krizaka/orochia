@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { ExploreResults, ExploreVideo } from "./explore";
 import { exploreResultsByMeaning, type MeaningDeps, type SimilarDeps, similarVideos } from "./explore-semantic";
 
-const video = (id: string): ExploreVideo => ({ id, title: id, creatorName: "c", creatorUsername: "c", creatorAvatar: null, thumbnailUrl: null, previewAnimationUrl: null, durationSeconds: 1, visibility: "PUBLIC", minTipAmountCents: 0, viewsCount: 0, tipsCount: 0, likesCount: 0, commentsCount: 0, tags: [], isBlurred: false, createdAt: "2026-01-01T00:00:00.000Z" });
+const video = (id: string): ExploreVideo => ({ id, title: id, creatorName: "c", creatorUsername: "c", creatorAvatar: null, thumbnailUrl: null, previewAnimationUrl: null, width: null, height: null, durationSeconds: 1, visibility: "PUBLIC", minTipAmountCents: 0, viewsCount: 0, tipsCount: 0, likesCount: 0, commentsCount: 0, tags: [], isBlurred: false, createdAt: "2026-01-01T00:00:00.000Z" });
 const base = (ids: string[]): ExploreResults => ({ videos: ids.map(video), hasMore: false, creators: [], stories: [] });
 
 function deps(over: Partial<MeaningDeps> = {}): MeaningDeps {

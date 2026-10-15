@@ -7,11 +7,15 @@ import React, { useEffect, useRef, useState } from "react";
 import { Badge, Button, cn, IconButton, Slider } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
+import { orientationOf } from "@/lib/video-aspect";
 
 interface VideoPlayerProps {
   videoId: string;
   streamUrl?: string | null;
   posterUrl?: string | null;
+  /** The source picture's size: a vertical clip plays vertical — full height on a phone — a horizontal one full width. */
+  width?: number | null;
+  height?: number | null;
   title?: string;
   isPaywalled?: boolean;
   minTipAmountCents?: number;
@@ -34,6 +38,8 @@ export function VideoPlayer({
   videoId,
   streamUrl,
   posterUrl,
+  width,
+  height,
   title,
   isPaywalled = false,
   minTipAmountCents = 0,
@@ -176,7 +182,14 @@ export function VideoPlayer({
   return (
     <div
       ref={containerRef}
-      className="theme-dark relative aspect-video w-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-2xl group select-none"
+      className={cn(
+        "theme-dark relative w-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-2xl group select-none",
+        orientationOf(width, height) === "vertical"
+          ? "mx-auto aspect-[9/16] max-h-[calc(100dvh-5rem)] max-w-[min(100%,28rem)]"
+          : orientationOf(width, height) === "square"
+            ? "mx-auto aspect-square max-h-[calc(100dvh-5rem)]"
+            : "aspect-video",
+      )}
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => isPlaying && setShowControls(false)}
     >

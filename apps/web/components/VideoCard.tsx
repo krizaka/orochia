@@ -8,6 +8,7 @@ import { TipModal } from "@/components/TipModal";
 import { Avatar, Badge, Button, Card, cn, IconButton } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
+import { aspectClassOf } from "@/lib/video-aspect";
 import type { VideoVisibility } from "@/lib/visibility";
 
 export interface VideoCardProps {
@@ -18,6 +19,9 @@ export interface VideoCardProps {
   creatorAvatar?: string | null;
   thumbnailUrl?: string | null;
   previewAnimationUrl?: string | null;
+  /** The source picture's size: a vertical clip fills a vertical box, a horizontal one 16:9 (lib/video-aspect.ts). */
+  width?: number | null;
+  height?: number | null;
   durationSeconds: number;
   visibility: VideoVisibility;
   minTipAmountCents: number;
@@ -111,7 +115,7 @@ export function VideoCard(props: VideoCardProps) {
 }
 
 /** The picture: the thumbnail (the animated preview while hovered), the sensitive veil, the play hint and the badges. */
-function VideoCardMedia({ hovered, thumbnailUrl, previewAnimationUrl, durationSeconds, isBlurred = false, ...video }: VideoCardProps & { hovered: boolean }) {
+function VideoCardMedia({ hovered, thumbnailUrl, previewAnimationUrl, width, height, durationSeconds, isBlurred = false, ...video }: VideoCardProps & { hovered: boolean }) {
   const [revealed, setRevealed] = useState(!isBlurred);
   // A video still encoding has no picture yet: show the placeholder rather than a broken image.
   const [broken, setBroken] = useState(false);
@@ -125,7 +129,7 @@ function VideoCardMedia({ hovered, thumbnailUrl, previewAnimationUrl, durationSe
   const veiled = isBlurred && !revealed;
 
   return (
-    <Card.Media>
+    <Card.Media className={aspectClassOf(width, height)}>
       <Card.Image ref={picture} src={src} onError={() => setBroken(true)} fallback={<Play className="h-10 w-10" />} className={cn(veiled && "scale-110 blur-xl")} />
       {veiled && (
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-scrim p-4 text-center backdrop-blur-md">
