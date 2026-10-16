@@ -105,10 +105,11 @@ if (process.env.AI_ENGINE_URL === "http://127.0.0.1:4599") {
   check("a video's page offers similar videos, never itself nor what is not public", Array.isArray(details.similar) && !details.similar.some((v) => v.id === neon.id || v.id === diaries.id || v.id === rehearsal.id));
 
   // The recommender (ADR-078): an interaction leaves through the outbox, as a pseudonym — never the account id.
-  check("a like is recorded", (await alex.call(`/api/videos/${neon.id}/like`, "POST", { liked: true })).status === 200);
+  // A share always records (a like may already exist in the seed: no new like, no event).
+  check("a share is recorded", (await alex.call(`/api/videos/${neon.id}/shares`, "POST", { channel: "LINK" })).status === 200);
   let liked = null;
   for (let i = 0; i < 90 && !liked; i++) {
-    liked = engine.reco.events.find((e) => e.kind === "LIKE" && e.item === neon.id);
+    liked = engine.reco.events.find((e) => e.kind === "SHARE" && e.item === neon.id);
     if (!liked) await new Promise((r) => setTimeout(r, 1000));
   }
   check("…and reaches Orazaka's recommender through the outbox", Boolean(liked), JSON.stringify(engine.reco.events.slice(-3)));
