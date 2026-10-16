@@ -1458,6 +1458,12 @@
     }
   },
   "watch": {
+    "ageGate": {
+      "title": "18+ content",
+      "signedOut": "Sign in with an account whose age has been confirmed to watch this video.",
+      "unchecked": "Your account's age has not been confirmed, so this video stays closed.",
+      "signIn": "Sign in"
+    },
     "metaTitle": "Video",
     "metaDescription": "{title} — a video by {creator} on Orochia.",
     "notFound": "Video not found",

@@ -2,6 +2,7 @@ import { placeBid } from "@orochia/payments";
 import { after,NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import { assertAdultAccessToAuction } from "@/lib/access";
 import { announceBid, auctionHttpError, auctionIdOr404, notifyBid } from "@/lib/auctions";
 import { requireUserWithRole } from "@/lib/auth";
 import { errorResponse, jsonError } from "@/lib/http";
@@ -21,6 +22,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
     const id = auctionIdOr404((await props.params).id);
     await limitAction("bid", req, user.id, { perUser: [30, 60], perIp: [90, 60] }, "Too many bids. Wait a moment.");
     const { amountCents } = Bid.parse(await req.json());
+    await assertAdultAccessToAuction(id, user.id);
     const outcome = await placeBid({ auctionId: id, bidderId: user.id, amountCents });
     // The live feed goes out before the response, so the bidder's own screen and everyone else's agree.
     const alias = await announceBid({

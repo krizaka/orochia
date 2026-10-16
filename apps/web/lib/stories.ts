@@ -2,7 +2,8 @@ import { audienceListMembers, audienceLists, contentRatings, db, profiles, stori
 import { BunnyApiError, BunnyStreamClient, exceedsLength, generateBunnyStreamToken, mapBunnyApiStatusToOrochia, signBunnyFileUrl } from "@orochia/media";
 import { and, asc, desc, eq, gt, inArray, isNotNull, isNull, lt, or, sql } from "drizzle-orm";
 
-import { areContacts, isApprovedFollower, paidForChallengeStory } from "./access";
+import { areContacts, assertAdultAccess, isApprovedFollower, paidForChallengeStory } from "./access";
+import { adultAccessAllowed } from "./adult-access";
 import { viewerKey } from "./engagement";
 import { bunnyStreamConfig, requireBunnyStream } from "./env";
 import { isVeiled } from "./discoverable";
@@ -70,6 +71,8 @@ export interface StoryItem {
   /** Image URL, or the signed HLS playlist of a video story. */
   url: string;
   thumbnailUrl: string | null;
+  /** 18+ and the server has not checked this viewer's age: nothing is signed (`content.age_check_required`). */
+  ageCheckRequired?: boolean;
   caption: string;
   durationSeconds: number;
   createdAt: Date;
@@ -187,7 +190,9 @@ export async function storyRail(viewerId: string | null, options: { includeOwnPe
     }
     const state = storyState(r.story.status);
     // Nothing is signed before the video is playable.
-    const media = state === "ready" ? playable(r.story) : { url: "", thumbnailUrl: null };
+    // 18+ (AGENTS.md 3.A): never signed for a visitor or an account whose age the server has not checked; the author always.
+    const gated = !adultAccessAllowed({ contentRatingId: r.story.contentRatingId, creatorId: r.story.creatorId, viewer: viewerId ? { id: viewerId, isAgeVerified: options.viewerAgeChecked === true } : null });
+    const media = state === "ready" && !gated ? playable(r.story) : { url: "", thumbnailUrl: null };
     const item: StoryItem = {
       id: r.story.id,
       type: r.story.mediaType === "VIDEO" ? "video" : "image",
@@ -207,6 +212,7 @@ export async function storyRail(viewerId: string | null, options: { includeOwnPe
       // The same veil as Explore (lib/discoverable.ts): an 18+ story is blurred for a visitor or an unchecked viewer; never for its author.
       isBlurred: ring.isOwn ? r.story.isBlurred : isVeiled({ isBlurred: r.story.isBlurred, ratingRequiresBlur: r.ratingRequiresBlur, ratingIsAdult: r.ratingIsAdult }, options.viewerAgeChecked === true),
       tipsCount: ring.isOwn ? r.story.tipsCount : 0,
+      ...(gated ? { ageCheckRequired: true } : {}),
     };
     ring.stories.push(item);
     if (!item.seen && !ring.isOwn) ring.allSeen = false;
@@ -445,6 +451,8 @@ async function visibleStory(storyId: string, viewerId: string | null) {
   if (!story || story.status !== "READY" || story.expiresAt <= new Date() || !(await canViewStory(story, viewerId))) {
     throw new HttpError(404, "Story not found");
   }
+  // 18+ stories: a signed-in, age-checked account (or the author) — views, likes, replies and tips included.
+  await assertAdultAccess(story, viewerId);
   return story;
 }
 
