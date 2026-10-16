@@ -4,12 +4,15 @@ import { DEFAULT_AVATARS, DEFAULT_BANNERS } from "@/lib/presets";
 
 export const dynamic = "force-static";
 
-const AVATAR_FILES = new Set(DEFAULT_AVATARS.flatMap((p) => [`${p.id}-512.webp`, `${p.id}-256.webp`]));
-const BANNER_FILES = new Set(DEFAULT_BANNERS.map((p) => `${p.id}.webp`));
+// The zone paths are built here, from the presets, and looked up by what the visitor asked for: the request never
+// becomes part of the address that is fetched.
+const PATHS = new Map<string, string>(
+  [...DEFAULT_AVATARS.flatMap((p) => [`avatars/${p.id}-512.webp`, `avatars/${p.id}-256.webp`]), ...DEFAULT_BANNERS.map((p) => `banners/${p.id}.webp`)].map((path) => [path, `public/defaults/${path}`]),
+);
 
 /** True for a file the defaults really are (nothing else of the zone is ever reachable through this route). */
 export function isDefaultFile(kind: string, file: string): boolean {
-  return (kind === "avatars" && AVATAR_FILES.has(file)) || (kind === "banners" && BANNER_FILES.has(file));
+  return PATHS.has(`${kind}/${file}`);
 }
 
 /**
@@ -19,10 +22,11 @@ export function isDefaultFile(kind: string, file: string): boolean {
  */
 export async function GET(req: NextRequest, props: { params: Promise<{ kind: string; file: string }> }) {
   const { kind, file } = await props.params;
-  if (!isDefaultFile(kind, file)) return new NextResponse("Not found", { status: 404 });
+  const zonePath = PATHS.get(`${kind}/${file}`);
+  if (!zonePath) return new NextResponse("Not found", { status: 404 });
   const host = process.env.MEDIA_CDN_HOSTNAME;
   if (!host) return new NextResponse("Media is not configured", { status: 503 });
-  const upstream = await fetch(`https://${host}/public/defaults/${kind}/${file}`, { headers: { Referer: `${req.nextUrl.origin}/` }, cache: "force-cache" }).catch(() => null);
+  const upstream = await fetch(`https://${host}/${zonePath}`, { headers: { Referer: `${req.nextUrl.origin}/` }, cache: "force-cache" }).catch(() => null);
   if (!upstream?.ok) return new NextResponse("Not found", { status: upstream?.status === 404 ? 404 : 502 });
   return new NextResponse(upstream.body, { headers: { "content-type": "image/webp", "cache-control": "public, max-age=31536000, immutable" } });
 }
