@@ -4,7 +4,7 @@ import { db, videos } from "@orochia/db";
 import { signBunnyDownloadUrl } from "@orochia/media";
 import { eq } from "drizzle-orm";
 import { requireUserWithRole } from "@/lib/auth";
-import { canDownloadVideo } from "@/lib/access";
+import { assertAdultAccessToVideo, canDownloadVideo } from "@/lib/access";
 import { bunnyStreamConfig } from "@/lib/env";
 import { errorResponse, jsonError } from "@/lib/http";
 
@@ -16,6 +16,7 @@ export async function GET(_req: NextRequest, props: { params: Promise<{ id: stri
     const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
     const id = z.string().uuid().safeParse((await props.params).id);
     if (!id.success) return jsonError(404, "Video not found");
+    await assertAdultAccessToVideo(id.data, user.id);
     if (!(await canDownloadVideo(id.data, user.id))) return jsonError(403, "Downloading is not part of your access to this video");
     const [video] = await db.select({ guid: videos.bunnyVideoId, status: videos.status, resolutions: videos.resolutions }).from(videos).where(eq(videos.id, id.data)).limit(1);
     if (!video || video.status !== "READY") return jsonError(409, "Video is not ready yet");

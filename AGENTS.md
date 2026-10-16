@@ -150,6 +150,14 @@ orochia/                           npm workspaces
   allowed to watch it. Adult ratings are veiled for visitors whose age the server has not checked. Search is PostgreSQL
   full-text (`search_vector`, GIN, `orochia_unaccent`, simple + English + French); tags are normalised by `lib/tags.ts`
   on every write and in the address (`/explore?tag=`); ranking is pure (`lib/ranking.ts`).
+- **18+ is gated by the server, never by the visitor's word** (`lib/adult-access.ts`, applied by `lib/access.ts`; the
+  ratings are the shared list of `lib/content-ratings.ts`, MATURE / ADULT). For such an item the stream
+  (`evaluateVideoAccess`, whatever the visibility), unlock / tip / purchase intents, auction bids, challenge pledges,
+  story playback and actions, downloads and details beyond the veiled summary all refuse with `403`
+  `content.age_check_required` unless the viewer is signed in **and** the server checked their age (`isAgeVerified`:
+  date of birth, 18+) — its author always can. The browser flag `orochia_age_verified` opens nothing. The rule lives in
+  that one place (`assertAdultAccess*` for entry points); a new route that plays, unlocks or charges for media calls it
+  (`lib/adult-access.test.ts` scans the entry points; `e2e/scenarios.mjs` covers each viewer).
 - A video taken down (`removed_at` set) does not exist — feed, search, profile, playlists, details and playback
   answer as if it were absent, **for its author too**. Suspended creators' videos are not listed.
 

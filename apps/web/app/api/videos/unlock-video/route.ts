@@ -13,6 +13,7 @@ import { eq } from "drizzle-orm";
 import { after,NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import { assertAdultAccessToVideo } from "@/lib/access";
 import { requireUserWithRole } from "@/lib/auth";
 import { appUrl, isDemoMode } from "@/lib/env";
 import { errorResponse, jsonError } from "@/lib/http";
@@ -47,6 +48,7 @@ export async function POST(req: NextRequest) {
     const [video] = await db.select().from(videos).where(eq(videos.id, videoId)).limit(1);
     if (!video || video.status !== "READY") return jsonError(404, "Video not found");
     if (video.creatorId === user.id) return jsonError(400, "You already own this video");
+    await assertAdultAccessToVideo(video.id, user.id);
     if (amountCents < video.minTipAmountCents) {
       return jsonError(400, `Minimum to unlock is $${(video.minTipAmountCents / 100).toFixed(2)}`);
     }

@@ -2,6 +2,7 @@ import { pledgeChallenge } from "@orochia/payments";
 import { after,NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import { assertAdultAccessToChallenge } from "@/lib/access";
 import { requireUserWithRole } from "@/lib/auth";
 import { announcePledge, challengeHttpError, challengeIdOr404, notifyPledge } from "@/lib/challenges";
 import { errorResponse, jsonError } from "@/lib/http";
@@ -19,6 +20,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
     const id = challengeIdOr404((await props.params).id);
     await enforceRateLimit(`pledge:${user.id}`, 30, 60, t("challenge.errors.TOO_MANY"));
     const { amountCents } = Pledge.parse(await req.json());
+    await assertAdultAccessToChallenge(id, user.id);
     const outcome = await pledgeChallenge({
       challengeId: id,
       backerId: user.id,

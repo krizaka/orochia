@@ -24,7 +24,7 @@ export async function GET(req: NextRequest, props: { params: Promise<{ id: strin
     const access = await evaluateVideoAccess(id.data, user?.id);
     if (!access.allowed) {
       return NextResponse.json(
-        { allowed: false, reason: access.reason, minTipAmountCents: access.minTipAmountCents, videoTitle: access.videoTitle },
+        { allowed: false, reason: access.reason, code: access.code, minTipAmountCents: access.minTipAmountCents, videoTitle: access.videoTitle },
         { status: access.reason === "NOT_FOUND" ? 404 : 403 },
       );
     }

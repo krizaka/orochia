@@ -1117,6 +1117,66 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   await sqlClient.end();
 }
 
+// 18+ is gated by the server (AGENTS.md 3.A, #219): a MATURE / ADULT item plays, unlocks, takes bids and pledges, downloads and
+// details beyond its veiled summary only for a signed-in account whose age was checked — its author always. The rating
+// is a fixture on a public video (set and put back in the database); the visitor's own flag opens nothing.
+{
+  const { default: pg } = await import("pg");
+  const sqlClient = new pg.Client({ connectionString: process.env.DATABASE_URL || "postgresql://orochia_user:orochia_secret@localhost:5432/orochia_db?sslmode=disable" });
+  await sqlClient.connect();
+  const CODE = "content.age_check_required";
+  const refused = (r) => r.status === 403 && r.json.code === CODE;
+  const stamp = Date.now();
+  const rawEmail = `unchecked${stamp}@example.com`;
+  const reg = await register({ username: `unchecked_${stamp}`, email: rawEmail, displayName: "Unchecked", password: "a-long-password-1", dateOfBirth: "1990-01-01", isAgeVerified: true, acceptTerms: true });
+  await sqlClient.query("update users set is_age_verified = false, date_of_birth = null where email = $1", [rawEmail]);
+  const unchecked = await session(rawEmail, "a-long-password-1");
+  check("an account whose age was never checked signs in", reg.status < 300 && unchecked.status === 200, `${reg.status}/${unchecked.status}`);
+  const setRating = (id, rating) => sqlClient.query("update videos set content_rating_id = $2 where id = $1", [id, rating]);
+  const target = neon;
+  for (const rating of ["MATURE", "ADULT"]) {
+    await setRating(target.id, rating);
+    check(`${rating}: a visitor's stream is refused with the stable code`, refused(await anon.call(`/api/videos/${target.id}/stream`)));
+    check(`${rating}: …and an unchecked account's`, refused(await unchecked.call(`/api/videos/${target.id}/stream`)));
+    check(`${rating}: a checked fan plays it`, (await alex.call(`/api/videos/${target.id}/stream`)).json.allowed === true);
+    check(`${rating}: its author always does`, (await elena.call(`/api/videos/${target.id}/stream`)).json.allowed === true);
+  }
+  await setRating(target.id, "MATURE");
+  const gatedDetails = (await anon.call(`/api/videos/${target.id}/details`)).json;
+  check("details give a visitor the veiled summary only", gatedDetails.gated === true && gatedDetails.code === CODE && gatedDetails.video.description === undefined && gatedDetails.video.moreFromCreator === undefined && gatedDetails.video.isBlurred === true, JSON.stringify(gatedDetails).slice(0, 200));
+  check("…and an unchecked account the same", (await unchecked.call(`/api/videos/${target.id}/details`)).json.gated === true);
+  check("…a checked fan the whole page", (await alex.call(`/api/videos/${target.id}/details`)).json.gated === undefined);
+  check("unlock: a visitor is refused", (await anon.call(`/api/videos/unlock-video`, "POST", { videoId: target.id, amountCents: 500, gateway: "CREDITS" })).status === 401);
+  check("unlock: an unchecked account is refused with the code", refused(await unchecked.call("/api/videos/unlock-video", "POST", { videoId: target.id, amountCents: 500, gateway: "CREDITS" })));
+  check("unlock: a checked fan is not refused for their age", (await alex.call("/api/videos/unlock-video", "POST", { videoId: target.id, amountCents: 1, gateway: "CREDITS" })).json.code !== CODE);
+  check("download: an unchecked account is refused with the code", refused(await unchecked.call(`/api/videos/${target.id}/download`)));
+  check("download: a checked fan is not refused for their age", (await alex.call(`/api/videos/${target.id}/download`)).json.code !== CODE);
+
+  const hour = 3600_000;
+  const auction = await elena.call("/api/auctions", "POST", { videoId: target.id, startingPriceCents: 1000, startsAt: new Date(), endsAt: new Date(Date.now() + 2 * hour), rights: "WATCH", settlement: "CREATOR_DECIDES" });
+  check("an auction on the rated video", auction.status === 201, JSON.stringify(auction.json));
+  const auctionId = auction.json.auctionId;
+  const bidOf = (s) => s.call(`/api/auctions/${auctionId}/bids`, "POST", { amountCents: 1000 });
+  check("bid: a visitor is refused", (await anon.call(`/api/auctions/${auctionId}/bids`, "POST", { amountCents: 1000 })).status === 401);
+  check("bid: an unchecked account is refused with the code", refused(await bidOf(unchecked)));
+
+  const goal = await elena.call("/api/challenges", "POST", { kind: "GOAL", title: "Age gate fixture", description: "Fixture for the 18+ gate.", deliverable: "VIDEO", deliveryDays: 7, goalCents: 2000, deadline: new Date(Date.now() + 2 * 86400_000), reward: "BACKERS" });
+  const goalId = goal.json.challengeId;
+  await sqlClient.query("update challenges set delivered_video_id = $2 where id = $1", [goalId, target.id]);
+  check("pledge: an unchecked account is refused with the code", refused(await unchecked.call(`/api/challenges/${goalId}/pledges`, "POST", { amountCents: 500 })));
+
+  // Put the fixture back: the same actions are no longer refused for their age (this account has no credits: 402/409, not 403).
+  await sqlClient.query("update challenges set delivered_video_id = null where id = $1", [goalId]);
+  await setRating(target.id, "GENERAL");
+  check("a general rating: the unchecked account streams again", (await unchecked.call(`/api/videos/${target.id}/stream`)).json.code !== CODE);
+  check("…and is not refused its bid for its age", (await bidOf(unchecked)).json.code !== CODE);
+  check("…nor its pledge", (await unchecked.call(`/api/challenges/${goalId}/pledges`, "POST", { amountCents: 500 })).json.code !== CODE);
+  await elena.call(`/api/auctions/${auctionId}`, "DELETE", { reason: "fixture" });
+  await elena.call(`/api/challenges/${goalId}/cancel`, "POST", {});
+  await setRating(target.id, null);
+  await sqlClient.end();
+}
+
 // Challenges: a creator's all-or-nothing goal, a dare to one creator (accept or decline), an open call creators apply
 // to; pledges in credits held until delivery, paid then, given back when it does not happen. Deadlines are moved in
 // the database (the only SQL here); everything else goes through the API.

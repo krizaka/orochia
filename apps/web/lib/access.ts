@@ -1,10 +1,14 @@
-import { db, videos, videoAccessGrants, contacts, follows, challenges, challengePledges } from "@orochia/db";
+import { db, videos, videoAccessGrants, contacts, follows, challenges, challengePledges, stories, users, auctions } from "@orochia/db";
 import { isInvited } from "./audiences";
 import { eq, and, or } from "drizzle-orm";
+import { AGE_CHECK_REQUIRED, adultAccessAllowed, type AdultViewer } from "./adult-access";
+import { HttpError } from "./http";
 
 export interface AccessEvaluation {
   allowed: boolean;
-  reason?: "PAYWALL_REQUIRED" | "CONTACTS_ONLY" | "FOLLOWERS_ONLY" | "INVITED_ONLY" | "AUCTION" | "CHALLENGE" | "AGE_VERIFICATION_REQUIRED" | "NOT_FOUND";
+  reason?: "PAYWALL_REQUIRED" | "CONTACTS_ONLY" | "FOLLOWERS_ONLY" | "INVITED_ONLY" | "AUCTION" | "CHALLENGE" | "AGE_CHECK_REQUIRED" | "NOT_FOUND";
+  /** Stable machine code of the refusal, when there is one (`content.age_check_required`). */
+  code?: string;
   minTipAmountCents?: number;
   creatorId?: string;
   videoTitle?: string;
@@ -53,6 +57,41 @@ export async function canOpenCollection(
   return isInvited("collection", collection.id, viewerId);
 }
 
+/** The server's facts about a viewer for the 18+ rule: signed in, and whether the server checked their age. */
+export async function adultViewer(viewerId: string | null | undefined): Promise<AdultViewer | null> {
+  if (!viewerId) return null;
+  const [row] = await db.select({ isAgeVerified: users.isAgeVerified, suspendedAt: users.suspendedAt }).from(users).where(eq(users.id, viewerId)).limit(1);
+  return row && !row.suspendedAt ? { id: viewerId, isAgeVerified: row.isAgeVerified } : null;
+}
+
+/** Throws the stable 403 `content.age_check_required` unless the viewer may take part in this item (AGENTS.md 3.A). */
+export async function assertAdultAccess(item: { contentRatingId: string | null | undefined; creatorId: string }, viewerId: string | null | undefined): Promise<void> {
+  if (adultAccessAllowed({ ...item, viewer: await adultViewer(viewerId) })) return;
+  throw new HttpError(403, "Confirm your age to open this content", { code: AGE_CHECK_REQUIRED, reason: "AGE_CHECK_REQUIRED" });
+}
+
+export async function assertAdultAccessToVideo(videoId: string, viewerId: string | null | undefined): Promise<void> {
+  const [v] = await db.select({ contentRatingId: videos.contentRatingId, creatorId: videos.creatorId }).from(videos).where(eq(videos.id, videoId)).limit(1);
+  if (v) await assertAdultAccess(v, viewerId);
+}
+
+export async function assertAdultAccessToStory(storyId: string, viewerId: string | null | undefined): Promise<void> {
+  const [s] = await db.select({ contentRatingId: stories.contentRatingId, creatorId: stories.creatorId }).from(stories).where(eq(stories.id, storyId)).limit(1);
+  if (s) await assertAdultAccess(s, viewerId);
+}
+
+export async function assertAdultAccessToAuction(auctionId: string, viewerId: string | null | undefined): Promise<void> {
+  const [a] = await db.select({ videoId: auctions.videoId }).from(auctions).where(eq(auctions.id, auctionId)).limit(1);
+  if (a) await assertAdultAccessToVideo(a.videoId, viewerId);
+}
+
+/** A challenge carries no rating of its own: it is as adult as what was delivered for it (video or story). */
+export async function assertAdultAccessToChallenge(challengeId: string, viewerId: string | null | undefined): Promise<void> {
+  const [c] = await db.select({ videoId: challenges.deliveredVideoId, storyId: challenges.deliveredStoryId }).from(challenges).where(eq(challenges.id, challengeId)).limit(1);
+  if (c?.videoId) await assertAdultAccessToVideo(c.videoId, viewerId);
+  if (c?.storyId) await assertAdultAccessToStory(c.storyId, viewerId);
+}
+
 /**
  * Evaluates whether a viewer has permission to stream a video.
  * Enforces zero-trust IDOR prevention on media assets.
@@ -75,6 +114,11 @@ export async function evaluateVideoAccess(
   // 1. Author has unrestricted access to their own content
   if (viewerId && video.creatorId === viewerId) {
     return { allowed: true, creatorId: video.creatorId, videoTitle: video.title };
+  }
+
+  // 1b. 18+ ratings: a signed-in, age-checked account only — whatever the visibility (AGENTS.md 3.A).
+  if (!adultAccessAllowed({ contentRatingId: video.contentRatingId, creatorId: video.creatorId, viewer: await adultViewer(viewerId) })) {
+    return { allowed: false, reason: "AGE_CHECK_REQUIRED", code: AGE_CHECK_REQUIRED, creatorId: video.creatorId, videoTitle: video.title };
   }
 
   // 2. Public video
@@ -191,9 +235,10 @@ export async function evaluateVideoAccess(
 
 /** Whether an account may download a video's file: its author, or a buyer whose grant includes downloading. */
 export async function canDownloadVideo(videoId: string, userId: string): Promise<boolean> {
-  const [video] = await db.select({ creatorId: videos.creatorId, removedAt: videos.removedAt }).from(videos).where(eq(videos.id, videoId)).limit(1);
+  const [video] = await db.select({ creatorId: videos.creatorId, removedAt: videos.removedAt, contentRatingId: videos.contentRatingId }).from(videos).where(eq(videos.id, videoId)).limit(1);
   if (!video || video.removedAt) return false;
   if (video.creatorId === userId) return true;
+  if (!adultAccessAllowed({ contentRatingId: video.contentRatingId, creatorId: video.creatorId, viewer: await adultViewer(userId) })) return false;
   const [grant] = await db
     .select({ id: videoAccessGrants.id })
     .from(videoAccessGrants)
