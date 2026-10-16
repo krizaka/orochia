@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { DEFAULT_AVATARS, DEFAULT_BANNERS, defaultAvatarFor, defaultBannerFor } from "./presets";
+import { DEFAULT_AVATARS, DEFAULT_BANNERS, defaultAvatarFor, defaultBannerFor, safeImageSrc } from "./presets";
 
 describe("default avatars and banners", () => {
   it("offers 15 avatars and 9 banners, each in the product's own /defaults path", () => {
@@ -19,5 +19,13 @@ describe("default avatars and banners", () => {
   it("serves the small size for avatars on request, the 512 by default for the preset", () => {
     expect(defaultAvatarFor("x", 256)).toMatch(/-256\.webp$/);
     expect(defaultAvatarFor("x", 512)).toMatch(/-512\.webp$/);
+  });
+
+  it("keeps only http(s) and app paths as a picture source", () => {
+    expect(safeImageSrc("https://orochia-dev.b-cdn.net/banners/a.webp")).toBe("https://orochia-dev.b-cdn.net/banners/a.webp");
+    expect(safeImageSrc("/defaults/banners/mural-1.webp")).toBe("/defaults/banners/mural-1.webp");
+    expect(safeImageSrc("javascript:alert(1)")).toBeUndefined();
+    expect(safeImageSrc("//evil.example/x.png")).toBeUndefined();
+    expect(safeImageSrc(null)).toBeUndefined();
   });
 });

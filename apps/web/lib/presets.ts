@@ -65,3 +65,9 @@ export function defaultAvatarFor(seed: string, size: 256 | 512 = 256): string {
 export function defaultBannerFor(seed: string): string {
   return DEFAULT_BANNERS[hash(seed || "?") % DEFAULT_BANNERS.length].url;
 }
+
+/** A picture address that is safe to put in `src`: an http(s) URL or a path of the app — anything else (javascript:, data:) is dropped. */
+export function safeImageSrc(url: string | null | undefined): string | undefined {
+  if (!url) return undefined;
+  return /^(https?:\/\/|\/(?!\/))/i.test(url) ? url : undefined;
+}
