@@ -69,5 +69,7 @@ export function defaultBannerFor(seed: string): string {
 /** A picture address that is safe to put in `src`: an http(s) URL or a path of the app — anything else (javascript:, data:) is dropped. */
 export function safeImageSrc(url: string | null | undefined): string | undefined {
   if (!url) return undefined;
-  return /^(https?:\/\/|\/(?!\/))/i.test(url) ? url : undefined;
+  if (url.startsWith("https://") || url.startsWith("http://")) return url;
+  if (url.startsWith("/") && !url.startsWith("//")) return url;
+  return undefined;
 }
