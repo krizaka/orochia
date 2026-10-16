@@ -1,14 +1,17 @@
 /**
  * The Orazaka client — the one door through which Orochia reaches AI (AGENTS.md: products consume AI only through
- * Orazaka, never a model provider). Server-only (it holds `AI_ENGINE_API_KEY`); today it asks for one thing: embeddings
- * (`POST /api/v1/embeddings`, key scope `ai:embed`), for the Explorer.
+ * Orazaka, never a model provider). Server-only (it holds `AI_ENGINE_API_KEY`). It asks for embeddings
+ * (`POST /api/v1/embeddings`, key scope `ai:embed`) for the Explorer, and talks to the recommender
+ * (`/api/v1/recommendations/*`, scopes `reco:sync` and `reco:read`, ADR-078) through {@link callOrazaka}.
  *
  * AI is an addition, never a dependency: every failure — not configured, unreachable, refused, malformed — is a typed
  * {@link OrazakaUnavailableError} the caller answers with its non-AI path. After {@link BREAKER_FAILURES} failures in a
  * row the client stops calling for {@link BREAKER_OPEN_MS}, so a down engine costs a search nothing.
  */
 
-export type OrazakaFailure = "not_configured" | "circuit_open" | "unreachable" | "refused" | "bad_response";
+import type { z } from "zod";
+
+export type OrazakaFailure = "not_configured" | "circuit_open" | "unreachable" | "refused" | "not_found" | "bad_response";
 
 export class OrazakaUnavailableError extends Error {
   constructor(
@@ -140,4 +143,83 @@ function parseEmbeddings(body: unknown, expected: number): Omit<EmbedResult, "ms
   const dimensions = vectors[0].length;
   if (vectors.some((v) => v.length !== dimensions)) return null;
   return { runId: b.runId, model: b.model, dimensions, vectors, promptTokens: typeof b.usage?.promptTokens === "number" ? b.usage.promptTokens : 0 };
+}
+
+export interface CallOptions<T> {
+  method: "GET" | "POST";
+  /** A path under the edge, e.g. `/api/v1/recommendations/for-you`. */
+  path: string;
+  query?: Record<string, string | number | undefined>;
+  body?: unknown;
+  /** The answer's schema: parsed at the edge, a mismatch is `bad_response`. */
+  schema: z.ZodType<T>;
+  env?: OrazakaEnv;
+  timeoutMs?: number;
+  fetchImpl?: typeof fetch;
+  now?: () => number;
+  /**
+   * Whether this call opens and honours the circuit breaker (default true). Background sync passes false: it has its own
+   * retry (the outbox), and a backlog failing must not pause the shelves a person is waiting for — nor the reverse.
+   */
+  breaker?: boolean;
+}
+
+export interface CallResult<T> {
+  data: T;
+  /** `X-Orazaka-Request-Id` when Orazaka sent one — the line in its logs. */
+  requestId: string | null;
+  ms: number;
+}
+
+/**
+ * One JSON call to Orazaka's edge with the service key, behind the same circuit breaker as the embeddings. Throws
+ * {@link OrazakaUnavailableError}, never anything else; a 404 is `not_found` and does not count against the breaker (an
+ * item Orazaka has not received yet is not an outage).
+ */
+export async function callOrazaka<T>(options: CallOptions<T>): Promise<CallResult<T>> {
+  const now = options.now ?? Date.now;
+  const start = now();
+  const conn = connection(options.env ?? (process.env as OrazakaEnv));
+  if (!conn) throw new OrazakaUnavailableError("not_configured", "Orazaka is not configured");
+  const guarded = options.breaker !== false;
+  if (guarded && breaker.openUntil > start) throw new OrazakaUnavailableError("circuit_open", "Orazaka is paused after repeated failures");
+
+  const url = new URL(`${conn.url}${options.path}`);
+  for (const [key, value] of Object.entries(options.query ?? {})) {
+    if (value !== undefined && value !== "") url.searchParams.set(key, String(value));
+  }
+  const doFetch = options.fetchImpl ?? fetch;
+  let response: Response;
+  try {
+    response = await doFetch(url.toString(), {
+      method: options.method,
+      headers: {
+        authorization: `Bearer ${conn.key}`,
+        ...(options.body === undefined ? {} : { "content-type": "application/json" }),
+      },
+      body: options.body === undefined ? undefined : JSON.stringify(options.body),
+      signal: AbortSignal.timeout(options.timeoutMs ?? DEFAULT_TIMEOUT_MS),
+      cache: "no-store",
+    });
+  } catch {
+    return fail("unreachable", "Orazaka did not answer", now(), guarded);
+  }
+  if (response.status === 404) throw new OrazakaUnavailableError("not_found", "Orazaka does not know it");
+  if (!response.ok) {
+    return fail(response.status >= 500 ? "unreachable" : "refused", `Orazaka answered ${response.status}`, now(), guarded);
+  }
+  let body: unknown;
+  try {
+    body = await response.json();
+  } catch {
+    return fail("bad_response", "Orazaka answered something that is not JSON", now(), guarded);
+  }
+  const parsed = options.schema.safeParse(body);
+  if (!parsed.success) return fail("bad_response", "Orazaka answered an unexpected shape", now(), guarded);
+
+  if (guarded) {
+    breaker.failures = 0;
+    breaker.openUntil = 0;
+  }
+  return { data: parsed.data, requestId: response.headers.get("x-orazaka-request-id"), ms: now() - start };
 }

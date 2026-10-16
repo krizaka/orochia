@@ -36,6 +36,7 @@ export * from "./challenges";
 export * from "./push";
 export * from "./search";
 export * from "./explorer";
+export * from "./recommendations";
 export * from "./platform-guard";
 
 // Relations

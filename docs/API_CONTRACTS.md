@@ -185,7 +185,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/webhooks/bunny` | signed webhook | Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (MEDIA_STREAM_WEBHOOK_SECRET). |
 | `POST` | `/api/webhooks/payments/[gateway]` | signed webhook | Gateway payment notifications. |
 
-## Database tables (49)
+## Database tables (52)
 
 | Table | Drizzle export | Defined in |
 | :--- | :--- | :--- |
@@ -227,6 +227,9 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `playlist_items` | `playlistItems` | `packages/db/src/schema/playlists.ts` |
 | `playlist_members` | `playlistMembers` | `packages/db/src/schema/playlists.ts` |
 | `push_devices` | `pushDevices` | `packages/db/src/schema/push.ts` |
+| `reco_outbox` | `recoOutbox` | `packages/db/src/schema/recommendations.ts` |
+| `reco_item_sync` | `recoItemSync` | `packages/db/src/schema/recommendations.ts` |
+| `app_settings` | `appSettings` | `packages/db/src/schema/recommendations.ts` |
 | `content_ratings` | `contentRatings` | `packages/db/src/schema/reference-data.ts` |
 | `stories` | `stories` | `packages/db/src/schema/stories.ts` |
 | `story_views` | `storyViews` | `packages/db/src/schema/stories.ts` |

@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 49 tables · 26 enums · 12 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 52 tables · 27 enums · 13 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -78,6 +78,17 @@ Every foreign key, read from the schema: what each table points to (through whic
 | `created_at` | timestamp with time zone | no | `now()` |  |
 
 **Indexes:** `ai_runs_created_idx` (created_at)
+
+### `app_settings`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `domain` | varchar(40) | no |  |  |
+| `version` | integer | no |  |  |
+| `settings` | jsonb | no |  |  |
+| `reason` | text | no |  |  |
+| `created_by` | varchar(80) | no |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
 
 ### `auction_bids`
 
@@ -532,6 +543,30 @@ Every foreign key, read from the schema: what each table points to (through whic
 
 **Indexes:** `rate_limit_buckets_reset_at_idx` (reset_at)
 
+### `reco_item_sync`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `video_id` | uuid | no |  | primary key |
+| `content_hash` | varchar(64) | no |  |  |
+| `synced_at` | timestamp with time zone | no | `now()` |  |
+
+### `reco_outbox`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `dedup_key` | varchar(120) | yes |  |  |
+| `kind` | reco_outbox_kind | no |  |  |
+| `payload` | jsonb | no |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+| `attempts` | integer | no | `0` |  |
+| `next_attempt_at` | timestamp with time zone | no | `now()` |  |
+| `sent_at` | timestamp with time zone | yes |  |  |
+| `last_error` | varchar(40) | yes |  |  |
+
+**Indexes:** `reco_outbox_dedup_idx` (unique, dedup_key) · `reco_outbox_pending_idx` (next_attempt_at, partial) · `reco_outbox_sent_idx` (sent_at)
+
 ### `revoked_sessions`
 
 | Column | Type | Null | Default | Notes |
@@ -865,6 +900,7 @@ Every foreign key, read from the schema: what each table points to (through whic
 | `payment_gateway` | `CCBILL`, `SEGPAY`, `CRYPTO`, `STRIPE`, `CREDITS` |
 | `payment_intent_status` | `PENDING`, `SUCCEEDED`, `FAILED` |
 | `payout_status` | `REQUESTED`, `UNDER_REVIEW`, `PROCESSING`, `SETTLED`, `FAILED` |
+| `reco_outbox_kind` | `EVENT`, `ERASURE` |
 | `report_reason` | `NON_CONSENSUAL`, `UNDERAGE`, `DMCA_COPYRIGHT`, `TERMS_VIOLATION`, `FRAUD_SCAM` |
 | `report_status` | `OPEN`, `IN_REVIEW`, `RESOLVED` |
 | `share_channel` | `LINK`, `X`, `WHATSAPP`, `TELEGRAM`, `EMAIL`, `OTHER` |
@@ -887,3 +923,4 @@ Every foreign key, read from the schema: what each table points to (through whic
 - `0009_video_dimensions.sql`
 - `0010_sessions_valid_after.sql`
 - `0011_video_framerate.sql`
+- `0012_recommendations.sql`

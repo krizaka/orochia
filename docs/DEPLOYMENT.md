@@ -193,7 +193,8 @@ The Orazaka engine the Explorer calls (embeddings), never a model provider.
 | Variable | Production | Secret | Default | What it does |
 | :--- | :---: | :---: | :--- | :--- |
 | `AI_ENGINE_URL` | — |  |  | Base URL of the Orazaka edge (its `/edge` path): the Explorer's semantic search and recommendations. Unset: the Explorer runs on full-text search alone. |
-| `AI_ENGINE_API_KEY` | — | ✓ |  | The Orazaka API key of the Explorer, scoped `ai:embed` (embeddings only). Without it the Explorer does not call Orazaka. |
+| `AI_ENGINE_API_KEY` | — | ✓ |  | Orochia's Orazaka service key, scoped `ai:embed reco:sync reco:read` (embeddings, the recommender — ADR-078). Without it Orochia does not call Orazaka. |
+| `AI_PSEUDONYM_KEY` | recommended | ✓ | `derived from AUTH_SESSION_SECRET` | The HMAC key that turns an account id into the pseudonym Orazaka's recommender knows (never the id itself). Without it in production nothing is sent to the recommender; rotating it forgets every profile. |
 
 ### Operator console — `OPERATOR_`
 

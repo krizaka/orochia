@@ -9,6 +9,7 @@ import {
 } from "@orochia/payments";
 import { errorResponse, jsonError } from "@/lib/http";
 import { notifySettlement } from "@/lib/notifications";
+import { enqueueSettlement } from "@/lib/recommendations/recommendations.outbox";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +48,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ gateway:
       return NextResponse.json({ received: true, outcome: topup.kind });
     }
     if (outcome.kind === "SETTLED") after(() => notifySettlement(event.intentId, Boolean(outcome.tip.grantId)));
+      if (outcome.kind === "SETTLED") after(() => enqueueSettlement(event.intentId, Boolean(outcome.tip.grantId), new Date()));
     if (outcome.kind === "UNDERPAID" || outcome.kind === "GATEWAY_MISMATCH") {
       console.error(`[webhooks/payments] ${gateway.data} intent ${event.intentId}: ${outcome.kind}`);
     }

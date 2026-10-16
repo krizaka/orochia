@@ -85,7 +85,7 @@
       "id": "data",
       "name": "Data persistence",
       "path": "packages/db",
-      "tablesCount": 49,
+      "tablesCount": 52,
       "tables": [
         "auctions",
         "auction_bids",
@@ -125,6 +125,9 @@
         "playlist_items",
         "playlist_members",
         "push_devices",
+        "reco_outbox",
+        "reco_item_sync",
+        "app_settings",
         "content_ratings",
         "stories",
         "story_views",
@@ -1296,6 +1299,10 @@
       "PROCESSING",
       "SETTLED",
       "FAILED"
+    ],
+    "reco_outbox_kind": [
+      "EVENT",
+      "ERASURE"
     ],
     "report_reason": [
       "NON_CONSENSUAL",

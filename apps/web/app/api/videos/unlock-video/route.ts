@@ -18,6 +18,7 @@ import { requireUserWithRole } from "@/lib/auth";
 import { appUrl, isDemoMode } from "@/lib/env";
 import { errorResponse, jsonError } from "@/lib/http";
 import { notifySettlement } from "@/lib/notifications";
+import { enqueueSettlement } from "@/lib/recommendations/recommendations.outbox";
 import { limitAction } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -73,6 +74,7 @@ export async function POST(req: NextRequest) {
       // Credits are only kept for a settled payment.
       if (outcome.kind !== "SETTLED" && outcome.kind !== "ALREADY_SETTLED") await refundCredits({ intentId: intent.id, buyerId: user.id, amountCents });
       if (outcome.kind === "SETTLED") after(() => notifySettlement(intent.id, Boolean(outcome.tip.grantId)));
+      if (outcome.kind === "SETTLED") after(() => enqueueSettlement(intent.id, Boolean(outcome.tip.grantId), new Date()));
       return NextResponse.json({ success: true, settled: outcome.kind === "SETTLED" });
     }
 
@@ -85,6 +87,7 @@ export async function POST(req: NextRequest) {
         status: "SUCCESS",
       });
       if (outcome.kind === "SETTLED") after(() => notifySettlement(intent.id, Boolean(outcome.tip.grantId)));
+      if (outcome.kind === "SETTLED") after(() => enqueueSettlement(intent.id, Boolean(outcome.tip.grantId), new Date()));
       return NextResponse.json({ success: true, settled: outcome.kind === "SETTLED", demo: true });
     }
     if (!configured.includes(gateway)) return jsonError(400, "This payment method is not available");

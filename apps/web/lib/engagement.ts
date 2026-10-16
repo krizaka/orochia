@@ -7,6 +7,8 @@ import { HttpError } from "./http";
 import type { SessionUser } from "./auth";
 import { after } from "next/server";
 import { notifyComment } from "./notifications";
+import { enqueueInteraction } from "./recommendations/recommendations.outbox";
+import { RecoEventKind } from "./recommendations/recommendations.types";
 
 /**
  * Views, likes, comments and shares. Each counter on `videos` moves in the same transaction as the
@@ -54,6 +56,7 @@ export async function recordView(
       .returning({ id: videoViews.id });
     if (inserted.length === 0) return false;
     await tx.update(videos).set({ viewsCount: sql`${videos.viewsCount} + 1` }).where(eq(videos.id, video.id));
+    if (viewerId) await enqueueInteraction(tx, { accountId: viewerId, videoId: video.id, creatorId: video.creatorId, kind: RecoEventKind.View, at: new Date() });
     return true;
   });
 }
@@ -69,6 +72,7 @@ export async function setLike(user: SessionUser, videoId: string, liked: boolean
           .where(and(eq(videoLikes.videoId, videoId), eq(videoLikes.userId, user.id)))
           .returning({ id: videoLikes.id });
     const delta = changed.length === 0 ? 0 : liked ? 1 : -1;
+    if (delta > 0) await enqueueInteraction(tx, { accountId: user.id, videoId, kind: RecoEventKind.Like, at: new Date() });
     const [row] = await tx
       .update(videos)
       .set({ likesCount: sql`greatest(${videos.likesCount} + ${delta}, 0)` })
@@ -191,6 +195,7 @@ export async function recordShare(viewerId: string | null, videoId: string, chan
   await requireWatchable(videoId, viewerId);
   return db.transaction(async (tx) => {
     await tx.insert(videoShares).values({ videoId, userId: viewerId, channel });
+    if (viewerId) await enqueueInteraction(tx, { accountId: viewerId, videoId, kind: RecoEventKind.Share, at: new Date() });
     const [row] = await tx
       .update(videos)
       .set({ sharesCount: sql`${videos.sharesCount} + 1` })

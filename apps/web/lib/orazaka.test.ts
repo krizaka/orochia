@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { BREAKER_FAILURES, BREAKER_OPEN_MS, breakerState, embedTexts, orazakaConfigured, OrazakaUnavailableError, resetBreaker } from "./orazaka";
+import { z } from "zod";
+
+import { BREAKER_FAILURES, BREAKER_OPEN_MS, breakerState, callOrazaka, embedTexts, orazakaConfigured, OrazakaUnavailableError, resetBreaker } from "./orazaka";
 
 const env = { AI_ENGINE_URL: "https://engine.example/edge/", AI_ENGINE_API_KEY: "oz_live_secretkey" };
 
@@ -84,5 +86,37 @@ describe("the Orazaka client", () => {
       await expect(embedTexts(texts, { env, fetchImpl: fetchImpl as unknown as typeof fetch })).rejects.toThrow(/non-blank/);
     }
     expect(fetchImpl).not.toHaveBeenCalled();
+  });
+});
+
+describe("callOrazaka (the recommender's calls)", () => {
+  const schema = z.object({ ok: z.boolean() });
+
+  it("sends the query and the key, parses the answer and returns Orazaka's request id", async () => {
+    const fetchImpl = vi.fn(async () => new Response(JSON.stringify({ ok: true }), { status: 200, headers: { "x-orazaka-request-id": "req-1" } }));
+    const result = await callOrazaka({ method: "GET", path: "/api/v1/recommendations/for-you", query: { user: "p", limit: 3, exclude: "" }, schema, env, fetchImpl: fetchImpl as unknown as typeof fetch });
+    const [url, init] = fetchImpl.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe("https://engine.example/edge/api/v1/recommendations/for-you?user=p&limit=3");
+    expect((init.headers as Record<string, string>).authorization).toBe("Bearer oz_live_secretkey");
+    expect(result).toMatchObject({ data: { ok: true }, requestId: "req-1" });
+  });
+
+  it("is not_found on a 404 without opening the breaker; a wrong shape is bad_response", async () => {
+    for (let i = 0; i < BREAKER_FAILURES + 1; i++) {
+      const e = await callOrazaka({ method: "GET", path: "/x", schema, env, fetchImpl: (async () => new Response("", { status: 404 })) as unknown as typeof fetch }).catch((x) => x);
+      expect(e.code).toBe("not_found");
+    }
+    expect(breakerState().open).toBe(false);
+    const bad = await callOrazaka({ method: "POST", path: "/x", body: {}, schema, env, fetchImpl: (async () => new Response(JSON.stringify({ ok: "yes" }))) as unknown as typeof fetch }).catch((x) => x);
+    expect(bad.code).toBe("bad_response");
+  });
+
+  it("background calls (breaker: false) neither open the breaker nor are stopped by it", async () => {
+    const down = (async () => new Response("", { status: 503 })) as unknown as typeof fetch;
+    for (let i = 0; i < BREAKER_FAILURES + 2; i++) {
+      const e = await callOrazaka({ method: "POST", path: "/x", body: {}, schema, env, breaker: false, fetchImpl: down }).catch((x) => x);
+      expect(e.code).toBe("unreachable");
+    }
+    expect(breakerState().open).toBe(false);
   });
 });
