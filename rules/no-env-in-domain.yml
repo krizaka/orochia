@@ -1,5 +1,5 @@
 id: no-env-in-domain
-language: TypeScript
+language: Tsx
 severity: error
 message: "No `env` import in domain code: the value arrives as a parameter (read from the settings, or from `lib/env` at the edge)."
 rule:
@@ -11,8 +11,12 @@ rule:
       regex: '(^|/)env($|\.js$|/)'
 files:
   - "packages/*/src/**/*.ts"
+  - "packages/*/src/**/*.tsx"
   - "src/**/*.ts"
+  - "src/**/*.tsx"
 ignores:
   - "**/node_modules/**"
   - "**/*.test.ts"
+  - "**/*.test.tsx"
   - "**/env.ts"
+  - "**/env.tsx"

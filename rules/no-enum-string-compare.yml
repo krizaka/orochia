@@ -1,5 +1,5 @@
 id: no-enum-string-compare
-language: TypeScript
+language: Tsx
 severity: error
 message: "An enum-typed field compared to a string literal. Compare to the centralised constant (`AuctionStatus.Open`), never a magic string."
 note: "Heuristic: a field named status/kind/role/reason/state/direction compared with ===/!== to a string literal."
@@ -20,8 +20,12 @@ rule:
         kind: string
 files:
   - "packages/*/src/**/*.ts"
+  - "packages/*/src/**/*.tsx"
   - "src/**/*.ts"
+  - "src/**/*.tsx"
   - "apps/web/lib/**/*.ts"
+  - "apps/web/lib/**/*.tsx"
 ignores:
   - "**/node_modules/**"
   - "**/*.test.ts"
+  - "**/*.test.tsx"
