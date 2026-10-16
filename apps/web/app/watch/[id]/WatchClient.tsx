@@ -11,6 +11,8 @@ import { RelationshipActions } from "@/components/RelationshipActions";
 import { ReportModal } from "@/components/ReportModal";
 import { SaveToPlaylist } from "@/components/SaveToPlaylist";
 import { TipModal } from "@/components/TipModal";
+import { OwnerBar } from "@/components/watch/OwnerBar";
+import type { VideoVisibility } from "@/lib/visibility";
 import { Avatar, Button, buttonVariants, cn, orochiaButton, Skeleton } from "@/components/ui";
 import { VideoComments } from "@/components/VideoComments";
 import { VideoPlayer } from "@/components/VideoPlayer";
@@ -57,6 +59,10 @@ interface VideoDetails {
   moreFromCreator: RelatedVideo[];
   /** The Explorer: videos near this one in meaning (tags when it has no vector yet). */
   similar?: RelatedVideo[];
+  tags?: string[] | null;
+  /** Set by the details API from the session: only then is the owner view drawn. */
+  isOwner?: boolean;
+  tipsCount?: number;
 }
 
 // The auction panel sits beside the player on large screens and right under it on phones (mounted once, in one place).
@@ -95,6 +101,12 @@ export default function WatchClient() {
     } catch {
       setStream({ allowed: false });
     }
+  }, [videoId]);
+
+  /** Reads the details again (after the owner saved an edit): no skeleton, the page keeps its place. */
+  const reloadDetails = useCallback(async () => {
+    const res = await fetch(`/api/videos/${videoId}/details`, { cache: "no-store" });
+    if (res.ok) setDetails(((await res.json()) as { video?: VideoDetails }).video ?? null);
   }, [videoId]);
 
   useEffect(() => {
@@ -267,10 +279,18 @@ export default function WatchClient() {
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <h1 className="text-xl sm:text-2xl font-bold text-fg">{title}</h1>
                 <div className="flex items-center gap-3">
+                  {details.isOwner ? (
+                    <OwnerBar
+                      video={{ id: videoId, title: details.title, description: details.description, tags: details.tags ?? [], visibility: details.visibility as VideoVisibility, minTipAmountCents: details.minTipAmountCents, viewsCount: details.viewsCount, tipsCount: details.tipsCount ?? 0 }}
+                      creatorUsername={details.creatorUsername}
+                      onSaved={() => void reloadDetails()}
+                    />
+                  ) : (
                   <Button variant="sensual" size="sm" shape="rounded" onClick={() => setIsTipModalOpen(true)}>
                     <Sparkles className="h-4 w-4" aria-hidden />
                     <span>{isPaywalled ? t("watch.unlock") : t("watch.tip")}</span>
                   </Button>
+                  )}
                   {stream?.allowed &&
                     (user ? (
                       <Button
