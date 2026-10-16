@@ -12,6 +12,7 @@ import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
 import { defaultAvatarFor } from "@/lib/presets";
 import { frameOf, orientationOf } from "@/lib/video-aspect";
+import { qualityOf } from "@/lib/video-quality";
 import type { VideoVisibility } from "@/lib/visibility";
 
 export interface VideoCardProps {
@@ -22,6 +23,8 @@ export interface VideoCardProps {
   creatorAvatar?: string | null;
   thumbnailUrl?: string | null;
   previewAnimationUrl?: string | null;
+  /** The renditions Bunny encoded: the badge shows the best one (lib/video-quality.ts). */
+  resolutions?: string[] | null;
   /** The source picture's size: a vertical clip fills a vertical box, a horizontal one 16:9 (lib/video-aspect.ts). */
   width?: number | null;
   height?: number | null;
@@ -68,7 +71,7 @@ export function VideoCard({ aspect, layout, ...props }: VideoCardProps & { aspec
         previewSrc={previewAnimationUrl}
         fit={square ? "contain" : "cover"}
         duration={formatDuration(durationSeconds)}
-        badges={<AccessBadges {...props} />}
+        badges={<><AccessBadges {...props} /><QualityBadge resolutions={props.resolutions} width={width} height={height} /></>}
         blurred={isBlurred && !revealed}
         overlay={
           isBlurred && !revealed ? (
@@ -97,6 +100,17 @@ export function VideoCard({ aspect, layout, ...props }: VideoCardProps & { aspec
       />
       <TipModal isOpen={tipping} onClose={() => setTipping(false)} videoId={id} creatorName={creatorName} minTipAmountCents={minTipAmountCents} onUnlockedSuccess={() => setTipping(false)} />
     </>
+  );
+}
+
+/** The real encoded quality (SD / HD / 2K / 4K and the lines), nothing while the video is not encoded. */
+function QualityBadge({ resolutions, width, height }: { resolutions?: string[] | null; width?: number | null; height?: number | null }) {
+  const q = qualityOf(resolutions, width, height);
+  if (!q) return null;
+  return (
+    <Badge size="sm" tone="neutral" className={cn(ON_MEDIA, "font-mono")} data-quality={q.tier} title={t("quality.title", { label: q.label })}>
+      {q.label}
+    </Badge>
   );
 }
 

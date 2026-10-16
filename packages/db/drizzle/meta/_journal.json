@@ -78,6 +78,13 @@
       "when": 1792094263082,
       "tag": "0010_sessions_valid_after",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792128396515,
+      "tag": "0011_video_framerate",
+      "breakpoints": true
     }
   ]
 }

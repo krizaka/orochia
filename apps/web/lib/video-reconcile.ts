@@ -11,15 +11,16 @@ const GUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export const isBunnyGuid = (id: string | null | undefined): boolean => Boolean(id && GUID.test(id));
 
 /** A video unsettled, or online without its poster, is worth asking Bunny about. */
-export function needsReconcile(video: { status: string; thumbnailUrl: string | null; width?: number | null; bunnyVideoId: string | null }): boolean {
+export function needsReconcile(video: { status: string; thumbnailUrl: string | null; width?: number | null; framerate?: number | null; bunnyVideoId: string | null }): boolean {
   if (!isBunnyGuid(video.bunnyVideoId)) return false;
   if (video.status === "PENDING_UPLOAD" || video.status === "PROCESSING") return true;
-  return video.status === "READY" && (!video.thumbnailUrl || video.width === null);
+  // READY clips encoded before the frame rate was kept are asked about once more (the info panel reads it).
+  return video.status === "READY" && (!video.thumbnailUrl || video.width === null || video.framerate === null);
 }
 
 /** What the webhook writes on READY, from the Stream API's answer (shared so both paths agree). */
 export function videoMediaFromBunny(
-  details: { length?: number; storageSize?: number; availableResolutions?: string; thumbnailFileName?: string; width?: number; height?: number },
+  details: { length?: number; storageSize?: number; availableResolutions?: string; thumbnailFileName?: string; width?: number; height?: number; framerate?: number },
   hostname: string,
   guid: string,
 ) {
@@ -32,6 +33,7 @@ export function videoMediaFromBunny(
     resolutions: details.availableResolutions ? details.availableResolutions.split(",").filter(Boolean) : [],
     width: details.width && details.width > 0 ? Math.round(details.width) : null,
     height: details.height && details.height > 0 ? Math.round(details.height) : null,
+    framerate: details.framerate && details.framerate > 0 ? details.framerate : null,
   };
 }
 
@@ -48,11 +50,11 @@ export async function reconcileVideos(options: { creatorId?: string; limit?: num
   if (!process.env.MEDIA_STREAM_API_KEY?.trim()) return { checked: 0, settled: 0 };
   const stale = new Date(Date.now() - VIDEO_RECHECK_AFTER_MS);
   const candidates = await db
-    .select({ id: videos.id, bunnyVideoId: videos.bunnyVideoId, status: videos.status, thumbnailUrl: videos.thumbnailUrl, width: videos.width, creatorId: videos.creatorId })
+    .select({ id: videos.id, bunnyVideoId: videos.bunnyVideoId, status: videos.status, thumbnailUrl: videos.thumbnailUrl, width: videos.width, framerate: videos.framerate, creatorId: videos.creatorId })
     .from(videos)
     .where(
       and(
-        or(inArray(videos.status, ["PENDING_UPLOAD", "PROCESSING"]), and(eq(videos.status, "READY"), or(isNull(videos.thumbnailUrl), isNull(videos.width)))),
+        or(inArray(videos.status, ["PENDING_UPLOAD", "PROCESSING"]), and(eq(videos.status, "READY"), or(isNull(videos.thumbnailUrl), isNull(videos.width), isNull(videos.framerate)))),
         sql`${videos.bunnyVideoId} ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'`,
         isNull(videos.removedAt),
         lt(videos.updatedAt, stale),

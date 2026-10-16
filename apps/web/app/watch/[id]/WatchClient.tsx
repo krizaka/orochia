@@ -12,6 +12,7 @@ import { ReportModal } from "@/components/ReportModal";
 import { SaveToPlaylist } from "@/components/SaveToPlaylist";
 import { TipModal } from "@/components/TipModal";
 import { OwnerBar } from "@/components/watch/OwnerBar";
+import { VideoInfo } from "@/components/watch/VideoInfo";
 import type { VideoVisibility } from "@/lib/visibility";
 import { Avatar, Button, buttonVariants, cn, orochiaButton, Skeleton } from "@/components/ui";
 import { VideoComments } from "@/components/VideoComments";
@@ -63,6 +64,9 @@ interface VideoDetails {
   /** Set by the details API from the session: only then is the owner view drawn. */
   isOwner?: boolean;
   tipsCount?: number;
+  resolutions?: string[] | null;
+  framerate?: number | null;
+  status?: string | null;
 }
 
 // The auction panel sits beside the player on large screens and right under it on phones (mounted once, in one place).
@@ -364,6 +368,8 @@ export default function WatchClient() {
                   </Link>
                 </div>
               </div>
+
+              <VideoInfo video={{ width: details.width, height: details.height, resolutions: details.resolutions, framerate: details.framerate, durationSeconds: details.durationSeconds, createdAt: details.createdAt, status: details.status, description: details.description }} />
 
               {details.description && (
                 <p className="mt-4 text-sm text-fg-secondary leading-relaxed bg-surface-2/30 rounded-2xl p-4 border border-border-subtle whitespace-pre-line shadow-xs">

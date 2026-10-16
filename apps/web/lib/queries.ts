@@ -21,6 +21,8 @@ export interface VideoSummary {
   creatorAvatar: string | null;
   thumbnailUrl: string | null;
   previewAnimationUrl: string | null;
+  /** The renditions Bunny encoded (`["480p","360p"]`): the quality badge reads the best one. */
+  resolutions?: string[] | null;
   /** The source picture's size (null until encoded): the card keeps the clip's orientation (lib/video-aspect.ts). */
   width: number | null;
   height: number | null;
@@ -45,6 +47,7 @@ const videoSummaryColumns = {
   creatorAvatar: profiles.avatarUrl,
   thumbnailUrl: videos.thumbnailUrl,
   previewAnimationUrl: videos.previewAnimationUrl,
+  resolutions: videos.resolutions,
   width: videos.width,
   height: videos.height,
   durationSeconds: videos.durationSeconds,
@@ -229,6 +232,9 @@ export async function creatorVideos(creatorId: string, limit = 24, viewerAgeChec
 export interface VideoDetails extends VideoSummary {
   description: string | null;
   tags: string[] | null;
+  /** Frames per second read from the file, and the encoding state: for the info panel. */
+  framerate: number | null;
+  status: string;
   creatorId: string;
   creatorBio: string | null;
   createdAt: Date;
@@ -244,6 +250,8 @@ export async function videoDetails(videoId: string, viewerAgeChecked = false): P
       ...videoSummaryColumns,
       description: videos.description,
       tags: videos.tags,
+      framerate: videos.framerate,
+      status: videos.status,
       creatorId: videos.creatorId,
       creatorBio: profiles.bio,
       createdAt: videos.createdAt,
