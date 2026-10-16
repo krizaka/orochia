@@ -1800,7 +1800,8 @@
       "lists": "Lists",
       "invitations": "Invitations",
       "treasury": "Treasury",
-      "settings": "Settings"
+      "settings": "Settings",
+      "insights": "Insights"
     },
     "loadError": "Your dashboard could not be loaded. Please try again later.",
     "stats": {
@@ -2978,5 +2979,40 @@
         ]
       }
     }
+  },
+  "insights": {
+    "metaTitle": "Insights · Orochia",
+    "title": "Insights",
+    "subtitle": "How your videos engage people, which tags work and when your audience is around — counts only, never a person.",
+    "offTitle": "Insights are not on yet",
+    "offBody": "They open with personalised recommendations. Your earnings and views are already in Earnings.",
+    "unavailableTitle": "Insights are out of reach for a moment",
+    "unavailableBody": "Nothing is lost: the figures come back on their own. Earnings and views are in Earnings.",
+    "toEarnings": "Open Earnings",
+    "videos": {
+      "title": "Your videos",
+      "hint": "Views, then likes, saves, shares, tips and unlocks per view.",
+      "empty": "Figures appear once people watch your public videos.",
+      "line": "{views} views · {engagements} engagements · {rate}%",
+      "watched": "{pct}% watched"
+    },
+    "tags": {
+      "title": "Tags that work",
+      "hint": "Engagement per view of the videos that carry each tag.",
+      "empty": "Tag your videos to see which subjects engage best.",
+      "line": "{videos} videos · {rate}%"
+    },
+    "hours": {
+      "title": "When your audience engages",
+      "hint": "Hours of the week (UTC) with the most engagement, shown from {min} different people.",
+      "empty": "Not enough people yet to say.",
+      "slot": "{day} {hour}:00 UTC"
+    },
+    "audience": {
+      "title": "Your audience also watches",
+      "hint": "Other creators followed by at least {min} of your viewers — never named.",
+      "line": "{count} other creators share your audience."
+    },
+    "weekdays": "Mon Tue Wed Thu Fri Sat Sun"
   }
 }

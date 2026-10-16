@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  BarChart3,
   Clapperboard,
   CreditCard,
   Film,
@@ -259,6 +260,12 @@ function DashboardContent() {
             <Link href="/earnings" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-fg-secondary hover:text-fg hover:bg-surface-2 transition-all">
               <CreditCard className="h-3.5 w-3.5 text-fg-success" />
               <span>{t("dashboard.tabs.earnings")}</span>
+            </Link>
+          )}
+          {isCreator && (
+            <Link href="/insights" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-fg-secondary hover:text-fg hover:bg-surface-2 transition-all">
+              <BarChart3 className="h-3.5 w-3.5 text-fg-accent" />
+              <span>{t("dashboard.tabs.insights")}</span>
             </Link>
           )}
         </div>
