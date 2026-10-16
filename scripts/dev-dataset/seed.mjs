@@ -27,6 +27,8 @@ const base = opt("base", "https://dev.orochia.com").replace(/\/$/, "");
 const mediaDir = opt("media-dir");
 const credentialsFile = opt("env-file", path.join(os.homedir(), "Documents", "krizaka", ["qa", "env"].join(".")));
 const only = opt("only");
+// --profile-media <folder from generate-profile-media.mjs>: each creator gets the avatar and cover named in dataset.json, through /api/uploads then the profile.
+const profileMedia = opt("profile-media");
 const dry = flag("dry-run");
 const prune = flag("prune");
 
@@ -59,7 +61,7 @@ async function session(prefix) {
   const jar = new Map();
   const call = async (url, init = {}) => {
     const cookie = [...jar].map(([k, v]) => `${k}=${v}`).join("; ");
-    const res = await fetch(base + url, { ...init, headers: { "content-type": "application/json", cookie, ...(init.headers ?? {}) }, redirect: "manual" });
+    const res = await fetch(base + url, { ...init, headers: { ...(init.body instanceof FormData ? {} : { "content-type": "application/json" }), cookie, ...(init.headers ?? {}) }, redirect: "manual" });
     for (const c of res.headers.getSetCookie?.() ?? []) {
       const [pair] = c.split(";");
       const i = pair.indexOf("=");
@@ -133,6 +135,25 @@ for (const creator of dataset.creators) {
   if (opened.status === 403) {
     await call("/api/me/birth-date", { method: "POST", body: JSON.stringify({ dateOfBirth: "1990-01-01" }) });
     await call("/api/me/become-creator", { method: "POST" });
+  }
+  if (profileMedia && creator.avatar && creator.banner) {
+    const send = async (category, file) => {
+      const form = new FormData();
+      form.set("category", category);
+      form.set("file", new Blob([fs.readFileSync(path.join(profileMedia, category, file))], { type: "image/webp" }), file);
+      const res = await call("/api/uploads", { method: "POST", body: form });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(`upload of ${file} refused (${res.status})`);
+      return body.data?.ref ?? body.data?.key ?? body.data?.path ?? body.data;
+    };
+    try {
+      const avatar = await send("avatars", `${creator.avatar}-512.webp`);
+      const banner = await send("banners", `${creator.banner}.webp`);
+      const set = await call("/api/me/profile", { method: "PUT", body: JSON.stringify({ avatar, banner }) });
+      console.log(`  avatar + cover ${set.ok ? "set" : `refused (${set.status})`}`);
+    } catch (error) {
+      console.log(`  ! avatar/cover: ${error.message}`);
+    }
   }
   const links = creator.websiteUrl ? { websiteUrl: creator.websiteUrl } : {};
   const profile = await call("/api/me/profile", { method: "PUT", body: JSON.stringify({ displayName: creator.displayName, bio: `${creator.bio} — ${creator.niche}`, ...links }) });

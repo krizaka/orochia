@@ -7,9 +7,10 @@ import React, { useState } from "react";
 
 import { TipModal } from "@/components/TipModal";
 import { Badge, Button, cn } from "@/components/ui";
+import { isAdultRating } from "@/lib/content-ratings";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
-import { isAdultRating } from "@/lib/content-ratings";
+import { defaultAvatarFor } from "@/lib/presets";
 import { frameOf, orientationOf } from "@/lib/video-aspect";
 import type { VideoVisibility } from "@/lib/visibility";
 
@@ -82,7 +83,7 @@ export function VideoCard({ aspect, layout, ...props }: VideoCardProps & { aspec
         fallback={<Play className="h-10 w-10" />}
         creator={{
           name: creatorName,
-          avatarSrc: creatorAvatar,
+          avatarSrc: creatorAvatar ?? defaultAvatarFor(creatorName),
           href: creatorUsername ? `/@${creatorUsername}` : undefined,
           defaultAvatar: { brand: "orochia", seed: creatorName },
         }}

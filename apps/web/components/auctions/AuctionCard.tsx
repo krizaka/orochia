@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Avatar, Badge, Card, Countdown } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
+import { defaultAvatarFor } from "@/lib/presets";
 
 import { auctionCountdown, auctionPrice } from "./auction-presenter";
 import { AuctionStatusBadge } from "./AuctionStatusBadge";
@@ -42,7 +43,7 @@ export function AuctionCard({ auction: a, index = 0 }: { auction: AuctionCardVie
             {countdown && <Countdown size="sm" label={t(countdown.labelKey)} target={countdown.target} />}
           </div>
           <Card.Footer>
-            <Avatar src={a.creatorAvatar} defaultAvatar={{ brand: "orochia", seed: a.creatorName }} size="xs" fallback={a.creatorName.charAt(0)} />
+            <Avatar src={a.creatorAvatar} defaultAvatar={{ brand: "orochia", seed: a.creatorName }} fallbackSrc={defaultAvatarFor(a.creatorName)} size="xs" fallback={a.creatorName.charAt(0)} />
             <span className="min-w-0 flex-1 truncate">{a.creatorName}</span>
             <span className="shrink-0 tabular-nums">{t("auction.bids", { count: a.bidsCount })}</span>
           </Card.Footer>

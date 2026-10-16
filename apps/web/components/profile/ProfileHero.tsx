@@ -4,11 +4,11 @@ import { BadgeCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
+import { ProfileStoriesRow, StoryAvatarRing } from "@/components/stories/ProfileStories";
 import { Avatar, Badge, SocialIcon } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { type MessageKey,t } from "@/lib/i18n";
-
-import { ProfileStoriesRow, StoryAvatarRing } from "@/components/stories/ProfileStories";
+import { defaultAvatarFor, defaultBannerFor } from "@/lib/presets";
 
 import { PictureQuickEdit } from "./PictureQuickEdit";
 
@@ -61,11 +61,7 @@ export function ProfileHero({
     <section className="relative mb-8 overflow-visible rounded-3xl border border-border-default bg-surface-1/60 shadow-2xl shadow-accent/5 backdrop-blur-sm">
       {/* Cover */}
       <div className="group relative h-36 overflow-hidden rounded-t-3xl sm:h-56">
-        {banner ? (
-          <img src={banner} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.02]" />
-        ) : (
-          <div className="h-full w-full bg-[radial-gradient(120%_120%_at_0%_0%,rgba(139,92,246,0.55),transparent_55%),radial-gradient(120%_120%_at_100%_100%,rgba(236,72,153,0.45),transparent_55%)] bg-surface-2" />
-        )}
+        <img src={banner ?? defaultBannerFor(displayName)} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.02]" />
         <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-surface-0/70 via-transparent to-transparent" />
         {editable && (
           <PictureQuickEdit
@@ -88,7 +84,7 @@ export function ProfileHero({
               {/* Inside a ProfileStories (the public page), the picture carries the story ring and opens the stories. */}
               <StoryAvatarRing>
                 <div className="h-28 w-28 overflow-hidden rounded-4xl bg-surface-3 ring-4 ring-border-subtle shadow-2xl shadow-accent/30 sm:h-36 sm:w-36">
-                  <Avatar src={avatar} defaultAvatar={{ brand: "orochia", seed: displayName }} alt={displayName} fallback={displayName.charAt(0)} className="h-full w-full rounded-none text-3xl" />
+                  <Avatar src={avatar} defaultAvatar={{ brand: "orochia", seed: displayName }} fallbackSrc={defaultAvatarFor(displayName)} alt={displayName} fallback={displayName.charAt(0)} className="h-full w-full rounded-none text-3xl" />
                 </div>
               </StoryAvatarRing>
               {editable && (

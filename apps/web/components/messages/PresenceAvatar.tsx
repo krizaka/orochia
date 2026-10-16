@@ -6,6 +6,7 @@ import React from "react";
 import { timeAgo } from "@/components/notifications/useNotifications";
 import { Avatar, cn } from "@/components/ui";
 import { t } from "@/lib/i18n";
+import { defaultAvatarFor } from "@/lib/presets";
 
 import type { PresenceView } from "./types";
 
@@ -38,7 +39,7 @@ export function PresenceAvatar({
   const state = presence?.state;
   return (
     <span className={cn("relative inline-flex shrink-0", className)}>
-      <Avatar src={src} defaultAvatar={{ brand: "orochia", seed: name }} alt="" size={size} fallback={name ? name.charAt(0).toUpperCase() : <UserIcon size={16} />} className="border border-border-default" />
+      <Avatar src={src} defaultAvatar={{ brand: "orochia", seed: name }} fallbackSrc={defaultAvatarFor(name)} alt="" size={size} fallback={name ? name.charAt(0).toUpperCase() : <UserIcon size={16} />} className="border border-border-default" />
       {(state === "online" || state === "away") && (
         <span
           aria-hidden

@@ -8,7 +8,9 @@
       "displayName": "Lena Voss",
       "bio": "Night sessions: live jazz, rainy city streets and fires with a guitar. New clip every week.",
       "niche": "nightlife & music",
-      "websiteUrl": "https://example.com/lena-voss"
+      "websiteUrl": "https://example.com/lena-voss",
+      "avatar": "painterly-1",
+      "banner": "neon-1"
     },
     {
       "key": "noah",
@@ -17,7 +19,9 @@
       "displayName": "Noah Rivera",
       "bio": "Kitchen, beach days and summer evenings: what I cook, where we dance, what we wear.",
       "niche": "food & summer lifestyle",
-      "websiteUrl": "https://example.com/noah-rivera"
+      "websiteUrl": "https://example.com/noah-rivera",
+      "avatar": "clay-1",
+      "banner": "mural-2"
     },
     {
       "key": "mira",
@@ -26,7 +30,9 @@
       "displayName": "Mira Castellanos",
       "bio": "Trails, harbours and deserts: slow travel, filmed where the signal ends.",
       "niche": "travel & riverside",
-      "websiteUrl": "https://example.com/mira-castellanos"
+      "websiteUrl": "https://example.com/mira-castellanos",
+      "avatar": "zine-2",
+      "banner": "skyline-1"
     },
     {
       "key": "kofi",
@@ -35,7 +41,9 @@
       "displayName": "Kofi Mensah",
       "bio": "Strength and mobility, five minutes at a time, before the city wakes up.",
       "niche": "wellness & fitness",
-      "websiteUrl": "https://example.com/kofi-mensah"
+      "websiteUrl": "https://example.com/kofi-mensah",
+      "avatar": "zine-1",
+      "banner": "aurora-3"
     },
     {
       "key": "aiko",
@@ -44,7 +52,9 @@
       "displayName": "Aiko Tanaka",
       "bio": "Ink, paint and walls: process clips from a Montreal studio.",
       "niche": "art & design",
-      "websiteUrl": "https://example.com/aiko-tanaka"
+      "websiteUrl": "https://example.com/aiko-tanaka",
+      "avatar": "graphic-1",
+      "banner": "stairs-1"
     }
   ],
   "videos": [

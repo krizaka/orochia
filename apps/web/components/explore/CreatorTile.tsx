@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Avatar, buttonVariants, Card, cn } from "@/components/ui";
 import type { ExploreCreator } from "@/lib/explore";
 import { t } from "@/lib/i18n";
+import { defaultAvatarFor } from "@/lib/presets";
 
 /** A creator to follow: cover, picture, name, @username, audience and public work — the whole card opens the profile. */
 export function CreatorTile({ creator: c, index = 0 }: { creator: ExploreCreator; index?: number }) {
@@ -14,7 +15,7 @@ export function CreatorTile({ creator: c, index = 0 }: { creator: ExploreCreator
           <Card.Image src={c.bannerUrl} fallback={<span className="h-full w-full bg-linear-to-br from-accent/30 via-accent-2/20 to-media" />} />
         </Card.Media>
         <Card.Body className="-mt-9 items-center gap-2 text-center">
-          <Avatar src={c.avatarUrl} defaultAvatar={{ brand: "orochia", seed: c.displayName }} alt="" fallback={c.displayName.charAt(0)} className="h-16 w-16 rounded-2xl border-4 border-surface-1 shadow-lg" />
+          <Avatar src={c.avatarUrl} defaultAvatar={{ brand: "orochia", seed: c.displayName }} fallbackSrc={defaultAvatarFor(c.displayName)} alt="" fallback={c.displayName.charAt(0)} className="h-16 w-16 rounded-2xl border-4 border-surface-1 shadow-lg" />
           <div className="min-w-0">
             <Card.Title className="flex items-center justify-center gap-1 truncate text-sm">
               <span className="truncate">{c.displayName}</span>

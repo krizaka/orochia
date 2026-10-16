@@ -1,24 +1,26 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import { Bell, Check, ExternalLink, Flame, KeyRound,Link2, Lock, User, UserX, Wallet } from "lucide-react";
 import Link from "next/link";
-import { Bell, Check, ExternalLink, Flame, Link2, Lock, User, UserX, Wallet, KeyRound } from "lucide-react";
-import { useAuth } from "@/lib/auth-context";
+import React, { useCallback, useEffect, useState } from "react";
+
+import { latestAdultBirthDate } from "@/components/BirthDateField";
 import {
   Avatar,
   Button,
   buttonVariants,
   Chip,
+  cn,
   Input,
   RadioGroup,
   SocialIcon,
   Spinner,
   Switch,
   Textarea,
-  cn,
 } from "@/components/ui";
-import { latestAdultBirthDate } from "@/components/BirthDateField";
-import { t, type MessageKey } from "@/lib/i18n";
+import { useAuth } from "@/lib/auth-context";
+import { type MessageKey,t } from "@/lib/i18n";
+import { defaultAvatarFor } from "@/lib/presets";
 
 interface BlockedUser {
   id: string;
@@ -521,7 +523,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
               {blocked.map((b) => (
                 <li key={b.id} className="flex items-center justify-between gap-3 py-3 text-sm">
                   <span className="flex items-center gap-3">
-                    <Avatar size="sm" src={b.avatarUrl} defaultAvatar={{ brand: "orochia", seed: b.id }} fallback={<User className="h-4 w-4" aria-hidden />} />
+                    <Avatar size="sm" src={b.avatarUrl} defaultAvatar={{ brand: "orochia", seed: b.id }} fallbackSrc={defaultAvatarFor(b.id)} fallback={<User className="h-4 w-4" aria-hidden />} />
                     <span>
                       <span className="font-semibold text-fg">{b.displayName || b.blockedUsername}</span>
                       <span className="ml-1.5 font-mono text-xs text-fg-muted">@{b.blockedUsername}</span>

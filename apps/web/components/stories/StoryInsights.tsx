@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { Avatar, Button, Chip, Dialog, EmptyState, Select, Sheet, Skeleton, Tabs, toast } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
+import { defaultAvatarFor } from "@/lib/presets";
 
 import { STORY_AUDIENCE_CHOICES, type StoryAudienceId, type StoryItem } from "./types";
 
@@ -29,7 +30,7 @@ interface Insights {
 function PersonRow({ person, children }: { person: Person; children?: React.ReactNode }) {
   const inner = (
     <>
-      <Avatar src={person.avatarUrl} defaultAvatar={{ brand: "orochia", seed: person.displayName }} alt="" fallback={(person.displayName || "?").charAt(0)} className="h-9 w-9 shrink-0 rounded-xl" />
+      <Avatar src={person.avatarUrl} defaultAvatar={{ brand: "orochia", seed: person.displayName }} fallbackSrc={defaultAvatarFor(person.displayName)} alt="" fallback={(person.displayName || "?").charAt(0)} className="h-9 w-9 shrink-0 rounded-xl" />
       <span className="min-w-0 flex-1">
         <span className="block truncate text-sm font-semibold text-fg">{person.displayName || t("stories.insights.formerAccount")}</span>
         {person.username && <span className="block truncate font-mono text-[11px] text-fg-muted">@{person.username}</span>}

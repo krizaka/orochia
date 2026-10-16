@@ -11,6 +11,7 @@ import { VideoGrid } from "@/components/VideoGrid";
 import { useAuth } from "@/lib/auth-context";
 import { feedEmptyActions, type FeedEmptyKind, type FeedTab, type ViewerState } from "@/lib/creator-journey";
 import { t } from "@/lib/i18n";
+import { defaultAvatarFor } from "@/lib/presets";
 import { aspectClassOf, orientationOf } from "@/lib/video-aspect";
 
 interface FeedFilterTabsProps {
@@ -135,7 +136,7 @@ export function FeedFilterTabs({ initialVideos, followingVideos = [], viewer, un
                   href={video.creatorUsername ? `/@${video.creatorUsername}` : "#"}
                   className="flex items-center gap-3 group"
                 >
-                  <Avatar src={video.creatorAvatar} defaultAvatar={{ brand: "orochia", seed: video.creatorName }} alt={video.creatorName} fallback={video.creatorName.charAt(0)} className="h-10 w-10 rounded-xl border border-accent/40" />
+                  <Avatar src={video.creatorAvatar} defaultAvatar={{ brand: "orochia", seed: video.creatorName }} fallbackSrc={defaultAvatarFor(video.creatorName)} alt={video.creatorName} fallback={video.creatorName.charAt(0)} className="h-10 w-10 rounded-xl border border-accent/40" />
                   <div>
                     <h4 className="text-xs sm:text-sm font-bold text-fg group-hover:text-fg-accent transition-colors">
                       {video.creatorName}
