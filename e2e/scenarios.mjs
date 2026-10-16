@@ -610,7 +610,7 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("a link to another site is refused", (await put(alex, { socialLinks: { instagram: "https://evil.example/x" } })).status === 400);
   check("a javascript: website is refused", (await put(alex, { websiteUrl: "javascript:alert(1)" })).status === 400);
   check("a picture URL chosen by the client is refused", (await put(alex, { avatar: "https://tracker.example/p.gif" })).status === 400);
-  check("a preset picture is accepted", (await put(alex, { avatar: "avatar-02" })).status === 200 && (await alex.call("/api/me/profile")).json.profile.avatarUrl === "/defaults/avatars/avatar-02.svg");
+  check("a preset picture is accepted", (await put(alex, { avatar: "clay-2" })).status === 200 && (await alex.call("/api/me/profile")).json.profile.avatarUrl === "/defaults/avatars/clay-2-512.webp");
   check("notification choices are kept", (await put(alex, { emailsOff: ["newMessage", "bogus"] })).status === 200 && JSON.stringify((await alex.call("/api/me/profile")).json.profile.emailsOff) === '["newMessage"]');
   check("a recorded date of birth cannot be rewritten", (await alex.call("/api/me/birth-date", "POST", { dateOfBirth: "1980-01-01" })).status === 409);
   check("a member has a public page", (await fetch(`${B}/creators/alex_vance`)).status === 200);
@@ -795,7 +795,7 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   const ratings = (await anon.call("/api/reference/content-ratings")).json.ratings;
   check("content ratings served", Array.isArray(ratings) && ratings.some((r) => r.id === "GENERAL"));
   const presets = (await anon.call("/api/reference/presets")).json;
-  check("preset assets served", Array.isArray(presets.avatars) && Array.isArray(presets.banners) && presets.avatars.length >= 8);
+  check("preset assets served", Array.isArray(presets.avatars) && Array.isArray(presets.banners) && presets.avatars.length >= 15);
 }
 
 // User Invitations
