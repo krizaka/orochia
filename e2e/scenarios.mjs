@@ -106,7 +106,7 @@ if (process.env.AI_ENGINE_URL === "http://127.0.0.1:4599") {
 
   // The recommender (ADR-078): an interaction leaves through the outbox, as a pseudonym — never the account id.
   // A share always records (a like may already exist in the seed: no new like, no event).
-  check("a share is recorded", (await alex.call(`/api/videos/${neon.id}/shares`, "POST", { channel: "LINK" })).status === 200);
+  check("a share is recorded", (await alex.call(`/api/videos/${neon.id}/shares`, "POST", { channel: "LINK" })).status === 201);
   let liked = null;
   for (let i = 0; i < 90 && !liked; i++) {
     liked = engine.reco.events.find((e) => e.kind === "SHARE" && e.item === neon.id);
