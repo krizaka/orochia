@@ -80,7 +80,7 @@ async function session(prefix) {
 /** The creator's own videos, whatever their state (a clip still encoding counts: a re-run never uploads it twice). */
 async function listOwn(call) {
   const res = await (await call("/api/me/dashboard")).json();
-  return (res.data?.uploads ?? []).filter((v) => !v.removedAt).map((v) => ({ id: v.id, title: v.title, width: v.width, height: v.height, status: v.status }));
+  return (res.data?.uploads ?? []).filter((v) => !v.removedAt).map((v) => ({ id: v.id, title: v.title, width: v.width, height: v.height, status: v.status, description: v.description ?? "" }));
 }
 
 async function sendOriginal(file, info) {
@@ -120,8 +120,9 @@ for (const creator of dataset.creators) {
   const wanted = dataset.videos.filter((v) => v.creator === creator.key);
   const call = await session(creator.credentials);
   const have = await listOwn(call);
-  const { upload, remove } = diffCreator(wanted, have);
-  console.log(`\n${creator.displayName} (@${creator.username}): ${have.length} now · ${upload.length} to upload · ${prune ? remove.length : 0} to delete`);
+  const stale = (w, h) => Boolean(runOf(w.file)?.sound) && !h.description.includes("sound:") && fs.existsSync(path.join(mediaDir, w.file));
+  const { upload, remove, replace } = diffCreator(wanted, have, stale);
+  console.log(`\n${creator.displayName} (@${creator.username}): ${have.length} now · ${upload.length} to upload · ${replace.length} to replace (sound) · ${prune ? remove.length : 0} to delete`);
   const missing = upload.filter((v) => !fs.existsSync(path.join(mediaDir, v.file)) || !runOf(v.file));
   for (const v of missing) console.log(`  ! ${v.file}: not in ${mediaDir} (or no run in manifest.json) — generate it first`);
   if (dry) {
@@ -158,7 +159,7 @@ for (const creator of dataset.creators) {
   const links = creator.websiteUrl ? { websiteUrl: creator.websiteUrl } : {};
   const profile = await call("/api/me/profile", { method: "PUT", body: JSON.stringify({ displayName: creator.displayName, bio: `${creator.bio} — ${creator.niche}`, ...links }) });
   console.log(`  profile ${profile.ok ? "set" : `refused (${profile.status})`}`);
-  for (const h of prune ? remove : []) {
+  for (const h of [...replace, ...(prune ? remove : [])]) {
     const res = await call(`/api/videos/${h.id}`, { method: "DELETE" });
     console.log(`  - ${h.title}: ${res.ok ? "deleted" : `kept (${res.status}: ${(await res.json().catch(() => ({}))).error ?? ""})`}`);
   }

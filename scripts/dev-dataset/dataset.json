@@ -95,42 +95,6 @@
       ]
     },
     {
-      "creator": "lena",
-      "file": "vinyl-spin.mp4",
-      "orientation": "vertical",
-      "title": "Vinyl on the turntable, close up",
-      "description": "A record spinning under the needle, the groove catching the light.",
-      "tags": [
-        "music",
-        "vinyl",
-        "dj"
-      ]
-    },
-    {
-      "creator": "lena",
-      "file": "neon-alley.mp4",
-      "orientation": "vertical",
-      "title": "Neon sign flickering in a rainy alley",
-      "description": "A pink sign buzzing above wet cobblestones.",
-      "tags": [
-        "nightlife",
-        "neon",
-        "city"
-      ]
-    },
-    {
-      "creator": "lena",
-      "file": "dj-hands.mp4",
-      "orientation": "vertical",
-      "title": "Hands on the mixer, last track of the night",
-      "description": "Faders sliding up while the lights pulse.",
-      "tags": [
-        "music",
-        "dj",
-        "nightlife"
-      ]
-    },
-    {
       "creator": "noah",
       "file": "fresh-pasta.mp4",
       "orientation": "horizontal",
@@ -190,138 +154,6 @@
         "fitness",
         "yoga",
         "morning"
-      ]
-    },
-    {
-      "creator": "noah",
-      "file": "latte-pour.mp4",
-      "orientation": "vertical",
-      "title": "Pouring a latte, top-down",
-      "description": "Milk meeting espresso, the pattern forming in the cup.",
-      "tags": [
-        "food",
-        "coffee",
-        "latte"
-      ]
-    },
-    {
-      "creator": "noah",
-      "file": "pottery-wheel.mp4",
-      "orientation": "vertical",
-      "title": "Clay on the wheel, hands only",
-      "description": "A bowl rising from a lump of wet clay.",
-      "tags": [
-        "art",
-        "pottery",
-        "craft"
-      ]
-    },
-    {
-      "creator": "mira",
-      "file": "waterfall-forest.mp4",
-      "orientation": "vertical",
-      "title": "Waterfall in the forest, tilt down",
-      "description": "Mist and moss from the crest to the pool.",
-      "tags": [
-        "travel",
-        "nature",
-        "waterfall"
-      ]
-    },
-    {
-      "creator": "mira",
-      "file": "desert-dunes.mp4",
-      "orientation": "vertical",
-      "title": "Dunes at golden hour, wind on the ridge",
-      "description": "Sand streaming off a ridge line in the last light.",
-      "tags": [
-        "travel",
-        "desert",
-        "sunset"
-      ]
-    },
-    {
-      "creator": "kofi",
-      "file": "kettlebell-dawn.mp4",
-      "orientation": "vertical",
-      "title": "Kettlebell swings at dawn, silhouette",
-      "description": "A kettlebell arcing against a pale sunrise.",
-      "tags": [
-        "fitness",
-        "strength",
-        "morning"
-      ]
-    },
-    {
-      "creator": "kofi",
-      "file": "trail-run.mp4",
-      "orientation": "vertical",
-      "title": "Trail run through the forest, low camera",
-      "description": "Shoes hitting a leafy path, light flickering through the trees.",
-      "tags": [
-        "fitness",
-        "running",
-        "trail"
-      ]
-    },
-    {
-      "creator": "kofi",
-      "file": "stretch-mat.mp4",
-      "orientation": "vertical",
-      "title": "Stretching on the mat, sunlight on the floor",
-      "description": "A mat, a window and a slow sequence, hands and feet only.",
-      "tags": [
-        "fitness",
-        "mobility",
-        "yoga"
-      ]
-    },
-    {
-      "creator": "aiko",
-      "file": "painting-brush.mp4",
-      "orientation": "vertical",
-      "title": "Brush loaded with violet paint, macro",
-      "description": "Bristles dragging a thick stroke across canvas.",
-      "tags": [
-        "art",
-        "painting",
-        "macro"
-      ]
-    },
-    {
-      "creator": "aiko",
-      "file": "ink-wash.mp4",
-      "orientation": "vertical",
-      "title": "Ink bleeding into wet paper",
-      "description": "Black ink blooming into soft clouds on paper.",
-      "tags": [
-        "art",
-        "ink",
-        "process"
-      ]
-    },
-    {
-      "creator": "aiko",
-      "file": "sketchbook.mp4",
-      "orientation": "vertical",
-      "title": "Pages of a sketchbook turning",
-      "description": "Pencil studies of hands and plants, flipped by a thumb.",
-      "tags": [
-        "art",
-        "sketchbook",
-        "drawing"
-      ]
-    },
-    {
-      "creator": "aiko",
-      "file": "mural-wall.mp4",
-      "orientation": "vertical",
-      "title": "A mural wall in the morning, camera rising",
-      "description": "Colour blocks and geometric shapes on a brick wall, no lettering.",
-      "tags": [
-        "art",
-        "mural",
-        "montreal"
       ]
     },
     {
@@ -551,26 +383,89 @@
         "montreal",
         "architecture"
       ]
+    },
+    {
+      "creator": "noah",
+      "file": "bagels.mp4",
+      "orientation": "vertical",
+      "title": "A tiny Montréal bagel bakery, in miniature",
+      "description": "Oven glow, drifting flour and a baker figurine sliding a bagel on the peel — a handcrafted tilt-shift diorama.",
+      "tags": [
+        "food",
+        "bagels",
+        "miniature"
+      ],
+      "external": true
+    },
+    {
+      "creator": "noah",
+      "file": "grandmothers-tea.mp4",
+      "orientation": "vertical",
+      "title": "Two grandmothers, a tablecloth and mint tea, in miniature",
+      "description": "A tilt-shift scene of two grandmothers pouring mint tea over a patterned tablecloth.",
+      "tags": [
+        "food",
+        "tea",
+        "miniature"
+      ],
+      "external": true
+    },
+    {
+      "creator": "mira",
+      "file": "picnic-olive-grove.mp4",
+      "orientation": "vertical",
+      "title": "A picnic in an olive grove, in miniature",
+      "description": "A small picnic under olive trees, shot as a handcrafted tilt-shift diorama.",
+      "tags": [
+        "travel",
+        "picnic",
+        "miniature"
+      ],
+      "external": true
+    },
+    {
+      "creator": "aiko",
+      "file": "spice-alley.mp4",
+      "orientation": "vertical",
+      "title": "A tiny spice alley with a sleeping cat, in miniature",
+      "description": "Baskets of spices, hanging lamps and a cat asleep in a handcrafted miniature alley.",
+      "tags": [
+        "art",
+        "miniature",
+        "souk"
+      ],
+      "external": true
+    },
+    {
+      "creator": "kofi",
+      "file": "skating-pond.mp4",
+      "orientation": "vertical",
+      "title": "Skaters on a frozen pond, in miniature",
+      "description": "Tiny figures gliding across a frozen pond in a tilt-shift winter diorama.",
+      "tags": [
+        "fitness",
+        "skating",
+        "winter"
+      ],
+      "external": true
+    },
+    {
+      "creator": "aiko",
+      "file": "arcade-night.mp4",
+      "orientation": "horizontal",
+      "title": "A 1990s arcade at night, a duel on the joystick",
+      "description": "Rows of glowing cabinets and a two-player fight reflected in a player's hands on the joystick.",
+      "tags": [
+        "art",
+        "retro",
+        "arcade"
+      ]
     }
   ],
   "generate": {
     "$comment": "Prompts of the vertical clips (Wan 2.1 1.3B, 480x832, through Orazaka's video-generation Studio): no face, no text, SFW.",
     "aspect": "9:16",
     "clips": {
-      "vinyl-spin.mp4": "A vinyl record spinning on a turntable, close-up of the needle in the groove, warm side light, shallow depth of field, cinematic. No people, no faces, no text.",
-      "neon-alley.mp4": "A pink neon sign flickering above a narrow rainy alley, wet cobblestones reflecting the glow, steam rising, slow push-in, cinematic. No people, no faces, no lettering.",
-      "dj-hands.mp4": "Close-up of hands sliding the faders of a DJ mixer, coloured stage lights pulsing in the background, shallow depth of field. Hands only, no faces, no text.",
-      "latte-pour.mp4": "Top-down view of milk being poured into an espresso cup forming a leaf pattern, soft daylight on a wooden table, slow motion. Hands not visible, no faces, no text.",
-      "pottery-wheel.mp4": "A lump of wet clay spinning on a potter's wheel while two hands shape it into a bowl, warm workshop light, close-up. Hands only, no faces, no text.",
-      "waterfall-forest.mp4": "A waterfall in a green forest, camera tilting down from the crest to the misty pool, moss on the rocks, soft light through the trees. No people, no text.",
-      "desert-dunes.mp4": "Sand streaming off a desert dune ridge at golden hour, wind lifting grains, slow push along the crest, warm light. No people, no faces, no text.",
-      "kettlebell-dawn.mp4": "A kettlebell swinging in an arc against a pale orange sunrise, strong backlight, only a dark silhouette of hands and the bell. No faces, no text.",
-      "trail-run.mp4": "Low camera on a forest trail, running shoes hitting a leafy path, sunlight flickering through trees, motion blur. Feet only, no faces, no text.",
-      "stretch-mat.mp4": "A yoga mat on a wooden floor with a window's sunlight stripe, a slow stretching sequence shown by bare hands and feet only. No faces, no text.",
-      "painting-brush.mp4": "Macro of a brush loaded with thick violet paint dragging a stroke across canvas, shallow depth of field, studio light. No people, no faces, no text.",
-      "ink-wash.mp4": "Black ink blooming into wet paper in soft clouds, top-down macro, slow motion. No people, no faces, no text.",
-      "sketchbook.mp4": "A thumb flipping the pages of a sketchbook filled with pencil studies of plants and hands, desk light. Hands only, no faces, no text.",
-      "mural-wall.mp4": "A brick wall painted with colour blocks and geometric shapes in violet, coral and gold, camera slowly rising in morning light. No people, no faces, no lettering.",
       "rooftop-party.mp4": {
         "prompt": "A rooftop summer party at dusk with friends dancing, string lights, a pink sunset over the city skyline, handheld, lively. Fictional adults in their late twenties and thirties, medium-wide framing, no extreme close-up of faces, light summer clothing, tasteful, no text, no logos.",
         "model": "wan2-2-t2v-a14b",
