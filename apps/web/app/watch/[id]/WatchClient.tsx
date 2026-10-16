@@ -186,6 +186,7 @@ export default function WatchClient() {
   const isInvitedOnly = stream ? !stream.allowed && stream.reason === "INVITED_ONLY" : false;
   const isAuction = stream ? !stream.allowed && stream.reason === "AUCTION" : false;
   const isChallenge = stream ? !stream.allowed && stream.reason === "CHALLENGE" : false;
+  const isAgeGated = stream ? !stream.allowed && stream.reason === "AGE_CHECK_REQUIRED" : false;
   const auctionPanel = auctionState.auction && (
     <AuctionPanel auction={auctionState.auction} skewMs={auctionState.skewMs} pulse={auctionState.pulse} onChanged={() => void auctionState.reload()} onOwnBid={auctionState.onOwnBid} />
   );
@@ -210,6 +211,16 @@ export default function WatchClient() {
             <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border-subtle" aria-busy="true">
               <Skeleton shape="rect" className="absolute inset-0 h-full rounded-2xl" />
               <span className="absolute inset-0 flex items-center justify-center font-mono text-xs text-fg-muted">{t("watch.verifying")}</span>
+            </div>
+          ) : isAgeGated ? (
+            <div role="alert" className="flex aspect-video w-full flex-col items-center justify-center gap-3 rounded-2xl border border-border-subtle bg-surface-2/60 p-6 text-center">
+              <h2 className="text-lg font-semibold text-fg">{t("watch.ageGate.title")}</h2>
+              <p className="max-w-md text-sm text-fg-secondary">{user ? t("watch.ageGate.unchecked") : t("watch.ageGate.signedOut")}</p>
+              {!user && (
+                <Link href={`/auth/login?next=/watch/${videoId}`} className={orochiaButton({ variant: "sensual", shape: "rounded" })}>
+                  {t("watch.ageGate.signIn")}
+                </Link>
+              )}
             </div>
           ) : (
             <VideoPlayer
@@ -332,9 +343,9 @@ export default function WatchClient() {
                 </div>
               </div>
 
-              {(details.description || details.creatorBio) && (
+              {details.description && (
                 <p className="mt-4 text-sm text-fg-secondary leading-relaxed bg-surface-2/30 rounded-2xl p-4 border border-border-subtle whitespace-pre-line shadow-xs">
-                  {details.description || details.creatorBio}
+                  {details.description}
                 </p>
               )}
 

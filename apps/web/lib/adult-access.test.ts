@@ -49,3 +49,13 @@ describe("every entry point that plays, unlocks or pays for a video goes through
     expect(read("lib/stories.ts")).toMatch(/adultAccessAllowed|assertAdultAccess/);
   });
 });
+
+describe("the watch page", () => {
+  const source = readFileSync(new URL("../app/watch/[id]/WatchClient.tsx", import.meta.url), "utf8");
+  it("closes the player on the age-check refusal instead of playing", () => {
+    expect(source).toContain('"AGE_CHECK_REQUIRED"');
+  });
+  it("shows the video's own description, never the creator's bio in its place", () => {
+    expect(source).not.toMatch(/details\.description\s*\|\|\s*details\.creatorBio/);
+  });
+});
