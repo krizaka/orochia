@@ -15,7 +15,6 @@ export const DEFAULT_AVATARS: PresetAsset[] = [
   { id: "aurora-2", name: "Ribbon light", url: "/defaults/avatars/aurora-2-512.webp" },
   { id: "painterly-1", name: "Oil portrait", url: "/defaults/avatars/painterly-1-512.webp" },
   { id: "painterly-2", name: "Silver beard", url: "/defaults/avatars/painterly-2-512.webp" },
-  { id: "painterly-3", name: "Rose veil", url: "/defaults/avatars/painterly-3-512.webp" },
   { id: "graphic-1", name: "Ink undercut", url: "/defaults/avatars/graphic-1-512.webp" },
   { id: "graphic-2", name: "Ink and wheels", url: "/defaults/avatars/graphic-2-512.webp" },
   { id: "graphic-3", name: "Violet halftone", url: "/defaults/avatars/graphic-3-512.webp" },
