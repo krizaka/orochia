@@ -1,3 +1,4 @@
+import { differenceInMilliseconds, hoursToMilliseconds, minutesToMilliseconds } from "date-fns";
 /**
  * The rules of an Orochia auction, as pure functions (no database, no clock of their own) so the server, the UI and
  * the tests apply the very same ones. Amounts are cents (1 credit = 1 US cent).
@@ -8,15 +9,15 @@ export const AUCTION_MIN_STARTING_PRICE_CENTS = 100;
 export const AUCTION_MAX_BID_CENTS = 1_000_000_00;
 
 /** An auction runs between one hour and fourteen days, and starts within thirty days. */
-export const AUCTION_MIN_DURATION_MS = 60 * 60 * 1000;
-export const AUCTION_MAX_DURATION_MS = 14 * 24 * 60 * 60 * 1000;
-export const AUCTION_MAX_START_DELAY_MS = 30 * 24 * 60 * 60 * 1000;
+export const AUCTION_MIN_DURATION_MS = hoursToMilliseconds(1);
+export const AUCTION_MAX_DURATION_MS = hoursToMilliseconds(14 * 24);
+export const AUCTION_MAX_START_DELAY_MS = hoursToMilliseconds(30 * 24);
 
 /** A bid placed less than two minutes before the end pushes the end two minutes after the bid (anti-sniping). */
-export const AUCTION_SOFT_CLOSE_MS = 2 * 60 * 1000;
+export const AUCTION_SOFT_CLOSE_MS = minutesToMilliseconds(2);
 
 /** When the creator decides, they have 48 hours; past that the best bid is declined and its credits released. */
-export const AUCTION_DECISION_WINDOW_MS = 48 * 60 * 60 * 1000;
+export const AUCTION_DECISION_WINDOW_MS = hoursToMilliseconds(48);
 
 /** The step between two bids grows with the price, like a saleroom's ladder. */
 export function bidIncrementCents(currentCents: number): number {
@@ -52,7 +53,7 @@ export function auctionPhase(auction: { status: string; startsAt: Date; endsAt: 
 
 /** The end after a bid placed at `now`: unchanged, or pushed back when the bid lands in the soft-close window. */
 export function endAfterBid(endsAt: Date, now: Date): { endsAt: Date; extended: boolean } {
-  if (endsAt.getTime() - now.getTime() >= AUCTION_SOFT_CLOSE_MS) return { endsAt, extended: false };
+  if (differenceInMilliseconds(endsAt, now) >= AUCTION_SOFT_CLOSE_MS) return { endsAt, extended: false };
   return { endsAt: new Date(now.getTime() + AUCTION_SOFT_CLOSE_MS), extended: true };
 }
 
@@ -63,10 +64,10 @@ export type ScheduleProblem = "START_IN_PAST" | "START_TOO_FAR" | "TOO_SHORT" | 
  * ago); the returned start is never before `now`.
  */
 export function checkAuctionSchedule(startsAt: Date, endsAt: Date, now: Date): { ok: true; startsAt: Date } | { ok: false; problem: ScheduleProblem } {
-  if (startsAt.getTime() < now.getTime() - 5 * 60 * 1000) return { ok: false, problem: "START_IN_PAST" };
+  if (startsAt.getTime() < now.getTime() - minutesToMilliseconds(5)) return { ok: false, problem: "START_IN_PAST" };
   const start = startsAt < now ? now : startsAt;
-  if (start.getTime() - now.getTime() > AUCTION_MAX_START_DELAY_MS) return { ok: false, problem: "START_TOO_FAR" };
-  const duration = endsAt.getTime() - start.getTime();
+  if (differenceInMilliseconds(start, now) > AUCTION_MAX_START_DELAY_MS) return { ok: false, problem: "START_TOO_FAR" };
+  const duration = differenceInMilliseconds(endsAt, start);
   if (duration < AUCTION_MIN_DURATION_MS - 60 * 1000) return { ok: false, problem: "TOO_SHORT" };
   if (duration > AUCTION_MAX_DURATION_MS) return { ok: false, problem: "TOO_LONG" };
   return { ok: true, startsAt: start };

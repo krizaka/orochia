@@ -1,3 +1,4 @@
+import { differenceInMilliseconds } from "date-fns";
 /**
  * Explore's ranking — pure functions, so the order of a section is tested without a database.
  *
@@ -34,7 +35,7 @@ export function trendingScores(buckets: readonly EngagementBucket[], now: Date):
   const scores = new Map<string, number>();
   const windowHours = TRENDING_WINDOW_DAYS * 24;
   for (const b of buckets) {
-    const ageHours = (now.getTime() - b.at.getTime()) / HOUR;
+    const ageHours = differenceInMilliseconds(now, b.at) / HOUR;
     if (ageHours > windowHours || b.count <= 0) continue;
     const score = ENGAGEMENT_WEIGHTS[b.kind] * b.count * decay(ageHours);
     scores.set(b.itemId, (scores.get(b.itemId) ?? 0) + score);
@@ -62,7 +63,7 @@ export function rankTrending<T extends RankCandidate>(
   const scored = candidates
     .map((c) => ({ ...c, score: scores.get(c.id) ?? 0 }))
     .filter((c) => c.score > 0)
-    .sort((a, b) => b.score - a.score || b.createdAt.getTime() - a.createdAt.getTime() || a.id.localeCompare(b.id));
+    .sort((a, b) => b.score - a.score || differenceInMilliseconds(b.createdAt, a.createdAt) || a.id.localeCompare(b.id));
   return diversify(scored, limit, perCreator);
 }
 
@@ -85,7 +86,7 @@ export function storyScore(story: { viewsCount: number; likesCount: number; tips
   const engagement =
     ENGAGEMENT_WEIGHTS.view * story.viewsCount + ENGAGEMENT_WEIGHTS.like * story.likesCount + ENGAGEMENT_WEIGHTS.tip * story.tipsCount;
   // A new story with no engagement yet still gets a place: freshness alone is worth one view.
-  return (1 + engagement) * decay((now.getTime() - story.createdAt.getTime()) / HOUR, 12);
+  return (1 + engagement) * decay(differenceInMilliseconds(now, story.createdAt) / HOUR, 12);
 }
 
 /** Live stories, best first (engagement and freshness), at most `perCreator` per creator. */
@@ -94,7 +95,7 @@ export function rankStories<T extends { creatorId: string; viewsCount: number; l
   now: Date,
   { limit = 12, perCreator = 3 }: { limit?: number; perCreator?: number } = {},
 ): T[] {
-  const sorted = [...stories].sort((a, b) => storyScore(b, now) - storyScore(a, now) || b.createdAt.getTime() - a.createdAt.getTime());
+  const sorted = [...stories].sort((a, b) => storyScore(b, now) - storyScore(a, now) || differenceInMilliseconds(b.createdAt, a.createdAt));
   return diversify(sorted, limit, perCreator);
 }
 
@@ -110,7 +111,7 @@ export interface CreatorSignals {
 
 /** "Creators to follow": what people do with their work this week, their audience, and whether they post lately. */
 export function creatorScore(c: CreatorSignals, now: Date): number {
-  const recency = c.lastPostAt ? 10 * decay((now.getTime() - c.lastPostAt.getTime()) / HOUR, 72) : 0;
+  const recency = c.lastPostAt ? 10 * decay(differenceInMilliseconds(now, c.lastPostAt) / HOUR, 72) : 0;
   return c.weeklyScore + 2 * Math.log2(1 + Math.max(0, c.followers)) + recency;
 }
 

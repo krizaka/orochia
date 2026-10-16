@@ -1,3 +1,4 @@
+import { differenceInMilliseconds, hoursToMilliseconds } from "date-fns";
 /**
  * The rules of an Orochia challenge, as pure functions (no database, no clock of their own) so the server, the UI and
  * the tests apply the same ones. Amounts are cents (1 credit = 1 US cent).
@@ -14,12 +15,12 @@ export const CHALLENGE_MAX_GOAL_CENTS = 1_000_000_00;
 export const CHALLENGE_MIN_OPEN_CALL_CENTS = 5_00;
 
 /** A creator answers a request within three days; past that it expires and every pledge comes back. */
-export const CHALLENGE_REQUEST_RESPONSE_MS = 72 * 60 * 60 * 1000;
+export const CHALLENGE_REQUEST_RESPONSE_MS = hoursToMilliseconds(72);
 
 /** A goal takes pledges for one hour to thirty days; an open call waits for its pick one hour to fourteen days. */
-export const CHALLENGE_MIN_WINDOW_MS = 60 * 60 * 1000;
-export const CHALLENGE_MAX_GOAL_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
-export const CHALLENGE_MAX_OPEN_CALL_WINDOW_MS = 14 * 24 * 60 * 60 * 1000;
+export const CHALLENGE_MIN_WINDOW_MS = hoursToMilliseconds(1);
+export const CHALLENGE_MAX_GOAL_WINDOW_MS = hoursToMilliseconds(30 * 24);
+export const CHALLENGE_MAX_OPEN_CALL_WINDOW_MS = hoursToMilliseconds(14 * 24);
 
 /** Once committed, the creator delivers within one to fourteen days (seven unless chosen). */
 export const CHALLENGE_MIN_DELIVERY_DAYS = 1;
@@ -71,7 +72,7 @@ export function checkChallengeDraft(draft: ChallengeDraft, now: Date): { ok: tru
     };
   const deadline = draft.deadline;
   if (!deadline || Number.isNaN(deadline.getTime())) return { ok: false, problem: "BAD_DEADLINE" };
-  const window = deadline.getTime() - now.getTime();
+  const window = differenceInMilliseconds(deadline, now);
   const max = draft.kind === "GOAL" ? CHALLENGE_MAX_GOAL_WINDOW_MS : CHALLENGE_MAX_OPEN_CALL_WINDOW_MS;
   // A minute of slack: the form was filled a moment ago.
   if (window < CHALLENGE_MIN_WINDOW_MS - 60 * 1000 || window > max) return { ok: false, problem: "BAD_DEADLINE" };
@@ -117,5 +118,5 @@ export function challengeStage(
 
 /** The delivery deadline of a challenge a creator commits to at `now`. */
 export function deliveryDeadline(deliveryDays: number, now: Date): Date {
-  return new Date(now.getTime() + deliveryDays * 24 * 60 * 60 * 1000);
+  return new Date(now.getTime() + hoursToMilliseconds(deliveryDays * 24));
 }

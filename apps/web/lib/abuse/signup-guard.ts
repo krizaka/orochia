@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { sessionSecret } from "../env";
 import { HttpError } from "../http";
 import { DISPOSABLE_EMAIL_DOMAINS } from "./disposable-email-domains";
+import { hoursToMilliseconds } from "date-fns";
 
 /**
  * Sign-up defences that cost a person nothing:
@@ -25,7 +26,7 @@ export const DEVICE_COOKIE = "orochia_device";
  */
 export const DEVICE_HEADER = "x-orochia-device";
 export const DEVICE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
-export const FORM_TOKEN_MAX_AGE_MS = 2 * 60 * 60 * 1000;
+export const FORM_TOKEN_MAX_AGE_MS = hoursToMilliseconds(2);
 
 export function minFillSeconds(env: Record<string, string | undefined> = process.env): number {
   const raw = env.ABUSE_SIGNUP_MIN_FILL_SECONDS?.trim();

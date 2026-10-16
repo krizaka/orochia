@@ -4,6 +4,7 @@ import { desc, sql } from "drizzle-orm";
 
 import { bunnyStreamConfig } from "./env";
 import { checkPlatformAlerts, platformUsage, releaseHeld, zeroRowsMissingFrom } from "./storage-usage";
+import { differenceInMilliseconds } from "date-fns";
 
 /**
  * Reconciliation of the application's storage counters with Bunny — the periodic check behind the quotas
@@ -178,6 +179,6 @@ export async function reconcileIsDue(now = new Date(), env: Record<string, strin
   const minutes = reconcileIntervalMinutes(env);
   if (minutes === 0 || !env.MEDIA_STREAM_API_KEY?.trim()) return false;
   const [last] = await db.select({ takenAt: storageSnapshots.takenAt }).from(storageSnapshots).orderBy(desc(storageSnapshots.takenAt)).limit(1);
-  return !last || now.getTime() - last.takenAt.getTime() >= minutes * 60_000;
+  return !last || differenceInMilliseconds(now, last.takenAt) >= minutes * 60_000;
 }
 
