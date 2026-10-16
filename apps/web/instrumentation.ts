@@ -10,4 +10,6 @@ export async function register() {
   startStorageScheduler();
   const { startExplorerScheduler } = await import("./lib/explorer-scheduler");
   startExplorerScheduler();
+  const { startRecommendationsScheduler } = await import("./lib/recommendations/recommendations.scheduler");
+  startRecommendationsScheduler();
 }

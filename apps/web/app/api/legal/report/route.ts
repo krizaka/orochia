@@ -8,6 +8,8 @@ import { appUrl } from "@/lib/env";
 import { errorResponse } from "@/lib/http";
 import { sendTemplate } from "@/lib/mail";
 import { limitAction } from "@/lib/rate-limit";
+import { enqueueInteraction } from "@/lib/recommendations/recommendations.outbox";
+import { RecoEventKind } from "@/lib/recommendations/recommendations.types";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +55,8 @@ export async function POST(req: NextRequest) {
         reporterId: reporter?.id ?? null,
       })
       .returning({ id: complianceReports.id });
+    // The recommender stops proposing what a person reported (and that creator) — a signal, never a verdict.
+    if (reporter && video) await enqueueInteraction(db, { accountId: reporter.id, videoId: video.id, kind: RecoEventKind.Report, at: new Date() });
 
     // Persisted first; the e-mails only notify (best-effort, never delay or fail the report).
     const urgent = input.reason === "UNDERAGE" || input.reason === "NON_CONSENSUAL";

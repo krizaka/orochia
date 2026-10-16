@@ -104,6 +104,16 @@ if (process.env.AI_ENGINE_URL === "http://127.0.0.1:4599") {
   const details = (await anon.call(`/api/videos/${neon.id}/details`)).json.video;
   check("a video's page offers similar videos, never itself nor what is not public", Array.isArray(details.similar) && !details.similar.some((v) => v.id === neon.id || v.id === diaries.id || v.id === rehearsal.id));
 
+  // The recommender (ADR-078): an interaction leaves through the outbox, as a pseudonym — never the account id.
+  check("a like is recorded", (await alex.call(`/api/videos/${neon.id}/like`, "POST", { liked: true })).status === 200);
+  let liked = null;
+  for (let i = 0; i < 40 && !liked; i++) {
+    liked = engine.reco.events.find((e) => e.kind === "LIKE" && e.item === neon.id);
+    if (!liked) await new Promise((r) => setTimeout(r, 1000));
+  }
+  check("…and reaches Orazaka's recommender through the outbox", Boolean(liked), JSON.stringify(engine.reco.events.slice(-3)));
+  check("…as a pseudonym, never the account", /^[0-9a-f]{64}$/.test(liked?.user ?? "") && !JSON.stringify(engine.reco.events).includes("alex"));
+
   engine.down();
   const down = await alex.call("/api/search?q=japan%20capital%20neon%20alley%20again");
   check("Orazaka out of reach: the search still answers, from full-text alone", down.status === 200 && !down.json.videos?.some((v) => v.via));

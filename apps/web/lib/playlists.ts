@@ -5,6 +5,8 @@ import { HttpError } from "./http";
 import { withSignedMedia } from "./media-urls";
 import type { VideoSummary } from "./queries";
 import { veilSummary } from "./video-veil";
+import { enqueueInteraction } from "./recommendations/recommendations.outbox";
+import { RecoEventKind } from "./recommendations/recommendations.types";
 
 /**
  * Collections (playlists): any account curates them and decides who opens each one — everyone,
@@ -116,7 +118,8 @@ export async function addToPlaylist(ownerId: string, playlistId: string, videoId
       .select({ next: sql<number>`coalesce(max(${playlistItems.position}), -1)::int + 1` })
       .from(playlistItems)
       .where(eq(playlistItems.playlistId, playlistId));
-    await tx.insert(playlistItems).values({ playlistId, videoId, position: next }).onConflictDoNothing();
+    const added = await tx.insert(playlistItems).values({ playlistId, videoId, position: next }).onConflictDoNothing().returning({ id: playlistItems.videoId });
+    if (added.length > 0) await enqueueInteraction(tx, { accountId: ownerId, videoId, kind: RecoEventKind.Save, at: new Date() });
     await tx.update(playlists).set({ updatedAt: new Date() }).where(eq(playlists.id, playlistId));
   });
 }

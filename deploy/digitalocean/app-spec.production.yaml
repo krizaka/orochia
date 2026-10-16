@@ -121,6 +121,10 @@ services:
       - key: AI_ENGINE_API_KEY
         scope: RUN_TIME
         type: SECRET
+      # The recommender's pseudonym key (ADR-078): a SECRET; rotating it forgets every profile at Orazaka.
+      - key: AI_PSEUDONYM_KEY
+        scope: RUN_TIME
+        type: SECRET
       # Sign in with Google / Facebook (offered only when both values of a provider are set).
       - key: AUTH_GOOGLE_CLIENT_ID
         scope: RUN_TIME

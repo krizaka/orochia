@@ -4,6 +4,8 @@ import { HttpError } from "./http";
 import { after } from "next/server";
 import { notifyContactRequest, notifyFollow } from "./notifications";
 import { circleChanged } from "./presence";
+import { enqueueInteraction } from "./recommendations/recommendations.outbox";
+import { RecoEventKind } from "./recommendations/recommendations.types";
 
 /**
  * The social graph: follows (a creator approves who follows them — APPROVED_FOLLOWERS_ONLY videos)
@@ -66,13 +68,17 @@ export async function follow(viewerId: string, creatorUsername: string): Promise
   if (creator.id === viewerId) throw new HttpError(400, "You cannot follow yourself");
   const created = await db.insert(follows).values({ followerId: viewerId, creatorId: creator.id }).onConflictDoNothing().returning({ status: follows.status });
   const state = (await relationship(viewerId, creator.id)).follow;
-  if (created.length > 0) after(() => notifyFollow(creator.id, viewerId, state === "PENDING"));
+  if (created.length > 0) {
+    after(() => notifyFollow(creator.id, viewerId, state === "PENDING"));
+    await enqueueInteraction(db, { accountId: viewerId, creatorId: creator.id, kind: RecoEventKind.Follow, at: new Date() });
+  }
   return state;
 }
 
 export async function unfollow(viewerId: string, creatorUsername: string): Promise<void> {
   const creator = await activeAccount(creatorUsername);
-  await db.delete(follows).where(and(eq(follows.followerId, viewerId), eq(follows.creatorId, creator.id)));
+  const removed = await db.delete(follows).where(and(eq(follows.followerId, viewerId), eq(follows.creatorId, creator.id))).returning({ id: follows.id });
+  if (removed.length > 0) await enqueueInteraction(db, { accountId: viewerId, creatorId: creator.id, kind: RecoEventKind.Unfollow, at: new Date() });
   circleChanged(viewerId, creator.id);
 }
 
