@@ -1188,6 +1188,15 @@
     },
     "shown": "{from}–{to} of {total}"
   },
+  "owner": {
+    "yours": "Your video",
+    "edit": "Edit",
+    "editTitle": "Edit your video",
+    "views": "{count} views",
+    "tips": "{count} tips",
+    "play": "Play {title}",
+    "playTitle": "Preview"
+  },
   "feed": {
     "tabs": {
       "foryou": "For you",
@@ -1905,6 +1914,7 @@
     "saveFailed": "The changes could not be saved.",
     "empty": "No videos yet. {link}.",
     "cols": {
+      "preview": "Preview",
       "title": "Title",
       "state": "State",
       "visibility": "Visibility",

@@ -228,6 +228,7 @@ export async function creatorVideos(creatorId: string, limit = 24, viewerAgeChec
 
 export interface VideoDetails extends VideoSummary {
   description: string | null;
+  tags: string[] | null;
   creatorId: string;
   creatorBio: string | null;
   createdAt: Date;
@@ -242,6 +243,7 @@ export async function videoDetails(videoId: string, viewerAgeChecked = false): P
     .select({
       ...videoSummaryColumns,
       description: videos.description,
+      tags: videos.tags,
       creatorId: videos.creatorId,
       creatorBio: profiles.bio,
       createdAt: videos.createdAt,

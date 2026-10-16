@@ -32,7 +32,9 @@ export async function GET(_req: NextRequest, props: { params: Promise<{ id: stri
       return NextResponse.json({ success: true, gated: true, code: AGE_CHECK_REQUIRED, video: { ...summary, isBlurred: true, similar: [] }, liked: false });
     }
     const [liked, similar] = await Promise.all([hasLiked(viewer?.id ?? null, video.id), similarVideos(video.id, viewer)]);
-    return NextResponse.json({ success: true, video: { ...video, similar }, liked });
+    // Ownership is decided here, from the session and the row: the page only draws the owner view when it is told so.
+    const isOwner = viewer?.id === video.creatorId;
+    return NextResponse.json({ success: true, video: { ...video, isOwner, similar }, liked });
   } catch (error) {
     return errorResponse(error, "videos/details");
   }
