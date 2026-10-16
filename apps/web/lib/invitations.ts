@@ -4,6 +4,7 @@ import { and, desc, eq, gt, or, sql } from "drizzle-orm";
 import { appUrl } from "./env";
 import { sendTemplate } from "./mail";
 import { HttpError } from "./http";
+import { hoursToMilliseconds } from "date-fns";
 
 /** How long an invitation link works. */
 const INVITATION_DAYS = 7;
@@ -51,7 +52,7 @@ export async function createInvitation(inviterId: string, targetEmail: string): 
     .limit(1);
 
   const code = crypto.randomBytes(24).toString("hex");
-  const expiresAt = new Date(Date.now() + INVITATION_DAYS * 24 * 60 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + hoursToMilliseconds(INVITATION_DAYS * 24));
 
   const [row] = await db
     .insert(userInvitations)

@@ -12,6 +12,7 @@ import { signMediaUrl } from "./media-urls";
 import { sendMessage } from "./messaging";
 import { publicUrlForRef } from "./storage";
 import { holdReason, recordStoredBytes, releaseHeld } from "./storage-usage";
+import { differenceInMilliseconds } from "date-fns";
 
 /**
  * Stories: images or short videos that live 24 hours (Instagram-style). Video stories are Bunny
@@ -371,7 +372,7 @@ export function reconcileDecision(
 ): "PROCESSING" | "READY" | "FAILED" | null {
   if ("missing" in bunny) return "FAILED";
   const target = mapBunnyApiStatusToOrochia(bunny.status);
-  if (target === null) return now.getTime() - story.createdAt.getTime() > STORY_UPLOAD_WINDOW_MS ? "FAILED" : null;
+  if (target === null) return differenceInMilliseconds(now, story.createdAt) > STORY_UPLOAD_WINDOW_MS ? "FAILED" : null;
   return target === story.status ? null : target;
 }
 
