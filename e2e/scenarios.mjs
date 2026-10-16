@@ -1129,7 +1129,7 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   const stamp = Date.now();
   const rawEmail = `unchecked${stamp}@example.com`;
   const reg = await register({ username: `unchecked_${stamp}`, email: rawEmail, displayName: "Unchecked", password: "a-long-password-1", dateOfBirth: "1990-01-01", isAgeVerified: true, acceptTerms: true });
-  await sqlClient.query("update users set is_age_verified = false, date_of_birth = null where email = $1", [rawEmail]);
+  await sqlClient.query("update users set is_age_verified = false, date_of_birth = null, email_verified_at = now() where email = $1", [rawEmail]);
   const unchecked = await session(rawEmail, "a-long-password-1");
   check("an account whose age was never checked signs in", reg.status < 300 && unchecked.status === 200, `${reg.status}/${unchecked.status}`);
   const setRating = (id, rating) => sqlClient.query("update videos set content_rating_id = $2 where id = $1", [id, rating]);
@@ -1151,7 +1151,7 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("details give a visitor the veiled summary only", gatedDetails.gated === true && gatedDetails.code === CODE && gatedDetails.video.description === undefined && gatedDetails.video.moreFromCreator === undefined && gatedDetails.video.isBlurred === true, JSON.stringify(gatedDetails).slice(0, 200));
   check("…and an unchecked account the same", (await unchecked.call(`/api/videos/${target.id}/details`)).json.gated === true);
   check("…a checked fan the whole page", (await alex.call(`/api/videos/${target.id}/details`)).json.gated === undefined);
-  check("unlock: a visitor is refused", (await anon.call(`/api/videos/unlock-video`, "POST", { videoId: target.id, amountCents: 500, gateway: "CREDITS" })).status === 401);
+  check("unlock: a visitor is refused", (await fetch(`${B}/api/videos/unlock-video`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ videoId: target.id, amountCents: 500, gateway: "CREDITS" }) })).status === 401);
   check("unlock: an unchecked account is refused with the code", refused(await unchecked.call("/api/videos/unlock-video", "POST", { videoId: target.id, amountCents: 500, gateway: "CREDITS" })));
   check("unlock: a checked fan is not refused for their age", (await alex.call("/api/videos/unlock-video", "POST", { videoId: target.id, amountCents: 1, gateway: "CREDITS" })).json.code !== CODE);
   check("download: an unchecked account is refused with the code", refused(await unchecked.call(`/api/videos/${target.id}/download`)));
@@ -1162,7 +1162,7 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("an auction on the rated video", auction.status === 201, JSON.stringify(auction.json));
   const auctionId = auction.json.auctionId;
   const bidOf = (s) => s.call(`/api/auctions/${auctionId}/bids`, "POST", { amountCents: 1000 });
-  check("bid: a visitor is refused", (await anon.call(`/api/auctions/${auctionId}/bids`, "POST", { amountCents: 1000 })).status === 401);
+  check("bid: a visitor is refused", (await fetch(`${B}/api/auctions/${auctionId}/bids`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ amountCents: 1000 }) })).status === 401);
   check("bid: an unchecked account is refused with the code", refused(await bidOf(unchecked)));
 
   const goal = await elena.call("/api/challenges", "POST", { kind: "GOAL", title: "Age gate fixture", description: "Fixture for the 18+ gate.", deliverable: "VIDEO", deliveryDays: 7, goalCents: 2000, deadline: new Date(Date.now() + 2 * 86400_000), reward: "BACKERS" });
