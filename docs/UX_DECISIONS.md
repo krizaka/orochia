@@ -207,3 +207,19 @@ written here, each with the place that carries it. Disagree, or saw that signal?
 - **Cost** — Each new kind of path needs its route in the app (or falls back to the web).
 - **Signal we are wrong** — Taps followed by an immediate back and a search for the same item.
 - **Feedback** — wrong for you? [Discussion #122](https://github.com/krizaka/orochia/discussions/122).
+
+## "For you" can be switched to chronological, and says when it is only trending
+
+- **Decision** — Signed-in viewers get a "For you" shelf first in Explore, ranked from what they watch, like, save and
+  follow; a two-choice switch (Personalised · Chronological, kept in the address) turns it into the newest public videos.
+  Without signals yet, or when the engine is out of reach, the shelf shows trending and its subtitle says so.
+- **Problem** — A personalised feed nobody can turn off feels manipulative, and a "For you" that is secretly the same for
+  everyone erodes trust once noticed.
+- **Principle** — Perceived control and transparency raise trust in recommenders and their acceptance (Pu, Chen & Hu,
+  "A user-centric evaluation framework for recommender systems", RecSys 2011; Konstan & Riedl, *UMUAI*, 2012).
+- **Refused** — A feed with no off switch; a hidden fallback; reasons on every card (noise at this size — they are kept
+  in the data for later).
+- **Cost** — One more control on Explore; the chronological list is the same as "New" further down.
+- **Signal we are wrong** — Most people switching to Chronological and staying there, or feedback that the picks feel
+  unrelated to what they did.
+- **Feedback** — wrong for you? [Discussion #122](https://github.com/krizaka/orochia/discussions/122).

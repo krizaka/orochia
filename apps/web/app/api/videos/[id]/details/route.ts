@@ -5,7 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { hasLiked } from "@/lib/engagement";
 import { adultViewer, evaluateVideoAccess } from "@/lib/access";
 import { AGE_CHECK_REQUIRED } from "@/lib/adult-access";
-import { similarVideos } from "@/lib/explore-semantic";
+import { moreLikeThis } from "@/lib/recommendations/recommendations.shelves";
 import { errorResponse, jsonError } from "@/lib/http";
 
 export const dynamic = "force-dynamic";
@@ -31,7 +31,7 @@ export async function GET(_req: NextRequest, props: { params: Promise<{ id: stri
       const { description: _d, creatorBio: _b, moreFromCreator: _m, ...summary } = video;
       return NextResponse.json({ success: true, gated: true, code: AGE_CHECK_REQUIRED, video: { ...summary, isBlurred: true, similar: [] }, liked: false });
     }
-    const [liked, similar] = await Promise.all([hasLiked(viewer?.id ?? null, video.id), similarVideos(video.id, viewer)]);
+    const [liked, similar] = await Promise.all([hasLiked(viewer?.id ?? null, video.id), moreLikeThis(video.id, viewer, new Date()).then((shelf) => shelf.videos)]);
     // Ownership is decided here, from the session and the row: the page only draws the owner view when it is told so.
     const isOwner = viewer?.id === video.creatorId;
     return NextResponse.json({ success: true, video: { ...video, isOwner, similar }, liked });
