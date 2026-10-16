@@ -8,7 +8,7 @@ export default defineConfig({
   // Next keeps JSX as is (tsconfig "jsx": "preserve"); the tests compile it with the automatic runtime.
   oxc: { jsx: { runtime: "automatic" } },
   test: {
-    include: ["packages/*/src/**/*.test.ts", "apps/web/lib/**/*.test.ts", "apps/web/components/**/*.test.ts", "scripts/**/*.test.mjs"],
+    include: ["packages/*/src/**/*.test.ts", "apps/web/lib/**/*.test.ts", "apps/web/components/**/*.test.ts", "apps/web/app/**/*.test.ts", "scripts/**/*.test.mjs"],
     environment: "node",
   },
 });

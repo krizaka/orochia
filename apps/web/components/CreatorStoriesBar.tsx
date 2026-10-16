@@ -9,6 +9,7 @@ import { useStoryAddress, useStoryRings } from "@/components/stories/useStories"
 import { Avatar, cn, Skeleton } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
+import { defaultAvatarFor } from "@/lib/presets";
 import { startOf } from "@/lib/story-player";
 
 /**
@@ -67,7 +68,7 @@ function StoriesRail() {
                   )}
                 />
                 <div className="relative h-14 w-14 sm:h-16 sm:w-16 overflow-hidden rounded-[14px] bg-surface-1 p-0.5">
-                  <Avatar src={r.avatarUrl} defaultAvatar={{ brand: "orochia", seed: r.displayName }} fallback={r.displayName.charAt(0)} className="h-full w-full rounded-[12px]" />
+                  <Avatar src={r.avatarUrl} defaultAvatar={{ brand: "orochia", seed: r.displayName }} fallbackSrc={defaultAvatarFor(r.displayName)} fallback={r.displayName.charAt(0)} className="h-full w-full rounded-[12px]" />
                 </div>
                 {r.isOwn && r.stories.some((s) => s.state === "processing") && (
                   <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-surface-3 px-1.5 py-px text-[9px] font-semibold text-fg-secondary">

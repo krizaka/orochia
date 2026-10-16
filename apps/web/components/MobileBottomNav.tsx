@@ -9,6 +9,7 @@ import { Avatar, cn } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { creatorSpaceCta, viewerStateOf } from "@/lib/creator-journey";
 import { t } from "@/lib/i18n";
+import { defaultAvatarFor } from "@/lib/presets";
 
 /**
  * The phone navigation, five equal tabs with Create in the middle: Home · Explore · Create · Saved ·
@@ -49,7 +50,7 @@ export function MobileBottomNav() {
           <span aria-hidden className={tab(false)} />
         ) : user ? (
           <Link href="/dashboard" className={tab(accountActive)}>
-            <Avatar size="xs" src={user.avatarUrl} defaultAvatar={{ brand: "orochia", seed: user.displayName }} fallback={user.displayName.charAt(0)} className={cn("h-6 w-6", accountActive && "ring-2 ring-ring")} />
+            <Avatar size="xs" src={user.avatarUrl} defaultAvatar={{ brand: "orochia", seed: user.displayName }} fallbackSrc={defaultAvatarFor(user.displayName)} fallback={user.displayName.charAt(0)} className={cn("h-6 w-6", accountActive && "ring-2 ring-ring")} />
             {t("nav.account")}
           </Link>
         ) : (

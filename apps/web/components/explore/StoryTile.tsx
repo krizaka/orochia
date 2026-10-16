@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Avatar, Badge, Card, cn } from "@/components/ui";
 import type { ExploreStory } from "@/lib/explore";
 import { t } from "@/lib/i18n";
+import { defaultAvatarFor } from "@/lib/presets";
 
 /**
  * A live public story in Explore: its still (veiled when it is sensitive), the creator, the caption and the time left.
@@ -19,7 +20,7 @@ export function StoryTile({ story, index = 0 }: { story: ExploreStory; index?: n
           <div className="absolute inset-0 bg-linear-to-t from-scrim-strong via-transparent to-scrim/40" aria-hidden />
           <Card.Overlay corner="top-left" className="flex items-center gap-2">
             <span className="rounded-full bg-linear-to-tr from-accent to-accent-2 p-0.5">
-              <Avatar src={story.creatorAvatar} defaultAvatar={{ brand: "orochia", seed: story.creatorName }} alt="" fallback={story.creatorName.charAt(0)} className="h-8 w-8 rounded-full border-2 border-media" />
+              <Avatar src={story.creatorAvatar} defaultAvatar={{ brand: "orochia", seed: story.creatorName }} fallbackSrc={defaultAvatarFor(story.creatorName)} alt="" fallback={story.creatorName.charAt(0)} className="h-8 w-8 rounded-full border-2 border-media" />
             </span>
           </Card.Overlay>
           <Card.Overlay corner="top-right">

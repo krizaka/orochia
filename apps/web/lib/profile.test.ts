@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { ageOn, checkDateOfBirth, normalizeHandle, normalizeWebsite, parseNotificationsOff, parseSocialLinks, profileImageUrl, socialLinksView } from "./profile";
+
 import { wants } from "./notifications";
+import { ageOn, checkDateOfBirth, normalizeHandle, normalizeWebsite, parseNotificationsOff, parseSocialLinks, profileImageUrl, socialLinksView } from "./profile";
 
 describe("social links", () => {
   it("takes a handle, an @handle or a link to that network", () => {
@@ -31,7 +32,7 @@ describe("social links", () => {
 
 describe("profile pictures", () => {
   it("come from a preset, an upload reference or what is already there — never a client URL", () => {
-    expect(profileImageUrl("avatar", "avatar-03", null)).toBe("/defaults/avatars/avatar-03.svg");
+    expect(profileImageUrl("avatar", "clay-1", null)).toBe("/defaults/avatars/clay-1-512.webp");
     expect(profileImageUrl("banner", "banners/0f8e2a9c-5b7d-4e1a-9c3b-2d4f6a8b0c1e.jpg", null)).toBe("/uploads/banners/0f8e2a9c-5b7d-4e1a-9c3b-2d4f6a8b0c1e.jpg");
     expect(profileImageUrl("avatar", "https://g.co/a.png", "https://g.co/a.png")).toBe("https://g.co/a.png");
     expect(profileImageUrl("avatar", null, "/x.png")).toBeNull();

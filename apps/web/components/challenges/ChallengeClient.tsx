@@ -7,6 +7,7 @@ import React from "react";
 import { Avatar, buttonVariants, cn, Countdown, orochiaButton, Skeleton, Stepper } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
+import { defaultAvatarFor } from "@/lib/presets";
 
 import { ChallengeActions } from "./ChallengeActions";
 import { ChallengeMeter, ChallengeStageBadge, KIND_ICONS } from "./ChallengeMeter";
@@ -60,7 +61,7 @@ export function ChallengeClient({ id }: { id: string }) {
                 href={`/@${c.creator.username}`}
                 className="inline-flex items-center gap-2 text-sm text-fg-secondary hover:text-fg"
               >
-                <Avatar src={c.creator.avatarUrl} defaultAvatar={{ brand: "orochia", seed: c.creator.name }} fallback={c.creator.name.charAt(0)} className="h-7 w-7" />
+                <Avatar src={c.creator.avatarUrl} defaultAvatar={{ brand: "orochia", seed: c.creator.name }} fallbackSrc={defaultAvatarFor(c.creator.name)} fallback={c.creator.name.charAt(0)} className="h-7 w-7" />
                 <span>{t(c.kind === "GOAL" ? "challenge.byCreator" : "challenge.forCreator", { name: c.creator.name })}</span>
               </Link>
             ) : (

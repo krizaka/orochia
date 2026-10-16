@@ -1,20 +1,22 @@
 "use client";
 
-import React, { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { CheckCircle2, Eye, Flag, Gavel,Heart, MessageSquare, Share2, ShieldCheck, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
-import { VideoPlayer } from "@/components/VideoPlayer";
-import { TipModal } from "@/components/TipModal";
-import { ReportModal } from "@/components/ReportModal";
-import { RelationshipActions } from "@/components/RelationshipActions";
-import { SaveToPlaylist } from "@/components/SaveToPlaylist";
-import { VideoComments } from "@/components/VideoComments";
+import React, { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+
 import { AuctionPanel } from "@/components/auctions/AuctionPanel";
 import { useAuctionStream } from "@/components/auctions/useAuctionStream";
-import { useAuth } from "@/lib/auth-context";
-import { Sparkles, Eye, ShieldCheck, Share2, Flag, CheckCircle2, Heart, MessageSquare, Gavel } from "lucide-react";
+import { RelationshipActions } from "@/components/RelationshipActions";
+import { ReportModal } from "@/components/ReportModal";
+import { SaveToPlaylist } from "@/components/SaveToPlaylist";
+import { TipModal } from "@/components/TipModal";
 import { Avatar, Button, buttonVariants, cn, orochiaButton, Skeleton } from "@/components/ui";
+import { VideoComments } from "@/components/VideoComments";
+import { VideoPlayer } from "@/components/VideoPlayer";
+import { useAuth } from "@/lib/auth-context";
 import { t } from "@/lib/i18n";
+import { defaultAvatarFor } from "@/lib/presets";
 
 interface StreamAccess {
   allowed: boolean;
@@ -326,7 +328,7 @@ export default function WatchClient() {
 
               <div className="mt-6 flex items-center justify-between rounded-2xl border border-border-subtle bg-surface-2/60 p-4 shadow-xs">
                 <div className="flex items-center gap-3">
-                  <Avatar src={details.creatorAvatar} defaultAvatar={{ brand: "orochia", seed: details.creatorName }} alt={details.creatorName} fallback={details.creatorName.charAt(0)} className="h-12 w-12 border border-accent/30" />
+                  <Avatar src={details.creatorAvatar} defaultAvatar={{ brand: "orochia", seed: details.creatorName }} fallbackSrc={defaultAvatarFor(details.creatorName)} alt={details.creatorName} fallback={details.creatorName.charAt(0)} className="h-12 w-12 border border-accent/30" />
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-bold text-fg">{details.creatorName}</span>

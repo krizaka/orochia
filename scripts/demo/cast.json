@@ -9,7 +9,7 @@
       "role": "CREATOR",
       "displayName": "Elena Marlow",
       "bio": "Singer-songwriter and director. I write the songs, then film them at night — a new music video every month.",
-      "banner": "banner-01",
+      "banner": "light-1",
       "minTipCents": 500,
       "website": "https://example.com",
       "portrait": "elena"
@@ -21,7 +21,7 @@
       "role": "CREATOR",
       "displayName": "Mia Calder",
       "bio": "Live loops, one synth, no second take.",
-      "banner": "banner-03",
+      "banner": "stairs-1",
       "minTipCents": 300,
       "portrait": "mia"
     },
@@ -32,7 +32,7 @@
       "role": "CREATOR",
       "displayName": "Theo Lang",
       "bio": "Street choreographer. I film the city as a stage.",
-      "banner": "banner-04",
+      "banner": "aurora-3",
       "minTipCents": 300,
       "portrait": "theo"
     },

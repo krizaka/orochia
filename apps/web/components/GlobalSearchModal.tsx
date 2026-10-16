@@ -8,6 +8,7 @@ import React, { useEffect, useState } from "react";
 import { Avatar, Badge, Chip, Command, CommandDialog, IconButton, Kbd, Spinner } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
+import { defaultAvatarFor } from "@/lib/presets";
 
 interface CreatorResult {
   id: string;
@@ -193,7 +194,7 @@ export function GlobalSearchModal({
           <Command.Group heading={heading(Users, t("search.creators", { count: creators.length }))}>
             {creators.map((c) => (
               <Command.Item key={c.id} value={`creator-${c.id}`} onSelect={() => handleSelect(`/@${c.username}`)} className="group">
-                <Avatar src={c.avatarUrl} defaultAvatar={{ brand: "orochia", seed: c.displayName }} alt={c.displayName} fallback={c.displayName.charAt(0)} className="h-10 w-10 rounded-xl border border-accent/40" />
+                <Avatar src={c.avatarUrl} defaultAvatar={{ brand: "orochia", seed: c.displayName }} fallbackSrc={defaultAvatarFor(c.displayName)} alt={c.displayName} fallback={c.displayName.charAt(0)} className="h-10 w-10 rounded-xl border border-accent/40" />
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-1.5">
                     <span className="truncate text-xs font-bold text-fg">{c.displayName}</span>
