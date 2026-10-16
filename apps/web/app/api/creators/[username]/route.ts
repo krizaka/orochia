@@ -17,7 +17,7 @@ export async function GET(_req: NextRequest, props: { params: Promise<{ username
     return NextResponse.json({
       success: true,
       creator,
-      videos: await creatorVideos(creator.id),
+      videos: await creatorVideos(creator.id, 24, viewer?.isAgeVerified === true),
       playlists: await visiblePlaylists(creator.id, viewer?.id ?? null),
       relationship: viewer && viewer.id !== creator.id ? await relationship(viewer.id, creator.id) : null,
     });

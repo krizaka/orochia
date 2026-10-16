@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     const tab = z.enum(AUCTION_TABS).catch("open").parse(req.nextUrl.searchParams.get("tab"));
     const user = tab === "bidding" || tab === "selling" ? await getCurrentUser() : null;
     if ((tab === "bidding" || tab === "selling") && !user) return jsonError(401, "Sign in to see your auctions");
-    return NextResponse.json({ success: true, tab, items: await listAuctions(tab, user?.id ?? null) });
+    return NextResponse.json({ success: true, tab, items: await listAuctions(tab, user?.id ?? null, 24, user?.isAgeVerified === true) });
   } catch (error) {
     return errorResponse(error, "auctions/list");
   }

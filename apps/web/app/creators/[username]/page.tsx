@@ -49,7 +49,7 @@ export default async function CreatorPage(props: { params: Promise<{ username: s
   // A lost Bunny webhook must not leave posters empty: ask the Stream API about this creator's unsettled videos first.
   await reconcileVideos({ creatorId: creator.id, limit: 10 }).catch(() => undefined);
   const [videos, playlists] = await Promise.all([
-    creatorVideos(creator.id),
+    creatorVideos(creator.id, 24, viewer?.isAgeVerified === true),
     visiblePlaylists(creator.id, viewer?.id ?? null),
   ]);
 

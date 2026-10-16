@@ -1,9 +1,10 @@
-import { db, playlists, playlistItems, playlistMembers, playlistAudienceLists, audienceListMembers, videos, users, profiles } from "@orochia/db";
+import { contentRatings, db, playlists, playlistItems, playlistMembers, playlistAudienceLists, audienceListMembers, videos, users, profiles } from "@orochia/db";
 import { and, asc, desc, eq, exists, isNull, or, sql } from "drizzle-orm";
 import { canOpenCollection, evaluateVideoAccess, type CollectionVisibility } from "./access";
 import { HttpError } from "./http";
 import { withSignedMedia } from "./media-urls";
 import type { VideoSummary } from "./queries";
+import { veilSummary } from "./video-veil";
 
 /**
  * Collections (playlists): any account curates them and decides who opens each one — everyone,
@@ -126,7 +127,7 @@ export async function removeFromPlaylist(ownerId: string, playlistId: string, vi
 }
 
 /** A collection with its videos, for a viewer its permission admits (others get a 404). */
-export async function playlistWithItems(playlistId: string, viewerId: string | null) {
+export async function playlistWithItems(playlistId: string, viewerId: string | null, viewerAgeChecked = false) {
   const [row] = await db
     .select({
       ...card,
@@ -142,7 +143,7 @@ export async function playlistWithItems(playlistId: string, viewerId: string | n
   if (!row || !(await canOpenCollection({ id: row.id, ownerId: row.ownerId, visibility: row.visibility }, viewerId))) {
     throw new HttpError(404, "Playlist not found");
   }
-  const items: VideoSummary[] = await db
+  const rows = await db
     .select({
       id: videos.id,
       title: videos.title,
@@ -160,11 +161,16 @@ export async function playlistWithItems(playlistId: string, viewerId: string | n
       tipsCount: videos.tipsCount,
       likesCount: videos.likesCount,
       commentsCount: videos.commentsCount,
+      isBlurred: videos.isBlurred,
+      ratingRequiresBlur: sql<boolean>`coalesce(${contentRatings.requiresBlur}, false)`,
+      ratingIsAdult: sql<boolean>`coalesce(${contentRatings.isAdult}, false)`,
     })
     .from(playlistItems)
     .innerJoin(videos, eq(videos.id, playlistItems.videoId))
+    .leftJoin(contentRatings, eq(contentRatings.id, videos.contentRatingId))
     .where(and(eq(playlistItems.playlistId, playlistId), eq(videos.status, "READY"), isNull(videos.removedAt)))
     .orderBy(asc(playlistItems.position));
+  const items: VideoSummary[] = rows.map((r) => veilSummary(r, viewerAgeChecked));
   // Invited-only videos stay hidden from viewers they were not shared with.
   const shown = await Promise.all(
     items.map(async (v) => v.visibility !== "INVITED_ONLY" || (await evaluateVideoAccess(v.id, viewerId)).allowed),

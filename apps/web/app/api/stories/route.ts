@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
       creatorId = creator.id;
     }
     const includeOwnPending = req.nextUrl.searchParams.get("pending") === "1";
-    return NextResponse.json({ success: true, rings: await storyRail(viewer?.id ?? null, { includeOwnPending, creatorId }) });
+    return NextResponse.json({ success: true, rings: await storyRail(viewer?.id ?? null, { includeOwnPending, creatorId, viewerAgeChecked: viewer?.isAgeVerified === true }) });
   } catch (error) {
     return errorResponse(error, "stories/rail");
   }

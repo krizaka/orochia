@@ -21,7 +21,8 @@ export async function generateMetadata(props: { params: Promise<{ id: string }> 
   const video = await listedVideo(id);
   if (!video) return { title: t("watch.metaTitle"), robots: NOINDEX };
   const description = (video.description || t("watch.metaDescription", { title: video.title, creator: video.creatorName })).slice(0, 300);
-  const images = video.thumbnailUrl ? [{ url: video.thumbnailUrl, width: 1280, height: 720, alt: video.title }] : undefined;
+  // An 18+ picture never goes out as a link preview (Open Graph, Twitter cards).
+  const images = video.thumbnailUrl && !video.isAdult ? [{ url: video.thumbnailUrl, width: 1280, height: 720, alt: video.title }] : undefined;
   return {
     title: `${video.title} · ${video.creatorName}`,
     description,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { featuredCreator, popularTags, searchVideos } from "@/lib/queries";
+import { getCurrentUser } from "@/lib/auth";
 import { errorResponse } from "@/lib/http";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +17,8 @@ const Query = z.object({
 export async function GET(req: NextRequest) {
   try {
     const query = Query.parse(Object.fromEntries(req.nextUrl.searchParams));
-    const [videos, featured, tags] = await Promise.all([searchVideos(query), featuredCreator(), popularTags()]);
+    const viewer = await getCurrentUser();
+    const [videos, featured, tags] = await Promise.all([searchVideos(query, viewer?.isAgeVerified === true), featuredCreator(), popularTags()]);
     return NextResponse.json({ success: true, videos, featured, tags });
   } catch (error) {
     return errorResponse(error, "feed");

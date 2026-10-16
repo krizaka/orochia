@@ -1,10 +1,11 @@
-import { db, follows, payoutRequests, playlists, profiles, stories,tipsLedger, users, videoAccessGrants, videos } from "@orochia/db";
+import { contentRatings, db, follows, payoutRequests, playlists, profiles, stories,tipsLedger, users, videoAccessGrants, videos } from "@orochia/db";
 import { getCreatorAvailableBalanceCents } from "@orochia/payments";
 import { and, desc, eq, gt, ilike, isNull, ne, or, type SQL,sql } from "drizzle-orm";
 
 import type { SessionUser } from "./auth";
 import { withSignedMedia } from "./media-urls";
 import { socialLinksView } from "./profile";
+import { veilSummary } from "./video-veil";
 import type { VideoVisibility } from "./visibility";
 
 /**
@@ -30,6 +31,10 @@ export interface VideoSummary {
   tipsCount: number;
   likesCount: number;
   commentsCount: number;
+  /** The 18+ veil for this viewer (lib/video-veil.ts): blurred until revealed. */
+  isBlurred: boolean;
+  /** The rating is 18+: the card says so. */
+  isAdult: boolean;
 }
 
 const videoSummaryColumns = {
@@ -49,6 +54,9 @@ const videoSummaryColumns = {
   tipsCount: videos.tipsCount,
   likesCount: videos.likesCount,
   commentsCount: videos.commentsCount,
+  isBlurred: videos.isBlurred,
+  ratingRequiresBlur: sql<boolean>`coalesce(${contentRatings.requiresBlur}, false)`,
+  ratingIsAdult: sql<boolean>`coalesce(${contentRatings.isAdult}, false)`,
 };
 
 /**
@@ -59,22 +67,23 @@ const listable = () =>
   and(eq(videos.status, "READY"), isNull(videos.removedAt), isNull(users.suspendedAt), ne(videos.visibility, "INVITED_ONLY"));
 
 /** Ready videos, newest first. Locked videos are listed — their stream is what is protected. */
-export async function listFeed(limit = 12): Promise<VideoSummary[]> {
-  return searchVideos({ limit });
+export async function listFeed(limit = 12, viewerAgeChecked = false): Promise<VideoSummary[]> {
+  return searchVideos({ limit }, viewerAgeChecked);
 }
 
 /** The newest videos of the creators this person follows (a pending request counts: they asked to see them). */
-export async function listFollowingFeed(viewerId: string, limit = 24): Promise<VideoSummary[]> {
+export async function listFollowingFeed(viewerId: string, limit = 24, viewerAgeChecked = false): Promise<VideoSummary[]> {
   return db
     .select(videoSummaryColumns)
     .from(videos)
     .innerJoin(users, eq(users.id, videos.creatorId))
     .innerJoin(follows, and(eq(follows.creatorId, videos.creatorId), eq(follows.followerId, viewerId)))
     .leftJoin(profiles, eq(profiles.userId, videos.creatorId))
+    .leftJoin(contentRatings, eq(contentRatings.id, videos.contentRatingId))
     .where(listable())
     .orderBy(desc(videos.createdAt))
     .limit(Math.min(Math.max(limit, 1), 60))
-    .then((rows) => rows.map(withSignedMedia));
+    .then((rows) => rows.map((r) => withSignedMedia(veilSummary(r, viewerAgeChecked))));
 }
 
 export interface VideoSearch {
@@ -85,7 +94,7 @@ export interface VideoSearch {
 }
 
 /** The explore search: title, description, creator or tag; newest first. */
-export async function searchVideos({ q, tag, limit = 24, offset = 0 }: VideoSearch): Promise<VideoSummary[]> {
+export async function searchVideos({ q, tag, limit = 24, offset = 0 }: VideoSearch, viewerAgeChecked = false): Promise<VideoSummary[]> {
   const filters: (SQL | undefined)[] = [listable()];
   const term = q?.trim();
   if (term) {
@@ -98,11 +107,12 @@ export async function searchVideos({ q, tag, limit = 24, offset = 0 }: VideoSear
     .from(videos)
     .innerJoin(users, eq(users.id, videos.creatorId))
     .leftJoin(profiles, eq(profiles.userId, videos.creatorId))
+    .leftJoin(contentRatings, eq(contentRatings.id, videos.contentRatingId))
     .where(and(...filters))
     .orderBy(desc(videos.createdAt))
     .limit(Math.min(Math.max(limit, 1), 60))
     .offset(Math.max(offset, 0))
-    .then((rows) => rows.map(withSignedMedia));
+    .then((rows) => rows.map((r) => withSignedMedia(veilSummary(r, viewerAgeChecked))));
 }
 
 /** The most used tags of listable videos, for the explore filters. */
@@ -203,16 +213,17 @@ export async function creatorByUsername(username: string): Promise<CreatorCard |
   return row ? creatorCardFor(row.id) : null;
 }
 
-export async function creatorVideos(creatorId: string, limit = 24): Promise<VideoSummary[]> {
+export async function creatorVideos(creatorId: string, limit = 24, viewerAgeChecked = false): Promise<VideoSummary[]> {
   return db
     .select(videoSummaryColumns)
     .from(videos)
     .innerJoin(users, eq(users.id, videos.creatorId))
     .leftJoin(profiles, eq(profiles.userId, videos.creatorId))
+    .leftJoin(contentRatings, eq(contentRatings.id, videos.contentRatingId))
     .where(and(eq(videos.creatorId, creatorId), listable()))
     .orderBy(desc(videos.createdAt))
     .limit(limit)
-    .then((rows) => rows.map(withSignedMedia));
+    .then((rows) => rows.map((r) => withSignedMedia(veilSummary(r, viewerAgeChecked))));
 }
 
 export interface VideoDetails extends VideoSummary {
@@ -226,7 +237,7 @@ export interface VideoDetails extends VideoSummary {
 }
 
 /** A video's public metadata (never its stream: that goes through the access resolver). */
-export async function videoDetails(videoId: string): Promise<VideoDetails | null> {
+export async function videoDetails(videoId: string, viewerAgeChecked = false): Promise<VideoDetails | null> {
   const [row] = await db
     .select({
       ...videoSummaryColumns,
@@ -240,11 +251,12 @@ export async function videoDetails(videoId: string): Promise<VideoDetails | null
     .from(videos)
     .innerJoin(users, eq(users.id, videos.creatorId))
     .leftJoin(profiles, eq(profiles.userId, videos.creatorId))
+    .leftJoin(contentRatings, eq(contentRatings.id, videos.contentRatingId))
     .where(and(eq(videos.id, videoId), isNull(videos.removedAt), isNull(users.suspendedAt)))
     .limit(1);
   if (!row) return null;
-  const more = (await creatorVideos(row.creatorId, 5)).filter((v) => v.id !== videoId).slice(0, 4);
-  return { ...withSignedMedia(row), moreFromCreator: more };
+  const more = (await creatorVideos(row.creatorId, 5, viewerAgeChecked)).filter((v) => v.id !== videoId).slice(0, 4);
+  return { ...withSignedMedia(veilSummary(row, viewerAgeChecked)), moreFromCreator: more };
 }
 
 export interface AccountProfile {
@@ -350,10 +362,12 @@ export async function studioVideos(creatorId: string, limit = 100): Promise<Stud
     .from(videos)
     .innerJoin(users, eq(users.id, videos.creatorId))
     .leftJoin(profiles, eq(profiles.userId, videos.creatorId))
+    .leftJoin(contentRatings, eq(contentRatings.id, videos.contentRatingId))
     .where(and(eq(videos.creatorId, creatorId), sql`(${videos.removalReason} is distinct from ${CREATOR_DELETED})`))
     .orderBy(desc(videos.createdAt))
     .limit(limit);
-  return rows.map((r) => withSignedMedia({ ...r, tags: r.tags ?? [] }));
+  // The creator's own studio: their own videos, never veiled from them.
+  return rows.map((r) => withSignedMedia({ ...veilSummary(r, true), tags: r.tags ?? [] }));
 }
 
 export interface Dashboard {
