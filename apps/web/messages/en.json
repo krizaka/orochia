@@ -1424,6 +1424,17 @@
       "noVideos": "No video matches yet."
     },
     "sections": {
+      "forYou": {
+        "title": "For you",
+        "description": "Picked from what you watch, like, save and follow — and from what people with the same taste enjoy.",
+        "warmingUp": "Trending for now: your picks appear as you watch, like and follow.",
+        "chronological": "The newest public videos, in order. No ranking.",
+        "personalised": "Personalised",
+        "chronologicalLabel": "Chronological",
+        "orderLabel": "How this list is ordered",
+        "emptyTitle": "Nothing to show yet",
+        "emptyBody": "As soon as creators publish, videos land here."
+      },
       "trending": {
         "title": "Trending this week",
         "description": "Most watched, liked and tipped lately — fresh activity counts most.",

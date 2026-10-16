@@ -16,10 +16,12 @@ import { VideoGrid as VideoGridView } from "@/components/VideoGrid";
 import { type SessionUser } from "@/lib/auth";
 import { creatorSpaceCta, type ViewerState } from "@/lib/creator-journey";
 import { unlessUnavailable } from "@/lib/degrade";
-import { discoverableTags, exploreSectionsSettled, exploreTag, type ExploreVideo } from "@/lib/explore";
+import { discoverableTags, exploreSectionsSettled, exploreTag, type ExploreVideo, newVideos } from "@/lib/explore";
 import { exploreResultsByMeaning } from "@/lib/explore-semantic";
 import { signupEnabled } from "@/lib/features";
 import { t } from "@/lib/i18n";
+import { forYou } from "@/lib/recommendations/recommendations.shelves";
+import { ShelfSource } from "@/lib/recommendations/recommendations.types";
 import { getViewer } from "@/lib/viewer";
 
 export const dynamic = "force-dynamic";
@@ -30,7 +32,7 @@ export const metadata = {
   alternates: { canonical: "/explore" },
 };
 
-type Params = { q?: string; tag?: string; page?: string; view?: string };
+type Params = { q?: string; tag?: string; page?: string; view?: string; order?: string };
 
 /** The address of an Explore view (only what is set; page 1 is implicit). */
 function exploreHref(p: Params): string {
@@ -116,7 +118,7 @@ export default async function ExplorePage(props: { searchParams: Promise<Params>
       </SectionBackdrop>
 
       <div className="mx-auto max-w-7xl space-y-14 px-4 pt-4 sm:px-6">
-        {searching ? <Results q={q} tag={tag} page={page} all={all} user={user} /> : <Sections user={user} state={state} />}
+        {searching ? <Results q={q} tag={tag} page={page} all={all} user={user} /> : <Sections user={user} state={state} chronological={params.order === "chronological"} />}
       </div>
     </div>
   );
@@ -145,12 +147,48 @@ async function ExploreTags({ current, q }: { current: string | null; q: string }
   );
 }
 
-/** The six discovery sections. */
-async function Sections({ user, state }: { user: SessionUser | null; state: ViewerState }) {
+/**
+ * "For you" (signed-in viewers): the feed Orochia's recommender ranks from what the viewer watches, likes, saves and
+ * follows — or, by the viewer's choice (`?order=chronological`, the address is the state), simply the newest videos.
+ * Without signals or without the engine it is trending, and says so.
+ */
+async function ForYou({ user, chronological }: { user: SessionUser; chronological: boolean }) {
+  const loaded = await unlessUnavailable(async () =>
+    chronological ? { videos: await newVideos(user, 12), source: ShelfSource.Fallback, personal: false } : { ...(await forYou(user, new Date())), personal: true },
+  );
+  const shelf = loaded.ok ? loaded.value : { videos: [], source: ShelfSource.Fallback, personal: !chronological };
+  const choice = (href: string, label: string, current: boolean) => (
+    <Link href={href} aria-current={current ? "true" : undefined} className={buttonVariants({ variant: current ? "secondary" : "ghost", size: "sm" })}>
+      {label}
+    </Link>
+  );
+  return (
+    <ExploreSection
+      id="for-you"
+      index={0}
+      icon={<Sparkles className="h-4.5 w-4.5" />}
+      title={t("explore.sections.forYou.title")}
+      description={chronological ? t("explore.sections.forYou.chronological") : shelf.source === ShelfSource.Orazaka ? t("explore.sections.forYou.description") : t("explore.sections.forYou.warmingUp")}
+      isEmpty={shelf.videos.length === 0}
+      unavailable={!loaded.ok}
+      empty={{ title: t("explore.sections.forYou.emptyTitle"), description: t("explore.sections.forYou.emptyBody"), cta: { href: "#new", label: t("explore.cta.seeNew") } }}
+    >
+      <nav aria-label={t("explore.sections.forYou.orderLabel")} className="mb-3 flex gap-2">
+        {choice("/explore", t("explore.sections.forYou.personalised"), !chronological)}
+        {choice("/explore?order=chronological", t("explore.sections.forYou.chronologicalLabel"), chronological)}
+      </nav>
+      <VideoGrid videos={shelf.videos} label={t("explore.sections.forYou.title")} />
+    </ExploreSection>
+  );
+}
+
+/** The discovery sections ("For you" first for a signed-in viewer). */
+async function Sections({ user, state, chronological }: { user: SessionUser | null; state: ViewerState; chronological: boolean }) {
   const { sections: s, unavailable } = await exploreSectionsSettled(user);
   const cta = ctas(user, state);
   return (
     <>
+      {user && <ForYou user={user} chronological={chronological} />}
       <ExploreSection
         id="trending"
         index={0}
