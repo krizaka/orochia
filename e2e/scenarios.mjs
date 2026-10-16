@@ -1133,7 +1133,12 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   const unchecked = await session(rawEmail, "a-long-password-1");
   check("an account whose age was never checked signs in", reg.status < 300 && unchecked.status === 200, `${reg.status}/${unchecked.status}`);
   const setRating = (id, rating) => sqlClient.query("update videos set content_rating_id = $2 where id = $1", [id, rating]);
-  const target = neon;
+  // A dedicated fixture video of elena's (public, ready): no other scenario touches it.
+  const fixtureId = (await sqlClient.query(
+    "insert into videos (creator_id, bunny_video_id, title, visibility, status) select id, $1, 'Age gate fixture', 'PUBLIC', 'READY' from users where email = 'elena@orochia.org' returning id",
+    [`fixture-${stamp}`],
+  )).rows[0].id;
+  const target = { id: fixtureId };
   for (const rating of ["MATURE", "ADULT"]) {
     await setRating(target.id, rating);
     check(`${rating}: a visitor's stream is refused with the stable code`, refused(await anon.call(`/api/videos/${target.id}/stream`)));
@@ -1173,7 +1178,7 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("…nor its pledge", (await unchecked.call(`/api/challenges/${goalId}/pledges`, "POST", { amountCents: 500 })).json.code !== CODE);
   await elena.call(`/api/auctions/${auctionId}`, "DELETE", { reason: "fixture" });
   await elena.call(`/api/challenges/${goalId}/cancel`, "POST", {});
-  await setRating(target.id, null);
+  await sqlClient.query("delete from videos where id = $1", [fixtureId]);
   await sqlClient.end();
 }
 
