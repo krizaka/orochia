@@ -6,6 +6,7 @@ import {
   uuid,
   varchar,
   integer,
+  real,
   index,
   uniqueIndex,
   boolean,
@@ -48,6 +49,8 @@ export const videos = pgTable(
     /** The source picture's size in pixels, read from the Stream API once encoded: a vertical clip is shown vertical, never letterboxed (lib/video-aspect.ts). Null until then. */
     width: integer("width"),
     height: integer("height"),
+    /** Frames per second of the source, read from the Stream API with the size (null until encoded). */
+    framerate: real("framerate"),
     tags: text("tags").array(),
     /** Taken down by an operator (DMCA, terms): hidden everywhere and never signed for playback. */
     removedAt: timestamp("removed_at", { withTimezone: true }),

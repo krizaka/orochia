@@ -82,6 +82,7 @@ export async function POST(req: NextRequest) {
           update.width = Math.round(details.width);
           update.height = Math.round(details.height);
         }
+        if (details.framerate > 0) update.framerate = details.framerate;
       } catch (error) {
         // The video is playable either way; its length and renditions are filled on the next event.
         console.error("bunny webhook: could not read the video details", error);

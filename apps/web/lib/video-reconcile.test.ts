@@ -20,12 +20,18 @@ describe("video media read back from Bunny (the webhook may never come)", () => 
       resolutions: ["240p", "360p", "480p"],
       width: null,
       height: null,
+      framerate: null,
     });
   });
 
   it("keeps the source size so a vertical clip stays vertical", () => {
     const patch = videoMediaFromBunny({ length: 6, storageSize: 1, availableResolutions: "480p", width: 540, height: 960 }, HOST, GUID);
     expect([patch.width, patch.height]).toEqual([540, 960]);
+  });
+
+  it("keeps the real frame rate Bunny read from the file", () => {
+    expect(videoMediaFromBunny({ length: 5, storageSize: 1, framerate: 16.004 }, HOST, GUID).framerate).toBe(16.004);
+    expect(videoMediaFromBunny({ length: 5, storageSize: 1, framerate: 0 }, HOST, GUID).framerate).toBeNull();
   });
 
   it("falls back to thumbnail.jpg when Bunny names no thumbnail", () => {
@@ -44,7 +50,8 @@ describe("video media read back from Bunny (the webhook may never come)", () => 
     expect(needsReconcile({ status: "PROCESSING", thumbnailUrl: null, bunnyVideoId: GUID })).toBe(true);
     expect(needsReconcile({ status: "PENDING_UPLOAD", thumbnailUrl: null, bunnyVideoId: GUID })).toBe(true);
     expect(needsReconcile({ status: "READY", thumbnailUrl: "https://x/y.jpg", width: null, bunnyVideoId: GUID })).toBe(true);
-    expect(needsReconcile({ status: "READY", thumbnailUrl: "https://x/y.jpg", width: 540, bunnyVideoId: GUID })).toBe(false);
+    expect(needsReconcile({ status: "READY", thumbnailUrl: "https://x/y.jpg", width: 540, framerate: 24, bunnyVideoId: GUID })).toBe(false);
+    expect(needsReconcile({ status: "READY", thumbnailUrl: "https://x/y.jpg", width: 540, framerate: null, bunnyVideoId: GUID })).toBe(true);
     expect(needsReconcile({ status: "READY", thumbnailUrl: null, bunnyVideoId: "qa-explorer-03" })).toBe(false);
     expect(needsReconcile({ status: "FAILED", thumbnailUrl: null, bunnyVideoId: GUID })).toBe(false);
   });

@@ -1188,6 +1188,28 @@
     },
     "shown": "{from}–{to} of {total}"
   },
+  "info": {
+    "title": "Video information",
+    "resolution": "Resolution",
+    "aspect": "Aspect",
+    "duration": "Duration",
+    "framerate": "Frame rate",
+    "fps": "{fps} fps",
+    "uploaded": "Uploaded",
+    "status": "Encoding",
+    "credit": "Made with",
+    "unknown": "Not read yet",
+    "statuses": {
+      "PENDING_UPLOAD": "Waiting for the upload",
+      "PROCESSING": "Encoding",
+      "READY": "Ready",
+      "FAILED": "Failed",
+      "HELD": "Held (storage limit)"
+    }
+  },
+  "quality": {
+    "title": "Encoded at {label}"
+  },
   "owner": {
     "yours": "Your video",
     "edit": "Edit",
