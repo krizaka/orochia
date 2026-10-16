@@ -14,7 +14,9 @@ COPY packages/db/package.json ./packages/db/
 COPY packages/media/package.json ./packages/media/
 COPY packages/payments/package.json ./packages/payments/
 COPY packages/config/package.json ./packages/config/
-RUN npm ci
+# No install script is needed to build the image (esbuild ships its binary as an optional package), and @ast-grep/cli
+# (a lint tool) has no linux-musl binary in the lock: its postinstall would fail on alpine.
+RUN npm ci --ignore-scripts
 
 # 2. Builder stage
 FROM base AS builder
