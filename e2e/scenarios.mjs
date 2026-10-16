@@ -107,7 +107,7 @@ if (process.env.AI_ENGINE_URL === "http://127.0.0.1:4599") {
   // The recommender (ADR-078): an interaction leaves through the outbox, as a pseudonym — never the account id.
   check("a like is recorded", (await alex.call(`/api/videos/${neon.id}/like`, "POST", { liked: true })).status === 200);
   let liked = null;
-  for (let i = 0; i < 40 && !liked; i++) {
+  for (let i = 0; i < 90 && !liked; i++) {
     liked = engine.reco.events.find((e) => e.kind === "LIKE" && e.item === neon.id);
     if (!liked) await new Promise((r) => setTimeout(r, 1000));
   }

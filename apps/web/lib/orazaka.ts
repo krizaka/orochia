@@ -157,6 +157,11 @@ export interface CallOptions<T> {
   timeoutMs?: number;
   fetchImpl?: typeof fetch;
   now?: () => number;
+  /**
+   * Whether this call opens and honours the circuit breaker (default true). Background sync passes false: it has its own
+   * retry (the outbox), and a backlog failing must not pause the shelves a person is waiting for — nor the reverse.
+   */
+  breaker?: boolean;
 }
 
 export interface CallResult<T> {
@@ -176,7 +181,8 @@ export async function callOrazaka<T>(options: CallOptions<T>): Promise<CallResul
   const start = now();
   const conn = connection(options.env ?? (process.env as OrazakaEnv));
   if (!conn) throw new OrazakaUnavailableError("not_configured", "Orazaka is not configured");
-  if (breaker.openUntil > start) throw new OrazakaUnavailableError("circuit_open", "Orazaka is paused after repeated failures");
+  const guarded = options.breaker !== false;
+  if (guarded && breaker.openUntil > start) throw new OrazakaUnavailableError("circuit_open", "Orazaka is paused after repeated failures");
 
   const url = new URL(`${conn.url}${options.path}`);
   for (const [key, value] of Object.entries(options.query ?? {})) {
@@ -196,22 +202,24 @@ export async function callOrazaka<T>(options: CallOptions<T>): Promise<CallResul
       cache: "no-store",
     });
   } catch {
-    return fail("unreachable", "Orazaka did not answer", now(), true);
+    return fail("unreachable", "Orazaka did not answer", now(), guarded);
   }
   if (response.status === 404) throw new OrazakaUnavailableError("not_found", "Orazaka does not know it");
   if (!response.ok) {
-    return fail(response.status >= 500 ? "unreachable" : "refused", `Orazaka answered ${response.status}`, now(), true);
+    return fail(response.status >= 500 ? "unreachable" : "refused", `Orazaka answered ${response.status}`, now(), guarded);
   }
   let body: unknown;
   try {
     body = await response.json();
   } catch {
-    return fail("bad_response", "Orazaka answered something that is not JSON", now(), true);
+    return fail("bad_response", "Orazaka answered something that is not JSON", now(), guarded);
   }
   const parsed = options.schema.safeParse(body);
-  if (!parsed.success) return fail("bad_response", "Orazaka answered an unexpected shape", now(), true);
+  if (!parsed.success) return fail("bad_response", "Orazaka answered an unexpected shape", now(), guarded);
 
-  breaker.failures = 0;
-  breaker.openUntil = 0;
+  if (guarded) {
+    breaker.failures = 0;
+    breaker.openUntil = 0;
+  }
   return { data: parsed.data, requestId: response.headers.get("x-orazaka-request-id"), ms: now() - start };
 }

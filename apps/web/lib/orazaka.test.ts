@@ -110,4 +110,13 @@ describe("callOrazaka (the recommender's calls)", () => {
     const bad = await callOrazaka({ method: "POST", path: "/x", body: {}, schema, env, fetchImpl: (async () => new Response(JSON.stringify({ ok: "yes" }))) as unknown as typeof fetch }).catch((x) => x);
     expect(bad.code).toBe("bad_response");
   });
+
+  it("background calls (breaker: false) neither open the breaker nor are stopped by it", async () => {
+    const down = (async () => new Response("", { status: 503 })) as unknown as typeof fetch;
+    for (let i = 0; i < BREAKER_FAILURES + 2; i++) {
+      const e = await callOrazaka({ method: "POST", path: "/x", body: {}, schema, env, breaker: false, fetchImpl: down }).catch((x) => x);
+      expect(e.code).toBe("unreachable");
+    }
+    expect(breakerState().open).toBe(false);
+  });
 });

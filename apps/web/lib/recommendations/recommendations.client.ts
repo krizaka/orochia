@@ -15,20 +15,21 @@ import {
 /**
  * Orazaka's recommender, as Orochia calls it (ADR-078 §6) — one function per endpoint, every answer parsed against the
  * recorded contract (recommendations-contract.json). Failures are `OrazakaUnavailableError` (lib/orazaka.ts): the
- * caller falls back, the outbox retries.
+ * caller falls back, the outbox retries. Background sync (events, items, erasures) stays off the circuit breaker: it has
+ * its own retry, and the shelves people wait for must not pause because a backlog is failing.
  */
 const BASE = "/api/v1/recommendations";
 
 export function sendEvents(events: RecoEvent[], timeoutMs?: number) {
-  return callOrazaka({ method: "POST", path: `${BASE}/events`, body: { events }, schema: IngestResultSchema, timeoutMs });
+  return callOrazaka({ method: "POST", path: `${BASE}/events`, body: { events }, schema: IngestResultSchema, timeoutMs, breaker: false });
 }
 
 export function sendItems(items: RecoItem[], timeoutMs?: number) {
-  return callOrazaka({ method: "POST", path: `${BASE}/items`, body: { items }, schema: CatalogueResultSchema, timeoutMs });
+  return callOrazaka({ method: "POST", path: `${BASE}/items`, body: { items }, schema: CatalogueResultSchema, timeoutMs, breaker: false });
 }
 
 export function sendErasure(erasure: { users: Pseudonym[]; items: string[] }, timeoutMs?: number) {
-  return callOrazaka({ method: "POST", path: `${BASE}/erasures`, body: erasure, schema: ErasureResultSchema, timeoutMs });
+  return callOrazaka({ method: "POST", path: `${BASE}/erasures`, body: erasure, schema: ErasureResultSchema, timeoutMs, breaker: false });
 }
 
 export function fetchForYou(user: Pseudonym, limit: number, exclude: string[], timeoutMs: number): Promise<CallResult<Feed>> {
