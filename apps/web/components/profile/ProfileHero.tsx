@@ -67,6 +67,7 @@ export function ProfileHero({
           <PictureQuickEdit
             kind="banner"
             hasPicture={Boolean(banner)}
+            current={banner}
             className="absolute right-3 top-3 sm:right-4 sm:top-4"
             onChanged={(url) => {
               setBanner(url);
@@ -91,6 +92,7 @@ export function ProfileHero({
                 <PictureQuickEdit
                   kind="avatar"
                   hasPicture={Boolean(avatar)}
+                  current={avatar}
                   className="absolute -bottom-1 -right-1"
                   onChanged={(url) => {
                     setAvatar(url);
