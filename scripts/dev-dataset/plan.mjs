@@ -34,8 +34,7 @@ export function validateDataset(ds) {
     perCreator.set(v.creator, [...(perCreator.get(v.creator) ?? []), v]);
   }
   for (const [key, list] of perCreator) {
-    if (list.length < 4) problems.push(`creator ${key}: ${list.length} videos, 4 at least`);
-    if (!list.some((v) => v.orientation === "vertical")) problems.push(`creator ${key}: at least one vertical clip`);
+    if (list.length < 3) problems.push(`creator ${key}: ${list.length} videos, 3 at least`);
   }
   const clips = ds.generate?.clips ?? {};
   for (const [file, spec] of Object.entries(clips)) {
@@ -44,26 +43,38 @@ export function validateDataset(ds) {
     if (/nud|naked|topless|erotic|sexual/i.test(prompt.replace(/\bno (nudity|nude)\b/gi, ""))) problems.push(`generate: ${file} must stay within the provider's guardrails (fashion, swimwear, dance only)`);
     if (!/no (people|faces|hands)|faces?/i.test(prompt)) problems.push(`generate: ${file} must say there is no face`);
   }
-  for (const v of ds.videos ?? []) if (!clips[v.file] && v.orientation === "vertical") problems.push(`video "${v.title}": a vertical clip needs its generation prompt`);
+  for (const v of ds.videos ?? []) if (!clips[v.file] && !v.external && v.orientation === "vertical") problems.push(`video "${v.title}": a vertical clip needs its generation prompt`);
   return problems;
 }
 
-/** What a creator has now vs what the dataset wants: `have` = [{ id, title }]. The same title twice: the later one is a duplicate. */
-export function diffCreator(wanted, have) {
+/**
+ * What a creator has now vs what the dataset wants: `have` = [{ id, title, description }]. The same title twice: the later
+ * one is a duplicate. `isStale(wanted, have)` marks a video that exists but must be replaced (a silent clip whose sound
+ * version is ready): it is removed and uploaded again — always with `remove` honoured only under --prune by the caller
+ * for the unwanted ones, but a stale one is always replaced.
+ */
+export function diffCreator(wanted, have, isStale = () => false) {
   const want = new Map(wanted.map((v) => [v.title.toLowerCase(), v]));
   const seen = new Set();
   const remove = [];
+  const replace = [];
   for (const h of have) {
     const key = h.title.toLowerCase();
-    if (!want.has(key) || seen.has(key)) remove.push(h);
+    const w = want.get(key);
+    if (!w || seen.has(key)) remove.push(h);
+    else if (isStale(w, h)) {
+      replace.push(h);
+      continue;
+    }
     seen.add(key);
   }
   const upload = wanted.filter((v) => !seen.has(v.title.toLowerCase()));
-  return { upload, remove };
+  return { upload, remove, replace };
 }
 
 /** The credit written under every description: which Orazaka run made the clip. */
 export function credit(entry) {
   if (!entry?.orazakaRunId) return null;
-  return `Made with Orazaka — run ${entry.orazakaRunId}${entry.model ? ` (${entry.model.split(" — ")[0]})` : ""}.`;
+  const sound = entry.sound ? ` · sound: ${entry.sound}${entry.soundRunId ? `, run ${entry.soundRunId}` : ""}` : "";
+  return `Made with Orazaka · run ${entry.orazakaRunId}${entry.model ? ` (${entry.model.split(" — ")[0]})` : ""}${sound}.`;
 }
