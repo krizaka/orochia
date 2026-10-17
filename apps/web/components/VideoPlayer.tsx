@@ -7,6 +7,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Badge, Button, cn, IconButton, Slider } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import { isAdultRating } from "@/lib/content-ratings";
+import { toggleFullscreen } from "@/lib/fullscreen";
 import { money } from "@/lib/money";
 import { orientationOf } from "@/lib/video-aspect";
 
@@ -124,15 +125,12 @@ export function VideoPlayer({
     };
   }, [streamUrl, isPaywalled, isGated]);
 
+  // The media element is the truth: play/pause state follows its events (native controls, fullscreen, a refused play()).
   const togglePlay = () => {
-    if (!videoRef.current) return;
-    if (isPlaying) {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      videoRef.current.play();
-      setIsPlaying(true);
-    }
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) void video.play().catch(() => setIsPlaying(false));
+    else video.pause();
   };
 
   const handleTimeUpdate = () => {
@@ -168,14 +166,8 @@ export function VideoPlayer({
     videoRef.current.muted = nextMuted;
   };
 
-  const toggleFullscreen = () => {
-    if (!containerRef.current) return;
-    if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen().catch((err) => console.error(err));
-    } else {
-      document.exitFullscreen().catch((err) => console.error(err));
-    }
-  };
+  // iPhone Safari has no fullscreen on a container: toggleFullscreen falls back to the video's own (orochia#275).
+  const onFullscreen = () => void toggleFullscreen(containerRef.current, videoRef.current);
 
   const formatTime = (secs: number) => {
     const m = Math.floor(secs / 60);
@@ -189,13 +181,14 @@ export function VideoPlayer({
       className={cn(
         "theme-dark relative w-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-2xl group select-none",
         orientationOf(width, height) === "vertical"
-          ? "mx-auto aspect-[9/16] max-h-[calc(100dvh-5rem)] max-w-[min(100%,28rem)]"
+          ? "mx-auto aspect-[9/16] max-h-[calc(100dvh-13rem-env(safe-area-inset-bottom))] max-w-[min(100%,28rem)] md:max-h-[calc(100dvh-5rem)]"
           : orientationOf(width, height) === "square"
-            ? "mx-auto aspect-square max-h-[calc(100dvh-5rem)]"
+            ? "mx-auto aspect-square max-h-[calc(100dvh-13rem-env(safe-area-inset-bottom))] md:max-h-[calc(100dvh-5rem)]"
             : "aspect-video",
       )}
-      onMouseEnter={() => setShowControls(true)}
-      onMouseLeave={() => isPlaying && setShowControls(false)}
+      // A mouse hides the controls while playing; a finger never does (iOS swallows the first tap after a hover change).
+      onPointerEnter={(e) => e.pointerType === "mouse" && setShowControls(true)}
+      onPointerLeave={(e) => e.pointerType === "mouse" && isPlaying && setShowControls(false)}
     >
       {/* 18+ Rating Badge Top Left */}
       {(isAdult || isAdultRating(contentRatingId)) && (
@@ -212,6 +205,8 @@ export function VideoPlayer({
         poster={posterUrl || undefined}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
         onEnded={() => setIsPlaying(false)}
         className={cn(
           "h-full w-full object-contain cursor-pointer transition-all duration-500",
@@ -270,7 +265,7 @@ export function VideoPlayer({
         </div>
       )}
 
-      {/* Custom Video Controls */}
+      {/* Custom Video Controls. On a phone the player ends above the fixed tab bar (MobileBottomNav, 4rem + safe area): sized by the 13rem above, so the bar never covers the controls. */}
       {!isPaywalled && !isGated && (
         <div
           className={cn(
@@ -328,7 +323,7 @@ export function VideoPlayer({
 
             <div className="flex items-center gap-3">
               {/* Fullscreen Button */}
-              <IconButton onClick={toggleFullscreen} className="h-8 w-8 text-current hover:bg-white/10 hover:text-fg-accent" label={t("player.fullscreen")}>
+              <IconButton onClick={onFullscreen} className="h-8 w-8 text-current hover:bg-white/10 hover:text-fg-accent" label={t("player.fullscreen")}>
                 <Maximize className="h-5 w-5" aria-hidden />
               </IconButton>
             </div>

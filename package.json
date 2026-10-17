@@ -21,6 +21,7 @@
     "dev:dataset": "node scripts/dev-dataset/seed.mjs",
     "test:e2e": "node e2e/scenarios.mjs",
     "test:a11y": "node e2e/a11y.mjs",
+    "test:player-iphone": "node e2e/player-iphone.mjs",
     "check": "npm run lint && npm run typecheck && npm test && npm run docs:generate -- --check",
     "db:up": "docker compose -f deploy/docker/docker-compose.dev.yml up -d --wait",
     "db:down": "docker compose -f deploy/docker/docker-compose.dev.yml down",
