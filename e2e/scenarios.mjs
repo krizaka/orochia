@@ -1372,7 +1372,7 @@ check("llms.txt served", (await fetch(`${B}/llms.txt`)).status === 200);
 
   // Sign-up: form token, honeypot, minimal delay, disposable addresses, scripts, per-IP limit.
   const person = () => {
-    const n = `${Date.now().toString(36)}${crypto.getRandomValues(new Uint32Array(1))[0] % 1e6}`;
+    const n = `${Date.now().toString(36)}${crypto.randomUUID().slice(0, 6)}`;
     return { username: `p_${n}`.slice(0, 30), email: `p_${n}@example.com`, displayName: "P", password: "a-long-password-1", dateOfBirth: "1990-01-01", isAgeVerified: true, acceptTerms: true };
   };
   const codeOf = async (res) => (await res.json().catch(() => ({}))).code;
