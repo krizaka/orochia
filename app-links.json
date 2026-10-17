@@ -2,7 +2,7 @@
   "host": "dev.orochia.com",
   "iosBundleId": "com.krizaka.orochia",
   "androidPackage": "com.krizaka.orochia",
-  "paths": ["/@*", "/watch/*", "/me", "/me/*", "/auctions", "/auctions/*", "/challenges", "/challenges/*", "/messages"],
+  "paths": ["/@*", "/watch/*", "/me", "/me/*", "/auctions", "/auctions/*", "/challenges", "/challenges/*", "/messages", "/messages/*"],
   "web": {
     "appDir": "apps/web/app",
     "extra": ["/@[username]"],

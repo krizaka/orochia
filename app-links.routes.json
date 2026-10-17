@@ -11,7 +11,8 @@
     "/auctions/*",
     "/challenges",
     "/challenges/*",
-    "/messages"
+    "/messages",
+    "/messages/*"
   ],
   "shareable": [
     "/auctions",
@@ -31,6 +32,7 @@
     "/me/treasury",
     "/me/videos",
     "/messages",
+    "/messages/*",
     "/watch/*",
     "/@*"
   ]
