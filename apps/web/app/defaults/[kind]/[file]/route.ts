@@ -7,7 +7,7 @@ export const dynamic = "force-static";
 // The zone paths are built here, from the presets, and looked up by what the visitor asked for: the request never
 // becomes part of the address that is fetched.
 const PATHS = new Map<string, string>(
-  [...DEFAULT_AVATARS.flatMap((p) => [`avatars/${p.id}-512.webp`, `avatars/${p.id}-256.webp`]), ...DEFAULT_BANNERS.map((p) => `banners/${p.id}.webp`)].map((path) => [path, `public/defaults/${path}`]),
+  [...DEFAULT_AVATARS.flatMap((p) => [`avatars/${p.id}-512.webp`, `avatars/${p.id}-256.webp`]), ...DEFAULT_BANNERS.flatMap((p) => [`banners/${p.id}.webp`, ...(p.thumbUrl.endsWith("-800.webp") ? [`banners/${p.id}-800.webp`] : [])])].map((path) => [path, `public/defaults/${path}`]),
 );
 
 /** True for a file the defaults really are (nothing else of the zone is ever reachable through this route). */

@@ -20,8 +20,9 @@ describe("the camera menu of a profile picture", () => {
     expect(messages.chooseAvatar).toBe("Choose an avatar");
     expect(messages.chooseBanner).toBe("Choose a cover");
   });
-  it("highlights the picture shown now in the picker and lists every default", () => {
-    expect(source).toContain("aria-pressed={current === p.url}");
-    expect(source).toContain("isAvatar ? 15 : 9");
+  it("hands the picture shown now to the picker, which marks it and groups the defaults by family", () => {
+    expect(source).toContain("<PresetPicker");
+    expect(source).toContain("presets.find((p) => p.url === current)");
+    expect(source).toContain("loading={loadingPresets}");
   });
 });

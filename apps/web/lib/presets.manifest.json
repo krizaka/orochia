@@ -1,0 +1,31 @@
+{
+  "$comment": "Orochia's default avatars and banners — the data the picker, the preset route and the profile API read. Files live in the product's storage zone (public/defaults/…) and are served by /defaults/…; ids are the file names. A new picture is added here AND in scripts/dev-dataset/profile-media-v2.json (its generation spec), never in a component. Avatars: <id>-256.webp and <id>-512.webp. Banners: 3:1 (or 4:1 for the first batch), <id>.webp at 1600, plus <id>-800.webp when `widths` says so.",
+  "avatars": [
+    { "id": "aurora-1", "family": "abstract", "alt": { "en": "Aurora orb", "fr": "Orbe aurore" } },
+    { "id": "aurora-2", "family": "abstract", "alt": { "en": "Ribbon light", "fr": "Rubans de lumière" } },
+    { "id": "painterly-1", "family": "painterly", "alt": { "en": "Oil portrait", "fr": "Portrait à l'huile" } },
+    { "id": "painterly-2", "family": "painterly", "alt": { "en": "Silver beard", "fr": "Barbe argentée" } },
+    { "id": "graphic-1", "family": "illustrated", "alt": { "en": "Ink undercut", "fr": "Coupe rasée à l'encre" } },
+    { "id": "graphic-2", "family": "illustrated", "alt": { "en": "Ink and wheels", "fr": "Encre et roues" } },
+    { "id": "graphic-3", "family": "illustrated", "alt": { "en": "Violet halftone", "fr": "Trame violette" } },
+    { "id": "clay-1", "family": "soft3d", "alt": { "en": "Clay, grown-up", "fr": "Argile, adulte" } },
+    { "id": "clay-2", "family": "soft3d", "alt": { "en": "Clay, long waves", "fr": "Argile, longues ondulations" } },
+    { "id": "clay-3", "family": "soft3d", "alt": { "en": "Clay, red curls", "fr": "Argile, boucles rousses" } },
+    { "id": "line-1", "family": "line", "alt": { "en": "Line wave", "fr": "Vague au trait" } },
+    { "id": "line-2", "family": "line", "alt": { "en": "Line scarf", "fr": "Foulard au trait" } },
+    { "id": "zine-1", "family": "illustrated", "alt": { "en": "Zine afro", "fr": "Afro de fanzine" } },
+    { "id": "zine-2", "family": "illustrated", "alt": { "en": "Zine beads", "fr": "Perles de fanzine" } },
+    { "id": "painterly-4", "family": "painterly", "alt": { "en": "Gold light", "fr": "Lumière dorée" } }
+  ],
+  "banners": [
+    { "id": "light-1", "family": "abstract", "alt": { "en": "Violet light", "fr": "Lumière violette" } },
+    { "id": "light-2", "family": "abstract", "alt": { "en": "Indigo waves", "fr": "Vagues indigo" } },
+    { "id": "texture-1", "family": "textures", "alt": { "en": "Paper layers", "fr": "Couches de papier" } },
+    { "id": "mural-1", "family": "textures", "alt": { "en": "Mural colours", "fr": "Couleurs de fresque" } },
+    { "id": "stairs-1", "family": "places", "alt": { "en": "Plateau stairs", "fr": "Escaliers du Plateau" } },
+    { "id": "neon-1", "family": "places", "alt": { "en": "Mile-End alley", "fr": "Ruelle du Mile-End" } },
+    { "id": "skyline-1", "family": "places", "alt": { "en": "Skyline dusk", "fr": "Horizon au crépuscule" } },
+    { "id": "mural-2", "family": "textures", "alt": { "en": "Brick geometry", "fr": "Géométrie de briques" } },
+    { "id": "aurora-3", "family": "abstract", "alt": { "en": "Northern lights", "fr": "Aurores boréales" } }
+  ]
+}

@@ -1,0 +1,588 @@
+{
+  "$comment": "Second batch of Orochia's default pictures (candidates, ~2x the target): generate all, review on the contact sheet, keep the best, then add the kept ones to apps/web/lib/presets.manifest.json (with alt EN/FR). Same rules as profile-media.json: adults only, every identity, no stereotype, no real person, no text or logo, never sexualised, violet to magenta palette. Avatars 1024 square -> 512 and 256 webp. Banners generated at 1536x512 (3:1) -> 1600 and 800 webp.",
+  "style": "Palette: deep violet to magenta accents, premium and next-gen, readable on light and dark. Clean composition, soft light, no text, no lettering, no logos, fully clothed, wholesome, clearly adult.",
+  "avatars": [
+    {
+      "id": "illustrated-1",
+      "family": "illustrated",
+      "prompt": "Flat vector illustration of an adult woman in her fifties with silver curls and laugh lines, bold simple shapes, clean outlines, shoulders-up, square avatar"
+    },
+    {
+      "id": "illustrated-2",
+      "family": "illustrated",
+      "prompt": "Flat vector illustration of an adult man wearing a deep indigo turban and a trimmed beard, bold simple shapes, clean outlines, shoulders-up, square avatar"
+    },
+    {
+      "id": "illustrated-3",
+      "family": "illustrated",
+      "prompt": "Flat vector illustration of an adult man with East Asian features, a short fade and a denim jacket, bold simple shapes, clean outlines, shoulders-up, square avatar"
+    },
+    {
+      "id": "illustrated-4",
+      "family": "illustrated",
+      "prompt": "Flat vector illustration of an adult man with a prosthetic arm resting on his shoulder, relaxed smile, bold simple shapes, clean outlines, shoulders-up, square avatar"
+    },
+    {
+      "id": "illustrated-5",
+      "family": "illustrated",
+      "prompt": "Flat vector illustration of an adult man with freckles, red hair and a thick beard, bold simple shapes, clean outlines, shoulders-up, square avatar"
+    },
+    {
+      "id": "illustrated-6",
+      "family": "illustrated",
+      "prompt": "Flat vector illustration of an adult plus-size woman with an afro and bright lipstick, bold simple shapes, clean outlines, shoulders-up, square avatar"
+    },
+    {
+      "id": "illustrated-7",
+      "family": "illustrated",
+      "prompt": "Flat vector illustration of an adult Latina woman with a red headscarf and hoop earrings, bold simple shapes, clean outlines, shoulders-up, square avatar"
+    },
+    {
+      "id": "illustrated-8",
+      "family": "illustrated",
+      "prompt": "Flat vector illustration of an adult man with dark brown skin, a short beard and round glasses, bold simple shapes, clean outlines, shoulders-up, square avatar"
+    },
+    {
+      "id": "illustrated-9",
+      "family": "illustrated",
+      "prompt": "Flat vector illustration of an adult androgynous person with a shaved head and small silver earrings, bold simple shapes, clean outlines, shoulders-up, square avatar"
+    },
+    {
+      "id": "illustrated-10",
+      "family": "illustrated",
+      "prompt": "Flat vector illustration of an adult woman with South Asian features, long braid and a gold nose stud, bold simple shapes, clean outlines, shoulders-up, square avatar"
+    },
+    {
+      "id": "illustrated-11",
+      "family": "illustrated",
+      "prompt": "Flat vector illustration of an adult woman with Down syndrome, warm smile, short bob haircut, bold simple shapes, clean outlines, shoulders-up, square avatar"
+    },
+    {
+      "id": "illustrated-12",
+      "family": "illustrated",
+      "prompt": "Flat vector illustration of an adult woman with vitiligo on her face and a shaved side haircut, bold simple shapes, clean outlines, shoulders-up, square avatar"
+    },
+    {
+      "id": "illustrated-13",
+      "family": "illustrated",
+      "prompt": "Flat vector illustration of an adult man in his sixties with white locs, bold simple shapes, clean outlines, shoulders-up, square avatar"
+    },
+    {
+      "id": "illustrated-14",
+      "family": "illustrated",
+      "prompt": "Flat vector illustration of an adult Black man with a sunlit fade and a leather jacket, bold simple shapes, clean outlines, shoulders-up, square avatar"
+    },
+    {
+      "id": "illustrated-15",
+      "family": "illustrated",
+      "prompt": "Flat vector illustration of an adult woman wearing a soft dusty-rose hijab and a gentle smile, bold simple shapes, clean outlines, shoulders-up, square avatar"
+    },
+    {
+      "id": "illustrated-16",
+      "family": "illustrated",
+      "prompt": "Flat vector illustration of an adult woman using a wheelchair, shown head and shoulders with big headphones, bold simple shapes, clean outlines, shoulders-up, square avatar"
+    },
+    {
+      "id": "painterly-1",
+      "family": "painterly",
+      "prompt": "Painterly portrait of an adult woman using a wheelchair, shown head and shoulders with big headphones, loose confident brushwork, soft rim light, shoulders-up, no real person, square avatar"
+    },
+    {
+      "id": "painterly-2",
+      "family": "painterly",
+      "prompt": "Painterly portrait of an adult non-binary person with an undercut and a pastel-streaked fringe, loose confident brushwork, soft rim light, shoulders-up, no real person, square avatar"
+    },
+    {
+      "id": "painterly-3",
+      "family": "painterly",
+      "prompt": "Painterly portrait of an adult Indigenous woman with long dark hair and beaded earrings, loose confident brushwork, soft rim light, shoulders-up, no real person, square avatar"
+    },
+    {
+      "id": "painterly-4",
+      "family": "painterly",
+      "prompt": "Painterly portrait of an adult man of Middle Eastern origin with a keffiyeh scarf, loose confident brushwork, soft rim light, shoulders-up, no real person, square avatar"
+    },
+    {
+      "id": "painterly-5",
+      "family": "painterly",
+      "prompt": "Painterly portrait of an adult person with a cochlear implant and short wavy hair, androgynous, loose confident brushwork, soft rim light, shoulders-up, no real person, square avatar"
+    },
+    {
+      "id": "painterly-6",
+      "family": "painterly",
+      "prompt": "Painterly portrait of an adult woman in her fifties with silver curls and laugh lines, loose confident brushwork, soft rim light, shoulders-up, no real person, square avatar"
+    },
+    {
+      "id": "painterly-7",
+      "family": "painterly",
+      "prompt": "Painterly portrait of an adult man wearing a deep indigo turban and a trimmed beard, loose confident brushwork, soft rim light, shoulders-up, no real person, square avatar"
+    },
+    {
+      "id": "painterly-8",
+      "family": "painterly",
+      "prompt": "Painterly portrait of an adult man with East Asian features, a short fade and a denim jacket, loose confident brushwork, soft rim light, shoulders-up, no real person, square avatar"
+    },
+    {
+      "id": "painterly-9",
+      "family": "painterly",
+      "prompt": "Painterly portrait of an adult man with a prosthetic arm resting on his shoulder, relaxed smile, loose confident brushwork, soft rim light, shoulders-up, no real person, square avatar"
+    },
+    {
+      "id": "painterly-10",
+      "family": "painterly",
+      "prompt": "Painterly portrait of an adult man with freckles, red hair and a thick beard, loose confident brushwork, soft rim light, shoulders-up, no real person, square avatar"
+    },
+    {
+      "id": "painterly-11",
+      "family": "painterly",
+      "prompt": "Painterly portrait of an adult plus-size woman with an afro and bright lipstick, loose confident brushwork, soft rim light, shoulders-up, no real person, square avatar"
+    },
+    {
+      "id": "painterly-12",
+      "family": "painterly",
+      "prompt": "Painterly portrait of an adult Latina woman with a red headscarf and hoop earrings, loose confident brushwork, soft rim light, shoulders-up, no real person, square avatar"
+    },
+    {
+      "id": "painterly-13",
+      "family": "painterly",
+      "prompt": "Painterly portrait of an adult man with dark brown skin, a short beard and round glasses, loose confident brushwork, soft rim light, shoulders-up, no real person, square avatar"
+    },
+    {
+      "id": "painterly-14",
+      "family": "painterly",
+      "prompt": "Painterly portrait of an adult androgynous person with a shaved head and small silver earrings, loose confident brushwork, soft rim light, shoulders-up, no real person, square avatar"
+    },
+    {
+      "id": "soft3d-1",
+      "family": "soft3d",
+      "prompt": "Soft 3D clay render of an adult woman with Down syndrome, warm smile, short bob haircut, rounded friendly proportions, matte material, studio light, head and shoulders, square avatar"
+    },
+    {
+      "id": "soft3d-2",
+      "family": "soft3d",
+      "prompt": "Soft 3D clay render of an adult woman with vitiligo on her face and a shaved side haircut, rounded friendly proportions, matte material, studio light, head and shoulders, square avatar"
+    },
+    {
+      "id": "soft3d-3",
+      "family": "soft3d",
+      "prompt": "Soft 3D clay render of an adult man in his sixties with white locs, rounded friendly proportions, matte material, studio light, head and shoulders, square avatar"
+    },
+    {
+      "id": "soft3d-4",
+      "family": "soft3d",
+      "prompt": "Soft 3D clay render of an adult Black man with a sunlit fade and a leather jacket, rounded friendly proportions, matte material, studio light, head and shoulders, square avatar"
+    },
+    {
+      "id": "soft3d-5",
+      "family": "soft3d",
+      "prompt": "Soft 3D clay render of an adult woman wearing a soft dusty-rose hijab and a gentle smile, rounded friendly proportions, matte material, studio light, head and shoulders, square avatar"
+    },
+    {
+      "id": "soft3d-6",
+      "family": "soft3d",
+      "prompt": "Soft 3D clay render of an adult woman using a wheelchair, shown head and shoulders with big headphones, rounded friendly proportions, matte material, studio light, head and shoulders, square avatar"
+    },
+    {
+      "id": "soft3d-7",
+      "family": "soft3d",
+      "prompt": "Soft 3D clay render of an adult non-binary person with an undercut and a pastel-streaked fringe, rounded friendly proportions, matte material, studio light, head and shoulders, square avatar"
+    },
+    {
+      "id": "soft3d-8",
+      "family": "soft3d",
+      "prompt": "Soft 3D clay render of an adult Indigenous woman with long dark hair and beaded earrings, rounded friendly proportions, matte material, studio light, head and shoulders, square avatar"
+    },
+    {
+      "id": "soft3d-9",
+      "family": "soft3d",
+      "prompt": "Soft 3D clay render of an adult man of Middle Eastern origin with a keffiyeh scarf, rounded friendly proportions, matte material, studio light, head and shoulders, square avatar"
+    },
+    {
+      "id": "soft3d-10",
+      "family": "soft3d",
+      "prompt": "Soft 3D clay render of an adult person with a cochlear implant and short wavy hair, androgynous, rounded friendly proportions, matte material, studio light, head and shoulders, square avatar"
+    },
+    {
+      "id": "soft3d-11",
+      "family": "soft3d",
+      "prompt": "Soft 3D clay render of an adult woman in her fifties with silver curls and laugh lines, rounded friendly proportions, matte material, studio light, head and shoulders, square avatar"
+    },
+    {
+      "id": "soft3d-12",
+      "family": "soft3d",
+      "prompt": "Soft 3D clay render of an adult man wearing a deep indigo turban and a trimmed beard, rounded friendly proportions, matte material, studio light, head and shoulders, square avatar"
+    },
+    {
+      "id": "soft3d-13",
+      "family": "soft3d",
+      "prompt": "Soft 3D clay render of an adult man with East Asian features, a short fade and a denim jacket, rounded friendly proportions, matte material, studio light, head and shoulders, square avatar"
+    },
+    {
+      "id": "soft3d-14",
+      "family": "soft3d",
+      "prompt": "Soft 3D clay render of an adult man with a prosthetic arm resting on his shoulder, relaxed smile, rounded friendly proportions, matte material, studio light, head and shoulders, square avatar"
+    },
+    {
+      "id": "line-1",
+      "family": "line",
+      "prompt": "Single continuous line art portrait of an adult plus-size woman with an afro and bright lipstick, minimal elegant strokes on a flat tinted background, square avatar"
+    },
+    {
+      "id": "line-2",
+      "family": "line",
+      "prompt": "Single continuous line art portrait of an adult Latina woman with a red headscarf and hoop earrings, minimal elegant strokes on a flat tinted background, square avatar"
+    },
+    {
+      "id": "line-3",
+      "family": "line",
+      "prompt": "Single continuous line art portrait of an adult man with dark brown skin, a short beard and round glasses, minimal elegant strokes on a flat tinted background, square avatar"
+    },
+    {
+      "id": "line-4",
+      "family": "line",
+      "prompt": "Single continuous line art portrait of an adult androgynous person with a shaved head and small silver earrings, minimal elegant strokes on a flat tinted background, square avatar"
+    },
+    {
+      "id": "line-5",
+      "family": "line",
+      "prompt": "Single continuous line art portrait of an adult woman with South Asian features, long braid and a gold nose stud, minimal elegant strokes on a flat tinted background, square avatar"
+    },
+    {
+      "id": "line-6",
+      "family": "line",
+      "prompt": "Single continuous line art portrait of an adult woman with Down syndrome, warm smile, short bob haircut, minimal elegant strokes on a flat tinted background, square avatar"
+    },
+    {
+      "id": "line-7",
+      "family": "line",
+      "prompt": "Single continuous line art portrait of an adult woman with vitiligo on her face and a shaved side haircut, minimal elegant strokes on a flat tinted background, square avatar"
+    },
+    {
+      "id": "line-8",
+      "family": "line",
+      "prompt": "Single continuous line art portrait of an adult man in his sixties with white locs, minimal elegant strokes on a flat tinted background, square avatar"
+    },
+    {
+      "id": "line-9",
+      "family": "line",
+      "prompt": "Single continuous line art portrait of an adult Black man with a sunlit fade and a leather jacket, minimal elegant strokes on a flat tinted background, square avatar"
+    },
+    {
+      "id": "line-10",
+      "family": "line",
+      "prompt": "Single continuous line art portrait of an adult woman wearing a soft dusty-rose hijab and a gentle smile, minimal elegant strokes on a flat tinted background, square avatar"
+    },
+    {
+      "id": "abstract-orb-1",
+      "family": "abstract",
+      "prompt": "Glossy violet-to-magenta glass orb floating in soft haze, square avatar"
+    },
+    {
+      "id": "abstract-orb-2",
+      "family": "abstract",
+      "prompt": "Swirling iridescent gradient sphere with fine grain, square avatar"
+    },
+    {
+      "id": "abstract-gradient-1",
+      "family": "abstract",
+      "prompt": "Smooth mesh gradient in deep violet, magenta and peach, square avatar"
+    },
+    {
+      "id": "abstract-gradient-2",
+      "family": "abstract",
+      "prompt": "Soft radial gradient with a glowing magenta core on indigo, square avatar"
+    },
+    {
+      "id": "abstract-pattern-1",
+      "family": "abstract",
+      "prompt": "Geometric pattern of overlapping circles in violet and magenta tones, square avatar"
+    },
+    {
+      "id": "abstract-pattern-2",
+      "family": "abstract",
+      "prompt": "Flowing topographic contour lines in magenta on deep violet, square avatar"
+    },
+    {
+      "id": "abstract-pattern-3",
+      "family": "abstract",
+      "prompt": "Tiled soft-edge diamonds in violet gradients, square avatar"
+    },
+    {
+      "id": "abstract-camera",
+      "family": "abstract",
+      "prompt": "Stylised vintage film camera, centred, violet and magenta lighting, no text, square avatar"
+    },
+    {
+      "id": "abstract-vinyl",
+      "family": "abstract",
+      "prompt": "Vinyl record on a turntable seen from above, violet and magenta glow, blank label, square avatar"
+    },
+    {
+      "id": "abstract-plant",
+      "family": "abstract",
+      "prompt": "Potted monstera plant in a violet room with magenta rim light, centred, square avatar"
+    },
+    {
+      "id": "abstract-headphones",
+      "family": "abstract",
+      "prompt": "Glossy over-ear headphones floating, violet and magenta gradient light, no text, square avatar"
+    },
+    {
+      "id": "abstract-polaroid",
+      "family": "abstract",
+      "prompt": "Blank instant photo frame with a violet-to-magenta sunset inside, no text, square avatar"
+    },
+    {
+      "id": "abstract-cassette",
+      "family": "abstract",
+      "prompt": "Retro audio cassette with a blank label, violet and magenta tones, centred, square avatar"
+    },
+    {
+      "id": "abstract-lamp",
+      "family": "abstract",
+      "prompt": "Warm desk lamp casting magenta light over a violet scene, centred, square avatar"
+    },
+    {
+      "id": "abstract-microphone",
+      "family": "abstract",
+      "prompt": "Studio condenser microphone, violet and magenta rim light, centred, no text, square avatar"
+    },
+    {
+      "id": "abstract-crystal",
+      "family": "abstract",
+      "prompt": "Faceted crystal cluster glowing violet and magenta, centred, square avatar"
+    }
+  ],
+  "banners": [
+    {
+      "id": "silk-1",
+      "family": "abstract",
+      "prompt": "Wide panoramic banner. Flowing violet silk drapes with soft folds, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "silk-2",
+      "family": "abstract",
+      "prompt": "Wide panoramic banner. Magenta silk ribbons rippling in light, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "waves-1",
+      "family": "abstract",
+      "prompt": "Wide panoramic banner. Layered indigo and magenta waves, smooth gradients, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "waves-2",
+      "family": "abstract",
+      "prompt": "Wide panoramic banner. Concentric violet ripples with fine grain, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "grain-1",
+      "family": "abstract",
+      "prompt": "Wide panoramic banner. Grainy gradient from deep violet to magenta, filmic, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "grain-2",
+      "family": "abstract",
+      "prompt": "Wide panoramic banner. Soft noisy dusk gradient in plum and peach, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "shapes-1",
+      "family": "abstract",
+      "prompt": "Wide panoramic banner. Overlapping translucent violet and magenta circles, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "shapes-2",
+      "family": "abstract",
+      "prompt": "Wide panoramic banner. Minimal arcs and soft shapes in indigo, magenta and cream, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "shapes-3",
+      "family": "abstract",
+      "prompt": "Wide panoramic banner. Flat geometric mountains in layered violet tones, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "light-3",
+      "family": "abstract",
+      "prompt": "Wide panoramic banner. Bokeh lights in magenta and violet, shallow depth, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "light-4",
+      "family": "abstract",
+      "prompt": "Wide panoramic banner. Long-exposure light streaks over dark violet, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "waves-3",
+      "family": "abstract",
+      "prompt": "Wide panoramic banner. Slow liquid marble swirls in violet and rose, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "grain-3",
+      "family": "abstract",
+      "prompt": "Wide panoramic banner. Soft film-grain sunrise gradient from indigo to coral, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "city-1",
+      "family": "places",
+      "prompt": "Wide panoramic banner. Montreal-style night city skyline, violet and magenta neon reflections, wide, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "city-2",
+      "family": "places",
+      "prompt": "Wide panoramic banner. Rainy city street at night, neon signs without any text, violet haze, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "neon-2",
+      "family": "places",
+      "prompt": "Wide panoramic banner. Empty neon-lit street, magenta and cyan glow, no signs with text, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "beach-1",
+      "family": "places",
+      "prompt": "Wide panoramic banner. Beach at dusk, violet sky, magenta horizon, calm sea, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "beach-2",
+      "family": "places",
+      "prompt": "Wide panoramic banner. Quiet cove at twilight, soft waves, plum clouds, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "mountain-1",
+      "family": "places",
+      "prompt": "Wide panoramic banner. Layered mountains at dawn, violet mist, magenta sun glow, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "mountain-2",
+      "family": "places",
+      "prompt": "Wide panoramic banner. Snowy peaks under a magenta-violet sunset, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "studio-1",
+      "family": "places",
+      "prompt": "Wide panoramic banner. Empty creator studio, soft box lights, violet and magenta, no people, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "interior-1",
+      "family": "places",
+      "prompt": "Wide panoramic banner. Cosy loft interior at dusk, big window, violet light, no people, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "interior-2",
+      "family": "places",
+      "prompt": "Wide panoramic banner. Minimal living room with plants, magenta evening light, no people, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "bridge-1",
+      "family": "places",
+      "prompt": "Wide panoramic banner. Illuminated bridge over water at night, violet tones, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "city-3",
+      "family": "places",
+      "prompt": "Wide panoramic banner. Rooftop view over a city at blue hour, violet sky, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "desert-1",
+      "family": "places",
+      "prompt": "Wide panoramic banner. Dunes at dusk, violet shadows, magenta sky, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "forest-1",
+      "family": "places",
+      "prompt": "Wide panoramic banner. Misty pine forest at dawn, violet light beams, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "fabric-1",
+      "family": "textures",
+      "prompt": "Wide panoramic banner. Close-up of violet velvet fabric folds, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "fabric-2",
+      "family": "textures",
+      "prompt": "Wide panoramic banner. Magenta woven linen texture, soft light, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "paper-1",
+      "family": "textures",
+      "prompt": "Wide panoramic banner. Layered handmade paper in plum, cream and magenta, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "paper-2",
+      "family": "textures",
+      "prompt": "Wide panoramic banner. Torn paper edges in violet tones, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "concrete-1",
+      "family": "textures",
+      "prompt": "Wide panoramic banner. Smooth concrete wall with violet-magenta light gradient, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "concrete-2",
+      "family": "textures",
+      "prompt": "Wide panoramic banner. Raw concrete with soft magenta shadow, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "marble-1",
+      "family": "textures",
+      "prompt": "Wide panoramic banner. Violet marble with magenta veins, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "wood-1",
+      "family": "textures",
+      "prompt": "Wide panoramic banner. Dark wood grain lit by magenta light, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "brick-1",
+      "family": "textures",
+      "prompt": "Wide panoramic banner. Painted brick wall in plum with soft light, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "ceramic-1",
+      "family": "textures",
+      "prompt": "Wide panoramic banner. Glazed ceramic tiles in violet and cream, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "mood-studio",
+      "family": "moods",
+      "prompt": "Wide panoramic banner. Podcast and video studio lights glowing violet and magenta, no people, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "mood-vinyl",
+      "family": "moods",
+      "prompt": "Wide panoramic banner. Wall shelf of vinyl records with blank sleeves, violet light, no text, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "mood-gym",
+      "family": "moods",
+      "prompt": "Wide panoramic banner. Empty modern gym, dumbbells, violet and magenta lighting, no people, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "mood-kitchen",
+      "family": "moods",
+      "prompt": "Wide panoramic banner. Bright creator kitchen counter with herbs and soft magenta light, no people, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "mood-desk",
+      "family": "moods",
+      "prompt": "Wide panoramic banner. Creative desk with camera and notebook, violet evening light, no people, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "mood-stage",
+      "family": "moods",
+      "prompt": "Wide panoramic banner. Empty small stage with a spotlight, violet and magenta haze, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "mood-plants",
+      "family": "moods",
+      "prompt": "Wide panoramic banner. Greenhouse corner at dusk with violet light, no people, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "mood-books",
+      "family": "moods",
+      "prompt": "Wide panoramic banner. Wall of bookshelves in warm magenta light, no people, subject centred and safe for cropping, calm and premium"
+    },
+    {
+      "id": "mood-music",
+      "family": "moods",
+      "prompt": "Wide panoramic banner. Small music room with synths and a guitar on stands, violet light, no people, subject centred and safe for cropping, calm and premium"
+    }
+  ]
+}

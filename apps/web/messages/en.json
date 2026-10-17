@@ -870,7 +870,20 @@
       "edit": "Edit",
       "editAvatar": "Change profile photo",
       "editBanner": "Change cover image",
-      "add": "Add a cover"
+      "add": "Add a cover",
+      "familiesLabel": "Style",
+      "families": {
+        "all": "All",
+        "illustrated": "Illustrated",
+        "painterly": "Painterly",
+        "soft3d": "Soft 3D",
+        "line": "Line art",
+        "abstract": "Abstract",
+        "places": "Places",
+        "textures": "Textures",
+        "moods": "Creator moods"
+      },
+      "empty": "Nothing here yet."
     },
     "identity": {
       "displayName": "Display name",
