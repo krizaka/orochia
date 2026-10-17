@@ -3,6 +3,7 @@ import { and, desc, eq, isNull, lt, lte, or, sql } from "drizzle-orm";
 import { after } from "next/server";
 
 import { HttpError } from "./http";
+import { parseMessageOrigin, type MessageOrigin } from "./message-origin";
 import { notifyMessage } from "./notifications";
 import { circleChanged, presenceFor, type PresenceView } from "./presence";
 import { publish } from "./realtime";
@@ -66,6 +67,8 @@ export interface MessageView {
   content: string;
   /** A private reply to a story: the story it answers (null once that story is gone, or for a plain message). */
   storyId: string | null;
+  /** `human`, or `ai_assisted` (shown with its disclosure; lib/message-origin.ts). */
+  origin: MessageOrigin;
   deliveredAt: Date | null;
   isRead: boolean;
   readAt: Date | null;
@@ -84,6 +87,7 @@ export function messageView(r: MessageRow): MessageView {
     recipientId: r.recipientId,
     content: r.content,
     storyId: r.storyId,
+    origin: parseMessageOrigin(r.origin),
     deliveredAt: r.deliveredAt,
     isRead: r.isRead,
     readAt: r.readAt,

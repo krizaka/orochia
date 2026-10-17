@@ -6,6 +6,7 @@ import React from "react";
 
 import { timeAgo } from "@/components/notifications/useNotifications";
 import { Badge, cn, EmptyState, Skeleton } from "@/components/ui";
+import { conversationPath } from "@/lib/conversation-path";
 import { t } from "@/lib/i18n";
 
 import { PresenceAvatar, presenceLabel } from "./PresenceAvatar";
@@ -74,7 +75,7 @@ export function ConversationList({
         return (
           <li key={c.id}>
             <Link
-              href={`/messages?c=${c.id}`}
+              href={conversationPath(c.id)}
               scroll={false}
               aria-current={selected ? "page" : undefined}
               aria-label={[other.displayName, status, c.unreadCount ? t("inbox.unreadCount", { count: c.unreadCount }) : null, preview].filter(Boolean).join(", ")}

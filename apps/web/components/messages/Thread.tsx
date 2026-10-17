@@ -6,6 +6,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { AlertDialog, Button, cn, DropdownMenu, EmptyState, IconButton, Skeleton, Textarea, toast } from "@/components/ui";
 import { t } from "@/lib/i18n";
+import { isAiAssisted } from "@/lib/message-origin";
 
 import { dayKey } from "./chat-state";
 import { Ticks } from "./ConversationList";
@@ -228,6 +229,7 @@ export function Thread({ conversation, myId, presence, messages, state, typing, 
                         )}
                       >
                         {m.storyId && <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-wider opacity-75">{t("inbox.storyReply")}</p>}
+                        {isAiAssisted(m.origin) && <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-wider opacity-75">{t("inbox.aiAssisted")}</p>}
                         <p className="whitespace-pre-wrap wrap-break-word">{m.content}</p>
                         <p className={cn("mt-0.5 text-right text-[10px]", mine ? "text-on-accent/80" : "text-fg-muted")}>
                           <time dateTime={m.createdAt}>{time(m.createdAt)}</time>

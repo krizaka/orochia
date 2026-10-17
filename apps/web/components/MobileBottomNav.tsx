@@ -1,18 +1,20 @@
 "use client";
 
-import { BookmarkIcon, GlobeIcon, HomeIcon, PlusIcon, UserIcon } from "@krizaka/icons";
+import { BookmarkIcon, GlobeIcon, HomeIcon, MessageIcon, PlusIcon, UserIcon } from "@krizaka/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 
+import { useUnreadMessages } from "@/components/messages/useUnreadMessages";
 import { Avatar, cn } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
+import { bottomNavLeaf } from "@/lib/bottom-nav";
 import { creatorSpaceCta, viewerStateOf } from "@/lib/creator-journey";
 import { t } from "@/lib/i18n";
 import { defaultAvatarFor } from "@/lib/presets";
 
 /**
- * The phone navigation, five equal tabs with Create in the middle: Home · Explore · Create · Saved ·
+ * The phone navigation, five equal tabs with Create in the middle: Home · Explore · Create · Messages (Saved for a visitor) ·
  * Account (or Sign in). Signing
  * in, the account and creating exist only here on a phone — the top bar keeps brand, search, theme.
  */
@@ -26,6 +28,7 @@ export function MobileBottomNav() {
     `flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors ${
       active ? "text-fg-accent" : "text-fg-secondary"
     }`;
+  const unreadMessages = useUnreadMessages(Boolean(user));
   const accountActive = pathname.startsWith("/dashboard") || pathname.startsWith("/auth");
 
   return (
@@ -43,9 +46,23 @@ export function MobileBottomNav() {
           </span>
           <span className="mt-1 text-[10px] font-semibold text-fg-accent">{t("nav.create")}</span>
         </Link>
-        <Link href={user ? "/dashboard?tab=playlists" : "/auth/login?next=/dashboard?tab=playlists"} className={tab(false)}>
-          <BookmarkIcon size={22} /> {t("nav.saved")}
-        </Link>
+        {bottomNavLeaf(Boolean(user)) === "messages" ? (
+          <Link href="/messages" className={cn(tab(pathname.startsWith("/messages")), "relative")} aria-label={unreadMessages ? `${t("nav.messages")} — ${t("inbox.unreadCount", { count: unreadMessages })}` : undefined}>
+            <span className="relative">
+              <MessageIcon size={22} />
+              {unreadMessages > 0 && (
+                <span className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent-2 px-1 text-[9px] font-bold text-on-accent ring-2 ring-surface-1">
+                  {unreadMessages > 99 ? "99+" : unreadMessages}
+                </span>
+              )}
+            </span>
+            {t("nav.messages")}
+          </Link>
+        ) : (
+          <Link href="/auth/login?next=/dashboard?tab=playlists" className={tab(false)}>
+            <BookmarkIcon size={22} /> {t("nav.saved")}
+          </Link>
+        )}
         {isLoading ? (
           <span aria-hidden className={tab(false)} />
         ) : user ? (

@@ -1,5 +1,7 @@
 /** What the Messages screens hold — the API's shapes (lib/messaging.ts) with dates as strings, plus local send states. */
 
+import type { MessageOrigin } from "@/lib/message-origin";
+
 export type PresenceState = "online" | "away" | "offline";
 
 export interface PresenceView {
@@ -42,6 +44,7 @@ export interface ServerMessage {
   recipientId: string;
   content: string;
   storyId: string | null;
+  origin: MessageOrigin;
   deliveredAt: string | null;
   isRead: boolean;
   readAt: string | null;

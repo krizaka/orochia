@@ -13,6 +13,7 @@ const msg = (seq: number, extra: Partial<ChatMessage> = {}): ChatMessage => ({
   recipientId: "you",
   content: `#${seq}`,
   storyId: null,
+  origin: "human",
   deliveredAt: null,
   isRead: false,
   readAt: null,
