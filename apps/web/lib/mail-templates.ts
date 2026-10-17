@@ -37,7 +37,7 @@ export const MAIL_TEMPLATES = {
     details: "text",
   },
   "content-report-receipt": { ticket: "text", ticketShort: "text", videoTitle: "text", urgent: "flag" },
-  notification: { username: "text", subject: "text", body: "text", link: "text", settingsLink: "text" },
+  notification: { username: "text", subject: "text", body: "text", link: "text", settingsLink: "text", unsubscribeLink: "text" },
 } as const satisfies Record<string, Record<string, VarKind>>;
 
 export type MailTemplateId = keyof typeof MAIL_TEMPLATES;

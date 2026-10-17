@@ -129,3 +129,9 @@ packages/db/src/schema/push.ts           push_devices
 krizaka/orochia-mobile src/lib/push.ts   permission, token, registration, tap → screen
 krizaka/orochia-mobile src/lib/notification-prefs.ts, src/app/settings/notifications.tsx   preferences by kind
 ```
+
+## Preferences as a matrix, and unsubscribing (krizaka/orochia#261)
+
+`lib/notification-matrix.ts` groups the events into five categories (messages · people and community · tips and earnings · auctions and challenges · account and security) and two channels (the app = bell + push, and e-mail). It is a view over the same two stored lists (`profiles.in_app_off`, `profiles.emails_off`); the sender is unchanged. The account category cannot be switched off, and the security e-mails (verification, password reset) are not notifications: no setting touches them.
+
+Every notification e-mail carries a signed one-click link (`/unsubscribe?t=…`, `lib/unsubscribe.ts`: account + category, HMAC with the session secret, no expiry) and the `List-Unsubscribe` / `List-Unsubscribe-Post: List-Unsubscribe=One-Click` headers (RFC 8058). `POST /api/unsubscribe` adds the category's events to `emails_off`; there is no link for the security category. The e-mail engine moves to `@krizaka/email` with krizaka/orochia#255 once it is released.

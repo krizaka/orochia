@@ -223,3 +223,12 @@ written here, each with the place that carries it. Disagree, or saw that signal?
 - **Signal we are wrong** — Most people switching to Chronological and staying there, or feedback that the picks feel
   unrelated to what they did.
 - **Feedback** — wrong for you? [Discussion #122](https://github.com/krizaka/orochia/discussions/122).
+
+## Notifications as a matrix (krizaka/orochia#261)
+
+- **Decision**: five categories × two channels (the app, e-mail), three presets (everything · the essentials · nothing but security), the security category shown and locked, and a one-click « unsubscribe from this kind of e-mail » link (and `List-Unsubscribe` header) in every notification e-mail.
+- **Problem**: 27 events × 2 switches was a wall of options; people could not tell what they would stop receiving, and e-mail felt like spam.
+- **Principle**: fewer, meaningful choices with good defaults beat exhaustive controls (Hick's law, Hick 1952; defaults decide most outcomes, Johnson & Goldstein 2003, "Do defaults save lives?"). One-click unsubscribe is the mail ecosystem's rule (RFC 8058) and protects the sender's reputation.
+- **Refused**: a per-event matrix as the main screen (kept in the data, not on the screen); turning security e-mails off; a login to unsubscribe (the signed link is the authorisation).
+- **Cost**: a person cannot silence one event of a category from the screen (the stored lists still can).
+- **Signal we are wrong**: many people on « Custom », or complaints about missing a specific event.
