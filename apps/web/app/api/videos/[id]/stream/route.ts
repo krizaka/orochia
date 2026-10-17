@@ -1,5 +1,5 @@
 import { db, videos } from "@orochia/db";
-import { BunnyStreamClient } from "@orochia/media";
+import { BunnyStreamClient, signBunnyFeedMp4Url } from "@orochia/media";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -46,8 +46,13 @@ export async function GET(req: NextRequest, props: { params: Promise<{ id: strin
     };
     recordView(video, user?.id ?? null, network).catch((err: unknown) => console.warn("Failed to record view:", err));
 
+    // The phone's vertical feed plays this light MP4 (same access decision as the HLS above, ten minutes).
+    const config = bunnyStreamConfig();
+    const feedMp4Url = signBunnyFeedMp4Url({ hostname: config.hostname, videoGuid: video.bunnyVideoId, tokenAuthKey: config.tokenAuthKey, resolutions: video.resolutions });
+
     return NextResponse.json({
       allowed: true,
+      feedMp4Url,
       videoId: video.id,
       title: video.title,
       streamUrl: signed.directM3u8Url,

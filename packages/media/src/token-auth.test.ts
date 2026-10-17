@@ -66,3 +66,24 @@ describe("Bunny webhook signature (v1)", () => {
     expect(mapBunnyStatusToOrochia(10)).toBeNull();
   });
 });
+
+import { feedPreviewRendition, signBunnyFeedMp4Url } from "./token-auth";
+
+describe("the MP4 a phone feed plays", () => {
+  it("takes the light rendition (480p, else 360p, else 720p), never the heaviest", () => {
+    expect(feedPreviewRendition(["1080p", "720p", "480p", "360p"])).toBe("480p");
+    expect(feedPreviewRendition(["720p", "360p"])).toBe("360p");
+    expect(feedPreviewRendition(["1080p", "720p"])).toBe("720p");
+    expect(feedPreviewRendition(null)).toBe("480p");
+  });
+
+  it("signs one file for ten minutes, the same url inside a window", () => {
+    const a = signBunnyFeedMp4Url({ hostname: "vz.b-cdn.net", videoGuid: "g1", tokenAuthKey: "k", resolutions: ["480p"], now: 1_000_000_000_000 });
+    const b = signBunnyFeedMp4Url({ hostname: "vz.b-cdn.net", videoGuid: "g1", tokenAuthKey: "k", resolutions: ["480p"], now: 1_000_000_100_000 });
+    expect(a).toMatch(/^https:\/\/vz\.b-cdn\.net\/g1\/play_480p\.mp4\?token=[\w-]+&expires=\d+$/);
+    expect(a).toBe(b);
+    const expires = Number(new URL(a).searchParams.get("expires"));
+    expect(expires - 1_000_000_000).toBeGreaterThanOrEqual(600);
+    expect(expires - 1_000_000_000).toBeLessThanOrEqual(1800);
+  });
+});

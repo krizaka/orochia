@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { UrlTabs } from "@/components/UrlTabs";
 import { redirect } from "next/navigation";
 import { CardGrid } from "@krizaka/ui/card-grid";
 import { LinkCard } from "@krizaka/ui/link-card";
@@ -69,23 +70,7 @@ export default async function ChallengesPage(props: { searchParams: Promise<{ ta
       </CardGrid>
       {startKind && user && <ChallengeAutoStart kind={startKind} isCreator={user.role === "CREATOR"} />}
 
-      <nav aria-label={t("challenges.tabsLabel")} className="mb-6 flex gap-1 overflow-x-auto border-b border-border-default">
-        {tabs.map((id) => (
-          <Link
-            key={id}
-            href={id === "open" ? "/challenges" : `/challenges?tab=${id}`}
-            aria-current={tab === id ? "page" : undefined}
-            className={cn(
-              "-mb-px shrink-0 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
-              tab === id
-                ? "border-accent text-fg"
-                : "border-transparent text-fg-secondary hover:text-fg",
-            )}
-          >
-            {t(`challenges.tabs.${id}`)}
-          </Link>
-        ))}
-      </nav>
+      <UrlTabs label={t("challenges.tabsLabel")} path="/challenges" defaultId="open" active={tab} tabs={tabs.map((id) => ({ id, label: t(`challenges.tabs.${id}`) }))} />
 
       {items.length === 0 ? (
         <div className="kz-fade rounded-3xl border border-dashed border-border-default px-6 py-16 text-center">

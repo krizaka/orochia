@@ -1,0 +1,17 @@
+id: no-hand-made-tab-bar
+language: Tsx
+severity: error
+message: "A tab bar is @krizaka/ui `Tabs` (roving focus, arrow keys, one scroll container), with the open tab in the address when it is a page's state (components/UrlTabs.tsx) — not a `<nav>` of links with `overflow-x-auto` and a bottom border."
+rule:
+  all:
+    - any:
+        - kind: jsx_opening_element
+        - kind: jsx_self_closing_element
+    - regex: '^<nav\b'
+    - regex: 'overflow-x-auto'
+    - regex: 'border-b'
+files:
+  - "apps/web/app/**/*.tsx"
+  - "apps/web/components/**/*.tsx"
+ignores:
+  - "**/node_modules/**"

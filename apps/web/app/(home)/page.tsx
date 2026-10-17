@@ -7,7 +7,8 @@ import { Button, cn } from "@/components/ui";
 import { signInHref, signUpHref } from "@/lib/creator-journey";
 import { signupEnabled } from "@/lib/features";
 import { t } from "@/lib/i18n";
-import { listFeed, listFollowingFeed } from "@/lib/queries";
+import { FeedSort } from "@/lib/feed-cursor";
+import { feedPage } from "@/lib/queries";
 import { getViewer } from "@/lib/viewer";
 
 export const metadata = { alternates: { canonical: "/" } };
@@ -19,20 +20,26 @@ export const dynamic = "force-dynamic";
  * — how it works, the 90 %, the four ways to support — lives on /how-it-works. Everything shown is read from the database:
  * an empty platform shows empty states, never invented creators or figures (AGENTS.md §3.F).
  */
-async function loadHome(viewerId: string | null, viewerAgeChecked: boolean) {
+const TAB_SORT = { foryou: FeedSort.Latest, trending: FeedSort.Trending, following: FeedSort.Following } as const;
+
+/** The open tab's first page, read on the server; the next pages come one at a time (`/api/feed?sort=…&cursor=…`). */
+async function loadHome(sort: FeedSort, viewerId: string | null, viewerAgeChecked: boolean) {
   try {
-    const [videos, following] = await Promise.all([listFeed(48, viewerAgeChecked), viewerId ? listFollowingFeed(viewerId, 48, viewerAgeChecked) : Promise.resolve([])]);
-    return { videos, following, unavailable: false };
+    if (sort === FeedSort.Following && !viewerId) return { page: { videos: [], nextCursor: null }, unavailable: false };
+    return { page: await feedPage({ sort, viewerId }, viewerAgeChecked), unavailable: false };
   } catch (error) {
     // Said as such under the feed ("could not load"), never as an empty platform.
     console.error("[home] feed unavailable:", error);
-    return { videos: [], following: [], unavailable: true };
+    return { page: { videos: [], nextCursor: null }, unavailable: true };
   }
 }
 
-export default async function HomePage() {
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ feed?: string | string[] }> }) {
   const { user: viewer, state: viewerState } = await getViewer();
-  const { videos, following, unavailable } = await loadHome(viewer?.id ?? null, viewer?.isAgeVerified === true);
+  const { feed } = await searchParams;
+  const asked = Array.isArray(feed) ? feed[0] : feed;
+  const tab = asked === "trending" || asked === "following" ? asked : "foryou";
+  const { page, unavailable } = await loadHome(TAB_SORT[tab], viewer?.id ?? null, viewer?.isAgeVerified === true);
   const container = "mx-auto w-full max-w-7xl px-4 sm:px-6";
   return (
     <div className="w-full overflow-x-clip">
@@ -60,7 +67,7 @@ export default async function HomePage() {
       <div className={cn(container, "py-6 sm:py-8")}>
         {viewer && <StoriesRail />}
         <section aria-label={t("feed.label")} className={viewer ? "mt-6" : undefined}>
-          <FeedFilterTabs initialVideos={videos} followingVideos={following} viewer={viewerState} unavailable={unavailable} />
+          <FeedFilterTabs initialTab={tab} initialPage={page} viewer={viewerState} unavailable={unavailable} />
         </section>
       </div>
     </div>

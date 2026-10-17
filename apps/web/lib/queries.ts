@@ -3,6 +3,7 @@ import { getCreatorAvailableBalanceCents } from "@orochia/payments";
 import { and, desc, eq, gt, ilike, isNull, ne, or, type SQL,sql } from "drizzle-orm";
 
 import type { SessionUser } from "./auth";
+import { type FeedSort, FEED_PAGE_SIZE, FEED_PAGE_MAX, FeedSort as Sort, pageOf, parseFeedCursor } from "./feed-cursor";
 import { withSignedMedia } from "./media-urls";
 import { socialLinksView } from "./profile";
 import { veilSummary } from "./video-veil";
@@ -87,6 +88,52 @@ export async function listFollowingFeed(viewerId: string, limit = 24, viewerAgeC
     .orderBy(desc(videos.createdAt))
     .limit(Math.min(Math.max(limit, 1), 60))
     .then((rows) => rows.map((r) => withSignedMedia(veilSummary(r, viewerAgeChecked))));
+}
+
+export interface FeedPage {
+  videos: VideoSummary[];
+  /** Opaque; absent on the last page. Send it back as `?cursor=` for the next one. */
+  nextCursor: string | null;
+}
+
+/**
+ * One page of a feed from our database (keyset pagination, lib/feed-cursor.ts): `latest` (newest first), `trending` (most
+ * viewed first) or `following` (newest of the creators the viewer follows, needs `viewerId`). A page costs one indexed
+ * range read of `limit + 1` rows; the library is never listed whole, and Bunny's list API is not asked at all.
+ */
+export async function feedPage(
+  { sort, cursor, limit = FEED_PAGE_SIZE, viewerId }: { sort: FeedSort; cursor?: string | null; limit?: number; viewerId?: string | null },
+  viewerAgeChecked = false,
+): Promise<FeedPage> {
+  const size = Math.min(Math.max(Math.trunc(limit), 1), FEED_PAGE_MAX);
+  const after = parseFeedCursor(cursor, sort);
+  const trending = sort === Sort.Trending;
+  const keyOf = trending ? sql<string>`${videos.viewsCount}::text` : sql<string>`${videos.createdAt}::text`;
+  const filters: (SQL | undefined)[] = [listable()];
+  if (after) {
+    filters.push(
+      trending
+        ? sql`(${videos.viewsCount}, ${videos.id}) < (${after.key}::integer, ${after.id}::uuid)`
+        : sql`(${videos.createdAt}, ${videos.id}) < (${after.key}::timestamptz, ${after.id}::uuid)`,
+    );
+  }
+  let query = db
+    .select({ ...videoSummaryColumns, cursorKey: keyOf })
+    .from(videos)
+    .innerJoin(users, eq(users.id, videos.creatorId))
+    .$dynamic();
+  if (sort === Sort.Following) {
+    if (!viewerId) return { videos: [], nextCursor: null };
+    query = query.innerJoin(follows, and(eq(follows.creatorId, videos.creatorId), eq(follows.followerId, viewerId)));
+  }
+  const rows = await query
+    .leftJoin(profiles, eq(profiles.userId, videos.creatorId))
+    .leftJoin(contentRatings, eq(contentRatings.id, videos.contentRatingId))
+    .where(and(...filters))
+    .orderBy(...(trending ? [desc(videos.viewsCount), desc(videos.id)] : [desc(videos.createdAt), desc(videos.id)]))
+    .limit(size + 1);
+  const page = pageOf(rows, size, sort);
+  return { videos: page.items.map((r) => withSignedMedia(veilSummary(r, viewerAgeChecked))), nextCursor: page.nextCursor };
 }
 
 export interface VideoSearch {

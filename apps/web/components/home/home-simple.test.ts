@@ -8,7 +8,7 @@ describe("the visitor's home reads in five seconds", () => {
     expect(read("./showcase/Scenes.tsx")).toContain('export const SCENES = ["feed", "stories", "support", "auction"] as const;');
   });
   it("the home is the feed: three tabs, a shelf and a grid, one intro line for a visitor and no pitch", () => {
-    const page = read("../../app/page.tsx");
+    const page = read("../../app/(home)/page.tsx");
     expect(page).toContain("FeedFilterTabs");
     expect(page).toContain("home-intro");
     expect(page).not.toMatch(/HomeHero|GetPaid|MobileSection|CreatorsCallToAction|kz-marquee|home\.marquee/);

@@ -97,3 +97,20 @@ export function signBunnyDownloadUrl(input: { hostname: string; videoGuid: strin
     now: input.now,
   });
 }
+
+/** The light MP4 a phone's vertical feed plays (a clip of seconds, not the full-quality file): 480p, else 360p, else 720p. */
+export function feedPreviewRendition(resolutions: string[] | null | undefined): "480p" | "360p" | "720p" {
+  const available = new Set(resolutions ?? []);
+  return (["480p", "360p", "720p"] as const).find((r) => available.has(r)) ?? "480p";
+}
+
+/** One signed MP4 file for a feed slide, valid ten minutes (the window is aligned, so a repeat request is cached). */
+export function signBunnyFeedMp4Url(input: { hostname: string; videoGuid: string; tokenAuthKey: string; resolutions?: string[] | null; now?: number }): string {
+  return signBunnyFileUrl({
+    hostname: input.hostname,
+    path: `/${input.videoGuid}/play_${feedPreviewRendition(input.resolutions)}.mp4`,
+    tokenAuthKey: input.tokenAuthKey,
+    windowSeconds: 600,
+    now: input.now,
+  });
+}

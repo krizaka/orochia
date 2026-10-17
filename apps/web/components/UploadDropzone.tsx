@@ -5,7 +5,7 @@ import { Check, CheckCircle2, Clapperboard, Eye, Film, Lock, Mail, Scissors, Shi
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 
-import { Badge, Button, buttonVariants, Checkbox, Chip, cn, IconButton, Input, Progress, RadioGroup, Select, Switch, Textarea } from "@/components/ui";
+import { Badge, Button, buttonVariants, Checkbox, Chip, cn, IconButton, Input, Progress, RadioGroup, Select, Stepper, Switch, Textarea } from "@/components/ui";
 import { apiErrorMessage } from "@/lib/api-errors";
 import { deleteDraft } from "@/lib/drafts";
 import { type MessageKey,t } from "@/lib/i18n";
@@ -13,6 +13,7 @@ import { money } from "@/lib/money";
 import { MAX_TAGS, normalizeTags, suggestTags } from "@/lib/tags";
 import { duration as timeLeft } from "@/lib/units";
 import { useUploadManager } from "@/lib/upload-manager";
+import { uploadSteps } from "@/lib/upload-steps";
 import { EDITOR_MAX_BYTES, type VideoEdit } from "@/lib/video-edit";
 
 import { DraftsShelf } from "./DraftsShelf";
@@ -268,16 +269,26 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
         </div>
         <h2 className="font-display text-2xl font-black text-fg">{t("publish.done.title")}</h2>
         <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-fg-secondary">{t("publish.done.body")}</p>
-        {uploading && (
-          <Progress
-            className="mx-auto mt-6 max-w-sm text-left"
-            value={upload?.progress ?? 0}
-            label={t("publish.sending")}
-            showLabel
-            status={upload?.status === "paused" ? "paused" : upload?.status === "error" ? "error" : "active"}
-            eta={upload?.timeRemainingSec ? t("uploads.eta", { time: timeLeft(upload.timeRemainingSec) ?? "" }) : undefined}
-          />
-        )}
+        <Stepper
+          aria-label={t("publish.pipeline.label")}
+          className="mx-auto mt-6 max-w-sm text-left"
+          steps={uploadSteps(upload?.status, upload?.progress ?? 0).map((step) => ({
+            title: t(`publish.pipeline.${step.id}`),
+            description: t(`publish.pipeline.${step.id}Body`),
+            status: step.status,
+            value: step.value,
+            content:
+              step.id === "send" && uploading ? (
+                <Progress
+                  value={upload?.progress ?? 0}
+                  label={t("publish.sending")}
+                  showLabel
+                  status={upload?.status === "paused" ? "paused" : "active"}
+                  eta={upload?.timeRemainingSec ? t("uploads.eta", { time: timeLeft(upload.timeRemainingSec) ?? "" }) : undefined}
+                />
+              ) : undefined,
+          }))}
+        />
         <div className="mt-8 flex flex-col justify-center gap-2 sm:flex-row">
           <Link href={`/watch/${uploadedVideoId}`} className={buttonVariants({ variant: "secondary", size: "lg", shape: "pill" })}>
             {t("publish.done.watch")}

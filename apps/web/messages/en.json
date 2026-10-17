@@ -1289,6 +1289,27 @@
       "findPeople": "Find people",
       "network": "Your network",
       "allVideos": "See all videos"
+    },
+    "loadingVideos": "Loading videos",
+    "loadMore": "Load more videos",
+    "loadingMore": "Loading more videos",
+    "loadFailed": "Could not load more videos",
+    "retry": "Try again",
+    "end": "You have seen everything for now.",
+    "vertical": {
+      "label": "Videos, one per screen",
+      "vertical": "One per screen",
+      "grid": "Grid",
+      "viewLabel": "Layout",
+      "sound": "Turn the sound on",
+      "mute": "Turn the sound off",
+      "fullscreen": "Full screen",
+      "like": "Like",
+      "comment": "Comments",
+      "share": "Share",
+      "signInToLike": "Sign in to like videos",
+      "linkCopied": "Link copied",
+      "tip": "Send a tip"
     }
   },
   "publish": {
@@ -1387,7 +1408,16 @@
     "removeTag": "Remove {tag}",
     "generalAudience": "General audience",
     "addTag": "Add #{tag}",
-    "sending": "Sending your video"
+    "sending": "Sending your video",
+    "pipeline": {
+      "label": "Where your video is",
+      "send": "Sending",
+      "sendBody": "Your file goes to our video servers. You can leave this page; the upload goes on.",
+      "encode": "Encoding",
+      "encodeBody": "We prepare the picture and the sound for every screen. This takes a few minutes.",
+      "live": "Online",
+      "liveBody": "Your video is listed and ready to watch."
+    }
   },
   "explore": {
     "metaTitle": "Explore creators, videos and stories",
@@ -1498,7 +1528,8 @@
         "other": "{count} public posts"
       },
       "open": "View profile"
-    }
+    },
+    "loading": "Loading Explore"
   },
   "watch": {
     "ageGate": {
@@ -1536,7 +1567,8 @@
     "more": "More from {name}",
     "similar": "Similar videos",
     "free": "Free",
-    "members": "Members"
+    "members": "Members",
+    "loading": "Loading the video"
   },
   "player": {
     "sensitiveTitle": "Sensitive content",
@@ -1827,7 +1859,8 @@
       "settled": "Payouts settled",
       "settledHint": "paid to creators",
       "unavailable": "Treasury figures are unavailable."
-    }
+    },
+    "loading": "Loading your space"
   },
   "collectionAudience": {
     "PRIVATE": {
@@ -3013,6 +3046,7 @@
       "hint": "Other creators followed by at least {min} of your viewers — never named.",
       "line": "{count} other creators share your audience."
     },
-    "weekdays": "Mon Tue Wed Thu Fri Sat Sun"
+    "weekdays": "Mon Tue Wed Thu Fri Sat Sun",
+    "loading": "Loading your insights"
   }
 }
