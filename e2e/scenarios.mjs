@@ -999,6 +999,88 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   check("…with the text and the path the tap opens", typeof note?.data.notification.text === "string" && note.data.notification.path.startsWith(`/watch/${diaries.id}`));
   check("…and nobody else's stream hears it", !resumed.events.some((e) => e.data?.type === "notification" && e.data.notification?.id === note?.data.notification.id));
 
+  // Group conversations (ADR 0002): contacts only, at most 50, an owner, invites, mute, leave, authorisation on every route.
+  {
+    const idOf = async (s) => (await s.call("/api/me/profile")).json.profile.id;
+    const [elenaId, alexId, samId, miaId] = [await idOf(elena), await idOf(alex), await idOf(sam), await idOf(mia)];
+    // sam and elena meet (mutual requests), like alex and elena above.
+    await sam.call("/api/contacts", "POST", { username: "elenavox" });
+    await elena.call("/api/contacts", "POST", { username: "sam_rivers" });
+  
+    const notContact = await elena.call("/api/groups", "POST", { title: "Studio", memberIds: [alexId, miaId] });
+    check("a group takes only the owner's contacts", notContact.status === 403 && notContact.json.code === "GROUP_MEMBER_NOT_ALLOWED", JSON.stringify(notContact.json));
+    check("…at least one other person", (await elena.call("/api/groups", "POST", { title: "Alone", memberIds: [] })).status === 400);
+    const made = await elena.call("/api/groups", "POST", { title: "  Studio   crew ", memberIds: [alexId, samId] });
+    check("a group of contacts is created, the creator its owner", made.status === 201, JSON.stringify(made.json));
+    const gid = made.json.conversationId;
+    const alexList = (await alex.call("/api/conversations")).json.conversations.find((c) => c.id === gid);
+    check("…each member lists it with its title and size", alexList?.kind === "group" && alexList.title === "Studio crew" && alexList.memberCount === 3, JSON.stringify(alexList));
+  
+    const alexStream = openStream(alex);
+    await alexStream.opened;
+    const sentAt = Date.now();
+    const msg = await elena.call(`/api/conversations/${gid}/messages`, "POST", { content: "Call time 9am", clientId: crypto.randomUUID() });
+    check("the owner writes in the group", msg.status === 201 && msg.json.message.recipientId === null, JSON.stringify(msg.json));
+    const got = await alexStream.next(isType("new_message", (d) => d.message.id === msg.json.message.id), 1500);
+    check("…a member's stream gets it live", Boolean(got) && got.at - sentAt < 1500);
+    check("…and counts it unread", (await alex.call("/api/conversations/unread")).json.total >= 1);
+    const again = await elena.call(`/api/conversations/${gid}/messages`, "POST", { content: "Call time 9am", clientId: msg.json.message.clientId });
+    check("…a retried send is not a second message", again.status === 200 && again.json.duplicate === true);
+    check("a member reads it (opening the conversation)", (await alex.call(`/api/conversations/${gid}/messages`)).json.messages.some((m) => m.id === msg.json.message.id));
+    check("…and the badge for this group goes down", (await alex.call("/api/conversations")).json.conversations.find((c) => c.id === gid).unreadCount === 0);
+  
+    // Authorisation: a stranger learns nothing — 404 on every route, never 403.
+    const nope = async (label, r) => check(`a non-member: ${label} → 404`, r.status === 404, String(r.status));
+    await nope("read the messages", await mia.call(`/api/conversations/${gid}/messages`));
+    await nope("write", await mia.call(`/api/conversations/${gid}/messages`, "POST", { content: "hi", clientId: crypto.randomUUID() }));
+    await nope("mark read", await mia.call(`/api/conversations/${gid}/read`, "POST", {}));
+    await nope("signal typing", await mia.call(`/api/conversations/${gid}/typing`, "POST", { typing: true }));
+    await nope("see the members", await mia.call(`/api/groups/${gid}`));
+    await nope("leave", await mia.call(`/api/groups/${gid}/leave`, "POST"));
+    await nope("mute", await mia.call(`/api/groups/${gid}/mute`, "POST", { hours: 1 }));
+    await nope("add someone", await mia.call(`/api/groups/${gid}/members`, "POST", { memberIds: [miaId] }));
+    await nope("invite", await mia.call(`/api/groups/${gid}/invites`, "POST"));
+    check("…a malformed id is a 404 too", (await mia.call("/api/groups/not-a-uuid")).status === 404);
+    check("a visitor has no group", (await anon.call(`/api/groups/${gid}`)).status === 401);
+    // Members who are not the owner cannot administer.
+    check("a member cannot add people", (await alex.call(`/api/groups/${gid}/members`, "POST", { memberIds: [miaId] })).status === 403);
+    check("…nor invite", (await alex.call(`/api/groups/${gid}/invites`, "POST")).status === 403);
+    check("…nor remove", (await alex.call(`/api/groups/${gid}/members/${samId}`, "DELETE")).status === 403);
+    check("…nor rename", (await alex.call(`/api/groups/${gid}`, "PATCH", { title: "Mine now" })).status === 403);
+  
+    // Mute: no badge for a muted group.
+    check("a member mutes the group", (await sam.call(`/api/groups/${gid}/mute`, "POST", { hours: 8 })).status === 200);
+    const before = (await sam.call("/api/conversations/unread")).json.total;
+    await elena.call(`/api/conversations/${gid}/messages`, "POST", { content: "Quiet one", clientId: crypto.randomUUID() });
+    check("…a muted group adds nothing to the badge", (await sam.call("/api/conversations/unread")).json.total === before);
+    check("…the list says it is muted", (await sam.call("/api/conversations")).json.conversations.find((c) => c.id === gid).muted === true);
+  
+    // Invite link: shown once, joins, a bad one is a 404.
+    const invite = await elena.call(`/api/groups/${gid}/invites`, "POST");
+    check("the owner makes an invite link", invite.status === 201 && typeof invite.json.token === "string");
+    check("a bad token is a 404", (await mia.call("/api/groups/join", "POST", { token: "x".repeat(32) })).status === 404);
+    const joined = await mia.call("/api/groups/join", "POST", { token: invite.json.token });
+    check("a valid link joins the group", joined.status === 200 && joined.json.conversationId === gid);
+    check("…joining twice changes nothing", (await mia.call("/api/groups/join", "POST", { token: invite.json.token })).status === 200);
+    check("…the new member reads, without the old messages as unread", (await mia.call(`/api/conversations/${gid}/messages`)).status === 200 && (await mia.call("/api/conversations/unread")).json.total === 0);
+    const members = (await elena.call(`/api/groups/${gid}`)).json.group;
+    check("the group lists four people, the owner first", members.members.length === 4 && members.members[0].role === "owner", JSON.stringify(members.members.map((m) => m.username)));
+    check("…revoking the links closes the door", (await elena.call(`/api/groups/${gid}/invites`, "DELETE")).status === 200 && (await sam.call("/api/groups/join", "POST", { token: invite.json.token })).status !== 500);
+  
+    // Remove, leave, hand over.
+    check("the owner removes a member", (await elena.call(`/api/groups/${gid}/members/${miaId}`, "DELETE")).status === 200);
+    check("…who no longer reads", (await mia.call(`/api/conversations/${gid}/messages`)).status === 404);
+    check("a member leaves", (await alex.call(`/api/groups/${gid}/leave`, "POST")).status === 200 && (await alex.call(`/api/conversations/${gid}/messages`)).status === 404);
+    check("the owner leaves: the group goes to the longest-standing member", (await elena.call(`/api/groups/${gid}/leave`, "POST")).status === 200 && (await sam.call(`/api/groups/${gid}`)).json.group.role === "owner");
+    check("a closed group takes no new message", (await sam.call(`/api/groups/${gid}`, "DELETE")).status === 200 && (await sam.call(`/api/conversations/${gid}/messages`, "POST", { content: "late", clientId: crypto.randomUUID() })).status === 409);
+  
+    // Limits: creating groups is rationed per account.
+    let last;
+    for (let i = 0; i < 12; i++) last = await admin.call("/api/groups", "POST", { title: "x", memberIds: [] });
+    check("creating groups is limited (429)", last.status === 429);
+    alexStream.close();
+  }
+
   resumed.close();
   elenaStream.close();
 }

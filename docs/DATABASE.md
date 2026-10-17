@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 52 tables · 27 enums · 14 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 54 tables · 27 enums · 15 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -29,7 +29,9 @@ Every foreign key, read from the schema: what each table points to (through whic
 | `compliance_reports` | `videos` (`video_id`) · `stories` (`story_id`) · `direct_messages` (`message_id`) · `users` (`reporter_id`) | — |
 | `contacts` | `users` (`requester_id`) · `users` (`addressee_id`) | — |
 | `content_ratings` | — | `stories` · `videos` |
-| `conversations` | `users` (`participant1_id`) · `users` (`participant2_id`) | `direct_messages` |
+| `conversation_invites` | `conversations` (`conversation_id`) · `users` (`created_by`) | — |
+| `conversation_members` | `conversations` (`conversation_id`) · `users` (`user_id`) | — |
+| `conversations` | `users` (`participant1_id`) · `users` (`participant2_id`) · `users` (`created_by`) | `conversation_invites` · `conversation_members` · `direct_messages` |
 | `credit_topups` | `users` (`user_id`) | — |
 | `direct_messages` | `conversations` (`conversation_id`) · `users` (`sender_id`) · `users` (`recipient_id`) · `stories` (`story_id`) | `compliance_reports` |
 | `explorer_embeddings` | `videos` (`video_id`) | — |
@@ -49,7 +51,7 @@ Every foreign key, read from the schema: what each table points to (through whic
 | `story_views` | `stories` (`story_id`) · `users` (`viewer_id`) | — |
 | `tips_ledger` | `users` (`sender_id`) · `users` (`creator_id`) · `videos` (`video_id`) · `stories` (`story_id`) | — |
 | `user_invitations` | `users` (`inviter_id`) | — |
-| `users` | — | `auction_bids` · `auctions` · `audience_list_members` · `audience_lists` · `auth_identities` · `auth_tokens` · `blocked_users` · `challenge_applications` · `challenge_pledges` · `challenges` · `compliance_reports` · `contacts` · `conversations` · `credit_topups` · `direct_messages` · `follows` · `notifications` · `payment_intents` · `payout_accounts` · `payout_requests` · `playlist_members` · `playlists` · `profiles` · `push_devices` · `stories` · `story_likes` · `story_views` · `tips_ledger` · `user_invitations` · `video_access_grants` · `video_comments` · `video_drafts` · `video_likes` · `video_shares` · `video_viewers` · `video_views` · `videos` · `wallet_ledger` |
+| `users` | — | `auction_bids` · `auctions` · `audience_list_members` · `audience_lists` · `auth_identities` · `auth_tokens` · `blocked_users` · `challenge_applications` · `challenge_pledges` · `challenges` · `compliance_reports` · `contacts` · `conversation_invites` · `conversation_members` · `conversations` · `credit_topups` · `direct_messages` · `follows` · `notifications` · `payment_intents` · `payout_accounts` · `payout_requests` · `playlist_members` · `playlists` · `profiles` · `push_devices` · `stories` · `story_likes` · `story_views` · `tips_ledger` · `user_invitations` · `video_access_grants` · `video_comments` · `video_drafts` · `video_likes` · `video_shares` · `video_viewers` · `video_views` · `videos` · `wallet_ledger` |
 | `video_access_grants` | `videos` (`video_id`) · `users` (`user_id`) | — |
 | `video_audience_lists` | `videos` (`video_id`) · `audience_lists` (`list_id`) | — |
 | `video_comments` | `videos` (`video_id`) · `users` (`author_id`) · `video_comments` (`parent_id`) · `users` (`removed_by`) | `video_comments` |
@@ -300,13 +302,48 @@ Every foreign key, read from the schema: what each table points to (through whic
 | `icon_name` | varchar(50) | no | `"shield"` |  |
 | `created_at` | timestamp with time zone | no | `now()` |  |
 
+### `conversation_invites`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | uuid | no | `gen_random_uuid()` | primary key |
+| `conversation_id` | uuid | no |  | → `conversations.id` (on delete cascade) |
+| `token_hash` | text | no |  |  |
+| `created_by` | uuid | yes |  | → `users.id` (on delete set null) |
+| `expires_at` | timestamp with time zone | no |  |  |
+| `max_uses` | integer | no | `50` |  |
+| `uses` | integer | no | `0` |  |
+| `revoked_at` | timestamp with time zone | yes |  |  |
+| `created_at` | timestamp with time zone | no | `now()` |  |
+
+**Indexes:** `conversation_invites_token_idx` (unique, token_hash) · `conversation_invites_conversation_idx` (conversation_id)
+
+### `conversation_members`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `conversation_id` | uuid | no |  | → `conversations.id` (on delete cascade) |
+| `user_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `role` | text | no | `"member"` |  |
+| `muted_until` | timestamp with time zone | yes |  |  |
+| `joined_at` | timestamp with time zone | no | `now()` |  |
+| `left_at` | timestamp with time zone | yes |  |  |
+| `last_read_seq` | bigint | no | `0` |  |
+
+**Indexes:** `conversation_members_user_idx` (user_id, partial)
+
 ### `conversations`
 
 | Column | Type | Null | Default | Notes |
 | :--- | :--- | :--- | :--- | :--- |
 | `id` | uuid | no | `gen_random_uuid()` | primary key |
-| `participant1_id` | uuid | no |  | → `users.id` (on delete cascade) |
-| `participant2_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `kind` | text | no | `"direct"` |  |
+| `participant1_id` | uuid | yes |  | → `users.id` (on delete cascade) |
+| `participant2_id` | uuid | yes |  | → `users.id` (on delete cascade) |
+| `title` | text | yes |  |  |
+| `avatar_url` | text | yes |  |  |
+| `created_by` | uuid | yes |  | → `users.id` (on delete set null) |
+| `archived_at` | timestamp with time zone | yes |  |  |
 | `last_message_at` | timestamp with time zone | no | `now()` |  |
 | `created_at` | timestamp with time zone | no | `now()` |  |
 | `updated_at` | timestamp with time zone | no | `now()` |  |
@@ -338,7 +375,7 @@ Every foreign key, read from the schema: what each table points to (through whic
 | `conversation_id` | uuid | no |  | → `conversations.id` (on delete cascade) |
 | `client_id` | uuid | yes |  |  |
 | `sender_id` | uuid | no |  | → `users.id` (on delete cascade) |
-| `recipient_id` | uuid | no |  | → `users.id` (on delete cascade) |
+| `recipient_id` | uuid | yes |  | → `users.id` (on delete cascade) |
 | `content` | text | no |  |  |
 | `story_id` | uuid | yes |  | → `stories.id` (on delete set null) |
 | `origin` | text | no | `"human"` |  |
@@ -926,3 +963,4 @@ Every foreign key, read from the schema: what each table points to (through whic
 - `0011_video_framerate.sql`
 - `0012_recommendations.sql`
 - `0013_message_origin.sql`
+- `0014_conversation_members.sql`

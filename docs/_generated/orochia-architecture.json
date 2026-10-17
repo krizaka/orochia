@@ -85,7 +85,7 @@
       "id": "data",
       "name": "Data persistence",
       "path": "packages/db",
-      "tablesCount": 52,
+      "tablesCount": 54,
       "tables": [
         "auctions",
         "auction_bids",
@@ -117,6 +117,8 @@
         "conversations",
         "direct_messages",
         "blocked_users",
+        "conversation_members",
+        "conversation_invites",
         "notifications",
         "rate_limit_buckets",
         "storage_alerts",
@@ -656,6 +658,72 @@
       "path": "/api/feed",
       "access": "public · session-aware",
       "summary": "The feeds, a page at a time."
+    },
+    {
+      "method": "POST",
+      "path": "/api/groups",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "Creates a group (the caller is its owner); the members must be the caller's contacts (or, for a creator, approved fans)."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/groups/[id]",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "Closes the group (owner): nobody writes any more."
+    },
+    {
+      "method": "GET",
+      "path": "/api/groups/[id]",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "The group: its name, the caller's role and mute, its members."
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/groups/[id]",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "Renames the group (owner)."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/groups/[id]/invites",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "Revokes every open invite (owner)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/groups/[id]/invites",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "A new invite link (owner): the token is shown once, and valid for a week."
+    },
+    {
+      "method": "POST",
+      "path": "/api/groups/[id]/leave",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "Leaves the group (the owner leaving passes it on)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/groups/[id]/members",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "Adds members (owner): contacts, up to 50 in all."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/groups/[id]/members/[userId]",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "Removes a member (owner)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/groups/[id]/mute",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "Mutes the group for some hours (no push, no badge), or `hours: null` to unmute."
+    },
+    {
+      "method": "POST",
+      "path": "/api/groups/join",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "Joins a group with an invite token (`/messages/join/<token>`): the answer is the conversation to open."
     },
     {
       "method": "GET",
@@ -1452,7 +1520,7 @@
         "runtime": "node",
         "version": "1.0.0",
         "published": false,
-        "description": "The API: 136 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
+        "description": "The API: 144 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
       },
       {
         "id": "orochia-config",

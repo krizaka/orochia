@@ -5,10 +5,11 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 
 import { ConversationList } from "@/components/messages/ConversationList";
+import { NewGroupDialog } from "@/components/messages/NewGroupDialog";
 import { OnlineNow } from "@/components/messages/OnlineNow";
 import { Thread } from "@/components/messages/Thread";
 import { useChat } from "@/components/messages/useChat";
-import { cn, IconButton, Input, Spinner } from "@/components/ui";
+import { Button, cn, IconButton, Input, Spinner } from "@/components/ui";
 import { responseErrorMessage } from "@/lib/api-errors";
 import { useAuth } from "@/lib/auth-context";
 import { conversationPath } from "@/lib/conversation-path";
@@ -113,6 +114,16 @@ export function MessagesScreen({ conversationId }: { conversationId: string | nu
                 <PlusIcon size={16} />
               </IconButton>
             </form>
+            <NewGroupDialog
+              onCreated={(id) => {
+                void chat.reload();
+                open(id);
+              }}
+            >
+              <Button variant="ghost" size="sm" className="mt-2 w-full justify-start">
+                <PlusIcon size={14} /> {t("inbox.group.new")}
+              </Button>
+            </NewGroupDialog>
             {startError && (
               <p role="alert" className="mt-2 text-xs text-fg-danger">
                 {startError}
@@ -132,6 +143,7 @@ export function MessagesScreen({ conversationId }: { conversationId: string | nu
               myId={myId}
               presence={conversation ? chat.presence[conversation.otherUser.id] : undefined}
               messages={chat.messages}
+              names={chat.names}
               state={chat.thread}
               typing={Boolean(conversation && chat.typing[conversation.id])}
               onBack={() => open(null)}

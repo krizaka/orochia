@@ -6,6 +6,7 @@ import React from "react";
 
 import { timeAgo } from "@/components/notifications/useNotifications";
 import { Badge, cn, EmptyState, Skeleton } from "@/components/ui";
+import { ConversationKind } from "@/lib/conversation-kinds";
 import { conversationPath } from "@/lib/conversation-path";
 import { t } from "@/lib/i18n";
 
@@ -64,7 +65,8 @@ export function ConversationList({
         const last = c.lastMessage;
         const mine = last?.senderId === myId;
         const isTyping = Boolean(typing[c.id]);
-        const status = presenceLabel(presence[other.id]);
+        const isGroup = c.kind === ConversationKind.Group;
+        const status = isGroup ? t("inbox.group.membersCount", { count: c.memberCount }) : presenceLabel(presence[other.id]);
         const preview = isTyping
           ? t("inbox.typing")
           : last
@@ -84,14 +86,15 @@ export function ConversationList({
                 selected ? "border-accent bg-accent/10" : "border-transparent hover:bg-surface-2/60",
               )}
             >
-              <PresenceAvatar src={other.avatarUrl} name={other.displayName} presence={presence[other.id]} />
+              <PresenceAvatar src={other.avatarUrl} name={other.displayName} presence={isGroup ? undefined : presence[other.id]} />
               <span className="min-w-0 flex-1">
                 <span className="mb-0.5 flex items-center justify-between gap-2">
                   <span className={cn("truncate text-sm text-fg", c.unreadCount ? "font-bold" : "font-semibold")}>{other.displayName}</span>
+                  {c.muted && <span className="sr-only">{t("inbox.group.muted")}</span>}
                   {last && <span className="shrink-0 text-[10px] text-fg-muted">{timeAgo(last.createdAt)}</span>}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  {mine && last && !isTyping && <Ticks receipt={receiptOf(last) as "sent" | "delivered" | "read"} />}
+                  {mine && !isGroup && last && !isTyping && <Ticks receipt={receiptOf(last) as "sent" | "delivered" | "read"} />}
                   <span className={cn("truncate text-xs", isTyping ? "font-medium text-fg-accent" : c.unreadCount ? "font-semibold text-fg" : "text-fg-secondary")}>{preview}</span>
                   {c.unreadCount > 0 && (
                     <Badge tone="accent" size="sm" className="ml-auto normal-case tracking-normal">
