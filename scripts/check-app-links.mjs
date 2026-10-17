@@ -6,7 +6,7 @@
    Config (JSON, `app-links.json` at the repository root):
      { "host": "dev.orochia.com", "iosBundleId": "com.krizaka.orochia", "androidPackage": "com.krizaka.orochia",
        "paths": ["/@*", "/watch/*", "/me", "/me/*"],            // what the AASA and the Android intent filters claim
-       "web": { "appDir": "apps/web/app", "extra": ["/@[username]"], "excluded": ["/auth/*", "/api/*"],
+       "web": { "appDir": "apps/web/app", "extra": ["/@[username]"], "excluded": ["/auth/*", "/api/*", "/[locale]/[...rest]"],
                 "aasaRoute": "apps/web/app/.well-known/apple-app-site-association/route.ts",
                 "assetlinksRoute": "apps/web/app/.well-known/assetlinks.json/route.ts" },
        "native": { "appJson": "app.json", "appDir": "src/app" } }
@@ -37,7 +37,16 @@ export function normalizeRoute(route) {
   return route.replace(/\[\[?\.\.\.[^\]]+\]?\]/g, "*").replace(/\[[^\]]+\]/g, "*") || "/";
 }
 
-/** Next.js `app/` tree → routes, groups `(x)` and slots `@x` removed, only folders holding a page. */
+/**
+ * A catch-all page that does nothing but answer 404 (`app/[locale]/[...rest]/page.tsx` → `notFound()`), there so that an
+ * unmatched address gets the app's own not-found page inside its layout. It is no shareable route.
+ */
+export function isNotFoundOnly(source) {
+  const code = source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+  return /^\s*(import\s[^;]+;\s*)*export\s+default\s+(async\s+)?function\s+\w*\s*\([^)]*\)\s*\{\s*notFound\(\)\s*;?\s*\}\s*$/.test(code);
+}
+
+/** Next.js `app/` tree → routes, groups `(x)` and slots `@x` removed, only folders holding a page (a not-found-only catch-all is no route). */
 export function nextRoutes(appDir) {
   const out = [];
   const walk = (dir, segs) => {
@@ -47,7 +56,10 @@ export function nextRoutes(appDir) {
         if (name.startsWith("_") || name === "node_modules") continue;
         const hidden = /^\(.*\)$/.test(name) || name.startsWith("@");
         walk(full, hidden ? segs : [...segs, name]);
-      } else if (PAGE.test(name)) out.push("/" + segs.join("/"));
+      } else if (PAGE.test(name)) {
+        if (/^\[\[?\.\.\./.test(segs.at(-1) ?? "") && isNotFoundOnly(readFileSync(full, "utf8"))) continue;
+        out.push("/" + segs.join("/"));
+      }
     }
   };
   if (existsSync(appDir)) walk(appDir, []);
@@ -87,8 +99,11 @@ const concrete = (p) => p.replace(/\*/g, "x");
 /** Rule 1 — web routes against claimed paths. Returns the gaps. */
 export function checkWebRoutes({ routes, paths, excluded = [], extra = [] }) {
   const gaps = [];
-  const all = [...new Set([...routes, ...extra].map(normalizeRoute))];
-  const skip = excluded.map(globToRegExp);
+  // An exclusion written with brackets (`/[locale]/[...rest]`) is that route itself, compared before normalising: as a
+  // glob, its normalised form (`/*/*`) would match every route.
+  const literal = new Set(excluded.filter((e) => e.includes("[")));
+  const all = [...new Set([...routes, ...extra].filter((r) => !literal.has(r)).map(normalizeRoute))];
+  const skip = excluded.filter((e) => !e.includes("[")).map(globToRegExp);
   const claims = paths.map(globToRegExp);
   const shareable = all.filter((r) => !skip.some((re) => re.test(r)));
   for (const r of shareable) {
