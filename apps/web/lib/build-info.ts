@@ -1,6 +1,6 @@
 /**
  * What this build is — version, environment, commit — inlined at build time by next.config.mjs. Every environment
- * but production carries a small badge next to the brand (`components/BuildBadge.tsx`), so nobody takes a build that
+ * but the footer carries the version and the environment (`components/SiteFooter.tsx`), so nobody takes a build that
  * is still being tested for the production one.
  */
 
@@ -30,11 +30,6 @@ export function describeBuild(raw: { version?: string; env?: string; sha?: strin
     env: parseAppEnv(raw.env),
     sha: /^[0-9a-f]{7}$/.test(sha) ? sha : null,
   };
-}
-
-/** The badge is shown everywhere but production. */
-export function showsBuildBadge(info: BuildInfo): boolean {
-  return info.env !== "production";
 }
 
 /** The commit on GitHub, or the repository when the SHA is unknown. */

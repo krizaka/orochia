@@ -17,7 +17,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
-import { BuildBadge } from "@/components/BuildBadge";
 import { MessagesButton } from "@/components/messages/MessagesButton";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { Avatar, cn,IconButton, OrochiaLogo, ThemeToggle } from "@/components/ui";
@@ -90,7 +89,6 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
               OROCHIA<span className="text-fg-accent">.</span>
             </span>
           </Link>
-          <BuildBadge />
         </div>
 
         <button
