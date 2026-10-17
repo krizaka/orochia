@@ -2,7 +2,8 @@
 
 import { Check, Crown, Film, Flame, Heart, Layers,Lock, Play, Share2, Shield, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React from "react";
 
 import { PlaylistCard, type PlaylistCardProps } from "@/components/PlaylistCard";

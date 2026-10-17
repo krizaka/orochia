@@ -1,7 +1,7 @@
 "use client";
 
 import { LogOut, MailCheck, RefreshCw } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React, { useState } from "react";
 
 import { Rich } from "@/components/Rich";

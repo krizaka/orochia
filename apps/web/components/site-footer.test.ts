@@ -42,7 +42,7 @@ describe("one footer, one contentinfo", () => {
   });
 
   it("the root layout renders it once, after the shell (outside <main>), and no other file renders a footer", async () => {
-    const layout = read("../app/layout.tsx");
+    const layout = read("../app/[locale]/layout.tsx");
     expect(layout.match(/<SiteFooter \/>/g)).toHaveLength(1);
     expect(layout.indexOf("</ClientLayoutShell>")).toBeLessThan(layout.indexOf("<SiteFooter />"));
     const { globSync } = await import("node:fs");

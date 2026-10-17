@@ -19,7 +19,8 @@ import {
 } from "@krizaka/icons";
 import { Flag, Volume2, VolumeX } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { ReportModal } from "@/components/ReportModal";

@@ -1,6 +1,7 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { toast } from "@/components/ui";

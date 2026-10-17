@@ -2,7 +2,7 @@
 
 import { MessageIcon } from "@krizaka/icons";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React from "react";
 
 import { buttonVariants, cn } from "@/components/ui";

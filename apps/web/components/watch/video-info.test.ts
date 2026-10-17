@@ -62,7 +62,7 @@ describe("the video information", () => {
     expect(read("../../../../packages/db/src/schema/videos.ts")).toContain('framerate: real("framerate")');
   });
   it("shows on the watch page and as a quality badge on the cards", () => {
-    expect(read("../../app/watch/[id]/WatchClient.tsx")).toContain("<VideoInfo");
+    expect(read("../../app/[locale]/watch/[id]/WatchClient.tsx")).toContain("<VideoInfo");
     expect(read("../VideoCard.tsx")).toContain("QualityBadge");
   });
 });

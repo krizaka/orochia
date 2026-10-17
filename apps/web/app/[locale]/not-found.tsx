@@ -1,21 +1,21 @@
+"use client";
+
 import { ExternalIcon, HomeIcon, SearchIcon } from "@krizaka/icons";
-import type { Metadata } from "next";
 import Link from "next/link";
 
 import { supportHref } from "@/components/errors/links";
 import { PageState } from "@/components/errors/PageState";
 import { Button, buttonVariants, Input } from "@/components/ui";
-import { getI18n } from "@/lib/i18n-server";
-
-export async function generateMetadata(): Promise<Metadata> {
-  const { t } = await getI18n();
-  return { title: t("errorPages.notFoundMetaTitle"), robots: { index: false } };
-}
+import { useI18n } from "@/lib/i18n-client";
 
 /** Every address no route matches, and every notFound(): the owl reads — it looked everywhere; search from here. */
-export default async function NotFound() {
-  const { t } = await getI18n();
+export default function NotFound() {
+  const { t } = useI18n();
   return (
+    <>
+    {/* A client page cannot export metadata: React hoists these to the document head. */}
+    <title>{t("errorPages.notFoundMetaTitle")}</title>
+    <meta name="robots" content="noindex" />
     <PageState
       bird="owl"
       mood="thinking"
@@ -55,5 +55,6 @@ export default async function NotFound() {
         </Button>
       </form>
     </PageState>
+    </>
   );
 }

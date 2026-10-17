@@ -4,16 +4,18 @@ import React from "react";
 
 import { cn } from "@/components/ui";
 import { DOCS } from "@/lib/docs";
-import { getI18n } from "@/lib/i18n-server";
+import { getI18n, localeFromParams } from "@/lib/i18n-server";
 import { SOURCE_URL } from "@/lib/seo";
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  await localeFromParams(params);
   const { t } = await getI18n();
   return { title: t("docs.meta.title"), description: t("docs.meta.description") };
 }
 
 /** The documentation hub: every public page of the repository's docs/, one card each. */
-export default async function DocsPage() {
+export default async function DocsPage({ params }: { params: Promise<{ locale: string }> }) {
+  await localeFromParams(params);
   const { t } = await getI18n();
   return (
     <div className={cn("mx-auto w-full max-w-5xl px-4 py-16 sm:px-6 sm:py-20")}>

@@ -3,11 +3,12 @@ import React from "react";
 
 import { MobileStepCard } from "@/components/mobile/MobileStepCard";
 import { cn, SectionBackdrop } from "@/components/ui";
-import { getI18n } from "@/lib/i18n-server";
+import { getI18n, localeFromParams } from "@/lib/i18n-server";
 import { MOBILE_STEPS } from "@/lib/mobile-media";
 import { pageAlternates } from "@/lib/seo-i18n";
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  await localeFromParams(params);
   const { t } = await getI18n();
   return { title: t("mobile.meta.title"), description: t("mobile.meta.description"), alternates: await pageAlternates("/mobile") };
 }
@@ -15,7 +16,8 @@ export async function generateMetadata(): Promise<Metadata> {
 const container = "mx-auto w-full max-w-7xl px-4 sm:px-6";
 
 /** The four steps of the Orochia app, each explained. */
-export default async function MobilePage() {
+export default async function MobilePage({ params }: { params: Promise<{ locale: string }> }) {
+  await localeFromParams(params);
   const { t } = await getI18n();
   return (
     <div className="w-full overflow-x-clip">

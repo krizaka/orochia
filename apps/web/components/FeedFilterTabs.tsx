@@ -3,7 +3,8 @@
 import { LoadMore, MediaGridSkeleton } from "@krizaka/ui/media-grid";
 import { Clapperboard, Clock, Flame, LayoutGrid, Rows3, Smartphone, Sparkles, Users } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React, { useReducer, useState, useSyncExternalStore } from "react";
 
 import { VerticalFeed } from "@/components/feed/VerticalFeed";

@@ -23,7 +23,7 @@ const STATIC: { path: string; priority: number; changeFrequency: "daily" | "week
 
 /** One page, its English address and its French one (`/fr<path>`): each entry names both, as hreflang alternates. */
 const page = (path: string) => ({
-  url: absolute(path),
+  url: absolute(localizedPath(path, "en")),
   alternates: { languages: { en: absolute(localizedPath(path, "en")), fr: absolute(localizedPath(path, "fr")), "x-default": absolute(localizedPath(path, "en")) } },
 });
 
@@ -34,7 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const statics = [
     ...STATIC.map((s) => ({ ...page(s.path), lastModified: now, changeFrequency: s.changeFrequency, priority: s.priority })),
-    ...DOCS.map((d) => ({ url: absolute(`/docs/${d.slug}`), lastModified: now, changeFrequency: "weekly" as const, priority: 0.5 })),
+    ...DOCS.map((d) => ({ url: absolute(localizedPath(`/docs/${d.slug}`, "en")), lastModified: now, changeFrequency: "weekly" as const, priority: 0.5 })),
   ];
   try {
     const { videos, creators, collections } = await sitemapEntries();

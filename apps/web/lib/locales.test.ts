@@ -29,11 +29,12 @@ describe("the language of a request", () => {
 });
 
 describe("addresses in a language", () => {
-  it("keeps English at the path itself and puts French under /fr", () => {
-    expect(localizedPath("/explore", "en")).toBe("/explore");
+  it("gives every page an address per language, English included", () => {
+    expect(localizedPath("/explore", "en")).toBe("/en/explore");
     expect(localizedPath("/explore", "fr")).toBe("/fr/explore");
     expect(localizedPath("/", "fr")).toBe("/fr");
-    expect(localizedPath("/fr/watch/1", "en")).toBe("/watch/1");
+    expect(localizedPath("/", "en")).toBe("/en");
+    expect(localizedPath("/fr/watch/1", "en")).toBe("/en/watch/1");
     expect(localizedPath("/fr/watch/1", "fr")).toBe("/fr/watch/1");
     expect(localizedPath("/@ada", "fr")).toBe("/fr/@ada");
   });

@@ -2,7 +2,7 @@
 
 import { Bell, CheckCheck, Settings } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React, { useState } from "react";
 
 import { Button, buttonVariants, cn, IconButton, Popover, Skeleton } from "@/components/ui";

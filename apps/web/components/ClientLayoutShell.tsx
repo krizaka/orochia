@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React, { useEffect, useRef, useState } from "react";
 
 import { AgeVerificationModal } from "@/components/AgeVerificationModal";

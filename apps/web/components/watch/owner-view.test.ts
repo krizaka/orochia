@@ -11,7 +11,7 @@ describe("the owner's view of a video", () => {
     expect(route).toContain("isOwner");
   });
   it("replaces 'Send a tip' on your own video and is drawn for nobody else", () => {
-    const page = read("../../app/watch/[id]/WatchClient.tsx");
+    const page = read("../../app/[locale]/watch/[id]/WatchClient.tsx");
     expect(page).toMatch(/details\.isOwner \? \(\s*<OwnerBar/);
     expect(page).toContain("setIsTipModalOpen(true)");
   });

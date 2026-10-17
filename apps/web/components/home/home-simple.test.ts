@@ -8,13 +8,13 @@ describe("the visitor's home reads in five seconds", () => {
     expect(read("./showcase/Scenes.tsx")).toContain('export const SCENES = ["feed", "stories", "support", "auction"] as const;');
   });
   it("the home is the feed for a member (and for a visitor who opens a tab); a visitor's home is five sections (visitor-home.test.ts)", () => {
-    const page = read("../../app/(home)/page.tsx");
+    const page = read("../../app/[locale]/(home)/page.tsx");
     expect(page).toContain("FeedFilterTabs");
     expect(page).not.toMatch(/HomeHero|GetPaid|MobileSection|CreatorsCallToAction|kz-marquee|home\.marquee/);
     expect(read("../VideoGrid.tsx")).toContain("@krizaka/ui/media-grid");
   });
   it("the pitch lives on /how-it-works: four short sections (see how-it-works.test.ts)", () => {
-    const page = read("../../app/how-it-works/page.tsx");
+    const page = read("../../app/[locale]/how-it-works/page.tsx");
     expect(page).toContain("<Journey");
     expect(page).not.toMatch(/GetPaid|MobileSection/);
   });

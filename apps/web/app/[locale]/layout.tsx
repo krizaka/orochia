@@ -2,7 +2,7 @@ import "./globals.css";
 import "@krizaka/ui/blocks.css";
 
 import type { Metadata, Viewport } from "next";
-import { headers } from "next/headers";
+import { notFound } from "next/navigation";
 
 import { ClientLayoutShell } from "@/components/ClientLayoutShell";
 import { DevEnvironmentNotice } from "@/components/DevEnvironmentNotice";
@@ -12,10 +12,9 @@ import { cn,MotionObserver, ThemeProvider, ThemeScript } from "@/components/ui";
 import { AuthProvider } from "@/lib/auth-context";
 import { getDictionary } from "@/lib/i18n";
 import { I18nProvider } from "@/lib/i18n-client";
-import { getI18n } from "@/lib/i18n-server";
-import { localizedPath, ogLocale, PATH_HEADER } from "@/lib/locales";
+import { getI18n, setRequestLocale } from "@/lib/i18n-server";
+import { isLocale, LOCALES, localizedPath, ogLocale } from "@/lib/locales";
 import { INDEXABLE, KRIZAKA_URL, NOINDEX, SITE_NAME, SITE_URL, siteGraph } from "@/lib/seo";
-import { alternatesFor } from "@/lib/seo-i18n";
 
 import { jakarta, outfit } from "./fonts";
 
@@ -30,11 +29,22 @@ export const viewport: Viewport = {
   ],
 };
 
-export async function generateMetadata(): Promise<Metadata> {
+type Props = { params: Promise<{ locale: string }> };
+
+/** One page per language, generated once: nothing in the layout reads the request. */
+export function generateStaticParams() {
+  return LOCALES.map((locale) => ({ locale }));
+}
+
+export const dynamicParams = false;
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const requested = (await params).locale;
+  if (!isLocale(requested)) return {};
+  setRequestLocale(requested);
   const { t, locale } = await getI18n();
   const description = t("seo.siteDescription");
   const ogTitle = t("seo.ogTitle");
-  const path = (await headers()).get(PATH_HEADER) ?? "/";
   return {
     metadataBase: new URL(SITE_URL),
     title: { default: t("seo.title"), template: "%s — Orochia" },
@@ -42,8 +52,8 @@ export async function generateMetadata(): Promise<Metadata> {
     applicationName: SITE_NAME,
     keywords: t("seo.keywords").split(",").map((k) => k.trim()),
     authors: [{ name: "Krizaka", url: KRIZAKA_URL }],
-    // Every page is canonical to itself in the language it is served in, with its hreflang pair; a page with its own `alternates` overrides it.
-    alternates: alternatesFor(path, locale),
+    // Every page is canonical to itself, at its address in its language (relative to metadataBase); a page gives its hreflang pair with `pageAlternates`, and may override this.
+    alternates: { canonical: "./" },
     creator: "Krizaka",
     publisher: "Krizaka",
     openGraph: { type: "website", siteName: SITE_NAME, url: localizedPath("/", locale), title: ogTitle, description, locale: ogLocale(locale), alternateLocale: ogLocale(locale === "fr" ? "en" : "fr") },
@@ -54,11 +64,10 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function RootLayout({ children, params }: Props & { children: React.ReactNode }) {
+  const requested = (await params).locale;
+  if (!isLocale(requested)) notFound();
+  setRequestLocale(requested);
   const { t, locale } = await getI18n();
   return (
     <html lang={locale} suppressHydrationWarning className={cn(outfit.variable, jakarta.variable, "overflow-x-hidden max-w-full w-full")}>

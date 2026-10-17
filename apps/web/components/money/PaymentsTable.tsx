@@ -1,6 +1,7 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React from "react";
 
 import { Badge, DataTable, EmptyState, Pagination } from "@/components/ui";

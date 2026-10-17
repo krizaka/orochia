@@ -87,11 +87,16 @@ const nextConfig = {
   // A profile's address is orochia.com/@username — the same for members and creators. The page lives in
   // app/creators/[username]; its old address redirects permanently.
   async rewrites() {
-    return [{ source: "/@:username", destination: "/creators/:username" }];
+    // The proxy puts a language in front of every address, so the profile address is matched with and without it.
+    return [
+      { source: "/:locale(en|fr)/@:username", destination: "/:locale/creators/:username" },
+      { source: "/@:username", destination: "/creators/:username" },
+    ];
   },
   async redirects() {
     return [
       { source: "/creators/:username", destination: "/@:username", permanent: true },
+      { source: "/:locale(en|fr)/creators/:username", destination: "/:locale/@:username", permanent: true },
       // Earnings and payouts live on one page.
       { source: "/creator/payouts", destination: "/me/earnings#payouts", permanent: true },
       ...Object.entries(meRoutes.tabs).map(([tab, destination]) => ({ source: "/dashboard", has: [{ type: "query", key: "tab", value: tab }], destination, permanent: true })),

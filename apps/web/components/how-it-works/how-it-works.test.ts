@@ -9,7 +9,7 @@ const read = (rel: string) => readFileSync(new URL(rel, import.meta.url), "utf8"
 const en = JSON.parse(read("../../messages/en.json")) as { howItWorks: Record<string, Record<string, string>> };
 
 describe("/how-it-works is short: hero, journey, four ways, closing", () => {
-  const page = read("../../app/how-it-works/page.tsx");
+  const page = read("../../app/[locale]/how-it-works/page.tsx");
 
   it("has exactly four sections, each labelled, and none of the old long blocks", () => {
     expect(page.match(/<section\b|<SectionBackdrop\b/g)).toHaveLength(4);

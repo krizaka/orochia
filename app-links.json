@@ -4,7 +4,7 @@
   "androidPackage": "com.krizaka.orochia",
   "paths": ["/@*", "/watch/*", "/me", "/me/*", "/auctions", "/auctions/*", "/challenges", "/challenges/*", "/messages", "/messages/*"],
   "web": {
-    "appDir": "apps/web/app",
+    "appDir": "apps/web/app/[locale]",
     "extra": ["/@[username]"],
     "excluded": ["/", "/auth/*", "/legal/*", "/docs", "/docs/*", "/how-it-works", "/mobile", "/explore", "/creators/*", "/creator/*", "/dashboard", "/earnings", "/insights", "/profile", "/wallet", "/notifications", "/playlists/*"],
     "aasaRoute": "apps/web/app/.well-known/apple-app-site-association/route.ts",

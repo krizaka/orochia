@@ -1,13 +1,14 @@
+import { createElement } from "react";
 import { Shield } from "lucide-react";
 import { describe, expect, it, vi } from "vitest";
 
 import { DevEnvironmentNotice } from "@/components/DevEnvironmentNotice";
 import { LegalDocument, legalMetadata } from "@/components/legal/LegalDocument";
-import NotFound from "@/app/not-found";
-import { generateMetadata as mobileMetadata } from "@/app/mobile/page";
+import NotFound from "@/app/[locale]/not-found";
+import { generateMetadata as mobileMetadata } from "@/app/[locale]/mobile/page";
 import { MobileStepCard } from "@/components/mobile/MobileStepCard";
 
-import { serverHtmlIn } from "./i18n-test-utils";
+import { htmlIn, serverHtmlIn } from "./i18n-test-utils";
 
 vi.mock("@/lib/i18n-server", () => import("./i18n-test-server"));
 vi.mock("next/navigation", () => ({ usePathname: () => "/explore", useRouter: () => ({ push: () => undefined, refresh: () => undefined }) }));
@@ -38,8 +39,8 @@ describe("the key pages render in each language", () => {
   });
 
   it("renders the 404 in the language of the request", async () => {
-    const en = await serverHtmlIn("en", NotFound, {});
-    const fr = await serverHtmlIn("fr", NotFound, {});
+    const en = htmlIn("en", createElement(NotFound));
+    const fr = htmlIn("fr", createElement(NotFound));
     expect(en).toContain("This page does not exist");
     expect(fr).toContain("Cette page n’existe pas");
     expect(fr).not.toContain("This page does not exist");
@@ -54,10 +55,10 @@ describe("the key pages render in each language", () => {
   it("gives the pages' metadata in French, with the canonical and hreflang of the French address", async () => {
     const { setTestLocale } = await import("./i18n-test-server");
     setTestLocale("fr");
-    const meta = await mobileMetadata();
+    const meta = await mobileMetadata({ params: Promise.resolve({ locale: "fr" }) });
     expect(meta.title).toBe("L’appli mobile Orochia");
     expect(meta.alternates?.canonical).toBe("/fr/mobile");
-    expect(meta.alternates?.languages).toEqual({ en: "/mobile", fr: "/fr/mobile", "x-default": "/mobile" });
+    expect(meta.alternates?.languages).toEqual({ en: "/en/mobile", fr: "/fr/mobile", "x-default": "/en/mobile" });
   });
 
   it("renders a server notice in the language of the request", async () => {

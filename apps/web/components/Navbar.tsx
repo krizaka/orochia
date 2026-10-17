@@ -14,7 +14,7 @@ import {
   WalletIcon as Wallet,
 } from "@krizaka/icons";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React, { useEffect, useRef, useState } from "react";
 
 import { LanguageSwitch } from "@/components/LanguageSwitch";

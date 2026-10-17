@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import React from "react";
 
 import { DOCS, findDoc, renderDoc } from "@/lib/docs";
-import { getI18n } from "@/lib/i18n-server";
+import { getI18n, localeFromParams } from "@/lib/i18n-server";
 import { SOURCE_URL } from "@/lib/seo";
 
 export const dynamicParams = false;
@@ -13,13 +13,15 @@ export function generateStaticParams() {
   return DOCS.map((doc) => ({ slug: doc.slug }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
+  await localeFromParams(params);
   const doc = findDoc((await params).slug);
   return doc ? { title: doc.title, description: doc.description || undefined } : {};
 }
 
 /** One page of the repository's docs/, rendered from its markdown. */
-export default async function DocPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function DocPage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
+  await localeFromParams(params);
   const { t } = await getI18n();
   const doc = findDoc((await params).slug);
   if (!doc) notFound();

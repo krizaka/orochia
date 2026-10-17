@@ -2,7 +2,8 @@
 
 import { BarChart3, Clapperboard, CreditCard, Film, Layers, LayoutDashboard, ListChecks, Settings, Shield, Sparkles, Upload, Users, Wallet } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React from "react";
 
 import { Avatar, Badge, buttonVariants, cn, Select } from "@/components/ui";

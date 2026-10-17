@@ -2,7 +2,8 @@
 
 import { AlertTriangle, Gavel, Pencil, Trash2, Users } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React, { useState } from "react";
 
 import { Rich } from "@/components/Rich";

@@ -72,13 +72,13 @@ describe("orochia: the family SEO contract", () => {
     expect(app.description).not.toMatch(/adulte/i);
   });
 
-  it("an indexed sitemap names both addresses of a page, English at the path and French under /fr, hreflang x-default English", async () => {
+  it("an indexed sitemap names both addresses of a page, each under its language, hreflang x-default English", async () => {
     vi.resetModules();
     vi.stubEnv("NEXT_PUBLIC_APP_URL", HOST);
     vi.stubEnv("APP_SEARCH_INDEXING", "on");
     const sitemap = (await import("../apps/web/app/sitemap.ts")).default;
-    const entry = (await sitemap()).find((e) => e.url === `${HOST}/explore`);
-    expect(entry?.alternates?.languages).toEqual({ en: `${HOST}/explore`, fr: `${HOST}/fr/explore`, "x-default": `${HOST}/explore` });
+    const entry = (await sitemap()).find((e) => e.url === `${HOST}/en/explore`);
+    expect(entry?.alternates?.languages).toEqual({ en: `${HOST}/en/explore`, fr: `${HOST}/fr/explore`, "x-default": `${HOST}/en/explore` });
   });
 });
 

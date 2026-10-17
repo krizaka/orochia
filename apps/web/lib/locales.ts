@@ -12,7 +12,7 @@ export const DEFAULT_LOCALE: Locale = "en";
 /** The cookie the family shares (krizaka.com, the dev sites): the language the reader chose, kept a year. */
 export const LOCALE_COOKIE = "NEXT_LOCALE";
 
-/** The request header the proxy fills with the language of a `/fr/…` address, so a page knows it before the cookie exists. */
+/** The request header the proxy fills with the language a page is served in (its address, else the cookie, else the browser). */
 export const LOCALE_HEADER = "x-locale";
 
 /** The request header carrying the address as asked (before the language prefix is taken off), for canonical and hreflang. */
@@ -38,11 +38,10 @@ export function localeFromAcceptLanguage(header: string | null | undefined): Loc
   return first === "fr" || first.startsWith("fr-") ? "fr" : "en";
 }
 
-/** The address of a path in a language: `/explore` stays itself in English, becomes `/fr/explore` in French. */
+/** The address of a path in a language — every page has one per language: `/explore` → `/en/explore`, `/fr/explore`. */
 export function localizedPath(path: string, locale: Locale): string {
   const clean = stripLocalePrefix(path).path;
-  if (locale === "en") return clean;
-  return clean === "/" ? "/fr" : `/fr${clean}`;
+  return clean === "/" ? `/${locale}` : `/${locale}${clean}`;
 }
 
 /** `/fr/explore` → `{ locale: "fr", path: "/explore" }`; an address without a prefix has no locale. */

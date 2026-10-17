@@ -21,7 +21,7 @@ describe("the development-environment line", () => {
   });
 
   it("is rendered by the layout only when the deployment is not open to search engines (the one flag)", () => {
-    const layout = readFileSync(join(__dirname, "..", "app", "layout.tsx"), "utf8");
+    const layout = readFileSync(join(__dirname, "..", "app", "[locale]", "layout.tsx"), "utf8");
     expect(layout).toContain("{!INDEXABLE && <DevEnvironmentNotice />}");
   });
 });

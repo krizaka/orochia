@@ -1,7 +1,8 @@
 "use client";
 
 import { MessageIcon, PlusIcon, SearchIcon } from "@krizaka/icons";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React, { useCallback, useEffect, useState } from "react";
 
 import { ConversationList } from "@/components/messages/ConversationList";

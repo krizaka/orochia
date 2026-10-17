@@ -13,7 +13,7 @@
 @import "@krizaka/tokens/brands/orochia.css";
 
 /* The workspace packages live outside this app. */
-@source "../../../packages";
+@source "../../../../packages";
 
 /* The app's typefaces are loaded by next/font (app/layout.tsx: --font-jakarta, --font-outfit); the roles read them. */
 :root {

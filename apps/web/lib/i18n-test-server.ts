@@ -14,3 +14,13 @@ export const setTestLocale = (locale: Locale) => {
 export const getLocale = async (): Promise<Locale> => current;
 
 export const getI18n = async (): Promise<I18nTools> => toolsFor(current);
+
+export const setRequestLocale = setTestLocale;
+
+/** The page-level helper of lib/i18n-server.ts: the language of the address. */
+export async function localeFromParams(params: Promise<{ locale: string }>): Promise<Locale> {
+  const { locale } = await params;
+  const asked: Locale = locale === "fr" ? "fr" : "en";
+  setTestLocale(asked);
+  return asked;
+}
