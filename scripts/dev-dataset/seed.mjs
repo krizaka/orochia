@@ -15,6 +15,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
+import { problemOf } from "./thumbnails.mjs";
 import { credit, diffCreator, isUpgrade, retag, validateDataset } from "./plan.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -190,6 +191,13 @@ for (const creator of dataset.creators) {
       const shape = ready.height > ready.width ? "vertical" : "horizontal";
       console.log(`  + ${v.title} (${ready.width}x${ready.height}${shape === v.orientation ? "" : ` — expected ${v.orientation}!`})`);
       if (shape !== v.orientation) failures++;
+      // A video whose thumbnail is missing or a flat frame would be an empty grey card in the feed: the seed fails on it.
+      const details = await (await call(`/api/videos/${ready.id}/details`)).json().catch(() => ({}));
+      const why = await problemOf(details.video?.thumbnailUrl);
+      if (why) {
+        failures++;
+        console.log(`  ! ${v.title}: ${why}`);
+      }
     } catch (error) {
       failures++;
       console.log(`  ! ${v.title}: ${error.message}`);

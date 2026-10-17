@@ -20,6 +20,7 @@
     "typecheck": "node apps/web/scripts/gen-docs-bundle.mjs && npm run lint --workspaces --if-present && tsc --noEmit -p apps/web/tsconfig.json",
     "test": "node apps/web/scripts/gen-docs-bundle.mjs && vitest run",
     "dev:dataset": "node scripts/dev-dataset/seed.mjs",
+    "dev:thumbnails": "node scripts/dev-dataset/thumbnails.mjs",
     "test:e2e": "node e2e/scenarios.mjs",
     "test:a11y": "node e2e/a11y.mjs",
     "check": "npm run lint && npm run typecheck && npm test && npm run docs:generate -- --check",
