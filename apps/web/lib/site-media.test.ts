@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { HERO_STEPS } from "./visitor-home";
+import { HERO_CLIP } from "./visitor-home";
 import { JOURNEY, WAYS } from "./how-it-works";
 import { LOCALES } from "./locales";
-import { CREATOR_CLIPS, FAN_CLIPS, SHOWCASE_CLIP, siteMedia, type TourClip, tourRecording, WATCH_CLIP } from "./site-media";
+import { CREATOR_CLIPS, FAN_CLIPS, HOME_TAKE, SHOWCASE_CLIP, siteMedia, type TourClip, tourRecording, WATCH_CLIP } from "./site-media";
 
-const ALL: TourClip[] = [...FAN_CLIPS, ...CREATOR_CLIPS, SHOWCASE_CLIP, WATCH_CLIP];
+const ALL: TourClip[] = [...FAN_CLIPS, ...CREATOR_CLIPS, SHOWCASE_CLIP, WATCH_CLIP, HOME_TAKE];
 
 describe("site recordings", () => {
   it("point at the Bunny CDN with a content hash in the name, in the reader's language", () => {
@@ -30,7 +30,7 @@ describe("site recordings", () => {
   });
 
   it("covers every step of the home and of /how-it-works, in en and fr", () => {
-    for (const clip of [...HERO_STEPS.map((s) => s.clip), ...JOURNEY.map((s) => s.clip), ...WAYS.map((w) => w.clip)]) {
+    for (const clip of [HERO_CLIP, ...JOURNEY.map((s) => s.clip), ...WAYS.map((w) => w.clip)]) {
       for (const locale of LOCALES) expect(() => tourRecording(clip, locale)).not.toThrow();
     }
   });

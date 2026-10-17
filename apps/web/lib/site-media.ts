@@ -139,7 +139,9 @@ export const CREATOR_CLIPS = ["elena-publish", "elena-story", "elena-earnings"] 
 export const SHOWCASE_CLIP = "showcase";
 /** The watch page on its own (the home's step 2, the journey's « watch »); the other clips are the day's moments above. */
 export const WATCH_CLIP = "alex-watch";
-export type TourClip = (typeof FAN_CLIPS)[number] | (typeof CREATOR_CLIPS)[number] | typeof SHOWCASE_CLIP | typeof WATCH_CLIP;
+/** The home's one continuous phone take of dev.orochia.com (`scripts/record-home-phone.mjs`), one per language. */
+export const HOME_TAKE = "home-phone";
+export type TourClip = (typeof FAN_CLIPS)[number] | (typeof CREATOR_CLIPS)[number] | typeof SHOWCASE_CLIP | typeof WATCH_CLIP | typeof HOME_TAKE;
 
 /** Every clip is recorded once per language (`npm run record:tour`): the interface in the clip is the reader's. */
 export const tourRecording = (id: TourClip, locale: Locale): Recording => recording(`products/orochia/tour/${locale}/${id}`);

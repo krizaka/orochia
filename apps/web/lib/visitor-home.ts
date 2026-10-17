@@ -1,3 +1,4 @@
+import type { Locale } from "@/lib/locales";
 import type { TourClip } from "@/lib/site-media";
 
 /**
@@ -7,13 +8,17 @@ import type { TourClip } from "@/lib/site-media";
  */
 export const VISITOR_SECTIONS = ["hero", "preview", "how", "creators", "closing"] as const;
 
-/** The hero's journey: the real recordings of the demo personas (Alex, a fan; Elena, a creator) on the app. */
-export const HERO_STEPS = [
-  { id: "find", clip: "alex-discover" },
-  { id: "watch", clip: "alex-watch" },
-  { id: "tip", clip: "alex-story" },
-  { id: "earn", clip: "elena-earnings" },
-] as const satisfies readonly { id: string; clip: TourClip }[];
+/**
+ * The hero's journey: four steps over ONE continuous take of the real app on a phone (`scripts/record-home-phone.mjs`
+ * prints the beats): the vertical feed, her story, the tip, her earnings.
+ */
+export const HERO_STEPS = [{ id: "find" }, { id: "watch" }, { id: "tip" }, { id: "earn" }] as const;
+export const HERO_CLIP: TourClip = "home-phone";
+
+/** Seconds at which each step of the take starts, per language (the recorder's `beats.json`); the take lasts `TAKE_SECONDS`. */
+export const TAKE_BEATS: Record<Locale, readonly number[]> = { en: [0, 6, 11, 16], fr: [0, 6, 11, 16] };
+// @fixed: the take's length is a fact of the recording, checked by a test against the beats.
+export const TAKE_SECONDS = 24;
 
 /** How it works, in three steps; the whole journey is /how-it-works. */
 export const HOW_STEPS = ["find", "choose", "support"] as const;

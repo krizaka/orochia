@@ -586,17 +586,17 @@
         "play": "Play the steps",
         "pause": "Pause the steps",
         "step": "Step {n} of {total}",
-        "caption": "Recorded on dev.orochia.com with demo accounts (Alex, a fan; Elena, a creator). No real person.",
+        "caption": "Recorded on dev.orochia.com with demo accounts (Mira, a fan; Lena, a creator). No real person.",
         "steps": {
           "find": {
             "title": "Find a creator",
-            "text": "Search a word; her video plays.",
-            "alt": "Searching on Orochia: a creator's video found and playing."
+            "text": "Swipe the feed: every video fills the screen.",
+            "alt": "Swiping Orochia's vertical feed, full-screen videos one after the other."
           },
           "watch": {
             "title": "Watch",
-            "text": "Videos and stories, in HD, on any screen.",
-            "alt": "The Orochia app playing a creator's video."
+            "text": "Her story plays full screen, sound off until you want it.",
+            "alt": "A creator's story playing full screen in the Orochia app."
           },
           "tip": {
             "title": "Tip her story",

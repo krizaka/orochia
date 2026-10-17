@@ -586,17 +586,17 @@
         "play": "Lancer les étapes",
         "pause": "Mettre les étapes en pause",
         "step": "Étape {n} sur {total}",
-        "caption": "Enregistré sur dev.orochia.com avec des comptes de démonstration (Alex, un fan; Elena, une créatrice). Aucune personne réelle.",
+        "caption": "Enregistré sur dev.orochia.com avec des comptes de démonstration (Mira, une fan; Lena, une créatrice). Aucune personne réelle.",
         "steps": {
           "find": {
             "title": "Trouver une créatrice",
-            "text": "Cherchez un mot; sa vidéo démarre.",
-            "alt": "Recherche sur Orochia : la vidéo d’une créatrice est trouvée et en cours de lecture."
+            "text": "Faites défiler le fil : chaque vidéo remplit l’écran.",
+            "alt": "Le fil vertical d’Orochia défilant, des vidéos plein écran l’une après l’autre."
           },
           "watch": {
             "title": "Regarder",
-            "text": "Des vidéos et des stories, en HD, sur tous les écrans.",
-            "alt": "L’appli Orochia lisant la vidéo d’une créatrice."
+            "text": "Sa story s’ouvre en plein écran, sans le son tant que vous ne le voulez pas.",
+            "alt": "La story d’une créatrice en lecture plein écran dans l’appli Orochia."
           },
           "tip": {
             "title": "Laisser un pourboire sur sa story",
