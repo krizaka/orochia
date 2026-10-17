@@ -9,6 +9,7 @@ import { isAdultRating } from "@/lib/content-ratings";
 import { useI18n } from "@/lib/i18n-client";
 import { orientationOf } from "@/lib/video-aspect";
 
+import { DOCUMENT_FULLSCREEN_EVENTS, enterFullscreen, exitFullscreen, type FullscreenDocument, type FullscreenTarget, type FullscreenVideo, isFullscreen, VIDEO_FULLSCREEN_EVENTS } from "./player-fullscreen";
 import { useWatchReport } from "./watch-report";
 
 interface VideoPlayerProps {
@@ -70,6 +71,7 @@ export function VideoPlayer({
   const [qualityLevels, setQualityLevels] = useState<string[]>([]);
   const [selectedQuality, setSelectedQuality] = useState<number>(-1); // -1 = auto
   const [showControls, setShowControls] = useState(true);
+  const [fullscreen, setFullscreen] = useState(false);
   useWatchReport(videoId, videoRef);
 
   // Initialize HLS Stream
@@ -168,12 +170,29 @@ export function VideoPlayer({
     videoRef.current.muted = nextMuted;
   };
 
-  const toggleFullscreen = () => {
-    if (!containerRef.current) return;
-    if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen().catch((err) => console.error(err));
-    } else {
-      document.exitFullscreen().catch((err) => console.error(err));
+  // Follow the fullscreen state through both APIs (container: document events; iPhone's native video: its own events).
+  useEffect(() => {
+    const video = videoRef.current as (HTMLVideoElement & FullscreenVideo) | null;
+    if (!video) return;
+    const sync = () => setFullscreen(isFullscreen(video, document as FullscreenDocument));
+    DOCUMENT_FULLSCREEN_EVENTS.forEach((e) => document.addEventListener(e, sync));
+    VIDEO_FULLSCREEN_EVENTS.forEach((e) => video.addEventListener(e, sync));
+    return () => {
+      DOCUMENT_FULLSCREEN_EVENTS.forEach((e) => document.removeEventListener(e, sync));
+      VIDEO_FULLSCREEN_EVENTS.forEach((e) => video.removeEventListener(e, sync));
+    };
+  }, []);
+
+  const toggleFullscreen = async () => {
+    const video = videoRef.current as (HTMLVideoElement & FullscreenVideo) | null;
+    const container = containerRef.current as (HTMLDivElement & FullscreenTarget) | null;
+    if (!video || !container) return;
+    const doc = document as FullscreenDocument;
+    try {
+      if (isFullscreen(video, doc)) await exitFullscreen(video, doc);
+      else await enterFullscreen(video, container, doc);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -188,7 +207,9 @@ export function VideoPlayer({
       ref={containerRef}
       className={cn(
         "theme-dark relative w-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-2xl group select-none",
-        orientationOf(width, height) === "vertical"
+        fullscreen
+          ? "h-dvh w-dvw max-h-none max-w-none rounded-none border-0"
+          : orientationOf(width, height) === "vertical"
           ? "mx-auto aspect-[9/16] max-h-[calc(100dvh-5rem)] max-w-[min(100%,28rem)]"
           : orientationOf(width, height) === "square"
             ? "mx-auto aspect-square max-h-[calc(100dvh-5rem)]"
@@ -209,6 +230,7 @@ export function VideoPlayer({
       {/* HTML5 Video Element */}
       <video
         ref={videoRef}
+        data-testid="player-video"
         poster={posterUrl || undefined}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
@@ -328,7 +350,7 @@ export function VideoPlayer({
 
             <div className="flex items-center gap-3">
               {/* Fullscreen Button */}
-              <IconButton onClick={toggleFullscreen} className="h-8 w-8 text-current hover:bg-white/10 hover:text-fg-accent" label={t("player.fullscreen")}>
+              <IconButton onClick={toggleFullscreen} className="relative z-30 h-11 w-11 touch-manipulation text-current sm:h-8 sm:w-8 hover:bg-white/10 hover:text-fg-accent" label={t("player.fullscreen")}>
                 <Maximize className="h-5 w-5" aria-hidden />
               </IconButton>
             </div>
