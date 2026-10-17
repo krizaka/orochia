@@ -3324,5 +3324,16 @@
   },
   "drafts": {
     "stillSaving": "Ce brouillon est encore en cours d’enregistrement. Réessayez dans un instant."
+  },
+  "movingCover": {
+    "menu": "Utiliser un moment de ma vidéo",
+    "title": "Une couverture qui bouge",
+    "hint": "Choisissez l’une de vos vidéos publiées, puis les {min} à {max} secondes qui jouent sur votre profil. Rien à téléverser : elle utilise une vidéo que vous avez déjà publiée.",
+    "none": "Vous n’avez pas encore de vidéo publiée, publique et gratuite d’au moins 3 secondes.",
+    "length": "Durée",
+    "seconds": "{count} s",
+    "start": "Début à",
+    "use": "Utiliser ce moment",
+    "failed": "La couverture n’a pas pu être enregistrée."
   }
 }

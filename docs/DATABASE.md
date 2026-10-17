@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 54 tables · 27 enums · 16 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 56 tables · 27 enums · 18 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -80,6 +80,48 @@ Every foreign key, read from the schema: what each table points to (through whic
 | `created_at` | timestamp with time zone | no | `now()` |  |
 
 **Indexes:** `ai_runs_created_idx` (created_at)
+
+### `app_config`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `platform` | varchar(16) | no |  | primary key |
+| `min_supported_version` | varchar(32) | no | `"0.0.0"` |  |
+| `latest_version` | varchar(32) | no | `"0.0.0"` |  |
+| `update_override` | varchar(8) | yes |  |  |
+| `store_url` | text | yes |  |  |
+| `maintenance_on` | boolean | no | `false` |  |
+| `maintenance_message` | jsonb | no | `'{}'::jsonb` |  |
+| `message` | jsonb | no | `'{}'::jsonb` |  |
+| `contract_min` | integer | no | `1` |  |
+| `contract_max` | integer | no | `1` |  |
+| `contract_sunset` | date | yes |  |  |
+| `flags` | jsonb | no | `'{}'::jsonb` |  |
+| `revision` | integer | no | `1` |  |
+| `updated_at` | timestamp with time zone | no | `now()` |  |
+| `updated_by` | varchar(255) | no | `"seed"` |  |
+
+### `app_config_history`
+
+| Column | Type | Null | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | serial | no | `undefined` | primary key |
+| `platform` | varchar(16) | no |  |  |
+| `revision` | integer | no |  |  |
+| `min_supported_version` | varchar(32) | no |  |  |
+| `latest_version` | varchar(32) | no |  |  |
+| `update_override` | varchar(8) | yes |  |  |
+| `store_url` | text | yes |  |  |
+| `maintenance_on` | boolean | no |  |  |
+| `maintenance_message` | jsonb | no |  |  |
+| `message` | jsonb | no |  |  |
+| `contract_min` | integer | no |  |  |
+| `contract_max` | integer | no |  |  |
+| `contract_sunset` | date | yes |  |  |
+| `flags` | jsonb | no |  |  |
+| `reason` | text | no |  |  |
+| `changed_by` | varchar(255) | no |  |  |
+| `changed_at` | timestamp with time zone | no | `now()` |  |
 
 ### `app_settings`
 
@@ -538,6 +580,11 @@ Every foreign key, read from the schema: what each table points to (through whic
 | `bio` | text | yes |  |  |
 | `avatar_url` | text | yes |  |  |
 | `banner_url` | text | yes |  |  |
+| `banner_kind` | varchar(20) | no | `"image"` |  |
+| `banner_video_id` | uuid | yes |  |  |
+| `banner_start_seconds` | real | yes |  |  |
+| `banner_end_seconds` | real | yes |  |  |
+| `banner_ambient_id` | varchar(60) | yes |  |  |
 | `website_url` | text | yes |  |  |
 | `social_links` | jsonb | no | `'{}'::jsonb` |  |
 | `notifications_off` | jsonb | no | `'[]'::jsonb` |  |
@@ -965,3 +1012,5 @@ Every foreign key, read from the schema: what each table points to (through whic
 - `0013_message_origin.sql`
 - `0014_conversation_members.sql`
 - `0015_analytics_outbox.sql`
+- `0017_app_config.sql`
+- `0018_video_banner.sql`

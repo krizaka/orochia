@@ -39,6 +39,10 @@ services:
       - key: APP_PUBLIC_ACTIONS
         scope: RUN_TIME
         value: "off"
+      # A profile cover that moves (a 3-6 s moment of the creator's own video, orochia#284): on for the dev site only.
+      - key: APP_VIDEO_BANNER
+        scope: RUN_TIME
+        value: "on"
       # Factory reset from the admin console (backup first). Never honoured on the indexed production.
       - key: DATABASE_ALLOW_RESET
         scope: RUN_TIME

@@ -1,12 +1,13 @@
 "use client";
 
-import { Camera, ImagePlus, Palette, Trash2 } from "lucide-react";
+import { Camera, Clapperboard, ImagePlus, Palette, Trash2 } from "lucide-react";
 import React, { useRef, useState } from "react";
 
 import { cn, Dialog, DropdownMenu, Sheet, Spinner } from "@/components/ui";
 import { useI18n } from "@/lib/i18n-client";
 import type { PresetAsset as Preset } from "@/lib/presets";
 
+import { BannerMomentDialog, type CoverVideo } from "./BannerMomentDialog";
 import { PresetPicker } from "./PresetPicker";
 
 let presetsCache: Promise<{ avatars: Preset[]; banners: Preset[] }> | null = null;
@@ -24,6 +25,7 @@ export function PictureQuickEdit({
   kind,
   hasPicture,
   current = null,
+  movingCover = false,
   onChanged,
   className = "",
 }: {
@@ -31,6 +33,8 @@ export function PictureQuickEdit({
   hasPicture: boolean;
   /** The picture shown now (a preset is highlighted in the picker). */
   current?: string | null;
+  /** APP_VIDEO_BANNER is on: the cover menu offers « Use a moment of my video ». */
+  movingCover?: boolean;
   onChanged: (url: string | null) => void;
   className?: string;
 }) {
@@ -39,6 +43,9 @@ export function PictureQuickEdit({
   const input = useRef<HTMLInputElement>(null);
   const [choosing, setChoosing] = useState(false);
   const [presets, setPresets] = useState<Preset[]>([]);
+  const [momentOpen, setMomentOpen] = useState(false);
+  const [coverVideos, setCoverVideos] = useState<CoverVideo[]>([]);
+  const [loadingVideos, setLoadingVideos] = useState(false);
   const [loadingPresets, setLoadingPresets] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +57,16 @@ export function PictureQuickEdit({
     setBusy(false);
     if (!res.ok) return setError(((await res.json().catch(() => ({}))) as { error?: string }).error || t("settings.failed"));
     onChanged(preview);
+  };
+
+  const saveMoment = async (choice: { videoId: string; startSeconds: number; endSeconds: number; poster: string | null }) => {
+    setBusy(true);
+    setError(null);
+    const bannerVideo = { kind: "video_segment", videoId: choice.videoId, startSeconds: choice.startSeconds, endSeconds: choice.endSeconds };
+    const res = await fetch("/api/me/profile", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ bannerVideo }) });
+    setBusy(false);
+    if (!res.ok) return setError(((await res.json().catch(() => ({}))) as { error?: string }).error || t("movingCover.failed"));
+    onChanged(choice.poster);
   };
 
   const upload = async (file: File | undefined) => {
@@ -97,6 +114,23 @@ export function PictureQuickEdit({
           >
             <Palette className="h-4 w-4 text-fg-accent" /> {t(isAvatar ? "settings.pictures.chooseAvatar" : "settings.pictures.chooseBanner")}
           </DropdownMenu.Item>
+          {movingCover && !isAvatar && (
+            <DropdownMenu.Item
+              onSelect={() => {
+                setMomentOpen(true);
+                setLoadingVideos(true);
+                void fetch("/api/me/banner-videos")
+                  .then((r) => (r.ok ? r.json() : { videos: [] }))
+                  .catch(() => ({ videos: [] }))
+                  .then((d: { videos: CoverVideo[] }) => {
+                    setCoverVideos(d.videos);
+                    setLoadingVideos(false);
+                  });
+              }}
+            >
+              <Clapperboard className="h-4 w-4 text-fg-accent" /> {t("movingCover.menu")}
+            </DropdownMenu.Item>
+          )}
           <DropdownMenu.Item onSelect={() => input.current?.click()}>
             <ImagePlus className="h-4 w-4 text-fg-accent" /> {t("settings.pictures.upload")}
           </DropdownMenu.Item>
@@ -109,6 +143,8 @@ export function PictureQuickEdit({
       </DropdownMenu.Root>
       <input ref={input} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => void upload(e.target.files?.[0])} />
       {error && <p role="alert" className="absolute mt-2 w-64 rounded-lg bg-danger px-3 py-2 text-xs text-fg-on-media shadow-lg">{error}</p>}
+
+      {movingCover && !isAvatar && <BannerMomentDialog open={momentOpen} onOpenChange={setMomentOpen} videos={coverVideos} loading={loadingVideos} onPick={(c) => void saveMoment(c)} />}
 
       <Dialog.Root open={choosing} onOpenChange={setChoosing}>
         <Sheet size="lg" aria-describedby={undefined}>

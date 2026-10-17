@@ -113,6 +113,20 @@
       "when": 1792220243307,
       "tag": "0015_analytics_outbox",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1792249053110,
+      "tag": "0017_app_config",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1792250862031,
+      "tag": "0018_video_banner",
+      "breakpoints": true
     }
   ]
 }

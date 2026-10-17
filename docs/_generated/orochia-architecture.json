@@ -85,8 +85,10 @@
       "id": "data",
       "name": "Data persistence",
       "path": "packages/db",
-      "tablesCount": 54,
+      "tablesCount": 56,
       "tables": [
+        "app_config",
+        "app_config_history",
         "auctions",
         "auction_bids",
         "audience_lists",
@@ -742,6 +744,12 @@
       "path": "/api/legal/report",
       "access": "public · session-aware",
       "summary": "Content reports."
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/banner-videos",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "The signed-in creator's own videos a cover can use: published, public, free and at least 3 s long."
     },
     {
       "method": "POST",
@@ -1533,7 +1541,7 @@
         "runtime": "node",
         "version": "1.0.0",
         "published": false,
-        "description": "The API: 146 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
+        "description": "The API: 148 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
       },
       {
         "id": "orochia-config",
@@ -1594,6 +1602,18 @@
         "version": "4.1.1",
         "published": true,
         "description": "The Orochia identity on the Krizaka platform: the Obsidian Velvet Noir theme as --kz-* token overrides and the product composites (StatusBadge, SocialIcon, orochiaButton), with their documentation registry (krizaka.com/docs/orochia/ui). The primitives come from @krizaka/ui."
+      },
+      {
+        "id": "krizaka-app-config",
+        "name": "@krizaka/app-config",
+        "role": "design",
+        "owner": "krizaka",
+        "repository": "app-config",
+        "path": "node_modules/@krizaka/app-config",
+        "runtime": "library",
+        "version": "0.1.0",
+        "published": true,
+        "description": "App version compatibility for Krizaka apps and backends: one contract (min/latest version, update mode, maintenance, contract range, 426 Upgrade Required, N-1 with Deprecation/Sunset) for Next.js backends and mobile, desktop and web clients. Twin of the Java building block krizaka-app-config. Zero dependency."
       },
       {
         "id": "krizaka-charts",
@@ -1924,6 +1944,11 @@
       {
         "from": "orochia-payments",
         "to": "orochia-db"
+      },
+      {
+        "from": "orochia-web",
+        "to": "krizaka-app-config",
+        "version": "0.1.0"
       },
       {
         "from": "orochia-web",

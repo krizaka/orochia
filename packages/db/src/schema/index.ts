@@ -14,6 +14,7 @@ import { auctions, auctionBids } from "./auctions";
 import { challenges, challengePledges, challengeApplications } from "./challenges";
 
 export * from "./enums";
+export * from "./app-config";
 export * from "./users";
 export * from "./contacts";
 export * from "./videos";

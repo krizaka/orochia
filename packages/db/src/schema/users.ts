@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, uuid, varchar, integer, date, jsonb, index } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, uuid, varchar, integer, real, date, jsonb, index } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { userRoleEnum } from "./enums";
 import { searchVectorOf, tsvector } from "./search";
@@ -37,7 +37,16 @@ export const profiles = pgTable("profiles", {
   displayName: varchar("display_name", { length: 100 }),
   bio: text("bio"),
   avatarUrl: text("avatar_url"),
+  /** The cover's still — also the poster of a video cover, so lists, cards and old clients always have a picture. */
   bannerUrl: text("banner_url"),
+  /** `image` | `video_segment` | `ambient` (lib/banner.ts). The next columns are null unless the kind uses them. */
+  bannerKind: varchar("banner_kind", { length: 20 }).default("image").notNull(),
+  /** video_segment: one of the creator's own videos (checked READY and not removed when read), and the 3-6 s moment. */
+  bannerVideoId: uuid("banner_video_id"),
+  bannerStartSeconds: real("banner_start_seconds"),
+  bannerEndSeconds: real("banner_end_seconds"),
+  /** ambient: an id of the ambient loops manifest. */
+  bannerAmbientId: varchar("banner_ambient_id", { length: 60 }),
   websiteUrl: text("website_url"),
   /** Handles on other networks (instagram, x, facebook, tiktok, youtube, telegram); URLs are built by the server. */
   socialLinks: jsonb("social_links").$type<Record<string, string>>().default(sql`'{}'::jsonb`).notNull(),
