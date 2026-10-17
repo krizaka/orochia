@@ -5,6 +5,7 @@ import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 
 import { latestAdultBirthDate } from "@/components/BirthDateField";
+import { NotificationMatrix } from "@/components/dashboard/NotificationMatrix";
 import {
   Avatar,
   Button,
@@ -56,50 +57,6 @@ interface Profile {
   challengeRequestsOff: boolean;
   challengeMinCents: number;
 }
-
-const EVENTS = [
-  "newFollower",
-  "contactRequest",
-  "newComment",
-  "commentReply",
-  "newMessage",
-  "tipReceived",
-  "videoUnlocked",
-  "videoReady",
-  "creatorPublished",
-  "auctionAnnounced",
-  "auctionOutbid",
-  "auctionWon",
-  "auctionDeclined",
-  "auctionNewBid",
-  "auctionDecision",
-  "auctionSold",
-  "auctionUnsold",
-  "challengeAnnounced",
-  "challengeRequested",
-  "challengePledged",
-  "challengeFunded",
-  "challengeAccepted",
-  "challengeApplied",
-  "challengeChosen",
-  "challengeDelivered",
-  "challengeReleased",
-  "challengeClosed",
-] as const;
-const CREATOR_EVENTS = new Set([
-  "tipReceived",
-  "videoUnlocked",
-  "videoReady",
-  "newFollower",
-  "auctionNewBid",
-  "auctionDecision",
-  "auctionSold",
-  "auctionUnsold",
-  "challengeRequested",
-  "challengeFunded",
-  "challengeChosen",
-  "challengeClosed",
-]);
 
 const label = "mb-1.5 block text-xs font-semibold text-fg-secondary";
 const hint = "mt-1 block text-[11px] leading-relaxed text-fg-muted";
@@ -228,14 +185,6 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
       </div>
     );
   }
-
-  const events = EVENTS.filter((e) => isCreator || !CREATOR_EVENTS.has(e));
-  const setChannel = (channel: "inApp" | "email", next: string[]) => {
-    if (channel === "inApp") setInAppOff(next);
-    else setEmailsOff(next);
-    void prefs.run(() => put(t, channel === "inApp" ? { inAppOff: next } : { emailsOff: next }));
-  };
-  const toggle = (list: string[], e: string, on: boolean) => (on ? list.filter((x) => x !== e) : [...list, e]);
 
   const sections = (["profile", "links", "privacy", "challenges", "notifications", "payouts", "accounts", "blocked"] as const).filter((s) => isCreator || (s !== "payouts" && s !== "challenges"));
 
@@ -421,35 +370,17 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
 
         <Section id="notifications" icon={<Bell className="h-4 w-4" />} title={t("settings.sections.notifications")}>
           <p className="-mt-2 mb-4 text-xs text-fg-secondary">{t("settings.notifications.intro")}</p>
-          <div className="overflow-hidden rounded-2xl border border-border-default">
-            <div className="grid grid-cols-[minmax(0,1fr)_64px_64px] items-center gap-2 border-b border-border-default bg-surface-2 px-4 py-2.5 text-[10px] font-bold uppercase tracking-wider text-fg-secondary sm:grid-cols-[minmax(0,1fr)_96px_96px]">
-              <span />
-              <span className="text-center">{t("settings.notifications.inApp")}</span>
-              <span className="text-center">{t("settings.notifications.byEmail")}</span>
-            </div>
-            {[{ id: "all", label: t("settings.notifications.all") }, ...events.map((e) => ({ id: e, label: t(`settings.notifications.events.${e}`) }))].map((row) => {
-              const all = row.id === "all";
-              const inOn = all ? events.every((e) => !inAppOff.includes(e)) : !inAppOff.includes(row.id);
-              const mailOn = all ? events.every((e) => !emailsOff.includes(e)) : !emailsOff.includes(row.id);
-              return (
-                <div
-                  key={row.id}
-                  className={cn(
-                    "grid grid-cols-[minmax(0,1fr)_64px_64px] items-center gap-2 px-4 py-2 sm:grid-cols-[minmax(0,1fr)_96px_96px]",
-                    all ? "border-b border-border-default font-semibold" : "border-b border-border-subtle last:border-0"
-                  )}
-                >
-                  <span className="text-sm text-fg">{row.label}</span>
-                  <span className="flex justify-center">
-                    <Switch checked={inOn} label={`${row.label} — ${t("settings.notifications.inApp")}`} onCheckedChange={(on) => setChannel("inApp", all ? (on ? [] : [...EVENTS]) : toggle(inAppOff, row.id, on))} />
-                  </span>
-                  <span className="flex justify-center">
-                    <Switch checked={mailOn} disabled={frequency === "NONE"} label={`${row.label} — ${t("settings.notifications.byEmail")}`} onCheckedChange={(on) => setChannel("email", all ? (on ? [] : [...EVENTS]) : toggle(emailsOff, row.id, on))} />
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+          <NotificationMatrix
+            isCreator={isCreator}
+            inAppOff={inAppOff}
+            emailsOff={emailsOff}
+            emailDisabled={frequency === "NONE"}
+            onChange={(next) => {
+              if (next.inAppOff) setInAppOff(next.inAppOff);
+              if (next.emailsOff) setEmailsOff(next.emailsOff);
+              void prefs.run(() => put(next));
+            }}
+          />
 
           <span className={cn(label, "mt-5")}>{t("settings.notifications.frequency")}</span>
           <Chip.Group

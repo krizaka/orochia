@@ -5,3 +5,5 @@ Hi @{username},
 {link}
 
 You receive this because it is turned on in your notification settings: {settingsLink}
+{#unsubscribeLink}Unsubscribe from this kind of e-mail: {unsubscribeLink}
+{/unsubscribeLink}

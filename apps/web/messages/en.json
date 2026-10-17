@@ -927,7 +927,7 @@
       "presenceHint": "Your contacts, the people you talk with and your approved followers see when you are online or last seen. Turn it off and you will not see theirs either."
     },
     "notifications": {
-      "intro": "Choose what reaches you, in the app (the bell) and by e-mail. Everything is on by default.",
+      "intro": "Choose what reaches you, in the app (the bell and your phone) and by e-mail. Security e-mails are always sent.",
       "all": "Everything",
       "events": {
         "newFollower": "Someone follows you or asks to",
@@ -960,7 +960,7 @@
         "storageLow": "Your storage space is almost full",
         "storageHeld": "An upload is on hold because your space is full"
       },
-      "inApp": "In the app",
+      "inApp": "App",
       "byEmail": "By e-mail",
       "frequency": "How many e-mails",
       "frequencies": {
@@ -968,7 +968,31 @@
         "HOURLY": "At most one an hour",
         "NONE": "No activity e-mails"
       },
-      "frequencyHint": "Account e-mails (security, password) are always sent."
+      "frequencyHint": "Account e-mails (security, password) are always sent.",
+      "categories": {
+        "messages": "Messages",
+        "follows": "People and community",
+        "earnings": "Tips and earnings",
+        "auctionsChallenges": "Auctions and challenges",
+        "account": "Account and security"
+      },
+      "categoryHints": {
+        "messages": "New private messages and group messages.",
+        "follows": "Followers, contact requests, comments, and new videos from creators you follow.",
+        "earnings": "Tips received and videos unlocked.",
+        "auctionsChallenges": "Bids, results, and every step of a challenge."
+      },
+      "securityNote": "Sign-in, password and storage notices. Always on.",
+      "presets": {
+        "label": "Presets",
+        "all": "Everything",
+        "essentials": "The essentials",
+        "securityOnly": "Nothing but security",
+        "allHint": "Everything reaches you, in the app and by e-mail.",
+        "essentialsHint": "Everything in the app. By e-mail only messages, earnings and your account.",
+        "securityOnlyHint": "Nothing but your account and security notices.",
+        "custom": "Your own choice."
+      }
     },
     "payouts": {
       "hint": "Your payout method, earnings, exports and withdrawals are on the Earnings page.",
@@ -3392,5 +3416,15 @@
     "feedDescription": "What shipped in Orochia, week by week.",
     "footerVersion": "v{version}",
     "langTag": "en"
+  },
+  "unsubscribe": {
+    "title": "Stop “{category}” e-mails?",
+    "body": "You will no longer receive this kind of e-mail. You keep your notifications in the app, and security e-mails are always sent. You can change this any time in your settings.",
+    "confirm": "Unsubscribe",
+    "doneTitle": "No more “{category}” e-mails",
+    "doneBody": "Done. You can turn them back on in your notification settings.",
+    "settings": "Notification settings",
+    "invalidTitle": "This link does not work",
+    "invalidBody": "It may be damaged. Open your notification settings to choose what you receive."
   }
 }

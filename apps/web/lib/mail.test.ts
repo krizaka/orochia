@@ -45,6 +45,18 @@ describe("mail", () => {
     expect(JSON.parse(init.body)).toEqual({ from: "Orochia <no-reply@mg.orochia.com>", to: ["a@example.com"], subject: "Hi", text: "Body", reply_to: "r@example.com" });
   });
 
+  it("carries extra headers (List-Unsubscribe) on both providers", async () => {
+    const headers = { "List-Unsubscribe": "<https://orochia.com/unsubscribe?t=x>", "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" };
+    const fetch = vi.fn().mockResolvedValue(new Response("{}", { status: 200 }));
+    vi.stubGlobal("fetch", fetch);
+    await sendMail({ to: "a@example.com", subject: "s", text: "t", headers }, { NODE_ENV: "production", MAIL_PROVIDER: "resend", MAIL_API_KEY: "k" } as unknown as NodeJS.ProcessEnv);
+    expect(JSON.parse(fetch.mock.calls[0][1].body).headers).toEqual(headers);
+    await sendMail({ to: "a@example.com", subject: "s", text: "t", headers }, { NODE_ENV: "production", MAIL_PROVIDER: "mailgun", MAIL_API_KEY: "k", MAIL_DOMAIN: "mg.orochia.com" } as unknown as NodeJS.ProcessEnv);
+    const form = fetch.mock.calls[1][1].body as FormData;
+    expect(form.get("h:List-Unsubscribe")).toBe(headers["List-Unsubscribe"]);
+    expect(form.get("h:List-Unsubscribe-Post")).toBe("List-Unsubscribe=One-Click");
+  });
+
   it("sends nothing when MAIL_PROVIDER is unset, unknown, or its key is missing", async () => {
     const fetch = vi.fn();
     vi.stubGlobal("fetch", fetch);
