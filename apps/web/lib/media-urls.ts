@@ -1,5 +1,4 @@
-import { generateBunnyStreamToken,signBunnyFileUrl } from "@orochia/media";
-
+import { signBunnyFileUrl, generateBunnyStreamToken } from "@orochia/media";
 import { bunnyStreamConfig } from "./env";
 
 /**

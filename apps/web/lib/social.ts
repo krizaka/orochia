@@ -1,8 +1,7 @@
-import { contacts, db, follows,profiles, users } from "@orochia/db";
+import { db, users, profiles, contacts, follows } from "@orochia/db";
 import { and, desc, eq, isNull, or, sql } from "drizzle-orm";
-import { after } from "next/server";
-
 import { HttpError } from "./http";
+import { after } from "next/server";
 import { notifyContactRequest, notifyFollow } from "./notifications";
 import { circleChanged } from "./presence";
 import { enqueueInteraction } from "./recommendations/recommendations.outbox";

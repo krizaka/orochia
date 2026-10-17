@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
 
 import { EXPLORER_DIMENSIONS } from "@orochia/db";
-import { describe, expect, it } from "vitest";
 
 /** The recorded run (scripts/record-explorer-run.mjs): the proof krizaka.com reads to say that the Explorer runs on Orazaka. */
 describe("explorer-run.json — a real run, recorded from Orazaka's own log", () => {

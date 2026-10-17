@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-
 import { clientIp, playbackIp } from "./client-ip";
 
 const h = (headers: Record<string, string>) => new Headers(headers);

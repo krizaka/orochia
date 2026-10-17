@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-
 import { sendMail } from "./mail";
 
 afterEach(() => vi.unstubAllGlobals());

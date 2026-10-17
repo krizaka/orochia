@@ -1,9 +1,9 @@
 import crypto from "crypto";
-import { hoursToMilliseconds } from "date-fns";
 
 import { sessionSecret } from "../env";
 import { HttpError } from "../http";
 import { DISPOSABLE_EMAIL_DOMAINS } from "./disposable-email-domains";
+import { hoursToMilliseconds } from "date-fns";
 
 /**
  * Sign-up defences that cost a person nothing:

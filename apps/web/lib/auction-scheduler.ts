@@ -1,5 +1,4 @@
 import { closeAuction, closeChallenge, dueAuctionIds, dueChallengeIds } from "@orochia/payments";
-
 import { announceClose } from "./auctions";
 import { announceClose as announceChallengeClose } from "./challenges";
 

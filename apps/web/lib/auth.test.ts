@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
-
-import { bearerToken, SESSION_TTL_SECONDS,signSessionToken, verifySessionToken } from "./auth";
+import { bearerToken, signSessionToken, verifySessionToken, SESSION_TTL_SECONDS } from "./auth";
 
 const SECRET = "test-secret-that-is-long-enough-0123456789";
 const user = { id: "u1", username: "ada", email: "ada@example.com", role: "MEMBER" as const, isAgeVerified: true, emailVerified: true };

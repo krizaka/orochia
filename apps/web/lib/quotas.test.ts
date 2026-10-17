@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-
 import { ConfigurationError } from "./env";
 import {
   evaluateUpload,
@@ -11,8 +10,8 @@ import {
   planFor,
   quotaConfig,
   reachedThresholds,
-  type UploadContext,
   usageLevel,
+  type UploadContext,
 } from "./quotas";
 
 const GB = 1024 ** 3;

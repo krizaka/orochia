@@ -12,7 +12,6 @@ vi.mock("next/headers", () => ({ cookies: async () => ({ get: () => undefined })
 
 import { GET as openForm } from "@/app/api/auth/register/route";
 import { GET as challengePage } from "@/app/auth/native-challenge/route";
-
 import { DEVICE_HEADER, formTokenProblem, signupDeviceId } from "./abuse/signup-guard";
 
 const DEVICE = "AppInstall_0123456789abcdef";

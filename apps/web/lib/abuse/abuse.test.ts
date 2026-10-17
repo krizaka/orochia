@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-
 import { HttpError } from "../http";
 import { memoryStore, RateLimitError, useRateLimitStore } from "../rate-limit";
 import { automationSignals, refuseAutomation } from "./automation";

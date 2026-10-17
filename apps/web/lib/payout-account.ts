@@ -1,7 +1,6 @@
-import { db, payoutAccounts } from "@orochia/db";
 import crypto from "crypto";
+import { db, payoutAccounts } from "@orochia/db";
 import { eq } from "drizzle-orm";
-
 import { payoutEncryptionKey } from "./env";
 import { HttpError } from "./http";
 

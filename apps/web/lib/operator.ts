@@ -1,8 +1,7 @@
 import crypto from "crypto";
 import { headers } from "next/headers";
-
-import type { SessionUser } from "./auth";
 import { HttpError } from "./http";
+import type { SessionUser } from "./auth";
 
 /**
  * The operator console (krizaka/orochia-admin) calls the admin API as a service: `Authorization: Bearer <token>` with

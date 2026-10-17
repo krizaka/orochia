@@ -1,6 +1,5 @@
 import { db, users } from "@orochia/db";
 import { inArray } from "drizzle-orm";
-
 import { usernameWithSuffix } from "./username-suffix";
 
 /**

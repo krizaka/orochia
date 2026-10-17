@@ -1,5 +1,4 @@
 import type { NextResponse } from "next/server";
-
 import { isProduction } from "./env";
 
 /** httpOnly, SameSite=Lax (the provider redirects back with a top-level GET), Secure in production. */

@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-
-import { bunnyStreamConfig, ConfigurationError, isDemoMode, metricsToken, sessionSecret } from "./env";
+import { ConfigurationError, bunnyStreamConfig, isDemoMode, metricsToken, sessionSecret } from "./env";
 
 afterEach(() => vi.unstubAllEnvs());
 
