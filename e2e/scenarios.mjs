@@ -1067,6 +1067,21 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
     check("the group lists four people, the owner first", members.members.length === 4 && members.members[0].role === "owner", JSON.stringify(members.members.map((m) => m.username)));
     check("…revoking the links closes the door", (await elena.call(`/api/groups/${gid}/invites`, "DELETE")).status === 200 && (await sam.call("/api/groups/join", "POST", { token: invite.json.token })).status !== 500);
   
+    // Reports and moderation: the operator reads the message and ten either side, then acts.
+    const reported = await alex.call(`/api/conversations/${gid}/messages/${msg.json.message.id}/report`, "POST", { reason: "TERMS_VIOLATION", details: "spam" });
+    check("a member reports a message of the group", reported.status === 201, JSON.stringify(reported.json));
+    check("…but never their own", (await elena.call(`/api/conversations/${gid}/messages/${msg.json.message.id}/report`, "POST", { reason: "TERMS_VIOLATION" })).status === 404);
+    const rep = ((await admin.call("/api/admin/reports")).json.reports ?? []).find((r) => r.messageId === msg.json.message.id);
+    check("…it reaches the operators", Boolean(rep));
+    const ctx = await admin.call(`/api/admin/reports/${rep?.id}/context`);
+    check("an operator reads the message with its neighbours", ctx.status === 200 && ctx.json.context.conversation.kind === "group" && ctx.json.context.messages.some((m) => m.id === msg.json.message.id) && ctx.json.context.messages.length <= 21, JSON.stringify(ctx.json).slice(0, 200));
+    check("…a member cannot", (await alex.call(`/api/admin/reports/${rep?.id}/context`)).status === 403);
+    check("…nor moderate", (await alex.call(`/api/admin/conversations/${gid}/moderate`, "POST", { action: "archive" })).status === 403);
+    check("an operator cannot remove someone who is not in the group", (await admin.call(`/api/admin/conversations/${gid}/moderate`, "POST", { action: "remove_member", userId: crypto.randomUUID() })).status === 404);
+    check("an operator removes the message", (await admin.call(`/api/admin/conversations/${gid}/moderate`, "POST", { action: "remove_message", messageId: msg.json.message.id })).status === 200);
+    check("…it is gone from the group", !(await alex.call(`/api/conversations/${gid}/messages`)).json.messages.some((m) => m.id === msg.json.message.id));
+    check("…and the report keeps its copy of the text", ((await admin.call("/api/admin/reports")).json.reports ?? []).find((r) => r.id === rep?.id)?.details.includes("Call time 9am"));
+
     // Remove, leave, hand over.
     check("the owner removes a member", (await elena.call(`/api/groups/${gid}/members/${miaId}`, "DELETE")).status === 200);
     check("…who no longer reads", (await mia.call(`/api/conversations/${gid}/messages`)).status === 404);
