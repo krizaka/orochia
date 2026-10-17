@@ -17,7 +17,7 @@ export default function LoginPage() {
   const [next, setNext] = useState<string | null>(null);
   useEffect(() => setNext(safeNext(new URLSearchParams(window.location.search).get("next"))), []);
   useEffect(() => {
-    if (!sessionLoading && user?.emailVerified) router.replace(safeNext(new URLSearchParams(window.location.search).get("next")) ?? "/dashboard");
+    if (!sessionLoading && user?.emailVerified) router.replace(safeNext(new URLSearchParams(window.location.search).get("next")) ?? "/me");
   }, [sessionLoading, user, router]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,7 +39,7 @@ export default function LoginPage() {
     try {
       await login(email, password);
       // Back where the visitor was sent from (?next=/creator/upload) — same-site paths only.
-      router.push(next ?? "/dashboard");
+      router.push(next ?? "/me");
     } catch (err) {
       setError(err instanceof Error && err.message ? err.message : t("auth.login.failed"));
     } finally {
@@ -75,7 +75,7 @@ export default function LoginPage() {
               shape="rounded"
               onClick={async () => {
                 await switchProfile("creator");
-                router.push("/dashboard");
+                router.push("/me");
               }}
             >
               {t("auth.login.demoCreator")}
@@ -86,7 +86,7 @@ export default function LoginPage() {
               shape="rounded"
               onClick={async () => {
                 await switchProfile("patron");
-                router.push("/dashboard");
+                router.push("/me");
               }}
             >
               {t("auth.login.demoMember")}

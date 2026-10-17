@@ -58,8 +58,8 @@ const PAGES = [
   { name: "home", url: "/" },
   { name: "auctions", url: "/auctions" },
   { name: "challenges", url: "/challenges" },
-  { name: "dashboard", url: "/dashboard", session: true },
-  { name: "settings", url: "/dashboard?tab=settings", session: true },
+  { name: "dashboard", url: "/me", session: true },
+  { name: "settings", url: "/me/settings", session: true },
   ...(watchId ? [{ name: "watch", url: `/watch/${watchId}`, session: true }] : []),
 ];
 if (!watchId) console.warn("! no /watch/<id> link on the home page (no public video): the watch page is skipped.");

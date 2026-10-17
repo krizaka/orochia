@@ -43,6 +43,13 @@ services:
       - key: DATABASE_ALLOW_RESET
         scope: RUN_TIME
         value: "true"
+      # Universal links / App Links (/.well-known/apple-app-site-association and assetlinks.json): entered once in the app.
+      - key: APP_IOS_TEAM_ID
+        scope: RUN_TIME
+        type: GENERAL
+      - key: APP_ANDROID_CERT_SHA256
+        scope: RUN_TIME
+        type: GENERAL
       # Service token of the operator console (orochia-admin-dev: OPERATOR_API_TOKEN, same value).
       - key: OPERATOR_API_TOKEN
         scope: RUN_TIME

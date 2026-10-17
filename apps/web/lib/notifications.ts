@@ -88,7 +88,7 @@ export async function notify(input: { userId: string; event: NotificationEvent; 
         subject: t(`notify.${event}.subject` as MessageKey, all),
         body: t(`notify.${event}.body` as MessageKey, all),
         link: `${appUrl()}${path}`,
-        settingsLink: `${appUrl()}/dashboard?tab=settings#settings-notifications`,
+        settingsLink: `${appUrl()}/me/settings#settings-notifications`,
       },
     });
   } catch (error) {
@@ -112,12 +112,12 @@ const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
 export async function notifyFollow(creatorId: string, followerId: string, pending: boolean) {
   const who = await nameOf(followerId);
-  await notify({ userId: creatorId, actorId: followerId, event: "newFollower", vars: { name: who.name, action: t(pending ? "notify.newFollower.asks" : "notify.newFollower.follows") }, path: pending ? "/dashboard?tab=network" : `/@${who.username}` });
+  await notify({ userId: creatorId, actorId: followerId, event: "newFollower", vars: { name: who.name, action: t(pending ? "notify.newFollower.asks" : "notify.newFollower.follows") }, path: pending ? "/me/network" : `/@${who.username}` });
 }
 
 export async function notifyContactRequest(targetId: string, requesterId: string) {
   const who = await nameOf(requesterId);
-  await notify({ userId: targetId, actorId: requesterId, event: "contactRequest", vars: { name: who.name }, path: "/dashboard?tab=network" });
+  await notify({ userId: targetId, actorId: requesterId, event: "contactRequest", vars: { name: who.name }, path: "/me/network" });
 }
 
 export async function notifyComment(input: { videoId: string; authorId: string; parentAuthorId: string | null }) {
@@ -153,7 +153,7 @@ export async function notifySettlement(intentId: string, unlocked: boolean) {
   const who = intent.senderId ? await nameOf(intent.senderId) : { name: "Someone", username: "" };
   const [video] = intent.videoId ? await db.select({ title: videos.title }).from(videos).where(eq(videos.id, intent.videoId)).limit(1) : [];
   const vars = { name: who.name, amount: money(intent.amountCents), title: video?.title ?? "" };
-  await notify({ userId: intent.creatorId, actorId: intent.senderId, event: unlocked ? "videoUnlocked" : "tipReceived", vars, path: "/dashboard?tab=ledger" });
+  await notify({ userId: intent.creatorId, actorId: intent.senderId, event: unlocked ? "videoUnlocked" : "tipReceived", vars, path: "/me/transactions" });
 }
 
 /** A video is online: its creator is told, and — when it is listed — the creator's approved followers. */

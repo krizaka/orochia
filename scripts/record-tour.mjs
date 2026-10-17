@@ -315,7 +315,7 @@ const CLIPS = {
   "elena-live": {
     who: "elena",
     async open(page, ids) {
-      await page.goto(`${BASE}/dashboard`);
+      await page.goto(`${BASE}/me`);
       return async () => {
         await pause(page, 2200);
         // Two fans, elsewhere, at this moment — through the app's own API, as their browsers would.
@@ -352,7 +352,7 @@ const CLIPS = {
     who: "elena",
     poster: 0.2,
     async open(page) {
-      await page.goto(`${BASE}/earnings`);
+      await page.goto(`${BASE}/me/earnings`);
       return async () => {
         await pause(page, 2200);
         await page.getByText(/After the 10% platform fee/).first().hover().catch(() => {});

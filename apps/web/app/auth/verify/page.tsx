@@ -14,7 +14,7 @@ export default function VerifyEmailPage() {
   const [state, setState] = useState<"working" | "done" | "failed">("working");
   const [error, setError] = useState<string | null>(null);
   // Where the sign-up form was going (e.g. the creator application), read once; the dashboard otherwise.
-  const [next, setNext] = useState("/dashboard");
+  const [next, setNext] = useState("/me");
   const started = useRef(false);
 
   useEffect(() => {

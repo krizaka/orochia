@@ -1,0 +1,37 @@
+{
+  "host": "dev.orochia.com",
+  "iosBundleId": "com.krizaka.orochia",
+  "androidPackage": "com.krizaka.orochia",
+  "paths": [
+    "/@*",
+    "/watch/*",
+    "/me",
+    "/me/*",
+    "/auctions",
+    "/auctions/*",
+    "/challenges",
+    "/challenges/*",
+    "/messages"
+  ],
+  "shareable": [
+    "/auctions",
+    "/auctions/*",
+    "/challenges",
+    "/challenges/*",
+    "/me",
+    "/me/collections",
+    "/me/earnings",
+    "/me/insights",
+    "/me/invitations",
+    "/me/library",
+    "/me/lists",
+    "/me/network",
+    "/me/settings",
+    "/me/transactions",
+    "/me/treasury",
+    "/me/videos",
+    "/messages",
+    "/watch/*",
+    "/@*"
+  ]
+}

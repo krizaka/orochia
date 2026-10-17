@@ -51,7 +51,7 @@ const PAGES = [
       ]
     : []),
   { name: "messages", url: "/messages", session: true },
-  { name: "dashboard", url: "/dashboard", session: true },
+  { name: "dashboard", url: "/me", session: true },
   { name: "wallet · add credits", url: "/wallet", session: true },
 ];
 for (const [what, found] of [["/watch/<id>", watchId], ["/@<username>", creator]]) {

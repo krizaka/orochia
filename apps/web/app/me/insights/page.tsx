@@ -36,8 +36,8 @@ function Block({ icon: Icon, title, hint, children }: { icon: React.ElementType;
  */
 export default async function InsightsPage() {
   const { user, state } = await getViewer();
-  if (!user) redirect("/login?next=/insights");
-  if (state !== "creator") redirect("/dashboard");
+  if (!user) redirect("/auth/login?next=/me/insights");
+  if (state !== "creator") redirect("/me");
   const now = new Date();
   const [view, audience, settings] = await Promise.all([creatorInsights(user.id, now), creatorAudience(user.id, now), recommendationSettings(now)]);
 
@@ -55,7 +55,7 @@ export default async function InsightsPage() {
             bird="owl"
             title={view.status === InsightsStatus.Off ? t("insights.offTitle") : t("insights.unavailableTitle")}
             description={view.status === InsightsStatus.Off ? t("insights.offBody") : t("insights.unavailableBody")}
-            action={<Link href="/earnings" className={buttonVariants({ variant: "secondary", size: "sm" })}>{t("insights.toEarnings")}</Link>}
+            action={<Link href="/me/earnings" className={buttonVariants({ variant: "secondary", size: "sm" })}>{t("insights.toEarnings")}</Link>}
           />
         ) : (
           <>

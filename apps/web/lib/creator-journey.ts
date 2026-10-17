@@ -29,7 +29,7 @@ export const CREATOR_APPLY_PATH = "/creator/apply";
 /** Where a verified creator publishes. */
 export const CREATOR_UPLOAD_PATH = "/creator/upload";
 /** The creator's own videos (the studio). */
-export const CREATOR_STUDIO_PATH = "/dashboard?tab=uploads";
+export const CREATOR_STUDIO_PATH = "/me/videos";
 
 /** A same-site path (`/x`, never `//host` or `https://…`), or null. */
 export function safeNext(next: string | null | undefined): string | null {
@@ -121,7 +121,7 @@ export function feedEmptyActions(state: ViewerState, kind: FeedEmptyKind, tab: F
     if (state === "anonymous") return [{ href: signInHref("/?feed=following"), label: "feed.actions.signIn", primary: true }];
     return [
       { href: "/explore", label: "feed.actions.findPeople", primary: true },
-      { href: "/dashboard?tab=network", label: "feed.actions.network" },
+      { href: "/me/network", label: "feed.actions.network" },
     ];
   }
   // Another tab with nothing in it: the other videos are one tap away.

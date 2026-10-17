@@ -362,7 +362,7 @@ async function notifyStoryHeld(storyId: string) {
   const [story] = await db.select({ creatorId: stories.creatorId }).from(stories).where(eq(stories.id, storyId)).limit(1);
   if (!story) return;
   const { notify } = await import("./notifications");
-  await notify({ userId: story.creatorId, event: "storageHeld", vars: { title: t("stories.heldTitle") }, path: "/dashboard?tab=uploads" });
+  await notify({ userId: story.creatorId, event: "storageHeld", vars: { title: t("stories.heldTitle") }, path: "/me/videos" });
 }
 
 /** A story video unsettled for this long is asked about at Bunny (its webhook may never come). */

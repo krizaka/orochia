@@ -29,7 +29,7 @@ export function MobileBottomNav() {
       active ? "text-fg-accent" : "text-fg-secondary"
     }`;
   const unreadMessages = useUnreadMessages(Boolean(user));
-  const accountActive = pathname.startsWith("/dashboard") || pathname.startsWith("/auth");
+  const accountActive = pathname === "/me" || pathname.startsWith("/me/") || pathname.startsWith("/auth");
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border-default bg-surface-1/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-2xl md:hidden">
@@ -59,14 +59,14 @@ export function MobileBottomNav() {
             {t("nav.messages")}
           </Link>
         ) : (
-          <Link href="/auth/login?next=/dashboard?tab=playlists" className={tab(false)}>
+          <Link href="/auth/login?next=/me/collections" className={tab(false)}>
             <BookmarkIcon size={22} /> {t("nav.saved")}
           </Link>
         )}
         {isLoading ? (
           <span aria-hidden className={tab(false)} />
         ) : user ? (
-          <Link href="/dashboard" className={tab(accountActive)}>
+          <Link href="/me" className={tab(accountActive)}>
             <Avatar size="xs" src={user.avatarUrl} defaultAvatar={{ brand: "orochia", seed: user.displayName }} fallbackSrc={defaultAvatarFor(user.displayName)} fallback={user.displayName.charAt(0)} className={cn("h-6 w-6", accountActive && "ring-2 ring-ring")} />
             {t("nav.account")}
           </Link>

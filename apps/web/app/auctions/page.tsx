@@ -56,7 +56,7 @@ export default async function AuctionsPage(props: { searchParams: Promise<{ tab?
             <p className="mt-3 text-sm font-semibold text-fg">{t(`auctions.empty.${tab}.title`)}</p>
             <p className="mx-auto mt-1 max-w-md text-xs text-fg-secondary">{t(`auctions.empty.${tab}.body`)}</p>
             {tab === "selling" && (
-              <Link href="/dashboard?tab=uploads" className={orochiaButton({ variant: "sensual", shape: "pill", className: "mt-5" })}>
+              <Link href="/me/videos" className={orochiaButton({ variant: "sensual", shape: "pill", className: "mt-5" })}>
                 {t("auctions.empty.selling.cta")}
               </Link>
             )}

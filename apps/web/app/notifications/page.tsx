@@ -52,7 +52,7 @@ export default function NotificationsPage() {
               <CheckCheck className="h-3.5 w-3.5" aria-hidden /> {t("notifications.markAll")}
             </Button>
           )}
-          <Link href="/dashboard?tab=settings#settings-notifications" aria-label={t("notifications.settings")} title={t("notifications.settings")} className={buttonVariants({ variant: "outline", size: "icon", shape: "rounded", className: "h-8 w-8 rounded-xl text-fg-secondary" })}>
+          <Link href="/me/settings#settings-notifications" aria-label={t("notifications.settings")} title={t("notifications.settings")} className={buttonVariants({ variant: "outline", size: "icon", shape: "rounded", className: "h-8 w-8 rounded-xl text-fg-secondary" })}>
             <Settings className="h-4 w-4" aria-hidden />
           </Link>
         </div>

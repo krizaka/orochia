@@ -227,9 +227,9 @@ async function main() {
   const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
   const bell: { event: string; actor?: Key; vars: Record<string, string>; path: string; hours: number; read?: boolean }[] = [
     { event: "challengePledged", vars: { amount: money(2500), title: g.title, total: money(15000) }, path: `/challenges/${challenge.id}`, hours: 2 },
-    { event: "tipReceived", actor: "lina", vars: { name: name("lina"), amount: money(500), title: "" }, path: "/dashboard?tab=ledger", hours: 2 },
+    { event: "tipReceived", actor: "lina", vars: { name: name("lina"), amount: money(500), title: "" }, path: "/me/transactions", hours: 2 },
     { event: "auctionNewBid", vars: { title: cast.videos.find((v) => v.key === a.video)!.title, amount: money(3000) }, path: `/watch/${video[a.video]}#auction`, hours: 8 },
-    { event: "videoUnlocked", actor: "sam", vars: { name: name("sam"), amount: money(1500), title: cast.videos.find((v) => v.key === "acoustic")!.title }, path: "/dashboard?tab=ledger", hours: 72, read: true },
+    { event: "videoUnlocked", actor: "sam", vars: { name: name("sam"), amount: money(1500), title: cast.videos.find((v) => v.key === "acoustic")!.title }, path: "/me/transactions", hours: 72, read: true },
     { event: "newFollower", actor: "jules", vars: { name: name("jules"), action: "now follows you" }, path: "/@julesmartin", hours: 96, read: true },
   ];
   for (const b of bell) {
