@@ -8,7 +8,7 @@ import { tourRecording } from "@/lib/site-media";
 
 /** The four ways to pay a creator: each card shows its moment from the app (the recording's poster), one line, one link. */
 export async function Ways({ share }: { share: number }) {
-  const { t } = await getI18n();
+  const { t, locale } = await getI18n();
   return (
     <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {WAYS.map(({ id, clip, icon: Icon, href }) => (
@@ -20,7 +20,7 @@ export async function Ways({ share }: { share: number }) {
               "hover:border-accent/50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
             )}
           >
-            <img src={tourRecording(clip).poster} alt="" loading="lazy" decoding="async" className="aspect-video w-full object-cover" />
+            <img src={tourRecording(clip, locale).poster} alt="" loading="lazy" decoding="async" className="aspect-video w-full object-cover" />
             <span className="flex flex-1 flex-col gap-1 p-4">
               <span className="flex items-center gap-2 text-base font-bold text-fg">
                 <Icon size={18} nodeColor="var(--kz-accent-2)" /> {t(`howItWorks.ways.${id}`)}

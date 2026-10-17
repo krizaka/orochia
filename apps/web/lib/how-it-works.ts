@@ -8,7 +8,7 @@ import type { TourClip } from "@/lib/site-media";
  */
 export const JOURNEY = [
   { id: "find", clip: "alex-discover" },
-  { id: "watch", clip: "showcase" },
+  { id: "watch", clip: "alex-watch" },
   { id: "tip", clip: "alex-story" },
   { id: "unlock", clip: "alex-unlock" },
   { id: "bid", clip: "alex-bid" },

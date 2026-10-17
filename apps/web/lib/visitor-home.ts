@@ -10,7 +10,7 @@ export const VISITOR_SECTIONS = ["hero", "preview", "how", "creators", "closing"
 /** The hero's journey: the real recordings of the demo personas (Alex, a fan; Elena, a creator) on the app. */
 export const HERO_STEPS = [
   { id: "find", clip: "alex-discover" },
-  { id: "watch", clip: "showcase" },
+  { id: "watch", clip: "alex-watch" },
   { id: "tip", clip: "alex-story" },
   { id: "earn", clip: "elena-earnings" },
 ] as const satisfies readonly { id: string; clip: TourClip }[];

@@ -20,7 +20,7 @@
       "username": "miacalder",
       "role": "CREATOR",
       "displayName": "Mia Calder",
-      "bio": "Live loops, one synth, no second take.",
+      "bio": "Looped on one synth, no second take.",
       "banner": "stairs-1",
       "minTipCents": 300,
       "portrait": "mia"
@@ -103,14 +103,14 @@
       "bunnyId": "0de10000-0000-4000-8000-000000000002",
       "creator": "elena",
       "clip": "feed-1",
-      "title": "Glass Hearts — live at the warehouse",
+      "title": "Glass Hearts — at the warehouse",
       "description": "The whole set, from the second row, with the crowd singing the last chorus.",
       "visibility": "PUBLIC",
       "duration": 1840,
       "views": 8320,
       "daysAgo": 26,
       "tags": [
-        "live",
+        "warehouse",
         "concert"
       ]
     },
@@ -184,14 +184,14 @@
       "bunnyId": "0de10000-0000-4000-8000-000000000007",
       "creator": "mia",
       "clip": "challenge",
-      "title": "Green Light — live loop session",
+      "title": "Green Light — loop session",
       "description": "Built from nothing in nine minutes.",
       "visibility": "PUBLIC",
       "duration": 545,
       "views": 6730,
       "daysAgo": 19,
       "tags": [
-        "live",
+        "loops",
         "electronic"
       ]
     },
