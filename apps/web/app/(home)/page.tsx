@@ -1,10 +1,11 @@
 import { platformFeePercent } from "@orochia/payments";
 import Link from "next/link";
-import React from "react";
+import React, { Suspense } from "react";
 
 import { FeedFilterTabs } from "@/components/FeedFilterTabs";
 import { StoriesRail } from "@/components/home/StoriesRail";
 import { VisitorHome } from "@/components/home/VisitorHome";
+import { PreviewPending, VisitorPreview } from "@/components/home/VisitorPreview";
 import { Button, cn } from "@/components/ui";
 import { signInHref, signUpHref } from "@/lib/creator-journey";
 import { signupEnabled } from "@/lib/features";
@@ -13,7 +14,6 @@ import { feedSettings } from "@/lib/feed-settings";
 import { t } from "@/lib/i18n";
 import { feedPage } from "@/lib/queries";
 import { getViewer } from "@/lib/viewer";
-import { PREVIEW_SIZE } from "@/lib/visitor-home";
 
 export const metadata = { alternates: { canonical: "/" } };
 export const dynamic = "force-dynamic";
@@ -44,22 +44,22 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const { feed } = await searchParams;
   const asked = Array.isArray(feed) ? feed[0] : feed;
   const tab = asked === "trending" || asked === "following" || asked === "latest" ? asked : "foryou";
-  const { shortsMaxSeconds } = await feedSettings(new Date()).catch(() => ({ shortsMaxSeconds: undefined }));
+  // A visitor's home paints without waiting for the database: only the feed preview streams (its own Suspense).
   if (!viewer && !asked) {
-    const preview = await feedPage({ sort: FeedSort.ForYou, viewerId: null, limit: PREVIEW_SIZE }, false).catch((error: unknown) => {
-      console.error("[home] preview unavailable:", error);
-      return { videos: [], nextCursor: null };
-    });
     return (
       <VisitorHome
-        videos={preview.videos}
+        preview={
+          <Suspense fallback={<PreviewPending />}>
+            <VisitorPreview />
+          </Suspense>
+        }
         share={100 - platformFeePercent()}
         joinHref={signupEnabled() ? signUpHref() : signInHref()}
         joinLabel={t(signupEnabled() ? "home.intro.join" : "feed.actions.signIn")}
-        shortsMaxSeconds={shortsMaxSeconds}
       />
     );
   }
+  const { shortsMaxSeconds } = await feedSettings(new Date()).catch(() => ({ shortsMaxSeconds: undefined }));
   const { page, unavailable } = await loadHome(TAB_SORT[tab], viewer?.id ?? null, viewer?.isAgeVerified === true);
   const container = "mx-auto w-full max-w-7xl px-4 sm:px-6";
   return (
