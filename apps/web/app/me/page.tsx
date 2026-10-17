@@ -44,10 +44,12 @@ export default function MeOverview() {
       {data && (
         <dl className={cn("grid grid-cols-2 gap-x-6 gap-y-5", kpis.length === 4 ? "sm:grid-cols-4" : "sm:grid-cols-3")}>
           {kpis.map((k) => (
-            <Link key={k.label} href={k.href} className="group block">
+            <div key={k.label} className="relative">
               <dt className="text-[11px] font-semibold uppercase tracking-wider text-fg-secondary">{k.label}</dt>
-              <dd className="mt-1 font-mono text-2xl font-black text-fg group-hover:text-fg-accent">{k.value}</dd>
-            </Link>
+              <dd className="mt-1">
+                <Link href={k.href} className="font-mono text-2xl font-black text-fg after:absolute after:inset-0 hover:text-fg-accent">{k.value}</Link>
+              </dd>
+            </div>
           ))}
         </dl>
       )}
