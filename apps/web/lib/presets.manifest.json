@@ -1,31 +1,747 @@
 {
   "$comment": "Orochia's default avatars and banners — the data the picker, the preset route and the profile API read. Files live in the product's storage zone (public/defaults/…) and are served by /defaults/…; ids are the file names. A new picture is added here AND in scripts/dev-dataset/profile-media-v2.json (its generation spec), never in a component. Avatars: <id>-256.webp and <id>-512.webp. Banners: 3:1 (or 4:1 for the first batch), <id>.webp at 1600, plus <id>-800.webp when `widths` says so.",
   "avatars": [
-    { "id": "aurora-1", "family": "abstract", "alt": { "en": "Aurora orb", "fr": "Orbe aurore" } },
-    { "id": "aurora-2", "family": "abstract", "alt": { "en": "Ribbon light", "fr": "Rubans de lumière" } },
-    { "id": "painterly-1", "family": "painterly", "alt": { "en": "Oil portrait", "fr": "Portrait à l'huile" } },
-    { "id": "painterly-2", "family": "painterly", "alt": { "en": "Silver beard", "fr": "Barbe argentée" } },
-    { "id": "graphic-1", "family": "illustrated", "alt": { "en": "Ink undercut", "fr": "Coupe rasée à l'encre" } },
-    { "id": "graphic-2", "family": "illustrated", "alt": { "en": "Ink and wheels", "fr": "Encre et roues" } },
-    { "id": "graphic-3", "family": "illustrated", "alt": { "en": "Violet halftone", "fr": "Trame violette" } },
-    { "id": "clay-1", "family": "soft3d", "alt": { "en": "Clay, grown-up", "fr": "Argile, adulte" } },
-    { "id": "clay-2", "family": "soft3d", "alt": { "en": "Clay, long waves", "fr": "Argile, longues ondulations" } },
-    { "id": "clay-3", "family": "soft3d", "alt": { "en": "Clay, red curls", "fr": "Argile, boucles rousses" } },
-    { "id": "line-1", "family": "line", "alt": { "en": "Line wave", "fr": "Vague au trait" } },
-    { "id": "line-2", "family": "line", "alt": { "en": "Line scarf", "fr": "Foulard au trait" } },
-    { "id": "zine-1", "family": "illustrated", "alt": { "en": "Zine afro", "fr": "Afro de fanzine" } },
-    { "id": "zine-2", "family": "illustrated", "alt": { "en": "Zine beads", "fr": "Perles de fanzine" } },
-    { "id": "painterly-4", "family": "painterly", "alt": { "en": "Gold light", "fr": "Lumière dorée" } }
+    {
+      "id": "aurora-1",
+      "family": "abstract",
+      "alt": {
+        "en": "Aurora orb",
+        "fr": "Orbe aurore"
+      }
+    },
+    {
+      "id": "aurora-2",
+      "family": "abstract",
+      "alt": {
+        "en": "Ribbon light",
+        "fr": "Rubans de lumière"
+      }
+    },
+    {
+      "id": "painterly-1",
+      "family": "painterly",
+      "alt": {
+        "en": "Oil portrait",
+        "fr": "Portrait à l'huile"
+      }
+    },
+    {
+      "id": "painterly-2",
+      "family": "painterly",
+      "alt": {
+        "en": "Silver beard",
+        "fr": "Barbe argentée"
+      }
+    },
+    {
+      "id": "graphic-1",
+      "family": "illustrated",
+      "alt": {
+        "en": "Ink undercut",
+        "fr": "Coupe rasée à l'encre"
+      }
+    },
+    {
+      "id": "graphic-2",
+      "family": "illustrated",
+      "alt": {
+        "en": "Ink and wheels",
+        "fr": "Encre et roues"
+      }
+    },
+    {
+      "id": "graphic-3",
+      "family": "illustrated",
+      "alt": {
+        "en": "Violet halftone",
+        "fr": "Trame violette"
+      }
+    },
+    {
+      "id": "clay-1",
+      "family": "soft3d",
+      "alt": {
+        "en": "Clay, grown-up",
+        "fr": "Argile, adulte"
+      }
+    },
+    {
+      "id": "clay-2",
+      "family": "soft3d",
+      "alt": {
+        "en": "Clay, long waves",
+        "fr": "Argile, longues ondulations"
+      }
+    },
+    {
+      "id": "clay-3",
+      "family": "soft3d",
+      "alt": {
+        "en": "Clay, red curls",
+        "fr": "Argile, boucles rousses"
+      }
+    },
+    {
+      "id": "line-1",
+      "family": "line",
+      "alt": {
+        "en": "Line wave",
+        "fr": "Vague au trait"
+      }
+    },
+    {
+      "id": "line-2",
+      "family": "line",
+      "alt": {
+        "en": "Line scarf",
+        "fr": "Foulard au trait"
+      }
+    },
+    {
+      "id": "zine-1",
+      "family": "illustrated",
+      "alt": {
+        "en": "Zine afro",
+        "fr": "Afro de fanzine"
+      }
+    },
+    {
+      "id": "zine-2",
+      "family": "illustrated",
+      "alt": {
+        "en": "Zine beads",
+        "fr": "Perles de fanzine"
+      }
+    },
+    {
+      "id": "painterly-4",
+      "family": "painterly",
+      "alt": {
+        "en": "Gold light",
+        "fr": "Lumière dorée"
+      }
+    },
+    {
+      "id": "illustrated-x1",
+      "family": "illustrated",
+      "alt": {
+        "en": "Silver curls, flat illustration",
+        "fr": "Boucles argentées, illustration à plat"
+      }
+    },
+    {
+      "id": "illustrated-x2",
+      "family": "illustrated",
+      "alt": {
+        "en": "Indigo turban, flat illustration",
+        "fr": "Turban indigo, illustration à plat"
+      }
+    },
+    {
+      "id": "illustrated-x5",
+      "family": "illustrated",
+      "alt": {
+        "en": "Red beard and freckles, flat illustration",
+        "fr": "Barbe rousse et taches de rousseur, illustration à plat"
+      }
+    },
+    {
+      "id": "illustrated-x6",
+      "family": "illustrated",
+      "alt": {
+        "en": "Afro and a warm smile, flat illustration",
+        "fr": "Afro et sourire chaleureux, illustration à plat"
+      }
+    },
+    {
+      "id": "illustrated-x7",
+      "family": "illustrated",
+      "alt": {
+        "en": "Red headscarf and hoops, flat illustration",
+        "fr": "Foulard rouge et créoles, illustration à plat"
+      }
+    },
+    {
+      "id": "illustrated-x8",
+      "family": "illustrated",
+      "alt": {
+        "en": "Round glasses and beard, flat illustration",
+        "fr": "Lunettes rondes et barbe, illustration à plat"
+      }
+    },
+    {
+      "id": "illustrated-x10",
+      "family": "illustrated",
+      "alt": {
+        "en": "Long braid, flat illustration",
+        "fr": "Longue tresse, illustration à plat"
+      }
+    },
+    {
+      "id": "illustrated-x12",
+      "family": "illustrated",
+      "alt": {
+        "en": "Vitiligo and a side shave, flat illustration",
+        "fr": "Vitiligo et côté rasé, illustration à plat"
+      }
+    },
+    {
+      "id": "illustrated-x15",
+      "family": "illustrated",
+      "alt": {
+        "en": "Soft pink hijab, flat illustration",
+        "fr": "Hijab rose pâle, illustration à plat"
+      }
+    },
+    {
+      "id": "illustrated-x16",
+      "family": "illustrated",
+      "alt": {
+        "en": "Wheelchair and headphones, flat illustration",
+        "fr": "Fauteuil roulant et casque, illustration à plat"
+      }
+    },
+    {
+      "id": "painterly-x1",
+      "family": "painterly",
+      "alt": {
+        "en": "Wheelchair and headphones, painted",
+        "fr": "Fauteuil roulant et casque, peinture"
+      }
+    },
+    {
+      "id": "painterly-x2",
+      "family": "painterly",
+      "alt": {
+        "en": "Pastel fringe and undercut, painted",
+        "fr": "Frange pastel et coupe rasée, peinture"
+      }
+    },
+    {
+      "id": "painterly-x3",
+      "family": "painterly",
+      "alt": {
+        "en": "Long dark hair and earrings, painted",
+        "fr": "Longs cheveux sombres et boucles d'oreilles, peinture"
+      }
+    },
+    {
+      "id": "painterly-x6",
+      "family": "painterly",
+      "alt": {
+        "en": "Silver hair and a wide smile, painted",
+        "fr": "Cheveux argentés et grand sourire, peinture"
+      }
+    },
+    {
+      "id": "painterly-x8",
+      "family": "painterly",
+      "alt": {
+        "en": "Denim jacket and a fade, painted",
+        "fr": "Veste en jean et dégradé, peinture"
+      }
+    },
+    {
+      "id": "painterly-x11",
+      "family": "painterly",
+      "alt": {
+        "en": "Big curls and red lipstick, painted",
+        "fr": "Grosses boucles et rouge à lèvres, peinture"
+      }
+    },
+    {
+      "id": "painterly-x14",
+      "family": "painterly",
+      "alt": {
+        "en": "Shaved head and silver studs, painted",
+        "fr": "Tête rasée et clous argentés, peinture"
+      }
+    },
+    {
+      "id": "soft3d-x2",
+      "family": "soft3d",
+      "alt": {
+        "en": "Vitiligo, soft 3D",
+        "fr": "Vitiligo, 3D douce"
+      }
+    },
+    {
+      "id": "soft3d-x4",
+      "family": "soft3d",
+      "alt": {
+        "en": "Short beard and leather jacket, soft 3D",
+        "fr": "Barbe courte et veste en cuir, 3D douce"
+      }
+    },
+    {
+      "id": "soft3d-x5",
+      "family": "soft3d",
+      "alt": {
+        "en": "Dusty-rose hijab, soft 3D",
+        "fr": "Hijab rose poudré, 3D douce"
+      }
+    },
+    {
+      "id": "soft3d-x6",
+      "family": "soft3d",
+      "alt": {
+        "en": "Wheelchair and headphones, soft 3D",
+        "fr": "Fauteuil roulant et casque, 3D douce"
+      }
+    },
+    {
+      "id": "soft3d-x7",
+      "family": "soft3d",
+      "alt": {
+        "en": "Pastel-streaked hair, soft 3D",
+        "fr": "Cheveux à mèches pastel, 3D douce"
+      }
+    },
+    {
+      "id": "soft3d-x12",
+      "family": "soft3d",
+      "alt": {
+        "en": "Indigo turban, soft 3D",
+        "fr": "Turban indigo, 3D douce"
+      }
+    },
+    {
+      "id": "line-x1",
+      "family": "line",
+      "alt": {
+        "en": "Afro, single-line portrait",
+        "fr": "Afro, portrait au trait continu"
+      }
+    },
+    {
+      "id": "line-x3",
+      "family": "line",
+      "alt": {
+        "en": "Round glasses and beard, line art",
+        "fr": "Lunettes rondes et barbe, dessin au trait"
+      }
+    },
+    {
+      "id": "line-x5",
+      "family": "line",
+      "alt": {
+        "en": "Twin braids, line art",
+        "fr": "Deux tresses, dessin au trait"
+      }
+    },
+    {
+      "id": "line-x8",
+      "family": "line",
+      "alt": {
+        "en": "White locs, line art",
+        "fr": "Locks blanches, dessin au trait"
+      }
+    },
+    {
+      "id": "line-x10",
+      "family": "line",
+      "alt": {
+        "en": "Hijab, line art",
+        "fr": "Hijab, dessin au trait"
+      }
+    },
+    {
+      "id": "abstract-orb",
+      "family": "abstract",
+      "alt": {
+        "en": "Violet glass orb",
+        "fr": "Orbe de verre violet"
+      }
+    },
+    {
+      "id": "abstract-vinyl",
+      "family": "abstract",
+      "alt": {
+        "en": "Vinyl record on a turntable",
+        "fr": "Disque vinyle sur une platine"
+      }
+    },
+    {
+      "id": "abstract-plant",
+      "family": "abstract",
+      "alt": {
+        "en": "Potted plant in violet light",
+        "fr": "Plante en pot sous une lumière violette"
+      }
+    },
+    {
+      "id": "abstract-headphones",
+      "family": "abstract",
+      "alt": {
+        "en": "Floating headphones",
+        "fr": "Casque flottant"
+      }
+    },
+    {
+      "id": "abstract-cassette",
+      "family": "abstract",
+      "alt": {
+        "en": "Retro audio cassette",
+        "fr": "Cassette audio rétro"
+      }
+    },
+    {
+      "id": "abstract-crystal",
+      "family": "abstract",
+      "alt": {
+        "en": "Glowing crystal cluster",
+        "fr": "Cristaux lumineux"
+      }
+    }
   ],
   "banners": [
-    { "id": "light-1", "family": "abstract", "alt": { "en": "Violet light", "fr": "Lumière violette" } },
-    { "id": "light-2", "family": "abstract", "alt": { "en": "Indigo waves", "fr": "Vagues indigo" } },
-    { "id": "texture-1", "family": "textures", "alt": { "en": "Paper layers", "fr": "Couches de papier" } },
-    { "id": "mural-1", "family": "textures", "alt": { "en": "Mural colours", "fr": "Couleurs de fresque" } },
-    { "id": "stairs-1", "family": "places", "alt": { "en": "Plateau stairs", "fr": "Escaliers du Plateau" } },
-    { "id": "neon-1", "family": "places", "alt": { "en": "Mile-End alley", "fr": "Ruelle du Mile-End" } },
-    { "id": "skyline-1", "family": "places", "alt": { "en": "Skyline dusk", "fr": "Horizon au crépuscule" } },
-    { "id": "mural-2", "family": "textures", "alt": { "en": "Brick geometry", "fr": "Géométrie de briques" } },
-    { "id": "aurora-3", "family": "abstract", "alt": { "en": "Northern lights", "fr": "Aurores boréales" } }
+    {
+      "id": "light-1",
+      "family": "abstract",
+      "alt": {
+        "en": "Violet light",
+        "fr": "Lumière violette"
+      }
+    },
+    {
+      "id": "light-2",
+      "family": "abstract",
+      "alt": {
+        "en": "Indigo waves",
+        "fr": "Vagues indigo"
+      }
+    },
+    {
+      "id": "texture-1",
+      "family": "textures",
+      "alt": {
+        "en": "Paper layers",
+        "fr": "Couches de papier"
+      }
+    },
+    {
+      "id": "mural-1",
+      "family": "textures",
+      "alt": {
+        "en": "Mural colours",
+        "fr": "Couleurs de fresque"
+      }
+    },
+    {
+      "id": "stairs-1",
+      "family": "places",
+      "alt": {
+        "en": "Plateau stairs",
+        "fr": "Escaliers du Plateau"
+      }
+    },
+    {
+      "id": "neon-1",
+      "family": "places",
+      "alt": {
+        "en": "Mile-End alley",
+        "fr": "Ruelle du Mile-End"
+      }
+    },
+    {
+      "id": "skyline-1",
+      "family": "places",
+      "alt": {
+        "en": "Skyline dusk",
+        "fr": "Horizon au crépuscule"
+      }
+    },
+    {
+      "id": "mural-2",
+      "family": "textures",
+      "alt": {
+        "en": "Brick geometry",
+        "fr": "Géométrie de briques"
+      }
+    },
+    {
+      "id": "aurora-3",
+      "family": "abstract",
+      "alt": {
+        "en": "Northern lights",
+        "fr": "Aurores boréales"
+      }
+    },
+    {
+      "id": "silk-1",
+      "family": "abstract",
+      "alt": {
+        "en": "Violet silk folds",
+        "fr": "Plis de soie violette"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "silk-2",
+      "family": "abstract",
+      "alt": {
+        "en": "Magenta silk ribbon",
+        "fr": "Ruban de soie magenta"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "waves-1",
+      "family": "abstract",
+      "alt": {
+        "en": "Layered indigo and magenta waves",
+        "fr": "Vagues superposées indigo et magenta"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "shapes-1",
+      "family": "abstract",
+      "alt": {
+        "en": "Overlapping violet circles",
+        "fr": "Cercles violets superposés"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "shapes-3",
+      "family": "abstract",
+      "alt": {
+        "en": "Layered violet mountains, flat",
+        "fr": "Montagnes violettes en aplats"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "waves-3",
+      "family": "abstract",
+      "alt": {
+        "en": "Liquid marble swirls",
+        "fr": "Volutes de marbre liquide"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "city-1",
+      "family": "places",
+      "alt": {
+        "en": "City skyline at night",
+        "fr": "Horizon urbain de nuit"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "beach-2",
+      "family": "places",
+      "alt": {
+        "en": "Cove at dusk",
+        "fr": "Crique au crépuscule"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "mountain-2",
+      "family": "places",
+      "alt": {
+        "en": "Snowy peaks at sunset",
+        "fr": "Sommets enneigés au coucher du soleil"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "studio-1",
+      "family": "places",
+      "alt": {
+        "en": "Empty studio with soft boxes",
+        "fr": "Studio vide et boîtes à lumière"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "interior-1",
+      "family": "places",
+      "alt": {
+        "en": "Brick loft at dusk",
+        "fr": "Loft en briques au crépuscule"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "interior-2",
+      "family": "places",
+      "alt": {
+        "en": "Living room with plants",
+        "fr": "Salon avec des plantes"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "bridge-1",
+      "family": "places",
+      "alt": {
+        "en": "Lit bridge over the water",
+        "fr": "Pont illuminé sur l'eau"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "forest-1",
+      "family": "places",
+      "alt": {
+        "en": "Misty pines at dawn",
+        "fr": "Pins dans la brume à l'aube"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "fabric-1",
+      "family": "textures",
+      "alt": {
+        "en": "Violet velvet",
+        "fr": "Velours violet"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "fabric-2",
+      "family": "textures",
+      "alt": {
+        "en": "Magenta linen weave",
+        "fr": "Tissage de lin magenta"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "paper-1",
+      "family": "textures",
+      "alt": {
+        "en": "Layered handmade paper",
+        "fr": "Papiers faits main superposés"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "ceramic-1",
+      "family": "textures",
+      "alt": {
+        "en": "Glazed tiles in violet and cream",
+        "fr": "Carreaux émaillés violets et crème"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "mood-vinyl",
+      "family": "moods",
+      "alt": {
+        "en": "Shelf of records",
+        "fr": "Étagère de disques"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "mood-gym",
+      "family": "moods",
+      "alt": {
+        "en": "Empty gym in violet light",
+        "fr": "Salle de sport vide sous une lumière violette"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "mood-kitchen",
+      "family": "moods",
+      "alt": {
+        "en": "Kitchen counter with herbs",
+        "fr": "Plan de travail avec des herbes"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "mood-books",
+      "family": "moods",
+      "alt": {
+        "en": "Bookshelves in warm light",
+        "fr": "Bibliothèque sous une lumière chaude"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    },
+    {
+      "id": "mood-music",
+      "family": "moods",
+      "alt": {
+        "en": "Music room with synths and guitars",
+        "fr": "Salle de musique, synthés et guitares"
+      },
+      "widths": [
+        800,
+        1600
+      ]
+    }
   ]
 }

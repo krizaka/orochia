@@ -29,6 +29,9 @@ if (!out) {
 }
 const only = opt("only");
 const edge = opt("edge", "https://dev.orazaka.com/edge");
+// --direct http://127.0.0.1:18086: talk to the pod's sd-server (FLUX.2 [klein], the very engine the Studio routes to) through an ssh
+// tunnel, without the Orazaka core: for when the platform's billing/runs API is down. The run ids of the manifest are then null.
+const direct = opt("direct");
 const credentialsFile = opt("env-file", path.join(os.homedir(), "Documents", "krizaka", ["qa", "env"].join(".")));
 const env = Object.fromEntries(
   fs
@@ -47,7 +50,7 @@ const manifest = fs.existsSync(manifestFile) ? JSON.parse(fs.readFileSync(manife
 
 // The Orazaka QA account lives in the credentials file under its own names (not this product's environment).
 const orazakaKey = (part) => ["ORAZAKA", "USER", part].join("_");
-const login = await fetch(`${edge}/api/v1/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: env[orazakaKey("EMAIL")], password: env[orazakaKey("PASSWORD")] }) });
+const login = direct ? { ok: true, json: async () => ({ token: "" }) } : await fetch(`${edge}/api/v1/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: env[orazakaKey("EMAIL")], password: env[orazakaKey("PASSWORD")] }) });
 if (!login.ok) throw new Error(`Orazaka sign-in failed (${login.status})`);
 const { token } = await login.json();
 const api = async (method, url, body) => {
@@ -60,6 +63,21 @@ const jobs = [
   ...spec.avatars.map((a) => ({ kind: "avatar", ...a, size: "1024x1024" })),
   ...spec.banners.map((b) => ({ kind: "banner", ...b, size: wide ? "1536x512" : "1360x768" })),
 ];
+async function save(job, raw, seed, runId, studio, started) {
+  fs.writeFileSync(path.join(out, "raw", `${job.id}.png`), raw);
+  if (job.kind === "avatar") {
+    for (const px of [512, 256]) await sharp(raw).resize(px, px).webp({ quality: 88 }).toFile(path.join(out, "avatars", `${job.id}-${px}.webp`));
+  } else if (wide) {
+    await sharp(raw).resize(1600, 533, { fit: "cover", position: "centre" }).webp({ quality: 86 }).toFile(path.join(out, "banners", `${job.id}.webp`));
+    await sharp(raw).resize(800, 267, { fit: "cover", position: "centre" }).webp({ quality: 84 }).toFile(path.join(out, "banners", `${job.id}-800.webp`));
+  } else {
+    await sharp(raw).resize(1600, 400, { fit: "cover", position: "centre" }).webp({ quality: 86 }).toFile(path.join(out, "banners", `${job.id}.webp`));
+  }
+  manifest.items.push({ id: job.id, kind: job.kind, style: job.family ?? job.style ?? null, prompt: job.prompt, seed, orazakaRunId: runId, studio, runSeconds: Math.round((Date.now() - started) / 1000) });
+  fs.writeFileSync(manifestFile, `${JSON.stringify(manifest, null, 2)}\n`);
+  console.log(`+ ${job.id} (${Math.round((Date.now() - started) / 1000)} s)`);
+}
+
 let failed = 0;
 let n = 0;
 for (const job of jobs) {
@@ -72,6 +90,14 @@ for (const job of jobs) {
   const seed = String((wide ? 20262100 : 20261100) + n);
   try {
     const started = Date.now();
+    if (direct) {
+      const [w, h] = job.size.split("x");
+      const res = await fetch(`${direct}/v1/images/generations`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ prompt: `${job.prompt}. ${spec.style}<sd_cpp_extra_args>{"seed":${seed}}</sd_cpp_extra_args>`, n: 1, size: `${w}x${h}`, response_format: "b64_json" }) });
+      if (!res.ok) throw new Error(`sd-server HTTP ${res.status}`);
+      const raw = Buffer.from((await res.json()).data[0].b64_json, "base64");
+      await save(job, raw, seed, null, `sd-server flux-2-klein-4b (direct)`, started);
+      continue;
+    }
     let run = await (await api("POST", "/api/v1/studios/image-generation/runs", { inputs: { prompt: `${job.prompt}. ${spec.style}`, size: job.size, seed } })).json();
     while (!["SUCCEEDED", "FAILED", "CANCELLED"].includes(run.status)) {
       await new Promise((r) => setTimeout(r, 8_000));
@@ -80,20 +106,7 @@ for (const job of jobs) {
     if (run.status !== "SUCCEEDED") throw new Error(`${run.status}: ${run.errorMessage ?? ""}`);
     const image = run.outputs.find((o) => o.type === "IMAGE") ?? run.outputs[0];
     const raw = Buffer.from(await (await api("GET", image.value)).arrayBuffer());
-    fs.writeFileSync(path.join(out, "raw", `${job.id}.png`), raw);
-    if (job.kind === "avatar") {
-      for (const px of [512, 256]) await sharp(raw).resize(px, px).webp({ quality: 88 }).toFile(path.join(out, "avatars", `${job.id}-${px}.webp`));
-    } else {
-      if (wide) {
-        await sharp(raw).resize(1600, 533, { fit: "cover", position: "centre" }).webp({ quality: 86 }).toFile(path.join(out, "banners", `${job.id}.webp`));
-        await sharp(raw).resize(800, 267, { fit: "cover", position: "centre" }).webp({ quality: 84 }).toFile(path.join(out, "banners", `${job.id}-800.webp`));
-      } else {
-        await sharp(raw).resize(1600, 400, { fit: "cover", position: "centre" }).webp({ quality: 86 }).toFile(path.join(out, "banners", `${job.id}.webp`));
-      }
-    }
-    manifest.items.push({ id: job.id, kind: job.kind, style: job.style ?? null, prompt: job.prompt, seed, orazakaRunId: run.id, studio: `image-generation ${run.blueprintVersion}`, runSeconds: Math.round((Date.now() - started) / 1000) });
-    fs.writeFileSync(manifestFile, `${JSON.stringify(manifest, null, 2)}\n`);
-    console.log(`+ ${job.id} (${Math.round((Date.now() - started) / 1000)} s)`);
+    await save(job, raw, seed, run.id, `image-generation ${run.blueprintVersion}`, started);
   } catch (error) {
     failed++;
     console.log(`! ${job.id}: ${error.message}`);
