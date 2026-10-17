@@ -14,11 +14,10 @@ describe("the visitor's home reads in five seconds", () => {
     expect(page).not.toMatch(/HomeHero|GetPaid|MobileSection|CreatorsCallToAction|kz-marquee|home\.marquee/);
     expect(read("../VideoGrid.tsx")).toContain("@krizaka/ui/media-grid");
   });
-  it("the pitch lives on /how-it-works, built from the kit's blocks", () => {
+  it("the pitch lives on /how-it-works: four short sections (see how-it-works.test.ts)", () => {
     const page = read("../../app/how-it-works/page.tsx");
-    expect(page).toContain("GetPaid");
-    expect(page).toContain("MobileSection");
-    expect(page).toContain("@krizaka/ui/argument-card");
+    expect(page).toContain("<Journey");
+    expect(page).not.toMatch(/GetPaid|MobileSection/);
   });
   it("makes no 4K promise (the ladder tops out at 1080p)", () => {
     expect(read("../../messages/en.json")).not.toMatch(/4K/);
