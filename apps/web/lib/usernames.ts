@@ -1,5 +1,6 @@
 import { db, users } from "@orochia/db";
 import { inArray } from "drizzle-orm";
+import { usernameWithSuffix } from "./username-suffix";
 
 /**
  * Usernames are the public address of an account (orochia.com/@username) and are unique (users.username is UNIQUE);
@@ -32,7 +33,7 @@ export async function freeUsername(name: string): Promise<string> {
   const base = usernameBase(name);
   const candidates = [base, ...Array.from({ length: 98 }, (_, i) => `${base}${i + 2}`)].filter((c) => !isReserved(c));
   const taken = new Set((await db.select({ u: users.username }).from(users).where(inArray(users.username, candidates))).map((r) => r.u));
-  return candidates.find((c) => !taken.has(c)) ?? `${base}_${Math.random().toString(36).slice(2, 6)}`;
+  return candidates.find((c) => !taken.has(c)) ?? usernameWithSuffix(base);
 }
 
 /** Whether a username can be taken, and a free one to suggest when it cannot. */
