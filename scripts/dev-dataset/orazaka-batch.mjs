@@ -50,7 +50,13 @@ const keyOf = (job) => `${job.kind}:${job.id}`;
 const store = readEnv(storeFile);
 const orazakaKey = (part) => ["ORAZAKA", "USER", part].join("_");
 let token;
+// The batch uses an Orazaka API key (`oz_…`, Authorization: Bearer) — the integration path the products use: edge exchange, per-key daily
+// quota, metering. `--mint-key` creates one for the QA account (stored in the QA store, never printed).
 async function login() {
+  if (store.OROCHIA_DATASET_ORAZAKA_KEY && !args.includes("--mint-key") && !args.includes("--session")) {
+    token = store.OROCHIA_DATASET_ORAZAKA_KEY;
+    return;
+  }
   const res = await fetch(`${edge}/api/v1/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: store[orazakaKey("EMAIL")], password: store[orazakaKey("PASSWORD")] }) });
   if (!res.ok) throw new Error(`Orazaka sign-in failed (${res.status})`);
   token = (await res.json()).token;
@@ -61,6 +67,7 @@ async function call(method, route, body, { form, raw } = {}) {
   let last;
   for (let attempt = 1; attempt <= 6; attempt++) {
     try {
+      stats.requests++;
       const res = await fetch(edge + route, {
         method,
         signal: AbortSignal.timeout(raw ? 300_000 : 60_000),
@@ -71,6 +78,7 @@ async function call(method, route, body, { form, raw } = {}) {
         await login();
         continue;
       }
+      if (res.status === 429) stats.quota429++;
       if (!res.ok) {
         const refused = new Error(`${method} ${route} -> ${res.status} ${(await res.text()).slice(0, 300)}`);
         refused.status = res.status;
@@ -123,6 +131,27 @@ async function submit(job, rec) {
   return call("POST", "/api/v1/studios/video-generation/runs", { inputs: { prompt: job.prompt, durationSeconds: job.seconds, aspect: job.aspect, seed, model: job.model, image: rec.uploadId } });
 }
 
+/** One call refreshes every run in flight (the run-history list), not one call per run: the API-key quota counts requests. */
+const live = new Map();
+let lastList = 0;
+let listing = null;
+async function refreshRuns() {
+  if (listing) return listing;
+  listing = (async () => {
+    try {
+      const list = await call("GET", "/api/v1/studios/runs?size=200");
+      for (const r of list) live.set(r.id, r);
+      stats.listCalls++;
+    } catch (error) {
+      log({ event: "list-failed", message: error.message });
+    } finally {
+      lastList = Date.now();
+      listing = null;
+    }
+  })();
+  return listing;
+}
+const stats = { requests: 0, listCalls: 0, byIdCalls: 0, quota429: 0 };
 const ACTIVE = new Set(["PENDING", "RUNNING", "QUEUED", "AWAITING_APPROVAL"]);
 async function makeOne(job) {
   const key = keyOf(job);
@@ -142,11 +171,17 @@ async function makeOne(job) {
   let run = { status: rec.status };
   while (ACTIVE.has(run.status)) {
     if (Date.now() > deadline + 30 * 60_000) throw new Error("gave up waiting (deadline)");
-    await new Promise((r) => setTimeout(r, job.kind === "image" ? 6000 : 15000));
-    try {
-      run = await call("GET", `/api/v1/studios/runs/${rec.runId}`);
-    } catch (error) {
-      log({ event: "poll-failed", key, message: error.message });
+    await new Promise((r) => setTimeout(r, job.kind === "image" ? 4000 : 10000));
+    if (Date.now() - lastList > 8000) await refreshRuns();
+    else if (listing) await listing;
+    run = live.get(rec.runId) ?? run;
+    if (!live.has(rec.runId) && Date.now() - rec.submittedAt > 120_000) {
+      try {
+        stats.byIdCalls++;
+        run = await call("GET", `/api/v1/studios/runs/${rec.runId}`);
+      } catch (error) {
+        log({ event: "poll-failed", key, message: error.message });
+      }
     }
     if (run.startedAt && !rec.startedAt) rec.startedAt = Date.parse(run.startedAt);
   }
@@ -178,6 +213,15 @@ async function makeOne(job) {
   console.log(`+ ${job.id} ${job.kind} queue ${rec.queueS}s run ${rec.runS}s${mark}`);
 }
 
+if (args.includes("--mint-key")) {
+  await login();
+  const made = await call("POST", "/api/v1/api-keys", { name: "orochia-dev-dataset-batch", scopes: [] });
+  const key = made.key ?? made.apiKey ?? made.token ?? made.value;
+  if (!key) throw new Error(`no key in the answer (fields: ${Object.keys(made)})`);
+  (await import("./qa-store.mjs")).setQaEnv(storeFile, { OROCHIA_DATASET_ORAZAKA_KEY: key });
+  console.log("API key minted into the QA store");
+  process.exit(0);
+}
 await login();
 let next = 0;
 let failed = 0;
@@ -203,5 +247,6 @@ async function worker() {
 }
 await Promise.all(Array.from({ length: concurrency }, worker));
 save();
-console.log(`${phase}: done, ${failed} failed, ${todo.length - next > 0 ? `${todo.length - next} left (deadline)` : "none left"}`);
+log({ event: "api-calls", ...stats });
+console.log(`${phase}: ${stats.listCalls} run-list calls, ${stats.byIdCalls} by-id calls; done, ${failed} failed, ${todo.length - next > 0 ? `${todo.length - next} left (deadline)` : "none left"}`);
 process.exit(failed ? 1 : 0);
