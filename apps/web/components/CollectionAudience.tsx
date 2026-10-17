@@ -1,3 +1,5 @@
+"use client";
+
 import { Globe, Lock, type LucideIcon,UserCheck, UserPlus, Users } from "lucide-react";
 import React from "react";
 

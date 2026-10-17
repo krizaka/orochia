@@ -405,12 +405,7 @@ for (const p of ["/", "/explore", "/explore?q=tokyo", "/explore?tag=acoustic", "
   check(`page ${p} → 200`, r.status === 200, r.status);
 }
 const plid = (await anon.call("/api/creators/elenavox")).json.playlists[0].id;
-{
-  const res = await fetch(`${B}/playlists/${plid}`);
-  const raw = res.status === 200 ? "" : await res.text();
-  const body = (raw.match(/(?:message|Error|digest)[^,;]{0,240}/g) ?? []).slice(0, 12).join(" | ");
-  check("playlist page → 200", res.status === 200, `${res.status} ${res.url} ${body}`);
-}
+check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status === 200);
 
 // Bunny Stream webhook (signature v1, keyed with the library's read-only API key)
 {
