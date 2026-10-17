@@ -3,6 +3,7 @@ import { db, userInvitations, users, profiles, contacts } from "@orochia/db";
 import { and, desc, eq, gt, or, sql } from "drizzle-orm";
 import { appUrl } from "./env";
 import { sendTemplate } from "./mail";
+import { languageFor } from "./account-locale";
 import { HttpError } from "./http";
 import { hoursToMilliseconds } from "date-fns";
 
@@ -71,6 +72,8 @@ export async function createInvitation(inviterId: string, targetEmail: string): 
   const inviterUsername = inviter?.username ?? "";
   await sendTemplate("invitation", {
     to: email,
+    // The invited person is not an account yet: the language of the person inviting.
+    locale: await languageFor(inviterId),
     vars: { inviterName: inviter?.displayName || `@${inviterUsername}`, inviterUsername, link: inviteUrl, expiresInDays: INVITATION_DAYS },
   });
 

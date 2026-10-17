@@ -18,6 +18,7 @@ import {
 } from "@/lib/abuse/signup-guard";
 import { publicChallenge,requireChallenge } from "@/lib/abuse/turnstile";
 import { sendVerificationEmail } from "@/lib/account-tokens";
+import { localeOf } from "@/lib/locales";
 import { SESSION_TTL_SECONDS, setSessionCookie, signSessionToken } from "@/lib/auth";
 import { clientIp } from "@/lib/client-ip";
 import { isDemoMode } from "@/lib/env";
@@ -129,6 +130,8 @@ export async function POST(req: NextRequest) {
           isVerified: true,
           isAgeVerified: true,
           dateOfBirth,
+          // Read in the language of the page that asked: its e-mails and notifications follow.
+          locale: localeOf(req.headers),
         })
         .returning();
       await tx.insert(profiles).values({ userId: user.id, displayName: input.displayName });
