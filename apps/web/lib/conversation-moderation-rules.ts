@@ -1,6 +1,7 @@
 /** What an operator may do about a reported conversation, and how much of it they read (ADR 0002). */
 
 /** The reported message and this many either side: moderation never reads a whole group. */
+// @fixed: a moderator reads the message and ten either side, never a whole group (ADR 0002)
 export const NEIGHBOUR_WINDOW = 10;
 
 export const MODERATION_ACTIONS = ["remove_message", "remove_member", "archive"] as const;

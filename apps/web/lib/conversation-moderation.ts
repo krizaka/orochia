@@ -1,6 +1,7 @@
 import { complianceReports, conversationMembers, conversations, db, directMessages, users } from "@orochia/db";
 import { and, asc, between, eq, isNull, sql } from "drizzle-orm";
 
+import { ConversationKind } from "./conversation-kinds";
 import { contextRange } from "./conversation-moderation-rules";
 import { HttpError } from "./http";
 import { emitUnread, emitUserEvent } from "./messaging";
@@ -53,7 +54,7 @@ export async function moderateConversation(input: ModerationInput): Promise<void
       .where(and(eq(directMessages.id, input.messageId), eq(directMessages.conversationId, input.conversationId)))
       .returning({ id: directMessages.id });
     if (removed.length === 0) throw new HttpError(404, "Message not found");
-  } else if (conversation.kind !== "group") {
+  } else if (conversation.kind !== ConversationKind.Group) {
     throw new HttpError(409, "Only a group can be moderated this way", { code: "NOT_A_GROUP" });
   } else if (input.action === "remove_member") {
     const removed = await db
