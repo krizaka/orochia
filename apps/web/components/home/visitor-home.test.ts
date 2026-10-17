@@ -2,7 +2,8 @@ import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
-import { HERO_STEPS, VISITOR_SECTIONS } from "../../lib/visitor-home";
+import { HERO_CLIP, HERO_STEPS, TAKE_BEATS, TAKE_SECONDS, VISITOR_SECTIONS } from "../../lib/visitor-home";
+import { beatAt } from "./HomeTour";
 
 const read = (rel: string) => readFileSync(new URL(rel, import.meta.url), "utf8");
 const messages = JSON.parse(read("../../messages/en.json")) as { home: { visitor: Record<string, unknown> } };
@@ -24,8 +25,22 @@ describe("a signed-out visitor's home tells one story", () => {
   });
 
   it("plays the real recordings of the app (the demo personas' journey), never a mock-up", () => {
-    expect(HERO_STEPS.map((s) => s.clip)).toEqual(["alex-discover", "alex-watch", "alex-story", "elena-earnings"]);
+    expect(HERO_STEPS.map((s) => s.id)).toEqual(["find", "watch", "tip", "earn"]);
+    expect(HERO_CLIP).toBe("home-phone");
     expect(read("./VisitorHome.tsx")).toContain("tourRecording");
+    // One continuous take of the app on a phone, in a device frame over a blur of itself: never four stills or a browser window.
+    expect(read("./HomeTour.tsx")).toContain('kind="phone"');
+  });
+
+  it("follows the take: every language has one beat per step, ascending, inside the take", () => {
+    for (const beats of Object.values(TAKE_BEATS)) {
+      expect(beats).toHaveLength(HERO_STEPS.length);
+      expect(beats[0]).toBe(0);
+      expect(beats.every((b, i) => i === 0 || b > beats[i - 1]!)).toBe(true);
+      expect(beats.at(-1)!).toBeLessThan(TAKE_SECONDS);
+    }
+    expect(beatAt(TAKE_BEATS.en, 0)).toBe(0);
+    expect(beatAt(TAKE_BEATS.en, TAKE_BEATS.en[2]! + 0.1)).toBe(2);
   });
 
   it("previews the real feed, read from the database (feedPage), veiled as for any visitor", () => {
@@ -51,7 +66,7 @@ describe("a signed-out visitor's home tells one story", () => {
 
   it("loads its proof first: preconnects to the media CDN and preloads the first step's poster at high priority", () => {
     const view = read("./VisitorHome.tsx");
-    expect(view).toMatch(/preconnect\(new URL\(steps\[0\]!\.poster\)\.origin\)/);
-    expect(view).toMatch(/<link rel="preload" as="image" href=\{steps\[0\]!\.poster\} fetchPriority="high" \/>/);
+    expect(view).toMatch(/preconnect\(new URL\(take\.poster\)\.origin\)/);
+    expect(view).toMatch(/<link rel="preload" as="image" href=\{take\.poster\} fetchPriority="high" \/>/);
   });
 });

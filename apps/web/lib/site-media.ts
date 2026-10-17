@@ -76,6 +76,12 @@ const FILES: Record<string, string> = {
   "products/orochia/tour/fr/showcase.jpg": "6a01dbf847",
   "products/orochia/tour/fr/showcase.mp4": "0e267c3eae",
   "products/orochia/tour/fr/showcase.webm": "908d9f1951",
+  "products/orochia/tour/en/home-phone.jpg": "34840768c3",
+  "products/orochia/tour/en/home-phone.mp4": "8e29aa420a",
+  "products/orochia/tour/en/home-phone.webm": "77812d59f6",
+  "products/orochia/tour/fr/home-phone.jpg": "8fa72e87ad",
+  "products/orochia/tour/fr/home-phone.mp4": "f41885fae2",
+  "products/orochia/tour/fr/home-phone.webm": "8e391cd349",
   "products/orochia/mobile/clip-age-gate.webm": "1705767387",
   "products/orochia/mobile/clip-age-gate.mp4": "77f0c10471",
   "products/orochia/mobile/clip-age-gate-poster.webp": "d1a1e47ae8",
@@ -139,7 +145,9 @@ export const CREATOR_CLIPS = ["elena-publish", "elena-story", "elena-earnings"] 
 export const SHOWCASE_CLIP = "showcase";
 /** The watch page on its own (the home's step 2, the journey's « watch »); the other clips are the day's moments above. */
 export const WATCH_CLIP = "alex-watch";
-export type TourClip = (typeof FAN_CLIPS)[number] | (typeof CREATOR_CLIPS)[number] | typeof SHOWCASE_CLIP | typeof WATCH_CLIP;
+/** The home's one continuous phone take of dev.orochia.com (`scripts/record-home-phone.mjs`), one per language. */
+export const HOME_TAKE = "home-phone";
+export type TourClip = (typeof FAN_CLIPS)[number] | (typeof CREATOR_CLIPS)[number] | typeof SHOWCASE_CLIP | typeof WATCH_CLIP | typeof HOME_TAKE;
 
 /** Every clip is recorded once per language (`npm run record:tour`): the interface in the clip is the reader's. */
 export const tourRecording = (id: TourClip, locale: Locale): Recording => recording(`products/orochia/tour/${locale}/${id}`);

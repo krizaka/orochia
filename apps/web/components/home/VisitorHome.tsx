@@ -7,11 +7,11 @@ import Link from "next/link";
 import React from "react";
 import { preconnect } from "react-dom";
 
-import { JourneyTour } from "@/components/home/JourneyTour";
+import { HomeTour } from "@/components/home/HomeTour";
 import { Button } from "@/components/ui";
 import { getI18n } from "@/lib/i18n-server";
 import { tourRecording } from "@/lib/site-media";
-import { HERO_STEPS, HOW_STEPS } from "@/lib/visitor-home";
+import { HERO_CLIP, HERO_STEPS, HOW_STEPS, TAKE_BEATS } from "@/lib/visitor-home";
 
 const HOW_ICONS = { find: <SearchIcon />, choose: <UnlockIcon />, support: <TipIcon /> } as const;
 
@@ -22,22 +22,18 @@ const HOW_ICONS = { find: <SearchIcon />, choose: <UnlockIcon />, support: <TipI
  */
 export async function VisitorHome({ preview, share, joinHref, joinLabel }: { preview: React.ReactNode; share: number; joinHref: string; joinLabel: string }) {
   const { t, locale } = await getI18n();
-  const steps = HERO_STEPS.map(({ id, clip }) => {
-    const media = tourRecording(clip, locale);
-    return {
-      id,
-      title: t(`home.visitor.tour.steps.${id}.title`),
-      description: t(`home.visitor.tour.steps.${id}.text`, { share }),
-      alt: t(`home.visitor.tour.steps.${id}.alt`),
-      poster: media.poster,
-      video: { webm: media.webm, mp4: media.mp4 },
-    };
-  });
-  // The first poster is the page's LCP: open the CDN's connection now and fetch it at once (React hoists the link into <head>).
-  preconnect(new URL(steps[0]!.poster).origin);
+  const take = tourRecording(HERO_CLIP, locale);
+  const steps = HERO_STEPS.map(({ id }) => ({
+    id,
+    title: t(`home.visitor.tour.steps.${id}.title`),
+    description: t(`home.visitor.tour.steps.${id}.text`, { share }),
+    alt: t(`home.visitor.tour.steps.${id}.alt`),
+  }));
+  // The take's poster is the page's LCP: open the CDN's connection now and fetch it at once (React hoists the link into <head>).
+  preconnect(new URL(take.poster).origin);
   return (
     <div className="w-full overflow-x-clip" data-testid="home-intro">
-      <link rel="preload" as="image" href={steps[0]!.poster} fetchPriority="high" />
+      <link rel="preload" as="image" href={take.poster} fetchPriority="high" />
       {/* 1 · The promise, and the real app as its proof — painted at once (LCP), never revealed. */}
       <PageHero id="hero" eyebrow={t("home.visitor.eyebrow")} title={t("home.visitor.title")} lead={t("home.visitor.lead", { share })}>
         <Button asChild variant="primary" size="lg" shape="cut" shimmer>
@@ -47,7 +43,7 @@ export async function VisitorHome({ preview, share, joinHref, joinLabel }: { pre
           <Link href={joinHref}>{joinLabel}</Link>
         </Button>
         <figure className="m-0 mt-8 flex basis-full flex-col gap-3">
-          <JourneyTour label={t("home.visitor.tour.label")} steps={steps} words={{ play: t("home.visitor.tour.play"), pause: t("home.visitor.tour.pause"), step: t("home.visitor.tour.step") }} />
+          <HomeTour label={t("home.visitor.tour.label")} steps={steps} beats={TAKE_BEATS[locale]} video={{ webm: take.webm, mp4: take.mp4 }} poster={take.poster} words={{ play: t("home.visitor.tour.play"), pause: t("home.visitor.tour.pause"), step: t("home.visitor.tour.step") }} />
           <figcaption className="text-center text-xs text-fg-muted md:text-start">{t("home.visitor.tour.caption")}</figcaption>
         </figure>
       </PageHero>
