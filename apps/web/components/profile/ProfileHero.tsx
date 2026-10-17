@@ -8,8 +8,10 @@ import { ProfileStoriesRow, StoryAvatarRing } from "@/components/stories/Profile
 import { Avatar, Badge, SocialIcon } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { type MessageKey,t } from "@/lib/i18n";
+import { type BannerVideoView } from "@/lib/banner-types";
 import { defaultAvatarFor, defaultBannerFor, safeImageSrc } from "@/lib/presets";
 
+import { BannerVideo } from "./BannerVideo";
 import { PictureQuickEdit } from "./PictureQuickEdit";
 
 export interface HeroLink {
@@ -35,6 +37,8 @@ export function ProfileHero({
   stats = [],
   actions,
   editable = false,
+  bannerVideo = null,
+  movingCover = false,
 }: {
   displayName: string;
   username: string;
@@ -47,6 +51,10 @@ export function ProfileHero({
   stats?: { label: string; value: string }[];
   actions?: React.ReactNode;
   editable?: boolean;
+  /** A moving cover (APP_VIDEO_BANNER, lib/banner-media.ts): plays over the still when the policy allows. */
+  bannerVideo?: BannerVideoView | null;
+  /** The switch is on: the owner's cover menu offers a moment of their own video. */
+  movingCover?: boolean;
 }) {
   const router = useRouter();
   const { refresh } = useAuth();
@@ -62,12 +70,14 @@ export function ProfileHero({
       {/* Cover */}
       <div className="group relative h-28 overflow-hidden rounded-2xl sm:h-44">
         <img src={safeImageSrc(banner) ?? defaultBannerFor(displayName)} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.02]" />
+        {bannerVideo && banner === bannerUrl && <BannerVideo poster={safeImageSrc(banner) ?? defaultBannerFor(displayName)} video={bannerVideo} />}
         <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-surface-0/70 via-transparent to-transparent" />
         {editable && (
           <PictureQuickEdit
             kind="banner"
             hasPicture={Boolean(banner)}
             current={banner}
+            movingCover={movingCover}
             className="absolute right-3 top-3 sm:right-4 sm:top-4"
             onChanged={(url) => {
               setBanner(url);

@@ -17,6 +17,8 @@ import { StartChallengeButton } from "@/components/challenges/StartChallengeButt
 import { creatorSpaceCta, viewerStateOf } from "@/lib/creator-journey";
 import { t } from "@/lib/i18n";
 import { reconcileVideos } from "@/lib/video-reconcile";
+import { videoBannerEnabled } from "@/lib/banner";
+import { bannerVideoFor } from "@/lib/banner-media";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +76,8 @@ export default async function CreatorPage(props: { params: Promise<{ username: s
           username={creator.username}
           avatarUrl={creator.avatarUrl}
           bannerUrl={creator.bannerUrl}
+          bannerVideo={await bannerVideoFor(creator.id).catch(() => null)}
+          movingCover={videoBannerEnabled()}
           verified={creator.isCreator && creator.isVerified}
           roleLabel={creator.isCreator ? t("profile.creator") : undefined}
           bio={creator.bio}

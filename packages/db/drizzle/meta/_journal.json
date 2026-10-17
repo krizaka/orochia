@@ -113,6 +113,13 @@
       "when": 1792220243307,
       "tag": "0015_analytics_outbox",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1792247398857,
+      "tag": "0016_video_banner",
+      "breakpoints": true
     }
   ]
 }
