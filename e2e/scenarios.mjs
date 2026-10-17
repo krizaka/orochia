@@ -407,7 +407,8 @@ for (const p of ["/", "/explore", "/explore?q=tokyo", "/explore?tag=acoustic", "
 const plid = (await anon.call("/api/creators/elenavox")).json.playlists[0].id;
 {
   const res = await fetch(`${B}/playlists/${plid}`);
-  const body = res.status === 200 ? "" : (await res.text()).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").slice(0, 1500);
+  const raw = res.status === 200 ? "" : await res.text();
+  const body = (raw.match(/(?:message|Error|digest)[^,;]{0,240}/g) ?? []).slice(0, 12).join(" | ");
   check("playlist page → 200", res.status === 200, `${res.status} ${res.url} ${body}`);
 }
 
