@@ -3,7 +3,12 @@
 // Studio run per image on dev.orazaka.com (FLUX.2 [klein], the Mac worker's sd-server), converted with sharp, written
 // under <out>/avatars and <out>/banners with a manifest.json (run id, model, seed, prompt) and a contact sheet.
 //
-//   node scripts/dev-dataset/generate-profile-media.mjs --out ~/.krizaka-worktrees/oro-profile-media [--only <id>]
+//   node scripts/dev-dataset/generate-profile-media.mjs --out ~/.krizaka-worktrees/oro-profile-media [--only <id>] [--spec profile-media-v2.json]
+//
+// profile-media.json is the first batch (banners 4:1, one 1600 file); a spec whose name ends in -v2.json is the second:
+// banners are made at 1536x512 (3:1) and written at 1600 (`<id>.webp`) and 800 (`<id>-800.webp`). Every item of a v2 spec
+// is a CANDIDATE: review contact-avatars.png / contact-banners.png, keep the best, add them to apps/web/lib/presets.manifest.json.
+// The one RunPod pod is shared (runpod-guard.py status): never start a second one for this.
 //
 // Needs the Mac worker on the queue (heavy lock). Credentials: the Orazaka QA account from the credentials file.
 import fs from "node:fs";
@@ -33,9 +38,11 @@ const env = Object.fromEntries(
     .filter(Boolean)
     .map((m) => [m[1], m[2].replace(/^["']|["']$/g, "")]),
 );
-const spec = JSON.parse(fs.readFileSync(path.join(here, "profile-media.json"), "utf8"));
+const specFile = opt("spec", "profile-media.json");
+const wide = specFile.endsWith("-v2.json");
+const spec = JSON.parse(fs.readFileSync(path.join(here, specFile), "utf8"));
 for (const d of ["avatars", "banners", "raw"]) fs.mkdirSync(path.join(out, d), { recursive: true });
-const manifestFile = path.join(out, "manifest.json");
+const manifestFile = path.join(out, wide ? "manifest-v2.json" : "manifest.json");
 const manifest = fs.existsSync(manifestFile) ? JSON.parse(fs.readFileSync(manifestFile, "utf8")) : { by: "orazaka image-generation (dev.orazaka.com)", items: [] };
 
 // The Orazaka QA account lives in the credentials file under its own names (not this product's environment).
@@ -51,7 +58,7 @@ const api = async (method, url, body) => {
 
 const jobs = [
   ...spec.avatars.map((a) => ({ kind: "avatar", ...a, size: "1024x1024" })),
-  ...spec.banners.map((b) => ({ kind: "banner", ...b, size: "1360x768" })),
+  ...spec.banners.map((b) => ({ kind: "banner", ...b, size: wide ? "1536x512" : "1360x768" })),
 ];
 let failed = 0;
 let n = 0;
@@ -62,7 +69,7 @@ for (const job of jobs) {
     console.log(`= ${job.id}: already made`);
     continue;
   }
-  const seed = String(20261100 + n);
+  const seed = String((wide ? 20262100 : 20261100) + n);
   try {
     const started = Date.now();
     let run = await (await api("POST", "/api/v1/studios/image-generation/runs", { inputs: { prompt: `${job.prompt}. ${spec.style}`, size: job.size, seed } })).json();
@@ -77,7 +84,12 @@ for (const job of jobs) {
     if (job.kind === "avatar") {
       for (const px of [512, 256]) await sharp(raw).resize(px, px).webp({ quality: 88 }).toFile(path.join(out, "avatars", `${job.id}-${px}.webp`));
     } else {
-      await sharp(raw).resize(1600, 400, { fit: "cover", position: "centre" }).webp({ quality: 86 }).toFile(path.join(out, "banners", `${job.id}.webp`));
+      if (wide) {
+        await sharp(raw).resize(1600, 533, { fit: "cover", position: "centre" }).webp({ quality: 86 }).toFile(path.join(out, "banners", `${job.id}.webp`));
+        await sharp(raw).resize(800, 267, { fit: "cover", position: "centre" }).webp({ quality: 84 }).toFile(path.join(out, "banners", `${job.id}-800.webp`));
+      } else {
+        await sharp(raw).resize(1600, 400, { fit: "cover", position: "centre" }).webp({ quality: 86 }).toFile(path.join(out, "banners", `${job.id}.webp`));
+      }
     }
     manifest.items.push({ id: job.id, kind: job.kind, style: job.style ?? null, prompt: job.prompt, seed, orazakaRunId: run.id, studio: `image-generation ${run.blueprintVersion}`, runSeconds: Math.round((Date.now() - started) / 1000) });
     fs.writeFileSync(manifestFile, `${JSON.stringify(manifest, null, 2)}\n`);
