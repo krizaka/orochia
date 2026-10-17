@@ -26,6 +26,7 @@ vi.mock("./presence", () => ({
   presenceBeat: vi.fn(async () => undefined),
   presenceLeave: vi.fn(async () => undefined),
   presenceCircle: vi.fn(async () => []),
+  forgetCircle: vi.fn(),
   presenceOf: vi.fn(async () => ({})),
   presenceTopic: (id: string) => `presence:${id}`,
 }));

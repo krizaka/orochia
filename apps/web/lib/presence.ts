@@ -2,6 +2,7 @@ import { db, users } from "@orochia/db";
 import { type ConnectionState, DEFAULT_PRESENCE, type PresenceChange, type PresenceState } from "@krizaka/realtime";
 import { eq, inArray, sql } from "drizzle-orm";
 
+import { createCircleCache } from "./circle-cache";
 import { PRESENCE_CIRCLE_LIMIT } from "./presence-rules";
 import { publish, realtimeBus } from "./realtime";
 
@@ -31,7 +32,7 @@ export interface PresenceEvent extends PresenceView {
  * both showing their presence, and an accepted contact, an exchange (both wrote) or an approved follow of a creator.
  * Most recent relationships first, at most PRESENCE_CIRCLE_LIMIT.
  */
-export async function presenceCircle(viewerId: string, limit = PRESENCE_CIRCLE_LIMIT): Promise<string[]> {
+async function loadPresenceCircle(viewerId: string, limit: number): Promise<string[]> {
   const result = await db.execute<{ id: string }>(sql`
     with me as (
       select coalesce(p.show_presence, true) as shows
@@ -74,6 +75,20 @@ export async function presenceCircle(viewerId: string, limit = PRESENCE_CIRCLE_L
      limit ${limit}`);
   return result.rows.map((r) => r.id);
 }
+
+const CIRCLE_TTL_MS = 30_000;
+const circleHolder = globalThis as unknown as { __orochiaCircles?: ReturnType<typeof createCircleCache> };
+const circles = () => (circleHolder.__orochiaCircles ??= createCircleCache({ ttlMs: CIRCLE_TTL_MS, load: (id) => loadPresenceCircle(id, PRESENCE_CIRCLE_LIMIT) }));
+
+/**
+ * The circle, remembered for 30 s per account (one query for a reconnect storm, #158) and forgotten at once when a
+ * block, a setting or a relationship changes it on this instance (`circleChanged`; other instances learn through the
+ * `circle_changed` event their streams receive).
+ */
+export const presenceCircle = (viewerId: string, limit = PRESENCE_CIRCLE_LIMIT): Promise<string[]> =>
+  limit === PRESENCE_CIRCLE_LIMIT ? circles().get(viewerId) : loadPresenceCircle(viewerId, limit);
+
+export const forgetCircle = (userId: string) => circles().invalidate(userId);
 
 /** The presence of `ids` as `viewerId` may see it: people outside the circle are simply absent from the answer. */
 export async function presenceFor(viewerId: string, ids: string[]): Promise<Record<string, PresenceView>> {
@@ -151,7 +166,10 @@ export async function presenceLeave(userId: string, connectionId: string) {
 
 /** A relationship changed between two accounts (contact, approved follow, exchange, block): both rebuild their circle. */
 export function circleChanged(...userIds: string[]) {
-  for (const id of new Set(userIds)) void publish(`user:${id}`, { type: "circle_changed" });
+  for (const id of new Set(userIds)) {
+    forgetCircle(id);
+    void publish(`user:${id}`, { type: "circle_changed" });
+  }
 }
 
 /**
