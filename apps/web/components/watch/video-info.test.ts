@@ -26,7 +26,8 @@ describe("the video information", () => {
   });
   it("is one quiet meta line plus a disclosure: no grid of boxes, 'Ready' hidden", () => {
     const out = html(null);
-    expect(out).toContain("HD 720p");
+    expect(out).not.toContain("HD");
+    expect(out).toContain("704×1280");
     expect(out).toContain("9:16");
     expect(out).toContain("0:05");
     expect(out).toContain("24 fps");
