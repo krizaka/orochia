@@ -13,6 +13,7 @@ import { SaveToPlaylist } from "@/components/SaveToPlaylist";
 import { TipModal } from "@/components/TipModal";
 import { OwnerBar } from "@/components/watch/OwnerBar";
 import { VideoInfo } from "@/components/watch/VideoInfo";
+import { withoutCredit } from "@/lib/ai-credit";
 import type { VideoVisibility } from "@/lib/visibility";
 import { Avatar, Button, buttonVariants, cn, orochiaButton, Skeleton } from "@/components/ui";
 import { VideoComments } from "@/components/VideoComments";
@@ -371,9 +372,9 @@ export default function WatchClient() {
 
               <VideoInfo video={{ width: details.width, height: details.height, resolutions: details.resolutions, framerate: details.framerate, durationSeconds: details.durationSeconds, createdAt: details.createdAt, status: details.status, description: details.description }} />
 
-              {details.description && (
+              {withoutCredit(details.description) && (
                 <p className="mt-4 text-sm text-fg-secondary leading-relaxed bg-surface-2/30 rounded-2xl p-4 border border-border-subtle whitespace-pre-line shadow-xs">
-                  {details.description}
+                  {withoutCredit(details.description)}
                 </p>
               )}
 

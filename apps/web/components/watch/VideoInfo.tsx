@@ -1,8 +1,11 @@
 "use client";
 
-import { DescriptionList } from "@krizaka/ui/description-list";
+import { Badge } from "@krizaka/ui/badge";
+import { Popover } from "@krizaka/ui/popover";
+import { Check, Copy, Sparkles } from "lucide-react";
 import React from "react";
 
+import { type AiCredit, parseAiCredit, shortRunId } from "@/lib/ai-credit";
 import { t } from "@/lib/i18n";
 import { aspectLabel, qualityOf } from "@/lib/video-quality";
 
@@ -21,8 +24,7 @@ const clock = (secs: number) => `${Math.floor(secs / 60)}:${String(Math.floor(se
 
 /** The credit line Orazaka-made clips carry in their description ("Made with Orazaka — run <id> (<model>)."). */
 export function creditOf(description?: string | null): string | null {
-  const m = description?.match(/Made with Orazaka[^\n]*/);
-  return m ? m[0] : null;
+  return parseAiCredit(description)?.line ?? null;
 }
 
 function statusLabel(status: string): string {
@@ -42,25 +44,117 @@ function statusLabel(status: string): string {
   }
 }
 
-/** What the video is, read from the file (Bunny Stream's metadata kept on the row), never guessed. */
+function fpsOf(framerate?: number | null): string | null {
+  return framerate ? t("info.fps", { fps: Number(framerate.toFixed(framerate % 1 < 0.01 ? 0 : 1)) }) : null;
+}
+
+function CopyRunId({ runId }: { runId: string }) {
+  const [done, setDone] = React.useState(false);
+  return (
+    <button
+      type="button"
+      aria-label={done ? t("info.ai.copied") : t("info.ai.copy")}
+      title={t("info.ai.copy")}
+      onClick={() => {
+        void navigator.clipboard?.writeText(runId).then(() => {
+          setDone(true);
+          window.setTimeout(() => setDone(false), 1500);
+        });
+      }}
+      className="inline-flex size-6 items-center justify-center rounded-md text-fg-secondary hover:bg-surface-3 hover:text-fg focus-visible:outline-2 focus-visible:outline-accent"
+    >
+      {done ? <Check className="size-3.5" aria-hidden /> : <Copy className="size-3.5" aria-hidden />}
+    </button>
+  );
+}
+
+/** The AI disclosure: one small badge, the provenance (run, model, hardware) in a popover. */
+export function AiBadge({ credit }: { credit: AiCredit }) {
+  return (
+    <Popover.Root>
+      <Popover.Trigger asChild>
+        <button type="button" data-testid="ai-badge" aria-label={t("info.ai.title")} className="rounded-full focus-visible:outline-2 focus-visible:outline-accent">
+          <Badge tone="accent" size="md">
+            <Sparkles className="size-3" aria-hidden />
+            {t("info.ai.badge")}
+          </Badge>
+        </button>
+      </Popover.Trigger>
+      <Popover.Content align="start" className="w-72 max-w-[calc(100vw-2rem)] p-3 text-sm" data-testid="ai-popover">
+        <p className="font-semibold text-fg">{t("info.ai.madeWith")}</p>
+        <dl className="mt-2 grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-1 text-xs">
+          {credit.runId && (
+            <>
+              <dt className="text-fg-secondary">{t("info.ai.run")}</dt>
+              <dd className="flex items-center gap-1 font-mono text-fg" data-testid="ai-run">
+                <span title={credit.runId}>{shortRunId(credit.runId)}</span>
+                <CopyRunId runId={credit.runId} />
+              </dd>
+            </>
+          )}
+          {credit.model && (
+            <>
+              <dt className="text-fg-secondary">{t("info.ai.model")}</dt>
+              <dd className="text-fg">{credit.model}</dd>
+            </>
+          )}
+          {credit.hardware && (
+            <>
+              <dt className="text-fg-secondary">{t("info.ai.hardware")}</dt>
+              <dd className="text-fg">{credit.hardware}</dd>
+            </>
+          )}
+        </dl>
+      </Popover.Content>
+    </Popover.Root>
+  );
+}
+
+/** What the video is, read from the file: one quiet line under the title, the rest one click away. */
 export function VideoInfo({ video }: { video: VideoInfoData }) {
   const q = qualityOf(video.resolutions, video.width, video.height);
   const aspect = aspectLabel(video.width, video.height);
-  const credit = creditOf(video.description);
+  const credit = parseAiCredit(video.description);
+  const fps = fpsOf(video.framerate);
+  const uploaded = new Date(video.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const notReady = video.status && video.status !== "READY" ? statusLabel(video.status) : null;
+  const meta = [q?.label ?? (video.width && video.height ? `${video.width}×${video.height}` : null), aspect, clock(video.durationSeconds), fps, uploaded].filter(Boolean) as string[];
   const dash = t("info.unknown");
-  const items = [
-    { term: t("info.resolution"), details: video.width && video.height ? `${video.width}×${video.height}${q ? ` · ${q.label}` : ""}` : dash },
-    { term: t("info.aspect"), details: aspect ?? dash },
-    { term: t("info.duration"), details: clock(video.durationSeconds) },
-    { term: t("info.framerate"), details: video.framerate ? t("info.fps", { fps: Number(video.framerate.toFixed(video.framerate % 1 < 0.01 ? 0 : 1)) }) : dash },
-    { term: t("info.uploaded"), details: new Date(video.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) },
-    { term: t("info.status"), details: video.status ? statusLabel(video.status) : dash },
-    ...(credit ? [{ term: t("info.credit"), details: credit }] : []),
+  const technical: Array<[string, string]> = [
+    [t("info.resolution"), video.width && video.height ? `${video.width}×${video.height}` : dash],
+    [t("info.aspect"), aspect ?? dash],
+    [t("info.duration"), clock(video.durationSeconds)],
+    [t("info.framerate"), fps ?? dash],
+    [t("info.uploaded"), uploaded],
+    [t("info.status"), video.status ? statusLabel(video.status) : dash],
   ];
   return (
-    <section aria-label={t("info.title")} data-testid="video-info" className="mt-4 rounded-2xl border border-border-subtle bg-surface-2/30 p-4">
-      <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-fg-secondary">{t("info.title")}</h2>
-      <DescriptionList layout="grid" items={items} />
+    <section aria-label={t("info.title")} data-testid="video-info" className="mt-3">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs text-fg-secondary" data-testid="video-meta">
+        {meta.map((m, i) => (
+          <React.Fragment key={m}>
+            {i > 0 && <span aria-hidden>·</span>}
+            <span>{m}</span>
+          </React.Fragment>
+        ))}
+        {notReady && (
+          <Badge tone={video.status === "FAILED" ? "danger" : "warning"} size="sm" data-testid="video-status">
+            {notReady}
+          </Badge>
+        )}
+        {credit && <AiBadge credit={credit} />}
+      </div>
+      <details className="group mt-2" data-testid="video-technical">
+        <summary className="inline-flex cursor-pointer list-none text-xs text-fg-secondary hover:text-fg [&::-webkit-details-marker]:hidden">{t("info.technical")}</summary>
+        <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-xs">
+          {technical.map(([term, value]) => (
+            <React.Fragment key={term}>
+              <dt className="text-fg-secondary">{term}</dt>
+              <dd className="text-fg">{value}</dd>
+            </React.Fragment>
+          ))}
+        </dl>
+      </details>
     </section>
   );
 }
