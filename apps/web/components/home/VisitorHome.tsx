@@ -9,8 +9,6 @@ import { preconnect } from "react-dom";
 
 import { JourneyTour } from "@/components/home/JourneyTour";
 import { Button } from "@/components/ui";
-import type { VideoCardProps } from "@/components/VideoCard";
-import { VideoGrid } from "@/components/VideoGrid";
 import { t } from "@/lib/i18n";
 import { tourRecording } from "@/lib/site-media";
 import { HERO_STEPS, HOW_STEPS } from "@/lib/visitor-home";
@@ -19,10 +17,10 @@ const HOW_ICONS = { find: <SearchIcon />, choose: <UnlockIcon />, support: <TipI
 
 /**
  * A signed-out visitor's home (lib/visitor-home.ts): the promise with the real app playing (the demo personas' recordings),
- * the real feed as a visitor sees it (read from the database, adult ratings veiled), how it works in three steps, the
+ * the real feed as a visitor sees it (VisitorPreview, streamed), how it works in three steps, the
  * creator side with the share computed from the fee setting, the way in. A member gets the feed itself.
  */
-export function VisitorHome({ videos, share, joinHref, joinLabel, shortsMaxSeconds }: { videos: VideoCardProps[]; share: number; joinHref: string; joinLabel: string; shortsMaxSeconds?: number }) {
+export function VisitorHome({ preview, share, joinHref, joinLabel }: { preview: React.ReactNode; share: number; joinHref: string; joinLabel: string }) {
   const steps = HERO_STEPS.map(({ id, clip }) => {
     const media = tourRecording(clip);
     return {
@@ -66,7 +64,7 @@ export function VisitorHome({ videos, share, joinHref, joinLabel, shortsMaxSecon
           </Button>
         }
       >
-        {videos.length ? <VideoGrid videos={videos} shortsMaxSeconds={shortsMaxSeconds} /> : <p className="text-fg-secondary">{t("home.visitor.preview.empty")}</p>}
+        {preview}
       </Section>
 
       {/* 3 · How it works — three steps for fans; the whole journey is /how-it-works. */}

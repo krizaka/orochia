@@ -29,9 +29,18 @@ describe("a signed-out visitor's home tells one story", () => {
   });
 
   it("previews the real feed, read from the database (feedPage), veiled as for any visitor", () => {
+    const preview = read("./VisitorPreview.tsx");
+    expect(preview).toMatch(/feedPage\(\{ sort: FeedSort\.ForYou, viewerId: null, limit: PREVIEW_SIZE \}/);
+    expect(preview).toContain("<VideoGrid");
+  });
+
+  it("paints the hero without waiting for the database: the preview streams in its own Suspense", () => {
     const page = read("../../app/(home)/page.tsx");
-    expect(page).toMatch(/feedPage\(\{ sort: FeedSort\.ForYou, viewerId: null, limit: PREVIEW_SIZE \}/);
-    expect(read("./VisitorHome.tsx")).toContain("<VideoGrid");
+    const visitor = page.match(/if \(!viewer && !asked\) \{[\s\S]*?\n {2}\}\n/)?.[0] ?? "";
+    expect(visitor).toContain("<VisitorHome");
+    expect(visitor).not.toMatch(/await /);
+    expect(page.indexOf("if (!viewer && !asked)")).toBeLessThan(page.indexOf("await feedSettings"));
+    expect(page).toMatch(/<Suspense fallback=\{<PreviewPending \/>\}>\s*<VisitorPreview \/>/);
   });
 
   it("has one primary action per section, and the flamingo's promise as the film says it", () => {
