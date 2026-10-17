@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@krizaka/ui/badge";
+import { MetaRow } from "@krizaka/ui/meta-row";
 import { Popover } from "@krizaka/ui/popover";
 import { Check, Copy, Sparkles } from "lucide-react";
 import React from "react";
@@ -130,20 +131,19 @@ export function VideoInfo({ video }: { video: VideoInfoData }) {
   ];
   return (
     <section aria-label={t("info.title")} data-testid="video-info" className="mt-3">
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs text-fg-secondary" data-testid="video-meta">
-        {meta.map((m, i) => (
-          <React.Fragment key={m}>
-            {i > 0 && <span aria-hidden>·</span>}
-            <span>{m}</span>
-          </React.Fragment>
-        ))}
-        {notReady && (
-          <Badge tone={video.status === "FAILED" ? "danger" : "warning"} size="sm" data-testid="video-status">
-            {notReady}
-          </Badge>
-        )}
-        {credit && <AiBadge credit={credit} />}
-      </div>
+      <MetaRow
+        data-testid="video-meta"
+        aria-label={t("info.title")}
+        items={meta}
+        chips={[
+          notReady ? (
+            <Badge key="status" tone={video.status === "FAILED" ? "danger" : "warning"} size="sm" data-testid="video-status">
+              {notReady}
+            </Badge>
+          ) : null,
+          credit ? <AiBadge key="ai" credit={credit} /> : null,
+        ]}
+      />
       <details className="group mt-2" data-testid="video-technical">
         <summary className="inline-flex cursor-pointer list-none text-xs text-fg-secondary hover:text-fg [&::-webkit-details-marker]:hidden">{t("info.technical")}</summary>
         <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-xs">
