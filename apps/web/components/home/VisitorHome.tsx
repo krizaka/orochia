@@ -9,7 +9,7 @@ import { preconnect } from "react-dom";
 
 import { JourneyTour } from "@/components/home/JourneyTour";
 import { Button } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { tourRecording } from "@/lib/site-media";
 import { HERO_STEPS, HOW_STEPS } from "@/lib/visitor-home";
 
@@ -20,7 +20,8 @@ const HOW_ICONS = { find: <SearchIcon />, choose: <UnlockIcon />, support: <TipI
  * the real feed as a visitor sees it (VisitorPreview, streamed), how it works in three steps, the
  * creator side with the share computed from the fee setting, the way in. A member gets the feed itself.
  */
-export function VisitorHome({ preview, share, joinHref, joinLabel }: { preview: React.ReactNode; share: number; joinHref: string; joinLabel: string }) {
+export async function VisitorHome({ preview, share, joinHref, joinLabel }: { preview: React.ReactNode; share: number; joinHref: string; joinLabel: string }) {
+  const { t } = await getI18n();
   const steps = HERO_STEPS.map(({ id, clip }) => {
     const media = tourRecording(clip);
     return {

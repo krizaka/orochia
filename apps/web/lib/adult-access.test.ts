@@ -51,7 +51,7 @@ describe("every entry point that plays, unlocks or pays for a video goes through
 });
 
 describe("the watch page", () => {
-  const source = readFileSync(new URL("../app/watch/[id]/WatchClient.tsx", import.meta.url), "utf8");
+  const source = readFileSync(new URL("../app/[locale]/watch/[id]/WatchClient.tsx", import.meta.url), "utf8");
   it("closes the player on the age-check refusal instead of playing", () => {
     expect(source).toContain('"AGE_CHECK_REQUIRED"');
   });

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 
 import { Button, Chip, cn, Dialog, Sheet, Skeleton, Slider } from "@/components/ui";
 import { SEGMENT_MAX_SECONDS, SEGMENT_MIN_SECONDS } from "@/lib/banner";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 export interface CoverVideo {
   id: string;
@@ -33,6 +33,7 @@ export function BannerMomentDialog({
   loading: boolean;
   onPick: (choice: { videoId: string; startSeconds: number; endSeconds: number; poster: string | null }) => void;
 }) {
+  const { t } = useI18n();
   const [videoId, setVideoId] = useState<string | null>(null);
   const [start, setStart] = useState(0);
   const [length, setLength] = useState(4);

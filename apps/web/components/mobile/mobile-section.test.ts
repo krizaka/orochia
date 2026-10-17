@@ -1,11 +1,17 @@
 import React from "react";
-import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
+
+import { serverHtmlIn } from "@/lib/i18n-test-utils";
 
 import { MobileSection } from "./MobileSection";
 
+vi.mock("@/lib/i18n-server", () => import("@/lib/i18n-test-server"));
+
 describe("the home page's mobile section", () => {
-  const html = renderToStaticMarkup(React.createElement(MobileSection));
+  let html = "";
+  beforeAll(async () => {
+    html = await serverHtmlIn("en", MobileSection, {});
+  });
   it("shows the four steps as phone recordings, played on demand — none autoplays", () => {
     expect((html.match(/<video/g) ?? []).length).toBe(4);
     expect(html).not.toContain("autoplay");

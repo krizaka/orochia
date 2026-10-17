@@ -17,7 +17,7 @@ describe("a signed-out visitor's home tells one story", () => {
   });
 
   it("is shown only to a visitor who did not ask for a feed tab: members, and ?feed=…, get the feed", () => {
-    const page = read("../../app/(home)/page.tsx");
+    const page = read("../../app/[locale]/(home)/page.tsx");
     expect(page).toMatch(/!viewer && !asked/);
     expect(page).toContain("<VisitorHome");
     expect(page).toContain("FeedFilterTabs");
@@ -35,7 +35,7 @@ describe("a signed-out visitor's home tells one story", () => {
   });
 
   it("paints the hero without waiting for the database: the preview streams in its own Suspense", () => {
-    const page = read("../../app/(home)/page.tsx");
+    const page = read("../../app/[locale]/(home)/page.tsx");
     const visitor = page.match(/if \(!viewer && !asked\) \{[\s\S]*?\n {2}\}\n/)?.[0] ?? "";
     expect(visitor).toContain("<VisitorHome");
     expect(visitor).not.toMatch(/await /);

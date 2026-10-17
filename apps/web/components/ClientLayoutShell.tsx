@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React, { useEffect, useRef, useState } from "react";
 
 import { AgeVerificationModal } from "@/components/AgeVerificationModal";
@@ -10,10 +10,11 @@ import { GlobalSearchModal } from "@/components/GlobalSearchModal";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { Navbar } from "@/components/Navbar";
 import { Charts, Toaster } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { UploadManagerProvider } from "@/lib/upload-manager";
 
 export function ClientLayoutShell({ children }: { children: React.ReactNode }) {
+  const { t } = useI18n();
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   // Pages enter with kz-page on navigation, not on the first load: the first paint is never held back by an
   // animation (largest contentful paint). globals.css stills .kz-page until this flag is set.

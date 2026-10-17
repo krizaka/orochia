@@ -3,7 +3,8 @@
 import { LoadMore, MediaGridSkeleton } from "@krizaka/ui/media-grid";
 import { Clapperboard, Clock, Flame, LayoutGrid, Rows3, Smartphone, Sparkles, Users } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React, { useReducer, useState, useSyncExternalStore } from "react";
 
 import { VerticalFeed } from "@/components/feed/VerticalFeed";
@@ -15,7 +16,7 @@ import { feedEmptyActions, type FeedEmptyKind, type FeedTab, type ViewerState } 
 import { type FeedSort } from "@/lib/feed-cursor";
 import { feedReducer, feedStateOf, type FeedTabId, hasMore, type PageData, TabStatus } from "@/lib/feed-state";
 import { FeedLayout, feedLayoutOf, PHONE_QUERY, viewSearch } from "@/lib/feed-view";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor } from "@/lib/presets";
 import { aspectClassOf, orientationOf } from "@/lib/video-aspect";
 
@@ -36,6 +37,7 @@ interface FeedFilterTabsProps {
  * it never offers the sign-up form — a fan explores or opens their creator space, a creator publishes.
  */
 function FeedEmpty({ viewer, kind, tab }: { viewer: ViewerState; kind: FeedEmptyKind; tab: FeedTab }) {
+  const { t } = useI18n();
   const { signupEnabled } = useAuth();
   const actions = feedEmptyActions(viewer, kind, tab, signupEnabled);
   return (
@@ -74,6 +76,7 @@ const SORT_OF: Record<FeedTab, FeedSort> = { foryou: "foryou", latest: "latest",
 const TAB_OF: Record<FeedTab, FeedTabId> = SORT_OF;
 
 export function FeedFilterTabs({ initialTab, initialPage, viewer, unavailable = false, shortsMaxSeconds }: FeedFilterTabsProps) {
+  const { t, number } = useI18n();
   // The open tab lives in the address (?feed=…), so a shared link opens the same feed. Switching tabs rewrites the address in
   // place (no server round trip): each tab keeps its own pages, and asks for its first one when opened.
   const pathname = usePathname();
@@ -221,7 +224,7 @@ export function FeedFilterTabs({ initialTab, initialPage, viewer, unavailable = 
                       {video.title}
                     </h3>
                     <div className="mt-2 flex items-center gap-3 text-xs text-fg-on-media/80 font-mono">
-                      <span>{t("feed.views", { count: video.viewsCount.toLocaleString("en-US") })}</span>
+                      <span>{t("feed.views", { count: video.viewsCount, shown: number(video.viewsCount) })}</span>
                       <span>•</span>
                       <span>{t("feed.minutes", { count: Math.max(1, Math.round(video.durationSeconds / 60)) })}</span>
                     </div>

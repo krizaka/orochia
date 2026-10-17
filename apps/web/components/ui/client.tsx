@@ -29,7 +29,8 @@ import {
 } from "@krizaka/ui/toast";
 import React from "react";
 
-import { currentLocale, t } from "@/lib/i18n";
+import type { Translator } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 type Labelled<P> = Omit<P, "closeLabel"> & { closeLabel?: string };
 
@@ -61,6 +62,7 @@ function useReturnFocus(onOpenAutoFocus: AutoFocus, onCloseAutoFocus: AutoFocus)
 
 /** @krizaka/ui's dialog content with its close button named in the app's language. */
 function DialogContent({ onOpenAutoFocus, onCloseAutoFocus, ...props }: Labelled<DialogContentProps>) {
+  const { t } = useI18n();
   const focus = useReturnFocus(onOpenAutoFocus, onCloseAutoFocus);
   return <UiDialogContent closeLabel={t("common.closeLabel")} {...focus} {...props} />;
 }
@@ -70,17 +72,20 @@ export const Dialog = { ...UiDialog, Content: DialogContent };
 
 /** A sheet (a dialog anchored at the bottom on a phone, centred from `sm` up), close button named in the app's language. */
 export function Sheet({ onOpenAutoFocus, onCloseAutoFocus, ...props }: Labelled<SheetProps>) {
+  const { t } = useI18n();
   const focus = useReturnFocus(onOpenAutoFocus, onCloseAutoFocus);
   return <UiSheet closeLabel={t("common.closeLabel")} {...focus} {...(props as SheetProps)} />;
 }
 
 /** A confirmation (Radix AlertDialog): Cancel is named by the app unless the screen says otherwise. */
 export function AlertDialog({ cancelLabel, ...props }: Omit<AlertDialogProps, "cancelLabel"> & { cancelLabel?: string }) {
+  const { t } = useI18n();
   return <UiAlertDialog cancelLabel={cancelLabel ?? t("common.cancel")} {...props} />;
 }
 
 /** The toasts' region, mounted once in the layout, named in the app's language. */
 export function Toaster(props: Omit<ToasterProps, "label" | "closeLabel">) {
+  const { t } = useI18n();
   return <UiToaster label={t("notifications.region")} closeLabel={t("notifications.dismiss")} {...props} />;
 }
 
@@ -88,7 +93,7 @@ export function Toaster(props: Omit<ToasterProps, "label" | "closeLabel">) {
  * “Removed — Undo”: the action waits (6 s, paused while hovered) before it becomes final. `onCommit` makes it final,
  * `onUndo` puts things back; the undo button is named by the app.
  */
-export function undoToast(message: React.ReactNode, options: Omit<UndoToastOptions, "undoLabel"> & { undoLabel?: string }) {
+export function undoToast(t: Translator, message: React.ReactNode, options: Omit<UndoToastOptions, "undoLabel"> & { undoLabel?: string }) {
   return uiUndoToast(message, { undoLabel: t("common.undo"), ...options });
 }
 
@@ -99,25 +104,29 @@ export const progressToast = (message: React.ReactNode, options: ProgressToastOp
 export const groupedToast = (key: string, message: React.ReactNode, options?: GroupedToastOptions) => uiGroupedToast(key, message, options);
 
 /** The short unit labels of every countdown (d, h, m, s), in the app's language. */
-export const countdownUnits = () => ({ d: t("auction.units.d"), h: t("auction.units.h"), m: t("auction.units.m"), s: t("auction.units.s") });
+export const countdownUnits = (t: Translator) => ({ d: t("auction.units.d"), h: t("auction.units.h"), m: t("auction.units.m"), s: t("auction.units.s") });
 
 /** @krizaka/ui's Countdown with the app's unit labels. */
 export function Countdown({ units, ...props }: Omit<CountdownProps, "units"> & { units?: CountdownProps["units"] }) {
-  return <UiCountdown units={units ?? countdownUnits()} {...props} />;
+  const { t } = useI18n();
+  return <UiCountdown units={units ?? countdownUnits(t)} {...props} />;
 }
 
 /** A figure that climbs into view (or, `trigger="change"`, rolls digit by digit to each new value), in the reader's locale. */
 export function NumberTicker(props: Omit<NumberTickerProps, "locale">) {
+  const { currentLocale } = useI18n();
   return <UiNumberTicker locale={currentLocale()} {...props} />;
 }
 
 /** An amount of US cents that rolls to each new value (a current bid, a pot): the digits move, the reader hears it once. */
 export function MoneyTicker({ cents, ...props }: Omit<NumberTickerProps, "locale" | "value" | "format"> & { cents: number }) {
+  const { currentLocale } = useI18n();
   return <UiNumberTicker locale={currentLocale()} value={cents / 100} format={{ style: "currency", currency: "USD" }} {...props} />;
 }
 
 /** A table of records (sort, cards on a phone, loading / empty states) with the app's words. */
 export function DataTable<T extends object>(props: DataTableProps<T>) {
+  const { t } = useI18n();
   return (
     <UiDataTable
       {...props}
@@ -134,6 +143,7 @@ export function DataTable<T extends object>(props: DataTableProps<T>) {
 
 /** Pages of a list, named in the app's language; the page lives in the address (`getHref`) or the screen's state. */
 export function Pagination(props: PaginationProps) {
+  const { t } = useI18n();
   return (
     <UiPagination
       {...props}
@@ -152,16 +162,19 @@ export function Pagination(props: PaginationProps) {
 
 /** The steps of a task, each state said in the app's words. */
 export function Stepper(props: Omit<StepperProps, "labels">) {
+  const { t } = useI18n();
   return <UiStepper labels={{ done: t("common.steps.done"), current: t("common.steps.current"), upcoming: t("common.steps.upcoming"), error: t("common.steps.error") }} {...props} />;
 }
 
 /** A band sliding forever, its pause button named in the app's language. */
 export function Marquee(props: Omit<MarqueeProps, "pauseLabel" | "playLabel">) {
+  const { t } = useI18n();
   return <UiMarquee pauseLabel={t("common.pauseBand")} playLabel={t("common.playBand")} {...props} />;
 }
 
 /** Every chart below it speaks the app's words and wears the Orochia palette (violet first). Mounted once in the layout. */
 export function Charts({ children }: { children: React.ReactNode }) {
+  const { currentLocale, t } = useI18n();
   return (
     <ChartsProvider
       locale={currentLocale()}
@@ -185,6 +198,7 @@ export function Charts({ children }: { children: React.ReactNode }) {
 
 /** @krizaka/ui's theme toggle (dark → light → system, persisted as `kz-theme`), named for what the next tap does. */
 export function ThemeToggle(props: Omit<ThemeToggleProps, "label">) {
+  const { t } = useI18n();
   return (
     <UiThemeToggle
       variant="ghost"

@@ -1,19 +1,19 @@
 import { audienceListMembers, audienceLists, contentRatings, db, profiles, stories, storyLikes, storyViews, tipsLedger,users } from "@orochia/db";
 import { BunnyApiError, BunnyStreamClient, exceedsLength, generateBunnyStreamToken, mapBunnyApiStatusToOrochia, signBunnyFileUrl } from "@orochia/media";
+import { differenceInMilliseconds } from "date-fns";
 import { and, asc, desc, eq, gt, inArray, isNotNull, isNull, lt, or, sql } from "drizzle-orm";
 
 import { areContacts, assertAdultAccess, isApprovedFollower, paidForChallengeStory } from "./access";
 import { adultAccessAllowed } from "./adult-access";
+import { isVeiled } from "./discoverable";
 import { viewerKey } from "./engagement";
 import { bunnyStreamConfig, requireBunnyStream } from "./env";
-import { isVeiled } from "./discoverable";
 import { HttpError } from "./http";
-import { t } from "./i18n";
 import { signMediaUrl } from "./media-urls";
 import { sendMessage } from "./messaging";
+import { i18nVar } from "./notification-vars";
 import { publicUrlForRef } from "./storage";
 import { holdReason, recordStoredBytes, releaseHeld } from "./storage-usage";
-import { differenceInMilliseconds } from "date-fns";
 
 /**
  * Stories: images or short videos that live 24 hours (Instagram-style). Video stories are Bunny
@@ -362,7 +362,7 @@ async function notifyStoryHeld(storyId: string) {
   const [story] = await db.select({ creatorId: stories.creatorId }).from(stories).where(eq(stories.id, storyId)).limit(1);
   if (!story) return;
   const { notify } = await import("./notifications");
-  await notify({ userId: story.creatorId, event: "storageHeld", vars: { title: t("stories.heldTitle") }, path: "/me/videos" });
+  await notify({ userId: story.creatorId, event: "storageHeld", vars: { title: i18nVar("stories.heldTitle") }, path: "/me/videos" });
 }
 
 /** A story video unsettled for this long is asked about at Bunny (its webhook may never come). */

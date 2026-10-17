@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 
 import { Chip, cn, Skeleton } from "@/components/ui";
-import { t } from "@/lib/i18n";
 import { familiesOf, type PresetAsset } from "@/lib/presets";
+import { useI18n } from "@/lib/i18n-client";
 
 /**
  * The grid of ready-made pictures of the « Pick a picture » dialog: the families as chips (All first), the pictures of the
@@ -24,6 +24,7 @@ export function PresetPicker({
   selectedId: string | null;
   onPick: (preset: PresetAsset) => void;
 }) {
+  const { t, locale } = useI18n();
   const isAvatar = kind === "avatar";
   const [family, setFamily] = useState("all");
   const families = familiesOf(kind, presets);
@@ -55,7 +56,7 @@ export function PresetPicker({
                   p.id === selectedId ? "ring-ring" : "ring-transparent"
                 )}
               >
-                <img src={p.thumbUrl} alt={p.alt.en} loading="lazy" decoding="async" className={cn("w-full bg-surface-3 object-cover", ratio)} />
+                <img src={p.thumbUrl} alt={p.alt[locale]} loading="lazy" decoding="async" className={cn("w-full bg-surface-3 object-cover", ratio)} />
               </button>
             ))}
       </div>

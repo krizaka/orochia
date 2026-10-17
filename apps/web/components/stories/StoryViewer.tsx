@@ -19,14 +19,15 @@ import {
 } from "@krizaka/icons";
 import { Flag, Volume2, VolumeX } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { ReportModal } from "@/components/ReportModal";
 import { TipModal } from "@/components/TipModal";
 import { AlertDialog, Avatar, Badge, cn, Dialog, DropdownMenu, IconButton, toast } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor } from "@/lib/presets";
 import {
   autoAdvances,
@@ -77,6 +78,7 @@ function useReducedMotion() {
 
 /** Who a story is for, as a small badge on the media (@krizaka/ui's scrim Badge; a list's name only for its author). */
 function AudienceBadge({ story }: { story: StoryItem }) {
+  const { t } = useI18n();
   const Icon = AUDIENCE_ICON[story.audience] ?? LockIcon;
   const label = story.audience === "INVITED_ONLY" && story.audienceListName ? story.audienceListName : t(`stories.viewer.audience.${story.audience in AUDIENCE_ICON ? story.audience : "INVITED_ONLY"}` as "stories.viewer.audience.PUBLIC");
   return (
@@ -112,6 +114,7 @@ export function StoryViewer({
   onStoryChange: (storyId: string, change: Partial<StoryItem>) => void;
   onRemoved: () => void;
 }) {
+  const { t } = useI18n();
   const { user } = useAuth();
   const pathname = usePathname();
   const router = useRouter();

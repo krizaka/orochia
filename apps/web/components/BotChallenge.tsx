@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 /**
  * Cloudflare Turnstile (lib/abuse/turnstile.ts): with an "Invisible" site key nobody sees anything unless Cloudflare
@@ -46,6 +46,7 @@ function loadTurnstile(): Promise<void> {
 }
 
 export function BotChallenge({ challenge, action, onToken }: { challenge: PublicChallenge | null; action: string; onToken: (token: string | null) => void }) {
+  const { t } = useI18n();
   const box = useRef<HTMLDivElement>(null);
   const callback = useRef(onToken);
   useEffect(() => {

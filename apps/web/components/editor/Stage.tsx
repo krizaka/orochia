@@ -4,7 +4,7 @@ import { Hand, Play } from "lucide-react";
 import React, { forwardRef, useRef, useState } from "react";
 
 import { cn,Spinner } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { previewFilter, type VideoEdit } from "@/lib/video-edit";
 
 import { useElementSize } from "./media";
@@ -31,6 +31,7 @@ export const Stage = forwardRef<
     videoProps: React.VideoHTMLAttributes<HTMLVideoElement>;
   }
 >(function Stage({ src, edit, natural, playing, progress, onTogglePlay, onFocus, videoProps }, video) {
+  const { t } = useI18n();
   const box = useRef<HTMLDivElement>(null);
   const size = useElementSize(box);
   const [dragging, setDragging] = useState(false);

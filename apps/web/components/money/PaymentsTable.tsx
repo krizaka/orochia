@@ -1,12 +1,12 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React from "react";
 
 import { Badge, DataTable, EmptyState, Pagination } from "@/components/ui";
 import type { EarningKind } from "@/lib/earning-kinds";
-import { t } from "@/lib/i18n";
-import { money } from "@/lib/money";
+import { useI18n } from "@/lib/i18n-client";
 
 export interface PaymentLine {
   id: string;
@@ -21,13 +21,13 @@ const PAGE_SIZE = 10;
 const SORTABLE = ["createdAt", "kind", "netCents"] as const;
 type Column = (typeof SORTABLE)[number];
 
-const day = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
 /**
  * The payments a creator received, on @krizaka/ui's `DataTable` (sortable columns, cards on a phone) and `Pagination`.
  * The sort and the page are the address (`?txsort=netCents-desc&txpage=2`), like every view of the app.
  */
 export function PaymentsTable({ lines }: { lines: PaymentLine[] }) {
+  const { t, money, date } = useI18n();
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -66,7 +66,7 @@ export function PaymentsTable({ lines }: { lines: PaymentLine[] }) {
       density="compact"
       empty={<EmptyState bird="flamingo" title={t("earnings.noTransactions")} className="border-0" />}
       columns={[
-        { id: "createdAt", header: t("earnings.cols.date"), sortable: true, cell: (l) => <span className="whitespace-nowrap text-xs text-fg-muted">{day(l.createdAt)}</span> },
+        { id: "createdAt", header: t("earnings.cols.date"), sortable: true, cell: (l) => <span className="whitespace-nowrap text-xs text-fg-muted">{date(l.createdAt)}</span> },
         {
           id: "kind",
           header: t("earnings.cols.kind"),

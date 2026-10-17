@@ -5,7 +5,7 @@ import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 
 import { Avatar, Badge, IconButton } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor } from "@/lib/presets";
 
 interface Person {
@@ -53,6 +53,7 @@ function Section({ title, empty, people, render }: { title: string; empty: strin
 
 /** Followers to approve (creators), contact requests to answer, and everyone you follow or know. */
 export function NetworkPanel({ isCreator }: { isCreator: boolean }) {
+  const { t } = useI18n();
   const [data, setData] = useState<Network | null>(null);
 
   const load = useCallback(async () => {

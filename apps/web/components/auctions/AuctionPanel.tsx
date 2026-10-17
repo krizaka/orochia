@@ -4,10 +4,9 @@ import { CheckCircle2, Clock, Download, Gavel, Info, Play, ShieldCheck, Sparkles
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
-import { timeAgo } from "@/components/notifications/useNotifications";
 import { Badge, Button, Chip, cn, ConfirmButton, Countdown, Input, MoneyTicker, orochiaButton, Spinner } from "@/components/ui";
-import { type MessageKey,t } from "@/lib/i18n";
-import { money } from "@/lib/money";
+import { type MessageKey, type Translator } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 import { AuctionStatusBadge } from "./AuctionStatusBadge";
 import type { Auction } from "./types";
@@ -16,7 +15,7 @@ import type { Auction } from "./types";
 export { AuctionStatusBadge };
 
 
-const bidderName = (alias: number, mine: boolean) => (mine ? t("auction.you") : t("auction.bidder", { n: alias }));
+const bidderName = (t: Translator, alias: number, mine: boolean) => (mine ? t("auction.you") : t("auction.bidder", { n: alias }));
 
 /**
  * An auction on the watch page, kept current: price, countdown (aligned on the server clock), the viewer's standing, the bid
@@ -36,6 +35,7 @@ export function AuctionPanel({
   onChanged: () => void;
   onOwnBid: (alias: number, balanceCents: number) => void;
 }) {
+  const { t, money, timeAgo } = useI18n();
   const a = auction;
   const { viewer } = a;
   // What the bidder typed, kept while it still reaches the minimum; a new minimum (someone bid) replaces a lower one.
@@ -306,7 +306,7 @@ export function AuctionPanel({
                     {b.mine ? t("auction.youShort") : b.alias}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-medium text-fg">{bidderName(b.alias, b.mine)}</span>
+                    <span className="block text-sm font-medium text-fg">{bidderName(t, b.alias, b.mine)}</span>
                     <span className="block text-[11px] text-fg-muted">{timeAgo(b.createdAt)}</span>
                   </span>
                   {i === 0 && a.status !== "DECLINED" && a.status !== "CANCELLED" && <Trophy className="h-3.5 w-3.5 text-fg-warning" aria-label={t("auction.leading")} />}
@@ -336,6 +336,7 @@ export function AuctionPanel({
 
 /** One line on where the viewer stands: leading, outbid, won, awaiting the creator, the creator's view… */
 function Standing({ auction: a }: { auction: Auction }) {
+  const { t, money } = useI18n();
   const v = a.viewer;
   let tone: "ok" | "warn" | "info" = "info";
   let text: string | null = null;

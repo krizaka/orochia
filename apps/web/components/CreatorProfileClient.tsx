@@ -1,14 +1,16 @@
 "use client";
 
+import { Check, Crown, Film, Flame, Heart, Layers,Lock, Play, Share2, Shield, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Sparkles, Check, Crown, Flame, Shield, Play, Lock, Film, Heart, Share2, Layers } from "lucide-react";
+
+import { PlaylistCard, type PlaylistCardProps } from "@/components/PlaylistCard";
+import { buttonVariants, cn, Tabs } from "@/components/ui";
 import type { VideoCardProps } from "@/components/VideoCard";
 import { VideoGrid } from "@/components/VideoGrid";
-import { PlaylistCard, type PlaylistCardProps } from "@/components/PlaylistCard";
-import { t } from "@/lib/i18n";
-import { buttonVariants, cn, Tabs } from "@/components/ui";
-import Link from "next/link";
+import { useI18n } from "@/lib/i18n-client";
 
 interface CreatorProfileClientProps {
   creator: {
@@ -39,6 +41,7 @@ export function CreatorProfileClient({
   playlists,
   emptyAction,
 }: CreatorProfileClientProps) {
+  const { t } = useI18n();
   // The open tab is in the address (?tab=…), so a link to it opens it.
   type ProfileTab = "all" | "ppv" | "playlists" | "about";
   const router = useRouter();

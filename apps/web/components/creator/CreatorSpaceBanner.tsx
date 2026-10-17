@@ -7,13 +7,14 @@ import React from "react";
 import { buttonVariants } from "@/components/ui";
 import type { UserProfile } from "@/lib/auth-context";
 import { creatorSpaceCta, viewerStateOf } from "@/lib/creator-journey";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 /**
  * On the dashboard of a member or of a creator waiting for the 2257 review: the creator space of this account, one tap
  * away — open it, or read where its review stands. Nothing for a verified creator (the studio is already there).
  */
 export function CreatorSpaceBanner({ user }: { user: Pick<UserProfile, "role" | "isVerified"> }) {
+  const { t } = useI18n();
   const state = viewerStateOf({ role: user.role, isVerified: user.isVerified ?? true });
   if (state !== "member" && state !== "creator-pending") return null;
   const cta = creatorSpaceCta(state)!;

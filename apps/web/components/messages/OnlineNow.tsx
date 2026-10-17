@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 import { PresenceAvatar, presenceLabel } from "./PresenceAvatar";
 import type { OnlinePerson } from "./types";
@@ -12,6 +12,7 @@ import type { OnlinePerson } from "./types";
  * nobody is — never a placeholder.
  */
 export function OnlineNow({ people, onOpen }: { people: OnlinePerson[]; onOpen: (username: string) => void }) {
+  const { t } = useI18n();
   if (people.length === 0) return null;
   return (
     <section aria-labelledby="online-now" className="border-b border-border-default px-4 py-3">
@@ -24,7 +25,7 @@ export function OnlineNow({ people, onOpen }: { people: OnlinePerson[]; onOpen: 
             <button
               type="button"
               onClick={() => onOpen(p.username)}
-              aria-label={`${p.displayName}, ${presenceLabel(p.presence) ?? ""}`}
+              aria-label={`${p.displayName}, ${presenceLabel(t, p.presence) ?? ""}`}
               className="flex w-14 flex-col items-center gap-1 rounded-xl p-1 transition-colors hover:bg-surface-2/60 focus-visible:outline-2 focus-visible:outline-ring"
             >
               <PresenceAvatar src={p.avatarUrl} name={p.displayName} presence={p.presence} size="lg" />

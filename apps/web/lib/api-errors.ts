@@ -1,4 +1,5 @@
-import { type MessageKey,t } from "./i18n";
+import { bytes as formatSize } from "./format";
+import { type MessageKey, type Translator } from "./i18n";
 
 /**
  * Words for the refusals the API answers with a stable `code` (quotas, rate limits, anti-bot): the API's own message is
@@ -40,16 +41,13 @@ const KNOWN = new Set([
   "BIRTH_DATE_REQUIRED",
 ]);
 
-/** 1.4 GB, 820 MB, 12 KB. */
-export function formatBytes(bytes: number): string {
-  if (bytes >= 1024 ** 4) return `${(bytes / 1024 ** 4).toFixed(1)} TB`;
-  if (bytes >= 1024 ** 3) return `${(bytes / 1024 ** 3).toFixed(1)} GB`;
-  if (bytes >= 1024 ** 2) return `${Math.round(bytes / 1024 ** 2)} MB`;
-  return `${Math.max(0, Math.round(bytes / 1024))} KB`;
+/** 1.4 GB, 820 MB, 12 kB — in the language of the translator (Go, Mo, ko in French). */
+export function formatBytes(t: Translator, bytes: number): string {
+  return formatSize(bytes, t.locale);
 }
 
 /** "40 s", "3 min", "2 h" — a Retry-After in words. */
-export function formatWait(seconds: number): string {
+export function formatWait(t: Translator, seconds: number): string {
   const s = Math.max(1, Math.ceil(seconds));
   if (s < 60) return t("apiErrors.wait.seconds", { count: s });
   if (s < 3600) return t("apiErrors.wait.minutes", { count: Math.ceil(s / 60) });
@@ -57,24 +55,24 @@ export function formatWait(seconds: number): string {
 }
 
 /** The message to show for an API refusal. `retryAfter` is the response's Retry-After header, when read. */
-export function apiErrorMessage(body: ApiErrorBody | null | undefined, fallback: string, options: { retryAfter?: string | null; maxFileBytes?: number } = {}): string {
+export function apiErrorMessage(t: Translator, body: ApiErrorBody | null | undefined, fallback: string, options: { retryAfter?: string | null; maxFileBytes?: number } = {}): string {
   const code = body?.code;
   if (code && KNOWN.has(code)) {
-    const wait = formatWait(body?.retryAfterSeconds ?? (Number(options.retryAfter) || 60));
+    const wait = formatWait(t, body?.retryAfterSeconds ?? (Number(options.retryAfter) || 60));
     const used = body?.quota?.usedBytes ?? 0;
     const limit = body?.quota?.limitBytes ?? null;
     return t(`apiErrors.${code}` as MessageKey, {
       wait,
-      left: formatBytes(Math.max(0, (limit ?? 0) - used)),
-      limit: limit === null ? "∞" : formatBytes(limit),
-      max: options.maxFileBytes ? formatBytes(options.maxFileBytes) : "",
+      left: formatBytes(t, Math.max(0, (limit ?? 0) - used)),
+      limit: limit === null ? "∞" : formatBytes(t, limit),
+      max: options.maxFileBytes ? formatBytes(t, options.maxFileBytes) : "",
     });
   }
   return body?.error || fallback;
 }
 
 /** Reads a failed response's body and Retry-After into the message to show. */
-export async function responseErrorMessage(res: Response, fallback: string, options: { maxFileBytes?: number } = {}): Promise<string> {
+export async function responseErrorMessage(t: Translator, res: Response, fallback: string, options: { maxFileBytes?: number } = {}): Promise<string> {
   const body = (await res.json().catch(() => null)) as ApiErrorBody | null;
-  return apiErrorMessage(body, fallback, { retryAfter: res.headers.get("Retry-After"), ...options });
+  return apiErrorMessage(t, body, fallback, { retryAfter: res.headers.get("Retry-After"), ...options });
 }

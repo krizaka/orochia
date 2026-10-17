@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 import { Button, Chip, cn, Dialog, Input, RadioGroup, Sheet, Textarea } from "@/components/ui";
-import { type MessageKey,t } from "@/lib/i18n";
-import { money } from "@/lib/money";
+import { type MessageKey } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 type Kind = "GOAL" | "REQUEST" | "OPEN_CALL";
 const WINDOWS = {
@@ -50,6 +50,7 @@ export function ChallengeComposer({
   initialKind?: Kind;
   creatorUsername?: string;
 }) {
+  const { t, money } = useI18n();
   const router = useRouter();
   const [kind, setKind] = useState<Kind>(initialKind ?? (isCreator ? "GOAL" : "REQUEST"));
   const [title, setTitle] = useState("");

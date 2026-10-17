@@ -6,10 +6,11 @@ import { BackdropMedia } from "@/components/home/BackdropMedia";
 import { Button, buttonVariants, cn, OrochiaLogo, SectionBackdrop } from "@/components/ui";
 import { CREATOR_APPLY_PATH, signUpHref } from "@/lib/creator-journey";
 import { signupEnabled } from "@/lib/features";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 
 /** The closing call to action for creators: the promise in one line, three facts, the way in. Ends tinted (`up`). */
-export function CreatorsCallToAction({ share }: { share: number }) {
+export async function CreatorsCallToAction({ share }: { share: number }) {
+  const { t } = await getI18n();
   return (
     <SectionBackdrop
       direction="up"

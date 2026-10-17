@@ -1,0 +1,23 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
+import { useAuth } from "@/lib/auth-context";
+import { useI18n } from "@/lib/i18n-client";
+
+/** "My profile": a creator's public page, a member's dashboard, or sign-in. */
+export default function ProfilePage() {
+  const { t } = useI18n();
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (!user) router.replace("/auth/login");
+    else if (user.role === "CREATOR") router.replace(`/@${user.username}`);
+    else router.replace("/me");
+  }, [user, isLoading, router]);
+
+  return (<div className="mx-auto max-w-lg px-4 py-24 text-center text-xs text-fg-muted font-mono">{t("profile.loading")}</div>);
+}

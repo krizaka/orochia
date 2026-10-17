@@ -5,7 +5,7 @@ import { z } from "zod";
 import { requireUserWithRole } from "@/lib/auth";
 import { challengeHttpError, challengeIdOr404, notifyApplied } from "@/lib/challenges";
 import { errorResponse, jsonError } from "@/lib/http";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { enforceRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +14,7 @@ const Apply = z.object({ note: z.string().max(280).optional() });
 
 /** A verified creator applies to take an open call, with a short note for its author. */
 export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const { t } = await getI18n();
   try {
     const user = await requireUserWithRole(["CREATOR"]);
     const id = challengeIdOr404((await props.params).id);
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
     after(() => notifyApplied(challenge, user.id));
     return NextResponse.json({ success: true, applicationId: application.id }, { status: 201 });
   } catch (error) {
-    const known = challengeHttpError(error);
+    const known = await challengeHttpError(error);
     if (known) return jsonError(known.status, known.message, known.extra);
     return errorResponse(error, "challenges/apply");
   }

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { responseErrorMessage } from "@/lib/api-errors";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { type LiveEvent, useLiveEvents } from "@/lib/realtime-client";
 
 import { applyMessageToList, applyReceipt, applyReceiptToList, markListRead, mergeMessages } from "./chat-state";
@@ -21,6 +21,7 @@ const visible = () => typeof document !== "undefined" && document.visibilityStat
  * with the account's stream (lib/realtime-client.ts); a reconnection reloads what may have changed meanwhile.
  */
 export function useChat(myId: string | null, activeId: string | null) {
+  const { t } = useI18n();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [listLoaded, setListLoaded] = useState(false);
   const [presence, setPresence] = useState<Record<string, PresenceView>>({});
@@ -76,7 +77,7 @@ export function useChat(myId: string | null, activeId: string | null) {
     setMessages((current) => mergeMessages(quiet ? current : current.filter((m) => m.local && m.conversationId === conversationId), data.messages));
     setThreadState({ loading: false, hasMore: data.hasMore, error: null, loadingOlder: false });
     setConversations((list) => markListRead(list, conversationId));
-  }, []);
+  }, [t]);
 
   const loadOlder = useCallback(async () => {
     const conversationId = active.current;
@@ -245,9 +246,9 @@ export function useChat(myId: string | null, activeId: string | null) {
       if (updated) setConversations(updated);
       return;
     }
-    const error = res ? await responseErrorMessage(res, t("inbox.sendFailed")) : t("inbox.network");
+    const error = res ? await responseErrorMessage(t, res, t("inbox.sendFailed")) : t("inbox.network");
     setMessages((current) => current.map((m) => (m.clientId === message.clientId && m.local ? { ...m, local: "failed", error } : m)));
-  }, []);
+  }, [t]);
 
   const send = useCallback(
     (content: string) => {

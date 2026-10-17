@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { cn, IconButton } from "@/components/ui";
 import type { VideoCardProps } from "@/components/VideoCard";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 const BUTTON = "h-11 min-h-11 w-11 min-w-11 bg-scrim text-fg-on-media backdrop-blur-md hover:bg-scrim";
 
@@ -38,6 +38,7 @@ export function LandscapeSlide({
   onShare: () => void;
   onTip: () => void;
 }) {
+  const { t } = useI18n();
   const ref = useRef<HTMLVideoElement>(null);
   const [paused, setPaused] = useState(false);
 

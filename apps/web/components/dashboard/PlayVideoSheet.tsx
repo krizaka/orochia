@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 
 import { Dialog, Sheet, Spinner } from "@/components/ui";
 import { VideoPlayer } from "@/components/VideoPlayer";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 export interface PlayableVideo {
   id: string;
@@ -19,6 +19,7 @@ export interface PlayableVideo {
  * `/api/videos/:id/stream` as the watch page: signed for the person who asks, who is the owner here.
  */
 export function PlayVideoSheet({ video, onClose }: { video: PlayableVideo | null; onClose: () => void }) {
+  const { t } = useI18n();
   const [streamUrl, setStreamUrl] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
   const id = video?.id;

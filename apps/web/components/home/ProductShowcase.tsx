@@ -4,7 +4,7 @@ import { AuctionIcon, type Icon, PlayIcon, Story24hIcon, TipIcon } from "@krizak
 import React, { useEffect, useRef, useState } from "react";
 
 import { Tabs } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 import { type Scene,SCENE_MS, SCENE_STYLES, SCENES, Screen } from "./showcase/Scenes";
 
@@ -17,6 +17,7 @@ const ICONS: Record<Scene, Icon> = { feed: PlayIcon, stories: Story24hIcon, supp
  * Pauses off-screen; under prefers-reduced-motion every screen shows its final state, still.
  */
 export function ProductShowcase({ share }: { share: number }) {
+  const { t } = useI18n();
   const [index, setIndex] = useState(0);
   const [running, setRunning] = useState(true);
   const [still, setStill] = useState(false);

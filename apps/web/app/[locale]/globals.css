@@ -1,0 +1,208 @@
+/* The Krizaka platform, in this order (orochia-design-system 3.0 README):
+   1. Tailwind CSS v4;
+   2. @krizaka/tailwind — the --kz-* tokens, the role utilities (bg-surface-1, text-fg-secondary, border-border-default,
+      text-fg-accent, text-fg-danger…), the `light:` / `dark:` variants (`.theme-dark` islands stay dark) and the motion signature;
+   3. @krizaka/ui/tailwind.css — Tailwind scans the @krizaka/ui primitives;
+   4. the Orochia identity — the --kz-* roles with the Obsidian Velvet Noir values, the kit's composites. */
+@import "tailwindcss";
+@import "@krizaka/tailwind";
+@import "@krizaka/ui/tailwind.css";
+@import "@krizaka/orochia-design-system/theme.css";
+/* 5. The Orochia brand of @krizaka/tokens (BRAND.md): accent-text, on-accent, ring and the section gradient of
+      SectionBackdrop (--kz-brand-gradient-*), in both themes. */
+@import "@krizaka/tokens/brands/orochia.css";
+
+/* The workspace packages live outside this app. */
+@source "../../../../packages";
+
+/* The app's typefaces are loaded by next/font (app/layout.tsx: --font-jakarta, --font-outfit); the roles read them. */
+:root {
+  --kz-font-sans: var(--font-jakarta), "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --kz-font-display: var(--font-outfit), Outfit, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Orochia web — local product tokens (prefixed, never generic), derived from the roles so both themes follow.
+   --orochia-glass-*    the frosted panels (.glass-panel): a translucent surface-1 over the ambient glow.
+   --orochia-ambient-*  the page's three soft glows (velvet, magenta, indigo) behind everything. */
+:root {
+  --orochia-glass-bg: color-mix(in oklab, var(--kz-surface-1) 78%, transparent);
+  --orochia-glass-border: var(--kz-border-default);
+  --orochia-glass-highlight: color-mix(in oklab, var(--kz-accent) 30%, transparent);
+  --orochia-ambient-1: color-mix(in oklab, var(--kz-accent) 12%, transparent);
+  --orochia-ambient-2: color-mix(in oklab, var(--kz-accent-2) 10%, transparent);
+  --orochia-ambient-3: rgb(99 102 241 / 0.08);
+}
+/* --orochia-device-*  the phone frame of the home showcase: a metal edge and core mixed from the roles, so the frame
+                      is graphite in the dark theme and silver in the light one without a variant.
+   --orochia-google-*  Google's sign-in button: white with near-black text in both themes, as Google's brand rules ask
+                      (a third-party mark, the one place a fixed white is right). */
+:root {
+  --orochia-device-edge: color-mix(in oklab, var(--kz-text-muted) 70%, var(--kz-surface-0));
+  --orochia-device-core: color-mix(in oklab, var(--kz-text-muted) 22%, var(--kz-surface-0));
+  --orochia-google: #ffffff;
+  --orochia-google-hover: #f2f2f2;
+  --orochia-on-google: #1f1f1f;
+}
+@theme inline {
+  --color-device-edge: var(--orochia-device-edge);
+  --color-device-core: var(--orochia-device-core);
+  --color-google: var(--orochia-google);
+  --color-google-hover: var(--orochia-google-hover);
+  --color-on-google: var(--orochia-on-google);
+}
+/* --orochia-backdrop-*  the footage behind the home's sections (components/home/BackdropMedia): how far it is blurred
+                        (depth of field: something moves, nobody is recognisable) and how much of it shows. On the light
+                        theme it is screened onto the section: only its coloured light shows, its shadows vanish — dark
+                        footage would otherwise muddy the page. */
+:root {
+  --orochia-backdrop-blur: 28px;
+  --orochia-backdrop-veil: 0.7;
+}
+html.light {
+  --orochia-backdrop-veil: 1;
+}
+.orochia-depth { --kz-backdrop-blur: var(--orochia-backdrop-blur); }
+.orochia-backdrop-veil { opacity: var(--orochia-backdrop-veil); }
+html.light .orochia-depth > .kz-backdrop-media { mix-blend-mode: screen; }
+/* Section backdrops end exactly on the page surface (the Orochia brand's last stop is a shade off surface-0, which
+   left a visible seam under each section). */
+.kz-backdrop { --kz-brand-gradient-to: var(--kz-surface-0); }
+
+html.light {
+  --orochia-glass-bg: color-mix(in oklab, var(--kz-surface-1) 88%, transparent);
+  --orochia-ambient-1: color-mix(in oklab, var(--kz-accent) 8%, transparent);
+  --orochia-ambient-2: color-mix(in oklab, var(--kz-accent-2) 6%, transparent);
+  --orochia-ambient-3: rgb(99 102 241 / 0.05);
+}
+
+html {
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+  overscroll-behavior-x: none;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  color: var(--kz-text-primary);
+  background-color: var(--kz-surface-0);
+  font-family: var(--kz-font-sans);
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+  position: relative;
+  overscroll-behavior-x: none;
+  -webkit-overflow-scrolling: touch;
+  background-image:
+    radial-gradient(at 0% 0%, var(--orochia-ambient-1) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, var(--orochia-ambient-2) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, var(--orochia-ambient-3) 0px, transparent 50%);
+  background-attachment: fixed;
+  transition: background-color 0.3s var(--kz-ease), color 0.3s var(--kz-ease);
+}
+
+/* Touch Device Stabilization:
+   Prevents hover-based transforms from sticking on iOS touch interactions,
+   which previously caused cards, buttons, and elements to jump/wobble under fingers */
+@media (hover: none) and (pointer: coarse) {
+  a, button, [role="button"], .group {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .hover\:-translate-y-1:hover,
+  .hover\:-translate-y-0\.5:hover,
+  .hover\:-translate-y-2:hover,
+  .hover\:scale-105:hover,
+  .hover\:scale-110:hover,
+  .hover\:scale-\[1\.02\]:hover,
+  .group:hover .group-hover\:scale-105,
+  .group:hover .group-hover\:scale-110,
+  .group:hover .group-hover\:-translate-y-1 {
+    transform: none !important;
+  }
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--kz-font-display);
+  letter-spacing: -0.02em;
+}
+
+/* Glassmorphic panel */
+.glass-panel {
+  background: var(--orochia-glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--orochia-glass-border);
+  transition: border-color 0.2s var(--kz-ease), box-shadow 0.2s var(--kz-ease), transform 0.2s var(--kz-ease);
+}
+
+.glass-panel:hover {
+  border-color: var(--orochia-glass-highlight);
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--kz-surface-0);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--kz-surface-3);
+  border-radius: 9999px;
+  border: 1px solid var(--kz-border-default);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--kz-accent);
+}
+
+/* The first load paints at once; pages enter with kz-page from the first navigation on (ClientLayoutShell). */
+html:not([data-navigated]) .kz-page { animation: none; }
+
+/* The Krizaka motion signature (kz-page, data-reveal, kz-word, kz-sheen, kz-spotlight, kz-lift, kz-marquee,
+   kz-overlay / kz-dialog / kz-pop / kz-fade, --kz-ease) comes from @krizaka/tailwind (@krizaka/ui/motion.css). */
+
+/* A like on a story: the heart pops once (the only motion of the action). Stops under reduced motion. */
+.orochia-like-pop {
+  animation: orochia-like-pop 0.42s var(--kz-ease) both;
+}
+@keyframes orochia-like-pop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.35); }
+  70% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .orochia-like-pop { animation: none; }
+}
+
+/* Documentation pages (/docs): the repository's markdown, on the roles — both themes follow. */
+.doc-prose { color: var(--kz-text-secondary); line-height: 1.7; font-size: 0.95rem; overflow-wrap: anywhere; }
+.doc-prose > :first-child { margin-top: 0; }
+.doc-prose h1 { font-family: var(--kz-font-display); font-size: 2rem; font-weight: 900; color: var(--kz-text-primary); margin: 0 0 1rem; }
+.doc-prose h2 { font-family: var(--kz-font-display); font-size: 1.4rem; font-weight: 800; color: var(--kz-text-primary); margin: 2.2rem 0 0.7rem; }
+.doc-prose h3 { font-size: 1.1rem; font-weight: 700; color: var(--kz-text-primary); margin: 1.6rem 0 0.5rem; }
+.doc-prose p, .doc-prose ul, .doc-prose ol, .doc-prose pre, .doc-prose table, .doc-prose blockquote { margin: 0 0 1rem; }
+.doc-prose ul { list-style: disc; padding-left: 1.4rem; }
+.doc-prose ol { list-style: decimal; padding-left: 1.4rem; }
+.doc-prose a { color: var(--kz-accent-text, var(--kz-accent)); text-decoration: underline; text-underline-offset: 2px; }
+.doc-prose code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85em; padding: 0.1em 0.35em; border-radius: 6px; background: var(--kz-surface-2); color: var(--kz-text-primary); }
+.doc-prose pre { overflow-x: auto; padding: 1rem; border-radius: 14px; background: var(--kz-surface-1); border: 1px solid var(--kz-border-default); }
+.doc-prose pre code { padding: 0; background: none; }
+.doc-prose blockquote { border-left: 3px solid var(--kz-accent); padding-left: 1rem; color: var(--kz-text-secondary); }
+.doc-prose table { display: block; overflow-x: auto; border-collapse: collapse; font-size: 0.85rem; }
+.doc-prose th, .doc-prose td { border: 1px solid var(--kz-border-default); padding: 0.4rem 0.7rem; text-align: left; vertical-align: top; }
+.doc-prose th { background: var(--kz-surface-1); color: var(--kz-text-primary); }
+.doc-prose hr { border: 0; border-top: 1px solid var(--kz-border-subtle); margin: 2rem 0; }
+
+/* Home, vertical feed (a phone): the video owns the screen — the visitor's intro line, the stories rail and the page's padding
+   step aside; the feed tabs float over the top of the first screen (components/FeedFilterTabs.tsx). */
+body:has([data-feed-layout="vertical"]) [data-testid="home-intro"],
+body:has([data-feed-layout="vertical"]) [data-feed-chrome] { display: none; }
+body:has([data-feed-layout="vertical"]) [data-feed-container] { padding: 0; }
+body:has([data-feed-layout="vertical"]) [data-feed-container] > section { margin-top: 0; }

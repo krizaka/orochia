@@ -8,10 +8,11 @@ import { Button, EmptyState } from "@/components/ui";
 import { responseErrorMessage } from "@/lib/api-errors";
 import { useAuth } from "@/lib/auth-context";
 import { conversationPath } from "@/lib/conversation-path";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 /** An invitation to a group: signed out, sign in first (and come back); otherwise one button joins it. */
 export function JoinGroup({ token }: { token: string }) {
+  const { t } = useI18n();
   const router = useRouter();
   const { user, isLoading } = useAuth();
   const [busy, setBusy] = useState(false);
@@ -22,7 +23,7 @@ export function JoinGroup({ token }: { token: string }) {
     setError(null);
     const res = await fetch("/api/groups/join", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token }) }).catch(() => null);
     setBusy(false);
-    if (!res?.ok) return setError(res ? await responseErrorMessage(res, t("inbox.group.joinFailed")) : t("inbox.network"));
+    if (!res?.ok) return setError(res ? await responseErrorMessage(t, res, t("inbox.group.joinFailed")) : t("inbox.network"));
     router.replace(conversationPath(((await res.json()) as { conversationId: string }).conversationId));
   };
 

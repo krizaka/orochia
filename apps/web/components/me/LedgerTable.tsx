@@ -1,14 +1,15 @@
+"use client";
+
 import React from "react";
 
 import { cn, EmptyState } from "@/components/ui";
-import { t } from "@/lib/i18n";
-import { money } from "@/lib/money";
+import { useI18n } from "@/lib/i18n-client";
 
 import type { LedgerLine } from "./MeData";
 
-export const day = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
 export function LedgerTable({ lines, isCreator }: { lines: LedgerLine[]; isCreator: boolean }) {
+  const { t, money, date } = useI18n();
   if (lines.length === 0) return <EmptyState title={t("dashboard.ledger.empty")} />;
   return (
     <div className="overflow-x-auto">
@@ -25,7 +26,7 @@ export function LedgerTable({ lines, isCreator }: { lines: LedgerLine[]; isCreat
         <tbody className="divide-y divide-border-subtle">
           {lines.map((tx) => (
             <tr key={tx.id} className="text-fg-secondary">
-              <td className="py-2.5 pr-4 font-mono">{day(tx.createdAt)}</td>
+              <td className="py-2.5 pr-4 font-mono">{date(tx.createdAt)}</td>
               <td className="py-2.5 pr-4">{tx.entryType.replace(/_/g, " ").toLowerCase()}</td>
               <td className="py-2.5 pr-4">{tx.counterparty}</td>
               <td className="py-2.5 pr-4">{tx.gateway}</td>

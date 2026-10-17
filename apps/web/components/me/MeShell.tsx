@@ -2,14 +2,14 @@
 
 import { BarChart3, Clapperboard, CreditCard, Film, Layers, LayoutDashboard, ListChecks, Settings, Shield, Sparkles, Upload, Users, Wallet } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React from "react";
 
 import { Avatar, Badge, buttonVariants, cn, Select } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
-import { t } from "@/lib/i18n";
-import { activeMeItem, type MeItem, meGroupsFor } from "@/lib/me-nav";
-import { money } from "@/lib/money";
+import { useI18n } from "@/lib/i18n-client";
+import { activeMeItem, meGroupsFor,type MeItem } from "@/lib/me-nav";
 import { defaultAvatarFor } from "@/lib/presets";
 
 import { MeDataProvider, useMeData } from "./MeData";
@@ -41,6 +41,7 @@ function Counter({ id }: { id: string }) {
  * The balance stays in the header whatever the section.
  */
 export function MeShell({ children }: { children: React.ReactNode }) {
+  const { t, money } = useI18n();
   const { user } = useAuth();
   const pathname = usePathname();
   const router = useRouter();

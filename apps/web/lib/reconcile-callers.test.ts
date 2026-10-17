@@ -9,7 +9,7 @@ describe("a lost Bunny webhook is caught up where a creator looks at their uploa
   it.each([
     ["the dashboard API (the creator's own uploads)", "../app/api/me/dashboard/route.ts"],
     ["the upload session", "../app/api/videos/create-upload-session/route.ts"],
-    ["the public creator profile", "../app/creators/[username]/page.tsx"],
+    ["the public creator profile", "../app/[locale]/creators/[username]/page.tsx"],
   ])("%s", (_name, file) => {
     expect(read(file)).toContain("reconcileVideos(");
   });

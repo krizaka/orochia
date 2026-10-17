@@ -5,8 +5,9 @@ import Link from "next/link";
 import React from "react";
 
 import { Avatar, cn } from "@/components/ui";
+import { useI18n } from "@/lib/i18n-client";
 
-import { type NotificationItem, timeAgo } from "./useNotifications";
+import { type NotificationItem } from "./useNotifications";
 
 const ICONS: Record<string, { icon: React.ElementType; tone: string }> = {
   newFollower: { icon: UserPlus, tone: "bg-accent" },
@@ -40,6 +41,7 @@ const ICONS: Record<string, { icon: React.ElementType; tone: string }> = {
 
 /** One notification: who (avatar + event badge), what, when; unread ones are marked. */
 export function NotificationRow({ n, onOpen, compact = false }: { n: NotificationItem; onOpen?: () => void; compact?: boolean }) {
+  const { timeAgo } = useI18n();
   const { icon: Icon, tone } = ICONS[n.event] ?? { icon: Bell, tone: "bg-fg-muted" };
   return (
     <Link

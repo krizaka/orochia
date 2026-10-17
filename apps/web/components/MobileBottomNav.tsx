@@ -2,7 +2,7 @@
 
 import { BookmarkIcon, GlobeIcon, HomeIcon, MessageIcon, PlusIcon, UserIcon } from "@krizaka/icons";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React from "react";
 
 import { useUnreadMessages } from "@/components/messages/useUnreadMessages";
@@ -10,7 +10,7 @@ import { Avatar, cn } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { bottomNavLeaf } from "@/lib/bottom-nav";
 import { creatorSpaceCta, viewerStateOf } from "@/lib/creator-journey";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor } from "@/lib/presets";
 
 /**
@@ -19,6 +19,7 @@ import { defaultAvatarFor } from "@/lib/presets";
  * in, the account and creating exist only here on a phone — the top bar keeps brand, search, theme.
  */
 export function MobileBottomNav() {
+  const { t } = useI18n();
   const pathname = usePathname();
   const { user, isLoading, signupEnabled } = useAuth();
   // Create: upload (verified creator), the creator application of this account (member, pending), sign up first (visitor).

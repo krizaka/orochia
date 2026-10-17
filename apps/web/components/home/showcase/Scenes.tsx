@@ -15,7 +15,7 @@ import {
 import React, { useEffect, useState } from "react";
 
 import { cn,Spinner } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 /**
  * The phone's screens, one flow each, played like the app is used: a finger taps, a sheet slides up, a price moves.
@@ -105,6 +105,7 @@ function Rail({ liked, pulseTip }: { liked: boolean; pulseTip?: boolean }) {
 }
 
 function CreatorLine({ caption }: { caption: string }) {
+  const { t } = useI18n();
   return (
     <div className="absolute bottom-20 left-4 right-16 z-20 text-white">
       <p className="flex items-center gap-1.5 text-[12px] font-bold drop-shadow-md">
@@ -120,6 +121,7 @@ function CreatorLine({ caption }: { caption: string }) {
 
 /** Watch: the vertical feed — a double tap likes, a swipe brings the next video. */
 function Feed({ still }: { still: boolean }) {
+  const { t } = useI18n();
   const step = useSteps(4, 1700, still);
   return (
     <div className="absolute inset-0 overflow-hidden bg-black">
@@ -150,6 +152,7 @@ function Feed({ still }: { still: boolean }) {
 
 /** Stories: three clips in a row, the bars fill, a tap on the right moves on. */
 function Stories({ still }: { still: boolean }) {
+  const { t } = useI18n();
   const step = useSteps(3, 2300, still);
   const names = ["story-1", "story-2", "story-3"];
   return (
@@ -189,6 +192,7 @@ const AMOUNTS = ["$5", "$10", "$25", "$50"];
 
 /** Tip: the coin on the rail opens the sheet, $10, send — the coins fly and the creator's share shows. */
 function Tip({ still, share }: { still: boolean; share: number }) {
+  const { t } = useI18n();
   const step = useSteps(6, 1100, still);
   const open = step >= 2 && step <= 4;
   return (
@@ -246,6 +250,7 @@ const BIDS = [12000, 13500, 15000, 16500];
 
 /** Auction: bids land by alias, the price climbs, a last-minute bid pushes the clock back. */
 function Auction({ still }: { still: boolean }) {
+  const { t } = useI18n();
   const step = useSteps(5, 1250, still);
   const [seconds, setSeconds] = useState(118);
   useEffect(() => {

@@ -6,8 +6,7 @@ import React, { useEffect, useState } from "react";
 
 import { Avatar, Button, cn, ConfirmButton, Dialog, RadioGroup, Sheet, Skeleton, Textarea } from "@/components/ui";
 import type { ChallengeView } from "@/lib/challenges";
-import { t } from "@/lib/i18n";
-import { money } from "@/lib/money";
+import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor } from "@/lib/presets";
 
 import { errorText, postJson } from "./PledgeBox";
@@ -16,6 +15,7 @@ type Option = { id: string; title: string; thumbnailUrl: string | null };
 
 /** The creator picks what they deliver: a ready video of theirs, or a story posted since they committed. */
 function DeliverSheet({ c, open, onClose, onDone }: { c: ChallengeView; open: boolean; onClose: () => void; onDone: () => void }) {
+  const { t, money } = useI18n();
   const [items, setItems] = useState<Option[] | null>(null);
   const [picked, setPicked] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -36,7 +36,7 @@ function DeliverSheet({ c, open, onClose, onDone }: { c: ChallengeView; open: bo
     if (ok) {
       onClose();
       onDone();
-    } else setError(errorText(data));
+    } else setError(errorText(t, money, data));
   };
   return (
     <Dialog.Root open={open} onOpenChange={(open) => !open && onClose()}>
@@ -94,6 +94,7 @@ function DeliverSheet({ c, open, onClose, onDone }: { c: ChallengeView; open: bo
  * withdraws while it is open. Every action reloads the challenge.
  */
 export function ChallengeActions({ c, onChanged }: { c: ChallengeView; onChanged: () => void }) {
+  const { t, money } = useI18n();
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [note, setNote] = useState("");
@@ -104,7 +105,7 @@ export function ChallengeActions({ c, onChanged }: { c: ChallengeView; onChanged
     const { ok, data } = await postJson(url, body);
     setBusy(null);
     if (ok) onChanged();
-    else setError(errorText(data));
+    else setError(errorText(t, money, data));
   };
   const v = c.viewer;
   const base = `/api/challenges/${c.id}`;

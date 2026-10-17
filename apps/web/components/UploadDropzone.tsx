@@ -8,10 +8,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { Badge, Button, buttonVariants, Checkbox, Chip, cn, IconButton, Input, Progress, RadioGroup, Select, Stepper, Switch, Textarea } from "@/components/ui";
 import { apiErrorMessage } from "@/lib/api-errors";
 import { deleteDraft } from "@/lib/drafts";
-import { type MessageKey,t } from "@/lib/i18n";
-import { money } from "@/lib/money";
+import { type MessageKey } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { MAX_TAGS, normalizeTags, suggestTags } from "@/lib/tags";
-import { duration as timeLeft } from "@/lib/units";
 import { useUploadManager } from "@/lib/upload-manager";
 import { uploadSteps } from "@/lib/upload-steps";
 import { EDITOR_MAX_BYTES, type VideoEdit } from "@/lib/video-edit";
@@ -93,6 +92,7 @@ function Step({ n, title, done, children }: { n: number; title: string; done: bo
  * the bytes never cross our servers.
  */
 export function UploadDropzone({ platformFeePercent }: { platformFeePercent: number }) {
+  const { t, duration: timeLeft, money } = useI18n();
   const { startUpload, uploads } = useUploadManager();
   const [file, setFile] = useState<File | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
@@ -196,7 +196,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
       });
       const data = await res.json().catch(() => ({}));
       // Quotas and limits answer a stable code: say it in the app's words (space left, wait, what to do).
-      if (!res.ok) throw new Error(apiErrorMessage(data, t("settings.failed"), { retryAfter: res.headers.get("Retry-After"), maxFileBytes: LIMIT.maxBytes }));
+      if (!res.ok) throw new Error(apiErrorMessage(t, data, t("settings.failed"), { retryAfter: res.headers.get("Retry-After"), maxFileBytes: LIMIT.maxBytes }));
       const { session, videoId } = data as { session: Parameters<typeof startUpload>[0]["session"]; videoId: string };
       // Filed in the chosen collection now; it shows there once encoding is finished.
       if (selectedCollection) {
@@ -211,7 +211,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
         type: "video",
         videoId,
         onSuccess: () => {
-          if (draftId) void deleteDraft(draftId).catch(() => undefined);
+          if (draftId) void deleteDraft(t, draftId).catch(() => undefined);
         },
         onError: (err) => setErrorMessage(err.message || t("settings.failed")),
       });

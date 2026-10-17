@@ -3,11 +3,12 @@
 import React, { Suspense } from "react";
 
 import { Spinner } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 import { MessagesScreen } from "./MessagesScreen";
 
 export function MessagesFallback() {
+  const { t } = useI18n();
   return (
     <div className="flex justify-center py-24 text-fg-muted">
       <Spinner size="md" className="text-current" />

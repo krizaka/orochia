@@ -2,7 +2,8 @@
 
 import { AlertTriangle, Gavel, Pencil, Trash2, Users } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import React, { useState } from "react";
 
 import { Rich } from "@/components/Rich";
@@ -14,8 +15,8 @@ import {
   IconButton,
   undoToast,
 } from "@/components/ui";
-import { t } from "@/lib/i18n";
-import { compact, money } from "@/lib/money";
+import type { Translator } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import type { VideoVisibility } from "@/lib/visibility";
 
 import { StartAuctionSheet } from "../auctions/StartAuctionSheet";
@@ -42,11 +43,12 @@ export interface StudioVideo {
 
 const SORTABLE = ["title", "durationSeconds", "viewsCount", "tipsCount"];
 
-const visibilityLabel = (v: StudioVideo["visibility"]) => t(`publish.audiences.${v}.title`);
+const visibilityLabel = (t: Translator, v: StudioVideo["visibility"]) => t(`publish.audiences.${v}.title`);
 
 const duration = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
 function StatusBadge({ v }: { v: StudioVideo }) {
+  const { t } = useI18n();
   const [label, tone] = v.removedAt
     ? [t("studio.status.removed"), "danger" as const]
     : v.status === "READY"
@@ -61,6 +63,7 @@ function StatusBadge({ v }: { v: StudioVideo }) {
 
 /** The creator's videos on `DataTable` (sortable title, duration, views, tips — the sort in the address; cards on a phone): state, figures, and editing (title, description, visibility, audience, price, tags) or deletion. */
 export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onChange: () => void }) {
+  const { t, money, compact } = useI18n();
   const [editing, setEditing] = useState<StudioVideo | null>(null);
   const [playing, setPlaying] = useState<StudioVideo | null>(null);
   const [auctioning, setAuctioning] = useState<StudioVideo | null>(null);
@@ -70,7 +73,7 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
   const [leaving, setLeaving] = useState<ReadonlySet<string>>(new Set());
   const remove = (v: StudioVideo) => {
     setLeaving((s) => new Set(s).add(v.id));
-    undoToast(t("studio.withdrawn", { title: v.title }), {
+    undoToast(t, t("studio.withdrawn", { title: v.title }), {
       onUndo: () => setLeaving((s) => { const next = new Set(s); next.delete(v.id); return next; }),
       onCommit: () => void fetch(`/api/videos/${v.id}`, { method: "DELETE" }).finally(onChange),
     });
@@ -150,10 +153,10 @@ export function VideoManager({ videos, onChange }: { videos: StudioVideo[]; onCh
               <span className="text-xs text-fg-secondary">
                 {v.visibility === "AUCTION" ? (
                   <Link href={`/watch/${v.id}#auction`} className="inline-flex items-center gap-1 font-semibold text-fg-accent">
-                    <Gavel className="h-3 w-3" aria-hidden /> {visibilityLabel(v.visibility)}
+                    <Gavel className="h-3 w-3" aria-hidden /> {visibilityLabel(t, v.visibility)}
                   </Link>
                 ) : (
-                  visibilityLabel(v.visibility)
+                  visibilityLabel(t, v.visibility)
                 )}
                 {v.visibility === "TIPPED_UNLOCKED" && <span className="ml-1 font-mono text-fg-accent">{money(v.minTipAmountCents)}</span>}
               </span>

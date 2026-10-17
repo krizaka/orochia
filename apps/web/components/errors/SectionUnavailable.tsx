@@ -4,13 +4,14 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { Button, cn, Mascot } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 /**
  * One part of a page that could not load (the database was unavailable — lib/degrade.ts): the rest of the page works,
  * this part says so and tries again in place (a refresh of the server components, no full reload).
  */
 export function SectionUnavailable({ className }: { className?: string }) {
+  const { t } = useI18n();
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   return (

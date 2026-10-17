@@ -3,11 +3,12 @@ import React from "react";
 
 import { PhoneClip } from "@/components/mobile/PhoneClip";
 import { buttonVariants, cn, SectionBackdrop } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { MOBILE_STEPS } from "@/lib/mobile-media";
 
 /** The app on a phone, on the home page: a swipeable row of its recordings, then the way to the explained journey. */
-export function MobileSection() {
+export async function MobileSection() {
+  const { t } = await getI18n();
   return (
     <SectionBackdrop direction="up" dome={false} aria-labelledby="home-mobile" id="mobile">
       <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6">

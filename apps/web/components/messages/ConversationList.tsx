@@ -4,11 +4,10 @@ import { CheckIcon, MessageIcon } from "@krizaka/icons";
 import Link from "next/link";
 import React from "react";
 
-import { timeAgo } from "@/components/notifications/useNotifications";
 import { Badge, cn, EmptyState, Skeleton } from "@/components/ui";
 import { ConversationKind } from "@/lib/conversation-kinds";
 import { conversationPath } from "@/lib/conversation-path";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 import { PresenceAvatar, presenceLabel } from "./PresenceAvatar";
 import { type Conversation, type PresenceView, receiptOf } from "./types";
@@ -39,6 +38,7 @@ export function ConversationList({
   presence: Record<string, PresenceView>;
   typing: Record<string, number>;
 }) {
+  const { t, timeAgo } = useI18n();
   if (!loaded) {
     return (
       <ul className="divide-y divide-border-subtle" aria-busy>
@@ -66,7 +66,7 @@ export function ConversationList({
         const mine = last?.senderId === myId;
         const isTyping = Boolean(typing[c.id]);
         const isGroup = c.kind === ConversationKind.Group;
-        const status = isGroup ? t("inbox.group.membersCount", { count: c.memberCount }) : presenceLabel(presence[other.id]);
+        const status = isGroup ? t("inbox.group.membersCount", { count: c.memberCount }) : presenceLabel(t, presence[other.id]);
         const preview = isTyping
           ? t("inbox.typing")
           : last

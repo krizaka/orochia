@@ -3,7 +3,8 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 import { responseErrorMessage } from "./api-errors";
-import { t } from "./i18n";
+import type { Translator } from "./i18n";
+import { useI18n } from "./i18n-client";
 
 
 export interface UserProfile {
@@ -72,17 +73,18 @@ const AuthContext = createContext<AuthContextType>({
   switchProfile: async () => {},
 });
 
-async function postJson(url: string, body: unknown): Promise<void> {
+async function postJson(t: Translator, url: string, body: unknown): Promise<void> {
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error(await responseErrorMessage(res, t("settings.failed")));
+  if (!res.ok) throw new Error(await responseErrorMessage(t, res, t("settings.failed")));
 }
 
 /** Session state, read from the server (httpOnly cookie) — nothing about the user is stored client-side. */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const { t } = useI18n();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [demoMode, setDemoMode] = useState(false);
@@ -107,12 +109,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [refresh]);
 
   const login = async (identifier: string, password: string) => {
-    await postJson("/api/auth/login", { identifier, password });
+    await postJson(t, "/api/auth/login", { identifier, password });
     await refresh();
   };
 
   const register = async (data: RegisterInput) => {
-    await postJson("/api/auth/register", data);
+    await postJson(t, "/api/auth/register", data);
     await refresh();
   };
 

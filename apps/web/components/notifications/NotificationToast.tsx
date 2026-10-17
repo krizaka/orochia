@@ -4,13 +4,14 @@ import { X } from "lucide-react";
 import React from "react";
 
 import { IconButton, toast } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 import { NotificationRow } from "./NotificationRow";
 import type { NotificationItem } from "./useNotifications";
 
 /** A notification that just arrived, as a toast's content: a tap opens it, the cross dismisses it. */
 export function NotificationToast({ n, onOpen, onDismiss }: { n: NotificationItem; onOpen: () => void; onDismiss: () => void }) {
+  const { t } = useI18n();
   return (
     <div className="relative w-full pr-6">
       <NotificationRow n={n} compact onOpen={onOpen} />

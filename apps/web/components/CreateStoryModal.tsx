@@ -10,7 +10,7 @@ import { Button, Checkbox, Chip, cn, Dialog, Select, Sheet, Textarea } from "@/c
 import { VideoEditor } from "@/components/VideoEditor";
 import { type ApiErrorBody, apiErrorMessage, responseErrorMessage } from "@/lib/api-errors";
 import { deleteDraft } from "@/lib/drafts";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { EDITOR_MAX_BYTES, type VideoEdit } from "@/lib/video-edit";
 
 type Audience = "PUBLIC" | "APPROVED_FOLLOWERS_ONLY" | "CONTACTS_ONLY" | "INVITED_ONLY";
@@ -29,6 +29,7 @@ interface List {
  * published once processed). Audience: everyone, approved followers, contacts or one of my lists.
  */
 export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boolean; onClose: () => void; onSuccess?: () => void }) {
+  const { t } = useI18n();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [caption, setCaption] = useState("");
@@ -129,14 +130,14 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
         form.append("file", file);
         const stored = await fetch("/api/uploads", { method: "POST", body: form });
         const storedData = (await stored.json().catch(() => ({}))) as ApiErrorBody & { data?: { ref: string } };
-        if (!stored.ok || !storedData.data) throw new Error(apiErrorMessage(storedData, t("stories.create.failed"), { retryAfter: stored.headers.get("Retry-After") }));
+        if (!stored.ok || !storedData.data) throw new Error(apiErrorMessage(t, storedData, t("stories.create.failed"), { retryAfter: stored.headers.get("Retry-After") }));
         setProgress(70);
         const res = await fetch("/api/stories", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...common, imageRef: storedData.data.ref }),
         });
-        if (!res.ok) throw new Error(await responseErrorMessage(res, t("stories.create.failed")));
+        if (!res.ok) throw new Error(await responseErrorMessage(t, res, t("stories.create.failed")));
         setDoneMessage(t("stories.create.publishedImage"));
         setState("done");
         onSuccess?.();
@@ -147,7 +148,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
       const data = (await res.json().catch(() => ({}))) as ApiErrorBody & {
         session?: { tusEndpoint: string; headers: { AuthorizationSignature: string; AuthorizationExpire: number; VideoId: string; LibraryId: string } };
       };
-      if (!res.ok || !data.session) throw new Error(apiErrorMessage(data, t("stories.create.failed"), { retryAfter: res.headers.get("Retry-After"), maxFileBytes: UPLOAD_LIMITS.story.maxBytes }));
+      if (!res.ok || !data.session) throw new Error(apiErrorMessage(t, data, t("stories.create.failed"), { retryAfter: res.headers.get("Retry-After"), maxFileBytes: UPLOAD_LIMITS.story.maxBytes }));
       const { session } = data;
       await new Promise<void>((resolve, reject) => {
         new tus.Upload(file, {
@@ -166,7 +167,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
         }).start();
       });
       // Published: the draft it came from has served its purpose.
-      if (draftId) await deleteDraft(draftId).catch(() => undefined);
+      if (draftId) await deleteDraft(t, draftId).catch(() => undefined);
       setDoneMessage(t("stories.create.publishedVideo"));
       setState("done");
       onSuccess?.();

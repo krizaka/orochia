@@ -8,7 +8,7 @@ import { StoryViewer } from "@/components/stories/StoryViewer";
 import { useStoryAddress, useStoryRings } from "@/components/stories/useStories";
 import { Avatar, cn, Skeleton } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor } from "@/lib/presets";
 import { startOf } from "@/lib/story-player";
 
@@ -26,6 +26,7 @@ export function CreatorStoriesBar() {
 }
 
 function StoriesRail() {
+  const { t } = useI18n();
   const { user } = useAuth();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const { rings, load, patchStory } = useStoryRings();

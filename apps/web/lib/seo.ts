@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 
+import type { Translator } from "./i18n";
+import type { Locale } from "./locales";
+
 /**
  * Search and AI discovery: one place for the public origin, the shared metadata and the JSON-LD
  * builders. Only what anyone may see is described — invited-only videos and non-public
@@ -9,10 +12,6 @@ import type { Metadata } from "next";
 /** The public origin. Build time reads it too, so it never throws: production sets NEXT_PUBLIC_APP_URL. */
 export const SITE_URL = (process.env.NEXT_PUBLIC_APP_URL || "https://orochia.com").replace(/\/$/, "");
 export const SITE_NAME = "Orochia";
-export const SITE_DESCRIPTION =
-  "Orochia is an open-source, adult-friendly video platform for independent creators: HD HLS streaming with signed links, " +
-  "followers, contacts, invited audiences and collections, tips and paid unlocks confirmed by the payment gateway, " +
-  "and 18 U.S.C. § 2257 creator verification.";
 /**
  * APP_SEARCH_INDEXING=off (dev and preview environments, read at build time): every page is noindex and
  * robots.txt shuts the door, so only production is indexed — never a duplicate.
@@ -40,12 +39,11 @@ const ORGANIZATION = {
   sameAs: ["https://github.com/krizaka"],
 };
 
-/** What the family-wide JSON-LD says of the application: neutral, the age rating is `contentRating`. */
-const APP_DESCRIPTION =
-  "Orochia is an open-source video platform for independent creators: HD HLS streaming with signed links, followers, collections, tips and paid unlocks confirmed by the payment gateway.";
-
-/** The sitewide graph: the site with its search, the application, and who makes it. */
-export function siteGraph() {
+/**
+ * The sitewide graph: the site with its search, the application, and who makes it. The words come from the messages
+ * (`seo.siteDescription`, `seo.appDescription`: neutral, the age rating is `contentRating`) in the language served.
+ */
+export function siteGraph(t: Translator, locale: Locale) {
   return {
     "@context": "https://schema.org",
     "@graph": [
@@ -55,9 +53,9 @@ export function siteGraph() {
         "@id": `${SITE_URL}/#website`,
         url: SITE_URL,
         name: SITE_NAME,
-        description: SITE_DESCRIPTION,
+        description: t("seo.siteDescription"),
         publisher: { "@id": ORGANIZATION["@id"] },
-        inLanguage: "en",
+        inLanguage: locale,
         potentialAction: {
           "@type": "SearchAction",
           target: { "@type": "EntryPoint", urlTemplate: `${SITE_URL}/explore?q={search_term_string}` },
@@ -71,7 +69,7 @@ export function siteGraph() {
         url: SITE_URL,
         applicationCategory: "MultimediaApplication",
         operatingSystem: "Web",
-        description: APP_DESCRIPTION,
+        description: t("seo.appDescription"),
         isAccessibleForFree: true,
         contentRating: "adult",
         license: "https://www.apache.org/licenses/LICENSE-2.0",
@@ -100,7 +98,7 @@ export interface VideoSchemaInput {
 }
 
 /** A listed video. No stream URL: playback is authorised per viewer and never public. */
-export function videoSchema(v: VideoSchemaInput) {
+export function videoSchema(v: VideoSchemaInput, t: Translator) {
   const url = absolute(`/watch/${v.id}`);
   return {
     "@context": "https://schema.org",
@@ -108,7 +106,7 @@ export function videoSchema(v: VideoSchemaInput) {
     "@id": url,
     url,
     name: v.title,
-    description: v.description || `${v.title} — a video by ${v.creatorName} on Orochia.`,
+    description: v.description || t("seo.videoDescription", { title: v.title, creator: v.creatorName }),
     thumbnailUrl: v.thumbnailUrl ? [v.thumbnailUrl] : undefined,
     uploadDate: new Date(v.createdAt).toISOString(),
     duration: v.durationSeconds > 0 ? isoDuration(v.durationSeconds) : undefined,

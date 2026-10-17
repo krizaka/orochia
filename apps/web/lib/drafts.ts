@@ -3,7 +3,7 @@
 import * as tus from "tus-js-client";
 
 import { type ApiErrorBody,apiErrorMessage } from "./api-errors";
-import { t } from "./i18n";
+import type { Translator } from "./i18n";
 import type { VideoEdit } from "./video-edit-settings";
 
 /**
@@ -46,10 +46,10 @@ interface TusSession {
 
 const KIND = { video: "VIDEO", story: "STORY" } as const;
 
-async function api<T>(url: string, init?: RequestInit): Promise<T> {
+async function api<T>(t: Translator, url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, { cache: "no-store", ...init });
   const data = (await res.json().catch(() => ({}))) as T & ApiErrorBody;
-  if (!res.ok) throw new Error(apiErrorMessage(data, t("settings.failed"), { retryAfter: res.headers.get("Retry-After") }));
+  if (!res.ok) throw new Error(apiErrorMessage(t, data, t("settings.failed"), { retryAfter: res.headers.get("Retry-After") }));
   return data;
 }
 const json = (method: string, body: unknown): RequestInit => ({ method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -91,8 +91,8 @@ async function cache<T>(mode: IDBTransactionMode, action: (store: IDBObjectStore
 
 // ── API ─────────────────────────────────────────────────────────────────────────────────────────
 
-export async function listDrafts(kind: DraftKind): Promise<DraftSummary[]> {
-  return (await api<{ drafts: DraftSummary[] }>(`/api/me/drafts?kind=${KIND[kind]}`)).drafts;
+export async function listDrafts(t: Translator, kind: DraftKind): Promise<DraftSummary[]> {
+  return (await api<{ drafts: DraftSummary[] }>(t, `/api/me/drafts?kind=${KIND[kind]}`)).drafts;
 }
 
 function sendOriginal(file: File, session: TusSession, onProgress?: (percent: number) => void) {
@@ -119,16 +119,16 @@ function sendOriginal(file: File, session: TusSession, onProgress?: (percent: nu
  * an existing one only updates its settings and form. `musicChanged` re-sends or removes the music.
  */
 export async function saveDraft(
+  t: Translator,
   input: { kind: DraftKind; file: File; edit: VideoEdit; details?: Details; draftId?: string; musicChanged: boolean },
   onProgress?: (percent: number) => void,
 ): Promise<string> {
   const { music, ...edit } = input.edit;
   let id = input.draftId;
   if (id) {
-    await api(`/api/me/drafts/${id}`, json("PATCH", { edit, details: input.details }));
+    await api(t, `/api/me/drafts/${id}`, json("PATCH", { edit, details: input.details }));
   } else {
-    const created = await api<{ draft: { id: string }; session: TusSession }>(
-      "/api/me/drafts",
+    const created = await api<{ draft: { id: string }; session: TusSession }>(t, "/api/me/drafts",
       json("POST", { kind: KIND[input.kind], fileName: input.file.name, contentType: input.file.type || "video/mp4", sizeBytes: input.file.size, edit, details: input.details ?? {} }),
     );
     id = created.draft.id;
@@ -138,7 +138,7 @@ export async function saveDraft(
       await fetch(`/api/me/drafts/${id}`, { method: "DELETE" }).catch(() => undefined);
       throw error;
     }
-    await api(`/api/me/drafts/${id}/uploaded`, { method: "POST" });
+    await api(t, `/api/me/drafts/${id}/uploaded`, { method: "POST" });
     const clipId = id;
     await cache("readwrite", (store) => store.put(input.file, clipId));
   }
@@ -146,9 +146,9 @@ export async function saveDraft(
     if (music) {
       const form = new FormData();
       form.append("file", music);
-      await api(`/api/me/drafts/${id}/music`, { method: "PUT", body: form });
+      await api(t, `/api/me/drafts/${id}/music`, { method: "PUT", body: form });
     } else if (input.draftId) {
-      await api(`/api/me/drafts/${id}/music`, { method: "DELETE" });
+      await api(t, `/api/me/drafts/${id}/music`, { method: "DELETE" });
     }
   }
   return id;
@@ -173,10 +173,10 @@ async function download(url: string, onProgress?: (percent: number) => void): Pr
 }
 
 /** Opens a draft for the editor: the clip from this browser when it has it, from Bunny otherwise; and its music. */
-export async function openDraft(draft: DraftSummary, onProgress?: (percent: number) => void): Promise<OpenedDraft> {
+export async function openDraft(t: Translator, draft: DraftSummary, onProgress?: (percent: number) => void): Promise<OpenedDraft> {
   let blob = await cache<Blob>("readonly", (store) => store.get(draft.id));
   if (!blob) {
-    if (!draft.originalUrl) throw new Error("This draft is still being saved. Try again in a moment.");
+    if (!draft.originalUrl) throw new Error(t("drafts.stillSaving"));
     blob = await download(draft.originalUrl, onProgress);
     const fetched = blob;
     await cache("readwrite", (store) => store.put(fetched, draft.id));
@@ -191,7 +191,7 @@ export async function openDraft(draft: DraftSummary, onProgress?: (percent: numb
 }
 
 /** Deletes a draft (with its clip and music), here and on the server. */
-export async function deleteDraft(id: string): Promise<void> {
+export async function deleteDraft(t: Translator, id: string): Promise<void> {
   await cache("readwrite", (store) => store.delete(id));
-  await api(`/api/me/drafts/${id}`, { method: "DELETE" });
+  await api(t, `/api/me/drafts/${id}`, { method: "DELETE" });
 }

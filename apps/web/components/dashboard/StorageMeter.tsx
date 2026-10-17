@@ -6,7 +6,8 @@ import React, { useEffect, useState } from "react";
 
 import { cn, Meter, Skeleton } from "@/components/ui";
 import { formatBytes } from "@/lib/api-errors";
-import { type MessageKey,t } from "@/lib/i18n";
+import { type MessageKey, type Translator } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 /** What GET /api/me/storage answers (lib/storage-usage.ts → StorageOverview). */
 export interface StorageView {
@@ -34,7 +35,7 @@ const TONE: Record<StorageView["level"], string> = {
 /** The meter turns amber from 80 %, red from 95 % — the same steps as the messages (`storage-usage.ts` levels). */
 const STORAGE_THRESHOLDS = { low: 0.8, high: 0.95 } as const;
 
-const planName = (plan: string) => {
+const planName = (t: Translator, plan: string) => {
   const key = `quota.plans.${plan}` as MessageKey;
   const label = t(key);
   return label === key ? plan : label;
@@ -46,6 +47,7 @@ const planName = (plan: string) => {
  * the page already has the figures (`initial`, server-rendered). `compact` for the upload page.
  */
 export function StorageMeter({ initial, compact = false, className }: { initial?: StorageView | null; compact?: boolean; className?: string }) {
+  const { t } = useI18n();
   const [storage, setStorage] = useState<StorageView | null>(initial ?? null);
   const [failed, setFailed] = useState(false);
 
@@ -74,9 +76,9 @@ export function StorageMeter({ initial, compact = false, className }: { initial?
   }
 
   const limited = storage.enabled && storage.limit.bytes !== null;
-  const used = formatBytes(storage.used.bytes);
+  const used = formatBytes(t, storage.used.bytes);
   const percent = Math.round(storage.percent ?? 0);
-  const usedLine = limited ? t("quota.used", { used, limit: formatBytes(storage.limit.bytes ?? 0) }) : t("quota.usedUnlimited", { used });
+  const usedLine = limited ? t("quota.used", { used, limit: formatBytes(t, storage.limit.bytes ?? 0) }) : t("quota.usedUnlimited", { used });
   const minutes = Math.round(storage.used.seconds / 60);
   const minutesLine =
     storage.enabled && storage.limit.seconds !== null
@@ -92,7 +94,7 @@ export function StorageMeter({ initial, compact = false, className }: { initial?
           <ServerIcon size={14} />
           {t("quota.title")}
         </h3>
-        <span className="text-[11px] text-fg-muted">{t("quota.plan", { plan: planName(storage.plan) })}</span>
+        <span className="text-[11px] text-fg-muted">{t("quota.plan", { plan: planName(t, storage.plan) })}</span>
       </div>
 
       <p className="mt-2 font-mono text-lg font-black text-fg">{usedLine}</p>

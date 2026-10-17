@@ -2,13 +2,14 @@ import React from "react";
 
 import { Clip } from "@/components/how-it-works/Clip";
 import { JOURNEY } from "@/lib/how-it-works";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 
 /**
  * The journey: seven steps, one line and one real recording each. This is the one slot `StepShowcase`
  * (@krizaka/ui) replaces — it takes the same JOURNEY list and the same lines, nothing else on the page changes.
  */
-export function Journey({ share }: { share: number }) {
+export async function Journey({ share }: { share: number }) {
+  const { t } = await getI18n();
   return (
     <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {JOURNEY.map((step, i) => (

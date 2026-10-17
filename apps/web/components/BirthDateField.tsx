@@ -4,7 +4,7 @@ import { Cake } from "lucide-react";
 import React, { useId } from "react";
 
 import { Field, Input } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 /** The latest date of birth that is 18 today (YYYY-MM-DD), for the picker's limit. */
 export function latestAdultBirthDate(today = new Date()): string {
@@ -19,6 +19,7 @@ export function isAdultBirthDate(value: string): boolean {
 
 /** Date of birth at sign-up: private, never shown, checked 18+ by the server. */
 export function BirthDateField({ value, onChange, className }: { value: string; onChange: (v: string) => void; className?: string }) {
+  const { t } = useI18n();
   const id = useId();
   return (
     <Field.Root className={className}>

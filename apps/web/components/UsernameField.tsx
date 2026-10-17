@@ -4,7 +4,7 @@ import { AtSign, Check } from "lucide-react";
 import React, { useEffect, useId, useState } from "react";
 
 import { Field, Input, Spinner } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 type Status = { available: boolean; reason?: "format" | "reserved" | "taken"; suggestion?: string } | null;
 
@@ -13,6 +13,7 @@ type Status = { available: boolean; reason?: "format" | "reserved" | "taken"; su
  * while typing and a free one is offered when it is taken (two "Oussama Abid" → @oussama_abid, @oussama_abid2).
  */
 export function UsernameField({ value, onChange, className }: { value: string; onChange: (v: string) => void; className?: string }) {
+  const { t } = useI18n();
   const id = useId();
   const [status, setStatus] = useState<Status>(null);
   const [checking, setChecking] = useState(false);

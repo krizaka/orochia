@@ -7,8 +7,9 @@ import React, { useState } from "react";
 import { ProfileStoriesRow, StoryAvatarRing } from "@/components/stories/ProfileStories";
 import { Avatar, Badge, SocialIcon } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
-import { type MessageKey,t } from "@/lib/i18n";
 import { type BannerVideoView } from "@/lib/banner-types";
+import { type MessageKey } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor, defaultBannerFor, safeImageSrc } from "@/lib/presets";
 
 import { BannerVideo } from "./BannerVideo";
@@ -56,6 +57,7 @@ export function ProfileHero({
   /** The switch is on: the owner's cover menu offers a moment of their own video. */
   movingCover?: boolean;
 }) {
+  const { t } = useI18n();
   const router = useRouter();
   const { refresh } = useAuth();
   const [avatar, setAvatar] = useState(avatarUrl);

@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
 import { Coins, Lock, Wallet } from "lucide-react";
+import Link from "next/link";
+import React, { useState } from "react";
+
 import { Button, Chip, Input, orochiaButton } from "@/components/ui";
-import { money } from "@/lib/money";
-import { t, type MessageKey } from "@/lib/i18n";
 import type { ChallengeView } from "@/lib/challenges";
+import { type I18nTools, type MessageKey, type Translator } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 /** Sends a JSON POST and returns the parsed answer, whatever the status (`ok` tells them apart). */
 export async function postJson(url: string, body?: unknown): Promise<{ ok: boolean; data: Record<string, unknown> }> {
@@ -19,7 +20,7 @@ export async function postJson(url: string, body?: unknown): Promise<{ ok: boole
   return { ok: Boolean(res?.ok), data };
 }
 
-export function errorText(data: Record<string, unknown>): string {
+export function errorText(t: Translator, money: I18nTools["money"], data: Record<string, unknown>): string {
   if (data.code === "INSUFFICIENT_CREDITS")
     return t("challenge.errors.INSUFFICIENT_CREDITS_BALANCE", {
       balance: money(Number(data.balance ?? 0)),
@@ -32,6 +33,7 @@ export function errorText(data: Record<string, unknown>): string {
  * back if it does not happen. Shows what the viewer already put in and their balance; a visitor is asked to sign in.
  */
 export function PledgeBox({ c, onPledged }: { c: ChallengeView; onPledged: (balanceCents: number) => void }) {
+  const { t, money } = useI18n();
   const [amount, setAmount] = useState<number>(c.suggestedPledgesCents[1] ?? 10_00);
   const [custom, setCustom] = useState("");
   const [busy, setBusy] = useState(false);
@@ -59,7 +61,7 @@ export function PledgeBox({ c, onPledged }: { c: ChallengeView; onPledged: (bala
     if (ok) {
       setCustom("");
       onPledged(Number(data.balanceCents ?? 0));
-    } else setError(errorText(data));
+    } else setError(errorText(t, money, data));
   };
 
   return (

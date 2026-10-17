@@ -3,11 +3,12 @@ import Link from "next/link";
 
 import { Avatar, buttonVariants, Card, cn } from "@/components/ui";
 import type { ExploreCreator } from "@/lib/explore";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { defaultAvatarFor } from "@/lib/presets";
 
 /** A creator to follow: cover, picture, name, @username, audience and public work — the whole card opens the profile. */
-export function CreatorTile({ creator: c, index = 0 }: { creator: ExploreCreator; index?: number }) {
+export async function CreatorTile({ creator: c, index = 0 }: { creator: ExploreCreator; index?: number }) {
+  const { t } = await getI18n();
   return (
     <Card.Root asChild interactive tone="glass" reveal={index} className="h-full">
       <Link href={`/@${c.username}`}>

@@ -1,7 +1,9 @@
+"use client";
+
 import { MediaGridSkeleton } from "@krizaka/ui/media-grid";
 
 import { cn, Skeleton } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 /**
  * What a route shows the instant it is opened, while its server data is read (the `loading.tsx` files): the shapes of the
@@ -21,6 +23,7 @@ function Announce({ label }: { label: string }) {
 
 /** Home and Explore: the tabs, then a Shorts shelf and the grid. */
 export function FeedSkeleton() {
+  const { t } = useI18n();
   return (
     <div aria-busy="true" className="w-full overflow-x-clip">
       <div className={cn(CONTAINER, "py-6 sm:py-8")}>
@@ -40,6 +43,7 @@ export function FeedSkeleton() {
 
 /** The watch page: the 16:9 player, the title, the creator, the actions, and the next videos beside it. */
 export function WatchSkeleton() {
+  const { t } = useI18n();
   return (
     <div aria-busy="true" className={cn(CONTAINER, "grid gap-6 py-6 lg:grid-cols-[minmax(0,1fr)_22rem]")}>
       <Announce label={t("watch.loading")} />
@@ -77,6 +81,7 @@ export function WatchSkeleton() {
 
 /** A creator's profile: banner, avatar, name, stats, then their videos. */
 export function ProfileSkeleton() {
+  const { t } = useI18n();
   return (
     <div aria-busy="true" className={cn(CONTAINER, "py-8")}>
       <div aria-hidden>

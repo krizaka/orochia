@@ -8,11 +8,12 @@ import Link from "next/link";
 import React from "react";
 
 import { EmptyState } from "@/components/ui";
-import { t } from "@/lib/i18n";
 import { AudienceStatus, type AudienceView } from "@/lib/analytics/analytics.view";
+import type { Translator } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 /** A funnel step's words: the kinds Orochia sends, else the kind as Orazaka names it. */
-function kindLabel(kind: string): string {
+function kindLabel(t: Translator, kind: string): string {
   const labels: Record<string, string> = {
     view: t("insights.audience28.kinds.view"),
     like: t("insights.audience28.kinds.like"),
@@ -32,6 +33,7 @@ const card = "rounded-3xl border border-border-default bg-surface-1/60 p-5 shado
  * audience threshold.
  */
 export function AudienceSection({ view, days }: { view: AudienceView; days: number }) {
+  const { t } = useI18n();
   if (view.status === AudienceStatus.Off) return null;
   if (view.status !== AudienceStatus.Ok) {
     return (
@@ -85,7 +87,7 @@ export function AudienceSection({ view, days }: { view: AudienceView; days: numb
             <Funnel
               title={t("insights.audience28.funnel")}
               description={t("insights.audience28.funnelHint")}
-              data={view.funnel.map((s) => ({ ...s, label: kindLabel(s.kind) }))}
+              data={view.funnel.map((s) => ({ ...s, label: kindLabel(t, s.kind) }))}
               label={(step) => step.label}
               value="subjects"
               height={200}

@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { Check, ListPlus, Plus } from "lucide-react";
+import Link from "next/link";
+import React, { useEffect, useRef, useState } from "react";
+
 import { Button, buttonVariants, IconButton, Input } from "@/components/ui";
-import { t } from "@/lib/i18n";
-import { audienceOf, type CollectionVisibility } from "./CollectionAudience";
 import { useAuth } from "@/lib/auth-context";
+import { useI18n } from "@/lib/i18n-client";
+
+import { audienceOf, type CollectionVisibility } from "./CollectionAudience";
 
 interface PlaylistCard {
   id: string;
@@ -17,6 +19,7 @@ interface PlaylistCard {
 
 /** "Save to collection": pick one of your collections or create one (private), then the video is appended. */
 export function SaveToPlaylist({ videoId }: { videoId: string }) {
+  const { t } = useI18n();
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [lists, setLists] = useState<PlaylistCard[] | null>(null);
@@ -94,7 +97,7 @@ export function SaveToPlaylist({ videoId }: { videoId: string }) {
                 className="flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2 text-left text-xs text-fg hover:bg-surface-2 disabled:opacity-70"
               >
                 <span className="flex items-center gap-2 truncate">
-                  {React.createElement(audienceOf(p.visibility).icon, { className: "h-3 w-3 shrink-0 text-fg-muted", "aria-label": audienceOf(p.visibility).label })}
+                  {React.createElement(audienceOf(t, p.visibility).icon, { className: "h-3 w-3 shrink-0 text-fg-muted", "aria-label": audienceOf(t, p.visibility).label })}
                   {p.title}
                 </span>
                 {saved.has(p.id) ? <Check className="h-4 w-4 text-fg-success" /> : <span className="font-mono text-[10px] text-fg-muted">{p.itemsCount}</span>}

@@ -3,9 +3,11 @@ import { and, count, desc, eq, inArray, isNull, lt, sql } from "drizzle-orm";
 
 import { conversationPath } from "./conversation-path";
 import { appUrl } from "./env";
-import { type MessageKey,t } from "./i18n";
+import { type I18nTools, type MessageKey, toolsFor } from "./i18n";
+import { DEFAULT_LOCALE, type Locale } from "./locales";
 import { sendTemplate } from "./mail";
 import { emitUserEvent } from "./messaging";
+import { i18nVar, moneyVar } from "./notification-vars";
 import type { NotificationEvent } from "./profile";
 import { pushToUser } from "./push";
 import { checkRateLimit } from "./rate-limit";
@@ -45,9 +47,27 @@ export function wants(off: unknown, event: NotificationEvent): boolean {
   return !(Array.isArray(off) && off.includes(event));
 }
 
-/** The text of a notification, for the bell and the e-mail. */
-export function notificationText(event: string, vars: Vars): string {
-  return t(`notify.${event}.body` as MessageKey, vars);
+function localizeVars(tools: Pick<I18nTools, "t" | "money">, vars: Vars): Vars {
+  const out: Vars = {};
+  for (const [name, value] of Object.entries(vars)) {
+    if (typeof value === "string" && value.startsWith("i18n:")) out[name] = tools.t(value.slice(5) as MessageKey);
+    else if (typeof value === "string" && /^money:\d+$/.test(value)) out[name] = tools.money(Number(value.slice(6)));
+    else out[name] = value;
+  }
+  return out;
+}
+
+/** The text of a notification, for the bell and the e-mail, in the language of `tools`. */
+export function notificationText(tools: Pick<I18nTools, "t" | "money">, event: string, vars: Vars): string {
+  return tools.t(`notify.${event}.body` as MessageKey, localizeVars(tools, vars));
+}
+
+/**
+ * The language a notification is written in when it leaves the server (live, push, e-mail): the recipient's own.
+ * Their chosen language is not stored yet, so it is the default one; the bell is written in the language of the page.
+ */
+async function recipientLocale(_userId: string): Promise<Locale> {
+  return DEFAULT_LOCALE;
 }
 
 /** Claims the right to send an activity e-mail now, under the account's frequency (atomic across instances). */
@@ -68,11 +88,12 @@ export async function notify(input: { userId: string; event: NotificationEvent; 
   try {
     const to = await recipient(userId);
     if (!to || to.suspended) return;
+    const tools = toolsFor(await recipientLocale(userId));
     if (wants(to.inAppOff, event)) {
       const [row] = await db.insert(notifications).values({ userId, event, actorId: input.actorId ?? null, vars, path }).returning();
-      emitUserEvent(userId, { type: "notification", notification: { id: row.id, event, text: notificationText(event, vars), path, createdAt: row.createdAt, readAt: null } });
+      emitUserEvent(userId, { type: "notification", notification: { id: row.id, event, text: notificationText(tools, event, vars), path, createdAt: row.createdAt, readAt: null } });
       // The same notification on the account's phones (when it has the app), in the background.
-      if (input.push !== false) void pushToUser(userId, { title: t(`notify.${event}.subject` as MessageKey, { ...vars, username: to.username }), body: notificationText(event, vars), path });
+      if (input.push !== false) void pushToUser(userId, { title: tools.t(`notify.${event}.subject` as MessageKey, { ...localizeVars(tools, vars), username: to.username }), body: notificationText(tools, event, vars), path });
     }
     if (!to.verified || !wants(to.emailsOff, event)) return;
     if (input.emailThrottleKey) {
@@ -80,13 +101,13 @@ export async function notify(input: { userId: string; event: NotificationEvent; 
       if (!(await checkRateLimit(`notify:${event}:${userId}:${input.emailThrottleKey}`, 1, window)).success) return;
     }
     if (!(await claimEmail(userId, to.frequency))) return;
-    const all = { ...vars, username: to.username };
+    const all = { ...localizeVars(tools, vars), username: to.username };
     await sendTemplate("notification", {
       to: to.email,
       vars: {
         username: to.username,
-        subject: t(`notify.${event}.subject` as MessageKey, all),
-        body: t(`notify.${event}.body` as MessageKey, all),
+        subject: tools.t(`notify.${event}.subject` as MessageKey, all),
+        body: tools.t(`notify.${event}.body` as MessageKey, all),
         link: `${appUrl()}${path}`,
         settingsLink: `${appUrl()}/me/settings#settings-notifications`,
       },
@@ -103,16 +124,14 @@ async function nameOf(userId: string): Promise<{ name: string; username: string 
     .leftJoin(profiles, eq(profiles.userId, users.id))
     .where(eq(users.id, userId))
     .limit(1);
-  return { name: row?.displayName || row?.username || "Someone", username: row?.username ?? "" };
+  return { name: row?.displayName || row?.username || "i18n:notify.someone", username: row?.username ?? "" };
 }
-
-const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
 // ── Events ──────────────────────────────────────────────────────────────────────────────────────
 
 export async function notifyFollow(creatorId: string, followerId: string, pending: boolean) {
   const who = await nameOf(followerId);
-  await notify({ userId: creatorId, actorId: followerId, event: "newFollower", vars: { name: who.name, action: t(pending ? "notify.newFollower.asks" : "notify.newFollower.follows") }, path: pending ? "/me/network" : `/@${who.username}` });
+  await notify({ userId: creatorId, actorId: followerId, event: "newFollower", vars: { name: who.name, action: i18nVar(pending ? "notify.newFollower.asks" : "notify.newFollower.follows") }, path: pending ? "/me/network" : `/@${who.username}` });
 }
 
 export async function notifyContactRequest(targetId: string, requesterId: string) {
@@ -150,9 +169,9 @@ export async function notifySettlement(intentId: string, unlocked: boolean) {
     .where(eq(paymentIntents.id, intentId))
     .limit(1);
   if (!intent || intent.senderId === intent.creatorId) return;
-  const who = intent.senderId ? await nameOf(intent.senderId) : { name: "Someone", username: "" };
+  const who = intent.senderId ? await nameOf(intent.senderId) : { name: i18nVar("notify.someone"), username: "" };
   const [video] = intent.videoId ? await db.select({ title: videos.title }).from(videos).where(eq(videos.id, intent.videoId)).limit(1) : [];
-  const vars = { name: who.name, amount: money(intent.amountCents), title: video?.title ?? "" };
+  const vars = { name: who.name, amount: moneyVar(intent.amountCents), title: video?.title ?? "" };
   await notify({ userId: intent.creatorId, actorId: intent.senderId, event: unlocked ? "videoUnlocked" : "tipReceived", vars, path: "/me/transactions" });
 }
 
@@ -189,7 +208,7 @@ export interface NotificationView {
 }
 
 /** An account's notifications, newest first (25 per page, `before` = the last one's date), and the unread count. */
-export async function listNotifications(userId: string, before?: Date): Promise<{ items: NotificationView[]; unread: number }> {
+export async function listNotifications(userId: string, tools: Pick<I18nTools, "t" | "money">, before?: Date): Promise<{ items: NotificationView[]; unread: number }> {
   const rows = await db
     .select({ n: notifications, avatar: profiles.avatarUrl })
     .from(notifications)
@@ -200,7 +219,7 @@ export async function listNotifications(userId: string, before?: Date): Promise<
   const [{ unread }] = await db.select({ unread: count() }).from(notifications).where(and(eq(notifications.userId, userId), isNull(notifications.readAt)));
   return {
     unread,
-    items: rows.map(({ n, avatar }) => ({ id: n.id, event: n.event, text: notificationText(n.event, n.vars), path: n.path, actorAvatar: avatar, createdAt: n.createdAt, readAt: n.readAt })),
+    items: rows.map(({ n, avatar }) => ({ id: n.id, event: n.event, text: notificationText(tools, n.event, n.vars), path: n.path, actorAvatar: avatar, createdAt: n.createdAt, readAt: n.readAt })),
   };
 }
 

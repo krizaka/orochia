@@ -8,8 +8,7 @@ import React, { useState } from "react";
 import { TipModal } from "@/components/TipModal";
 import { Badge, Button, cn } from "@/components/ui";
 import { isAdultRating } from "@/lib/content-ratings";
-import { t } from "@/lib/i18n";
-import { money } from "@/lib/money";
+import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor } from "@/lib/presets";
 import { frameOf, tileFitOf } from "@/lib/video-aspect";
 import { qualityOf } from "@/lib/video-quality";
@@ -56,6 +55,7 @@ const ON_MEDIA = "bg-scrim-strong normal-case tracking-normal backdrop-blur-md";
  * with Orochia's own parts in its slots — who may watch it, the sensitive veil, a tip.
  */
 export function VideoCard({ aspect, layout, ...props }: VideoCardProps & { aspect?: "portrait" | "landscape"; layout?: "stack" | "row" }) {
+  const { t, number } = useI18n();
   const { id, title, creatorName, creatorUsername, creatorAvatar, thumbnailUrl, previewAnimationUrl, width, height, durationSeconds, viewsCount, minTipAmountCents, isBlurred = false } = props;
   const [tipping, setTipping] = useState(false);
   const [revealed, setRevealed] = useState(!isBlurred);
@@ -93,7 +93,7 @@ export function VideoCard({ aspect, layout, ...props }: VideoCardProps & { aspec
           href: creatorUsername ? `/@${creatorUsername}` : undefined,
           defaultAvatar: { brand: "orochia", seed: creatorName },
         }}
-        meta={t("feed.views", { count: viewsCount.toLocaleString("en-US") })}
+        meta={t("feed.views", { count: viewsCount, shown: number(viewsCount) })}
         action={
           <Button size="sm" shape="rounded" onClick={() => setTipping(true)} className="h-6 gap-1 border-accent/30 bg-accent/10 px-2 text-[10px] text-fg-accent hover:border-accent hover:bg-accent hover:text-on-accent">
             <Sparkles className="h-2.5 w-2.5" aria-hidden />
@@ -108,6 +108,7 @@ export function VideoCard({ aspect, layout, ...props }: VideoCardProps & { aspec
 
 /** The real encoded quality (SD / HD / 2K / 4K and the lines), nothing while the video is not encoded. */
 function QualityBadge({ resolutions, width, height }: { resolutions?: string[] | null; width?: number | null; height?: number | null }) {
+  const { t } = useI18n();
   const q = qualityOf(resolutions, width, height);
   if (!q) return null;
   return (
@@ -119,6 +120,7 @@ function QualityBadge({ resolutions, width, height }: { resolutions?: string[] |
 
 /** Who may watch: 18+, the unlock price, contacts, auction, backers — or free. */
 function AccessBadges({ visibility, minTipAmountCents, contentRatingId, isAdult = false }: Pick<VideoCardProps, "visibility" | "minTipAmountCents" | "contentRatingId" | "isAdult">) {
+  const { t, money } = useI18n();
   const adult = isAdult || isAdultRating(contentRatingId);
   const ACCESS = {
     TIPPED_UNLOCKED: { icon: Lock, label: t("card.unlockFor", { price: money(minTipAmountCents) }) },

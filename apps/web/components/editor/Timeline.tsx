@@ -3,7 +3,7 @@
 import React, { useRef } from "react";
 
 import { cn, Skeleton } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 import { clock,FILMSTRIP_FRAMES } from "./media";
 
@@ -34,6 +34,7 @@ export function Timeline({
   onEnd: (s: number) => void;
   onSeek: (s: number) => void;
 }) {
+  const { t } = useI18n();
   const strip = useRef<HTMLDivElement>(null);
   const grip = useRef<Grip | null>(null);
   const pct = (s: number) => (duration ? (s / duration) * 100 : 0);

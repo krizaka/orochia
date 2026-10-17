@@ -1,10 +1,11 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { toast } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { findStory, type StoryPosition } from "@/lib/story-player";
 
 import type { StoryItem, StoryRing } from "./types";
@@ -48,6 +49,7 @@ export function useStoryRings(options: { creator?: string; paused?: boolean } = 
  * (any more) closes with a word, never an empty viewer.
  */
 export function useStoryAddress(rings: StoryRing[] | null) {
+  const { t } = useI18n();
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -89,7 +91,7 @@ export function useStoryAddress(rings: StoryRing[] | null) {
     if (!rings || !storyId || position) return;
     toast(t("stories.viewer.unavailable"));
     router.replace(href(null), { scroll: false });
-  }, [rings, storyId, position, router, href]);
+  }, [rings, storyId, position, router, href, t]);
 
   return { storyId, position, open, go, close };
 }

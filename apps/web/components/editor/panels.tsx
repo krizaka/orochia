@@ -4,7 +4,7 @@ import { Check, Lock, Music2, RotateCcw, Trash2, Volume2, VolumeX, Wand2 } from 
 import React from "react";
 
 import { Button, Chip, cn, IconButton, Skeleton, Slider } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { previewFilter, SPEEDS, VIDEO_FILTERS, type VideoEdit, type VideoFilter, type VideoFormat } from "@/lib/video-edit";
 
 import { FILMSTRIP_FRAMES } from "./media";
@@ -15,6 +15,7 @@ type Setter = <K extends keyof VideoEdit>(key: K, value: VideoEdit[K]) => void;
 
 /** Title, one-line guidance and — when something changed — a reset, at the top of every tool. */
 export function PanelHeader({ tool, changed, onReset }: { tool: Tool; changed: boolean; onReset: () => void }) {
+  const { t } = useI18n();
   return (
     <div className="mb-4 flex items-start justify-between gap-3">
       <div>
@@ -41,6 +42,7 @@ export function TrimPanel(props: {
   onEnd: (s: number) => void;
   onSeek: (s: number) => void;
 }) {
+  const { t } = useI18n();
   const { edit, set, maxSeconds } = props;
   return (
     <div className="space-y-4">
@@ -61,6 +63,7 @@ export function TrimPanel(props: {
 }
 
 export function FiltersPanel({ edit, set, frames }: { edit: VideoEdit; set: Setter; frames: string[] }) {
+  const { t } = useI18n();
   const frame = frames[Math.min(frames.length - 1, Math.floor(FILMSTRIP_FRAMES / 2))];
   return (
     <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-2 scrollbar-none lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0">
@@ -92,6 +95,7 @@ export function FiltersPanel({ edit, set, frames }: { edit: VideoEdit; set: Sett
 }
 
 export function AdjustPanel({ edit, set }: { edit: VideoEdit; set: Setter }) {
+  const { t } = useI18n();
   return (
     <div className="space-y-5">
       {(["brightness", "contrast", "saturation"] as const).map((key) => (
@@ -116,6 +120,7 @@ export function AdjustPanel({ edit, set }: { edit: VideoEdit; set: Setter }) {
 const FORMAT_SHAPE: Record<VideoFormat, string> = { original: "h-5 w-8", vertical: "h-8 w-[1.15rem]", square: "h-6 w-6" };
 
 export function FormatPanel({ edit, onFormat, locked }: { edit: VideoEdit; onFormat: (f: VideoFormat) => void; locked: boolean }) {
+  const { t } = useI18n();
   if (locked) {
     return (
       <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/3 p-4">
@@ -141,6 +146,7 @@ export function FormatPanel({ edit, onFormat, locked }: { edit: VideoEdit; onFor
 }
 
 export function SoundPanel({ edit, set }: { edit: VideoEdit; set: Setter }) {
+  const { t } = useI18n();
   const muted = edit.volume === 0;
   return (
     <div className="space-y-5">

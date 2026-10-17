@@ -12,7 +12,7 @@ import type { VideoCardProps } from "@/components/VideoCard";
 import { useAuth } from "@/lib/auth-context";
 import { mayStream } from "@/lib/feed-view";
 import { createWatchTracker, type WatchReport } from "@/lib/feed-watch";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { frameOf } from "@/lib/video-aspect";
 
 const matches = (query: string) => typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia(query).matches;
@@ -40,6 +40,7 @@ const RAIL_BUTTON = "h-11 min-h-11 w-11 min-w-11 bg-scrim text-fg-on-media backd
  * view, for the recommender (lib/feed-events.ts). The feed fills the screen between the bar and the tab bar.
  */
 export function VerticalFeed({ videos, shortsMaxSeconds, onNearEnd, className }: { videos: VideoCardProps[]; /** The Shorts limit (`feed` settings): a longer vertical clip is shown as a Video. */ shortsMaxSeconds?: number; /** The viewer is within three slides of the last one: ask for the next page. */ onNearEnd?: () => void; className?: string }) {
+  const { t } = useI18n();
   const router = useRouter();
   const { user } = useAuth();
   const signedIn = user !== null;

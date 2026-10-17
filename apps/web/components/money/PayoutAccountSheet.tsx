@@ -4,7 +4,8 @@ import { Lock } from "lucide-react";
 import React, { useState } from "react";
 
 import { Button, Chip, cn, Dialog, Input, Select, Sheet } from "@/components/ui";
-import { type MessageKey,t } from "@/lib/i18n";
+import { type MessageKey } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 const METHODS = ["BANK_IBAN", "BANK_US", "BANK_CA", "PAYPAL", "CRYPTO_USDT_TRC20", "CRYPTO_BTC"] as const;
 type Method = (typeof METHODS)[number];
@@ -26,6 +27,7 @@ const field =
 
 /** Add or replace where earnings are sent. */
 export function PayoutAccountSheet({ open, onClose, onSaved }: { open: boolean; onClose: () => void; onSaved: () => void }) {
+  const { t } = useI18n();
   const [method, setMethod] = useState<Method>("BANK_IBAN");
   const [holderName, setHolderName] = useState("");
   const [country, setCountry] = useState("");

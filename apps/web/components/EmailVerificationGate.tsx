@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
-import { usePathname } from "next/navigation";
 import { LogOut, MailCheck, RefreshCw } from "lucide-react";
+import { usePathname } from "@/lib/use-pathname";
+import React, { useState } from "react";
+
+import { Rich } from "@/components/Rich";
 import { Button } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
-import { t } from "@/lib/i18n";
-import { Rich } from "@/components/Rich";
+import { useI18n } from "@/lib/i18n-client";
 
 /** Pages an unverified account may still open: the verification link itself, password reset, legal. */
 const OPEN_PATHS = ["/auth/verify", "/auth/reset-password", "/auth/forgot-password", "/legal"];
@@ -17,6 +18,7 @@ const OPEN_PATHS = ["/auth/verify", "/auth/reset-password", "/auth/forgot-passwo
  * (requireUserWithRole), so this is the interface of a rule, not the rule.
  */
 export function EmailVerificationGate({ children }: { children: React.ReactNode }) {
+  const { t } = useI18n();
   const { user, logout, refresh } = useAuth();
   const pathname = usePathname();
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");

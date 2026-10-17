@@ -3,19 +3,19 @@
 import { UserIcon } from "@krizaka/icons";
 import React from "react";
 
-import { timeAgo } from "@/components/notifications/useNotifications";
 import { Avatar, cn } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { timeAgo } from "@/lib/format";
+import type { Translator } from "@/lib/i18n";
 import { defaultAvatarFor } from "@/lib/presets";
 
 import type { PresenceView } from "./types";
 
 /** "Online", "Away", "Seen 5 min ago" — or nothing when the presence is not shared. */
-export function presenceLabel(view: PresenceView | undefined): string | null {
+export function presenceLabel(t: Translator, view: PresenceView | undefined): string | null {
   if (!view) return null;
   if (view.state === "online") return t("inbox.presence.online");
   if (view.state === "away") return t("inbox.presence.away");
-  return view.lastSeenAt ? t("inbox.presence.seen", { when: timeAgo(view.lastSeenAt) }) : null;
+  return view.lastSeenAt ? t("inbox.presence.seen", { when: timeAgo(view.lastSeenAt, t.locale) }) : null;
 }
 
 /**
