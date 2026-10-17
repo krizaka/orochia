@@ -7,11 +7,12 @@ import { Clip } from "@/components/how-it-works/Clip";
 import { Journey } from "@/components/how-it-works/Journey";
 import { Ways } from "@/components/how-it-works/Ways";
 import { Button, buttonVariants, cn, SectionBackdrop } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 
 const share = () => 100 - platformFeePercent();
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
   return { title: t("howItWorks.meta.title"), description: t("howItWorks.meta.description", { share: share() }) };
 }
 
@@ -22,7 +23,8 @@ const h2 = "font-display text-2xl font-black tracking-tight text-fg sm:text-3xl"
  * What Orochia is, in four short sections: the promise with the real app playing, the journey in seven steps, the four
  * ways to pay a creator, and the way in. The 90 % is computed from the platform fee setting, never typed.
  */
-export default function HowItWorksPage() {
+export default async function HowItWorksPage() {
+  const { t } = await getI18n();
   const s = share();
   return (
     <div className="w-full overflow-x-clip">

@@ -1,5 +1,6 @@
 import { AuctionIcon, ChallengeIcon, CreatorIcon, SearchIcon, StoryIcon, VideoIcon } from "@krizaka/icons";
 import { Flame, Hash, Sparkles, X } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import React from "react";
@@ -19,18 +20,19 @@ import { unlessUnavailable } from "@/lib/degrade";
 import { discoverableTags, exploreSectionsSettled, exploreTag, type ExploreVideo, newVideos } from "@/lib/explore";
 import { exploreResultsByMeaning } from "@/lib/explore-semantic";
 import { signupEnabled } from "@/lib/features";
-import { t } from "@/lib/i18n";
+import type { I18nTools } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { forYou } from "@/lib/recommendations/recommendations.shelves";
 import { ShelfSource } from "@/lib/recommendations/recommendations.types";
+import { pageAlternates } from "@/lib/seo-i18n";
 import { getViewer } from "@/lib/viewer";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: t("explore.metaTitle"),
-  description: t("explore.metaDescription"),
-  alternates: { canonical: "/explore" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return { title: t("explore.metaTitle"), description: t("explore.metaDescription"), alternates: await pageAlternates("/explore") };
+}
 
 type Params = { q?: string; tag?: string; page?: string; view?: string; order?: string };
 
@@ -46,7 +48,7 @@ function exploreHref(p: Params): string {
  * Where an empty section sends each kind of viewer (lib/creator-journey.ts): a creator publishes, a member opens the
  * creator space of their account, a pending creator follows their review, a visitor signs up — then the application.
  */
-function ctas(user: SessionUser | null, state: ViewerState) {
+function ctas(t: I18nTools["t"], user: SessionUser | null, state: ViewerState) {
   const isCreator = state === "creator";
   const space = creatorSpaceCta(state, signupEnabled());
   const publish: SectionCta = space
@@ -72,6 +74,7 @@ function VideoGrid({ videos }: { videos: ExploreVideo[]; label: string }) {
  * state: search, tag, "all videos" and the page are all in it.
  */
 export default async function ExplorePage(props: { searchParams: Promise<Params> }) {
+  const { t } = await getI18n();
   const params = await props.searchParams;
   const q = (params.q ?? "").trim().slice(0, 100);
   const rawTag = (params.tag ?? "").trim();
@@ -126,6 +129,7 @@ export default async function ExplorePage(props: { searchParams: Promise<Params>
 
 /** The popular tags, as filter chips (the current one first, with a way out). */
 async function ExploreTags({ current, q }: { current: string | null; q: string }) {
+  const { t } = await getI18n();
   // The tags are a shortcut: when the database is unavailable they are left out, the search still works.
   const loaded = await unlessUnavailable(() => discoverableTags(16));
   const tags = loaded.ok ? loaded.value : [];
@@ -153,6 +157,7 @@ async function ExploreTags({ current, q }: { current: string | null; q: string }
  * Without signals or without the engine it is trending, and says so.
  */
 async function ForYou({ user, chronological }: { user: SessionUser; chronological: boolean }) {
+  const { t } = await getI18n();
   const loaded = await unlessUnavailable(async () =>
     chronological ? { videos: await newVideos(user, 12), source: ShelfSource.Fallback, personal: false } : { ...(await forYou(user, new Date())), personal: true },
   );
@@ -184,8 +189,9 @@ async function ForYou({ user, chronological }: { user: SessionUser; chronologica
 
 /** The discovery sections ("For you" first for a signed-in viewer). */
 async function Sections({ user, state, chronological }: { user: SessionUser | null; state: ViewerState; chronological: boolean }) {
+  const { t } = await getI18n();
   const { sections: s, unavailable } = await exploreSectionsSettled(user);
-  const cta = ctas(user, state);
+  const cta = ctas(t, user, state);
   return (
     <>
       {user && <ForYou user={user} chronological={chronological} />}
@@ -291,6 +297,7 @@ async function Sections({ user, state, chronological }: { user: SessionUser | nu
 
 /** A search, a tag, or every video: creators and stories first (when they match), then the videos, paged. */
 async function Results({ q, tag, page, all, user }: { q: string; tag: string | null; page: number; all: boolean; user: SessionUser | null }) {
+  const { t } = await getI18n();
   const loaded = await unlessUnavailable(() => exploreResultsByMeaning(user, { q, tag, page }));
   if (!loaded.ok) return <SectionUnavailable />;
   const r = loaded.value;

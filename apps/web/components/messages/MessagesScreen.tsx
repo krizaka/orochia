@@ -13,7 +13,7 @@ import { Button, cn, IconButton, Input, Spinner } from "@/components/ui";
 import { responseErrorMessage } from "@/lib/api-errors";
 import { useAuth } from "@/lib/auth-context";
 import { conversationPath } from "@/lib/conversation-path";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { useLiveStatus } from "@/lib/realtime-client";
 
 /**
@@ -22,6 +22,7 @@ import { useLiveStatus } from "@/lib/realtime-client";
  * starts) the conversation with that account.
  */
 export function MessagesScreen({ conversationId }: { conversationId: string | null }) {
+  const { t } = useI18n();
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -46,13 +47,13 @@ export function MessagesScreen({ conversationId }: { conversationId: string | nu
       setStartError(null);
       const res = await fetch("/api/conversations", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ recipientUsername: name }) }).catch(() => null);
       setStarting(false);
-      if (!res?.ok) return setStartError(res ? await responseErrorMessage(res, t("inbox.startFailed")) : t("inbox.network"));
+      if (!res?.ok) return setStartError(res ? await responseErrorMessage(t, res, t("inbox.startFailed")) : t("inbox.network"));
       const data = (await res.json()) as { conversationId: string };
       setNewChat("");
       await chat.reload();
       open(data.conversationId);
     },
-    [chat, open],
+    [chat, open, t],
   );
 
   // `?user=` (a "Message" button elsewhere): open that conversation, then the address names it.

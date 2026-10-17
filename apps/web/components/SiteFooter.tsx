@@ -5,7 +5,7 @@ import Link from "next/link";
 import React from "react";
 
 import { BUILD_INFO } from "@/lib/build-info";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 /**
  * Orochia is independent once deployed: its footer is @krizaka/ui's SiteFooter in product mode (`family={false}`) —
@@ -13,6 +13,7 @@ import { t } from "@/lib/i18n";
  * Montréal. No family columns, no link to another product. The legal links and the 18+ statement end the signature line.
  */
 export function SiteFooter() {
+  const { t } = useI18n();
   const link = (href: string, label: string) => (
     <FamilyFooter.Link asChild>
       <Link href={href}>{label}</Link>

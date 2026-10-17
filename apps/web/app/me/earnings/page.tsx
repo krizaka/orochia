@@ -14,8 +14,7 @@ import { WithdrawSheet } from "@/components/money/WithdrawSheet";
 import { Badge, type BadgeProps, Button, buttonVariants, Chip, cn, EmptyState, Loader, Meter, MoneyTicker, NumberTicker, orochiaButton } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { EARNING_KINDS, type EarningKind } from "@/lib/earning-kinds";
-import { t } from "@/lib/i18n";
-import { compact, money } from "@/lib/money";
+import { useI18n } from "@/lib/i18n-client";
 
 type Period = "30d" | "90d" | "12m" | "all";
 type Sort = "net" | "views";
@@ -58,6 +57,7 @@ const USD = { style: "money", currency: "USD" } as const;
 
 /** A creator's earnings and payouts. Period and sort live in the address (?period=…&sort=…); payouts at #payouts. */
 function EarningsPage() {
+  const { t, money, compact, date } = useI18n();
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -303,7 +303,7 @@ function EarningsPage() {
                   <ul className="divide-y divide-border-subtle">
                     {data!.payouts.map((p) => (
                       <li key={p.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
-                        <span className="text-xs text-fg-muted">{new Date(p.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                        <span className="text-xs text-fg-muted">{date(p.createdAt)}</span>
                         <Badge tone={STATUS_TONE[p.status] ?? "neutral"} className="normal-case tracking-normal">{t(`earnings.statuses.${p.status}`)}</Badge>
                         <span className="font-mono font-semibold tabular-nums text-fg">{money(p.amountCents)}</span>
                       </li>

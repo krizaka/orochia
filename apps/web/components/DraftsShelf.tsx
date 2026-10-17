@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import { Clapperboard, Music2, Trash2 } from "lucide-react";
-import { Button, cn, Spinner } from "@/components/ui";
-import { type DraftKind, type DraftSummary, type OpenedDraft, deleteDraft, listDrafts, openDraft } from "@/lib/drafts";
-import { t } from "@/lib/i18n";
+import React, { useEffect, useState } from "react";
 
-const when = (iso: string) => new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+import { Button, cn, Spinner } from "@/components/ui";
+import { deleteDraft, type DraftKind, type DraftSummary, listDrafts, openDraft,type OpenedDraft } from "@/lib/drafts";
+import { useI18n } from "@/lib/i18n-client";
+
 
 /** The creator's drafts of one kind, to continue editing on any device. Renders nothing when there are none. */
 export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; refresh?: number; onOpen: (draft: OpenedDraft) => void }) {
+  const { t, dateTime } = useI18n();
   const [drafts, setDrafts] = useState<DraftSummary[]>([]);
   const [opening, setOpening] = useState<{ id: string; progress: number } | null>(null);
   const [confirming, setConfirming] = useState<string | null>(null);
@@ -17,13 +18,13 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
 
   useEffect(() => {
     let live = true;
-    listDrafts(kind)
+    listDrafts(t, kind)
       .then((d) => live && setDrafts(d))
       .catch(() => live && setDrafts([]));
     return () => {
       live = false;
     };
-  }, [kind, refresh]);
+  }, [kind, refresh, t]);
 
   if (drafts.length === 0) return null;
 
@@ -31,7 +32,7 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
     setError(null);
     setOpening({ id: draft.id, progress: 0 });
     try {
-      onOpen(await openDraft(draft, (progress) => setOpening({ id: draft.id, progress })));
+      onOpen(await openDraft(t, draft, (progress) => setOpening({ id: draft.id, progress })));
     } catch (err) {
       setError(err instanceof Error && err.message ? err.message : t("editor.drafts.failed"));
     } finally {
@@ -43,7 +44,7 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
     if (confirming !== id) return setConfirming(id);
     setConfirming(null);
     try {
-      await deleteDraft(id);
+      await deleteDraft(t, id);
       setDrafts((all) => all.filter((d) => d.id !== id));
     } catch {
       setError(t("editor.drafts.failed"));
@@ -83,7 +84,7 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
                   ) : (
                     <>
                       <span className="line-clamp-2">{title}</span>
-                      <span className="mt-0.5 block font-normal text-white/70">{t("editor.drafts.edited", { date: when(d.updatedAt) })}</span>
+                      <span className="mt-0.5 block font-normal text-white/70">{t("editor.drafts.edited", { date: dateTime(d.updatedAt) })}</span>
                     </>
                   )}
                 </span>

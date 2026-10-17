@@ -5,9 +5,8 @@ import { Gavel, Lock, Maximize, Pause, Play, Sparkles, Users, Volume2, VolumeX }
 import React, { useEffect, useRef, useState } from "react";
 
 import { Badge, Button, cn, IconButton, Slider } from "@/components/ui";
-import { t } from "@/lib/i18n";
 import { isAdultRating } from "@/lib/content-ratings";
-import { money } from "@/lib/money";
+import { useI18n } from "@/lib/i18n-client";
 import { orientationOf } from "@/lib/video-aspect";
 
 import { useWatchReport } from "./watch-report";
@@ -57,6 +56,7 @@ export function VideoPlayer({
   isBlurred = false,
   isAdult = false,
 }: VideoPlayerProps) {
+  const { t, money } = useI18n();
   const isGated = isContactsOnly || isFollowersOnly || isInvitedOnly || isAuction || isChallenge;
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);

@@ -53,12 +53,32 @@ describe("orochia: the family SEO contract", () => {
 
   it("the JSON-LD names the Krizaka Organization on www, and the application is a neutral SoftwareApplication", async () => {
     const { seo } = await load("on");
-    const nodes = seo.siteGraph()["@graph"];
+    const { toolsFor } = await import("../apps/web/lib/i18n.ts");
+    const nodes = seo.siteGraph(toolsFor("en").t, "en")["@graph"];
     expect(nodes.find((n) => n["@id"] === ORG_ID)?.url).toBe("https://www.krizaka.com");
     const app = nodes.find((n) => [].concat(n["@type"]).includes("SoftwareApplication"));
     expect(app.publisher).toEqual({ "@id": ORG_ID });
     expect(app.description).not.toMatch(/adult/i);
     expect(JSON.stringify(nodes)).not.toContain("https://krizaka.com");
+  });
+
+  it("the JSON-LD speaks the language served, still neutral", async () => {
+    const { seo } = await load("on");
+    const { toolsFor } = await import("../apps/web/lib/i18n.ts");
+    const nodes = seo.siteGraph(toolsFor("fr").t, "fr")["@graph"];
+    expect(nodes.find((n) => n["@type"] === "WebSite").inLanguage).toBe("fr");
+    const app = nodes.find((n) => [].concat(n["@type"]).includes("SoftwareApplication"));
+    expect(app.description).toMatch(/plateforme vidéo/);
+    expect(app.description).not.toMatch(/adulte/i);
+  });
+
+  it("an indexed sitemap names both addresses of a page, English at the path and French under /fr, hreflang x-default English", async () => {
+    vi.resetModules();
+    vi.stubEnv("NEXT_PUBLIC_APP_URL", HOST);
+    vi.stubEnv("APP_SEARCH_INDEXING", "on");
+    const sitemap = (await import("../apps/web/app/sitemap.ts")).default;
+    const entry = (await sitemap()).find((e) => e.url === `${HOST}/explore`);
+    expect(entry?.alternates?.languages).toEqual({ en: `${HOST}/explore`, fr: `${HOST}/fr/explore`, "x-default": `${HOST}/explore` });
   });
 });
 

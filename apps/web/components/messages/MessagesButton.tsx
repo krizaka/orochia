@@ -6,12 +6,13 @@ import { usePathname } from "next/navigation";
 import React from "react";
 
 import { buttonVariants, cn } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 import { useUnreadMessages } from "./useUnreadMessages";
 
 /** Messages in the top bar, next to the bell, on every width: the unread count moves live. */
 export function MessagesButton() {
+  const { t } = useI18n();
   const unread = useUnreadMessages(true);
   const active = usePathname().startsWith("/messages");
   const label = unread ? `${t("nav.messages")} — ${t("inbox.unreadCount", { count: unread })}` : t("nav.messages");

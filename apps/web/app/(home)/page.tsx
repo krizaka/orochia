@@ -1,4 +1,5 @@
 import { platformFeePercent } from "@orochia/payments";
+import type { Metadata } from "next";
 import Link from "next/link";
 import React, { Suspense } from "react";
 
@@ -11,11 +12,14 @@ import { signInHref, signUpHref } from "@/lib/creator-journey";
 import { signupEnabled } from "@/lib/features";
 import { FeedSort } from "@/lib/feed-cursor";
 import { feedSettings } from "@/lib/feed-settings";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { feedPage } from "@/lib/queries";
+import { pageAlternates } from "@/lib/seo-i18n";
 import { getViewer } from "@/lib/viewer";
 
-export const metadata = { alternates: { canonical: "/" } };
+export async function generateMetadata(): Promise<Metadata> {
+  return { alternates: await pageAlternates("/") };
+}
 export const dynamic = "force-dynamic";
 
 /**
@@ -40,6 +44,7 @@ async function loadHome(sort: FeedSort, viewerId: string | null, viewerAgeChecke
 }
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ feed?: string | string[] }> }) {
+  const { t } = await getI18n();
   const { user: viewer, state: viewerState } = await getViewer();
   const { feed } = await searchParams;
   const asked = Array.isArray(feed) ? feed[0] : feed;

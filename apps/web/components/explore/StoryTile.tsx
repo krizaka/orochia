@@ -4,14 +4,15 @@ import Link from "next/link";
 
 import { Avatar, Badge, Card, cn } from "@/components/ui";
 import type { ExploreStory } from "@/lib/explore";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { defaultAvatarFor } from "@/lib/presets";
 
 /**
  * A live public story in Explore: its still (veiled when it is sensitive), the creator, the caption and the time left.
  * It opens the story viewer on the creator's profile (`/@user?story=<id>`), which signs the media for the viewer.
  */
-export function StoryTile({ story, index = 0 }: { story: ExploreStory; index?: number }) {
+export async function StoryTile({ story, index = 0 }: { story: ExploreStory; index?: number }) {
+  const { t } = await getI18n();
   return (
     <Card.Root asChild interactive tone="glass" reveal={index} className="h-full">
       <Link href={`/@${story.creatorUsername}?story=${story.id}`} aria-label={t("explore.story.open", { name: story.creatorName })}>

@@ -7,8 +7,8 @@ import React, { Suspense, useCallback, useEffect, useState } from "react";
 
 import { Badge, Button, cn, EmptyState, RadioGroup, Skeleton, Spinner } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
-import { type MessageKey,t } from "@/lib/i18n";
-import { money } from "@/lib/money";
+import { type MessageKey } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 interface Pack {
   id: string;
@@ -29,6 +29,7 @@ const TYPE_ICON = { TOPUP: ArrowDownLeft, REFUND: RotateCcw, SPEND: ArrowUpRight
 
 /** The wallet: credits balance, buying credits through a hosted checkout, and every movement. */
 function WalletPage() {
+  const { t, money, dateTime } = useI18n();
   const { user } = useAuth();
   const params = useSearchParams();
   const [wallet, setWallet] = useState<Wallet | null>(null);
@@ -178,7 +179,7 @@ function WalletPage() {
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block text-sm font-medium text-fg">{t(`wallet.types.${h.type}`)}</span>
-                      <span className="block text-[11px] text-fg-muted">{new Date(h.createdAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>
+                      <span className="block text-[11px] text-fg-muted">{dateTime(h.createdAt)}</span>
                     </span>
                     <span className={cn("font-mono text-sm font-semibold tabular-nums", h.amountCents >= 0 ? "text-fg-success" : "text-fg-secondary")}>
                       {h.amountCents >= 0 ? "+" : "−"}

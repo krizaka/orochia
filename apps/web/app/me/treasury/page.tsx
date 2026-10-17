@@ -6,10 +6,10 @@ import React, { useEffect } from "react";
 import { useMeData } from "@/components/me/MeData";
 import { EmptyState } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
-import { t } from "@/lib/i18n";
-import { money } from "@/lib/money";
+import { useI18n } from "@/lib/i18n-client";
 
 export default function MeTreasury() {
+  const { t, money } = useI18n();
   const { user } = useAuth();
   const { treasury } = useMeData();
   const router = useRouter();

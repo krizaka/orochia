@@ -6,8 +6,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 import { Avatar, Badge, Chip, Command, CommandDialog, IconButton, Kbd, Spinner } from "@/components/ui";
-import { t } from "@/lib/i18n";
-import { money } from "@/lib/money";
+import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor } from "@/lib/presets";
 
 interface CreatorResult {
@@ -55,6 +54,7 @@ export function GlobalSearchModal({
   isOpen: boolean;
   onClose: () => void;
 }) {
+  const { t, money } = useI18n();
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"all" | "creators" | "videos" | "tags">("all");

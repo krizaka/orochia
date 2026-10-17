@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 import { useAuth } from "@/lib/auth-context";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 /** "My profile": a creator's public page, a member's dashboard, or sign-in. */
 export default function ProfilePage() {
+  const { t } = useI18n();
   const { user, isLoading } = useAuth();
   const router = useRouter();
 

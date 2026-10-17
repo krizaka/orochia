@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import React from "react";
 
 import { DOCS, findDoc, renderDoc } from "@/lib/docs";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { SOURCE_URL } from "@/lib/seo";
 
 export const dynamicParams = false;
@@ -20,6 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 /** One page of the repository's docs/, rendered from its markdown. */
 export default async function DocPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { t } = await getI18n();
   const doc = findDoc((await params).slug);
   if (!doc) notFound();
   const html = renderDoc(doc.markdown);

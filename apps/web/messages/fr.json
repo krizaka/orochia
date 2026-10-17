@@ -1,0 +1,3252 @@
+{
+  "common": {
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "loading": "Chargement…",
+    "optional": "facultatif",
+    "tryAgain": "Réessayer",
+    "skipToContent": "Passer au contenu",
+    "closeLabel": "Fermer",
+    "delete": "Supprimer",
+    "create": "Créer",
+    "add": "Ajouter",
+    "copy": "Copier",
+    "copied": "Copié",
+    "undo": "Annuler",
+    "steps": {
+      "done": "Terminé",
+      "current": "En cours",
+      "upcoming": "À venir",
+      "error": "Échec"
+    },
+    "pauseBand": "Mettre le bandeau en pause",
+    "playBand": "Relancer le bandeau",
+    "language": {
+      "switchTo": "Passer à l’anglais",
+      "target": "English"
+    }
+  },
+  "stories": {
+    "add": "Ajouter une story",
+    "yours": "Votre story",
+    "emptyCreator": "Aucune story en ligne — partagez-en une, elle reste visible 24 heures.",
+    "previous": "Story précédente",
+    "next": "Story suivante",
+    "remove": "Retirer cette story",
+    "removeConfirm": "Retirer cette story? Elle disparaîtra pour tout le monde.",
+    "views": {
+      "one": "{count} vue",
+      "other": "{count} vues"
+    },
+    "seeProfile": "Voir le profil",
+    "create": {
+      "title": "Nouvelle story",
+      "subtitle": "Une photo ou une courte vidéo, visible pendant 24 heures.",
+      "choose": "Choisir une photo ou une vidéo",
+      "chooseHint": "JPG, PNG, WEBP jusqu’à 10 Mo · MP4, MOV jusqu’à 60 s",
+      "change": "Changer",
+      "caption": "Légende",
+      "captionPlaceholder": "Ajoutez un petit mot…",
+      "audience": "Qui peut la voir",
+      "audiences": {
+        "PUBLIC": "Tout le monde",
+        "APPROVED_FOLLOWERS_ONLY": "Abonnés approuvés",
+        "CONTACTS_ONLY": "Contacts",
+        "INVITED_ONLY": "Une de mes listes"
+      },
+      "list": "Liste",
+      "noList": "Créez d’abord une liste (Tableau de bord → Listes).",
+      "publish": "Partager la story",
+      "uploading": "Téléversement… {progress} %",
+      "publishedImage": "Votre story est en ligne pour 24 heures.",
+      "publishedVideo": "Téléversée. Votre story apparaîtra dès que le traitement sera terminé, pour 24 heures.",
+      "unsupported": "Choisissez une image (JPG, PNG, WEBP) ou une vidéo.",
+      "tooLarge": "Ce fichier est trop volumineux pour une story (photos jusqu’à 10 Mo, vidéos jusqu’à 250 Mo après montage).",
+      "failed": "La story n’a pas pu être partagée.",
+      "tooLargeToEdit": "Cette vidéo est trop volumineuse pour être préparée comme story (plus de 400 Mo). Coupez-la d’abord sur votre appareil.",
+      "editFirst": "Les stories sont verticales et durent jusqu’à 60 secondes : ajustez votre séquence avant de la publier.",
+      "adjust": "Ajuster",
+      "rating": "Classification du contenu",
+      "blur": "Brouiller l’aperçu"
+    },
+    "removeArmed": "Touchez de nouveau pour supprimer",
+    "processing": "Traitement en cours",
+    "processingHint": "Votre story est en cours d’encodage. Elle sera en ligne pour 24 heures dès qu’elle sera prête — cette page se met à jour toute seule.",
+    "failed": "Non publiée",
+    "failedHint": "Cette vidéo n’a pas pu être traitée (trop longue, ou le téléversement n’a pas été mené à terme). Retirez-la et partagez-la de nouveau.",
+    "viewer": {
+      "title": "Stories de {name}",
+      "position": "Story {current} sur {total}, {name}",
+      "age": {
+        "m": "{value} min",
+        "h": "{value} h"
+      },
+      "audience": {
+        "PUBLIC": "Public",
+        "APPROVED_FOLLOWERS_ONLY": "Abonnés",
+        "CONTACTS_ONLY": "Contacts",
+        "INVITED_ONLY": "Proches",
+        "CHALLENGE": "Contributeurs"
+      },
+      "soundOn": "Activer le son (M)",
+      "soundOff": "Couper le son (M)",
+      "tapForSound": "Touchez pour le son",
+      "pause": "Pause (Espace)",
+      "play": "Lecture (Espace)",
+      "more": "Plus",
+      "copyLink": "Copier le lien",
+      "linkCopied": "Lien copié.",
+      "linkFailed": "Le lien n’a pas pu être copié.",
+      "report": "Signaler",
+      "reportTitle": "Story de @{username}",
+      "activity": "Activité",
+      "like": "J’aime",
+      "unlike": "Je n’aime plus",
+      "likeFailed": "Votre mention J’aime n’a pas pu être enregistrée.",
+      "replyLabel": "Répondre en privé à {name}",
+      "replyPlaceholder": "Répondre à {name}…",
+      "send": "Envoyer",
+      "sending": "Envoi…",
+      "replySent": "Envoyé à {name} — dans vos messages.",
+      "replyFailed": "Votre réponse n’a pas pu être envoyée.",
+      "openConversation": "Ouvrir",
+      "tip": "Envoyer un pourboire à {name}",
+      "tipShort": "Pourboire",
+      "tipSent": "Pourboire envoyé à {name}. Merci!",
+      "signInToReact": "Connectez-vous pour aimer, répondre ou laisser un pourboire",
+      "sensitive": "Contenu sensible",
+      "sensitiveHint": "La personne qui l’a créée a demandé que cette story soit brouillée jusqu’à ce que vous choisissiez de la voir.",
+      "reveal": "Afficher la story",
+      "removeTitle": "Retirer cette story?",
+      "removeConfirm": "Retirer",
+      "removed": "Story retirée.",
+      "removeFailed": "La story n’a pas pu être retirée.",
+      "unavailable": "Cette story n’est plus disponible.",
+      "errors": {
+        "denied": {
+          "title": "L’hébergeur vidéo a refusé cette story",
+          "hint": "Le serveur vidéo (Bunny CDN) n’a pas accepté le lien de lecture. C’est un réglage du serveur, pas votre connexion — réessayez plus tard."
+        },
+        "missing": {
+          "title": "Cette story n’existe plus",
+          "hint": "Son média est introuvable. Elle a peut-être été retirée."
+        },
+        "network": {
+          "title": "La story n’a pas pu se charger",
+          "hint": "Vérifiez votre connexion et réessayez."
+        },
+        "media": {
+          "title": "Cette story ne peut pas être lue ici",
+          "hint": "Votre navigateur n’a pas pu lire cette vidéo."
+        },
+        "status": "HTTP {status}",
+        "retry": "Réessayer"
+      }
+    },
+    "insights": {
+      "title": "Activité de la story",
+      "subtitle": "Vous seul le voyez : qui a regardé, aimé et laissé un pourboire.",
+      "figures": {
+        "views": "Vues",
+        "likes": "J’aime",
+        "tips": "Pourboires"
+      },
+      "viewers": "Spectateurs",
+      "tips": "Pourboires",
+      "liked": "A aimé",
+      "guests": "+ {count} vues de visiteurs non connectés",
+      "noViewers": "Aucun spectateur pour l’instant",
+      "noTips": "Aucun pourboire pour l’instant",
+      "noTipsHint": "Les pourboires envoyés depuis cette story s’affichent ici, avec le nom de la personne.",
+      "failed": "L’activité n’a pas pu être chargée.",
+      "formerAccount": "Ancien compte",
+      "audienceLocked": "Livrée pour un défi : seuls ses contributeurs la voient, et cela ne peut pas changer.",
+      "audienceHint": "Prend effet immédiatement pour tout le monde.",
+      "saveAudience": "Enregistrer",
+      "audienceSaved": "Public mis à jour.",
+      "audienceFailed": "Le public n’a pas pu être modifié."
+    },
+    "profile": {
+      "title": "Stories",
+      "story": "Story",
+      "open": "Regarder les stories ({count})",
+      "openOf": "Stories de {name}"
+    },
+    "held": "En attente — espace de stockage plein",
+    "heldHint": "Cette story est conservée, mais n’est montrée à personne : votre espace de stockage est plein. Libérez de l’espace (brouillons, anciennes vidéos) et elle sera mise en ligne.",
+    "heldTitle": "Votre story vidéo"
+  },
+  "auth": {
+    "register": {
+      "closedTitle": "Les inscriptions sont fermées pendant le développement d’Orochia",
+      "closedBody": "Nous construisons Orochia au grand jour et n’acceptons pas encore de nouveaux comptes. Si vous avez déjà un compte, vous pouvez toujours vous connecter.",
+      "closedSignIn": "Se connecter",
+      "title": "Créer votre compte",
+      "subtitle": "Regardez, abonnez-vous et soutenez des créateurs. La publication viendra plus tard, depuis votre tableau de bord.",
+      "username": "Nom d’utilisateur",
+      "usernamePlaceholder": "votrenom",
+      "displayName": "Nom affiché",
+      "displayNamePlaceholder": "Comment les gens vous voient",
+      "email": "Courriel",
+      "emailPlaceholder": "vous@exemple.com",
+      "password": "Mot de passe",
+      "passwordHint": "Au moins 10 caractères",
+      "ageCertify": "J’ai au moins <b>18 ans</b>.",
+      "acceptTerms": "J’accepte les {terms} et l’{notice}.",
+      "terms": "conditions d’utilisation",
+      "notice": "avis relatif à l’article 2257 du titre 18 du U.S. Code",
+      "submit": "Créer le compte",
+      "submitting": "Création de votre compte…",
+      "haveAccount": "Vous avez déjà un compte?",
+      "signIn": "Se connecter",
+      "errors": {
+        "age": "Vous devez avoir au moins 18 ans pour vous inscrire.",
+        "password": "Choisissez un mot de passe d’au moins 10 caractères.",
+        "terms": "Acceptez les conditions d’utilisation pour continuer.",
+        "failed": "L’inscription a échoué.",
+        "birthDate": "Vous devez avoir au moins 18 ans pour vous inscrire à Orochia."
+      },
+      "birthDate": "Date de naissance",
+      "birthDateHint": "Privée — jamais affichée sur votre profil. Orochia est réservée aux adultes.",
+      "usernameHint": "Votre adresse : orochia.com/@{username}",
+      "usernameFree": "Disponible",
+      "usernameTaken": "Déjà pris — essayez {suggestion}",
+      "usernameReserved": "Réservé — essayez {suggestion}",
+      "usernameFormat": "De 3 à 30 lettres, chiffres ou _",
+      "useSuggestion": "Utiliser",
+      "honeypot": "Laissez ce champ vide",
+      "challenge": "Vérification en cours…"
+    },
+    "social": {
+      "google": "Continuer avec Google",
+      "facebook": "Continuer avec Facebook",
+      "or": "ou",
+      "errors": {
+        "cancelled": "La connexion a été annulée.",
+        "state": "Ce lien de connexion a expiré. Réessayez.",
+        "provider": "Le fournisseur n’a pas pu confirmer votre connexion. Réessayez.",
+        "suspended": "Ce compte est suspendu. Communiquez avec l’exploitant de la plateforme."
+      }
+    },
+    "complete": {
+      "title": "Terminer votre compte",
+      "subtitle": "Vous vous êtes connecté avec {provider}. Choisissez comment les gens vous voient, puis confirmez que vous avez 18 ans ou plus.",
+      "email": "Courriel",
+      "emailHint": "{provider} n’a pas partagé d’adresse — nous vous enverrons un lien pour la confirmer.",
+      "submit": "Créer mon compte",
+      "submitting": "Création de votre compte…",
+      "expired": "Cette connexion a expiré.",
+      "restart": "Retour à la connexion",
+      "providers": {
+        "google": "Google",
+        "facebook": "Facebook"
+      }
+    },
+    "login": {
+      "title": "Bon retour",
+      "subtitle": "Connectez-vous pour suivre, regarder et soutenir vos créateurs.",
+      "demo": "Comptes de démonstration",
+      "demoCreator": "Se connecter comme créateur",
+      "demoMember": "Se connecter comme membre",
+      "identifier": "Courriel ou nom d’utilisateur",
+      "identifierPlaceholder": "vous@exemple.com",
+      "password": "Mot de passe",
+      "forgot": "Mot de passe oublié?",
+      "submit": "Se connecter",
+      "submitting": "Connexion…",
+      "failed": "La connexion a échoué. Vérifiez vos renseignements et réessayez.",
+      "new": "Nouveau sur Orochia?",
+      "register": "Créer votre compte gratuit"
+    },
+    "forgot": {
+      "title": "Mot de passe oublié?",
+      "sent": "Si un compte utilise {email}, un lien de réinitialisation est en route. Il fonctionne une seule fois et pendant une heure.",
+      "demo": "Mode démo :",
+      "email": "Courriel",
+      "submit": "Envoyer le lien de réinitialisation",
+      "back": "← Retour à la connexion",
+      "failed": "La demande n’a pas pu être envoyée. Réessayez."
+    },
+    "reset": {
+      "done": "Mot de passe modifié",
+      "doneBody": "Connectez-vous avec votre nouveau mot de passe.",
+      "signIn": "Se connecter",
+      "title": "Choisir un nouveau mot de passe",
+      "password": "Nouveau mot de passe",
+      "confirm": "Confirmez-le",
+      "submit": "Enregistrer le nouveau mot de passe",
+      "tooShort": "Au moins 10 caractères.",
+      "differ": "Les deux mots de passe sont différents.",
+      "failed": "Le mot de passe n’a pas pu être modifié."
+    },
+    "verify": {
+      "working": "Vérification en cours",
+      "done": "Courriel vérifié",
+      "doneBody": "Votre compte est prêt.",
+      "continue": "Continuer",
+      "failed": "Lien non valide",
+      "newLink": "Demander un nouveau lien",
+      "invalid": "Ce lien est invalide ou a expiré.",
+      "unreachable": "La vérification n’a pas pu joindre le serveur. Réessayez."
+    }
+  },
+  "nav": {
+    "home": "Accueil",
+    "explore": "Explorer",
+    "create": "Créer",
+    "upload": "Téléverser",
+    "account": "Compte",
+    "signIn": "Se connecter",
+    "join": "S’inscrire",
+    "search": "Rechercher",
+    "searchPlaceholder": "Rechercher des créateurs, des vidéos, des mots-clics…",
+    "dashboard": "Tableau de bord",
+    "earnings": "Revenus",
+    "settings": "Paramètres",
+    "messages": "Messages",
+    "signOut": "Se déconnecter",
+    "balance": "Solde",
+    "saved": "Enregistrés",
+    "viewProfile": "Voir le profil",
+    "wallet": "Portefeuille",
+    "uploadHint": "Publier une vidéo",
+    "auctions": "Enchères",
+    "challenges": "Défis",
+    "mobile": "L’appli"
+  },
+  "footer": {
+    "explore": "Explorer",
+    "terms": "Conditions",
+    "privacy": "Confidentialité",
+    "compliance": "2257",
+    "dmca": "DMCA",
+    "adults": "Toutes les personnes représentées ont 18 ans ou plus.",
+    "howItWorks": "Comment ça marche",
+    "docs": "Documentation",
+    "mobile": "L’appli",
+    "devNotice": "Environnement de développement — accès sur invitation",
+    "label": "Pied de page"
+  },
+  "home": {
+    "ctaExplore": "Explorer les créateurs",
+    "why": {
+      "title": "Pourquoi on reste",
+      "stories": {
+        "title": "Des stories chaque jour",
+        "body": "De courtes vidéos et des photos des créateurs que vous suivez, en ligne pendant 24 heures."
+      },
+      "access": {
+        "title": "Un accès qui fait sur mesure",
+        "body": "Abonnés, contacts, listes de proches : chaque créateur choisit exactement qui voit chaque vidéo."
+      },
+      "support": {
+        "title": "Un soutien qui leur parvient",
+        "body": "Les pourboires et les déblocages vont au créateur — {share} % de chaque paiement, confirmé par le fournisseur de paiement."
+      },
+      "eyebrow": "Pour les fans",
+      "body": "Du nouveau chaque jour de la part des personnes que vous suivez — et un lien direct avec elles."
+    },
+    "creators": {
+      "eyebrow": "Pour les créateurs",
+      "title": "Votre public. Vos règles. Vos revenus.",
+      "body": "Publiez des vidéos et des stories en HD, décidez qui regarde chacune, fixez vos prix et soyez payé, sur une plateforme à code source ouvert à laquelle vous pouvez faire confiance.",
+      "cta": "Commencer à créer",
+      "points": {
+        "upload": "Téléversement direct vers un réseau vidéo mondial",
+        "audience": "Abonnés, contacts et listes privées",
+        "paid": "Pourboires et déblocages payants, {share} % pour vous"
+      }
+    },
+    "trending": "En ce moment",
+    "featured": "Créateur à la une",
+    "viewProfile": "Voir le profil",
+    "figures": {
+      "followers": "{count} partisans",
+      "views": "{count} vues",
+      "videos": "{count} vidéos"
+    },
+    "showcase": {
+      "label": "Orochia en action, sur un téléphone",
+      "scenes": {
+        "feed": "Regarder",
+        "stories": "Stories",
+        "auction": "Enchère",
+        "support": "Soutenir"
+      },
+      "ui": {
+        "following": "Abonnements",
+        "forYou": "Pour vous",
+        "creator": "Créateur vérifié",
+        "caption1": "Spectacle vu du premier rang, tourné en HD",
+        "caption2": "Séance néon — la version de ce soir",
+        "storyBadge": "Story",
+        "storyExpires": "En ligne 24 h",
+        "reply": "Répondre en privé…",
+        "tipTitle": "Laisser un pourboire",
+        "tipSend": "Envoyer {amount}",
+        "tipSent": "Pourboire envoyé",
+        "tipKeep": "Le créateur garde {share} %",
+        "auctionBadge": "Enchère · en cours",
+        "currentBid": "Mise actuelle",
+        "endsIn": "Se termine dans",
+        "bidder": "Enchérisseur {n}",
+        "you": "Vous",
+        "lead": "Vous êtes en tête",
+        "bidCta": "Miser {amount}",
+        "extended": "+2:00 · une mise de dernière minute prolonge le compte à rebours",
+        "tabs": {
+          "home": "Accueil",
+          "explore": "Explorer",
+          "create": "Créer",
+          "saved": "Enregistrés",
+          "you": "Vous"
+        },
+        "clock": "9:41",
+        "elapsed": "0:04",
+        "length": "HD · 12:48"
+      }
+    },
+    "auctions": "Enchères",
+    "auctionsAll": "Toutes les enchères",
+    "auctionsHow": {
+      "window": {
+        "title": "Une vidéo est mise en ligne",
+        "body": "Le créateur fixe le début, la fin, le prix de départ — et décide si le gagnant peut la télécharger."
+      },
+      "held": {
+        "title": "Les mises sont réservées",
+        "body": "Chaque mise est payée en crédits et réservée tant qu’elle est en tête. Si on vous surenchérit, vos crédits vous sont rendus aussitôt."
+      },
+      "softClose": {
+        "title": "Un dernier mot équitable",
+        "body": "Une mise dans les {minutes} dernières minutes ajoute {minutes} minutes au compte à rebours."
+      },
+      "winner": {
+        "title": "Un seul gagnant",
+        "body": "Seul le gagnant regarde la vidéo. Si le créateur examine la meilleure mise, il a {hours} heures pour le faire."
+      },
+      "none": "Aucune enchère n’est ouverte pour l’instant — la prochaine apparaîtra ici dès son lancement.",
+      "upcoming": "Voir les enchères à venir"
+    },
+    "challenges": {
+      "title": "Défis",
+      "all": "Tous les défis",
+      "pitch": "Financez-le. Lancez-le. Réalisez-le.",
+      "body": "Les contributions sont réservées en crédits jusqu’à la livraison de la vidéo — dans un délai de {days} jours — et vous sont rendues si elle n’est pas livrée.",
+      "cta": "Lancer un défi",
+      "lead": "Financez un objectif, mettez un créateur au défi, répondez à un appel ouvert."
+    },
+    "ways": {
+      "title": "Quatre façons de les soutenir",
+      "tip": "Pourboire",
+      "unlock": "Déblocage",
+      "auction": "Mise",
+      "challenge": "Soutenir un défi"
+    },
+    "paid": {
+      "eyebrow": "Être payé",
+      "titleLead": "Quatre sources de revenus.",
+      "titleAccent": "{share} % vous reviennent.",
+      "body": "Pourboires, déblocages payants, enchères et défis. Chaque paiement est confirmé par le fournisseur de paiement, réparti de la même façon et inscrit dans un registre que personne ne réécrit.",
+      "split": {
+        "percent": "{value} %",
+        "you": "au créateur, sur chaque paiement",
+        "platform": "à Orochia",
+        "label": "Sur chaque paiement, le créateur garde {share} % et Orochia {fee} %",
+        "example": "Un pourboire de {amount} : {net} pour le créateur, {fee} pour Orochia. Même répartition pour les déblocages, les mises gagnantes et les contributions."
+      },
+      "forYou": "{amount} pour vous",
+      "ways": {
+        "tips": {
+          "title": "Pourboires",
+          "body": "Sur n’importe quelle vidéo, de la part de fans qui veulent simplement dire merci.",
+          "example": "Un pourboire de {amount}"
+        },
+        "unlocks": {
+          "title": "Déblocages payants",
+          "body": "Votre prix pour une vidéo, jamais sous le minimum que vous fixez. Payée une fois, elle est à eux pour de bon.",
+          "example": "Un déblocage de {amount}"
+        },
+        "auctions": {
+          "title": "Enchères",
+          "body": "Une vidéo, un gagnant. Les mises sont réservées en crédits tant qu’elles sont en tête; une mise de dernière minute prolonge le compte à rebours.",
+          "example": "p. ex. une mise gagnante de {amount}"
+        },
+        "challenges": {
+          "title": "Défis",
+          "body": "Vos fans financent votre objectif ou vous mettent au défi avec une offre. Les contributions restent réservées jusqu’à ce que vous livriez la vidéo.",
+          "example": "Une contribution de {amount}"
+        }
+      },
+      "proofs": {
+        "confirmed": {
+          "title": "Confirmé par le fournisseur",
+          "body": "Un paiement ne compte que lorsque l’avis signé du fournisseur arrive — jamais sur la parole d’un navigateur."
+        },
+        "escrow": {
+          "title": "Réservé, puis versé",
+          "body": "Les mises et les contributions restent réservées en crédits et sont rendues aussitôt si la vidéo n’arrive jamais."
+        },
+        "payouts": {
+          "title": "Versements dès {minimum}",
+          "body": "Vers votre compte bancaire (IBAN, compte américain ou canadien), PayPal, USDT ou BTC — renseignements chiffrés au repos."
+        },
+        "open": {
+          "title": "Code source ouvert",
+          "body": "Le code qui répartit chaque paiement est public (Apache-2.0).",
+          "link": "Le lire sur GitHub"
+        }
+      },
+      "cta": "Commencer à gagner",
+      "ctaChallenges": "Voir les défis",
+      "hub": {
+        "label": "Chaque soutien va au créateur",
+        "description": "Un créateur, au centre, reçoit les pourboires, les déblocages, les mises gagnantes et les contributions aux défis; {share} % de chacun lui revient.",
+        "community": "Partisans",
+        "creator": "Créateur",
+        "payouts": "Versements",
+        "toCreator": "au créateur",
+        "value": "+ {amount}",
+        "ways": {
+          "tips": "Pourboires",
+          "unlocks": "Déblocages",
+          "auctions": "Enchères",
+          "challenges": "Défis"
+        }
+      }
+    },
+    "auctionsLead": "Une vidéo, un gagnant — des mises réservées en crédits.",
+    "challengesHow": {
+      "goal": {
+        "title": "Un objectif",
+        "body": "Un créateur fixe une cible, à partir de {goal}. Les fans contribuent; quand elle est atteinte, le créateur réalise la vidéo."
+      },
+      "dare": {
+        "title": "Une demande",
+        "body": "Vous envoyez une idée et une offre à un créateur. Il répond dans un délai de {hours} heures — sinon vos crédits vous sont rendus."
+      },
+      "openCall": {
+        "title": "Un appel ouvert",
+        "body": "Publiez une idée avec une récompense, à partir de {openCall}, et choisissez, parmi les créateurs qui se proposent, celui qui la réalisera."
+      }
+    },
+    "trendingAll": "Explorer",
+    "market": "Enchères et défis",
+    "intro": {
+      "line": "Regardez les créateurs que vous aimez et soutenez-les directement.",
+      "sub": "Ils gardent l’essentiel de chaque paiement.",
+      "join": "Créer votre compte"
+    },
+    "member": {
+      "title": "Bon retour, @{name}",
+      "body": "Les stories du jour, ce qui est aux enchères et ce que les fans financent."
+    },
+    "heroTitle": "Les créateurs que vous aimez, chaque jour.",
+    "heroLead": "Regardez-les, abonnez-vous et soutenez-les directement — ils gardent {share} % de chaque paiement.",
+    "ctaHow": "Comment ça marche",
+    "features": {
+      "title": "Tout au même endroit",
+      "lead": "Les outils que les fans et les créateurs utilisent chaque jour.",
+      "stories": {
+        "title": "Stories de 24 heures",
+        "hook": "De courtes vidéos et des photos qui restent en ligne une journée."
+      },
+      "streaming": {
+        "title": "Diffusion HD",
+        "hook": "Lecture HLS signée sur un réseau vidéo mondial."
+      },
+      "support": {
+        "title": "Pourboires et déblocages",
+        "hook": "Les créateurs gardent {share} % de chaque paiement."
+      },
+      "challenges": {
+        "title": "Défis et demandes",
+        "hook": "Financez une vidéo que vous voulez voir créée : vos crédits sont réservés jusqu’à la livraison."
+      },
+      "circles": {
+        "title": "Listes de proches",
+        "hook": "Choisissez exactement qui voit chaque vidéo."
+      },
+      "editor": {
+        "title": "Éditeur dans le navigateur",
+        "hook": "Coupez et peaufinez avant de publier."
+      }
+    },
+    "ctaCreate": "Créer votre compte gratuit",
+    "visitor": {
+      "eyebrow": "Orochia · créateurs indépendants",
+      "title": "Regardez les créateurs que vous aimez et payez-les directement.",
+      "lead": "Des vidéos et des stories de créateurs indépendants, qui choisissent qui voit chacune. Pourboires, déblocages, enchères et défis : {share} % de chaque paiement va au créateur.",
+      "tour": {
+        "label": "Orochia, enregistrée sur la vraie appli",
+        "play": "Lancer les étapes",
+        "pause": "Mettre les étapes en pause",
+        "step": "Étape {n} sur {total}",
+        "caption": "Enregistré sur dev.orochia.com avec des comptes de démonstration (Alex, un fan; Elena, une créatrice). Aucune personne réelle.",
+        "steps": {
+          "find": {
+            "title": "Trouver une créatrice",
+            "text": "Cherchez un mot; sa vidéo démarre.",
+            "alt": "Recherche sur Orochia : la vidéo d’une créatrice est trouvée et en cours de lecture."
+          },
+          "watch": {
+            "title": "Regarder",
+            "text": "Des vidéos et des stories, en HD, sur tous les écrans.",
+            "alt": "L’appli Orochia lisant la vidéo d’une créatrice."
+          },
+          "tip": {
+            "title": "Laisser un pourboire sur sa story",
+            "text": "Quelques dollars, directement pour elle.",
+            "alt": "Un fan envoie un pourboire depuis la story d’une créatrice."
+          },
+          "earn": {
+            "title": "Elle est payée",
+            "text": "{share} % de chaque paiement, versés à sa banque.",
+            "alt": "Les revenus d’une créatrice sur Orochia."
+          }
+        }
+      },
+      "preview": {
+        "eyebrow": "En ce moment",
+        "title": "Sur Orochia aujourd’hui",
+        "lead": "Le vrai fil, tel qu’un visiteur le voit. Les vidéos pour adultes restent voilées tant que le serveur n’a pas vérifié votre âge.",
+        "cta": "Voir tout le fil",
+        "empty": "Rien n’est encore publié : les premières vidéos apparaîtront ici dès qu’elles le seront."
+      },
+      "how": {
+        "eyebrow": "Comment ça marche",
+        "title": "Trouver, regarder, soutenir",
+        "lead": "Trois étapes pour les fans; le parcours complet, avec ses enregistrements, est à un clic.",
+        "cta": "Le parcours complet",
+        "steps": {
+          "find": {
+            "title": "Trouver des créateurs",
+            "text": "Cherchez, abonnez-vous et voyez leurs stories chaque jour, en ligne pendant 24 heures."
+          },
+          "choose": {
+            "title": "Regarder ce qu’ils partagent avec vous",
+            "text": "Chaque créateur décide qui regarde chaque vidéo : abonnés, contacts, proches, ou moyennant un prix."
+          },
+          "support": {
+            "title": "Les soutenir directement",
+            "text": "Laissez un pourboire, débloquez, misez ou soutenez un défi. Un paiement ne compte que lorsque le fournisseur le confirme."
+          }
+        }
+      },
+      "creators": {
+        "eyebrow": "Pour les créateurs",
+        "title": "Votre public. Vos règles. {share} % pour vous.",
+        "lead": "Publiez des vidéos et des stories en HD, décidez qui regarde chacune, fixez vos prix et soyez payé, sur une plateforme à code source ouvert.",
+        "cta": "Commencer à créer",
+        "points": {
+          "upload": "Téléversement direct vers un réseau vidéo mondial",
+          "audience": "Abonnés, contacts et listes privées",
+          "paid": "Pourboires, déblocages, enchères et défis, {share} % pour vous"
+        }
+      },
+      "flamingoLabel": "La promesse du flamant",
+      "flamingo": "Le flamant répond, et le paiement suit.",
+      "closing": {
+        "title": "Jetez un coup d’œil",
+        "body": "Orochia est réservée aux adultes (18 ans et plus) : votre âge est vérifié par le serveur avant la lecture de tout contenu pour adultes.",
+        "cta": "Explorer les créateurs"
+      }
+    }
+  },
+  "payments": {
+    "method": "Payer avec",
+    "credits": {
+      "title": "Crédits Orochia",
+      "hint": "Payé depuis votre solde Orochia — instantané"
+    },
+    "gateways": {
+      "CCBILL": {
+        "title": "Carte",
+        "hint": "Visa, Mastercard — paiement sécurisé CCBill"
+      },
+      "SEGPAY": {
+        "title": "Carte",
+        "hint": "Paiement sécurisé Segpay"
+      },
+      "CRYPTO": {
+        "title": "Cryptomonnaie",
+        "hint": "USDT, BTC, ETH, Solana"
+      },
+      "STRIPE": {
+        "title": "Carte ou portefeuille numérique",
+        "hint": "Paiement sécurisé Stripe"
+      }
+    },
+    "title": "Soutenir {name}",
+    "subtitle": "Débloquez cette vidéo et soutenez directement la personne qui l’a créée.",
+    "amount": "Montant",
+    "minimum": "Minimum : {amount}",
+    "pay": "Payer {amount}",
+    "processing": "Ouverture du paiement…",
+    "unavailable": "Les paiements ne sont pas encore offerts sur ce serveur.",
+    "discreet": "Facturation discrète. Les données de votre carte n’atteignent jamais Orochia.",
+    "failed": "Le paiement n’a pas pu démarrer. Réessayez ou choisissez un autre mode de paiement.",
+    "startFailed": "Impossible de démarrer le paiement pour {name}.",
+    "subtitleStory": "Un pourboire laissé sur cette story va directement à la personne qui l’a créée."
+  },
+  "editor": {
+    "title": "Modifier la vidéo",
+    "edit": "Modifier",
+    "start": "Début",
+    "end": "Fin",
+    "filterNames": {
+      "none": "Original",
+      "vivid": "Éclatant",
+      "warm": "Chaud",
+      "cool": "Froid",
+      "golden": "Doré",
+      "cinematic": "Cinéma",
+      "faded": "Délavé",
+      "dramatic": "Dramatique",
+      "dreamy": "Rêveur",
+      "neon": "Néon",
+      "sepia": "Sépia",
+      "mono": "Mono",
+      "noir": "Noir",
+      "vintage": "Rétro"
+    },
+    "apply": "Appliquer",
+    "loading": "Chargement de l’éditeur (une seule fois)…",
+    "exporting": "Traitement… {progress} %",
+    "tooLarge": "Ce fichier est trop volumineux pour être modifié dans le navigateur (plus de 400 Mo).",
+    "failed": "La vidéo n’a pas pu être modifiée. Vous pouvez tout de même téléverser l’original.",
+    "maxLength": "Les stories durent jusqu’à {seconds} secondes.",
+    "previewNote": "L’aperçu est fidèle; la vidéo exportée correspond exactement.",
+    "tools": {
+      "trim": "Couper",
+      "filters": "Filtres",
+      "adjust": "Ajuster",
+      "format": "Format",
+      "sound": "Son"
+    },
+    "formats": {
+      "original": "Original",
+      "vertical": "Story 9:16",
+      "square": "Carré 1:1"
+    },
+    "reposition": "Glissez pour recadrer",
+    "storyVertical": "Les stories sont toujours verticales (9:16).",
+    "play": "Lecture",
+    "pause": "Pause",
+    "cancel": "Annuler",
+    "selection": "{start} – {end} · {length} s",
+    "speed": "Vitesse",
+    "adjust": {
+      "brightness": "Luminosité",
+      "contrast": "Contraste",
+      "saturation": "Couleur",
+      "reset": "Réinitialiser"
+    },
+    "sound": {
+      "volume": "Son d’origine",
+      "muted": "Muet",
+      "fadeIn": "Fondu à l’ouverture",
+      "fadeOut": "Fondu à la fermeture",
+      "denoise": "Réduire le bruit de fond",
+      "music": "Musique",
+      "addMusic": "Ajouter de la musique depuis votre appareil",
+      "replaceMusic": "Remplacer",
+      "removeMusic": "Retirer la musique",
+      "musicVolume": "Volume de la musique",
+      "musicHint": "Elle joue dès le début de votre séquence et se répète si elle est plus courte. N’utilisez que de la musique dont vous détenez les droits.",
+      "mute": "Couper le son",
+      "unmute": "Remettre le son"
+    },
+    "saveDraft": "Enregistrer le brouillon",
+    "draftSaved": "Brouillon enregistré sur cet appareil.",
+    "draftFailed": "Le brouillon n’a pas pu être enregistré. Vérifiez votre connexion et réessayez.",
+    "discard": {
+      "title": "Quitter l’éditeur?",
+      "body": "Vos modifications seront perdues, à moins d’enregistrer un brouillon.",
+      "discard": "Abandonner les modifications",
+      "keep": "Continuer à modifier"
+    },
+    "savingDraft": "Enregistrement de votre brouillon… {progress} %",
+    "drafts": {
+      "title": "Vos brouillons",
+      "edited": "Enregistré {date}",
+      "expires": "Conservé jusqu’au {date}",
+      "resume": "Reprendre la modification",
+      "opening": "Ouverture… {progress} %",
+      "delete": "Supprimer le brouillon",
+      "deleteConfirm": "Touchez de nouveau pour supprimer",
+      "processing": "Enregistrement en cours…",
+      "failed": "Ce brouillon n’a pas pu être ouvert.",
+      "untitled": "Sans titre"
+    },
+    "titleStory": "Modifier la story",
+    "done": "Terminé",
+    "next": "Suivant",
+    "reset": "Réinitialiser",
+    "preview": "Aperçu",
+    "toolsLabel": "Outils de modification",
+    "kept": "{length} s conservées",
+    "panels": {
+      "trim": {
+        "title": "Couper",
+        "hint": "Glissez les poignées blanches pour garder le meilleur passage. Faites glisser la ligne du temps pour prévisualiser n’importe quel moment."
+      },
+      "filters": {
+        "title": "Filtres",
+        "hint": "Touchez un style. Affinez-le dans Ajuster — la vidéo exportée correspond à l’aperçu."
+      },
+      "adjust": {
+        "title": "Ajuster",
+        "hint": "Lumière, contraste et couleur. Double-cliquez sur un curseur pour le réinitialiser."
+      },
+      "format": {
+        "title": "Format",
+        "hint": "Choisissez la forme, puis faites glisser l’image pour choisir ce qui reste dans le cadre."
+      },
+      "sound": {
+        "title": "Son",
+        "hint": "Son d’origine, fondus en douceur, moins de bruit de fond et musique en arrière-plan."
+      }
+    }
+  },
+  "upload": {
+    "limits": "MP4, MOV, MKV — jusqu’à {size} et {duration}. Téléversement direct, reprenable.",
+    "tooLarge": "Ce fichier fait {size} : les vidéos peuvent aller jusqu’à {max}.",
+    "tooLong": "Cette vidéo dure {duration} : les vidéos peuvent durer jusqu’à {max}."
+  },
+  "profile": {
+    "creator": "Créateur",
+    "member": "Membre",
+    "verified": "Créateur vérifié (dossiers de l’article 2257 du titre 18 du U.S. Code)",
+    "stats": {
+      "patrons": "Mécènes",
+      "views": "Vues",
+      "videos": "Vidéos"
+    },
+    "networks": {
+      "instagram": "Instagram",
+      "x": "X",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "youtube": "YouTube",
+      "telegram": "Telegram",
+      "website": "Site Web"
+    },
+    "visit": "{network} — @{handle}",
+    "editProfile": "Modifier le profil",
+    "share": "Partager le profil",
+    "copied": "Lien copié",
+    "balance": "Solde",
+    "upload": "Téléverser",
+    "ageCertified": "18+ certifié",
+    "viewPublic": "Voir le profil public",
+    "loading": "Chargement du profil…",
+    "tip": "Pourboire"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "saved": "Enregistré",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "failed": "Enregistrement impossible. Réessayez.",
+    "sections": {
+      "profile": "Profil",
+      "links": "Liens",
+      "privacy": "Confidentialité",
+      "notifications": "Notifications",
+      "payouts": "Versements",
+      "accounts": "Modes de connexion",
+      "blocked": "Comptes bloqués",
+      "challenges": "Défis"
+    },
+    "pictures": {
+      "avatar": "Photo de profil",
+      "banner": "Image de couverture",
+      "upload": "Téléverser une photo",
+      "chooseAvatar": "Choisir un avatar",
+      "chooseBanner": "Choisir une couverture",
+      "remove": "Retirer",
+      "uploading": "Téléversement…",
+      "uploadFailed": "L’image n’a pas pu être téléversée (JPG, PNG ou WEBP, jusqu’à {size}).",
+      "presetsTitle": "Choisir une image",
+      "close": "Fermer",
+      "edit": "Modifier",
+      "editAvatar": "Changer la photo de profil",
+      "editBanner": "Changer l’image de couverture",
+      "add": "Ajouter une couverture"
+    },
+    "identity": {
+      "displayName": "Nom affiché",
+      "displayNameHint": "Affiché partout. Plusieurs personnes peuvent porter le même nom.",
+      "username": "Nom d’utilisateur",
+      "usernameHint": "Votre adresse unique : orochia.com/@{username}. Personne d’autre ne peut l’avoir — plusieurs personnes peuvent partager un nom affiché, jamais un nom d’utilisateur.",
+      "bio": "À propos de vous",
+      "bioPlaceholder": "Quelques mots pour vos visiteurs",
+      "email": "Courriel",
+      "emailHint": "Privé — vous seul le voyez. Il sert à vous connecter et à recevoir les notifications que vous gardez.",
+      "birthDate": "Date de naissance",
+      "birthDateHint": "Privée — jamais affichée. Orochia est réservée aux adultes : elle confirme que vous avez 18 ans ou plus.",
+      "birthDateMissing": "Pas encore fournie",
+      "birthDateAdd": "Ajouter votre date de naissance",
+      "viewProfile": "Voir mon profil public"
+    },
+    "links": {
+      "intro": "Affichés sur votre profil public. Saisissez votre identifiant ou collez un lien.",
+      "website": "Site Web",
+      "websitePlaceholder": "https://votre-site.com",
+      "handlePlaceholder": "identifiant"
+    },
+    "privacy": {
+      "messages": "Qui peut vous écrire",
+      "everyone": "Tout le monde",
+      "everyoneHint": "Tout membre ayant un compte vérifié.",
+      "contacts": "Contacts seulement",
+      "contactsHint": "Seulement les personnes que vous avez acceptées comme contacts.",
+      "presence": "Afficher quand je suis en ligne",
+      "presenceHint": "Vos contacts, les personnes avec qui vous échangez et vos abonnés approuvés voient quand vous êtes en ligne ou votre dernière présence. Désactivez cette option et vous ne verrez pas la leur non plus."
+    },
+    "notifications": {
+      "intro": "Choisissez ce qui vous parvient, dans l’appli (la cloche) et par courriel. Tout est activé par défaut.",
+      "all": "Tout",
+      "events": {
+        "newFollower": "Quelqu’un vous suit ou demande à vous suivre",
+        "contactRequest": "Quelqu’un demande à devenir votre contact",
+        "newComment": "Un commentaire sur l’une de vos vidéos",
+        "commentReply": "Une réponse à votre commentaire",
+        "newMessage": "Un nouveau message privé",
+        "tipReceived": "Vous recevez un pourboire",
+        "videoUnlocked": "Quelqu’un débloque l’une de vos vidéos",
+        "videoReady": "Votre téléversement est traité et en ligne",
+        "creatorPublished": "Un créateur que vous suivez publie une vidéo",
+        "auctionAnnounced": "Un créateur que vous suivez lance une enchère",
+        "auctionOutbid": "Quelqu’un surenchérit sur votre mise",
+        "auctionWon": "Vous remportez une enchère",
+        "auctionDeclined": "L’une de vos mises est refusée ou annulée (crédits rendus)",
+        "auctionNewBid": "Une nouvelle mise sur l’une de vos enchères",
+        "auctionDecision": "L’une de vos enchères se termine et attend votre décision",
+        "auctionSold": "L’une de vos enchères est vendue",
+        "auctionUnsold": "L’une de vos enchères se termine sans mise",
+        "challengeAnnounced": "Un créateur que vous suivez fixe un objectif",
+        "challengeRequested": "Quelqu’un vous fait une demande",
+        "challengePledged": "Quelqu’un soutient votre défi",
+        "challengeFunded": "Votre objectif est atteint",
+        "challengeAccepted": "Un défi que vous soutenez est lancé",
+        "challengeApplied": "Un créateur se propose pour votre appel ouvert",
+        "challengeChosen": "Vous êtes choisi pour un appel ouvert",
+        "challengeDelivered": "Un défi que vous soutenez est livré",
+        "challengeReleased": "Un défi que vous soutenez n’aura pas lieu",
+        "challengeClosed": "Un défi que vous auriez pu réaliser est clos",
+        "storageLow": "Votre espace de stockage est presque plein",
+        "storageHeld": "Un téléversement est en attente parce que votre espace est plein"
+      },
+      "inApp": "Dans l’appli",
+      "byEmail": "Par courriel",
+      "frequency": "Nombre de courriels",
+      "frequencies": {
+        "INSTANT": "Chaque notification",
+        "HOURLY": "Au plus un par heure",
+        "NONE": "Aucun courriel d’activité"
+      },
+      "frequencyHint": "Les courriels du compte (sécurité, mot de passe) sont toujours envoyés."
+    },
+    "payouts": {
+      "hint": "Votre mode de versement, vos revenus, vos exportations et vos retraits se trouvent sur la page Revenus.",
+      "request": "Ouvrir Revenus et versements"
+    },
+    "accounts": {
+      "intro": "Les façons de vous connecter à ce compte.",
+      "none": "Seulement le courriel et le mot de passe.",
+      "unlink": "Dissocier",
+      "linkedOn": "Associé le {date}"
+    },
+    "blocked": {
+      "intro": "Les comptes bloqués ne peuvent pas vous écrire, vous suivre ni demander à devenir votre contact.",
+      "none": "Vous n’avez bloqué personne.",
+      "unblock": "Débloquer"
+    },
+    "challenges": {
+      "accept": "Accepter les demandes",
+      "acceptHint": "Vos fans peuvent vous envoyer un défi avec une offre. Vous acceptez ou refusez chacun; rien n’est payé tant que vous n’avez pas livré.",
+      "minimum": "Plus petite offre",
+      "minimumHint": "Les demandes sous ce montant sont refusées avant de vous parvenir."
+    }
+  },
+  "notify": {
+    "newFollower": {
+      "subject": "{name} {action}",
+      "body": "{name} {action}.",
+      "follows": "vous suit désormais",
+      "asks": "demande à vous suivre"
+    },
+    "contactRequest": {
+      "subject": "{name} veut devenir votre contact",
+      "body": "{name} a demandé à devenir votre contact. Acceptez ou refusez depuis votre réseau."
+    },
+    "newComment": {
+      "subject": "Nouveau commentaire sur « {title} »",
+      "body": "{name} a commenté votre vidéo « {title} »."
+    },
+    "commentReply": {
+      "subject": "{name} vous a répondu",
+      "body": "{name} a répondu à votre commentaire sur « {title} »."
+    },
+    "newMessage": {
+      "subject": "Nouveau message de {name}",
+      "body": "{name} vous a envoyé un message privé."
+    },
+    "tipReceived": {
+      "subject": "Vous avez reçu un pourboire de {amount}",
+      "body": "{name} vous a envoyé un pourboire de {amount}. Il est dans votre solde."
+    },
+    "videoUnlocked": {
+      "subject": "{name} a débloqué « {title} »",
+      "body": "{name} a débloqué votre vidéo « {title} » pour {amount}. Le montant est dans votre solde."
+    },
+    "videoReady": {
+      "subject": "« {title} » est en ligne",
+      "body": "Votre vidéo « {title} » est traitée et peut maintenant être regardée."
+    },
+    "creatorPublished": {
+      "subject": "Nouveauté de {name} : « {title} »",
+      "body": "{name} vient de publier « {title} »."
+    },
+    "auctionAnnounced": {
+      "subject": "{name} a mis « {title} » aux enchères",
+      "body": "{name} a mis « {title} » aux enchères. La plus haute mise l’emporte."
+    },
+    "auctionNewBid": {
+      "subject": "Nouvelle mise : {amount} sur « {title} »",
+      "body": "Quelqu’un a misé {amount} sur « {title} »."
+    },
+    "auctionOutbid": {
+      "subject": "Quelqu’un a surenchéri sur « {title} »",
+      "body": "Quelqu’un a misé {amount} sur « {title} ». Vos crédits sont de retour dans votre portefeuille — misez de nouveau pour reprendre la tête."
+    },
+    "auctionWon": {
+      "subject": "Vous avez remporté « {title} »",
+      "body": "Vous avez remporté « {title} » pour {amount}. Vous pouvez la regarder dès maintenant."
+    },
+    "auctionDecision": {
+      "subject": "« {title} » : acceptez ou refusez {amount}",
+      "body": "Votre enchère pour « {title} » s’est terminée à {amount}. Acceptez ou refusez la meilleure mise dans les 48 heures."
+    },
+    "auctionSold": {
+      "subject": "« {title} » vendue pour {amount}",
+      "body": "Votre enchère pour « {title} » s’est conclue à {amount}. Le montant est dans votre solde."
+    },
+    "auctionUnsold": {
+      "subject": "« {title} » : l’enchère s’est terminée sans mise",
+      "body": "Votre enchère pour « {title} » s’est terminée sans mise. La vidéo retrouve son public précédent."
+    },
+    "auctionDeclined": {
+      "subject": "Votre mise sur « {title} » n’a pas été retenue",
+      "body": "Votre mise de {amount} sur « {title} » n’a pas été retenue. Vos crédits sont de retour dans votre portefeuille."
+    },
+    "challengeAnnounced": {
+      "subject": "{name} a fixé un objectif",
+      "body": "{name} a fixé un objectif : « {title} ». Soutenez-le pour le concrétiser."
+    },
+    "challengeRequested": {
+      "subject": "Nouvelle demande : « {title} »",
+      "body": "{amount} sont sur la table pour « {title} ». Acceptez ou refusez dans un délai de 3 jours."
+    },
+    "challengePledged": {
+      "subject": "+{amount} sur « {title} »",
+      "body": "+{amount} sur « {title} » — {total} engagés jusqu’ici."
+    },
+    "challengeFunded": {
+      "subject": "« {title} » a atteint son objectif",
+      "body": "« {title} » a atteint son objectif avec {total}. Une fois lancé, vous avez {days} jours pour livrer."
+    },
+    "challengeAccepted": {
+      "subject": "« {title} » est lancé",
+      "body": "« {title} » est lancé : {name} a {days} jours pour le livrer."
+    },
+    "challengeApplied": {
+      "subject": "{name} se propose pour « {title} »",
+      "body": "{name} veut réaliser « {title} ». Choisissez un créateur avant l’échéance."
+    },
+    "challengeChosen": {
+      "subject": "Vous avez été choisi pour « {title} »",
+      "body": "Vous avez été choisi pour « {title} » — {total} vous attendent. Livrez dans un délai de {days} jours."
+    },
+    "challengeDelivered": {
+      "subject": "« {title} » est arrivé",
+      "body": "« {title} » est arrivé. Votre contribution l’a rendu possible — regardez-le maintenant."
+    },
+    "challengeReleased": {
+      "subject": "« {title} » n’aura pas lieu",
+      "body": "« {title} » n’aura pas lieu : {reason}. Vos {amount} en crédits sont de retour dans votre portefeuille."
+    },
+    "challengeClosed": {
+      "subject": "« {title} » est clos",
+      "body": "« {title} » est clos : {reason}."
+    },
+    "storageLow": {
+      "subject": "Votre espace de stockage est plein à {percent} %",
+      "body": "Vous avez utilisé {percent} % de vos {limit} de stockage. Supprimez des brouillons ou d’anciennes vidéos, ou demandez un forfait plus grand, avant que les téléversements soient refusés."
+    },
+    "storageHeld": {
+      "subject": "« {title} » est en attente : stockage plein",
+      "body": "« {title} » est encodée et conservée, mais non publiée : votre espace de stockage est plein. Libérez de l’espace et elle sera mise en ligne toute seule — rien n’a été supprimé."
+    },
+    "storageAlert": {
+      "subject": "Stockage de la plateforme à {percent} %",
+      "body": "Le stockage vidéo d’Orochia est à {percent} % ({used} sur {limit}). Les nouveaux téléversements sont refusés à 100 % : augmentez ABUSE_QUOTA_PLATFORM_GB ou libérez de l’espace."
+    },
+    "someone": "Quelqu’un"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAll": "Tout marquer comme lu",
+    "empty": "Rien de nouveau. Les abonnements, commentaires, pourboires et messages s’affichent ici.",
+    "seeAll": "Voir toutes les notifications",
+    "settings": "Paramètres des notifications",
+    "unread": "{count} non lues",
+    "loadMore": "Afficher les plus anciennes",
+    "dismiss": "Ignorer",
+    "region": "Notifications en direct",
+    "loading": "Chargement de vos notifications"
+  },
+  "wallet": {
+    "title": "Portefeuille",
+    "subtitle": "Les crédits Orochia paient les pourboires, les déblocages et les mises d’un seul toucher. 1 crédit = 0,01 $ US.",
+    "balance": "Vos crédits",
+    "balanceValue": "{amount} en crédits",
+    "add": "Ajouter des crédits",
+    "choosePack": "Choisir un montant",
+    "bonus": "+{amount} de bonus",
+    "popular": "Le plus choisi",
+    "payWith": "Payer avec",
+    "pay": "Payer {price}",
+    "processing": "Ouverture du paiement sécurisé…",
+    "gateways": {
+      "CCBILL": "Carte, Apple Pay, Google Pay",
+      "SEGPAY": "Carte",
+      "CRYPTO": "Cryptomonnaie (USDT, BTC…)",
+      "STRIPE": "Carte, Apple Pay, Google Pay",
+      "TEST": "Recharge d’essai — aucun frais"
+    },
+    "secure": "Paiement sécurisé par notre partenaire de paiement. Les données de votre carte n’atteignent jamais Orochia.",
+    "noGateway": "L’achat de crédits ouvrira dès qu’un partenaire de paiement sera connecté.",
+    "success": "Paiement reçu — vos crédits sont en route. Ils s’afficheront ici d’ici une minute.",
+    "testSuccess": "Crédits ajoutés (recharge d’essai, rien n’a été facturé).",
+    "cancelled": "Paiement annulé. Rien n’a été facturé.",
+    "history": "Historique",
+    "empty": "Aucun mouvement pour l’instant. Ajoutez des crédits pour laisser un pourboire ou débloquer d’un seul toucher.",
+    "types": {
+      "TOPUP": "Crédits ajoutés",
+      "SPEND": "Paiement",
+      "REFUND": "Remboursement",
+      "ADJUSTMENT": "Ajustement",
+      "HOLD": "Réservés pour une mise ou une contribution",
+      "RELEASE": "Mise libérée"
+    },
+    "failed": "Le paiement n’a pas pu démarrer. Réessayez ou choisissez un autre mode de paiement.",
+    "short": "Crédits insuffisants (vous avez {balance}).",
+    "held": "{amount} réservés dans vos mises en tête et vos contributions à des défis"
+  },
+  "earnings": {
+    "title": "Revenus",
+    "subtitle": "Ce que vos vidéos rapportent, tiré du registre — chaque cent, exactement une fois.",
+    "periods": {
+      "30d": "30 jours",
+      "90d": "90 jours",
+      "12m": "12 mois",
+      "all": "Depuis le début"
+    },
+    "net": "Revenus nets",
+    "netHint": "Après les frais de plateforme de {fee} % · {payments} paiements",
+    "available": "Disponible pour un retrait",
+    "pending": "{amount} en route",
+    "views": "Vues totales",
+    "viewsHint": "{count} pendant cette période",
+    "supporters": "Partisans",
+    "supportersHint": "Brut : {amount}",
+    "withdraw": "Retirer",
+    "trend": "12 derniers mois",
+    "trendLabel": "Votre part par mois, selon ce qui l’a générée",
+    "videos": "Vos vidéos",
+    "top": "Les plus rentables",
+    "low": "Les moins rentables",
+    "sortBy": "Trier par",
+    "sort": {
+      "net": "Revenus",
+      "views": "Vues"
+    },
+    "videoMeta": "{views} vues · {payments} paiements",
+    "noVideos": "Publiez une vidéo pour voir ici ce qu’elle rapporte.",
+    "transactions": "Paiements reçus",
+    "noTransactions": "Aucun paiement pendant cette période.",
+    "export": "Exporter",
+    "exportTransactions": "Paiements (CSV)",
+    "exportVideos": "Vidéos (CSV)",
+    "kinds": {
+      "tip": "Pourboire",
+      "unlock": "Déblocage",
+      "auction": "Enchère",
+      "challenge": "Défi"
+    },
+    "payouts": "Versements",
+    "payoutAccount": "Où nous envoyons votre argent",
+    "noAccount": "Ajoutez un compte bancaire, un compte PayPal ou une adresse de cryptomonnaie pour pouvoir retirer.",
+    "addAccount": "Ajouter un mode de versement",
+    "changeAccount": "Modifier",
+    "paidOut": "Versé jusqu’ici : {amount}",
+    "history": "Historique des versements",
+    "noPayouts": "Aucun versement pour l’instant.",
+    "statuses": {
+      "REQUESTED": "Demandé",
+      "UNDER_REVIEW": "En examen",
+      "PROCESSING": "En cours d’envoi",
+      "SETTLED": "Versé",
+      "FAILED": "Échec"
+    },
+    "request": {
+      "title": "Retirer vos revenus",
+      "amount": "Montant",
+      "max": "Tout ({amount})",
+      "min": "Minimum de 20,00 $",
+      "to": "Envoyé à {hint}",
+      "submit": "Demander {amount}",
+      "done": "Demande reçue. Vous serez avisé de l’envoi.",
+      "tooLow": "Il vous faut au moins 20,00 $ de disponible pour retirer.",
+      "quick": "Montants rapides"
+    },
+    "account": {
+      "title": "Mode de versement",
+      "method": "Mode",
+      "holder": "Titulaire du compte",
+      "holderHint": "Le nom inscrit sur le compte.",
+      "country": "Pays",
+      "methods": {
+        "BANK_IBAN": "Banque (IBAN)",
+        "BANK_US": "Banque américaine (ACH)",
+        "BANK_CA": "Banque canadienne",
+        "PAYPAL": "PayPal",
+        "CRYPTO_USDT_TRC20": "USDT (TRC-20)",
+        "CRYPTO_BTC": "Bitcoin"
+      },
+      "fields": {
+        "iban": "IBAN",
+        "bic": "BIC / SWIFT (facultatif)",
+        "routingNumber": "Numéro d’acheminement",
+        "accountNumber": "Numéro de compte",
+        "accountType": "Type de compte",
+        "transitNumber": "Numéro de transit",
+        "institutionNumber": "Numéro d’institution",
+        "email": "Courriel PayPal",
+        "address": "Adresse du portefeuille"
+      },
+      "checking": "Chèques",
+      "savings": "Épargne",
+      "secure": "Chiffré et stocké de façon sécuritaire. Seuls les derniers chiffres sont affichés.",
+      "save": "Enregistrer le mode de versement",
+      "saved": "Mode de versement enregistré."
+    },
+    "period": "Période",
+    "tipsPulse": "Pourboires, 30 derniers jours",
+    "split": {
+      "title": "Où va chaque paiement",
+      "label": "Répartition de ce que vos partisans ont payé",
+      "you": "À vous",
+      "platform": "À Orochia",
+      "hint": "{percent} % de chaque pourboire, déblocage, enchère et défi vous reviennent — lu dans le registre, jamais estimé.",
+      "none": "Votre premier paiement affichera la répartition ici."
+    },
+    "goal": {
+      "title": "Votre prochain versement",
+      "caption": "disponible",
+      "target": "Versement minimum",
+      "ready": "Prêt à retirer — il sera envoyé à votre mode de versement.",
+      "toGo": "Encore {amount} et vous pourrez retirer."
+    },
+    "loading": "Chargement de vos revenus",
+    "month": "Mois",
+    "cols": {
+      "date": "Date",
+      "kind": "Type",
+      "video": "Vidéo",
+      "supporter": "Partisan",
+      "net": "Votre part"
+    },
+    "shown": "{from}–{to} sur {total}"
+  },
+  "info": {
+    "title": "Renseignements sur la vidéo",
+    "resolution": "Résolution",
+    "aspect": "Format d’image",
+    "duration": "Durée",
+    "framerate": "Fréquence d’images",
+    "fps": "{fps} i/s",
+    "uploaded": "Téléversée",
+    "status": "Encodage",
+    "credit": "Réalisée avec",
+    "unknown": "Pas encore lu",
+    "technical": "Détails techniques",
+    "ai": {
+      "badge": "Générée par IA",
+      "title": "Générée par IA",
+      "madeWith": "Réalisée avec Orazaka",
+      "run": "Exécution",
+      "model": "Modèle",
+      "hardware": "Matériel",
+      "copy": "Copier l’identifiant de l’exécution",
+      "copied": "Copié"
+    },
+    "statuses": {
+      "PENDING_UPLOAD": "En attente du téléversement",
+      "PROCESSING": "Encodage",
+      "READY": "Prête",
+      "FAILED": "Échec",
+      "HELD": "En attente (limite de stockage)"
+    }
+  },
+  "quality": {
+    "title": "Encodée en {label}"
+  },
+  "owner": {
+    "yours": "Votre vidéo",
+    "edit": "Modifier",
+    "editTitle": "Modifier votre vidéo",
+    "views": "{count} vues",
+    "tips": "{count} pourboires",
+    "play": "Lire {title}",
+    "playTitle": "Aperçu"
+  },
+  "feed": {
+    "tabs": {
+      "foryou": "Pour vous",
+      "following": "Abonnements",
+      "trending": "Tendances",
+      "latest": "Récent"
+    },
+    "shorts": "Shorts",
+    "shortsPrevious": "Shorts précédents",
+    "shortsNext": "Shorts suivants",
+    "grid": "Affichage en grille",
+    "cinematic": "Grand affichage",
+    "views": "{count} vues",
+    "minutes": "{count} min",
+    "watch": "Regarder",
+    "noThumbnail": "Orochia",
+    "hd": "HD",
+    "creatorFallback": "créateur",
+    "unlockFor": "Débloquer pour {price}",
+    "label": "Fils",
+    "view": "Affichage",
+    "empty": {
+      "platform": {
+        "anonymous": {
+          "title": "Les premières vidéos arrivent",
+          "body": "Les créateurs aménagent leur espace. Créez votre compte gratuit pour les suivre en premier — ou ouvrez votre propre espace de création."
+        },
+        "member": {
+          "title": "Aucune vidéo pour l’instant — les premiers créateurs s’installent",
+          "body": "Tout est prêt : suivez les créateurs à mesure qu’ils arrivent, explorez ce qui est déjà en ligne — ou publiez vous-même en ouvrant un espace de création sur ce compte."
+        },
+        "creator-pending": {
+          "title": "Aucune vidéo pour l’instant — la vôtre pourrait être la première",
+          "body": "Votre espace de création attend la vérification de votre identité et de votre âge. Les téléversements ouvrent dès son approbation."
+        },
+        "creator": {
+          "title": "Aucune vidéo pour l’instant — soyez le premier à publier",
+          "body": "Votre espace de création est vérifié. Téléversez une vidéo et elle ouvrira ce fil à toutes les personnes autorisées à la regarder."
+        },
+        "suspended": {
+          "title": "Rien à afficher",
+          "body": "Ce compte est suspendu : il ne peut ni regarder ni publier. Communiquez avec l’exploitant de la plateforme."
+        }
+      },
+      "tab": {
+        "foryou": {
+          "title": "Rien ici pour l’instant",
+          "body": "Les vidéos choisies pour vous s’affichent ici."
+        },
+        "latest": {
+          "title": "Rien ici pour l’instant",
+          "body": "Les vidéos les plus récentes arrivent d’abord ici."
+        },
+        "trending": {
+          "title": "Rien en tendance pour l’instant",
+          "body": "Les vidéos grimpent ici à mesure qu’on les regarde."
+        },
+        "following": {
+          "title": "Vous ne suivez encore personne",
+          "body": "Suivez des créateurs et leurs nouvelles vidéos arriveront d’abord ici. Trouvez des gens à suivre dans Explorer."
+        }
+      },
+      "unavailable": {
+        "title": "Le fil n’a pas pu se charger",
+        "body": "Un problème est survenu de notre côté — votre compte n’est pas en cause. Réessayez dans un instant.",
+        "retry": "Réessayer"
+      }
+    },
+    "actions": {
+      "join": "Créer votre compte gratuit",
+      "signIn": "Connectez-vous pour les voir",
+      "explore": "Explorer les créateurs",
+      "findPeople": "Trouver des gens",
+      "network": "Votre réseau",
+      "allVideos": "Voir toutes les vidéos"
+    },
+    "loadingVideos": "Chargement des vidéos",
+    "loadMore": "Charger d’autres vidéos",
+    "loadingMore": "Chargement d’autres vidéos",
+    "loadFailed": "Impossible de charger d’autres vidéos",
+    "retry": "Réessayer",
+    "end": "Vous avez tout vu pour le moment.",
+    "vertical": {
+      "label": "Vidéos, une par écran",
+      "vertical": "Une par écran",
+      "grid": "Grille",
+      "viewLabel": "Disposition",
+      "sound": "Activer le son",
+      "mute": "Couper le son",
+      "tapForSound": "Touchez pour le son",
+      "play": "Lecture",
+      "pause": "Pause",
+      "fullscreen": "Plein écran",
+      "like": "J’aime",
+      "comment": "Commentaires",
+      "share": "Partager",
+      "signInToLike": "Connectez-vous pour aimer des vidéos",
+      "linkCopied": "Lien copié",
+      "tip": "Laisser un pourboire"
+    }
+  },
+  "publish": {
+    "title": "Publier une vidéo",
+    "subtitle": "Directement vers un réseau vidéo mondial — votre fichier ne passe jamais par nos serveurs.",
+    "steps": {
+      "video": "Votre vidéo",
+      "details": "Détails",
+      "audience": "Qui peut regarder",
+      "rating": "Contenu",
+      "declarations": "Déclarations"
+    },
+    "drop": {
+      "title": "Déposez votre vidéo ici",
+      "or": "ou",
+      "browse": "choisissez un fichier",
+      "dragging": "Relâchez pour l’ajouter",
+      "replace": "Remplacer",
+      "edit": "Modifier la vidéo",
+      "edited": "Modifiée"
+    },
+    "unsupported": "Choisissez un fichier vidéo (MP4, MOV, MKV…).",
+    "fields": {
+      "title": "Titre",
+      "titlePlaceholder": "Donnez-lui un nom qui donne envie de cliquer",
+      "description": "Description",
+      "descriptionPlaceholder": "De quoi s’agit-il? Générique, points saillants…",
+      "tags": "Mots-clics",
+      "tagsPlaceholder": "Saisissez un mot-clic et appuyez sur Entrée",
+      "tagsHint": "Jusqu’à 12 — ils aident les gens à la trouver.",
+      "collection": "Ajouter à une collection",
+      "noCollection": "Aucune collection",
+      "price": "Prix de déblocage",
+      "priceHint": "Les fans paient au moins ce montant pour la regarder.",
+      "tagsSuggested": "Suggestions"
+    },
+    "audiences": {
+      "PUBLIC": {
+        "title": "Tout le monde",
+        "hint": "Gratuite pour tous, visible partout."
+      },
+      "APPROVED_FOLLOWERS_ONLY": {
+        "title": "Abonnés",
+        "hint": "Seulement les abonnés que vous avez approuvés."
+      },
+      "CONTACTS_ONLY": {
+        "title": "Contacts",
+        "hint": "Seulement vos contacts acceptés."
+      },
+      "TIPPED_UNLOCKED": {
+        "title": "Déblocage payant",
+        "hint": "Les fans paient pour la regarder."
+      },
+      "INVITED_ONLY": {
+        "title": "Invités",
+        "hint": "Les personnes et les listes que vous choisissez, après la publication."
+      },
+      "AUCTION": {
+        "title": "Enchère",
+        "hint": "Seul l’enchérisseur gagnant la regarde."
+      },
+      "CHALLENGE": {
+        "title": "Défi",
+        "hint": "Seuls les contributeurs du défi pour lequel elle a été réalisée la regardent."
+      }
+    },
+    "split": {
+      "fan": "Le fan paie",
+      "fee": "Plateforme ({fee} %)",
+      "you": "Vous recevez"
+    },
+    "rating": {
+      "label": "Classification du contenu",
+      "blur": "Brouiller l’aperçu",
+      "blurHint": "Les spectateurs touchent pour révéler la vignette et les premières secondes."
+    },
+    "declarations": {
+      "intro": "Exigées par la loi avant la publication de toute vidéo.",
+      "age": "Toutes les personnes présentes ont 18 ans ou plus et ont donné un consentement explicite, par écrit.",
+      "records": "Je conserve les dossiers d’identité et d’âge exigés par l’article 2257 du titre 18 du U.S. Code.",
+      "rights": "Je détiens ou j’ai obtenu sous licence tout ce que contient cette vidéo (image, musique, prestations).",
+      "all": "Je confirme les trois"
+    },
+    "submit": "Publier",
+    "uploading": "Téléversement… {progress} %",
+    "missing": "Ajoutez {what} pour publier",
+    "preview": "Aperçu",
+    "previewHint": "Voici comment votre vidéo apparaîtra dans le fil.",
+    "untitled": "Votre titre ici",
+    "done": {
+      "title": "Votre vidéo est en route",
+      "body": "Elle est en cours de téléversement, puis de traitement pour tous les écrans, jusqu’en 1080p. Nous vous aviserons dès qu’elle sera en ligne — vous pouvez continuer à naviguer entre-temps.",
+      "watch": "Ouvrir la vidéo",
+      "another": "En publier une autre"
+    },
+    "removeTag": "Retirer {tag}",
+    "generalAudience": "Tout public",
+    "addTag": "Ajouter #{tag}",
+    "sending": "Envoi de votre vidéo",
+    "pipeline": {
+      "label": "Où en est votre vidéo",
+      "send": "Envoi",
+      "sendBody": "Votre fichier part vers nos serveurs vidéo. Vous pouvez quitter cette page; le téléversement continue.",
+      "encode": "Encodage",
+      "encodeBody": "Nous préparons l’image et le son pour tous les écrans. Cela prend quelques minutes.",
+      "live": "En ligne",
+      "liveBody": "Votre vidéo est répertoriée et prête à être regardée."
+    }
+  },
+  "explore": {
+    "metaTitle": "Explorer les créateurs, les vidéos et les stories",
+    "metaDescription": "Découvrez Orochia : les tendances de la semaine, les nouvelles vidéos, les stories en ligne, les créateurs à suivre, les enchères et les défis en cours.",
+    "eyebrow": "Explorer",
+    "title": "Trouvez votre prochaine obsession.",
+    "subtitle": "Ce que les gens regardent, aiment et récompensent d’un pourboire cette semaine — nouvelles vidéos, stories en ligne, créateurs à suivre, enchères et défis en cours.",
+    "placeholder": "Rechercher des vidéos, des créateurs, des stories",
+    "search": "Rechercher",
+    "all": "Tout",
+    "tags": "Mots-clics",
+    "seeAll": "Tout voir",
+    "pages": "Pages",
+    "noMatchQuery": "Rien ne correspond à « {q} » pour l’instant.",
+    "noMatchFilter": "Rien ne correspond à ce filtre pour l’instant.",
+    "noMatchHint": "Essayez un autre mot ou mot-clic — de nouvelles vidéos arrivent chaque jour.",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "results": {
+      "query": "Résultats pour « {q} »",
+      "tag": "#{tag}",
+      "both": "« {q} » dans #{tag}",
+      "all": "Toutes les vidéos",
+      "clear": "Effacer",
+      "creators": {
+        "one": "{count} créateur",
+        "other": "{count} créateurs"
+      },
+      "stories": {
+        "one": "{count} story en ligne",
+        "other": "{count} stories en ligne"
+      },
+      "videos": "Vidéos",
+      "noVideos": "Aucune vidéo ne correspond pour l’instant."
+    },
+    "sections": {
+      "forYou": {
+        "title": "Pour vous",
+        "description": "Choisies d’après ce que vous regardez, aimez, enregistrez et suivez — et ce qu’apprécient les gens qui ont les mêmes goûts.",
+        "warmingUp": "En tendance pour le moment : vos suggestions apparaîtront à mesure que vous regardez, aimez et suivez.",
+        "chronological": "Les vidéos publiques les plus récentes, dans l’ordre. Aucun classement.",
+        "personalised": "Personnalisé",
+        "chronologicalLabel": "Chronologique",
+        "orderLabel": "Comment cette liste est ordonnée",
+        "emptyTitle": "Rien à afficher pour l’instant",
+        "emptyBody": "Dès que des créateurs publieront, les vidéos arriveront ici."
+      },
+      "trending": {
+        "title": "Tendances de la semaine",
+        "description": "Les plus regardées, aimées et récompensées récemment — l’activité la plus fraîche compte le plus.",
+        "emptyTitle": "Rien n’est en tendance pour l’instant",
+        "emptyBody": "Les vues, les mentions J’aime et les pourboires des sept derniers jours déterminent ce qui monte ici."
+      },
+      "stories": {
+        "title": "Stories",
+        "description": "Des stories publiques, en ligne pendant 24 heures.",
+        "emptyTitle": "Aucune story en ligne pour l’instant",
+        "emptyBody": "Les stories durent 24 heures. Les stories publiques apparaissent ici dès qu’elles sont partagées."
+      },
+      "new": {
+        "title": "Nouveautés",
+        "description": "Les plus récentes vidéos publiques.",
+        "emptyTitle": "Aucune vidéo pour l’instant",
+        "emptyBody": "Les vidéos publiques apparaissent ici dès la fin de leur traitement."
+      },
+      "creators": {
+        "title": "Créateurs à suivre",
+        "description": "Des créateurs vérifiés dont le travail suscite de l’engagement cette semaine.",
+        "emptyTitle": "Aucun créateur à suggérer pour l’instant",
+        "emptyBody": "Les créateurs vérifiés ayant des vidéos ou des stories publiques sont suggérés ici — ceux que vous suivez déjà en sont exclus."
+      },
+      "auctions": {
+        "title": "Enchères en cours",
+        "description": "Misez sur des vidéos exclusives. Les plus proches de leur fin d’abord.",
+        "emptyTitle": "Aucune enchère en cours",
+        "emptyBody": "Les créateurs mettent des vidéos exclusives aux enchères au plus offrant; les mises sont réservées en crédits jusqu’à la fin."
+      },
+      "challenges": {
+        "title": "Défis en cours",
+        "description": "Des objectifs, des demandes et des appels ouverts qui acceptent des contributions.",
+        "emptyTitle": "Aucun défi en cours",
+        "emptyBody": "Les fans engagent des crédits sur des objectifs et des demandes; les créateurs ne sont payés qu’à la livraison."
+      }
+    },
+    "cta": {
+      "publish": "Publier une vidéo",
+      "join": "Rejoindre Orochia",
+      "shareStory": "Partager une story",
+      "seeNew": "Voir les plus récentes vidéos",
+      "startAuction": "Mettre une vidéo aux enchères",
+      "howAuctions": "Comment fonctionnent les enchères",
+      "setGoal": "Fixer un objectif",
+      "dare": "Faire une demande à un créateur",
+      "backToExplore": "Retour à Explorer"
+    },
+    "story": {
+      "open": "Ouvrir la story de {name}",
+      "left": "Encore {hours} h"
+    },
+    "creator": {
+      "verified": "Créateur vérifié",
+      "followers": {
+        "one": "{count} abonné",
+        "other": "{count} abonnés"
+      },
+      "items": {
+        "one": "{count} publication publique",
+        "other": "{count} publications publiques"
+      },
+      "open": "Voir le profil"
+    }
+  },
+  "watch": {
+    "ageGate": {
+      "title": "Contenu 18+",
+      "signedOut": "Connectez-vous avec un compte dont l’âge a été confirmé pour regarder cette vidéo.",
+      "unchecked": "L’âge de votre compte n’a pas été confirmé; cette vidéo reste donc fermée.",
+      "signIn": "Se connecter"
+    },
+    "metaTitle": "Vidéo",
+    "metaDescription": "{title} — une vidéo de {creator} sur Orochia.",
+    "notFound": "Vidéo introuvable",
+    "notFoundBody": "Elle a peut-être été retirée par son créateur.",
+    "backToFeed": "Retour au fil",
+    "paymentReceived": "Paiement reçu — la vidéo se débloquera dès que le fournisseur de paiement l’aura confirmé.",
+    "paymentCancelled": "Paiement annulé. Rien n’a été facturé.",
+    "verifying": "Vérification de votre accès…",
+    "unlock": "Débloquer",
+    "tip": "Laisser un pourboire",
+    "like": "J’aime",
+    "unlike": "Retirer le J’aime",
+    "share": "Partager",
+    "copied": "Lien copié",
+    "report": "Signaler",
+    "views": "{count} vues",
+    "comments": "{count} commentaires",
+    "shares": "{count} partages",
+    "verified": "Créateur vérifié (dossiers de l’article 2257 du titre 18 du U.S. Code)",
+    "viewProfile": "Voir le profil",
+    "protection": {
+      "title": "Comment cette vidéo est protégée",
+      "signed": "Les liens de lecture sont signés et expirent après cinq minutes — ils ne peuvent être ni partagés ni intégrés ailleurs.",
+      "checked": "L’accès est vérifié sur le serveur à chaque lecture : abonnés, contacts, déblocages et vidéos du créateur lui-même.",
+      "confirmed": "Les déblocages ne sont accordés qu’après la confirmation du paiement par le fournisseur."
+    },
+    "more": "Plus de {name}",
+    "similar": "Vidéos semblables",
+    "free": "Gratuit",
+    "members": "Membres",
+    "loading": "Chargement de la vidéo"
+  },
+  "player": {
+    "sensitiveTitle": "Contenu sensible",
+    "sensitiveBody": "Le créateur a signalé cette vidéo comme sensible. La discrétion de l’auditoire est de mise.",
+    "reveal": "Afficher la vidéo",
+    "paidTitle": "Débloquer cette vidéo",
+    "paidBody": "Soutenez le créateur pour la regarder — le déblocage est à vous pour de bon, jusqu’en 1080p.",
+    "paidCta": "Débloquer pour {price}",
+    "invitedTitle": "Réservée aux personnes invitées",
+    "invitedBody": "Le créateur partage cette vidéo avec les personnes qu’il invite. Votre invitation n’est pas active.",
+    "followersTitle": "Réservée aux abonnés approuvés",
+    "followersBody": "Le créateur ouvre cette vidéo aux abonnés qu’il approuve. Abonnez-vous — elle se débloquera dès qu’il acceptera.",
+    "contactsTitle": "Réservée aux contacts",
+    "contactsBody": "Le créateur réserve cette vidéo à ses contacts acceptés. Envoyez une demande de contact pour la regarder.",
+    "play": "Lecture",
+    "pause": "Pause",
+    "mute": "Couper le son",
+    "unmute": "Remettre le son",
+    "volume": "Volume",
+    "volumeValue": "{percent} %",
+    "seek": "Position",
+    "fullscreen": "Plein écran",
+    "auctionTitle": "Aux enchères",
+    "auctionBody": "La plus haute mise remporte cette vidéo. Misez en crédits — si quelqu’un surenchérit, vos crédits vous sont rendus aussitôt.",
+    "auctionCta": "Voir l’enchère",
+    "challengeTitle": "Réalisée pour un défi",
+    "challengeBody": "Ses contributeurs l’ont financée, et eux seuls la regardent. Soutenez le prochain pour en faire partie.",
+    "challengeCta": "Voir les défis en cours"
+  },
+  "comments": {
+    "title": "Commentaires",
+    "add": "Ajouter un commentaire",
+    "replyTo": "Répondre à {name}",
+    "post": "Publier",
+    "posting": "Publication…",
+    "reply": "Répondre",
+    "remove": "Retirer",
+    "removeConfirm": "Touchez de nouveau pour retirer",
+    "removed": "Commentaire retiré.",
+    "close": "Fermer les commentaires",
+    "open": "Ouvrir les commentaires",
+    "closed": "Les commentaires sont fermés sur cette vidéo.",
+    "signIn": "Connectez-vous",
+    "signInToComment": "{signIn} pour commenter.",
+    "loading": "Chargement…",
+    "empty": "Aucun commentaire pour l’instant — soyez le premier.",
+    "slowDown": "Patientez un peu avant de commenter de nouveau.",
+    "postFailed": "Votre commentaire n’a pas pu être publié.",
+    "removeFailed": "Le commentaire n’a pas pu être retiré.",
+    "settingFailed": "Le réglage n’a pas pu être enregistré."
+  },
+  "relationship": {
+    "signInToFollow": "Connectez-vous pour suivre",
+    "follow": "Suivre",
+    "following": "Abonné",
+    "requested": "Demande d’abonnement envoyée",
+    "unfollow": "Se désabonner",
+    "addContact": "Ajouter aux contacts",
+    "contact": "Contact",
+    "accept": "Accepter la demande de contact",
+    "requestSent": "Demande envoyée",
+    "withdraw": "Retirer la demande",
+    "message": "Écrire",
+    "failed": "Un problème est survenu. Réessayez."
+  },
+  "card": {
+    "related": "En lien avec votre recherche",
+    "unlockFor": "Débloquer · {price}",
+    "contacts": "Contacts seulement",
+    "free": "Gratuit",
+    "like": "J’aime",
+    "unlike": "Je n’aime plus",
+    "save": "Enregistrer dans une collection",
+    "saved": "Enregistré",
+    "tip": "Pourboire",
+    "sensitive": "Contenu sensible",
+    "reveal": "Touchez pour afficher",
+    "auction": "Enchère",
+    "challenge": "Contributeurs seulement",
+    "adult": "18+"
+  },
+  "collections": {
+    "save": "Enregistrer",
+    "saveTo": "Enregistrer dans une collection",
+    "loading": "Chargement…",
+    "none": "Aucune collection pour l’instant — créez-en une ci-dessous.",
+    "newPlaceholder": "Nouvelle collection",
+    "create": "Créer la collection",
+    "failed": "Enregistrement impossible. Réessayez."
+  },
+  "report": {
+    "title": "Signaler cette vidéo",
+    "subtitle": "Les signalements sont examinés par des personnes, les plus graves en premier.",
+    "about": "Concerne : « {title} »",
+    "reason": "Quel est le problème?",
+    "reasons": {
+      "UNDERAGE": {
+        "title": "Quelqu’un a peut-être moins de 18 ans",
+        "hint": "Retirée immédiatement pendant l’examen."
+      },
+      "NON_CONSENSUAL": {
+        "title": "Diffusée sans consentement",
+        "hint": "Une personne présente n’a pas consenti à cette vidéo."
+      },
+      "DMCA_COPYRIGHT": {
+        "title": "Droit d’auteur",
+        "hint": "Elle utilise votre œuvre sans autorisation (DMCA)."
+      },
+      "TERMS_VIOLATION": {
+        "title": "Enfreint les règles",
+        "hint": "Contenu ou comportement interdit."
+      },
+      "FRAUD_SCAM": {
+        "title": "Arnaque ou tromperie",
+        "hint": "Trompeur, frauduleux ou faux."
+      }
+    },
+    "details": "Détails",
+    "detailsPlaceholder": "Repères temporels, liens, tout ce qui nous aide à agir rapidement…",
+    "email": "Votre courriel",
+    "emailHint": "Uniquement pour faire le suivi de ce signalement.",
+    "submit": "Envoyer le signalement",
+    "cancel": "Annuler",
+    "sent": "Signalement envoyé",
+    "sentBody": "Merci. Notre équipe examine chaque signalement; les cas de mineurs présumés et de contenu non consensuel passent en premier.",
+    "close": "Fermer",
+    "failed": "Le signalement n’a pas pu être envoyé. Réessayez.",
+    "titleStory": "Signaler cette story"
+  },
+  "theme": {
+    "toLight": "Passer au thème clair",
+    "toDark": "Passer au thème sombre",
+    "toSystem": "Suivre le thème du système"
+  },
+  "collectionPage": {
+    "eyebrow": "Collection",
+    "by": "Par {name}",
+    "videos": "{count} vidéos",
+    "empty": "Cette collection est vide. Utilisez « Enregistrer » sur une vidéo pour l’y ajouter."
+  },
+  "verifyGate": {
+    "title": "Vérifiez votre courriel",
+    "body": "Nous avons envoyé un lien de confirmation à {email}. Ouvrez-le pour commencer à utiliser Orochia — d’ici là, votre compte ne peut que se connecter.",
+    "sent": "Lien envoyé — consultez votre boîte de réception",
+    "resend": "Renvoyer le lien",
+    "done": "Je l’ai vérifié",
+    "demo": "Mode démo :",
+    "spam": "Vérifiez votre dossier de pourriels. Le lien ne fonctionne qu’une fois, pendant 48 heures.",
+    "signOut": "Se déconnecter",
+    "sendFailed": "Le lien n’a pas pu être envoyé. Réessayez dans un instant."
+  },
+  "ageGate": {
+    "badge": "Réservé aux adultes",
+    "title": "Bienvenue sur Orochia",
+    "body": "Orochia est une plateforme vidéo pour créateurs indépendants. Elle contient du <b>contenu pour adultes</b> et est donc réservée aux adultes.",
+    "age": "J’ai 18 ans ou plus (ou l’âge de la majorité là où j’habite).",
+    "terms": "J’accepte les conditions d’utilisation et l’avis relatif à l’article 2257 du titre 18 du U.S. Code.",
+    "consent": "Je choisis de voir du contenu pour adultes réalisé par des créateurs indépendants.",
+    "enter": "J’ai 18 ans ou plus — entrer",
+    "leave": "Quitter",
+    "termsLink": "Conditions",
+    "privacyLink": "Confidentialité",
+    "noticeLink": "Avis 2257"
+  },
+  "search": {
+    "placeholder": "Rechercher des créateurs, des vidéos, des mots-clics…",
+    "clear": "Effacer",
+    "close": "Fermer",
+    "esc": "Échap",
+    "tabs": {
+      "all": "Tout",
+      "creators": "Créateurs",
+      "videos": "Vidéos",
+      "tags": "Mots-clics"
+    },
+    "popular": "Mots-clics populaires",
+    "creators": "Créateurs ({count})",
+    "videos": "Vidéos ({count})",
+    "tags": "Mots-clics ({count})",
+    "empty": "Rien trouvé pour « {query} ». Essayez un autre mot ou un mot-clic.",
+    "navigate": "Naviguer",
+    "select": "Ouvrir",
+    "full": "Voir tous les résultats",
+    "title": "Recherche",
+    "results": "Résultats",
+    "filter": "Afficher",
+    "stories": "Stories ({count})"
+  },
+  "profileTabs": {
+    "all": "Vidéos ({count})",
+    "ppv": "Payantes",
+    "playlists": "Collections ({count})",
+    "about": "À propos",
+    "empty": "Aucune vidéo dans cette section pour l’instant.",
+    "verifiedTitle": "Créateur vérifié",
+    "verifiedBody": "Orochia a examiné les dossiers d’identité et d’âge de ce créateur, comme l’exige l’article 2257 du titre 18 du U.S. Code, avant qu’il puisse publier.",
+    "pendingTitle": "Vérification en cours",
+    "pendingBody": "Les dossiers de ce créateur visés par l’article 2257 du titre 18 du U.S. Code sont en cours d’examen. Il pourra publier une fois approuvé.",
+    "noBio": "Pas encore de biographie.",
+    "label": "Sections du profil"
+  },
+  "uploads": {
+    "expand": "Afficher les téléversements",
+    "uploading": "Téléversement ({progress} %)",
+    "complete": "Téléversements terminés",
+    "label": "Téléversements",
+    "title": "Téléversements",
+    "running": "{count} téléversement(s) en cours en arrière-plan",
+    "finished": "Tous les téléversements sont terminés",
+    "minimize": "Réduire",
+    "pause": "Pause",
+    "resume": "Reprendre",
+    "cancel": "Annuler",
+    "dismiss": "Ignorer",
+    "paused": "En pause ({progress} %)",
+    "processing": "Téléversée — traitement en cours",
+    "failed": "Échec du téléversement",
+    "view": "Ouvrir la vidéo →",
+    "eta": "Environ {time} restantes"
+  },
+  "audience": {
+    "usernamePlaceholder": "@nomdutilisateur",
+    "usernameLabel": "Nom d’utilisateur à inviter",
+    "invite": "Inviter",
+    "listLabel": "Ouverte à l’une de vos listes",
+    "noList": "Aucune liste pour l’instant",
+    "allAdded": "Toutes vos listes sont ajoutées",
+    "addList": "Ajouter l’une de vos listes…",
+    "manage": "Gérer les listes",
+    "loading": "Chargement…",
+    "nobody": "Personne pour l’instant : vous seul pouvez l’ouvrir.",
+    "removeList": "Retirer la liste {name}",
+    "withdraw": "Retirer @{username}",
+    "failed": "La modification n’a pas pu être enregistrée.",
+    "noAccount": "Aucun compte ne porte ce nom d’utilisateur."
+  },
+  "dashboard": {
+    "ledger": {
+      "empty": "Aucune transaction pour l’instant.",
+      "date": "Date",
+      "type": "Type",
+      "from": "De",
+      "creator": "Créateur",
+      "gateway": "Mode de paiement",
+      "amount": "Montant"
+    },
+    "signedOut": {
+      "title": "Connectez-vous pour continuer",
+      "body": "Connectez-vous ou créez un compte pour ouvrir votre espace.",
+      "cta": "Se connecter"
+    },
+    "tabs": {
+      "label": "Sections du tableau de bord",
+      "overview": "Aperçu",
+      "library": "Bibliothèque ({count})",
+      "ledger": "Transactions",
+      "uploads": "Mes vidéos ({count})",
+      "earnings": "Revenus",
+      "network": "Réseau",
+      "playlists": "Collections",
+      "lists": "Listes",
+      "invitations": "Invitations",
+      "treasury": "Trésorerie",
+      "settings": "Paramètres",
+      "insights": "Statistiques"
+    },
+    "loadError": "Votre tableau de bord n’a pas pu être chargé. Réessayez plus tard.",
+    "stats": {
+      "available": "Solde disponible",
+      "spent": "Total dépensé",
+      "fromLedger": "Calculé à partir du registre",
+      "published": "Vidéos publiées",
+      "unlocked": "Vidéos débloquées",
+      "pendingPayouts": "Versements en cours",
+      "transactions": "Transactions"
+    },
+    "libraryEmpty": "Les vidéos que vous débloquez apparaissent ici.",
+    "unlockedOn": "débloquée le {date}",
+    "treasury": {
+      "gross": "Volume brut",
+      "grossHint": "{count} paiements",
+      "fees": "Frais de plateforme",
+      "feesHint": "{percent} % du brut",
+      "creators": "Revenus des créateurs",
+      "creatorsHint": "nets de frais",
+      "requested": "Versements en cours",
+      "requestedHint": "demandés, non réglés",
+      "settled": "Versements réglés",
+      "settledHint": "versés aux créateurs",
+      "unavailable": "Les chiffres de trésorerie ne sont pas disponibles."
+    },
+    "loading": "Chargement de votre espace",
+    "group": {
+      "content": "Contenu",
+      "audience": "Public",
+      "money": "Argent",
+      "account": "Compte"
+    },
+    "nav": {
+      "overview": "Aperçu",
+      "videos": "Mes vidéos",
+      "collections": "Collections",
+      "library": "Bibliothèque",
+      "lists": "Listes",
+      "network": "Réseau",
+      "invitations": "Invitations",
+      "insights": "Statistiques",
+      "transactions": "Transactions",
+      "earnings": "Revenus et versements",
+      "treasury": "Trésorerie",
+      "settings": "Paramètres"
+    },
+    "me": {
+      "menuLabel": "Votre espace",
+      "sectionLabel": "Aller à",
+      "recent": "Activité récente",
+      "recentEmpty": "Rien pour l’instant. Vos premiers mouvements s’afficheront ici.",
+      "seeAll": "Tout voir",
+      "views": "Vues",
+      "tips": "Pourboires reçus",
+      "hello": "Bon retour, {name}"
+    }
+  },
+  "collectionAudience": {
+    "PRIVATE": {
+      "label": "Moi seul",
+      "hint": "Personne d’autre ne la voit."
+    },
+    "INVITED_ONLY": {
+      "label": "Invités",
+      "hint": "Les personnes que vous invitez et vos listes."
+    },
+    "CONTACTS_ONLY": {
+      "label": "Contacts",
+      "hint": "Vos contacts acceptés."
+    },
+    "APPROVED_FOLLOWERS_ONLY": {
+      "label": "Abonnés",
+      "hint": "Les abonnés que vous avez approuvés."
+    },
+    "PUBLIC": {
+      "label": "Tout le monde",
+      "hint": "Affichée sur votre profil."
+    }
+  },
+  "invites": {
+    "title": "Inviter des créateurs et des proches",
+    "intro": "Quand vos proches s’inscrivent avec votre lien d’invitation, vous devenez automatiquement contacts.",
+    "emailPlaceholder": "Courriel de la personne (facultatif)",
+    "create": "Créer un lien d’invitation",
+    "createFailed": "L’invitation n’a pas pu être créée.",
+    "networkError": "Pas de connexion. Réessayez.",
+    "ready": "Votre lien d’invitation est prêt",
+    "code": "Code : {code}",
+    "copyLink": "Copier le lien d’invitation",
+    "sent": "Invitations envoyées",
+    "loading": "Chargement des invitations…",
+    "empty": "Vous n’avez pas encore créé de lien d’invitation.",
+    "colCode": "Code",
+    "colRecipient": "Destinataire",
+    "colStatus": "Statut",
+    "colCreated": "Créée le",
+    "colActions": "Actions",
+    "openLink": "Toute personne ayant le lien",
+    "status": {
+      "ACCEPTED": "Acceptée",
+      "EXPIRED": "Expirée",
+      "PENDING": "En attente"
+    },
+    "copyTitle": "Copier le lien"
+  },
+  "lists": {
+    "usernamePlaceholder": "@nomdutilisateur",
+    "addTo": "Ajouter quelqu’un à {name}",
+    "loading": "Chargement…",
+    "empty": "Personne dans cette liste pour l’instant.",
+    "removeMember": "Retirer @{username}",
+    "noAccount": "Aucun compte ne porte ce nom d’utilisateur.",
+    "addFailed": "Cette personne n’a pas pu être ajoutée.",
+    "duplicate": "Vous avez déjà une liste portant ce nom.",
+    "createFailed": "La liste n’a pas pu être créée.",
+    "namePlaceholder": "Nouvelle liste — p. ex. Proches",
+    "intro": "Les listes sont privées. Ouvrez une vidéo ou une collection réservée aux invités à une liste : les personnes que vous y ajoutez plus tard y ont accès, celles que vous retirez le perdent.",
+    "none": "Aucune liste pour l’instant.",
+    "people": "{count} personnes",
+    "delete": "Supprimer {name}",
+    "confirmDelete": "Supprimer? Les membres perdent l’accès",
+    "deleted": "Liste « {name} » supprimée"
+  },
+  "network": {
+    "loading": "Chargement de votre réseau…",
+    "followRequests": "Demandes d’abonnement",
+    "followRequestsEmpty": "Personne n’attend votre approbation.",
+    "approve": "Approuver",
+    "decline": "Refuser",
+    "contactRequests": "Demandes de contact",
+    "contactRequestsEmpty": "Aucune demande de contact en attente.",
+    "accept": "Accepter",
+    "reject": "Rejeter",
+    "block": "Bloquer",
+    "followers": "Abonnés approuvés",
+    "followersEmpty": "Les abonnés approuvés peuvent regarder vos vidéos réservées aux abonnés.",
+    "removeFollower": "Retirer l’abonné",
+    "contacts": "Contacts",
+    "contactsEmpty": "Les contacts réciproques peuvent regarder les vidéos réservées aux contacts les uns des autres.",
+    "removeContact": "Retirer le contact",
+    "following": "Abonnements",
+    "followingEmpty": "Suivez des créateurs pour voir leurs vidéos réservées aux abonnés une fois qu’ils vous auront approuvé.",
+    "approved": "approuvé",
+    "pending": "en attente",
+    "unfollow": "Se désabonner",
+    "outgoing": "Demandes envoyées",
+    "outgoingEmpty": "Aucune demande envoyée.",
+    "withdraw": "Retirer"
+  },
+  "playlistsPanel": {
+    "saveFailed": "La modification n’a pas pu être enregistrée. Réessayez.",
+    "titlePlaceholder": "Titre de la nouvelle collection",
+    "whoOpens": "Qui peut l’ouvrir",
+    "whoOpensNamed": "Qui peut ouvrir {title}",
+    "perVideo": "Chaque vidéo d’une collection garde sa propre règle d’accès.",
+    "loading": "Chargement…",
+    "empty": "Aucune collection pour l’instant. Créez-en une, puis utilisez « Enregistrer » sur une vidéo.",
+    "videos": "{count} vidéos",
+    "invitedMeta": " · {members} invités · {lists} listes",
+    "delete": "Supprimer {title}",
+    "confirmDelete": "Supprimer?",
+    "shared": "Partagées avec vous",
+    "sharedMeta": "@{owner} · {count} vidéos",
+    "deleted": "Collection « {title} » supprimée"
+  },
+  "studio": {
+    "status": {
+      "removed": "Retirée",
+      "failed": "Échec de l’encodage",
+      "encoding": "Encodage",
+      "published": "Publiée",
+      "held": "En attente — stockage plein"
+    },
+    "saveFailed": "Les modifications n’ont pas pu être enregistrées.",
+    "empty": "Aucune vidéo pour l’instant. {link}.",
+    "cols": {
+      "preview": "Aperçu",
+      "title": "Titre",
+      "state": "État",
+      "visibility": "Visibilité",
+      "duration": "Durée",
+      "views": "Vues",
+      "tips": "Pourboires",
+      "actions": "Actions"
+    },
+    "whoCanWatchNamed": "Qui peut regarder {title}",
+    "editNamed": "Modifier {title}",
+    "deleteNamed": "Supprimer {title}",
+    "confirmDelete": "Supprimer? Les revenus sont conservés",
+    "editTitle": "Modifier la vidéo",
+    "title": "Titre",
+    "description": "Description",
+    "visibility": "Qui peut regarder",
+    "price": "Prix de déblocage (USD)",
+    "audience": "Personnes et listes invitées",
+    "tags": "Mots-clics (séparés par des virgules)",
+    "uploadFirst": "Téléversez la première",
+    "auctionNamed": "Mettre « {title} » aux enchères",
+    "auctionLocked": "Enchère — le gagnant la regarde",
+    "challengeLocked": "Réalisée pour un défi — ses contributeurs la regardent",
+    "withdrawn": "« {title} » retirée",
+    "caption": "Vos vidéos"
+  },
+  "inbox": {
+    "title": "Messages",
+    "intro": "Des conversations privées avec les créateurs et vos contacts, en temps réel.",
+    "newPlaceholder": "Nouvelle discussion : @nomdutilisateur",
+    "start": "Commencer une conversation",
+    "loadingConversations": "Chargement des conversations…",
+    "none": "Aucune conversation pour l’instant",
+    "noneHint": "Saisissez un nom d’utilisateur ci-dessus pour discuter avec un créateur ou un contact.",
+    "noMessages": "Aucun message pour l’instant",
+    "thread": "Conversation",
+    "back": "Retour aux conversations",
+    "options": "Options",
+    "block": "Bloquer ce compte",
+    "startTitle": "Commencer la conversation",
+    "sayHello": "Dites bonjour à @{username}.",
+    "messagePlaceholder": "Écrire un message…",
+    "send": "Envoyer",
+    "emptyTitle": "Vos messages",
+    "emptyHint": "Choisissez une conversation, ou saisissez un nom d’utilisateur pour en commencer une nouvelle.",
+    "loading": "Chargement des messages…",
+    "loadFailed": "Les messages n’ont pas pu être chargés.",
+    "network": "Pas de connexion. Réessayez.",
+    "startFailed": "La conversation n’a pas pu être commencée.",
+    "sendFailed": "Le message n’a pas pu être envoyé.",
+    "storyReply": "A répondu à une story",
+    "aiAssisted": "Rédigé avec l’aide de l’IA",
+    "onlineNow": "En ligne maintenant",
+    "presence": {
+      "online": "En ligne",
+      "away": "Absent",
+      "seen": "Dernière activité {when}",
+      "offline": "Hors ligne"
+    },
+    "typing": "écrit…",
+    "typingLabel": "{name} est en train d’écrire",
+    "status": {
+      "sending": "Envoi…",
+      "sent": "Envoyé",
+      "delivered": "Remis",
+      "read": "Lu",
+      "failed": "Non envoyé"
+    },
+    "retry": "Réessayer",
+    "discard": "Retirer",
+    "you": "Vous : {text}",
+    "unreadCount": "{count} non lus",
+    "newFrom": "Nouveau message de {name} : {text}",
+    "reconnecting": "Reconnexion… les nouveaux messages arriveront dès que vous serez de nouveau en ligne.",
+    "loadOlder": "Afficher les messages précédents",
+    "today": "Aujourd’hui",
+    "yesterday": "Hier",
+    "viewProfile": "Voir le profil",
+    "unblock": "Débloquer",
+    "blockedBanner": "Vous avez bloqué @{username}. Débloquez ce compte pour écrire de nouveau.",
+    "blockTitle": "Bloquer @{username}?",
+    "blockBody": "Cette personne ne pourra plus vous écrire ni voir quand vous êtes en ligne, et vous ne verrez pas non plus sa présence. Vous pouvez la débloquer dans les paramètres.",
+    "blockConfirm": "Bloquer",
+    "blocked": "@{username} est bloqué.",
+    "unblocked": "@{username} est débloqué.",
+    "messageActions": "Actions sur le message",
+    "reportMessage": "Signaler",
+    "composerLabel": "Message à {name}",
+    "sendHint": "Entrée pour envoyer · Maj + Entrée pour un saut de ligne",
+    "log": "Messages avec {name}",
+    "list": "Conversations",
+    "report": {
+      "title": "Signaler ce message",
+      "subtitle": "Les signalements sont examinés par des personnes, les plus graves en premier. L’expéditeur n’est pas informé de qui l’a signalé.",
+      "reason": "Quel est le problème?",
+      "details": "Détails (facultatif)",
+      "detailsPlaceholder": "Tout ce qui nous aide à agir rapidement…",
+      "submit": "Envoyer le signalement",
+      "sent": "Signalement envoyé",
+      "sentBody": "Merci. Notre équipe examine chaque signalement; les cas de mineurs présumés et de contenu non consensuel passent en premier. Vous pouvez aussi bloquer ce compte.",
+      "failed": "Le signalement n’a pas pu être envoyé. Réessayez."
+    },
+    "group": {
+      "new": "Nouveau groupe",
+      "newHint": "Choisissez vos contacts (jusqu’à {max} personnes). Ils pourront lire et écrire ici.",
+      "name": "Nom du groupe",
+      "namePlaceholder": "Nom du groupe",
+      "pick": "Vos contacts",
+      "create": "Créer le groupe",
+      "createFailed": "Le groupe n’a pas pu être créé.",
+      "noContacts": "Vous n’avez encore aucun contact à ajouter. Ajoutez des contacts depuis leur profil.",
+      "info": "Détails du groupe",
+      "loadFailed": "Le groupe n’a pas pu être chargé.",
+      "actionFailed": "Ça n’a pas fonctionné. Réessayez.",
+      "closed": "Ce groupe est fermé. Vous pouvez le lire, mais personne ne peut y écrire.",
+      "mute": "Mettre ce groupe en sourdine",
+      "muteHint": "Aucune notification ni pastille pendant {hours} heures.",
+      "muted": "En sourdine",
+      "members": "{count} membres",
+      "membersCount": "{count} membres",
+      "owner": "Propriétaire",
+      "remove": "Retirer",
+      "add": "Ajouter des personnes",
+      "addSelected": "Ajouter {count}",
+      "invite": "Lien d’invitation",
+      "inviteHint": "Toute personne ayant le lien peut se joindre pendant une semaine, jusqu’à concurrence de 50 places. Ne le partagez qu’avec des gens de confiance.",
+      "inviteLink": "Lien d’invitation",
+      "createLink": "Créer un lien",
+      "copy": "Copier",
+      "copied": "Lien copié",
+      "revoke": "Annuler les liens",
+      "revoked": "Les liens ne fonctionnent plus.",
+      "leave": "Quitter le groupe",
+      "leaveTitle": "Quitter ce groupe?",
+      "leaveBody": "Vous ne recevrez plus ses messages. Il vous faudra une nouvelle invitation pour y revenir.",
+      "close": "Fermer le groupe",
+      "closeTitle": "Fermer ce groupe?",
+      "closeBody": "Plus personne ne pourra y écrire. Les membres pourront encore le lire.",
+      "sayHello": "Dites bonjour au groupe.",
+      "someone": "Quelqu’un",
+      "joinTitle": "Vous êtes invité à un groupe",
+      "joinBody": "Joignez-vous à la conversation. Vous pouvez la quitter quand vous voulez.",
+      "join": "Rejoindre le groupe",
+      "joinSignIn": "Connectez-vous pour rejoindre",
+      "joinFailed": "Cette invitation n’est plus valide."
+    }
+  },
+  "legal": {
+    "back": "Retour à Orochia",
+    "dmcaLink": "politique DMCA",
+    "docs": {
+      "terms": {
+        "metaTitle": "Conditions d’utilisation — Orochia",
+        "metaDescription": "Conditions d’utilisation, responsabilités des créateurs et politique d’utilisation acceptable d’Orochia.",
+        "badge": "Conditions",
+        "title": "Conditions d’utilisation",
+        "subtitle": "En vigueur le 6 octobre 2026 · Orochia, plateforme de création à code source ouvert",
+        "sections": {
+          "eligibility": {
+            "title": "1. Âge et admissibilité",
+            "paragraphs": {
+              "p1": "Orochia est une plateforme de création qui peut héberger du contenu pour adultes. En l’utilisant ou en y publiant, vous attestez, sous peine de parjure, que :"
+            },
+            "items": {
+              "age": "vous avez au moins dix-huit (18) ans, ou l’âge de la majorité là où vous habitez;",
+              "capacity": "vous avez le droit et la capacité juridique d’accepter les présentes conditions;",
+              "local": "le visionnement de contenu pour adultes ou à caractère mature n’est pas interdit là où vous habitez."
+            }
+          },
+          "creators": {
+            "title": "2. Responsabilités des créateurs",
+            "paragraphs": {
+              "p1": "Les créateurs conservent l’entière propriété de leurs médias. En publiant, ils s’engagent à respecter les obligations suivantes :"
+            },
+            "points": {
+              "consent": {
+                "lead": "Consentement de toutes les personnes présentes :",
+                "text": "chaque interprète représenté a donné, avant l’enregistrement, un consentement exprès, volontaire et écrit."
+              },
+              "records": {
+                "lead": "Dossiers de l’article 2257 du titre 18 du U.S. Code :",
+                "text": "les créateurs conservent les dossiers qui prouvent l’âge de chaque interprète au moment de l’enregistrement."
+              },
+              "ncii": {
+                "lead": "Aucun contenu non consensuel :",
+                "text": "tout téléversement montrant des images non consensuelles, des hypertrucages non autorisés ou une personne présumée mineure entraîne la résiliation immédiate et définitive du compte et un signalement aux autorités (NCMEC)."
+              }
+            }
+          },
+          "payments": {
+            "title": "3. Paiements, pourboires et registre",
+            "paragraphs": {
+              "p1": "Les pourboires et les déblocages sont consignés dans un registre à écriture double, en ajout seulement. Un paiement confirmé par le fournisseur de paiement (carte, crédits Orochia ou cryptomonnaie) est définitif dès que l’accès au média a été accordé."
+            }
+          },
+          "dmca": {
+            "title": "4. Droit d’auteur (DMCA)",
+            "paragraphs": {
+              "p1": "Orochia se conforme au Digital Millennium Copyright Act (17 U.S.C. § 512). Les titulaires de droits d’auteur peuvent envoyer un avis de retrait selon les modalités décrites dans notre {dmca}."
+            }
+          }
+        }
+      },
+      "dmca": {
+        "metaTitle": "Politique DMCA sur le droit d’auteur — Orochia",
+        "metaDescription": "Comment envoyer un avis relatif au droit d’auteur en vertu du Digital Millennium Copyright Act (17 U.S.C. § 512), et qui le reçoit.",
+        "badge": "Droit d’auteur",
+        "title": "Politique DMCA sur le droit d’auteur et le retrait de contenu",
+        "subtitle": "Comment signaler une violation du droit d’auteur en vertu de 17 U.S.C. § 512(c).",
+        "sections": {
+          "policy": {
+            "title": "1. Notre politique",
+            "paragraphs": {
+              "p1": "Orochia respecte la propriété intellectuelle des créateurs et des titulaires de droits d’auteur. En vertu du Digital Millennium Copyright Act (« DMCA »), Orochia donne suite sans délai aux avis de violation valides envoyés à son agent désigné pour le droit d’auteur."
+            }
+          },
+          "notice": {
+            "title": "2. Envoyer un avis",
+            "paragraphs": {
+              "p1": "L’avis d’un titulaire de droit d’auteur ou d’un représentant autorisé doit contenir :"
+            },
+            "items": {
+              "signature": "la signature, physique ou électronique, d’une personne autorisée à agir au nom du titulaire;",
+              "work": "l’œuvre protégée que l’on prétend violée;",
+              "material": "le contenu à retirer, avec ses adresses Orochia ou ses identifiants de vidéo;",
+              "contact": "les coordonnées : nom légal, adresse postale, numéro de téléphone et adresse courriel;",
+              "goodFaith": "une déclaration selon laquelle vous croyez de bonne foi que l’utilisation n’est autorisée ni par le titulaire, ni par son mandataire, ni par la loi;",
+              "accuracy": "une déclaration, sous peine de parjure, selon laquelle les renseignements de l’avis sont exacts."
+            }
+          },
+          "agent": {
+            "title": "3. Agent désigné",
+            "contact": {
+              "name": "Responsable de la conformité DMCA",
+              "emails": "dmca@krizaka.com · legal@orochia.org"
+            },
+            "note": "Vous pouvez aussi signaler un média contrefait directement sur la page d’une vidéo avec le bouton « Signaler », pour un examen plus rapide."
+          }
+        }
+      },
+      "records": {
+        "metaTitle": "Déclaration relative à la tenue de dossiers (article 2257 du titre 18 du U.S. Code) — Orochia",
+        "metaDescription": "Déclaration de conformité relative à la tenue de dossiers en vertu de l’article 2257 du titre 18 du U.S. Code.",
+        "badge": "Conformité",
+        "title": "Déclaration relative à la tenue de dossiers (article 2257 du titre 18 du U.S. Code)",
+        "subtitle": "Déclaration en vertu du titre 18 du United States Code, article 2257, et de la partie 75 du titre 28 du C.F.R.",
+        "sections": {
+          "age": {
+            "title": "1. Âge des interprètes",
+            "paragraphs": {
+              "p1": "Tout mannequin, acteur, créateur et toute autre personne apparaissant dans une représentation visuelle d’un comportement sexuellement explicite, réel ou simulé, sur Orochia avait au moins dix-huit (18) ans au moment de sa création."
+            }
+          },
+          "custodian": {
+            "title": "2. Dépositaire des dossiers",
+            "paragraphs": {
+              "p1": "Orochia est une plateforme technique à code source ouvert et un fournisseur d’hébergement pour les contenus soumis par les créateurs. Pour ces contenus, les dossiers originaux exigés par l’article 2257 du titre 18 du U.S. Code et la partie 75 du titre 28 du C.F.R. sont conservés par le créateur ou le producteur indépendant.",
+              "p2": "Avant de publier quoi que ce soit, chaque créateur soumet une déclaration qui nomme le dépositaire des dossiers et son adresse, confirme la vérification de l’âge et accepte les obligations continues de tenue de dossiers."
+            }
+          },
+          "exemption": {
+            "title": "3. Exemption",
+            "paragraphs": {
+              "p1": "Certaines représentations visuelles de ce site peuvent être exemptées des exigences de l’article 2257 du titre 18 du U.S. Code et de la partie 75 du titre 28 du C.F.R., parce qu’elles ne montrent pas de comportement sexuellement explicite réel ou qu’elles ont été créées avant l’entrée en vigueur de la loi."
+            }
+          }
+        }
+      },
+      "privacy": {
+        "metaTitle": "Politique de confidentialité — Orochia",
+        "metaDescription": "Aucun traceur publicitaire, des liens de lecture de courte durée et des paiements traités par les fournisseurs : comment Orochia protège vos données.",
+        "badge": "Confidentialité",
+        "title": "Politique de confidentialité",
+        "subtitle": "Dernière mise à jour le 6 octobre 2026",
+        "sections": {
+          "tracking": {
+            "title": "1. Aucun traceur publicitaire",
+            "paragraphs": {
+              "p1": "Orochia n’utilise aucun traceur publicitaire tiers, aucun suivi comportemental intersites et aucune intégration avec des courtiers en données. Ce que vous regardez, ce que vous ouvrez et à qui vous laissez un pourboire demeurent privés."
+            }
+          },
+          "playback": {
+            "title": "2. Lecture protégée",
+            "paragraphs": {
+              "p1": "Chaque lecture reçoit un lien signé, valide 300 secondes, émis seulement après la vérification de votre accès. Il ne peut être ni partagé ni intégré ailleurs."
+            }
+          },
+          "payments": {
+            "title": "3. Paiements",
+            "paragraphs": {
+              "p1": "Les paiements par carte, Apple Pay et Google Pay passent par la page de paiement du fournisseur (CCBill, Segpay — PCI-DSS niveau 1) : les données de votre carte n’atteignent jamais Orochia. Les pourboires en cryptomonnaie (USDT, BTC) transitent par un fournisseur sans garde; Orochia ne conserve aucun identifiant financier."
+            }
+          }
+        }
+      }
+    }
+  },
+  "auction": {
+    "title": "Enchère",
+    "phase": {
+      "UPCOMING": "Bientôt",
+      "ENDING": "Clôture",
+      "AWAITING_DECISION": "En examen",
+      "SOLD": "Vendue",
+      "DECLINED": "Non vendue",
+      "UNSOLD": "Sans mise",
+      "CANCELLED": "Annulée",
+      "OPEN": "Ouverte"
+    },
+    "rights": {
+      "WATCH": "Regarder",
+      "DOWNLOAD": "Regarder et télécharger"
+    },
+    "units": {
+      "d": "j",
+      "h": "h",
+      "m": "min",
+      "s": "s"
+    },
+    "extended": "Prolongée",
+    "currentBid": "Mise actuelle",
+    "startingPrice": "Prix de départ",
+    "soldFor": "Vendue pour",
+    "counts": "{bids} mises · {bidders} enchérisseurs",
+    "bids": "{count} mises",
+    "startsIn": "Commence dans",
+    "endsIn": "Se termine dans",
+    "decisionIn": "Décision d’ici",
+    "closing": "Clôture…",
+    "placeBid": "Miser",
+    "quickBids": "Mises rapides",
+    "yourBid": "Votre mise en dollars",
+    "minimum": "Minimum : {amount}",
+    "balance": "{amount} en crédits",
+    "signInToBid": "Connectez-vous pour miser",
+    "accept": "Accepter {amount}",
+    "decline": "Refuser la meilleure mise",
+    "declineConfirm": "Touchez de nouveau pour refuser",
+    "cancel": "Annuler l’enchère",
+    "cancelConfirm": "Touchez de nouveau pour annuler",
+    "cancelHint": "Aucune mise pour l’instant — vous pouvez encore annuler.",
+    "download": "Télécharger la vidéo",
+    "placed": "Mise placée — vous êtes en tête.",
+    "topUp": "Ajouter des crédits",
+    "history": "Mises",
+    "noBidsYet": "Aucune mise pour l’instant. Soyez le premier.",
+    "noBidsYetUpcoming": "Les mises ouvrent à la fin du compte à rebours.",
+    "you": "Vous",
+    "youShort": "Vous",
+    "bidder": "Enchérisseur {n}",
+    "leading": "En tête",
+    "howTitle": "Comment ça marche",
+    "how": {
+      "held": "Votre mise est payée en crédits et réservée tant que vous êtes en tête. On vous surenchérit? Les crédits retournent aussitôt dans votre portefeuille.",
+      "softClose": "Une mise dans les 2 dernières minutes ajoute 2 minutes, pour que chacun ait un dernier mot équitable.",
+      "CREATOR_DECIDES": "À la fin, le créateur a 48 heures pour accepter ou refuser la meilleure mise. Si elle est refusée, vos crédits vous sont rendus.",
+      "HIGHEST_BID": "Elle est vendue à la plus haute mise à la fin — sans examen.",
+      "rights": {
+        "WATCH": "Le gagnant — et lui seul — peut la regarder.",
+        "DOWNLOAD": "Le gagnant — et lui seul — peut la regarder et la télécharger."
+      }
+    },
+    "standing": {
+      "leading": "Vous êtes le plus offrant.",
+      "outbid": "On vous a surenchéri. Vos crédits vous sont rendus — misez de nouveau pour reprendre la tête.",
+      "won": "Vous avez remporté cette enchère. La vidéo est à vous pour de bon.",
+      "wonDownload": "Vous avez remporté cette enchère. Regardez la vidéo ici ou téléchargez-la.",
+      "underReview": "Votre mise de {amount} est la meilleure. Le créateur l’examine — vos crédits restent réservés jusqu’à sa décision.",
+      "soldOther": "Cette vidéo a été vendue aux enchères.",
+      "creatorSold": "Vendue pour {amount} à @{username}.",
+      "creatorDecide": "Meilleure mise : {amount} par {username}. Acceptez-la pour vendre, ou refusez et les crédits seront rendus.",
+      "creatorLeader": "En tête : {username}.",
+      "creatorAutomatic": "Cette enchère est vendue à la plus haute mise à la fin.",
+      "DECLINED": "L’enchère s’est terminée sans vente.",
+      "UNSOLD": "L’enchère s’est terminée sans mise.",
+      "CANCELLED": "L’enchère a été annulée."
+    },
+    "errors": {
+      "generic": "Un problème est survenu. Réessayez.",
+      "download": "Le téléchargement n’a pas pu démarrer. Réessayez.",
+      "NOT_FOUND": "Cette enchère n’est plus disponible.",
+      "VIDEO_NOT_READY": "La vidéo est encore en traitement. Réessayez une fois qu’elle sera en ligne.",
+      "ALREADY_AUCTIONED": "Cette vidéo est déjà aux enchères.",
+      "BAD_SCHEDULE": "Vérifiez le début et la fin de l’enchère.",
+      "BAD_PRICE": "Le prix de départ est d’au moins 1,00 $.",
+      "NOT_STARTED": "Les mises ne sont pas encore ouvertes.",
+      "NOT_OPEN": "L’enchère est terminée.",
+      "OWN_AUCTION": "Vous ne pouvez pas miser sur votre propre enchère.",
+      "BID_TOO_LOW": "Misez au moins {minimum}.",
+      "BID_TOO_HIGH": "Cette mise dépasse le maximum.",
+      "INSUFFICIENT_CREDITS": "Crédits insuffisants (vous avez {balance}).",
+      "HAS_BIDS": "Une enchère qui a reçu des mises ne peut pas être annulée.",
+      "NOT_AWAITING_DECISION": "Cette enchère n’attend pas de décision."
+    },
+    "start": {
+      "title": "Mettre aux enchères",
+      "intro": "« {title} » ira au plus offrant. Pendant l’enchère, vous seul pouvez la regarder.",
+      "price": "Prix de départ",
+      "priceHint": "La première mise commence ici. Les mises sont payées en crédits Orochia (1 crédit = 0,01 $ US).",
+      "when": "Début",
+      "now": "Maintenant",
+      "later": "Plus tard",
+      "nowLower": "maintenant",
+      "startAt": "Date et heure de début",
+      "duration": "Durée",
+      "durations": {
+        "1h": "1 heure",
+        "24h": "1 jour",
+        "3d": "3 jours",
+        "7d": "7 jours",
+        "custom": "Personnalisée"
+      },
+      "endAt": "Date et heure de fin",
+      "durationHint": "De 1 heure à 14 jours. Une mise dans les 2 dernières minutes ajoute 2 minutes.",
+      "rights": "Le gagnant obtient",
+      "exclusive": "Exclusive : une fois vendue, seuls le gagnant et vous pouvez la regarder.",
+      "automatic": "Vendre automatiquement à la plus haute mise",
+      "summary": "Commence {when} à {price}, dure {duration}. Le gagnant obtient : {rights}.",
+      "submit": "Lancer l’enchère",
+      "problems": {
+        "START_IN_PAST": "Le début est dans le passé.",
+        "START_TOO_FAR": "Commencez dans les 30 prochains jours.",
+        "TOO_SHORT": "Une enchère dure au moins 1 heure.",
+        "TOO_LONG": "Une enchère dure au plus 14 jours."
+      },
+      "automaticHint": {
+        "on": "Elle est vendue à la plus haute mise à la fin, quel que soit le montant.",
+        "off": "À la fin, vous avez 48 heures pour accepter ou refuser la meilleure mise. Si vous la refusez, l’enchérisseur récupère ses crédits."
+      }
+    }
+  },
+  "auctions": {
+    "metaTitle": "Enchères — Orochia",
+    "metaDescription": "Misez sur des vidéos exclusives de créateurs Orochia. La plus haute mise l’emporte — et seul le gagnant regarde.",
+    "eyebrow": "Enchères",
+    "title": "Des vidéos exclusives, à la plus haute mise",
+    "subtitle": "Les créateurs mettent des vidéos aux enchères. Misez en crédits, voyez le prix bouger à mesure que les mises arrivent, et le gagnant — lui seul — la regarde.",
+    "steps": {
+      "held": "Vos crédits sont réservés tant que vous êtes en tête, et rendus dès qu’on vous surenchérit.",
+      "softClose": "Une mise de dernière minute ajoute 2 minutes : pas de mise à la dernière seconde.",
+      "win": "Gagnez et elle est à vous : regardez-la, ou téléchargez-la si le créateur le permet."
+    },
+    "tabsLabel": "Listes d’enchères",
+    "tabs": {
+      "open": "En cours",
+      "upcoming": "À venir",
+      "ended": "Vendues",
+      "bidding": "Mes mises",
+      "selling": "Mes enchères"
+    },
+    "empty": {
+      "open": {
+        "title": "Aucune enchère en cours pour l’instant",
+        "body": "Les créateurs mettent des vidéos exclusives aux enchères. Suivez-les pour savoir quand la prochaine commence."
+      },
+      "upcoming": {
+        "title": "Rien de prévu pour l’instant",
+        "body": "Les enchères planifiées apparaissent ici, avec leur compte à rebours."
+      },
+      "ended": {
+        "title": "Rien de vendu pour l’instant",
+        "body": "Les vidéos vendues aux enchères apparaissent ici."
+      },
+      "bidding": {
+        "title": "Vous n’avez pas encore misé",
+        "body": "Vos enchères apparaissent ici : celles où vous êtes en tête, celles où l’on vous a surenchéri, celles que vous avez remportées."
+      },
+      "selling": {
+        "title": "Aucune enchère pour l’instant",
+        "body": "Mettez l’une de vos vidéos aux enchères depuis votre bibliothèque — le marteau à côté d’elle.",
+        "cta": "Ouvrir ma bibliothèque"
+      }
+    },
+    "seeOpen": "Voir les enchères en cours"
+  },
+  "challenge": {
+    "kind": {
+      "GOAL": "Objectif",
+      "REQUEST": "Demande à un créateur",
+      "OPEN_CALL": "Appel ouvert"
+    },
+    "stage": {
+      "FUNDING": "Financement",
+      "GOAL_REACHED": "Objectif atteint",
+      "AWAITING_ANSWER": "En attente de réponse",
+      "CASTING": "Candidatures ouvertes",
+      "CLOSING": "Clôture",
+      "IN_PROGRESS": "En cours de réalisation",
+      "DELIVERED": "Livré",
+      "DECLINED": "Refusé",
+      "EXPIRED": "Expiré",
+      "FAILED": "Non livré",
+      "CANCELLED": "Retiré"
+    },
+    "final": {
+      "CLOSING": "Règlement en cours…",
+      "DELIVERED": "Livré — les contributeurs ont été remboursés en contenu.",
+      "DECLINED": "Refusé — chaque contribution a été rendue.",
+      "EXPIRED": "Expiré — chaque contribution a été rendue.",
+      "FAILED": "Non livré à temps — chaque contribution a été rendue.",
+      "CANCELLED": "Retiré — chaque contribution a été rendue."
+    },
+    "deliverable": {
+      "VIDEO": "Vidéo",
+      "STORY": "Story"
+    },
+    "reward": {
+      "BACKERS": "Contributeurs seulement",
+      "EVERYONE": "Tout le monde"
+    },
+    "ofGoal": "sur {goal} · {percent} %",
+    "backers": "Contributeurs · {count}",
+    "applicants": "Candidats · {count}",
+    "anyCreator": "N’importe quel créateur",
+    "answerIn": "Réponse attendue dans",
+    "pickIn": "Choix attendu dans",
+    "endsIn": "Se termine dans",
+    "deliverIn": "Livraison attendue dans",
+    "start": "Lancer un défi",
+    "backToAll": "Tous les défis",
+    "byCreator": "Un objectif de {name}",
+    "forCreator": "Une demande pour {name}",
+    "openToAll": "Ouvert à tout créateur vérifié",
+    "requestedBy": "Vous est envoyée par @{username}",
+    "deliveryDays": "Livré dans un délai de {days} jours",
+    "delivered": {
+      "watch": "Il est arrivé — votre contribution l’a rendu possible.",
+      "locked": "Livré aux personnes qui l’ont soutenu.",
+      "cta": "Le regarder",
+      "storyCta": "Ouvrir les stories"
+    },
+    "recent": "Dernières contributions",
+    "noPledges": "Aucune contribution pour l’instant — soyez le premier.",
+    "you": "Vous",
+    "backer": "Contributeur {n}",
+    "goalReachedHint": "L’objectif est atteint : les contributions comptent encore jusqu’à ce que le créateur commence ou que le temps soit écoulé.",
+    "leaderboard": "Meilleurs contributeurs",
+    "errors": {
+      "NOT_FOUND": "Défi introuvable",
+      "BAD_TITLE": "Donnez-lui un titre de 4 à 120 caractères.",
+      "BAD_DESCRIPTION": "Décrivez-le en 10 à 1 000 caractères.",
+      "BAD_GOAL": "Un objectif se situe entre 10 $ et 1 000 000 $.",
+      "BAD_DEADLINE": "Choisissez une échéance comprise entre une heure et la plus longue période permise.",
+      "BAD_DELIVERY_DAYS": "Le délai de livraison est de 1 à 14 jours.",
+      "BAD_AMOUNT": "Vérifiez le montant : les contributions commencent à 1 $, la cagnotte d’un appel ouvert à 5 $.",
+      "NOT_A_CREATOR": "Seuls les créateurs vérifiés peuvent faire cela.",
+      "REQUESTS_OFF": "Ce créateur n’accepte pas de demandes pour le moment.",
+      "OFFER_TOO_LOW": "Votre offre est inférieure au minimum de ce créateur.",
+      "OFFER_TOO_LOW_AMOUNT": "Ce créateur accepte les demandes à partir de {amount}.",
+      "OWN_CHALLENGE": "Vous ne pouvez pas soutenir ni réaliser un défi pour lequel vous seriez payé.",
+      "NOT_OPEN": "Ce défi n’est plus ouvert.",
+      "INSUFFICIENT_CREDITS": "Crédits insuffisants.",
+      "INSUFFICIENT_CREDITS_BALANCE": "Crédits insuffisants — votre solde est de {balance}.",
+      "GOAL_NOT_REACHED": "L’objectif n’est pas encore atteint.",
+      "NOT_ALLOWED": "Vous ne pouvez pas faire cela sur ce défi.",
+      "ALREADY_APPLIED": "Vous avez déjà posé votre candidature.",
+      "NOT_IN_PROGRESS": "Ce défi n’attend pas de livraison.",
+      "BAD_DELIVERY": "Choisissez une de vos vidéos prêtes, non utilisée ailleurs, ou une story publiée depuis votre engagement.",
+      "SIGN_IN": "Connectez-vous pour voir vos défis",
+      "TOO_MANY": "Trop d’actions. Patientez un instant.",
+      "generic": "Un problème est survenu. Réessayez."
+    },
+    "release": {
+      "DECLINED": "le créateur l’a refusé",
+      "EXPIRED": "le temps est écoulé",
+      "FAILED": "il n’a pas été livré à temps",
+      "CANCELLED": "il a été retiré",
+      "NOT_CHOSEN": "un autre créateur a été choisi"
+    },
+    "pledge": {
+      "signIn": "Connectez-vous pour soutenir ce défi.",
+      "signInCta": "Se connecter",
+      "titleGoal": "Soutenir cet objectif",
+      "titlePot": "Ajouter à la cagnotte",
+      "custom": "Autre",
+      "submit": "Contribuer {amount}",
+      "held": "Réservé en crédits jusqu’à la livraison — rendu si elle n’a pas lieu.",
+      "balance": "Solde : {balance}",
+      "yours": "Vous avez mis {amount}",
+      "topUp": "Ajouter des crédits"
+    },
+    "compose": {
+      "title": "Lancer un défi",
+      "kind": "Type de défi",
+      "kindHint": {
+        "GOAL": "Fixez un objectif : vous le réalisez si les fans l’atteignent.",
+        "REQUEST": "Faites une demande à un créateur, avec une offre.",
+        "OPEN_CALL": "Tout créateur peut se proposer; vous en choisissez un."
+      },
+      "creator": "Créateur",
+      "creatorPlaceholder": "@nomdutilisateur",
+      "titleLabel": "Titre",
+      "titlePlaceholder": {
+        "GOAL": "Ce que vous réaliserez une fois l’objectif atteint",
+        "REQUEST": "Ce que vous lui demandez de réaliser",
+        "OPEN_CALL": "Ce que vous voulez qu’un créateur réalise"
+      },
+      "description": "Détails",
+      "descriptionPlaceholder": "Décor, durée, ce que ça doit montrer — soyez précis.",
+      "descriptionHint": "Tout doit respecter les conditions d’utilisation : adultes seulement, consentants, et personne qui n’a accepté d’y apparaître.",
+      "deliverable": "Livré sous forme de",
+      "delivery": "Délai de livraison",
+      "deliveryLabels": {
+        "3": "3 jours",
+        "7": "7 jours",
+        "14": "14 jours"
+      },
+      "windowLabels": {
+        "1d": "24 heures",
+        "3d": "3 jours",
+        "7d": "7 jours",
+        "14d": "14 jours",
+        "30d": "30 jours"
+      },
+      "amount": {
+        "GOAL": "Objectif",
+        "REQUEST": "Votre offre",
+        "OPEN_CALL": "Cagnotte de départ"
+      },
+      "amountHint": {
+        "GOAL": "Tout ou rien : sous l’objectif à l’échéance, chaque contribution est rendue.",
+        "REQUEST": "Réservée en crédits dès maintenant, versée seulement à la livraison. D’autres peuvent s’y ajouter.",
+        "OPEN_CALL": "Réservée en crédits dès maintenant, versée à la livraison au créateur que vous choisissez."
+      },
+      "window": {
+        "GOAL": "Période de financement",
+        "OPEN_CALL": "Les candidatures ferment dans"
+      },
+      "reward": "Qui la regarde",
+      "theCreator": "le créateur",
+      "summary": {
+        "GOAL": "Si les fans contribuent {amount} dans un délai de {days} jours, vous réaliserez une {what} et le livrerez dans un délai de {delivery} jours. Sinon, chaque contribution est rendue.",
+        "REQUEST": "Vous offrez {amount} à {creator} pour une {what}. Il a 3 jours pour accepter; s’il accepte, il livre dans un délai de {delivery} jours. Refusée ou en retard, vos crédits vous sont rendus.",
+        "OPEN_CALL": "Vous mettez {amount} dans la cagnotte pour une {what}. Les créateurs se proposent pendant {days} jours; vous en choisissez un, qui livre dans un délai de {delivery} jours."
+      },
+      "submit": {
+        "GOAL": "Ouvrir l’objectif",
+        "REQUEST": "Envoyer la demande",
+        "OPEN_CALL": "Publier l’appel"
+      }
+    },
+    "deliver": {
+      "title": "Livrer le défi",
+      "submit": "Livrer et encaisser {amount}",
+      "intro": {
+        "VIDEO": "Choisissez la vidéo que vous avez réalisée pour ce défi.",
+        "STORY": "Choisissez la story que vous avez publiée pour ce défi."
+      },
+      "audience": {
+        "BACKERS": "Seuls ses contributeurs la regarderont.",
+        "EVERYONE": "Elle devient publique."
+      },
+      "none": {
+        "VIDEO": "Aucune vidéo prête à livrer pour l’instant — téléversez-la d’abord.",
+        "STORY": "Aucune story publiée depuis votre engagement — publiez-la d’abord."
+      },
+      "untitled": "Sans titre"
+    },
+    "actions": {
+      "answerHint": "{amount} sont sur la table. Si vous acceptez, vous avez {days} jours pour livrer; si vous refusez, chaque contribution est rendue.",
+      "accept": "Accepter",
+      "decline": "Refuser",
+      "startHint": "L’objectif est atteint. Commencez maintenant — vous avez ensuite {days} jours pour livrer.",
+      "start": "Commencer maintenant",
+      "deliverHint": {
+        "VIDEO": "Téléversez la vidéo, puis livrez-la ici pour être payé.",
+        "STORY": "Publiez la story, puis livrez-la ici pour être payé."
+      },
+      "deliver": "Livrer",
+      "applyNote": "Un mot pour l’auteur (facultatif)",
+      "apply": "Se proposer pour le réaliser",
+      "pickTitle": "Choisir un créateur",
+      "applicationsTitle": "Candidatures",
+      "pick": "Choisir",
+      "cancelHint": "Le retirer : chaque contribution est rendue.",
+      "cancel": "Retirer",
+      "cancelConfirm": "Touchez de nouveau pour retirer"
+    },
+    "application": {
+      "PENDING": "En attente d’un choix",
+      "CHOSEN": "Choisi",
+      "NOT_CHOSEN": "Non retenu",
+      "WITHDRAWN": "Retirée"
+    },
+    "dare": "Demande",
+    "meterLabel": "Amassé",
+    "journey": "Où en est le défi"
+  },
+  "challenges": {
+    "metaTitle": "Défis",
+    "metaDescription": "Objectifs, demandes et appels ouverts : les fans financent des vidéos et des stories sur mesure, les créateurs les réalisent — payés seulement à la livraison.",
+    "eyebrow": "Défis",
+    "title": "Financez-le. Lancez-le. Réalisez-le.",
+    "subtitle": "Les fans mettent des crédits derrière ce qu’ils veulent voir; les créateurs le réalisent. Personne ne paie pour rien : les crédits sont réservés jusqu’à la livraison et rendus si elle n’a pas lieu.",
+    "how": {
+      "GOAL": "Un créateur fixe un objectif et une échéance. Atteignez-le ensemble et il le réalise — manquez-le et chaque contribution est rendue.",
+      "REQUEST": "Faites une demande à un créateur, avec une offre à laquelle tout le monde peut s’ajouter. Il a trois jours pour accepter ou refuser.",
+      "OPEN_CALL": "Publiez un défi pour n’importe quel créateur. Les créateurs vérifiés se proposent, vous en choisissez un, il livre."
+    },
+    "tabsLabel": "Défis",
+    "tabs": {
+      "open": "En cours",
+      "calls": "Appels ouverts",
+      "done": "Livrés",
+      "inbox": "À traiter",
+      "mine": "Les miens",
+      "backing": "Soutenus"
+    },
+    "empty": {
+      "open": {
+        "title": "Aucun défi ouvert pour l’instant",
+        "body": "Lancez-en un : fixez un objectif, faites une demande à un créateur ou publiez un appel ouvert."
+      },
+      "calls": {
+        "title": "Aucun appel ouvert pour l’instant",
+        "body": "Quand des fans publient un défi pour n’importe quel créateur, il apparaît ici."
+      },
+      "done": {
+        "title": "Rien de livré pour l’instant",
+        "body": "Les défis livrés apparaissent ici."
+      },
+      "inbox": {
+        "title": "Rien à traiter",
+        "body": "Les demandes qui vous sont envoyées et les défis que vous devez livrer apparaissent ici."
+      },
+      "mine": {
+        "title": "Vous n’avez lancé aucun défi",
+        "body": "Vos objectifs, demandes et appels ouverts apparaissent ici."
+      },
+      "backing": {
+        "title": "Vous ne soutenez aucun défi pour l’instant",
+        "body": "Les défis auxquels vous contribuez apparaissent ici."
+      }
+    },
+    "seeOpen": "Voir les défis en cours",
+    "startCta": "En lancer un"
+  },
+  "quota": {
+    "title": "Stockage",
+    "label": "Stockage utilisé",
+    "loading": "Vérification de votre stockage…",
+    "used": "{used} utilisés sur {limit}",
+    "usedUnlimited": "{used} utilisés — forfait illimité",
+    "minutes": "{used} sur {limit} minutes de vidéo",
+    "minutesUnlimited": "{used} minutes de vidéo",
+    "plan": "Forfait : {plan}",
+    "plans": {
+      "default": "Standard",
+      "pro": "Pro",
+      "unlimited": "Illimité"
+    },
+    "today": "{count} sur {max} téléversements aujourd’hui",
+    "levels": {
+      "ok": "Beaucoup de place pour de nouveaux téléversements.",
+      "warning": "Vous avez utilisé {percent} % de votre espace. Supprimez des brouillons ou d’anciennes vidéos, ou demandez un forfait plus grand.",
+      "critical": "Presque plein ({percent} %) : le prochain gros téléversement pourrait être refusé.",
+      "full": "Votre espace est plein : les nouveaux téléversements sont refusés tant que vous n’en libérez pas.",
+      "unlimited": "Aucune limite de stockage sur votre forfait."
+    },
+    "held": "{count} téléversement(s) en attente jusqu’à ce que de l’espace soit libéré — conservés, jamais supprimés.",
+    "paused": "Les téléversements sont suspendus pour tout le monde pendant l’agrandissement du stockage de la plateforme. Réessayez plus tard.",
+    "off": "Les limites de stockage sont désactivées sur ce déploiement.",
+    "manage": "Gérer les téléversements"
+  },
+  "apiErrors": {
+    "FILE_TOO_LARGE": "Ce fichier est trop volumineux : la limite est de {max} par fichier.",
+    "VIDEO_TOO_LONG": "Cette vidéo est trop longue pour être téléversée ici.",
+    "CREATOR_STORAGE_FULL": "Espace insuffisant : il vous reste {left} sur {limit}. Supprimez des brouillons ou d’anciennes vidéos, ou demandez un forfait plus grand.",
+    "CREATOR_MINUTES_FULL": "Il ne reste pas assez de temps de vidéo sur votre forfait pour ce fichier.",
+    "PLATFORM_STORAGE_FULL": "Les téléversements sont suspendus : le stockage de la plateforme est plein. Réessayez plus tard.",
+    "PLATFORM_MINUTES_FULL": "Les téléversements sont suspendus : le temps de vidéo de la plateforme est épuisé. Réessayez plus tard.",
+    "UPLOADS_PER_DAY": "Vous avez atteint la limite de téléversements d’aujourd’hui. Réessayez dans {wait}.",
+    "CONCURRENT_UPLOADS": "Terminez les téléversements en cours avant d’en commencer un autre.",
+    "STORAGE_LIMITS_UNAVAILABLE": "Les téléversements sont indisponibles pour le moment. Réessayez plus tard.",
+    "RATE_LIMITED": "Trop de tentatives. Réessayez dans {wait}.",
+    "LOGIN_LOCKED": "Trop de tentatives échouées. Réessayez dans {wait}.",
+    "LOGIN_RATE_LIMITED": "Trop de tentatives de connexion depuis ce réseau. Réessayez dans {wait}.",
+    "AUTOMATION_REFUSED": "Cette requête semble automatisée. Utilisez le site Web ou l’appli Orochia.",
+    "BOT_SUSPECTED": "Un problème est survenu. Rechargez la page et réessayez.",
+    "FORM_TOKEN_MISSING": "Un problème est survenu. Rechargez la page et réessayez.",
+    "FORM_TOKEN_INVALID": "Un problème est survenu. Rechargez la page et réessayez.",
+    "FORM_TOO_FAST": "Quelle rapidité! Vérifiez vos renseignements et envoyez de nouveau le formulaire.",
+    "FORM_EXPIRED": "Ce formulaire a expiré. Rechargez la page et réessayez.",
+    "EMAIL_DOMAIN_REFUSED": "Les adresses courriel jetables ne sont pas acceptées. Utilisez une adresse que vous gardez.",
+    "CHALLENGE_FAILED": "La vérification antirobot a échoué. Réessayez.",
+    "CHALLENGE_UNAVAILABLE": "La vérification antirobot est indisponible pour le moment. Réessayez dans quelques minutes.",
+    "wait": {
+      "seconds": "{count} s",
+      "minutes": "{count} min",
+      "hours": "{count} h"
+    },
+    "MESSAGE_BLOCKED": "Vous ne pouvez pas envoyer de messages à ce compte.",
+    "MESSAGE_YOU_BLOCKED": "Vous avez bloqué ce compte. Débloquez-le pour écrire de nouveau.",
+    "MESSAGE_CONTACTS_ONLY": "Ce compte n’accepte que les messages de ses contacts.",
+    "BIRTH_DATE_REQUIRED": "Ajoutez d’abord votre date de naissance dans vos paramètres : Orochia vérifie que vous avez 18 ans ou plus avant d’ouvrir un espace de création."
+  },
+  "charts": {
+    "showData": "Afficher les données",
+    "hideData": "Masquer les données",
+    "tableCaption": "{title} — données",
+    "loading": "Chargement du graphique…",
+    "empty": "Rien à afficher pour cette période pour l’instant.",
+    "error": "Le graphique n’a pas pu être chargé.",
+    "exportCsv": "Télécharger en CSV",
+    "exportPng": "Télécharger en PNG",
+    "exportSvg": "Télécharger en SVG"
+  },
+  "table": {
+    "selectAll": "Sélectionner toutes les lignes",
+    "selectRow": "Sélectionner {name}",
+    "empty": "Rien à afficher",
+    "pages": "Pages",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page": "Page {page}",
+    "pageOf": "Page {page} sur {count}",
+    "pageSize": "Lignes par page"
+  },
+  "errorPages": {
+    "serverMetaTitle": "Cette page n’a pas pu se charger — Orochia",
+    "serverEyebrow": "Un contretemps de notre côté",
+    "serverTitle": "Cette page n’a pas pu se charger",
+    "exploreTitle": "Explorer n’a pas pu se charger",
+    "serverBody": "Quelque chose a échoué de notre côté pendant la préparation de la page — rien de ce que vous avez fait. Votre compte, vos crédits et vos vidéos sont en sécurité.",
+    "serverHint": "Réessayez dans un instant : ces problèmes se règlent généralement d’eux-mêmes. S’il persiste, écrivez-nous en nous donnant la référence ci-dessous.",
+    "retry": "Réessayer",
+    "retrying": "Nouvelle tentative…",
+    "home": "Retour à l’accueil",
+    "support": "Communiquer avec le soutien",
+    "reference": "Référence de l’erreur",
+    "copyReference": "Copier la référence de l’erreur",
+    "copied": "Copié",
+    "notFoundMetaTitle": "Page introuvable",
+    "notFoundEyebrow": "Erreur 404 · page introuvable",
+    "notFoundTitle": "Cette page n’existe pas",
+    "notFoundBody": "La chouette a regardé partout sans la trouver. Le lien est peut-être ancien ou mal saisi, ou ce qu’il montrait a été retiré. Cherchez-la, ou repartez d’Explorer.",
+    "searchPlaceholder": "Rechercher des créateurs, des vidéos, des mots-clics…",
+    "search": "Rechercher",
+    "explore": "Explorer Orochia",
+    "sectionTitle": "Cette partie n’a pas pu se charger",
+    "sectionBody": "Le reste de la page fonctionne. Réessayez dans un instant."
+  },
+  "creatorSpace": {
+    "cta": {
+      "anonymous": "Devenir créateur",
+      "member": "Ouvrir votre espace de création",
+      "pending": "Voir l’état de votre vérification",
+      "creator": "Téléverser une vidéo"
+    },
+    "apply": {
+      "metaTitle": "Votre espace de création",
+      "eyebrow": "Espace de création",
+      "member": {
+        "title": "Ouvrez votre espace de création",
+        "lead": "C’est ce compte, @{username} — aucune nouvelle inscription. Il devient un espace de création et conserve tout ce qu’il fait aujourd’hui : suivre, laisser des pourboires, débloquer, écrire des messages."
+      },
+      "pending": {
+        "title": "Votre espace de création est en cours d’examen",
+        "lead": "Les téléversements ouvriront une fois que l’équipe de conformité d’Orochia aura approuvé vos dossiers d’identité et d’âge. Il n’y a rien à remplir ici en attendant."
+      },
+      "steps": {
+        "label": "Votre chemin vers la publication",
+        "account": {
+          "title": "Votre compte",
+          "body": "Connecté, courriel confirmé, 18 ans ou plus vérifié par le serveur à partir de votre date de naissance."
+        },
+        "accountMissing": {
+          "title": "Votre date de naissance",
+          "body": "Orochia s’en sert pour vérifier que vous avez 18 ans ou plus avant d’ouvrir un espace de création. Ajoutez-la dans vos paramètres — elle n’est jamais affichée."
+        },
+        "open": {
+          "title": "Ouvrir l’espace de création",
+          "body": "Un seul toucher : votre compte devient un compte de créateur. Rien n’est publié, rien n’est facturé."
+        },
+        "review": {
+          "title": "Examen de l’identité et de l’âge (article 2257 du titre 18 du U.S. Code)",
+          "body": "La loi exige un dossier qui prouve que chaque personne qui publie est majeure. Pour l’instant, un opérateur l’examine à la main et écrit à {email} si un document est nécessaire; un fournisseur de vérification d’identité s’en chargera bientôt ici."
+        },
+        "publish": {
+          "title": "Publier et être payé",
+          "body": "Vidéos et stories de 24 heures, qui voit quoi, enchères et défis. Vous gardez {share} % de chaque paiement, envoyé au compte de versement que vous ajoutez (chiffré, affiché seulement de façon masquée)."
+        }
+      },
+      "cta": "Ouvrir mon espace de création",
+      "working": "Ouverture de votre espace de création…",
+      "failed": "Votre espace de création n’a pas pu être ouvert. Réessayez.",
+      "addBirthDate": "Ajouter votre date de naissance",
+      "before": {
+        "title": "En attendant l’approbation",
+        "items": {
+          "fan": "Regardez, suivez, laissez des pourboires, débloquez et écrivez — comme aujourd’hui",
+          "profile": "Modifiez votre profil : photo, couverture, biographie, liens",
+          "payout": "Indiquez où vos revenus seront envoyés"
+        }
+      },
+      "after": {
+        "title": "Une fois approuvé",
+        "items": {
+          "upload": "Téléversez des vidéos et des stories de 24 heures",
+          "earn": "Enchères, objectifs, demandes — et pourboires sur tout ce que vous publiez",
+          "badge": "Le badge de vérification sur votre profil"
+        }
+      },
+      "links": {
+        "profile": "Modifier votre profil",
+        "payout": "Renseignements de versement",
+        "rules": "Ce que l’examen vérifie"
+      },
+      "suspended": {
+        "title": "Ce compte est suspendu",
+        "body": "Un compte suspendu ne peut pas ouvrir d’espace de création. Communiquez avec l’exploitant de la plateforme."
+      }
+    },
+    "banner": {
+      "member": {
+        "title": "Publier sur Orochia",
+        "body": "Ouvrez un espace de création sur ce compte — aucune nouvelle inscription. Vous continuez de suivre, de laisser des pourboires et de débloquer."
+      },
+      "pending": {
+        "title": "Votre espace de création est en cours d’examen",
+        "body": "Les téléversements ouvriront une fois vos dossiers d’identité et d’âge (article 2257 du titre 18 du U.S. Code) approuvés."
+      }
+    }
+  },
+  "howItWorks": {
+    "meta": {
+      "title": "Comment fonctionne Orochia",
+      "description": "Orochia est une plateforme vidéo pour créateurs indépendants : les fans les paient directement — pourboires, déblocages payants, enchères et objectifs financés — et les créateurs gardent {share} %. Voyez la vraie application à l’œuvre."
+    },
+    "eyebrow": "Comment fonctionne Orochia",
+    "title": "Une créatrice, un fan. Chaque paiement à l’écran.",
+    "lead": "Elena réalise des vidéoclips. Alex la paie pour les voir. Regardez la vraie appli.",
+    "ctaExplore": "Explorer les créateurs",
+    "ctaDocs": "Lire la documentation",
+    "heroClip": "Une journée sur Orochia : Alex trouve Elena, laisse un pourboire sur sa story et débloque sa séance; elle est payée et retire {share} %.",
+    "frameLabel": "orochia · Web",
+    "journey": {
+      "title": "De la découverte au versement, en sept étapes",
+      "step": "Étape {n}"
+    },
+    "steps": {
+      "find": "La trouver : cherchez un mot, son vidéoclip démarre.",
+      "watch": "Regarder : la journée en un extrait — découvrir, laisser un pourboire, débloquer.",
+      "tip": "Laisser un pourboire sur sa story : 5 $, directement pour elle.",
+      "unlock": "Débloquer une séance : 8 $ en crédits, lue aussitôt.",
+      "bid": "Miser sur une version : les crédits ne sont réservés que tant que vous êtes en tête.",
+      "back": "Soutenir son prochain tournage : réservé jusqu’à ce qu’elle livre.",
+      "earn": "Elle retire {share} % de chaque paiement."
+    },
+    "ways": {
+      "title": "Quatre façons de payer une créatrice",
+      "tip": "Pourboire",
+      "tipLine": "Directement à la créatrice, {share} % du montant.",
+      "unlock": "Déblocage payant",
+      "unlockLine": "Deux touchers avec des crédits; le serveur accorde l’accès.",
+      "auction": "Enchère",
+      "auctionLine": "La plus haute mise remporte une version exclusive.",
+      "goal": "Objectif financé",
+      "goalLine": "Payé à la livraison, rendu si elle n’a pas lieu."
+    },
+    "closing": {
+      "title": "Voyez-le par vous-même",
+      "line": "Les crédits engagés sont réservés jusqu’à ce qu’elle livre. Elena et Alex sont des personnages de démonstration; aucune personne montrée n’a de vrai compte."
+    }
+  },
+  "docs": {
+    "meta": {
+      "title": "Documentation",
+      "description": "Comment Orochia est construite et comment l’exécuter : prise en main, architecture, accueil des créateurs, enchères, défis, chaîne de traitement des médias, temps réel, appli mobile, accessibilité et déploiement."
+    },
+    "eyebrow": "Documentation",
+    "title": "Orochia, documentée",
+    "lead": "Orochia est à code source ouvert. Ces pages sont la documentation du dépôt lui-même — comment ça marche, pourquoi c’est construit ainsi et comment l’exécuter vous-même.",
+    "source": "Lire le code source sur GitHub",
+    "editOnGithub": "Modifier cette page sur GitHub",
+    "back": "Toute la documentation",
+    "navLabel": "Pages de documentation"
+  },
+  "mobile": {
+    "meta": {
+      "title": "L’appli mobile Orochia",
+      "description": "L’appli Orochia sur un téléphone, en quatre étapes expliquées : l’écran 18+, le fil et les stories, le déblocage d’une vidéo, un objectif et une enchère."
+    },
+    "eyebrow": "Sur votre téléphone",
+    "title": "Orochia dans votre poche : quatre étapes",
+    "lead": "Suivez les créateurs que vous aimez, regardez, débloquez et soutenez ce qu’ils réalisent — depuis votre téléphone, réservé aux adultes. Quatre étapes, telles que la vraie appli les montre.",
+    "recordedOn": "Enregistré sur le simulateur iOS avec des personnages inventés. Appuyez sur lecture; rien ne démarre tout seul.",
+    "all": "Suivre les quatre étapes",
+    "stepsTitle": "Les quatre étapes",
+    "step": "Étape",
+    "notice": "À remarquer",
+    "frameLabel": "orochia · mobile",
+    "steps": {
+      "age-gate": {
+        "goal": "Confirmer que vous êtes adulte",
+        "short": "Une installation neuve : l’écran 18+, puis le fil (12 s).",
+        "purpose": "Orochia est réservée aux adultes; le tout premier écran vous demande donc de confirmer que vous avez 18 ans ou plus avant d’afficher quoi que ce soit. C’est la règle de la maison, dite une fois, d’entrée de jeu.",
+        "alt": "Une installation neuve s’ouvre sur le logo Orochia et les mots « Réservé aux adultes »; Alex touche « J’ai 18 ans ou plus — entrer » et le fil apparaît.",
+        "notice": [
+          "L’écran de confirmation vient avant tout le reste : aucune vidéo, aucun créateur ni aucun prix n’est visible tant qu’il n’est pas confirmé.",
+          "Entrer, c’est confirmer que vous avez 18 ans ou plus, ou l’âge de la majorité là où vous êtes, et accepter les conditions.",
+          "« Lire les conditions » se trouve juste sous le bouton : les conditions sont à un toucher avant que vous acceptiez."
+        ]
+      },
+      "feed-stories": {
+        "goal": "Voir ce que vos créateurs ont publié aujourd’hui",
+        "short": "Alex fait défiler le fil, puis ouvre la story d’Elena (coupure entre les deux, 27 s).",
+        "purpose": "L’écran d’accueil met d’abord les créateurs que vous suivez : une rangée de stories en haut, le fil de vidéos en dessous. Vous êtes à jour en une minute et vous touchez ce que vous voulez regarder.",
+        "alt": "Alex fait défiler le fil d’accueil, touche l’anneau d’Elena dans la rangée de stories et regarde sa story en plein écran.",
+        "notice": [
+          "Un anneau par créateur dans la rangée de stories; un créateur que vous n’avez pas encore vu est entouré du dégradé signature.",
+          "Une story s’ouvre en plein écran et se lit jusqu’au bout; une photo reste à l’écran cinq secondes.",
+          "Une vidéo qui n’est pas gratuite porte un badge de cadenas qui nomme son accès (Abonnés, Déblocage, Enchère, Contributeurs), pour que vous le sachiez avant de toucher."
+        ]
+      },
+      "unlock": {
+        "goal": "Débloquer une vidéo dont le créateur a fixé le prix",
+        "short": "« Night Drive » demande un déblocage : le prix, et « Débloquer sur orochia.com » (14 s).",
+        "purpose": "Certaines vidéos sont payantes. L’écran vous explique pourquoi vous ne pouvez pas encore la regarder et ce qu’elle coûte, puis vous renvoie au site Web pour la débloquer, là où le créateur est payé.",
+        "alt": "Alex ouvre la vidéo « Night Drive »; au lieu de la lire, l’écran affiche le prix du déblocage et un bouton, Débloquer sur orochia.com.",
+        "notice": [
+          "La raison est dite en mots simples : débloquez cette vidéo à son prix pour la regarder.",
+          "L’appli ne prend jamais de paiement elle-même : le bouton ouvre orochia.com sur cette vidéo.",
+          "Les autres verrous sont nommés aussi — abonnés seulement, contacts, enchère ou défi — chacun avec sa propre phrase."
+        ]
+      },
+      "challenge-auction": {
+        "goal": "Soutenir un objectif et miser à une enchère",
+        "short": "Alex contribue 10 $ à un objectif, puis mise 31,00 $ et prend la tête (coupures entre les écrans, 15 s).",
+        "purpose": "Deux façons de participer à ce qu’un créateur réalise : financer un objectif avec d’autres fans, ou miser sur une vidéo que seul le gagnant regarde. Les deux sont réservés en crédits jusqu’à ce que le créateur livre.",
+        "alt": "Alex contribue dix dollars à un objectif et voit l’anneau et les contributeurs se mettre à jour, puis mise trente et un dollars à une enchère et voit qu’il est en tête.",
+        "notice": [
+          "Un objectif affiche l’anneau, ce qui est amassé jusqu’ici, les contributeurs et le temps restant; les crédits sont réservés jusqu’à la livraison et rendus si elle n’a pas lieu.",
+          "Une enchère affiche la mise actuelle, les mises jusqu’ici et les prochains montants à proposer, et dit « Vous êtes en tête » quand c’est le cas.",
+          "Les comptes à rebours suivent l’horloge du serveur : un téléphone déréglé de quelques minutes compte quand même juste."
+        ]
+      }
+    }
+  },
+  "insights": {
+    "metaTitle": "Statistiques · Orochia",
+    "title": "Statistiques",
+    "subtitle": "Comment vos vidéos suscitent de l’engagement, quels mots-clics fonctionnent et quand votre public est là — des totaux seulement, jamais une personne.",
+    "offTitle": "Les statistiques ne sont pas encore activées",
+    "offBody": "Elles ouvrent avec les recommandations personnalisées. Vos revenus et vos vues sont déjà dans Revenus.",
+    "unavailableTitle": "Les statistiques sont inaccessibles un instant",
+    "unavailableBody": "Rien n’est perdu : les chiffres reviennent d’eux-mêmes. Les revenus et les vues sont dans Revenus.",
+    "toEarnings": "Ouvrir Revenus",
+    "videos": {
+      "title": "Vos vidéos",
+      "hint": "Les vues, puis les mentions J’aime, enregistrements, partages, pourboires et déblocages par vue.",
+      "empty": "Les chiffres apparaissent dès que des gens regardent vos vidéos publiques.",
+      "line": "{views} vues · {engagements} interactions · {rate} %",
+      "watched": "{pct} % regardé"
+    },
+    "tags": {
+      "title": "Mots-clics qui fonctionnent",
+      "hint": "L’engagement par vue des vidéos qui portent chaque mot-clic.",
+      "empty": "Ajoutez des mots-clics à vos vidéos pour voir quels sujets suscitent le plus d’engagement.",
+      "line": "{videos} vidéos · {rate} %"
+    },
+    "hours": {
+      "title": "Quand votre public interagit",
+      "hint": "Les heures de la semaine (UTC) où l’engagement est le plus élevé, affichées à partir de {min} personnes différentes.",
+      "empty": "Pas encore assez de gens pour le dire.",
+      "slot": "{day} {hour} h UTC"
+    },
+    "audience": {
+      "title": "Votre public regarde aussi",
+      "hint": "D’autres créateurs suivis par au moins {min} de vos spectateurs — jamais nommés.",
+      "line": "{count} autres créateurs partagent votre public."
+    },
+    "weekdays": "lun mar mer jeu ven sam dim",
+    "loading": "Chargement de vos statistiques",
+    "audience28": {
+      "title": "Votre public, {days} derniers jours",
+      "hint": "Calculé à partir de ce que les gens font sur vos vidéos — pseudonymisé, jamais une personne, rien d’affiché pour moins de {min} personnes.",
+      "hidden": "Moins de {min}",
+      "vsBefore": "par rapport à la période précédente",
+      "tiles": {
+        "viewers": "Personnes",
+        "views": "Vues",
+        "likes": "J’aime",
+        "tips": "Pourboires",
+        "watched": "Regardé en moyenne"
+      },
+      "daily": "Vues et mentions J’aime par jour",
+      "day": "Jour",
+      "funnel": "De la vue au pourboire",
+      "funnelHint": "Les personnes qui ont regardé, puis aimé, puis laissé un pourboire en une semaine.",
+      "funnelEmpty": "L’entonnoir apparaît dès qu’au moins {min} personnes passent d’une vue à une mention J’aime.",
+      "kinds": {
+        "view": "A regardé",
+        "like": "A aimé",
+        "save": "A enregistré",
+        "share": "A partagé",
+        "tip": "A laissé un pourboire",
+        "unlock": "A débloqué"
+      },
+      "top": "Vidéos qui ont suscité le plus d’engagement",
+      "topEmpty": "Une vidéo s’affiche ici dès qu’au moins {min} personnes l’ont aimée, enregistrée, partagée ou récompensée d’un pourboire.",
+      "topLine": "{viewers} personnes · {views} vues",
+      "cohorts": "Qui revient",
+      "cohortsHint": "Les personnes regroupées selon la semaine où elles vous ont regardé pour la première fois, et la part qui regarde encore chaque semaine suivante.",
+      "weekN": "Semaine {n}",
+      "weeksAfter": "Semaines après",
+      "firstWeek": "Première semaine",
+      "smallTitle": "Votre public est encore trop petit pour être affiché",
+      "smallBody": "Les chiffres apparaissent dès qu’au moins {min} personnes ont regardé vos vidéos pendant la période — pour que personne ne puisse être identifié."
+    }
+  },
+  "meta": {
+    "collection": "Collection",
+    "collectionTitle": "{title} — une collection de @{owner}",
+    "collectionDescription": "Une collection de vidéos réunies par @{owner} sur Orochia.",
+    "creator": "Créateur",
+    "creatorDescription": "{name} — créateur indépendant sur Orochia, {count} vidéos.",
+    "creatorOg": "{name} sur Orochia"
+  },
+  "seo": {
+    "title": "Orochia — la plateforme vidéo des créateurs indépendants",
+    "ogTitle": "Orochia — la plateforme qui appartient aux créateurs indépendants",
+    "siteDescription": "Orochia est une plateforme vidéo à code source ouvert, ouverte aux adultes, pour les créateurs indépendants : diffusion HLS en HD par liens signés, abonnés, contacts, publics invités et collections, pourboires et déblocages payants confirmés par la passerelle de paiement, et vérification des créateurs selon l’article 2257 du titre 18 du U.S. Code.",
+    "appDescription": "Orochia est une plateforme vidéo à code source ouvert pour les créateurs indépendants : diffusion HLS en HD par liens signés, abonnés, collections, pourboires et déblocages payants confirmés par la passerelle de paiement.",
+    "videoDescription": "{title} — une vidéo de {creator} sur Orochia.",
+    "keywords": "plateforme vidéo pour créateurs, créateurs indépendants, plateforme vidéo à code source ouvert, plateforme pour créateurs ouverte aux adultes, diffusion HLS, monétisation pour créateurs, pourboires et déblocages payants, conformité 2257, Bunny Stream",
+    "ogImageAlt": "Orochia — la plateforme vidéo qui appartient aux créateurs indépendants",
+    "ogImageTagline": "La plateforme vidéo qui appartient aux créateurs indépendants.",
+    "ogImagePoints": "Flux HD signés, Paiements confirmés par la passerelle, Créateurs indépendants",
+    "ogImageFooter": "orochia.com · par Krizaka · 18+"
+  },
+  "drafts": {
+    "stillSaving": "Ce brouillon est encore en cours d’enregistrement. Réessayez dans un instant."
+  }
+}

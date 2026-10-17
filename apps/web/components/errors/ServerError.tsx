@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useTransition } from "react";
 
 import { Button, buttonVariants } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 import { ErrorReference } from "./ErrorReference";
 import { supportHref } from "./links";
@@ -17,6 +17,7 @@ import { PageState } from "./PageState";
  * the error reference to give them. `scope` words the explore page's own boundary.
  */
 export function ServerError({ digest, retry, scope = "page", as }: { digest?: string; retry: () => void; scope?: "page" | "explore"; as?: "section" | "main" }) {
+  const { t } = useI18n();
   const [pending, startTransition] = useTransition();
   return (
     <PageState

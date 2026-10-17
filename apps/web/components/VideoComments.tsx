@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Rich } from "@/components/Rich";
 import { Avatar, Button, cn, Textarea } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor } from "@/lib/presets";
 
 interface Comment {
@@ -25,6 +25,7 @@ interface Comment {
 const COMMENT_MAX_LENGTH = 2000;
 
 function Composer({ onSubmit, placeholder, autoFocus }: { onSubmit: (body: string) => Promise<boolean>; placeholder: string; autoFocus?: boolean }) {
+  const { t } = useI18n();
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
   return (
@@ -70,6 +71,7 @@ export function VideoComments({
   commentsEnabled: boolean;
   onCountChange: (delta: number) => void;
 }) {
+  const { t, dateShort } = useI18n();
   const { user } = useAuth();
   const [comments, setComments] = useState<Comment[] | null>(null);
   const [enabled, setEnabled] = useState(initiallyEnabled);
@@ -132,7 +134,7 @@ export function VideoComments({
             {c.authorName}
           </Link>{" "}
           <span className="font-mono text-[10px] text-fg-muted">
-            {new Date(c.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+            {dateShort(c.createdAt)}
           </span>
         </p>
         <p className={cn(

@@ -6,7 +6,8 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { AlertDialog, Button, cn, DropdownMenu, EmptyState, IconButton, Skeleton, Textarea, toast } from "@/components/ui";
 import { ConversationKind } from "@/lib/conversation-kinds";
-import { t } from "@/lib/i18n";
+import type { Translator } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { isAiAssisted } from "@/lib/message-origin";
 
 import { dayKey } from "./chat-state";
@@ -18,19 +19,19 @@ import { type ChatMessage, type Conversation, type PresenceView, receiptOf } fro
 
 const MAX_LENGTH = 4000;
 
-function dayLabel(iso: string): string {
+function dayLabel(t: Translator, locale: string, iso: string): string {
   const d = new Date(iso);
   const today = new Date();
   const yesterday = new Date(Date.now() - 86_400_000);
   if (dayKey(iso) === dayKey(today.toISOString())) return t("inbox.today");
   if (dayKey(iso) === dayKey(yesterday.toISOString())) return t("inbox.yesterday");
-  return d.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+  return d.toLocaleDateString(locale, { weekday: "short", month: "short", day: "numeric" });
 }
 
-const time = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
 /** Three dots that breathe (still under reduced motion), and the words for screen readers. */
 function TypingBubble({ name }: { name: string }) {
+  const { t } = useI18n();
   return (
     <div className="flex items-end gap-2" role="status">
       <span className="sr-only">{t("inbox.typingLabel", { name })}</span>
@@ -67,6 +68,7 @@ export interface ThreadProps {
  * line; a message that could not leave stays in place with Retry.
  */
 export function Thread({ conversation, myId, presence, messages, names = {}, state, typing, onBack, onSend, onRetry, onDiscard, onTyping, onLoadOlder, onBlock }: ThreadProps) {
+  const { t, currentLocale, clock } = useI18n();
   const [draft, setDraft] = useState("");
   const [reporting, setReporting] = useState<ChatMessage | null>(null);
   const [confirmBlock, setConfirmBlock] = useState(false);
@@ -107,7 +109,7 @@ export function Thread({ conversation, myId, presence, messages, names = {}, sta
 
   const other = conversation.otherUser;
   const isGroup = conversation.kind === ConversationKind.Group;
-  const status = isGroup ? t("inbox.group.membersCount", { count: conversation.memberCount }) : presenceLabel(presence);
+  const status = isGroup ? t("inbox.group.membersCount", { count: conversation.memberCount }) : presenceLabel(t, presence);
   const lastMine = [...messages].reverse().find((m) => m.senderId === myId && !m.local);
 
   const submit = () => {
@@ -202,7 +204,7 @@ export function Thread({ conversation, myId, presence, messages, names = {}, sta
             <ol role="log" aria-label={t("inbox.log", { name: other.displayName })} className="space-y-1.5">
               {messages.map((m, i) => {
                 const mine = m.senderId === myId;
-                const separator = i === 0 || dayKey(messages[i - 1].createdAt) !== dayKey(m.createdAt) ? dayLabel(m.createdAt) : null;
+                const separator = i === 0 || dayKey(messages[i - 1].createdAt) !== dayKey(m.createdAt) ? dayLabel(t, currentLocale(), m.createdAt) : null;
                 const receipt = receiptOf(m);
                 return (
                   <li key={m.clientId ?? m.id}>
@@ -242,7 +244,7 @@ export function Thread({ conversation, myId, presence, messages, names = {}, sta
                         {isAiAssisted(m.origin) && <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-wider opacity-75">{t("inbox.aiAssisted")}</p>}
                         <p className="whitespace-pre-wrap wrap-break-word">{m.content}</p>
                         <p className={cn("mt-0.5 text-right text-[10px]", mine ? "text-on-accent/80" : "text-fg-muted")}>
-                          <time dateTime={m.createdAt}>{time(m.createdAt)}</time>
+                          <time dateTime={m.createdAt}>{clock(m.createdAt)}</time>
                         </p>
                       </div>
                     </div>

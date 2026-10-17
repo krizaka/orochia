@@ -5,8 +5,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 import { Avatar, Button, Chip, Dialog, EmptyState, Select, Sheet, Skeleton, Tabs, toast } from "@/components/ui";
-import { t } from "@/lib/i18n";
-import { money } from "@/lib/money";
+import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor } from "@/lib/presets";
 
 import { STORY_AUDIENCE_CHOICES, type StoryAudienceId, type StoryItem } from "./types";
@@ -28,6 +27,7 @@ interface Insights {
 }
 
 function PersonRow({ person, children }: { person: Person; children?: React.ReactNode }) {
+  const { t } = useI18n();
   const inner = (
     <>
       <Avatar src={person.avatarUrl} defaultAvatar={{ brand: "orochia", seed: person.displayName }} fallbackSrc={defaultAvatarFor(person.displayName)} alt="" fallback={(person.displayName || "?").charAt(0)} className="h-9 w-9 shrink-0 rounded-xl" />
@@ -63,6 +63,7 @@ export function StoryInsights({
   story: StoryItem;
   onAudienceChanged: (audience: StoryAudienceId, listName: string | null) => void;
 }) {
+  const { t, money } = useI18n();
   const [data, setData] = useState<Insights | null>(null);
   const [failed, setFailed] = useState(false);
   const [tab, setTab] = useState("viewers");

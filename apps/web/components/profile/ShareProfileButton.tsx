@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
 import { Check, Share2 } from "lucide-react";
-import { t } from "@/lib/i18n";
+import React, { useState } from "react";
+
 import { Button } from "@/components/ui";
+import { useI18n } from "@/lib/i18n-client";
 
 /** Shares a profile: the phone's share sheet when there is one, otherwise the link is copied. */
 export function ShareProfileButton({ username, displayName }: { username: string; displayName: string }) {
+  const { t } = useI18n();
   const [copied, setCopied] = useState(false);
   const share = async () => {
     const url = `${window.location.origin}/@${username}`;

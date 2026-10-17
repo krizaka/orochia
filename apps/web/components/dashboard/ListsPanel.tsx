@@ -4,7 +4,7 @@ import { ChevronDown, Plus, Trash2, UserPlus, X } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 
 import { Button, cn, ConfirmButton, EmptyState, IconButton, Input, undoToast } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 interface List {
   id: string;
@@ -21,6 +21,7 @@ interface Member {
 const field = "h-auto rounded-2xl bg-surface-2/80 px-4 py-3";
 
 function Members({ list, onChange }: { list: List; onChange: () => void }) {
+  const { t } = useI18n();
   const [members, setMembers] = useState<Member[] | null>(null);
   const [username, setUsername] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -98,6 +99,7 @@ function Members({ list, onChange }: { list: List; onChange: () => void }) {
  * invited-only videos and collections. Changing a list changes who opens everything it is attached to.
  */
 export function ListsPanel() {
+  const { t } = useI18n();
   const [lists, setLists] = useState<List[] | null>(null);
   const [name, setName] = useState("");
   const [open, setOpen] = useState<string | null>(null);
@@ -125,7 +127,7 @@ export function ListsPanel() {
   const [leaving, setLeaving] = useState<ReadonlySet<string>>(new Set());
   const remove = (list: List) => {
     setLeaving((s) => new Set(s).add(list.id));
-    undoToast(t("lists.deleted", { name: list.name }), {
+    undoToast(t, t("lists.deleted", { name: list.name }), {
       onUndo: () => setLeaving((s) => { const next = new Set(s); next.delete(list.id); return next; }),
       onCommit: () => void fetch(`/api/me/lists/${list.id}`, { method: "DELETE" }).finally(load),
     });

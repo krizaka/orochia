@@ -1,16 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
 import { CheckCheck, Settings } from "lucide-react";
-import { Button, buttonVariants, EmptyState, Loader } from "@/components/ui";
-import { useAuth } from "@/lib/auth-context";
+import Link from "next/link";
+import React, { useState } from "react";
+
 import { NotificationRow } from "@/components/notifications/NotificationRow";
 import { type NotificationItem, useNotifications } from "@/components/notifications/useNotifications";
-import { t } from "@/lib/i18n";
+import { Button, buttonVariants, EmptyState, Loader } from "@/components/ui";
+import { useAuth } from "@/lib/auth-context";
+import { useI18n } from "@/lib/i18n-client";
 
 /** Every notification of the account, newest first, live; older ones on demand. */
 export default function NotificationsPage() {
+  const { t } = useI18n();
   const { user } = useAuth();
   const { items, unread, loaded, markRead } = useNotifications(Boolean(user));
   const [older, setOlder] = useState<NotificationItem[]>([]);

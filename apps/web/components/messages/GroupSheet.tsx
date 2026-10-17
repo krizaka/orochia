@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { AlertDialog, Avatar, Badge, Button, Checkbox, cn, Dialog, IconButton, Input, Sheet, Spinner, Switch, toast } from "@/components/ui";
 import { responseErrorMessage } from "@/lib/api-errors";
 import { MemberRole } from "@/lib/conversation-kinds";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor } from "@/lib/presets";
 
 interface Member {
@@ -39,6 +39,7 @@ const MUTE_HOURS = 8;
  * list on the `conversation_changed` event.
  */
 export function GroupSheet({ conversationId, myId, onLeft }: { conversationId: string; myId: string; onLeft: () => void }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [info, setInfo] = useState<GroupInfo | null>(null);
   const [title, setTitle] = useState("");
@@ -51,7 +52,7 @@ export function GroupSheet({ conversationId, myId, onLeft }: { conversationId: s
 
   const load = async () => {
     const res = await fetch(`/api/groups/${conversationId}`, { cache: "no-store" }).catch(() => null);
-    if (!res?.ok) return setError(res ? await responseErrorMessage(res, t("inbox.group.loadFailed")) : t("inbox.network"));
+    if (!res?.ok) return setError(res ? await responseErrorMessage(t, res, t("inbox.group.loadFailed")) : t("inbox.network"));
     const group = ((await res.json()) as { group: GroupInfo }).group;
     setInfo(group);
     setTitle(group.title ?? "");
@@ -63,7 +64,7 @@ export function GroupSheet({ conversationId, myId, onLeft }: { conversationId: s
     const res = await fetch(path, init).catch(() => null);
     setBusy(false);
     if (!res?.ok) {
-      setError(res ? await responseErrorMessage(res, t("inbox.group.actionFailed")) : t("inbox.network"));
+      setError(res ? await responseErrorMessage(t, res, t("inbox.group.actionFailed")) : t("inbox.network"));
       return false;
     }
     await done?.();
@@ -237,7 +238,7 @@ export function GroupSheet({ conversationId, myId, onLeft }: { conversationId: s
                               setBusy(true);
                               const res = await fetch(`/api/groups/${conversationId}/invites`, { method: "POST" }).catch(() => null);
                               setBusy(false);
-                              if (!res?.ok) return setError(res ? await responseErrorMessage(res, t("inbox.group.actionFailed")) : t("inbox.network"));
+                              if (!res?.ok) return setError(res ? await responseErrorMessage(t, res, t("inbox.group.actionFailed")) : t("inbox.network"));
                               setLink(`${window.location.origin}/messages/join/${((await res.json()) as { token: string }).token}`);
                             }}
                           >

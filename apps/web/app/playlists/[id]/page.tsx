@@ -11,16 +11,18 @@ import { Rich } from "@/components/Rich";
 import { VideoGrid } from "@/components/VideoGrid";
 import { getCurrentUser } from "@/lib/auth";
 import { HttpError } from "@/lib/http";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { playlistWithItems } from "@/lib/playlists";
 import { NOINDEX } from "@/lib/seo";
+import { pageAlternates } from "@/lib/seo-i18n";
 
 export const dynamic = "force-dynamic";
 
 /** Only public collections are indexed; the others answer with a neutral, noindex title. */
 export async function generateMetadata(props: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { t } = await getI18n();
   const { id } = await props.params;
-  if (!/^[0-9a-f-]{36}$/i.test(id)) return { title: "Collection", robots: NOINDEX };
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return { title: t("meta.collection"), robots: NOINDEX };
   const [row] = await db
     .select({ title: playlists.title, description: playlists.description, visibility: playlists.visibility, owner: users.username })
     .from(playlists)
@@ -28,16 +30,17 @@ export async function generateMetadata(props: { params: Promise<{ id: string }> 
     .where(eq(playlists.id, id))
     .limit(1)
     .catch(() => []);
-  if (!row || row.visibility !== "PUBLIC") return { title: "Collection", robots: NOINDEX };
+  if (!row || row.visibility !== "PUBLIC") return { title: t("meta.collection"), robots: NOINDEX };
   return {
-    title: `${row.title} — a collection by @${row.owner}`,
-    description: row.description ?? `A collection of videos curated by @${row.owner} on Orochia.`,
-    alternates: { canonical: `/playlists/${id}` },
+    title: t("meta.collectionTitle", { title: row.title, owner: row.owner }),
+    description: row.description ?? t("meta.collectionDescription", { owner: row.owner }),
+    alternates: await pageAlternates(`/playlists/${id}`),
   };
 }
 
 /** A collection, for the viewers its permission admits (others get a 404). Each play is still access-checked. */
 export default async function PlaylistPage(props: { params: Promise<{ id: string }> }) {
+  const { t } = await getI18n();
   const params = await props.params;
   if (!/^[0-9a-f-]{36}$/i.test(params.id)) notFound();
   const viewer = await getCurrentUser();

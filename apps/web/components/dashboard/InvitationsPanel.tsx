@@ -1,10 +1,11 @@
 "use client";
 
+import { Check, Clock,Copy, Mail, Plus, Sparkles, UserCheck } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
-import { Mail, Copy, Check, Plus, Sparkles, UserCheck, Clock } from "lucide-react";
-import { Badge, Button, Input, Spinner } from "@/components/ui";
-import { t } from "@/lib/i18n";
+
 import { Rich } from "@/components/Rich";
+import { Badge, Button, Input, Spinner } from "@/components/ui";
+import { useI18n } from "@/lib/i18n-client";
 
 interface Invitation {
   id: string;
@@ -17,6 +18,7 @@ interface Invitation {
 }
 
 export function InvitationsPanel() {
+  const { t, date } = useI18n();
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [loading, setLoading] = useState(true);
   const [emailInput, setEmailInput] = useState("");
@@ -202,11 +204,7 @@ export function InvitationsPanel() {
                       )}
                     </td>
                     <td className="py-3 pr-4 text-fg-muted font-mono text-[11px]">
-                      {new Date(inv.createdAt).toLocaleDateString([], {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
+                      {date(inv.createdAt)}
                     </td>
                     <td className="py-3 text-right">
                       <Button

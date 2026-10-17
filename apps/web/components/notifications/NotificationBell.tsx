@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 
 import { Button, buttonVariants, cn, IconButton, Popover, Skeleton } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 import { NotificationRow } from "./NotificationRow";
 import { showNotificationToast } from "./NotificationToast";
@@ -18,6 +18,7 @@ import { useNotifications } from "./useNotifications";
  * link to /notifications (a page, so its address can be shared and reloaded).
  */
 export function NotificationBell() {
+  const { t } = useI18n();
   const pathname = usePathname();
   const { items, unread, loaded, markRead } = useNotifications(true, {
     // What just happened, as it happens: a toast for each notification that arrives while the page is open — except a

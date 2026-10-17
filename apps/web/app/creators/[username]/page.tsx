@@ -1,42 +1,46 @@
-import React from "react";
-import { notFound } from "next/navigation";
-import { Users, Eye, Film } from "lucide-react";
-import { creatorByUsername, creatorVideos } from "@/lib/queries";
-import { visiblePlaylists } from "@/lib/playlists";
-import { getCurrentUser } from "@/lib/auth";
-import { RelationshipActions } from "@/components/RelationshipActions";
-import { JsonLd } from "@/components/JsonLd";
-import { profileSchema } from "@/lib/seo";
-import { CreatorProfileClient } from "@/components/CreatorProfileClient";
+import { Eye, Film,Users } from "lucide-react";
 import Link from "next/link";
-import { ProfileHero } from "@/components/profile/ProfileHero";
-import { ProfileStories } from "@/components/stories/ProfileStories";
-import { TipCreatorButton } from "@/components/profile/TipCreatorButton";
-import { ShareProfileButton } from "@/components/profile/ShareProfileButton";
+import { notFound } from "next/navigation";
+import React from "react";
+
 import { StartChallengeButton } from "@/components/challenges/StartChallengeButton";
+import { CreatorProfileClient } from "@/components/CreatorProfileClient";
+import { JsonLd } from "@/components/JsonLd";
+import { ProfileHero } from "@/components/profile/ProfileHero";
+import { ShareProfileButton } from "@/components/profile/ShareProfileButton";
+import { TipCreatorButton } from "@/components/profile/TipCreatorButton";
+import { RelationshipActions } from "@/components/RelationshipActions";
+import { ProfileStories } from "@/components/stories/ProfileStories";
+import { getCurrentUser } from "@/lib/auth";
 import { creatorSpaceCta, viewerStateOf } from "@/lib/creator-journey";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
+import { visiblePlaylists } from "@/lib/playlists";
+import { creatorByUsername, creatorVideos } from "@/lib/queries";
+import { profileSchema } from "@/lib/seo";
+import { pageAlternates } from "@/lib/seo-i18n";
 import { reconcileVideos } from "@/lib/video-reconcile";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(props: { params: Promise<{ username: string }> }) {
+  const { t } = await getI18n();
   const params = await props.params;
   const creator = await creatorByUsername(params.username.toLowerCase()).catch(() => null);
-  if (!creator) return { title: "Creator" };
-  const description = (creator.bio ?? `${creator.displayName} — independent creator on Orochia, ${creator.videosCount} videos.`).slice(0, 300);
+  if (!creator) return { title: t("meta.creator") };
+  const description = (creator.bio ?? t("meta.creatorDescription", { name: creator.displayName, count: creator.videosCount })).slice(0, 300);
   const images = creator.avatarUrl ? [{ url: creator.avatarUrl, alt: creator.displayName }] : undefined;
   return {
     title: `${creator.displayName} (@${creator.username})`,
     description,
-    alternates: { canonical: `/@${creator.username}` },
-    openGraph: { type: "profile", url: `/@${creator.username}`, title: `${creator.displayName} on Orochia`, description, images },
-    twitter: { card: "summary", title: `${creator.displayName} on Orochia`, description },
+    alternates: await pageAlternates(`/@${creator.username}`),
+    openGraph: { type: "profile", url: `/@${creator.username}`, title: t("meta.creatorOg", { name: creator.displayName }), description, images },
+    twitter: { card: "summary", title: t("meta.creatorOg", { name: creator.displayName }), description },
   };
 }
 
 /** A creator's public luxury page: identity, figures, tiers, goal and published videos */
 export default async function CreatorPage(props: { params: Promise<{ username: string }> }) {
+  const { t, number } = await getI18n();
   const params = await props.params;
   const creator = await creatorByUsername(params.username.toLowerCase());
   if (!creator) notFound();
@@ -78,7 +82,7 @@ export default async function CreatorPage(props: { params: Promise<{ username: s
           roleLabel={creator.isCreator ? t("profile.creator") : undefined}
           bio={creator.bio}
           links={links}
-          stats={stats.map((s) => ({ label: s.label, value: s.value.toLocaleString("en-US") }))}
+          stats={stats.map((s) => ({ label: s.label, value: number(s.value) }))}
           actions={
             <>
               {viewer?.id === creator.id ? (

@@ -4,7 +4,8 @@ import { Gavel } from "lucide-react";
 import React, { useState } from "react";
 
 import { Button, cn, Dialog, Input, Select, Sheet, Textarea } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import type { Translator } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import type { VideoVisibility } from "@/lib/visibility";
 import { CHOOSABLE_VISIBILITIES } from "@/lib/visibility";
 
@@ -20,7 +21,7 @@ export interface EditableVideo {
   minTipAmountCents: number;
 }
 
-const visibilityLabel = (v: VideoVisibility) => t(`publish.audiences.${v}.title`);
+const visibilityLabel = (t: Translator, v: VideoVisibility) => t(`publish.audiences.${v}.title`);
 const field = "mt-1 w-full rounded-xl border border-border-default bg-surface-2 px-3 py-2.5 text-sm text-fg focus:border-accent focus:outline-hidden";
 const label = "block text-xs font-semibold text-fg-secondary";
 
@@ -29,6 +30,7 @@ const label = "block text-xs font-semibold text-fg-secondary";
  * at it (the dashboard table, the watch page). The server decides who may: the PATCH matches the owner in its query.
  */
 export function VideoEditSheet({ video, onClose, onSaved }: { video: EditableVideo | null; onClose: () => void; onSaved: () => void }) {
+  const { t } = useI18n();
   const [visibility, setVisibility] = useState<VideoVisibility>(video?.visibility ?? "PUBLIC");
   const [seen, setSeen] = useState<string | null>(video?.id ?? null);
   if ((video?.id ?? null) !== seen) {
@@ -95,7 +97,7 @@ export function VideoEditSheet({ video, onClose, onSaved }: { video: EditableVid
                       </span>
                     ) : (
                       <Select name="visibility" value={visibility} onChange={(e) => setVisibility(e.target.value as VideoVisibility)} className="mt-1 rounded-xl">
-                        {CHOOSABLE_VISIBILITIES.map((value) => <option key={value} value={value}>{visibilityLabel(value)}</option>)}
+                        {CHOOSABLE_VISIBILITIES.map((value) => <option key={value} value={value}>{visibilityLabel(t, value)}</option>)}
                       </Select>
                     )}
                   </label>

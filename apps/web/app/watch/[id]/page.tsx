@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
-import { videoDetails } from "@/lib/queries";
+
 import { JsonLd } from "@/components/JsonLd";
-import { NOINDEX, absolute, videoSchema } from "@/lib/seo";
+import { getI18n } from "@/lib/i18n-server";
+import { videoDetails } from "@/lib/queries";
+import { absolute, NOINDEX, videoSchema } from "@/lib/seo";
+import { pageAlternates } from "@/lib/seo-i18n";
+
 import WatchClient from "./WatchClient";
-import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +20,7 @@ async function listedVideo(id: string) {
 }
 
 export async function generateMetadata(props: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { t } = await getI18n();
   const { id } = await props.params;
   const video = await listedVideo(id);
   if (!video) return { title: t("watch.metaTitle"), robots: NOINDEX };
@@ -26,7 +30,7 @@ export async function generateMetadata(props: { params: Promise<{ id: string }> 
   return {
     title: `${video.title} · ${video.creatorName}`,
     description,
-    alternates: { canonical: `/watch/${video.id}` },
+    alternates: await pageAlternates(`/watch/${video.id}`),
     openGraph: { type: "video.other", url: absolute(`/watch/${video.id}`), title: video.title, description, images },
     twitter: { card: "summary_large_image", title: video.title, description, images: images?.map((i) => i.url) },
   };
@@ -34,11 +38,12 @@ export async function generateMetadata(props: { params: Promise<{ id: string }> 
 
 /** The watch page: metadata and VideoObject on the server, the player and its access checks on the client. */
 export default async function WatchPage(props: { params: Promise<{ id: string }> }) {
+  const { t } = await getI18n();
   const { id } = await props.params;
   const video = await listedVideo(id);
   return (
     <>
-      {video && <JsonLd data={videoSchema(video)} />}
+      {video && <JsonLd data={videoSchema(video, t)} />}
       <WatchClient />
     </>
   );

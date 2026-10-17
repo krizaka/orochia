@@ -21,7 +21,11 @@
       "error": "Failed"
     },
     "pauseBand": "Pause the band",
-    "playBand": "Play the band"
+    "playBand": "Play the band",
+    "language": {
+      "switchTo": "Switch to French",
+      "target": "Français"
+    }
   },
   "stories": {
     "add": "Add story",
@@ -1103,7 +1107,8 @@
     "storageAlert": {
       "subject": "Platform storage at {percent}%",
       "body": "Orochia's video storage is at {percent}% ({used} of {limit}). New uploads are refused at 100%: raise ABUSE_QUOTA_PLATFORM_GB or free space."
-    }
+    },
+    "someone": "Someone"
   },
   "notifications": {
     "title": "Notifications",
@@ -3233,5 +3238,28 @@
       "smallTitle": "Your audience is still too small to show",
       "smallBody": "Figures appear once at least {min} people have watched your videos in the period — so no one can be singled out."
     }
+  },
+  "meta": {
+    "collection": "Collection",
+    "collectionTitle": "{title} — a collection by @{owner}",
+    "collectionDescription": "A collection of videos curated by @{owner} on Orochia.",
+    "creator": "Creator",
+    "creatorDescription": "{name} — independent creator on Orochia, {count} videos.",
+    "creatorOg": "{name} on Orochia"
+  },
+  "seo": {
+    "title": "Orochia — Video Platform for Independent Creators",
+    "ogTitle": "Orochia — the platform independent creators own",
+    "siteDescription": "Orochia is an open-source, adult-friendly video platform for independent creators: HD HLS streaming with signed links, followers, contacts, invited audiences and collections, tips and paid unlocks confirmed by the payment gateway, and 18 U.S.C. § 2257 creator verification.",
+    "appDescription": "Orochia is an open-source video platform for independent creators: HD HLS streaming with signed links, followers, collections, tips and paid unlocks confirmed by the payment gateway.",
+    "videoDescription": "{title} — a video by {creator} on Orochia.",
+    "keywords": "creator video platform, independent creators, open-source video platform, adult-friendly creator platform, HLS streaming, creator monetization, tips and paid unlocks, 2257 compliance, Bunny Stream",
+    "ogImageAlt": "Orochia — the video platform independent creators own",
+    "ogImageTagline": "The video platform independent creators own.",
+    "ogImagePoints": "Signed HD streams, Gateway-confirmed payments, Independent creators",
+    "ogImageFooter": "orochia.com · by Krizaka · 18+"
+  },
+  "drafts": {
+    "stillSaving": "This draft is still being saved. Try again in a moment."
   }
 }

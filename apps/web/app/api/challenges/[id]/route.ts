@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { getCurrentUser } from "@/lib/auth";
 import { challengeIdOr404, challengeView } from "@/lib/challenges";
 import { errorResponse, jsonError } from "@/lib/http";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 
 export const dynamic = "force-dynamic";
 
 /** A challenge as the viewer sees it: progress, deadlines, backers (aliases), applications and what the viewer may do. */
 export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const { t } = await getI18n();
   try {
     const id = challengeIdOr404((await props.params).id);
     const user = await getCurrentUser();

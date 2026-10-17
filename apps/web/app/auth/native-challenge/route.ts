@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { publicChallenge } from "@/lib/abuse/turnstile";
-import { t } from "@/lib/i18n";
+import { toolsFor } from "@/lib/i18n";
+import { localeOf } from "@/lib/locales";
 
 export const dynamic = "force-dynamic";
 
@@ -15,11 +16,12 @@ const scriptJson = (value: unknown) => JSON.stringify(value).replace(/</g, "\\u0
  * is configured, `interactive` while Cloudflare asks the person something (the app makes room for it).
  */
 export function GET(req: NextRequest) {
+  const { t, locale } = toolsFor(localeOf(req.headers));
   const challenge = publicChallenge();
   const theme = req.nextUrl.searchParams.get("theme") === "light" ? "light" : "dark";
   const config = challenge ? { siteKey: challenge.siteKey, theme, action: "signup" } : null;
   const html = `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="${locale}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${t("auth.register.challenge")}</title>
 <style>html,body{margin:0;background:transparent}body{display:flex;justify-content:center;padding:4px}</style>
 <script>

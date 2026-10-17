@@ -5,8 +5,7 @@ import React from "react";
 
 import { cn, MoneyTicker, Progress, StatusBadge } from "@/components/ui";
 import type { ChallengeCardView } from "@/lib/challenges";
-import { t } from "@/lib/i18n";
-import { money } from "@/lib/money";
+import { useI18n } from "@/lib/i18n-client";
 
 export const KIND_ICONS = {
   GOAL: Target,
@@ -16,6 +15,7 @@ export const KIND_ICONS = {
 
 /** A challenge's stage as a `StatusBadge`: pulsing (`active`) while it moves (taking pledges, waiting, in progress), still once it is final. */
 export function ChallengeStageBadge({ stage, className }: { stage: ChallengeCardView["stage"]; className?: string }) {
+  const { t } = useI18n();
   const tone =
     stage === "GOAL_REACHED" || stage === "DELIVERED"
       ? "success"
@@ -43,6 +43,7 @@ export function ChallengeMeter({
   size?: "sm" | "md" | "lg";
   pulse?: number;
 }) {
+  const { t, money } = useI18n();
   const ratio = c.progress === null ? Math.min(1, c.pledgedCents / 100_00) : Math.min(1, c.progress);
   const Icon = c.kind === "GOAL" ? Target : c.kind === "REQUEST" ? Flame : Gavel;
   const valueText =

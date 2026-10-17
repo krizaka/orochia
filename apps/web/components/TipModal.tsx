@@ -5,8 +5,8 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 import { Button, cn, Dialog, RadioGroup, Sheet } from "@/components/ui";
-import { t } from "@/lib/i18n";
-import { amountChoices, money } from "@/lib/money";
+import { useI18n } from "@/lib/i18n-client";
+import { amountChoices } from "@/lib/money";
 
 type Gateway = "CREDITS" | "CCBILL" | "SEGPAY" | "CRYPTO" | "STRIPE";
 /** The ways to pay, in display order (only those the deployment offers are shown). */
@@ -38,6 +38,7 @@ export function TipModal({
   minTipAmountCents,
   onUnlockedSuccess,
 }: TipModalProps) {
+  const { t, money } = useI18n();
   // The amounts offered start at the creator's price (an $8 unlock offers $8 first, selected), then the usual steps.
   const presets = amountChoices(minTipAmountCents);
   const [selectedAmount, setSelectedAmount] = useState<number>(minTipAmountCents > 100 ? minTipAmountCents : storyId ? 500 : 1000);

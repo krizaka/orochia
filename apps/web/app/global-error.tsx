@@ -6,7 +6,7 @@ import Link from "next/link";
 
 import { ServerError } from "@/components/errors/ServerError";
 import { cn, OrochiaLogo, ThemeProvider, ThemeScript } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 import { jakarta, outfit } from "./fonts";
 
@@ -15,6 +15,7 @@ import { jakarta, outfit } from "./fonts";
  * theme (`kz-theme`, applied before paint), the brand in a bar that leads home, and the falcon's page.
  */
 export default function GlobalError({ error, retry }: { error: Error & { digest?: string }; retry: () => void }) {
+  const { t } = useI18n();
   return (
     <html lang="en" suppressHydrationWarning className={cn(outfit.variable, jakarta.variable)}>
       <head>

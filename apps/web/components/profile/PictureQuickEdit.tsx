@@ -4,7 +4,7 @@ import { Camera, ImagePlus, Palette, Trash2 } from "lucide-react";
 import React, { useRef, useState } from "react";
 
 import { cn, Dialog, DropdownMenu, Sheet, Spinner } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import type { PresetAsset as Preset } from "@/lib/presets";
 
 import { PresetPicker } from "./PresetPicker";
@@ -34,6 +34,7 @@ export function PictureQuickEdit({
   onChanged: (url: string | null) => void;
   className?: string;
 }) {
+  const { t } = useI18n();
   const isAvatar = kind === "avatar";
   const input = useRef<HTMLInputElement>(null);
   const [choosing, setChoosing] = useState(false);

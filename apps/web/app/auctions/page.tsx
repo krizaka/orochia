@@ -1,23 +1,30 @@
-import React from "react";
-import Link from "next/link";
-import { UrlTabs } from "@/components/UrlTabs";
 import { Gavel, ShieldCheck, Timer, Trophy } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import React from "react";
+
 import { AuctionCard } from "@/components/auctions/AuctionCard";
-import { orochiaButton, buttonVariants, cn } from "@/components/ui";
+import { buttonVariants, cn,orochiaButton } from "@/components/ui";
+import { UrlTabs } from "@/components/UrlTabs";
+import { AUCTION_TABS, type AuctionTab,listAuctions } from "@/lib/auctions";
 import { getCurrentUser } from "@/lib/auth";
-import { AUCTION_TABS, listAuctions, type AuctionTab } from "@/lib/auctions";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
+import { pageAlternates } from "@/lib/seo-i18n";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return {
   title: t("auctions.metaTitle"),
   description: t("auctions.metaDescription"),
-  alternates: { canonical: "/auctions" },
+  alternates: await pageAlternates("/auctions"),
 };
+}
 
 /** Auctions: open (ending soonest first), upcoming, sold, and — signed in — yours as a bidder and as a seller. */
 export default async function AuctionsPage(props: { searchParams: Promise<{ tab?: string }> }) {
+  const { t } = await getI18n();
   const { tab: asked } = await props.searchParams;
   const user = await getCurrentUser();
   const tabs = AUCTION_TABS.filter((id) => (id === "bidding" ? Boolean(user) : id === "selling" ? user?.role === "CREATOR" : true));

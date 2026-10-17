@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse, after } from "next/server";
 import { cancelChallenge } from "@orochia/payments";
+import { after,NextRequest, NextResponse } from "next/server";
+
 import { requireUserWithRole } from "@/lib/auth";
 import { announceReleased, challengeHttpError, challengeIdOr404 } from "@/lib/challenges";
 import { errorResponse, jsonError } from "@/lib/http";
@@ -19,7 +20,7 @@ export async function POST(_req: NextRequest, props: { params: Promise<{ id: str
     after(() => announceReleased(challenge, releasedTo));
     return NextResponse.json({ success: true, status: challenge.status });
   } catch (error) {
-    const known = challengeHttpError(error);
+    const known = await challengeHttpError(error);
     if (known) return jsonError(known.status, known.message, known.extra);
     return errorResponse(error, "challenges/cancel");
   }

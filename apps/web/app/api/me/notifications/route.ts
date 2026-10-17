@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+
 import { requireUserWithRole } from "@/lib/auth";
-import { listNotifications, markNotificationsRead } from "@/lib/notifications";
 import { errorResponse } from "@/lib/http";
+import { getI18n } from "@/lib/i18n-server";
+import { listNotifications, markNotificationsRead } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +13,7 @@ export async function GET(req: NextRequest) {
   try {
     const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
     const before = z.string().datetime().optional().safeParse(req.nextUrl.searchParams.get("before") ?? undefined);
-    return NextResponse.json({ success: true, ...(await listNotifications(user.id, before.success && before.data ? new Date(before.data) : undefined)) });
+    return NextResponse.json({ success: true, ...(await listNotifications(user.id, await getI18n(), before.success && before.data ? new Date(before.data) : undefined)) });
   } catch (error) {
     return errorResponse(error, "me/notifications/get");
   }

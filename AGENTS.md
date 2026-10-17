@@ -382,19 +382,46 @@ orochia/                           npm workspaces
   then `@source` for the workspace packages and a documented `--orochia-*` block (glass, ambient glows) — there is no
   `tailwind.config.js`.
 - Every list has an empty state; every action shows its pending and error states; no `alert()`.
-- **Every user-facing string lives in `apps/web/messages/en.json`** and is read with `t("key", { vars })`
-  (`lib/i18n.ts`, keys typed from the file, `<Rich>` for `<b>` and `{slot}` links; `messages("branch")` for long
-  structured content such as the legal pages). English is the only locale for now; another language adds
-  `messages/<locale>.json` with the same shape. Plain product words ("Dashboard", "Sign in"), never jargon or mixed
-  languages. The engine (`t`, `format`, `<Rich>`) and the gate are [`@krizaka/i18n`](https://www.npmjs.com/package/@krizaka/i18n),
-  shared with every Krizaka app — `lib/i18n.ts` and `components/Rich.tsx` only bind it; a change to them is a PR in
-  `krizaka-ui`. **No exception, enforced**: `npm run check:i18n` (part of `npm run lint`, so of `check` and CI) runs
-  `krizaka-i18n check` (the catalogue: no empty string) and `krizaka-i18n scan`, which parses
-  every page and component and fails on JSX text, user-facing attributes (`placeholder`, `title`, `aria-label`, `alt`,
+- **Every user-facing string lives in `apps/web/messages/en.json` and `fr.json`** (`lib/i18n.ts`, keys typed from
+  `en.json`, `fr.json` typed against it: a key missing from French fails type-checking). English is the reference and
+  the default; **French is a language of design** (Québec's Charter of the French language expects a commercial site
+  that serves Québec to be available in French). Read a string with `const { t } = useI18n()` in a client component
+  (`lib/i18n-client.tsx`, the provider is mounted in the root layout with the catalogue of the active language only)
+  or `const { t } = await getI18n()` in a server component, route or `generateMetadata` (`lib/i18n-server.ts`) — **there
+  is no ambient language and no global `t`**. `useI18n()`/`getI18n()` also give `money`, `compact`, `bytes`, `duration`,
+  `number`, `date`, `dateShort`, `dateTime`, `clock`, `timeAgo` (lib/format.ts, in the reader's Intl locale: `fr-CA`,
+  `en-US`), `messages("branch")` for long structured content (the legal pages) and `t.locale`, which a helper outside a
+  component receives as `t` (`apiErrorMessage(t, …)`). Never `toLocaleString("en-US")`, never `new Date().toLocale…([])`.
+  `<Rich>` renders `<b>` and `{slot}` links.
+- **Which language a request speaks** (`lib/locales.ts`, `proxy.ts`): the language of a `/fr/…` address (the proxy
+  serves it as the page itself, with the `x-locale` header — the English address stays the unprefixed one, `/en/…`
+  also works), else the reader's choice (the family's cookie `NEXT_LOCALE`, written by the language switch and by the
+  proxy), else their browser's `Accept-Language` (`fr`, `fr-CA` → French), else English (crawlers, API clients). Pages
+  are therefore dynamic. `<html lang>`, the canonical and the hreflang pair (`en`, `fr`, `x-default` = English) follow
+  it (`alternatesFor` in `lib/seo-i18n.ts`, a page's `generateMetadata` uses `pageAlternates("/path")`), the sitemap
+  lists both addresses of every page but the documentation (English only for now), and `<LanguageSwitch>` is in the bar.
+  A route handler that has its `Request` reads `localeOf(req.headers)`.
+- **A notification is stored as an event and its variables**, never as text; a variable that is itself words is stored
+  as a key (`i18nVar("notify.newFollower.asks")`) and an amount as cents (`moneyVar(1250)`), said in the language of
+  whoever reads it (`lib/notification-vars.ts`).
+- **French is Québec French, « vous »** — the family's words: *courriel* (never e-mail), *téléverser* (never upload),
+  *mot-clic*, *abonné* / *s'abonner* (follower), *pourboire* (tip), *portefeuille*, *crédits*, *défi* with its three
+  kinds *objectif* (goal), *demande* (dare) and *appel ouvert* (open call), *contribution* / *contributeur* (pledge /
+  backer), *enchère* / *mise*, *déblocage* (unlock), *versement* (payout), *story* and *Shorts* kept, *vidéo*. Quotation
+  marks and colons carry a no-break space; `18+` stays `18+`. `tests/`-level guards live in `lib/i18n.test.ts` (catalogue
+  parity, no English word left, the vocabulary above, « vous »). The legal texts are a faithful translation to be
+  reviewed by counsel before they are relied on.
+- Plain product words ("Dashboard", "Sign in"), never jargon or mixed languages. The engine (`t`, `format`, `<Rich>`) and
+  the gate are [`@krizaka/i18n`](https://www.npmjs.com/package/@krizaka/i18n), shared with every Krizaka app —
+  `lib/i18n.ts` and `components/Rich.tsx` only bind it; a change to them is a PR in `krizaka-ui`. **No exception,
+  enforced**: `npm run check:i18n` (part of `npm run lint`, so of `check` and CI) runs `krizaka-i18n check` (the
+  catalogues: same keys, no empty string, same placeholders and markup) and `krizaka-i18n scan`, which parses every page,
+  component and lib module and fails on JSX text, user-facing attributes (`placeholder`, `title`, `aria-label`, `alt`,
   `label`), messages given to state setters (`setError("…")`), words in data (`{ label: "…" }`) and browser dialogs.
   Data modules keep structure (ids, icons, order) and read their words by id (``t(`collectionAudience.${id}.label`)``).
   A string that is not shown (protocol metadata) carries `// i18n-ignore: <why>`. Destructive actions confirm with
-  a second tap (`ConfirmButton`), never `window.confirm`.
+  a second tap (`ConfirmButton`), never `window.confirm`. A test renders a component in a language with
+  `lib/i18n-test-utils.tsx` (`htmlIn`, `serverHtmlIn`).
 - Both themes are first-class, **through tokens**: surfaces, text, borders and accents use the roles of
   `@krizaka/tailwind` (`bg-surface-1`, `text-fg-secondary`, `border-border-default`, `text-accent`, `text-danger`,
   `bg-scrim` on media), which change with the theme. No raw palette colour, no `light:`, no `[var(--…)]`, no template

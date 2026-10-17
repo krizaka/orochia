@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 
 import { Button, cn, Dialog, Input, RadioGroup, Sheet, Textarea } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 export interface ReportModalProps {
   /** The reported video — or, for a story, empty with `storyId` set. */
@@ -25,6 +25,7 @@ const field =
 
 /** Report a video: a reason, details and a contact address; persisted before it is acknowledged (compliance_reports). */
 export function ReportModal({ videoId, storyId, videoTitle, isOpen, onClose }: ReportModalProps) {
+  const { t } = useI18n();
   const { user } = useAuth();
   const [reason, setReason] = useState<Reason | null>(null);
   const [details, setDetails] = useState("");

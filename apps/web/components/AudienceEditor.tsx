@@ -5,7 +5,7 @@ import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 
 import { Button, IconButton, Input, Select } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 interface Person {
   userId: string;
@@ -24,6 +24,7 @@ interface ListCard {
  * `/api/playlists/<id>/members`).
  */
 export function AudienceEditor({ endpoint, onChange }: { endpoint: string; onChange?: () => void }) {
+  const { t } = useI18n();
   const [people, setPeople] = useState<Person[] | null>(null);
   const [attached, setAttached] = useState<ListCard[]>([]);
   const [myLists, setMyLists] = useState<ListCard[]>([]);

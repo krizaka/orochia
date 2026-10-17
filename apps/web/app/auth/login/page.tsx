@@ -1,16 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { ArrowRight, Lock, LogIn, Mail, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { t } from "@/lib/i18n";
-import { SocialSignIn } from "@/components/SocialSignIn";
 import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+
+import { SocialSignIn } from "@/components/SocialSignIn";
+import { Button, Field, Input, OrochiaLogo } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { safeNext, signUpHref } from "@/lib/creator-journey";
-import { LogIn, Lock, Mail, ArrowRight, Sparkles } from "lucide-react";
-import { Button, Field, Input, OrochiaLogo } from "@/components/ui";
+import { useI18n } from "@/lib/i18n-client";
 
 export default function LoginPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const { login, switchProfile, demoMode, signupEnabled, user, isLoading: sessionLoading } = useAuth();
   // ?next= — where to go once signed in; a signed-in person is sent there at once (same-site paths only).

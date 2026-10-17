@@ -4,13 +4,13 @@ import { CheckCircle2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
 import { Button, Chip, Dialog, Input, Sheet } from "@/components/ui";
-import { t } from "@/lib/i18n";
-import { money } from "@/lib/money";
+import { useI18n } from "@/lib/i18n-client";
 
 const MIN = 2000;
 
 /** Withdraw earnings to the saved payout method: amount (quick picks or free), destination, confirmation. */
 export function WithdrawSheet({ open, onClose, availableCents, destinationHint, onDone }: { open: boolean; onClose: () => void; availableCents: number; destinationHint: string; onDone: () => void }) {
+  const { t, money } = useI18n();
   const [amount, setAmount] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);

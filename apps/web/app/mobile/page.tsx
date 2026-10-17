@@ -3,15 +3,20 @@ import React from "react";
 
 import { MobileStepCard } from "@/components/mobile/MobileStepCard";
 import { cn, SectionBackdrop } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { MOBILE_STEPS } from "@/lib/mobile-media";
+import { pageAlternates } from "@/lib/seo-i18n";
 
-export const metadata: Metadata = { title: t("mobile.meta.title"), description: t("mobile.meta.description"), alternates: { canonical: "/mobile" } };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return { title: t("mobile.meta.title"), description: t("mobile.meta.description"), alternates: await pageAlternates("/mobile") };
+}
 
 const container = "mx-auto w-full max-w-7xl px-4 sm:px-6";
 
 /** The four steps of the Orochia app, each explained. */
-export default function MobilePage() {
+export default async function MobilePage() {
+  const { t } = await getI18n();
   return (
     <div className="w-full overflow-x-clip">
       <SectionBackdrop direction="up" dome={false} aria-labelledby="mobile-title">

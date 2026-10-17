@@ -6,13 +6,14 @@ import React from "react";
 
 import { Avatar, Card, Countdown } from "@/components/ui";
 import type { ChallengeCardView } from "@/lib/challenges";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor } from "@/lib/presets";
 
 import { ChallengeMeter, ChallengeStageBadge, KIND_ICONS } from "./ChallengeMeter";
 
 /** A challenge in a list: kind, stage, the pot, the clock and who makes it — the whole card opens it. */
 export function ChallengeCard({ challenge: c, index = 0 }: { challenge: ChallengeCardView; index?: number }) {
+  const { t } = useI18n();
   const KindIcon = KIND_ICONS[c.kind];
   return (
     <Card.Root asChild interactive tone="glass" reveal={index}>
@@ -58,6 +59,7 @@ export function ChallengeCard({ challenge: c, index = 0 }: { challenge: Challeng
 
 /** The clock that matters at this stage: the deadline while it moves, the delivery date while in progress. */
 function ChallengeClock({ c }: { c: ChallengeCardView }) {
+  const { t } = useI18n();
   const ticking = c.stage === "FUNDING" || c.stage === "GOAL_REACHED" || c.stage === "AWAITING_ANSWER" || c.stage === "CASTING";
   if (ticking) {
     const label = c.kind === "REQUEST" ? "challenge.answerIn" : c.kind === "OPEN_CALL" ? "challenge.pickIn" : "challenge.endsIn";

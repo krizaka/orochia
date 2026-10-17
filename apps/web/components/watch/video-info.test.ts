@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import React from "react";
-import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
+import { htmlIn } from "@/lib/i18n-test-utils";
 import { parseAiCredit, shortRunId, withoutCredit } from "@/lib/ai-credit";
 
 import { creditOf, VideoInfo } from "./VideoInfo";
@@ -11,7 +11,7 @@ const read = (rel: string) => readFileSync(new URL(rel, import.meta.url), "utf8"
 const RUN = "6351addc-1f2e-4b7a-9c3d-0123456789ab";
 const AI = `A drone glide.\n\nMade with Orazaka — run ${RUN} (wan2.2-ti2v-5b on NVIDIA H100 80GB HBM3).`;
 const base = { width: 704, height: 1280, framerate: 24, durationSeconds: 5, createdAt: "2026-10-16T12:00:00Z", status: "READY" };
-const html = (description: string | null, status = "READY") => renderToStaticMarkup(React.createElement(VideoInfo, { video: { ...base, status, description } }));
+const html = (description: string | null, status = "READY") => htmlIn("en", React.createElement(VideoInfo, { video: { ...base, status, description } }));
 
 describe("the video information", () => {
   it("quotes the Orazaka credit line, nothing else of the description", () => {

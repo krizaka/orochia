@@ -1,15 +1,20 @@
 import { ExternalIcon, HomeIcon, SearchIcon } from "@krizaka/icons";
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { supportHref } from "@/components/errors/links";
 import { PageState } from "@/components/errors/PageState";
 import { Button, buttonVariants, Input } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 
-export const metadata = { title: t("errorPages.notFoundMetaTitle"), robots: { index: false } };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return { title: t("errorPages.notFoundMetaTitle"), robots: { index: false } };
+}
 
 /** Every address no route matches, and every notFound(): the owl reads — it looked everywhere; search from here. */
-export default function NotFound() {
+export default async function NotFound() {
+  const { t } = await getI18n();
   return (
     <PageState
       bird="owl"

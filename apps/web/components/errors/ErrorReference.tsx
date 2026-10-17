@@ -4,13 +4,14 @@ import { CheckIcon, CopyIcon } from "@krizaka/icons";
 import { useState } from "react";
 
 import { IconButton } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 /**
  * The reference of an error (Next's digest — the same number as in the server's logs), small and copyable: what
  * support asks for, never a raw shout in the corner of the page.
  */
 export function ErrorReference({ digest }: { digest: string }) {
+  const { t } = useI18n();
   const [copied, setCopied] = useState(false);
   const copy = async () => {
     try {

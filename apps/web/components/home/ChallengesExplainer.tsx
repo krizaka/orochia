@@ -1,14 +1,13 @@
 import { ChallengeIcon, GoalIcon, UsersIcon } from "@krizaka/icons";
-import { CHALLENGE_MAX_DELIVERY_DAYS, CHALLENGE_MIN_GOAL_CENTS, CHALLENGE_MIN_OPEN_CALL_CENTS, CHALLENGE_REQUEST_RESPONSE_MS } from "@orochia/payments";
 import { CardGrid } from "@krizaka/ui/card-grid";
 import { LinkCard } from "@krizaka/ui/link-card";
+import { CHALLENGE_MAX_DELIVERY_DAYS, CHALLENGE_MIN_GOAL_CENTS, CHALLENGE_MIN_OPEN_CALL_CENTS, CHALLENGE_REQUEST_RESPONSE_MS } from "@orochia/payments";
 import Link from "next/link";
 import React from "react";
 
 import { Button } from "@/components/ui";
-import { t } from "@/lib/i18n";
-import { challengeStartHref, CHALLENGE_STARTS } from "@/lib/challenge-kinds";
-import { money } from "@/lib/money";
+import { CHALLENGE_STARTS,challengeStartHref } from "@/lib/challenge-kinds";
+import { getI18n } from "@/lib/i18n-server";
 
 const ICONS = { goal: GoalIcon, dare: ChallengeIcon, call: UsersIcon } as const;
 
@@ -17,7 +16,8 @@ const ICONS = { goal: GoalIcon, dare: ChallengeIcon, call: UsersIcon } as const;
  * (packages/payments/src/challenge-rules.ts), the promise that matters — pledges are held until the video is delivered —
  * and the way in. Never a sample challenge.
  */
-export function ChallengesExplainer() {
+export async function ChallengesExplainer() {
+  const { money, t } = await getI18n();
   const vars = {
     goal: money(CHALLENGE_MIN_GOAL_CENTS),
     openCall: money(CHALLENGE_MIN_OPEN_CALL_CENTS),

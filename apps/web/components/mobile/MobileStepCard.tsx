@@ -2,11 +2,12 @@ import React from "react";
 
 import { PhoneClip } from "@/components/mobile/PhoneClip";
 import { cn } from "@/components/ui";
-import { messages, t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { type MobileStep } from "@/lib/mobile-media";
 
 /** One step of the journey: the phone with its recording, then the fan's goal, what the screen does and what to notice. */
-export function MobileStepCard({ id, index }: { id: MobileStep; index: number }) {
+export async function MobileStepCard({ id, index }: { id: MobileStep; index: number }) {
+  const { messages, t } = await getI18n();
   const titleId = `mobile-step-${id}`;
   const notice = messages("mobile").steps[id].notice;
   return (

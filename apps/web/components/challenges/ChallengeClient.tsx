@@ -5,8 +5,7 @@ import Link from "next/link";
 import React from "react";
 
 import { Avatar, buttonVariants, cn, Countdown, orochiaButton, Skeleton, Stepper } from "@/components/ui";
-import { t } from "@/lib/i18n";
-import { money } from "@/lib/money";
+import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor } from "@/lib/presets";
 
 import { ChallengeActions } from "./ChallengeActions";
@@ -23,6 +22,7 @@ const panel = "rounded-2xl border border-border-default bg-surface-1/60 p-5";
  * apply, pick, deliver, withdraw. Once delivered, its backers watch the video or the story from here.
  */
 export function ChallengeClient({ id }: { id: string }) {
+  const { t, money } = useI18n();
   const { challenge: c, loaded, skewMs, pulse, reload } = useChallengeStream(id);
   if (!loaded) return <Skeleton shape="rect" className="mx-auto h-96 max-w-6xl rounded-3xl" />;
   if (!c) {

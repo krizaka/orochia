@@ -3,7 +3,7 @@ import React from "react";
 import { VideoGrid } from "@/components/VideoGrid";
 import { FeedSort } from "@/lib/feed-cursor";
 import { feedSettings } from "@/lib/feed-settings";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { feedPage } from "@/lib/queries";
 import { PREVIEW_SIZE } from "@/lib/visitor-home";
 
@@ -17,6 +17,7 @@ export function PreviewPending() {
  * as for any visitor). Streamed in its own Suspense, so the visitor's hero never waits for the database.
  */
 export async function VisitorPreview() {
+  const { t } = await getI18n();
   const { shortsMaxSeconds } = await feedSettings(new Date()).catch(() => ({ shortsMaxSeconds: undefined }));
   const preview = await feedPage({ sort: FeedSort.ForYou, viewerId: null, limit: PREVIEW_SIZE }, false).catch((error: unknown) => {
     console.error("[home] preview unavailable:", error);

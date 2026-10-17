@@ -9,11 +9,11 @@ import { LedgerTable } from "@/components/me/LedgerTable";
 import { useMeData } from "@/components/me/MeData";
 import { cn, EmptyState, Skeleton } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
-import { t } from "@/lib/i18n";
-import { compact, money } from "@/lib/money";
+import { useI18n } from "@/lib/i18n-client";
 
 /** « Overview »: the figures that matter first, then the latest movements. Everything else is one click away in the sections. */
 export default function MeOverview() {
+  const { t, money, compact } = useI18n();
   const { user } = useAuth();
   const { data, loadError } = useMeData();
   if (!user) return null;

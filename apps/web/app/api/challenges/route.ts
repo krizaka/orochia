@@ -5,7 +5,7 @@ import { z } from "zod";
 import { getCurrentUser, requireUserWithRole } from "@/lib/auth";
 import { CHALLENGE_TABS, challengeHttpError, creatorIdByUsername, listChallenges, notifyCreated,PERSONAL_CHALLENGE_TABS } from "@/lib/challenges";
 import { errorResponse, jsonError } from "@/lib/http";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { enforceRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -40,6 +40,7 @@ const Create = z.discriminatedUnion("kind", [
 
 /** Lists challenges by tab: open, calls (open calls), done (delivered), inbox (yours to answer or deliver), mine, backing. */
 export async function GET(req: NextRequest) {
+  const { t } = await getI18n();
   try {
     const tab = z.enum(CHALLENGE_TABS).catch("open").parse(req.nextUrl.searchParams.get("tab"));
     const user = PERSONAL_CHALLENGE_TABS.includes(tab) ? await getCurrentUser() : null;
@@ -60,6 +61,7 @@ export async function GET(req: NextRequest) {
  * pot is held; creators apply and the author picks one).
  */
 export async function POST(req: NextRequest) {
+  const { t } = await getI18n();
   try {
     const user = await requireUserWithRole(["MEMBER", "CREATOR", "ADMIN"]);
     await enforceRateLimit(`challenge-create:${user.id}`, 20, 60 * 60, t("challenge.errors.TOO_MANY"));
@@ -78,7 +80,7 @@ export async function POST(req: NextRequest) {
     after(() => notifyCreated(challenge));
     return NextResponse.json({ success: true, challengeId: challenge.id, balanceCents }, { status: 201 });
   } catch (error) {
-    const known = challengeHttpError(error);
+    const known = await challengeHttpError(error);
     if (known) return jsonError(known.status, known.message, known.extra);
     return errorResponse(error, "challenges/create");
   }

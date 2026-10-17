@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { UserPlus } from "lucide-react";
-import { useAuth } from "@/lib/auth-context";
-import { Rich } from "@/components/Rich";
-import { t } from "@/lib/i18n";
-import { Avatar, Button, buttonVariants, Checkbox, Field, Input, OrochiaLogo, Spinner } from "@/components/ui";
+import React, { useEffect, useState } from "react";
+
 import { BirthDateField, isAdultBirthDate } from "@/components/BirthDateField";
+import { Rich } from "@/components/Rich";
+import { Avatar, Button, buttonVariants, Checkbox, Field, Input, OrochiaLogo, Spinner } from "@/components/ui";
 import { UsernameField } from "@/components/UsernameField";
+import { useAuth } from "@/lib/auth-context";
+import { useI18n } from "@/lib/i18n-client";
 
 interface Pending {
   provider: "google" | "facebook";
@@ -23,6 +24,7 @@ interface Pending {
 
 /** After a first Google / Facebook sign-in: username, display name, 18+ certification and terms, then the account. */
 export default function CompleteSignUpPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const { refresh } = useAuth();
   const [pending, setPending] = useState<Pending | null | "expired">(null);

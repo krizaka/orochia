@@ -11,16 +11,16 @@ import { RelationshipActions } from "@/components/RelationshipActions";
 import { ReportModal } from "@/components/ReportModal";
 import { SaveToPlaylist } from "@/components/SaveToPlaylist";
 import { TipModal } from "@/components/TipModal";
-import { OwnerBar } from "@/components/watch/OwnerBar";
-import { VideoInfo } from "@/components/watch/VideoInfo";
-import { withoutCredit } from "@/lib/ai-credit";
-import type { VideoVisibility } from "@/lib/visibility";
 import { Avatar, Button, buttonVariants, cn, orochiaButton, Skeleton } from "@/components/ui";
 import { VideoComments } from "@/components/VideoComments";
 import { VideoPlayer } from "@/components/VideoPlayer";
+import { OwnerBar } from "@/components/watch/OwnerBar";
+import { VideoInfo } from "@/components/watch/VideoInfo";
+import { withoutCredit } from "@/lib/ai-credit";
 import { useAuth } from "@/lib/auth-context";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor } from "@/lib/presets";
+import type { VideoVisibility } from "@/lib/visibility";
 
 interface StreamAccess {
   allowed: boolean;
@@ -82,6 +82,7 @@ const useLargeScreen = () => useSyncExternalStore(subscribeLarge, () => window.m
 const formatDuration = (secs: number) => `${Math.floor(secs / 60)}:${String(Math.floor(secs % 60)).padStart(2, "0")}`;
 
 export default function WatchClient() {
+  const { t, date, number } = useI18n();
   const { id: videoId } = useParams<{ id: string }>();
   const searchParams = useSearchParams();
   const paymentState = searchParams.get("payment");
@@ -308,12 +309,12 @@ export default function WatchClient() {
                         className={cn(liked && "border-accent/40 bg-accent/10 text-fg-accent hover:bg-accent/15")}
                       >
                         <Heart className={cn("h-4 w-4", liked && "fill-current")} aria-hidden />
-                        <span>{details.likesCount.toLocaleString("en-US")}</span>
+                        <span>{number(details.likesCount)}</span>
                       </Button>
                     ) : (
                       <Link href={`/auth/login?next=/watch/${videoId}`} aria-label={t("watch.like")} className={buttonVariants({ size: "sm", shape: "rounded" })}>
                         <Heart className="h-4 w-4" />
-                        <span>{details.likesCount.toLocaleString("en-US")}</span>
+                        <span>{number(details.likesCount)}</span>
                       </Link>
                     ))}
                   <SaveToPlaylist videoId={videoId} />
@@ -331,23 +332,23 @@ export default function WatchClient() {
               <div className="mt-3 flex items-center gap-4 text-xs text-fg-secondary font-mono">
                 <span className="flex items-center gap-1">
                   <Eye className="h-3.5 w-3.5 text-fg-muted" />
-                  {t("watch.views", { count: details.viewsCount.toLocaleString("en-US") })}
+                  {t("watch.views", { count: number(details.viewsCount) })}
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1">
                   <MessageSquare className="h-3.5 w-3.5 text-fg-muted" aria-hidden />
-                  <span aria-label={t("watch.comments", { count: details.commentsCount })}>{details.commentsCount.toLocaleString("en-US")}</span>
+                  <span aria-label={t("watch.comments", { count: details.commentsCount })}>{number(details.commentsCount)}</span>
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1">
                   <Share2 className="h-3.5 w-3.5 text-fg-muted" aria-hidden />
-                  <span aria-label={t("watch.shares", { count: details.sharesCount })}>{details.sharesCount.toLocaleString("en-US")}</span>
+                  <span aria-label={t("watch.shares", { count: details.sharesCount })}>{number(details.sharesCount)}</span>
                 </span>
                 <span>•</span>
                 <span>{formatDuration(details.durationSeconds)}</span>
                 <span>•</span>
                 <span>
-                  {new Date(details.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                  {date(details.createdAt)}
                 </span>
               </div>
 

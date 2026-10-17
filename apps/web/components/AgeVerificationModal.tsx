@@ -6,7 +6,7 @@ import React, { useSyncExternalStore } from "react";
 
 import { Rich } from "@/components/Rich";
 import { Button, Dialog, OrochiaLogo } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 const AGE_KEY = "orochia_age_verified";
 const listeners = new Set<() => void>();
@@ -18,6 +18,7 @@ const subscribe = (fn: () => void) => {
 const readVerified = () => localStorage.getItem(AGE_KEY) !== null;
 
 export function AgeVerificationModal() {
+  const { t } = useI18n();
   const verified = useSyncExternalStore(subscribe, readVerified, () => true);
   const isOpen = !verified;
 

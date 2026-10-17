@@ -7,7 +7,8 @@ import React, { useState } from "react";
 import { ProfileStoriesRow, StoryAvatarRing } from "@/components/stories/ProfileStories";
 import { Avatar, Badge, SocialIcon } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
-import { type MessageKey,t } from "@/lib/i18n";
+import { type MessageKey } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor, defaultBannerFor, safeImageSrc } from "@/lib/presets";
 
 import { PictureQuickEdit } from "./PictureQuickEdit";
@@ -48,6 +49,7 @@ export function ProfileHero({
   actions?: React.ReactNode;
   editable?: boolean;
 }) {
+  const { t } = useI18n();
   const router = useRouter();
   const { refresh } = useAuth();
   const [avatar, setAvatar] = useState(avatarUrl);

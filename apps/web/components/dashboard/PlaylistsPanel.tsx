@@ -5,10 +5,10 @@ import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 
 import { Button, cn, ConfirmButton, EmptyState, Input, Select, undoToast } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 import { AudienceEditor } from "../AudienceEditor";
-import { audienceOf, COLLECTION_AUDIENCES, CollectionAudienceBadge, type CollectionVisibility } from "../CollectionAudience";
+import { audienceOf, CollectionAudienceBadge, collectionAudiences, type CollectionVisibility } from "../CollectionAudience";
 
 interface Collection {
   id: string;
@@ -24,6 +24,7 @@ const field = "h-auto rounded-2xl bg-surface-2/80 px-4 py-3";
 
 /** Your collections — create, choose who opens each, invite accounts, delete — and those shared with you. */
 export function PlaylistsPanel() {
+  const { t } = useI18n();
   const [lists, setLists] = useState<Collection[] | null>(null);
   const [shared, setShared] = useState<(Collection & { ownerUsername: string })[] | null>(null);
   const [title, setTitle] = useState("");
@@ -44,7 +45,7 @@ export function PlaylistsPanel() {
   const [leaving, setLeaving] = useState<ReadonlySet<string>>(new Set());
   const removeCollection = (p: Collection) => {
     setLeaving((s) => new Set(s).add(p.id));
-    undoToast(t("playlistsPanel.deleted", { title: p.title }), {
+    undoToast(t, t("playlistsPanel.deleted", { title: p.title }), {
       onUndo: () => setLeaving((s) => { const next = new Set(s); next.delete(p.id); return next; }),
       onCommit: () => void send(`/api/playlists/${p.id}`, "DELETE"),
     });
@@ -72,7 +73,7 @@ export function PlaylistsPanel() {
         <Input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} placeholder={t("playlistsPanel.titlePlaceholder")} className={cn(field, "flex-1")} />
         <span className="sm:w-56">
         <Select value={visibility} onChange={(e) => setVisibility(e.target.value as CollectionVisibility)} aria-label={t("playlistsPanel.whoOpens")} className={cn(field, "pr-9")}>
-          {COLLECTION_AUDIENCES.map((a) => (
+          {collectionAudiences(t).map((a) => (
             <option key={a.value} value={a.value}>
               {a.label}
             </option>
@@ -84,7 +85,7 @@ export function PlaylistsPanel() {
         </Button>
       </form>
       <p className="-mt-3 text-[11px] text-fg-muted">
-        {audienceOf(visibility).hint} {t("playlistsPanel.perVideo")}
+        {audienceOf(t, visibility).hint} {t("playlistsPanel.perVideo")}
       </p>
       {error && <p className="text-xs text-fg-danger">{error}</p>}
 
@@ -111,7 +112,7 @@ export function PlaylistsPanel() {
                     aria-label={t("playlistsPanel.whoOpensNamed", { title: p.title })}
                     className="h-8 rounded-lg pl-2 text-[11px] font-semibold"
                   >
-                    {COLLECTION_AUDIENCES.map((a) => (
+                    {collectionAudiences(t).map((a) => (
                       <option key={a.value} value={a.value}>
                         {a.label}
                       </option>

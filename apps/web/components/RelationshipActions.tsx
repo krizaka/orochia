@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import { Check, Clock, MessageSquare,UserCheck, UserPlus, Users } from "lucide-react";
 import Link from "next/link";
-import { Check, Clock, UserPlus, Users, UserCheck, MessageSquare } from "lucide-react";
-import { t } from "@/lib/i18n";
+import React, { useCallback, useEffect, useState } from "react";
+
 import { Button, buttonVariants, cn, orochiaButton } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
+import { useI18n } from "@/lib/i18n-client";
 
 type Follow = "PENDING" | "APPROVED" | null;
 interface Contact {
@@ -29,6 +30,7 @@ export function RelationshipActions({
   onChange?: () => void;
   size?: "sm" | "md";
 }) {
+  const { t } = useI18n();
   const { user } = useAuth();
   const [follow, setFollow] = useState<Follow>(null);
   const [contact, setContact] = useState<Contact | null>(null);

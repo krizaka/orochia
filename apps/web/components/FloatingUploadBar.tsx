@@ -16,14 +16,14 @@ import Link from "next/link";
 import React, { useEffect, useRef } from "react";
 
 import { IconButton, Progress, progressToast, toast } from "@/components/ui";
-import { t } from "@/lib/i18n";
-import { bytes, duration, speed } from "@/lib/units";
+import type { I18nTools, Translator } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { useUploadManager } from "@/lib/upload-manager";
 
 const STATUS = { uploading: "active", queued: "active", paused: "paused", error: "error", completed: "active" } as const;
 
 /** “About 2 min left”, or nothing while the speed is not known. */
-const etaOf = (seconds: number | null) => {
+const etaOf = (t: Translator, duration: I18nTools["duration"], seconds: number | null) => {
   const left = duration(seconds);
   return left ? t("uploads.eta", { time: left }) : undefined;
 };
@@ -34,6 +34,7 @@ const etaOf = (seconds: number | null) => {
  * opens the dock again.
  */
 export function FloatingUploadBar() {
+  const { t, speed, bytes, duration } = useI18n();
   const {
     uploads,
     isDockMinimized,
@@ -72,11 +73,11 @@ export function FloatingUploadBar() {
     toastId.current = progressToast(t("uploads.running", { count: Math.max(1, activeCount) }), {
       id: toastId.current ?? undefined,
       value: activeCount === 0 ? 1 : totalProgress / 100,
-      description: etaOf(slowest),
+      description: etaOf(t, duration, slowest),
       doneMessage: t("uploads.processing"),
       action: { label: t("uploads.expand"), onClick: () => setIsDockMinimized(false) },
     });
-  }, [tracking, activeCount, failed, totalProgress, slowest, setIsDockMinimized]);
+  }, [tracking, activeCount, failed, totalProgress, slowest, setIsDockMinimized, t, duration]);
 
   if (uploads.length === 0) return null;
 
@@ -199,7 +200,7 @@ export function FloatingUploadBar() {
               size="sm"
               label={item.title}
               status={STATUS[item.status]}
-              eta={item.status === "uploading" ? etaOf(item.timeRemainingSec) : undefined}
+              eta={item.status === "uploading" ? etaOf(t, duration, item.timeRemainingSec) : undefined}
               className="mb-2"
             />
 
@@ -210,7 +211,7 @@ export function FloatingUploadBar() {
                   <>
                     <span className="font-mono font-semibold text-fg-accent">{item.progress}%</span>
                     {speed(item.speedBytesPerSec) && <span> · {speed(item.speedBytesPerSec)}</span>}
-                    {etaOf(item.timeRemainingSec) && <span> · {etaOf(item.timeRemainingSec)}</span>}
+                    {etaOf(t, duration, item.timeRemainingSec) && <span> · {etaOf(t, duration, item.timeRemainingSec)}</span>}
                   </>
                 )}
                 {item.status === "paused" && (

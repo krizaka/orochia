@@ -4,7 +4,7 @@ import Link from "next/link";
 import React from "react";
 
 import { buttonVariants, cn } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 
 const STEPS = [
   ["window", AuctionIcon],
@@ -18,7 +18,8 @@ const STEPS = [
  * packages/payments/src/auction-rules.ts in words (the soft close and the decision window are read from there), never
  * a sample auction. One light runs slowly along the rail; still under prefers-reduced-motion.
  */
-export function AuctionsExplainer() {
+export async function AuctionsExplainer() {
+  const { t } = await getI18n();
   const minutes = AUCTION_SOFT_CLOSE_MS / 60_000;
   const hours = AUCTION_DECISION_WINDOW_MS / 3_600_000;
   return (

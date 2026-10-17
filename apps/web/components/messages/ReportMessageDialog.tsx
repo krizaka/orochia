@@ -5,7 +5,7 @@ import React, { useState } from "react";
 
 import { Button, Dialog, RadioGroup, Sheet, Textarea } from "@/components/ui";
 import { responseErrorMessage } from "@/lib/api-errors";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 import type { ChatMessage } from "./types";
 
@@ -15,6 +15,7 @@ type Reason = (typeof REASONS)[number];
 
 /** Report a message one received: a reason and optional details; the message's text goes with the report. */
 export function ReportMessageDialog({ conversationId, message, onClose }: { conversationId: string; message: ChatMessage | null; onClose: () => void }) {
+  const { t } = useI18n();
   const [reason, setReason] = useState<Reason | null>(null);
   const [details, setDetails] = useState("");
   const [busy, setBusy] = useState(false);
@@ -40,7 +41,7 @@ export function ReportMessageDialog({ conversationId, message, onClose }: { conv
       body: JSON.stringify({ reason, details: details.trim() || undefined }),
     }).catch(() => null);
     setBusy(false);
-    if (!res?.ok) return setError(res ? await responseErrorMessage(res, t("inbox.report.failed")) : t("inbox.network"));
+    if (!res?.ok) return setError(res ? await responseErrorMessage(t, res, t("inbox.report.failed")) : t("inbox.network"));
     setSent(true);
   };
 

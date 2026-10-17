@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 import { Button, Chip, cn, Dialog, Input, Sheet, Switch } from "@/components/ui";
-import { type MessageKey,t } from "@/lib/i18n";
-import { money } from "@/lib/money";
+import { type MessageKey } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 const DURATIONS = [
   { id: "1h", ms: 3600_000 },
@@ -31,6 +31,7 @@ const toLocalInput = (d: Date) => new Date(d.getTime() - d.getTimezoneOffset() *
  * highest bid whatever it is. A summary reads the choice back before it is confirmed.
  */
 export function StartAuctionSheet({ video, open, onClose }: { video: { id: string; title: string }; open: boolean; onClose: () => void }) {
+  const { t, money, dateTime } = useI18n();
   const router = useRouter();
   const [price, setPrice] = useState("20");
   const [when, setWhen] = useState<"now" | "later">("now");
@@ -138,7 +139,7 @@ export function StartAuctionSheet({ video, open, onClose }: { video: { id: strin
               <p className="rounded-2xl border border-accent/20 bg-accent/[0.06] px-4 py-3 text-xs leading-relaxed text-fg-secondary">
                 {t("auction.start.summary", {
                   price: money(priceCents),
-                  when: when === "now" ? t("auction.start.nowLower") : new Date(startAt).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }),
+                  when: when === "now" ? t("auction.start.nowLower") : dateTime(startAt),
                   duration: t(`auction.start.durations.${duration}`),
                   rights: t(`auction.rights.${rights}`),
                 })}

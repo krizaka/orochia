@@ -19,7 +19,8 @@ import {
   Textarea,
 } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
-import { type MessageKey,t } from "@/lib/i18n";
+import { type MessageKey, type Translator } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor } from "@/lib/presets";
 
 interface BlockedUser {
@@ -106,7 +107,7 @@ const field =
   "w-full rounded-xl border border-border-default bg-surface-2 px-3.5 py-2.5 text-sm text-fg placeholder:text-fg-muted focus:border-accent focus:outline-hidden";
 const ghost = buttonVariants({ variant: "outline", size: "sm", shape: "rounded", className: "rounded-xl" });
 
-async function put(body: object): Promise<string | null> {
+async function put(t: Translator, body: object): Promise<string | null> {
   const res = await fetch("/api/me/profile", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   if (res.ok) return null;
   const data = (await res.json().catch(() => ({}))) as { error?: string };
@@ -127,6 +128,7 @@ function Section({ id, icon, title, children }: { id: string; icon: React.ReactN
 
 /** Save button + its outcome, for a section that saves on demand. */
 function SaveRow({ state, error, onSave }: { state: "idle" | "saving" | "saved"; error: string | null; onSave: () => void }) {
+  const { t } = useI18n();
   return (
     <div className="mt-5 flex flex-wrap items-center gap-3">
       <Button variant="sensual" size="sm" shape="rounded" onClick={onSave} loading={state === "saving"} className="rounded-xl px-5 font-bold">
@@ -163,6 +165,7 @@ function useSaver() {
  * links, privacy, notifications, payouts (creators), sign-in methods and blocked accounts.
  */
 export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
+  const { t, date, currentLocale } = useI18n();
   const { refresh } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [blocked, setBlocked] = useState<BlockedUser[]>([]);
@@ -230,7 +233,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
   const setChannel = (channel: "inApp" | "email", next: string[]) => {
     if (channel === "inApp") setInAppOff(next);
     else setEmailsOff(next);
-    void prefs.run(() => put(channel === "inApp" ? { inAppOff: next } : { emailsOff: next }));
+    void prefs.run(() => put(t, channel === "inApp" ? { inAppOff: next } : { emailsOff: next }));
   };
   const toggle = (list: string[], e: string, on: boolean) => (on ? list.filter((x) => x !== e) : [...list, e]);
 
@@ -281,7 +284,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
             <Textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3} maxLength={1000} placeholder={t("settings.identity.bioPlaceholder")} className="resize-y rounded-xl px-3.5" />
           </label>
           <SaveRow state={identity.state} error={identity.error} onSave={() => void identity.run(async () => {
-            const failure = await put({ displayName, bio });
+            const failure = await put(t, { displayName, bio });
             if (!failure) void refresh();
             return failure;
           })} />
@@ -296,7 +299,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
               <span className={cn(label, "flex items-center gap-1.5")}><Lock className="h-3 w-3" /> {t("settings.identity.birthDate")}</span>
               {profile.dateOfBirth ? (
                 <div className={cn(field, "text-fg-secondary")}>
-                  {new Date(`${profile.dateOfBirth}T00:00:00Z`).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })}
+                  {new Date(`${profile.dateOfBirth}T00:00:00Z`).toLocaleDateString(currentLocale(), { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })}
                 </div>
               ) : (
                 <div className="flex gap-2">
@@ -350,7 +353,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
               <Input type="url" value={website} onChange={(e) => setWebsite(e.target.value)} maxLength={200} placeholder={t("settings.links.websitePlaceholder")} className="rounded-xl px-3.5" />
             </label>
           </div>
-          <SaveRow state={linkSaver.state} error={linkSaver.error} onSave={() => void linkSaver.run(() => put({ socialLinks: links, websiteUrl: website }))} />
+          <SaveRow state={linkSaver.state} error={linkSaver.error} onSave={() => void linkSaver.run(() => put(t, { socialLinks: links, websiteUrl: website }))} />
         </Section>
 
         <Section id="privacy" icon={<Lock className="h-4 w-4" />} title={t("settings.sections.privacy")}>
@@ -361,7 +364,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
             onValueChange={(v) => {
               const value = v as "EVERYONE" | "CONTACTS_ONLY";
               setProfile({ ...profile, directMessagePrivacy: value });
-              void prefs.run(() => put({ directMessagePrivacy: value }));
+              void prefs.run(() => put(t, { directMessagePrivacy: value }));
             }}
             className="grid gap-2 sm:grid-cols-2"
           >
@@ -382,7 +385,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
               label={t("settings.privacy.presence")}
               onCheckedChange={(on) => {
                 setProfile({ ...profile, showPresence: on });
-                void prefs.run(() => put({ showPresence: on }));
+                void prefs.run(() => put(t, { showPresence: on }));
               }}
             />
           </div>
@@ -400,7 +403,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
                 label={t("settings.challenges.accept")}
                 onCheckedChange={(on) => {
                   setProfile({ ...profile, challengeRequestsOff: !on });
-                  void dares.run(() => put({ challengeRequestsOff: !on }));
+                  void dares.run(() => put(t, { challengeRequestsOff: !on }));
                 }}
               />
             </div>
@@ -412,7 +415,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
               </span>
               <span className="mt-1 block text-[11px] text-fg-muted">{t("settings.challenges.minimumHint")}</span>
             </label>
-            <SaveRow state={dares.state} error={dares.error} onSave={() => void dares.run(() => put({ challengeMinCents: Math.round(Number(challengeMin) * 100) }))} />
+            <SaveRow state={dares.state} error={dares.error} onSave={() => void dares.run(() => put(t, { challengeMinCents: Math.round(Number(challengeMin) * 100) }))} />
           </Section>
         )}
 
@@ -457,7 +460,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
             onValueChange={(v) => {
               const f = v as Profile["emailFrequency"];
               setFrequency(f);
-              void prefs.run(() => put({ emailFrequency: f }));
+              void prefs.run(() => put(t, { emailFrequency: f }));
             }}
           >
             {(["INSTANT", "HOURLY", "NONE"] as const).map((f) => (
@@ -494,7 +497,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
                   <span>
                     <span className="font-semibold capitalize text-fg">{id.provider.toLowerCase()}</span>
                     {id.email && <span className="ml-2 text-xs text-fg-secondary">{id.email}</span>}
-                    <span className="block text-[11px] text-fg-muted">{t("settings.accounts.linkedOn", { date: new Date(id.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) })}</span>
+                    <span className="block text-[11px] text-fg-muted">{t("settings.accounts.linkedOn", { date: date(id.createdAt) })}</span>
                   </span>
                   <Button
                     variant="outline"

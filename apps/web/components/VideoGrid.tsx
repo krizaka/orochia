@@ -4,7 +4,7 @@ import { MediaGrid } from "@krizaka/ui/media-grid";
 import React from "react";
 
 import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { frameOf } from "@/lib/video-aspect";
 
 const FIRST_ROW = 4;
@@ -14,6 +14,7 @@ const FIRST_ROW = 4;
  * `MediaGrid`, mode `split`) — a vertical card never towers over a horizontal one. `layout="list"` is one row per video.
  */
 export function VideoGrid({ videos, layout = "grid", shortsMaxSeconds, className }: { videos: VideoCardProps[]; layout?: "grid" | "list"; /** The Shorts limit (`feed` settings, lib/video-aspect.ts `formatOf`): a longer vertical clip sits in the 16:9 grid. */ shortsMaxSeconds?: number; className?: string }) {
+  const { t } = useI18n();
   // The first row is on the first screen: its posters are not lazy. Everything below the fold is.
   const first = new Set(videos.slice(0, FIRST_ROW).map((v) => v.id));
   return (

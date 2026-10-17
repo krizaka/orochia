@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { t } from "@/lib/i18n";
+
+import { useI18n } from "@/lib/i18n-client";
 
 type Provider = "google" | "facebook";
 
@@ -29,6 +30,7 @@ function FacebookMark() {
  * when none is. The page's ?next= is where to land after signing in.
  */
 export function SocialSignIn() {
+  const { t } = useI18n();
   const [providers, setProviders] = useState<Provider[]>([]);
   const [next, setNext] = useState("/");
   useEffect(() => {

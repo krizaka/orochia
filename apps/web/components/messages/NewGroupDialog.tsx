@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { Button, Checkbox, Dialog, Input, Sheet } from "@/components/ui";
 import { responseErrorMessage } from "@/lib/api-errors";
 import { MAX_GROUP_MEMBERS } from "@/lib/group-rules";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 interface Contact {
   userId: string;
@@ -15,6 +15,7 @@ interface Contact {
 
 /** A new group: a name and some of your contacts (a group takes only contacts — or, for a creator, approved fans). */
 export function NewGroupDialog({ onCreated, children }: { onCreated: (conversationId: string) => void; children: React.ReactNode }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [contacts, setContacts] = useState<Contact[] | null>(null);
@@ -28,7 +29,7 @@ export function NewGroupDialog({ onCreated, children }: { onCreated: (conversati
     setError(null);
     const res = await fetch("/api/groups", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title, memberIds: [...picked] }) }).catch(() => null);
     setBusy(false);
-    if (!res?.ok) return setError(res ? await responseErrorMessage(res, t("inbox.group.createFailed")) : t("inbox.network"));
+    if (!res?.ok) return setError(res ? await responseErrorMessage(t, res, t("inbox.group.createFailed")) : t("inbox.network"));
     const { conversationId } = (await res.json()) as { conversationId: string };
     setOpen(false);
     setTitle("");

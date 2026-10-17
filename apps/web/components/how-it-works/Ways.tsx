@@ -3,11 +3,12 @@ import React from "react";
 
 import { cn } from "@/components/ui";
 import { WAYS } from "@/lib/how-it-works";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { tourRecording } from "@/lib/site-media";
 
 /** The four ways to pay a creator: each card shows its moment from the app (the recording's poster), one line, one link. */
-export function Ways({ share }: { share: number }) {
+export async function Ways({ share }: { share: number }) {
+  const { t } = await getI18n();
   return (
     <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {WAYS.map(({ id, clip, icon: Icon, href }) => (

@@ -3,6 +3,7 @@ import { db, users } from "@orochia/db";
 import { platformFeePercent } from "@orochia/payments";
 import { eq } from "drizzle-orm";
 import { Check, Clock } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import React from "react";
@@ -12,11 +13,14 @@ import { buttonVariants, cn, EmptyState, SectionBackdrop, Stepper } from "@/comp
 import { getSession } from "@/lib/auth";
 import { CREATOR_APPLY_PATH, CREATOR_STUDIO_PATH, signInHref, signUpHref } from "@/lib/creator-journey";
 import { signupEnabled } from "@/lib/features";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { getViewer } from "@/lib/viewer";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: t("creatorSpace.apply.metaTitle") };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return { title: t("creatorSpace.apply.metaTitle") };
+}
 
 /**
  * The creator application of the signed-in account (docs/CREATOR_ONBOARDING.md). One address for every step:
@@ -24,6 +28,7 @@ export const metadata = { title: t("creatorSpace.apply.metaTitle") };
  * never a new account); a pending creator reads the status of the 2257 review; a verified creator goes to the studio.
  */
 export default async function CreatorApplyPage() {
+  const { t } = await getI18n();
   const { user, state } = await getViewer();
   if (!user) {
     // Signed up but the e-mail is not confirmed yet: the verification gate (EmailVerificationGate) shows instead.

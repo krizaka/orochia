@@ -13,7 +13,7 @@ import { Button, Checkbox, Field, Input, OrochiaLogo } from "@/components/ui";
 import { UsernameField } from "@/components/UsernameField";
 import { useAuth } from "@/lib/auth-context";
 import { NEXT_AFTER_VERIFY_KEY, safeNext, signInHref } from "@/lib/creator-journey";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 
 /**
@@ -22,6 +22,7 @@ import { t } from "@/lib/i18n";
  * is confirmed. A signed-in person never stays here: they go on to `next` (docs/CREATOR_ONBOARDING.md).
  */
 export function RegisterForm() {
+  const { t } = useI18n();
   const router = useRouter();
   const { register, user, isLoading: sessionLoading } = useAuth();
   const [next, setNext] = useState<string | null>(null);

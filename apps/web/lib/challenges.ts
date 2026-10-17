@@ -1,23 +1,27 @@
-import { db, challenges, challengePledges, challengeApplications, follows, profiles, stories, users, videos } from "@orochia/db";
-import { and, asc, desc, eq, gt, inArray, isNull, ne, sql, type SQL } from "drizzle-orm";
-import { alias } from "drizzle-orm/pg-core";
+import { challengeApplications, challengePledges, challenges, db, follows, profiles, stories, users, videos } from "@orochia/db";
 import {
-  CHALLENGE_MIN_PLEDGE_CENTS,
-  CHALLENGE_SUGGESTED_PLEDGES_CENTS,
-  ChallengeError,
   activeChallengeIdsFor,
   cancelChallenge,
+  CHALLENGE_MIN_PLEDGE_CENTS,
+  CHALLENGE_SUGGESTED_PLEDGES_CENTS,
+  type ChallengeCloseOutcome,
+  ChallengeError,
   challengeProgress,
+  type ChallengeRow,
+  type ChallengeStage,
   challengeStage,
   closeChallenge,
   getWalletBalanceCents,
-  type ChallengeCloseOutcome,
-  type ChallengeRow,
-  type ChallengeStage,
 } from "@orochia/payments";
+import { and, asc, desc, eq, gt, inArray, isNull, ne, type SQL,sql } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
+
 import { HttpError } from "./http";
-import { t } from "./i18n";
+import { toolsFor } from "./i18n";
+import { getI18n } from "./i18n-server";
+import { DEFAULT_LOCALE } from "./locales";
 import { signMediaUrl } from "./media-urls";
+import { i18nVar } from "./notification-vars";
 import { notify } from "./notifications";
 import { publish } from "./realtime";
 
@@ -371,7 +375,7 @@ export async function deliveryOptions(challengeId: string, creatorId: string) {
     .from(challenges)
     .where(and(eq(challenges.id, challengeId), eq(challenges.creatorId, creatorId), eq(challenges.status, "ACCEPTED")))
     .limit(1);
-  if (!row) throw new HttpError(404, t("challenge.errors.NOT_FOUND"));
+  if (!row) throw new HttpError(404, (await getI18n()).t("challenge.errors.NOT_FOUND"));
   if (row.deliverable === "VIDEO") {
     const items = await db
       .select({
@@ -580,7 +584,7 @@ export async function announceAccepted(challenge: ChallengeRow, how: "accepted" 
       event: "challengeClosed",
       vars: {
         title: challenge.title,
-        reason: t("challenge.release.NOT_CHOSEN"),
+        reason: i18nVar("challenge.release.NOT_CHOSEN"),
       },
       path: path(challenge),
     });
@@ -609,7 +613,7 @@ export async function announceReleased(challenge: ChallengeRow, releasedTo: stri
     type: "state",
     status: challenge.status,
   });
-  const reason = t(`challenge.release.${challenge.status as "DECLINED" | "EXPIRED" | "FAILED" | "CANCELLED"}`);
+  const reason = i18nVar(`challenge.release.${challenge.status as "DECLINED" | "EXPIRED" | "FAILED" | "CANCELLED"}`);
   for (const backer of releasedTo) {
     const [total] = await db
       .select({
@@ -640,7 +644,7 @@ export async function announceClose(outcome: ChallengeCloseOutcome) {
       event: "challengeClosed",
       vars: {
         title: outcome.challenge.title,
-        reason: t("challenge.release.FAILED"),
+        reason: i18nVar("challenge.release.FAILED"),
       },
       path: path(outcome.challenge),
     });
@@ -664,7 +668,7 @@ export async function cancelChallengesByOperator(userId: string, reason: string)
 // ── Errors ────────────────────────────────────────────────────────────────────────────────────
 
 /** An engine refusal as an HTTP answer: status, a plain message, and the details the UI shows (minimum, balance). */
-export function challengeHttpError(error: unknown): { status: number; message: string; extra: Record<string, unknown> } | null {
+export async function challengeHttpError(error: unknown): Promise<{ status: number; message: string; extra: Record<string, unknown> } | null> {
   if (!(error instanceof ChallengeError)) return null;
   const status: Record<ChallengeError["code"], number> = {
     NOT_FOUND: 404,
@@ -690,14 +694,14 @@ export function challengeHttpError(error: unknown): { status: number; message: s
   if (error.code === "INSUFFICIENT_CREDITS") extra.topUpUrl = "/wallet";
   return {
     status: status[error.code],
-    message: t(`challenge.errors.${error.code}`),
+    message: (await getI18n()).t(`challenge.errors.${error.code}`),
     extra,
   };
 }
 
 /** Throws an HttpError for a challenge id that is not a UUID (404, never 500). */
 export function challengeIdOr404(id: string): string {
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) throw new HttpError(404, t("challenge.errors.NOT_FOUND"));
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) throw new HttpError(404, toolsFor(DEFAULT_LOCALE).t("challenge.errors.NOT_FOUND"));
   return id;
 }
 

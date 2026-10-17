@@ -5,7 +5,7 @@ import React, { createContext, Suspense, useContext, useState } from "react";
 
 import { CreateStoryModal } from "@/components/CreateStoryModal";
 import { cn } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { startOf } from "@/lib/story-player";
 
 import { StoryViewer } from "./StoryViewer";
@@ -81,6 +81,7 @@ export function ProfileStories(props: { username: string; canAdd: boolean; child
 
 /** The ring around a profile picture (the brand gradient while a story is unseen, a quiet line once seen). */
 export function StoryAvatarRing({ children, className }: { children: React.ReactNode; className?: string }) {
+  const { t } = useI18n();
   const stories = useProfileStories();
   const live = stories?.ring?.stories.filter((s) => s.state === "ready") ?? [];
   if (!stories || live.length === 0) return <>{children}</>;
@@ -100,6 +101,7 @@ export function StoryAvatarRing({ children, className }: { children: React.React
 
 /** The current stories in a row under the profile's header (and "Add story" on your own profile). */
 export function ProfileStoriesRow() {
+  const { t } = useI18n();
   const stories = useProfileStories();
   if (!stories) return null;
   const items = stories.ring?.stories ?? [];

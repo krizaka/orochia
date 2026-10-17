@@ -7,8 +7,7 @@ import { BackdropMedia } from "@/components/home/BackdropMedia";
 import { Button, buttonVariants, cn, IsoHub, SectionBackdrop } from "@/components/ui";
 import { CREATOR_APPLY_PATH, signUpHref } from "@/lib/creator-journey";
 import { signupEnabled } from "@/lib/features";
-import { t } from "@/lib/i18n";
-import { money } from "@/lib/money";
+import { getI18n } from "@/lib/i18n-server";
 import { SOURCE_URL } from "@/lib/seo";
 
 /**
@@ -40,7 +39,8 @@ const PROOFS = [
  * and pledges flow in, the creator's share on each link) and the split written out, the guarantees that make it trustworthy, and the
  * way in. Every figure is computed from the platform's rules; nothing pretends to be someone's earnings.
  */
-export function GetPaid({ fee }: { fee: number }) {
+export async function GetPaid({ fee }: { fee: number }) {
+  const { t, money } = await getI18n();
   const share = 100 - fee;
   const example = splitPlatformFee(10_00, fee);
   return (

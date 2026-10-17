@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 
 import { AlertDialog, Button, cn,Dialog, IconButton } from "@/components/ui";
 import { type DraftKind, saveDraft } from "@/lib/drafts";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { DEFAULT_EDIT, EDITOR_MAX_BYTES, exportEditedVideo,type VideoEdit } from "@/lib/video-edit";
 
 import { clock, useFilmstrip, useObjectUrl, usePreviewPlayer } from "./media";
@@ -61,6 +61,7 @@ export function VideoEditor({
   /** Leaves the editor; with the draft id when the edit was saved as a draft. */
   onClose: (savedDraftId?: string) => void;
 }) {
+  const { t } = useI18n();
   const story = kind === "story";
   const maxSeconds = story ? STORY_SECONDS : undefined;
   const wide = !story;
@@ -93,7 +94,7 @@ export function VideoEditor({
     setTask({ kind: "draft", percent: 0 });
     player.pause();
     try {
-      const id = await saveDraft({ kind, file, edit, details, draftId, musicChanged: edit.music !== (initialEdit?.music ?? null) }, (percent) => setTask({ kind: "draft", percent }));
+      const id = await saveDraft(t, { kind, file, edit, details, draftId, musicChanged: edit.music !== (initialEdit?.music ?? null) }, (percent) => setTask({ kind: "draft", percent }));
       onClose(id);
     } catch (e) {
       console.error("video editor: draft not saved", e);

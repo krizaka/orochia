@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
 import { Flame } from "lucide-react";
+import Link from "next/link";
+import React, { useState } from "react";
+
 import { Button, orochiaButton } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
+
 import { ChallengeComposer } from "./ChallengeComposer";
 
 /** Opens the challenge composer — or, for a visitor, the sign-in page that comes back here. */
@@ -23,6 +25,7 @@ export function StartChallengeButton({
   label?: string;
   variant?: "primary" | "secondary";
 }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const text = label ?? t("challenge.start");
   // "primary" is Orochia's gradient call to action.

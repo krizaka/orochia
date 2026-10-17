@@ -1,12 +1,14 @@
 import { readFileSync } from "node:fs";
-import { renderToStaticMarkup } from "react-dom/server";
+import { createElement } from "react";
 import { describe, expect, it } from "vitest";
+
+import { htmlIn } from "@/lib/i18n-test-utils";
 
 import { SiteFooter } from "./SiteFooter";
 import { BUILD_INFO } from "@/lib/build-info";
 
 describe("the footer (@krizaka/ui's SiteFooter, NAV-SYS)", () => {
-  const html = renderToStaticMarkup(SiteFooter());
+  const html = htmlIn("en", createElement(SiteFooter));
   it("says which version runs, discreetly", () => {
     expect(html).toContain('data-testid="app-version"');
     expect(html).toContain(`v${BUILD_INFO.version}`);
@@ -36,7 +38,7 @@ describe("one footer, one contentinfo", () => {
   const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf8");
 
   it("renders a single footer landmark", () => {
-    expect(renderToStaticMarkup(SiteFooter()).match(/<footer\b/g)).toHaveLength(1);
+    expect(htmlIn("en", createElement(SiteFooter)).match(/<footer\b/g)).toHaveLength(1);
   });
 
   it("the root layout renders it once, after the shell (outside <main>), and no other file renders a footer", async () => {

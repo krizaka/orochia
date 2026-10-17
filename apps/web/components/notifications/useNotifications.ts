@@ -62,14 +62,3 @@ export function useNotifications(enabled: boolean, { onLive }: { onLive?: (n: No
 
   return { items, unread, loaded, markRead, reload: load };
 }
-
-const rtf = typeof Intl !== "undefined" ? new Intl.RelativeTimeFormat("en", { numeric: "auto", style: "short" }) : null;
-export function timeAgo(iso: string): string {
-  const s = (Date.now() - new Date(iso).getTime()) / 1000;
-  if (!rtf) return "";
-  if (s < 60) return rtf.format(-Math.round(s), "second");
-  if (s < 3600) return rtf.format(-Math.round(s / 60), "minute");
-  if (s < 86400) return rtf.format(-Math.round(s / 3600), "hour");
-  if (s < 604800) return rtf.format(-Math.round(s / 86400), "day");
-  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}

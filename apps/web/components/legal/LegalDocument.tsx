@@ -1,11 +1,14 @@
-import React from "react";
-import Link from "next/link";
+import { ArrowLeft, CheckCircle2, type LucideIcon,Mail } from "lucide-react";
 import type { Metadata } from "next";
-import { ArrowLeft, CheckCircle2, Mail, type LucideIcon } from "lucide-react";
-import { Rich } from "@/components/Rich";
-import { messages, t } from "@/lib/i18n";
+import Link from "next/link";
+import React from "react";
 
-export type LegalDocId = keyof ReturnType<typeof messages<"legal">>["docs"];
+import { Rich } from "@/components/Rich";
+import type { I18nTools, Messages } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
+import { pageAlternates } from "@/lib/seo-i18n";
+
+export type LegalDocId = keyof Messages["legal"]["docs"];
 
 interface LegalSection {
   title: string;
@@ -25,16 +28,19 @@ interface LegalDoc {
   sections: Record<string, LegalSection>;
 }
 
-const doc = (id: LegalDocId) => messages("legal").docs[id] as unknown as LegalDoc;
+const docOf = (messages: I18nTools["messages"], id: LegalDocId) => messages("legal").docs[id] as unknown as LegalDoc;
 
-export function legalMetadata(id: LegalDocId, path: string): Metadata {
-  const { metaTitle, metaDescription } = doc(id);
-  return { title: metaTitle, description: metaDescription, alternates: { canonical: path } };
+/** The `generateMetadata` of a legal page, in the language of the request. */
+export async function legalMetadata(id: LegalDocId, path: string): Promise<Metadata> {
+  const { messages } = await getI18n();
+  const { metaTitle, metaDescription } = docOf(messages, id);
+  return { title: metaTitle, description: metaDescription, alternates: await pageAlternates(path) };
 }
 
 /** A legal page rendered from its messages (`legal.docs.<id>`): the words live in en.json, the layout once here. */
-export function LegalDocument({ id, icon: Icon }: { id: LegalDocId; icon: LucideIcon }) {
-  const { badge, title, subtitle, sections } = doc(id);
+export async function LegalDocument({ id, icon: Icon }: { id: LegalDocId; icon: LucideIcon }) {
+  const { t, messages } = await getI18n();
+  const { badge, title, subtitle, sections } = docOf(messages, id);
   const slots = {
     dmca: (
       <Link href="/legal/dmca" className="font-semibold text-fg-accent underline-offset-2 hover:underline">

@@ -1,10 +1,13 @@
-import React from "react";
-import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { MobileStepCard } from "@/components/mobile/MobileStepCard";
 
-import { messages } from "./i18n";
+import { toolsFor } from "./i18n";
+import { serverHtmlIn } from "./i18n-test-utils";
+
+vi.mock("@/lib/i18n-server", () => import("./i18n-test-server"));
+
+const { messages } = toolsFor("en");
 import { MOBILE_STEPS, mobileClip } from "./mobile-media";
 
 const CDN = /^https:\/\/krizaka-assets\.b-cdn\.net\/site\/products\/orochia\/mobile\/[a-z0-9-]+\.[0-9a-f]{10}\.(webm|mp4|webp)$/;
@@ -35,8 +38,8 @@ describe("the mobile journey", () => {
     expect(JSON.stringify(messages("mobile")).toLowerCase()).not.toMatch(/\blive\b/);
   });
 
-  it("renders a step with its recording (on demand, with a text alternative), purpose and things to notice", () => {
-    const html = renderToStaticMarkup(React.createElement(MobileStepCard, { id: "unlock", index: 2 }));
+  it("renders a step with its recording (on demand, with a text alternative), purpose and things to notice", async () => {
+    const html = await serverHtmlIn("en", MobileStepCard, { id: "unlock" as const, index: 2 });
     const s = messages("mobile").steps.unlock;
     expect(html).toContain('preload="none"');
     expect(html).not.toContain("autoplay");

@@ -7,7 +7,8 @@ import { Check, Copy, Sparkles } from "lucide-react";
 import React from "react";
 
 import { type AiCredit, parseAiCredit, shortRunId } from "@/lib/ai-credit";
-import { t } from "@/lib/i18n";
+import type { Translator } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { aspectLabel, qualityOf } from "@/lib/video-quality";
 
 export interface VideoInfoData {
@@ -28,7 +29,7 @@ export function creditOf(description?: string | null): string | null {
   return parseAiCredit(description)?.line ?? null;
 }
 
-function statusLabel(status: string): string {
+function statusLabel(t: Translator, status: string): string {
   switch (status) {
     case "PENDING_UPLOAD":
       return t("info.statuses.PENDING_UPLOAD");
@@ -45,11 +46,12 @@ function statusLabel(status: string): string {
   }
 }
 
-function fpsOf(framerate?: number | null): string | null {
+function fpsOf(t: Translator, framerate?: number | null): string | null {
   return framerate ? t("info.fps", { fps: Number(framerate.toFixed(framerate % 1 < 0.01 ? 0 : 1)) }) : null;
 }
 
 function CopyRunId({ runId }: { runId: string }) {
+  const { t } = useI18n();
   const [done, setDone] = React.useState(false);
   return (
     <button
@@ -71,6 +73,7 @@ function CopyRunId({ runId }: { runId: string }) {
 
 /** The AI disclosure: one small badge, the provenance (run, model, hardware) in a popover. */
 export function AiBadge({ credit }: { credit: AiCredit }) {
+  const { t } = useI18n();
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
@@ -113,12 +116,13 @@ export function AiBadge({ credit }: { credit: AiCredit }) {
 
 /** What the video is, read from the file: one quiet line under the title, the rest one click away. */
 export function VideoInfo({ video }: { video: VideoInfoData }) {
+  const { t, date } = useI18n();
   const q = qualityOf(video.resolutions, video.width, video.height);
   const aspect = aspectLabel(video.width, video.height);
   const credit = parseAiCredit(video.description);
-  const fps = fpsOf(video.framerate);
-  const uploaded = new Date(video.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-  const notReady = video.status && video.status !== "READY" ? statusLabel(video.status) : null;
+  const fps = fpsOf(t, video.framerate);
+  const uploaded = date(video.createdAt);
+  const notReady = video.status && video.status !== "READY" ? statusLabel(t, video.status) : null;
   const meta = [q?.label ?? (video.width && video.height ? `${video.width}×${video.height}` : null), aspect, clock(video.durationSeconds), fps, uploaded].filter(Boolean) as string[];
   const dash = t("info.unknown");
   const technical: Array<[string, string]> = [
@@ -127,7 +131,7 @@ export function VideoInfo({ video }: { video: VideoInfoData }) {
     [t("info.duration"), clock(video.durationSeconds)],
     [t("info.framerate"), fps ?? dash],
     [t("info.uploaded"), uploaded],
-    [t("info.status"), video.status ? statusLabel(video.status) : dash],
+    [t("info.status"), video.status ? statusLabel(t, video.status) : dash],
   ];
   return (
     <section aria-label={t("info.title")} data-testid="video-info" className="mt-3">

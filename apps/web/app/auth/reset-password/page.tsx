@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
 import { CheckCircle2, Lock } from "lucide-react";
+import Link from "next/link";
+import React, { useState } from "react";
+
 import { Button, buttonVariants, Input, OrochiaLogo } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 /** The link e-mailed by "forgot password": /auth/reset-password?token=… sets a new password once. */
 export default function ResetPasswordPage() {
+  const { t } = useI18n();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [state, setState] = useState<"idle" | "saving" | "done">("idle");

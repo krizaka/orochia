@@ -17,12 +17,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
+import { LanguageSwitch } from "@/components/LanguageSwitch";
 import { MessagesButton } from "@/components/messages/MessagesButton";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { Avatar, cn,IconButton, OrochiaLogo, ThemeToggle } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { creatorSpaceCta, viewerStateOf } from "@/lib/creator-journey";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor } from "@/lib/presets";
 
 /**
@@ -31,6 +32,7 @@ import { defaultAvatarFor } from "@/lib/presets";
  * (MobileBottomNav), so each action exists once on a phone.
  */
 export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
+  const { t } = useI18n();
   const { user, isLoading, logout, signupEnabled } = useAuth();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -110,6 +112,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
           <IconButton onClick={onOpenSearch} shape="rounded" className="h-9 w-9 rounded-xl md:hidden" label={t("nav.search")}>
             <Search className="h-5 w-5" aria-hidden />
           </IconButton>
+          <LanguageSwitch />
           <ThemeToggle />
 
           {user ? (

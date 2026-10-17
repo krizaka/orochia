@@ -5,7 +5,7 @@ import Hls from "hls.js";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { Button, Spinner } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { blockedByAutoplayPolicy, IMAGE_STORY_MS, imageProgress, type PlaybackError, playbackError, videoProgress } from "@/lib/story-player";
 
 import type { StoryItem } from "./types";
@@ -153,6 +153,7 @@ function StoryVideo({ story, paused, sound, onProgress, onEnded, onAutoplayMuted
 
 /** A story that cannot play: what happened, in words, with the HTTP status when the CDN gave one, and a retry. */
 function PlaybackFailed({ failure, onRetry }: { failure: PlaybackFailure; onRetry: () => void }) {
+  const { t } = useI18n();
   return (
     <div role="alert" className="flex max-w-xs flex-col items-center gap-3 px-6 text-center">
       <span className="flex h-11 w-11 items-center justify-center rounded-full bg-scrim text-fg-warning">
@@ -200,6 +201,7 @@ function StoryImage({ story, paused, onProgress, onEnded }: Pick<MediaProps, "st
  * a tap (nothing plays, nothing counts as progress, before that). The author always sees their own story.
  */
 export function StoryMedia(props: MediaProps & { veiled: boolean; onReveal: () => void }) {
+  const { t } = useI18n();
   const { story, veiled, onReveal } = props;
   if (story.state !== "ready") {
     return (

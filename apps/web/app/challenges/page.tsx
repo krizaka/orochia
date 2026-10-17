@@ -1,26 +1,32 @@
-import React from "react";
-import Link from "next/link";
-import { UrlTabs } from "@/components/UrlTabs";
-import { redirect } from "next/navigation";
 import { CardGrid } from "@krizaka/ui/card-grid";
 import { LinkCard } from "@krizaka/ui/link-card";
-import { ChallengeAutoStart } from "@/components/challenges/ChallengeAutoStart";
-import { challengeKindFromSlug, challengeStartHref, CHALLENGE_STARTS } from "@/lib/challenge-kinds";
 import { Flame, Megaphone, Target } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import React from "react";
+
+import { ChallengeAutoStart } from "@/components/challenges/ChallengeAutoStart";
 import { ChallengeCard } from "@/components/challenges/ChallengeCard";
 import { StartChallengeButton } from "@/components/challenges/StartChallengeButton";
 import { buttonVariants, cn } from "@/components/ui";
+import { UrlTabs } from "@/components/UrlTabs";
 import { getCurrentUser } from "@/lib/auth";
-import { CHALLENGE_TABS, PERSONAL_CHALLENGE_TABS, listChallenges, type ChallengeTab } from "@/lib/challenges";
-import { t } from "@/lib/i18n";
+import { CHALLENGE_STARTS,challengeKindFromSlug, challengeStartHref } from "@/lib/challenge-kinds";
+import { CHALLENGE_TABS, type ChallengeTab,listChallenges, PERSONAL_CHALLENGE_TABS } from "@/lib/challenges";
+import { getI18n } from "@/lib/i18n-server";
+import { pageAlternates } from "@/lib/seo-i18n";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return {
   title: t("challenges.metaTitle"),
   description: t("challenges.metaDescription"),
-  alternates: { canonical: "/challenges" },
+  alternates: await pageAlternates("/challenges"),
 };
+}
 
 const ICONS = { GOAL: Target, REQUEST: Flame, OPEN_CALL: Megaphone } as const;
 
@@ -29,6 +35,7 @@ const ICONS = { GOAL: Target, REQUEST: Flame, OPEN_CALL: Megaphone } as const;
  * signed in — the creator's inbox, what the viewer wrote and what they back. The three kinds are explained up top.
  */
 export default async function ChallengesPage(props: { searchParams: Promise<{ tab?: string; new?: string }> }) {
+  const { t } = await getI18n();
   const { tab: asked, new: startSlug } = await props.searchParams;
   const user = await getCurrentUser();
   // A card said "start this kind": a visitor signs in and comes back here; only a creator sets a goal.

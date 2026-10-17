@@ -103,7 +103,11 @@ const nextConfig = {
     // A site that is not indexed (APP_SEARCH_INDEXING=off: dev, preview) says so on every response, as well as in robots.txt and
     // the pages' robots meta. Read at build time, like lib/seo.ts INDEXABLE.
     const robotsHeader = process.env.APP_SEARCH_INDEXING === "off" ? [{ key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" }] : [];
-    return [{ source: "/:path*", headers: [...securityHeaders, ...robotsHeader] }];
+    return [
+      { source: "/:path*", headers: [...securityHeaders, ...robotsHeader] },
+      // A page is written in the language of its address, its cookie or the browser's: caches must tell them apart.
+      { source: "/((?!_next/static|_next/image).*)", headers: [{ key: "Vary", value: "Accept-Language, Cookie" }] },
+    ];
   },
 };
 

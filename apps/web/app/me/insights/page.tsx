@@ -1,4 +1,5 @@
 import { BarChart3, Clock, Hash, Users } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import React from "react";
@@ -6,7 +7,7 @@ import React from "react";
 import { AudienceSection } from "@/components/insights/AudienceSection";
 import { buttonVariants, EmptyState, SectionBackdrop } from "@/components/ui";
 import { creatorAudience } from "@/lib/analytics/analytics.audience";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { creatorInsights } from "@/lib/recommendations/recommendations.insights";
 import { recommendationSettings } from "@/lib/recommendations/recommendations.settings";
 import { InsightsStatus } from "@/lib/recommendations/recommendations.view";
@@ -14,7 +15,10 @@ import { getViewer } from "@/lib/viewer";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: t("insights.metaTitle"), robots: { index: false } };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return { title: t("insights.metaTitle"), robots: { index: false } };
+}
 
 const card = "rounded-3xl border border-border-default bg-surface-1/60 p-5 shadow-xs";
 
@@ -35,6 +39,7 @@ function Block({ icon: Icon, title, hint, children }: { icon: React.ElementType;
  * many other creators it also follows — from the interactions Orochia's recommender received (pseudonymous, counts only).
  */
 export default async function InsightsPage() {
+  const { t } = await getI18n();
   const { user, state } = await getViewer();
   if (!user) redirect("/auth/login?next=/me/insights");
   if (state !== "creator") redirect("/me");

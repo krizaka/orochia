@@ -1,15 +1,17 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { CheckCircle2, XCircle } from "lucide-react";
+import Link from "next/link";
+import React, { useEffect, useRef, useState } from "react";
+
 import { OrochiaLogo, Spinner } from "@/components/ui";
 import { useAuth } from "@/lib/auth-context";
 import { NEXT_AFTER_VERIFY_KEY, safeNext } from "@/lib/creator-journey";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 /** The link e-mailed at registration: /auth/verify?token=… confirms the address once. */
 export default function VerifyEmailPage() {
+  const { t } = useI18n();
   const { refresh } = useAuth();
   const [state, setState] = useState<"working" | "done" | "failed">("working");
   const [error, setError] = useState<string | null>(null);

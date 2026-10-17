@@ -4,8 +4,7 @@ import { AuctionIcon as Gavel, CheckIcon as Trophy, DownloadIcon as Download, Pl
 import Link from "next/link";
 
 import { Avatar, Badge, Card, Countdown } from "@/components/ui";
-import { t } from "@/lib/i18n";
-import { money } from "@/lib/money";
+import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor } from "@/lib/presets";
 
 import { auctionCountdown, auctionPrice } from "./auction-presenter";
@@ -14,6 +13,7 @@ import type { AuctionCard as AuctionCardView } from "./types";
 
 /** An auction in a list: picture, state, price, countdown, creator — the whole card opens its watch page. */
 export function AuctionCard({ auction: a, index = 0 }: { auction: AuctionCardView; index?: number }) {
+  const { t, money } = useI18n();
   const price = auctionPrice(a);
   const countdown = auctionCountdown(a);
   return (
