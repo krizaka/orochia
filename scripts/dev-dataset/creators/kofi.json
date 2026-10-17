@@ -1,0 +1,40 @@
+{
+  "key": "kofi",
+  "username": "qa_fan3",
+  "credentials": "OROCHIA_FAN3",
+  "existing": true,
+  "displayName": "Kofi Mensah",
+  "rating": null,
+  "avatar": "Portrait of a fit man in his early 30s with short hair and a calm focused expression, sunrise on a yoga mat behind him, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a beach yoga mat at sunrise with calm waves and pink sky, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Move well",
+      "description": "Yoga and recovery.",
+      "videos": [
+        "Morning yoga flow for beginners",
+        "Yoga on the beach at sunrise",
+        "A spa-like lounge, towels and steam",
+        "Wellness terrace, tea and morning light"
+      ]
+    }
+  ],
+  "videos": [],
+  "stories": [
+    {
+      "caption": "Mat and sunrise",
+      "kind": "image",
+      "still": "Vertical photograph of a rolled yoga mat on a beach at sunrise, no people, no text"
+    },
+    {
+      "caption": "Kettlebell, chalk",
+      "kind": "image",
+      "still": "Vertical photograph of a kettlebell and a chalk bowl on a gym floor in morning light, no people, no text"
+    },
+    {
+      "caption": "Trail shoes",
+      "kind": "image",
+      "still": "Vertical photograph of trail running shoes on a forest path with morning mist, no people, no text"
+    }
+  ]
+}

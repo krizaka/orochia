@@ -1,0 +1,100 @@
+{
+  "key": "tomas_herrera",
+  "username": "tomas_herrera",
+  "displayName": "Tomás Herrera",
+  "bio": "Surf coach on the Pacific. Dawn patrol, glassy sets and the quiet before the first wave.",
+  "niche": "Surf & ocean",
+  "tags": [
+    "surf",
+    "ocean",
+    "waves",
+    "sunrise"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a man in his early 30s with sun-bleached hair and salt on his shoulders, beach sunrise behind him, relaxed smile, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a Pacific beach at dawn with glassy waves and a lone surfer silhouette far away, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Pacific mornings",
+      "description": "Waves, wax and light.",
+      "videos": [
+        "Dawn patrol, glassy sets",
+        "Barrel from the beach",
+        "Waxing the board",
+        "Sunset session, last wave"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Dawn patrol, glassy sets",
+      "description": "Paddling out before the wind picks up.",
+      "tags": [
+        "surf",
+        "dawn",
+        "waves",
+        "ocean"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of clean glassy ocean waves at dawn with a surfer paddling far away in pink and orange light, no face, no text",
+      "motion": "Waves roll in cleanly and the surfer paddles over a swell, light glows, slow camera drift."
+    },
+    {
+      "title": "Barrel from the beach",
+      "description": "A wave peeling along the point.",
+      "tags": [
+        "surf",
+        "barrel",
+        "wave",
+        "slowmo"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a large turquoise wave curling into a barrel on a point break with spray in the air, a distant surfer silhouette, golden light, no face, no text",
+      "motion": "The wave curls and peels along the point while spray drifts in the golden light, slow steady camera."
+    },
+    {
+      "title": "Waxing the board",
+      "description": "Circles of wax, sand and morning light.",
+      "tags": [
+        "surfboard",
+        "wax",
+        "beach",
+        "morning"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical close-up photograph of a hand rubbing wax on a surfboard deck in circles, sandy feet nearby, morning light, no face, no text",
+      "motion": "The hand moves in slow circles and wax shavings glint, subtle macro drift."
+    },
+    {
+      "title": "Sunset session, last wave",
+      "description": "Orange sky, long shadows and a last ride in.",
+      "tags": [
+        "surf",
+        "sunset",
+        "ocean",
+        "beach"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a surfer far away riding a wave at sunset with orange reflections on the water, no face, no text",
+      "motion": "The surfer rides the wave toward the shore, the water glows orange, slow camera pan."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Wetsuit on the line",
+      "kind": "image",
+      "still": "Vertical photograph of a wetsuit and a board drying beside a beach hut at sunrise, no people, no text"
+    },
+    {
+      "caption": "Footprints at low tide",
+      "kind": "image",
+      "still": "Vertical photograph of footprints on wet sand at low tide with the sea shimmering, golden light, no text"
+    },
+    {
+      "caption": "Set coming in",
+      "kind": "clip",
+      "still": "Vertical photograph of a swell lining up on the horizon at dawn, no people, no text",
+      "motion": "The swell approaches slowly and the water shimmers."
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "key": "kenji_watanabe",
+  "username": "kenji_watanabe",
+  "displayName": "Kenji Watanabe",
+  "bio": "Night photographer. Long exposures, wet streets, and the stories light tells after the shops close.",
+  "niche": "Night photography",
+  "tags": [
+    "photography",
+    "night",
+    "longexposure",
+    "city"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a man in his early 40s with round glasses and a camera strap around his neck, city lights bokeh behind him, calm expression, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic long-exposure photograph of a night city bridge with light trails and a glowing skyline, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "After dark",
+      "description": "A city, after the shops close.",
+      "videos": [
+        "Light trails on the bridge",
+        "Tripod, rain, patience",
+        "Empty crossing, 3 a.m.",
+        "Rooftop view, blue hour"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Light trails on the bridge",
+      "description": "A twenty-second exposure turned into a moving picture.",
+      "tags": [
+        "photography",
+        "long-exposure",
+        "bridge",
+        "night"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide long-exposure photograph of a city bridge at night with red and white light trails and a glowing skyline over water, no people, no text",
+      "motion": "Car lights stream across the bridge in glowing trails, the water shimmers, slow gentle camera push-in."
+    },
+    {
+      "title": "Tripod, rain, patience",
+      "description": "Setting up in the rain for a single shot.",
+      "tags": [
+        "photography",
+        "rain",
+        "tripod",
+        "night"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a camera on a tripod on a rainy night street with neon reflections on the wet ground, the photographer standing far away seen from behind, no text",
+      "motion": "Rain falls steadily, neon reflections ripple on the wet ground, slow camera push-in toward the camera."
+    },
+    {
+      "title": "Empty crossing, 3 a.m.",
+      "description": "A traffic light cycling for no one.",
+      "tags": [
+        "city",
+        "night",
+        "empty",
+        "traffic-light"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of an empty city intersection at 3am with traffic lights glowing red and green reflections on wet asphalt, no people, no readable text",
+      "motion": "The traffic light changes colour and reflections shift on the wet road, subtle slow push-in."
+    },
+    {
+      "title": "Rooftop view, blue hour",
+      "description": "The sky between day and night, over a sea of rooftops.",
+      "tags": [
+        "blue-hour",
+        "rooftop",
+        "city",
+        "skyline"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a city skyline at blue hour from a rooftop, windows beginning to glow, deep blue sky, no people, no text",
+      "motion": "Windows light up one by one and clouds drift across the sky, slow push-in."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Camera bag, rain cover",
+      "kind": "image",
+      "still": "Vertical photograph of a camera bag with a rain cover on wet pavement at night, no text"
+    },
+    {
+      "caption": "Contact sheet",
+      "kind": "image",
+      "still": "Vertical photograph of a table with printed black-and-white photographs under a lamp, abstract city scenes, no text"
+    },
+    {
+      "caption": "Bokeh test",
+      "kind": "image",
+      "still": "Vertical photograph of blurred colourful city lights bokeh at night, no text"
+    }
+  ]
+}

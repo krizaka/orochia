@@ -1,0 +1,99 @@
+{
+  "key": "lea_fontaine",
+  "username": "lea_fontaine",
+  "displayName": "Léa Fontaine",
+  "bio": "Illustration and journaling. Gouache, ink and small stories drawn on the train.",
+  "niche": "Illustration & journaling",
+  "tags": [
+    "illustration",
+    "journal",
+    "drawing",
+    "gouache"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a woman in her mid 20s with a messy bun and ink-stained fingers holding a brush, cosy studio light, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of an illustrator's desk with gouache pots, sketchbooks, brushes and watercolour paper, soft window light, subject across the middle band",
+  "collections": [
+    {
+      "title": "Studio pages",
+      "description": "Drawings in progress.",
+      "videos": [
+        "Gouache landscape in five minutes",
+        "Train sketching, one stop at a time",
+        "Ink bottle, nib, first line",
+        "Sketchbook flip-through"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Gouache landscape in five minutes",
+      "description": "A flat wash, three colours and a tiny pine forest.",
+      "tags": [
+        "gouache",
+        "painting",
+        "landscape",
+        "illustration"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical top-down photograph of a hand painting a small gouache landscape with pine trees in a sketchbook, paint pots and brushes around, no face, no text",
+      "motion": "The brush strokes a green tree shape and the paint glistens, slow top-down drift."
+    },
+    {
+      "title": "Train sketching, one stop at a time",
+      "description": "A pen, a window and a stranger's silhouette.",
+      "tags": [
+        "sketching",
+        "train",
+        "ink",
+        "journal"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a hand sketching in a journal on a train seat with a blurred landscape rushing past the window, no face, no text",
+      "motion": "The landscape rushes past the window while the pen moves across the page, gentle handheld feel."
+    },
+    {
+      "title": "Ink bottle, nib, first line",
+      "description": "A calligraphy nib touching the paper.",
+      "tags": [
+        "ink",
+        "nib",
+        "drawing",
+        "macro"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical macro photograph of a metal dip pen nib touching cream paper with a fresh line of black ink, ink bottle blurred behind, no face, no text",
+      "motion": "The nib draws a smooth curving line leaving glossy black ink, subtle macro drift."
+    },
+    {
+      "title": "Sketchbook flip-through",
+      "description": "Pages of journey notes and tiny portraits of coffee cups.",
+      "tags": [
+        "sketchbook",
+        "journal",
+        "pages",
+        "art"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a sketchbook open on a wooden table with watercolour doodles of cups and plants, pens and a cup of coffee, warm light, no text",
+      "motion": "A hand turns the pages slowly, light shifts across the paper, gentle push-in."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Palette day",
+      "kind": "image",
+      "still": "Vertical photograph of a palette of gouache colours with a wet brush, soft window light, no text"
+    },
+    {
+      "caption": "Tiny cup study",
+      "kind": "image",
+      "still": "Vertical photograph of a small watercolour painting of a coffee cup beside the real cup, warm light, no text"
+    },
+    {
+      "caption": "Ink drying",
+      "kind": "image",
+      "still": "Vertical photograph of a drying ink drawing of a city rooftop on a desk, no text"
+    }
+  ]
+}

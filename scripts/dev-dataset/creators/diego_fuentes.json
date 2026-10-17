@@ -1,0 +1,99 @@
+{
+  "key": "diego_fuentes",
+  "username": "diego_fuentes",
+  "displayName": "Diego Fuentes",
+  "bio": "DJ and beach-club host. Sunset sets, neon pool nights and the crowd's first hands in the air. Adults only.",
+  "niche": "DJ & beach-club nights",
+  "tags": [
+    "dj",
+    "beach-club",
+    "nightlife",
+    "music"
+  ],
+  "rating": "MATURE",
+  "avatar": "Portrait of a man in his early 30s with a trimmed beard and headphones around his neck, colourful stage light on his face, open linen shirt, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a beach club DJ booth at sunset with laser lights and a crowd silhouette on the sand, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "After dark",
+      "description": "Beach-club and club scenes.",
+      "videos": [
+        "Sunset set, hands in the air",
+        "Mixer close-up, fader slide",
+        "Pool party, neon after dark",
+        "Soundcheck, empty club"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Sunset set, hands in the air",
+      "description": "The first drop of the night with the sun going down.",
+      "tags": [
+        "dj",
+        "beach-club",
+        "sunset",
+        "crowd"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a crowd in silhouette with hands raised on a beach at sunset facing a DJ booth with lights, orange sky, no readable faces, no text",
+      "motion": "The crowd sways with raised hands, stage lights sweep across, the sun sinks, slow camera push-in."
+    },
+    {
+      "title": "Mixer close-up, fader slide",
+      "description": "Hands, faders and a perfect transition.",
+      "tags": [
+        "dj",
+        "mixer",
+        "closeup",
+        "music"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical close-up photograph of DJ hands on a mixer sliding a fader with colourful LED lights reflecting, shallow depth of field, no face, no text",
+      "motion": "The hand slides the fader slowly while LED lights pulse, subtle macro drift."
+    },
+    {
+      "title": "Pool party, neon after dark",
+      "description": "Neon colours on the water and silhouettes dancing at the edge.",
+      "tags": [
+        "pool-party",
+        "neon",
+        "night",
+        "dance"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a pool at night lit in neon pink and blue with silhouettes of people dancing at the edge, tasteful, no readable faces, no text",
+      "motion": "Neon light ripples across the pool surface and silhouettes dance, slow camera tilt, pulsing glow."
+    },
+    {
+      "title": "Soundcheck, empty club",
+      "description": "Before the doors open: an empty floor, one spotlight and a bass test.",
+      "tags": [
+        "club",
+        "soundcheck",
+        "empty",
+        "music"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of an empty nightclub dance floor before opening with a single spotlight, haze in the air and speakers on stage, no people, no text",
+      "motion": "Haze drifts through the spotlight beam and lights sweep slowly, gentle camera push-in."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Headphones on",
+      "kind": "image",
+      "still": "Vertical photograph of studio headphones resting on a DJ controller with warm light, no people, no text"
+    },
+    {
+      "caption": "Flight case",
+      "kind": "image",
+      "still": "Vertical photograph of a flight case of vinyl records open backstage, warm light, no people, no text"
+    },
+    {
+      "caption": "Last light",
+      "kind": "image",
+      "still": "Vertical photograph of a beach at sunset with an empty DJ booth silhouette, no people, no text"
+    }
+  ]
+}

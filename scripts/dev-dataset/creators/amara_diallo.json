@@ -1,0 +1,105 @@
+{
+  "key": "amara_diallo",
+  "username": "amara_diallo",
+  "displayName": "Amara Diallo",
+  "bio": "Natural hair, braiding and the hands behind the style. Patterns, patience and a very good comb.",
+  "niche": "Hair & beauty",
+  "tags": [
+    "hair",
+    "braids",
+    "beauty",
+    "natural-hair"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a woman in her late 20s with dark skin and intricate box braids with gold cuffs, warm studio light, bright smile, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a hair salon station with combs, colourful hair extensions and warm mirror lights, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Craft & finish",
+      "description": "The braiding process and the details.",
+      "videos": [
+        "Box braids, hands only",
+        "Gold cuffs and a finished braid"
+      ]
+    },
+    {
+      "title": "Salon scenes",
+      "description": "Colour and the studio.",
+      "videos": [
+        "Salon morning, first client",
+        "Colour test: copper to plum"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Box braids, hands only",
+      "description": "Section by section: the rhythm of braiding.",
+      "tags": [
+        "braids",
+        "hair",
+        "protective-style",
+        "hands"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical close-up photograph of a pair of hands braiding long sections of black hair into box braids, warm soft light, shallow depth of field, no face, no text",
+      "motion": "The hands cross and pull the strands in a steady rhythm, the braid lengthens, subtle macro drift."
+    },
+    {
+      "title": "Salon morning, first client",
+      "description": "Mirrors, warm light and the day's first tools laid out.",
+      "tags": [
+        "salon",
+        "hair",
+        "morning",
+        "tools"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a tidy salon station in morning light with combs, brushes, hair clips and a mirror ringed with bulbs, no people, no text",
+      "motion": "Morning light slowly warms across the station and dust motes float, gentle push-in."
+    },
+    {
+      "title": "Gold cuffs and a finished braid",
+      "description": "The final touch: cuffs, a mirror turn and light on the finish.",
+      "tags": [
+        "braids",
+        "finish",
+        "accessories",
+        "style"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical close-up photograph of a long braid with gold hair cuffs held up to a mirror, warm light, no face, no text",
+      "motion": "The braid swings gently and the gold cuffs catch the light, slow camera drift."
+    },
+    {
+      "title": "Colour test: copper to plum",
+      "description": "Strands in copper, burgundy and plum laid out in a colour fan.",
+      "tags": [
+        "hair-colour",
+        "colour",
+        "beauty",
+        "palette"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of hair strand swatches in copper, burgundy and plum fanned on a white marble table with soft daylight, no people, no text",
+      "motion": "Light shifts across the strands making the colours shimmer, slow horizontal pan."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Edge control and a comb",
+      "kind": "image",
+      "still": "Vertical photograph of a wide-tooth comb and styling pots on a vanity, warm light, no people, no text"
+    },
+    {
+      "caption": "Hair day",
+      "kind": "image",
+      "still": "Vertical photograph of braided hair in golden afternoon light, seen from behind, no face, no text"
+    },
+    {
+      "caption": "Cuffs collection",
+      "kind": "image",
+      "still": "Vertical photograph of a tray of gold and bronze hair cuffs, soft light, no text"
+    }
+  ]
+}

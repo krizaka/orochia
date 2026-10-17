@@ -1,0 +1,99 @@
+{
+  "key": "andre_costa",
+  "username": "andre_costa",
+  "displayName": "André Costa",
+  "bio": "Bartender and mixologist. Stirred, shaken, never rushed — cocktails for grown-ups, served with a story. Adults only.",
+  "niche": "Cocktails & mixology",
+  "tags": [
+    "cocktails",
+    "bartending",
+    "mixology",
+    "nightlife"
+  ],
+  "rating": "MATURE",
+  "avatar": "Portrait of a man in his mid 30s with a well-groomed beard and rolled-up shirt sleeves behind a dim bar, amber bar lights, charming smile, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a dim cocktail bar with rows of bottles lit amber behind the counter, a copper shaker in the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Behind the bar",
+      "description": "Four drinks and a closing time.",
+      "videos": [
+        "Old fashioned, stirred slow",
+        "Shake it, strain it",
+        "Flame on the orange peel",
+        "Bar close, chairs up"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Old fashioned, stirred slow",
+      "description": "Ice, bitters and a spiral of orange peel.",
+      "tags": [
+        "cocktail",
+        "old-fashioned",
+        "whisky",
+        "bar"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a bartender's hand stirring an amber old fashioned in a mixing glass with a long bar spoon, amber bar lights, no face, no text",
+      "motion": "The spoon stirs slowly and ice clinks, an orange peel twists and its oil mists in the light."
+    },
+    {
+      "title": "Shake it, strain it",
+      "description": "A copper shaker and a coupe glass.",
+      "tags": [
+        "cocktail",
+        "shaker",
+        "bartending",
+        "coupe"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a bartender shaking a copper cocktail shaker above a row of coupe glasses on a dark bar, amber backlight, no face, no text",
+      "motion": "The shaker moves rhythmically with a splash of light, the liquid pours into a coupe, slow camera push-in."
+    },
+    {
+      "title": "Flame on the orange peel",
+      "description": "A flare of citrus oil over a glass.",
+      "tags": [
+        "cocktail",
+        "flame",
+        "citrus",
+        "garnish"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a hand squeezing an orange peel over a lit match making a small flare above a cocktail glass, dark bar background, no face, no text",
+      "motion": "The peel is squeezed and a small flare of citrus flame lights the glass, sparks fade, subtle macro drift."
+    },
+    {
+      "title": "Bar close, chairs up",
+      "description": "Lights low after the last guest.",
+      "tags": [
+        "bar",
+        "closing-time",
+        "night",
+        "mood"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of an empty cocktail bar after closing with chairs up on tables, warm amber lights dimming and bottles glowing behind the counter, no people, no text",
+      "motion": "Lights dim slowly and the bottles glow, haze drifts, slow gentle push-in."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Ice sphere",
+      "kind": "image",
+      "still": "Vertical photograph of a clear ice sphere in a rocks glass with amber whisky, dark bar, no people, no text"
+    },
+    {
+      "caption": "Bitters shelf",
+      "kind": "image",
+      "still": "Vertical photograph of a shelf of small apothecary bitters bottles in amber light, no text"
+    },
+    {
+      "caption": "Last garnish",
+      "kind": "image",
+      "still": "Vertical photograph of a cocktail with a rosemary sprig and smoke curling, dark bar, no people, no text"
+    }
+  ]
+}
