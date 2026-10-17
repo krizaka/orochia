@@ -18,6 +18,11 @@ export interface Person {
 
 export interface Conversation {
   id: string;
+  /** `group`: `otherUser` is the group itself (id = the conversation, displayName = its title). */
+  kind: "direct" | "group";
+  title: string | null;
+  memberCount: number;
+  muted: boolean;
   lastMessageAt: string;
   otherUser: Person & { role?: string };
   lastMessage: {
@@ -41,7 +46,7 @@ export interface ServerMessage {
   clientId: string | null;
   conversationId: string;
   senderId: string;
-  recipientId: string;
+  recipientId: string | null;
   content: string;
   storyId: string | null;
   origin: MessageOrigin;

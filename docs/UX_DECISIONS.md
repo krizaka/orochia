@@ -223,3 +223,13 @@ written here, each with the place that carries it. Disagree, or saw that signal?
 - **Signal we are wrong** — Most people switching to Chronological and staying there, or feedback that the picks feel
   unrelated to what they did.
 - **Feedback** — wrong for you? [Discussion #122](https://github.com/krizaka/orochia/discussions/122).
+
+## Group conversations (krizaka/orochia#260, ADR 0002)
+
+- **Decision**: a group takes only the owner's contacts (or a creator's approved fans), at most 50, with an invitation link that lives a week. A non-member gets a 404, never a "forbidden".
+- **Problem**: people wanted to talk to several people at once (a crew, a fan group) without opening a public room.
+- **Principle**: small groups keep accountability and trust — group size and anonymity drive social loafing and harassment (Latané, Williams & Harkins 1979, "Many hands make light the work"; Suler 2004, "The online disinhibition effect"). Adding only known people, and being able to leave or mute in one tap, keeps control with the person.
+- **Refused**: public rooms and discoverable groups (moderation load, an adult platform), adding anyone by username (unsolicited groups), per-message read receipts in a group (pressure to answer; a read cursor is enough for the badge).
+- **Cost**: you cannot add a stranger without an invitation link; the owner is a single point of administration.
+- **Signal we are wrong**: many groups created then abandoned within a day (the creation is too heavy), or reports per group above the 1:1 rate (the invite link spreads too far).
+- Feedback: the pinned GitHub Discussion linked from the app.

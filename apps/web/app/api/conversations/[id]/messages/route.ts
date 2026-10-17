@@ -31,8 +31,8 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     const id = z.string().uuid().safeParse((await params).id);
     if (!id.success) return jsonError(404, "Conversation not found");
     const page = Page.parse(Object.fromEntries(req.nextUrl.searchParams));
-    const { messages, hasMore } = await getConversationMessages(id.data, user.id, page);
-    return NextResponse.json({ success: true, messages, hasMore });
+    const { messages, hasMore, names } = await getConversationMessages(id.data, user.id, page);
+    return NextResponse.json({ success: true, messages, hasMore, ...(names ? { names } : {}) });
   } catch (error) {
     return errorResponse(error, "conversations/[id]/messages");
   }
