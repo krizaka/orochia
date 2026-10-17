@@ -92,9 +92,8 @@
     },
     {
       "caption": "Sky tonight",
-      "kind": "clip",
-      "still": "Vertical photograph of green aurora ribbons over snowy pines, no people, no text",
-      "motion": "The aurora ribbons slowly shift above the trees."
+      "kind": "image",
+      "still": "Vertical photograph of green aurora ribbons over snowy pines, no people, no text"
     }
   ]
 }

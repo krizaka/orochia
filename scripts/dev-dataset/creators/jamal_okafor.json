@@ -92,9 +92,8 @@
     },
     {
       "caption": "Sixteen counts",
-      "kind": "clip",
-      "still": "Vertical photograph of a dancer in silhouette against a large window at sunset, arms raised, no face visible, no text",
-      "motion": "The dancer raises both arms slowly and turns, soft light flares."
+      "kind": "image",
+      "still": "Vertical photograph of a dancer in silhouette against a large window at sunset, arms raised, no face visible, no text"
     }
   ]
 }

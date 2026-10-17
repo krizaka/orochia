@@ -87,9 +87,8 @@
     },
     {
       "caption": "Maple syrup pour",
-      "kind": "clip",
-      "still": "Vertical close-up photograph of amber maple syrup pouring over a stack of pancakes, warm light, no text",
-      "motion": "The maple syrup pours slowly in a thick amber stream and pools, steam rises."
+      "kind": "image",
+      "still": "Vertical close-up photograph of amber maple syrup pouring over a stack of pancakes, warm light, no text"
     },
     {
       "caption": "Flour everywhere",

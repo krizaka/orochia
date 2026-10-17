@@ -77,13 +77,13 @@ async function profiles(c, call) {
 
 async function videos(c, call) {
   const have = await listOwn(call);
-  const wanted = c.videos.filter((v) => !have.some((h) => h.title.toLowerCase() === v.title.toLowerCase()) && stillApproved(`${c.key}/v/${slug(v.title)}`) && clipApproved(`${c.key}/v/${slug(v.title)}`));
+  const wanted = c.videos.filter((v) => !have.some((h) => h.title.toLowerCase() === v.title.toLowerCase()) && clipApproved(`${c.key}/v/${slug(v.title)}`));
   console.log(`  videos: ${have.length} now, ${wanted.length} to send`);
   for (const v of wanted) {
     if (seeded.sent >= maxVideos) break;
     const id = `${c.key}/v/${slug(v.title)}`;
     const file = made("clip", id).file;
-    const note = `Made with Orazaka — run ${made("clip", id).runId} (Wan 2.2 TI2V 5B, from a FLUX.2 [klein] picture, run ${made("image", id).runId}).`;
+    const note = `Made with Orazaka — run ${made("clip", id).runId} (${made("clip", id).model}${made("image", id) && !made("clip", id).model?.includes("t2v") ? `, from a FLUX.2 [klein] picture, run ${made("image", id).runId}` : ""}).`;
     try {
       if (dry) {
         console.log(`  + ${v.title} (dry)`);

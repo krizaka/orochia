@@ -2,98 +2,111 @@
   "key": "diego_fuentes",
   "username": "diego_fuentes",
   "displayName": "Diego Fuentes",
-  "bio": "DJ and beach-club host. Sunset sets, neon pool nights and the crowd's first hands in the air. Adults only.",
-  "niche": "DJ & beach-club nights",
+  "bio": "Electro DJ and festival host. Stage lights, rooftop sunsets and the first drop of the night. Adults only.",
+  "niche": "Electro & festivals",
   "tags": [
+    "electro",
+    "festival",
     "dj",
-    "beach-club",
-    "nightlife",
-    "music"
+    "rooftop"
   ],
   "rating": "MATURE",
-  "avatar": "Portrait of a man in his early 30s with a trimmed beard and headphones around his neck, colourful stage light on his face, open linen shirt, shoulders-up, photographic, fictional person",
-  "banner": "Ultra-wide panoramic photograph of a beach club DJ booth at sunset with laser lights and a crowd silhouette on the sand, subject across the middle band, cinematic",
+  "avatar": "Portrait of a charismatic man in his mid 30s with a trimmed beard and headphones around his neck, colourful stage lasers behind him, open shirt, shoulders-up, photographic, fictional person, clearly an adult",
+  "banner": "Ultra-wide panoramic photograph of a festival main stage with laser beams and a huge crowd with raised hands at night, subject across the middle band, cinematic",
   "collections": [
     {
-      "title": "After dark",
-      "description": "Beach-club and club scenes.",
+      "title": "Stage & rooftop",
+      "description": "Electro nights and sunsets.",
       "videos": [
-        "Sunset set, hands in the air",
-        "Mixer close-up, fader slide",
-        "Pool party, neon after dark",
-        "Soundcheck, empty club"
+        "Festival main stage, the drop",
+        "Rooftop electro at sunset",
+        "Fader slide, close up",
+        "Concert lights from the pit"
       ]
     }
   ],
   "videos": [
     {
-      "title": "Sunset set, hands in the air",
-      "description": "The first drop of the night with the sun going down.",
+      "title": "Festival main stage, the drop",
+      "description": "Lasers, smoke and thousands of hands at the exact second the beat drops.",
       "tags": [
-        "dj",
-        "beach-club",
-        "sunset",
-        "crowd"
+        "electro",
+        "festival",
+        "crowd",
+        "lasers"
       ],
       "orientation": "horizontal",
-      "still": "Wide photograph of a crowd in silhouette with hands raised on a beach at sunset facing a DJ booth with lights, orange sky, no readable faces, no text",
-      "motion": "The crowd sways with raised hands, stage lights sweep across, the sun sinks, slow camera push-in."
+      "still": "Wide cinematic photograph of a night electronic festival main stage with laser beams, confetti cannons and a huge crowd of adults with raised hands seen from the back, no readable faces, no text",
+      "motion": "The beat drops: lasers sweep, confetti bursts and the crowd jumps with raised hands, camera swoops forward over the crowd.",
+      "hero": true
     },
     {
-      "title": "Mixer close-up, fader slide",
-      "description": "Hands, faders and a perfect transition.",
+      "title": "Rooftop electro at sunset",
+      "description": "A DJ booth on a rooftop, a pink sky and a dancing crowd.",
+      "tags": [
+        "rooftop",
+        "electro",
+        "sunset",
+        "dj"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a rooftop party at sunset with a DJ booth, a pink and orange sky over the city skyline and adults dancing, tasteful party outfits, no text",
+      "motion": "The crowd dances as the sky shifts to pink, lights flicker on, camera glides across the rooftop.",
+      "hero": true
+    },
+    {
+      "title": "Fader slide, close up",
+      "description": "Hands, faders and coloured LEDs.",
       "tags": [
         "dj",
         "mixer",
         "closeup",
-        "music"
+        "electro"
       ],
       "orientation": "vertical",
       "still": "Vertical close-up photograph of DJ hands on a mixer sliding a fader with colourful LED lights reflecting, shallow depth of field, no face, no text",
-      "motion": "The hand slides the fader slowly while LED lights pulse, subtle macro drift."
+      "motion": "The hand slides the fader slowly while LED lights pulse in colour, subtle macro drift."
     },
     {
-      "title": "Pool party, neon after dark",
-      "description": "Neon colours on the water and silhouettes dancing at the edge.",
+      "title": "Concert lights from the pit",
+      "description": "A wall of stage lights seen from the front of the crowd.",
       "tags": [
-        "pool-party",
-        "neon",
-        "night",
-        "dance"
+        "concert",
+        "stage-lights",
+        "crowd",
+        "night"
       ],
       "orientation": "vertical",
-      "still": "Vertical photograph of a pool at night lit in neon pink and blue with silhouettes of people dancing at the edge, tasteful, no readable faces, no text",
-      "motion": "Neon light ripples across the pool surface and silhouettes dance, slow camera tilt, pulsing glow."
-    },
-    {
-      "title": "Soundcheck, empty club",
-      "description": "Before the doors open: an empty floor, one spotlight and a bass test.",
-      "tags": [
-        "club",
-        "soundcheck",
-        "empty",
-        "music"
-      ],
-      "orientation": "horizontal",
-      "still": "Wide photograph of an empty nightclub dance floor before opening with a single spotlight, haze in the air and speakers on stage, no people, no text",
-      "motion": "Haze drifts through the spotlight beam and lights sweep slowly, gentle camera push-in."
+      "still": "Vertical photograph from the front of a concert crowd looking up at a stage covered in beams of coloured light and haze, silhouettes of raised hands, no readable faces, no text",
+      "motion": "Beams of light swing across the haze and hands wave in silhouette, camera rises slowly."
     }
   ],
   "stories": [
     {
+      "caption": "Soundcheck",
+      "kind": "image",
+      "still": "Vertical photograph of an empty festival stage with beams of light and haze before opening, no people, no text"
+    },
+    {
+      "caption": "Wristbands",
+      "kind": "image",
+      "still": "Vertical photograph of neon festival wristbands on a wrist, close-up, no face, no text"
+    },
+    {
+      "caption": "Crowd, 2 a.m.",
+      "kind": "clip",
+      "still": "Vertical photograph of a festival crowd at night with raised hands under lasers, seen from the back, no readable faces, no text",
+      "motion": "Lasers sweep over the crowd, hands wave."
+    },
+    {
       "caption": "Headphones on",
       "kind": "image",
-      "still": "Vertical photograph of studio headphones resting on a DJ controller with warm light, no people, no text"
+      "still": "Vertical photograph of studio headphones on a DJ controller with coloured light, no people, no text"
     },
     {
-      "caption": "Flight case",
+      "caption": "Sunrise set",
       "kind": "image",
-      "still": "Vertical photograph of a flight case of vinyl records open backstage, warm light, no people, no text"
-    },
-    {
-      "caption": "Last light",
-      "kind": "image",
-      "still": "Vertical photograph of a beach at sunset with an empty DJ booth silhouette, no people, no text"
+      "still": "Vertical photograph of a beach stage at sunrise with a DJ silhouette, no readable faces, no text"
     }
   ]
 }

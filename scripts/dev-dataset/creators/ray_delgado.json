@@ -1,0 +1,111 @@
+{
+  "key": "ray_delgado",
+  "username": "ray_delgado",
+  "displayName": "Ray Delgado",
+  "bio": "Neon Miami 80s: white suits, palm trees, ocean drives and city lights in pink and teal. Retro-crime mood, zero violence.",
+  "niche": "Neon Miami 80s",
+  "tags": [
+    "miami",
+    "neon",
+    "retro",
+    "80s"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a stylish man in his late 30s with slicked-back hair and aviator sunglasses wearing a pastel suit jacket, pink and teal neon light on his face, neon Miami 80s style, shoulders-up, photographic, fictional person, clearly an adult",
+  "banner": "Ultra-wide panoramic photograph of a neon Miami 80s skyline at dusk with palm trees, a pink and teal sky and a vintage sports car on an ocean drive, subject across the middle band, cinematic, no text",
+  "collections": [
+    {
+      "title": "Neon Miami 80s",
+      "description": "Retro nights.",
+      "videos": [
+        "Neon Miami 80s, ocean drive at night",
+        "White suit, pink sunset",
+        "Rooftop pool, neon haze",
+        "Cassette in the glovebox"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Neon Miami 80s, ocean drive at night",
+      "description": "Palm trees, pink neon and a sports car cruising by the water.",
+      "tags": [
+        "miami",
+        "neon",
+        "80s",
+        "retro"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide cinematic photograph of a neon Miami 80s ocean drive at night, art-deco hotels with pink and teal neon without readable text, palm trees, a red vintage sports car, wet asphalt reflections, no logos, no people visible",
+      "motion": "The sports car cruises past, neon reflections glide on the wet road, palm trees sway, camera tracks alongside.",
+      "hero": true
+    },
+    {
+      "title": "White suit, pink sunset",
+      "description": "A man in a pastel suit walking a boardwalk at sunset, retro-film grain.",
+      "tags": [
+        "miami",
+        "fashion",
+        "retro",
+        "sunset"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical cinematic photograph of a man in his late 30s in a pastel suit seen from behind walking on a palm-lined boardwalk at a pink and orange sunset in neon Miami 80s style, film grain, no text",
+      "motion": "He walks slowly along the boardwalk, his jacket moves in the sea wind, palms sway, steady camera follow."
+    },
+    {
+      "title": "Rooftop pool, neon haze",
+      "description": "A rooftop pool glowing pink and teal over a night skyline.",
+      "tags": [
+        "miami",
+        "rooftop",
+        "pool",
+        "neon"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a rooftop pool at night glowing pink and teal with palm trees and a city skyline, haze, no people, no text",
+      "motion": "The pool water ripples in neon colours and haze drifts, slow camera push-in."
+    },
+    {
+      "title": "Cassette in the glovebox",
+      "description": "A cassette tape, a steering wheel and a sunset road.",
+      "tags": [
+        "80s",
+        "retro",
+        "car",
+        "music"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph from inside a vintage convertible of a cassette tape player glowing in the dashboard with a pink sunset road ahead, hands on the steering wheel, no face, no text",
+      "motion": "The road streams by ahead, the dashboard glows, the cassette reels turn, slow camera drift."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Neon sign (no letters)",
+      "kind": "image",
+      "still": "Vertical photograph of an abstract pink and teal neon flamingo-shaped tube light on a dark wall, no text"
+    },
+    {
+      "caption": "Palm at dusk",
+      "kind": "image",
+      "still": "Vertical photograph of silhouetted palm trees against a pink and teal dusk sky, neon Miami 80s style, no text"
+    },
+    {
+      "caption": "Aviators",
+      "kind": "image",
+      "still": "Vertical photograph of aviator sunglasses on a car dashboard reflecting pink sunset, no text"
+    },
+    {
+      "caption": "Ocean drive, 1 a.m.",
+      "kind": "clip",
+      "still": "Vertical photograph of a neon-lit empty ocean boulevard with wet asphalt, no readable text, no people",
+      "motion": "Neon reflections shimmer on the wet road."
+    },
+    {
+      "caption": "Cabriolet",
+      "kind": "image",
+      "still": "Vertical photograph of a white vintage convertible parked by palm trees at sunset, no people, no logos, no text"
+    }
+  ]
+}

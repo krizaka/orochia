@@ -5,8 +5,7 @@
       "noah",
       "ravi_kapoor",
       "isabella_rossi",
-      "andre_costa",
-      "fatima_zahra"
+      "andre_costa"
     ],
     "city": [
       "theo_marchand",
@@ -17,11 +16,10 @@
     ],
     "maker": [
       "mateo_silva",
-      "lars_henriksen",
       "priya_nair",
       "lea_fontaine",
       "aiko",
-      "fatima_zahra"
+      "ines_duarte"
     ],
     "outdoors": [
       "mira",
@@ -31,24 +29,36 @@
       "sven_aaltonen"
     ],
     "wellness": [
-      "zoe_lambert",
       "kofi",
       "meilin_zhao",
-      "nadia_haddad",
-      "amara_diallo"
+      "amara_diallo",
+      "ines_duarte"
     ],
     "glamour": [
       "elena_voss",
       "chloe_armand",
       "diego_fuentes",
       "andre_costa",
-      "yuki_mori"
+      "yuki_mori",
+      "valentina_cruz"
     ],
     "fun": [
       "sofia_lindqvist",
       "jamal_okafor",
       "diego_fuentes",
-      "lena"
+      "lena",
+      "sasha_volkov",
+      "valentina_cruz"
+    ],
+    "lifestyle": [
+      "chloe_armand",
+      "diego_fuentes",
+      "elena_voss",
+      "andre_costa",
+      "valentina_cruz",
+      "ray_delgado",
+      "ines_duarte",
+      "sasha_volkov"
     ]
   }
 }

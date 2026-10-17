@@ -92,9 +92,8 @@
     },
     {
       "caption": "Tea glasses",
-      "kind": "clip",
-      "still": "Vertical photograph of a tray of small glasses of chai with steam at a roadside stall, no readable text",
-      "motion": "Steam curls from the glasses, slow push-in."
+      "kind": "image",
+      "still": "Vertical photograph of a tray of small glasses of chai with steam at a roadside stall, no readable text"
     }
   ]
 }

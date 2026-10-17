@@ -92,9 +92,8 @@
     },
     {
       "caption": "Lights on",
-      "kind": "clip",
-      "still": "Vertical tilt-shift photograph of a miniature street at dusk with tiny glowing windows, no text",
-      "motion": "Tiny window lights flicker on one by one, slow subtle push-in."
+      "kind": "image",
+      "still": "Vertical tilt-shift photograph of a miniature street at dusk with tiny glowing windows, no text"
     }
   ]
 }

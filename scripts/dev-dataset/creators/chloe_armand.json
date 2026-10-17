@@ -2,98 +2,111 @@
   "key": "chloe_armand",
   "username": "chloe_armand",
   "displayName": "Chloé Armand",
-  "bio": "Resort mornings, rooftop pools and long lunches by the sea. Swimwear, sunsets and slow summer living. Adults only.",
-  "niche": "Resort & beach-club lifestyle",
+  "bio": "Boat parties, sunsets and swimwear on the Mediterranean. Long days on deck, good music, golden hour. Adults only.",
+  "niche": "Boat parties & swimwear",
   "tags": [
-    "resort",
+    "boat-party",
+    "swimwear",
     "summer",
-    "beach-club",
-    "lifestyle"
+    "yacht"
   ],
   "rating": "MATURE",
-  "avatar": "Portrait of a smiling woman in her early 30s with sun-kissed shoulders and wavy hair, wearing sunglasses pushed up and a white linen shirt, golden hour at a beach club, shoulders-up, photographic, fictional person",
-  "banner": "Ultra-wide panoramic photograph of a luxury beach club at sunset with white loungers, a turquoise pool and palm trees, subject across the middle band, cinematic",
+  "avatar": "Portrait of a glamorous woman in her early 30s with sun-kissed skin and wavy hair, sunglasses pushed up, wearing a white linen shirt over a swimsuit, golden hour on a yacht deck, shoulders-up, photographic, fictional person, clearly an adult",
+  "banner": "Ultra-wide panoramic photograph of a party yacht at sunset on turquoise water with people in swimwear dancing on the deck far away, subject across the middle band, cinematic",
   "collections": [
     {
-      "title": "Summer, slowly",
-      "description": "Pools, terraces and the coast.",
+      "title": "Boat days",
+      "description": "Swimwear, sea and sunsets.",
       "videos": [
-        "Infinity pool, early morning",
-        "Beach-club sunset, one cocktail",
-        "Swimsuit season, packing for the coast",
-        "Yacht lunch, Mediterranean"
+        "Boat party, swimwear on the sundeck",
+        "Champagne spray off the bow",
+        "Jumping off the stern",
+        "Anchor down, sunset playlist"
       ]
     }
   ],
   "videos": [
     {
-      "title": "Infinity pool, early morning",
-      "description": "The pool before anyone arrives: still water, white loungers, a first coffee.",
+      "title": "Boat party, swimwear on the sundeck",
+      "description": "A sundeck full of dancing adults in swimwear, the sea sparkling and the music loud.",
       "tags": [
-        "resort",
-        "pool",
-        "morning",
+        "boat-party",
+        "swimwear",
+        "yacht",
         "summer"
       ],
       "orientation": "horizontal",
-      "still": "Wide photograph of an empty infinity pool at a seaside resort at sunrise with white loungers and the sea beyond, soft pink light, no people, no text",
-      "motion": "The water surface ripples gently, light glitters, slow gentle push-in toward the horizon."
+      "still": "Wide cinematic photograph of a luxury party yacht sundeck with adults in stylish swimwear dancing and holding drinks, turquoise sea sparkling, bright sun, tasteful, fictional adults clearly over 25, tasteful, energetic, cinematic, no text",
+      "motion": "People dance and raise their glasses on the moving deck, sea spray and sunlight sparkle, the boat cuts through blue water, camera glides along the deck.",
+      "hero": true
     },
     {
-      "title": "Beach-club sunset, one cocktail",
-      "description": "A sunset toast on the terrace.",
+      "title": "Champagne spray off the bow",
+      "description": "A toast, a cork and a golden-hour spray over the bow.",
       "tags": [
-        "beach-club",
+        "champagne",
+        "boat-party",
         "sunset",
-        "cocktail",
-        "summer"
-      ],
-      "orientation": "vertical",
-      "still": "Vertical photograph of a woman in a flowing sundress seen from behind at a beach club terrace holding a cocktail toward a vivid sunset, tasteful, fully clothed, no face, no text",
-      "motion": "The sunset light shifts, her dress and hair move in the breeze, cocktail glass glints, slow camera drift."
-    },
-    {
-      "title": "Swimsuit season, packing for the coast",
-      "description": "Straw hats, folded linens and a swimsuit — a suitcase before the trip.",
-      "tags": [
-        "swimwear",
-        "packing",
-        "summer",
-        "travel"
-      ],
-      "orientation": "vertical",
-      "still": "Vertical top-down photograph of an open suitcase packed with folded linen clothes, a straw hat, sunglasses and a bikini top, sand-coloured bed sheet, no people, tasteful, no text",
-      "motion": "Sunlight shifts slowly across the suitcase and a sheer curtain moves in the breeze, subtle top-down drift."
-    },
-    {
-      "title": "Yacht lunch, Mediterranean",
-      "description": "A long table on deck, white wine and the sea passing by.",
-      "tags": [
-        "yacht",
-        "lunch",
-        "mediterranean",
         "luxury"
       ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a woman in a chic one-piece swimsuit and sunglasses seen in three-quarter back view on a yacht bow spraying champagne into golden-hour light, tasteful, fictional adults clearly over 25, tasteful, energetic, cinematic, no text",
+      "motion": "Champagne sprays in an arc glittering in the light, her hair moves in the sea breeze, the bow rises over small waves, steady camera.",
+      "hero": true
+    },
+    {
+      "title": "Jumping off the stern",
+      "description": "Friends in swimwear jumping from the back of the boat into clear water.",
+      "tags": [
+        "boat-party",
+        "swim",
+        "summer",
+        "friends"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of adults in swimwear mid-jump from the stern of a yacht into clear turquoise water, bright sunlight, seen from a distance, tasteful, no text",
+      "motion": "They leap one after the other and hit the water in bursts of spray, the boat idles, light flickers on the sea."
+    },
+    {
+      "title": "Anchor down, sunset playlist",
+      "description": "The boat stops, the music turns slow, and the sky goes orange.",
+      "tags": [
+        "sunset",
+        "yacht",
+        "chill",
+        "music"
+      ],
       "orientation": "horizontal",
-      "still": "Wide photograph of a long lunch table on a yacht deck with white tablecloth, wine glasses and fruit, blue sea beyond, people seen from a distance in summer clothes, tasteful, no text",
-      "motion": "The yacht glides across the blue sea, sunlight sparkles on the water, tablecloth flutters, slow camera drift."
+      "still": "Wide photograph of an anchored yacht at sunset with silhouettes of adults lounging on the deck under string lights, orange sky over calm sea, no text",
+      "motion": "The sky glows orange and the water ripples, string lights twinkle, silhouettes sway gently, slow camera push-in."
     }
   ],
   "stories": [
     {
-      "caption": "Sunscreen and a book",
+      "caption": "Deck, 4 p.m.",
       "kind": "image",
-      "still": "Vertical photograph of a beach towel with a paperback, sunscreen and sunglasses on warm sand, no people, no text"
+      "still": "Vertical photograph of white loungers and colourful towels on a yacht deck in bright sun, no people, no text"
     },
     {
-      "caption": "Sea breeze",
+      "caption": "Straw hat season",
       "kind": "image",
-      "still": "Vertical photograph of sheer white curtains blowing at a balcony facing the sea at golden hour, no people, no text"
+      "still": "Vertical photograph of a woman seen from behind in a straw hat and a sarong on a yacht rail looking at the sea, tasteful, adult, no text"
     },
     {
-      "caption": "Rooftop pool, evening",
+      "caption": "Ice bucket",
+      "kind": "clip",
+      "still": "Vertical photograph of a champagne bucket and two glasses on a deck table at golden hour, no people, no text",
+      "motion": "Ice glints and bubbles rise in the glasses, slow push-in."
+    },
+    {
+      "caption": "Anchor drop",
       "kind": "image",
-      "still": "Vertical photograph of a rooftop pool at dusk with warm lanterns and a city skyline, no people, no text"
+      "still": "Vertical photograph of crystal-clear turquoise water seen from a yacht swim platform, no people, no text"
+    },
+    {
+      "caption": "Last light on the bow",
+      "kind": "image",
+      "still": "Vertical photograph of a yacht bow in orange sunset light with a small flag, no people, no text"
     }
   ]
 }

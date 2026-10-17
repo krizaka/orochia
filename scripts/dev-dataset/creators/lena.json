@@ -43,9 +43,8 @@
     },
     {
       "caption": "Guitar by the fire",
-      "kind": "clip",
-      "still": "Vertical photograph of an acoustic guitar leaning against a stone fireplace with glowing embers, no people, no text",
-      "motion": "Embers glow and flicker softly, slow push-in."
+      "kind": "image",
+      "still": "Vertical photograph of an acoustic guitar leaning against a stone fireplace with glowing embers, no people, no text"
     }
   ]
 }

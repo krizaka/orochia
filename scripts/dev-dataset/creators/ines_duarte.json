@@ -1,0 +1,109 @@
+{
+  "key": "ines_duarte",
+  "username": "ines_duarte",
+  "displayName": "Inês Duarte",
+  "bio": "Fitness and athleisure on the beach: sunrise sessions, rope workouts and a very strong coffee. Fashion for moving.",
+  "niche": "Fitness & fashion",
+  "tags": [
+    "fitness",
+    "athleisure",
+    "workout",
+    "fashion"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a fit athletic woman in her early 30s with a high ponytail and a sports top, light sweat and a determined smile, beach gym at sunrise, shoulders-up, photographic, fictional person, clearly an adult",
+  "banner": "Ultra-wide panoramic photograph of an outdoor beach gym at sunrise with ropes, rings and a barbell, a lone athlete silhouette in the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Move",
+      "description": "Workouts and looks.",
+      "videos": [
+        "Beach workout at sunrise",
+        "Athleisure, three looks",
+        "Kettlebell and chalk",
+        "Yoga flow on the sand"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Beach workout at sunrise",
+      "description": "Rope slams, burpees and a pink horizon.",
+      "tags": [
+        "fitness",
+        "workout",
+        "beach",
+        "sunrise"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide cinematic photograph of an athletic woman in sportswear doing battle-rope slams on a beach at sunrise, spray and sand in the air, pink sky, fictional adults clearly over 25, tasteful, energetic, cinematic, seen from the side, no text",
+      "motion": "She slams the heavy ropes in a steady rhythm, sand and spray fly, the sun rises, camera orbits slowly."
+    },
+    {
+      "title": "Athleisure, three looks",
+      "description": "From gym to brunch in three outfits.",
+      "tags": [
+        "athleisure",
+        "fashion",
+        "outfit",
+        "style"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a woman in stylish athleisure leggings and a cropped jacket walking down a sunny city street holding a coffee, seen in three-quarter back view, tasteful, adult, no text",
+      "motion": "She walks along the street, her jacket and ponytail move, sunlight flickers between buildings, steady camera follow."
+    },
+    {
+      "title": "Kettlebell and chalk",
+      "description": "Chalk dust, a heavy kettlebell and the clean arc of a swing in a bright gym.",
+      "tags": [
+        "fitness",
+        "kettlebell",
+        "strength",
+        "gym"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a woman's hands and forearms gripping a kettlebell in chalk dust in a bright gym, no face, no text",
+      "motion": "The kettlebell swings up in a clean arc, chalk dust puffs, subtle camera drift."
+    },
+    {
+      "title": "Yoga flow on the sand",
+      "description": "A slow yoga flow on the beach at golden hour with the calm sea behind.",
+      "tags": [
+        "yoga",
+        "beach",
+        "flow",
+        "wellness"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a woman in a yoga pose in silhouette on the beach at golden hour with calm waves behind, no face visible, no text",
+      "motion": "She moves slowly into a new pose, waves lap, golden light glows, steady camera."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Sneakers on the sand",
+      "kind": "image",
+      "still": "Vertical photograph of running shoes on wet sand at sunrise, no people, no text"
+    },
+    {
+      "caption": "Protein and a smoothie",
+      "kind": "image",
+      "still": "Vertical photograph of a green smoothie and a shaker on a beach bar at morning light, no people, no text"
+    },
+    {
+      "caption": "Rope marks",
+      "kind": "image",
+      "still": "Vertical photograph of heavy battle ropes on sand at sunrise, no people, no text"
+    },
+    {
+      "caption": "Gym bag",
+      "kind": "image",
+      "still": "Vertical photograph of a gym bag, water bottle and towel on a bench in morning light, no people, no text"
+    },
+    {
+      "caption": "Stretch",
+      "kind": "image",
+      "still": "Vertical photograph of a rolled yoga mat on a rooftop terrace at sunrise with a city skyline, no people, no text"
+    }
+  ]
+}
