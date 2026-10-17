@@ -31,3 +31,22 @@ describe("the bar", () => {
     expect(src).toContain("<BuildBadge />");
   });
 });
+
+describe("one footer, one contentinfo", () => {
+  const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf8");
+
+  it("renders a single footer landmark", () => {
+    expect(renderToStaticMarkup(SiteFooter()).match(/<footer\b/g)).toHaveLength(1);
+  });
+
+  it("the root layout renders it once, after the shell (outside <main>), and no other file renders a footer", async () => {
+    const layout = read("../app/layout.tsx");
+    expect(layout.match(/<SiteFooter \/>/g)).toHaveLength(1);
+    expect(layout.indexOf("</ClientLayoutShell>")).toBeLessThan(layout.indexOf("<SiteFooter />"));
+    const { globSync } = await import("node:fs");
+    const offenders = globSync("{app,components}/**/*.tsx", { cwd: new URL("..", import.meta.url).pathname })
+      .filter((file) => !/(^|\/)(SiteFooter|layout)\.tsx$/.test(file))
+      .filter((file) => /<footer\b|<SiteFooter\b|<FamilyFooter\b/.test(read(`../${file}`)));
+    expect(offenders).toEqual([]);
+  });
+});
