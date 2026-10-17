@@ -170,28 +170,28 @@ try {
 
     // 1 · the feed: two swipes
     mark("start");
-    await pause(page, 1500);
+    await pause(page, 1000);
     await glide(page, FEED, card * v1, 950 + 250 * (v1 - v0 - 1));
-    await pause(page, 1500);
+    await pause(page, 1100);
     await glide(page, FEED, card * v2, 1100 + 250 * (v2 - v1 - 1));
-    await pause(page, 1300);
+    await pause(page, 900);
 
     // 2 · her story: the creator's page, the ring, the story playing full screen; 3 · tip: the sheet over it, an amount chosen
     // (shown, never paid)
     mark("feed");
     await page.goto(`${BASE}/${loc}/@${HANDLE}`);
     await page.waitForLoadState("networkidle").catch(() => {});
-    await pause(page, 1300);
+    await pause(page, 700);
     await tap(page, page.getByRole("button", { name: say(loc, "Watch stories ({count})") }).first(), 500);
     await page.waitForFunction(() => [...document.querySelectorAll("video")].some((v) => v.currentTime > 0.5 && !v.paused), null, { timeout: 12_000 }).catch(() => {});
-    await pause(page, 1500);
+    await pause(page, 1100);
     mark("story");
     await tap(page, page.getByRole("button", { name: say(loc, "Send a tip to {name}") }).first(), 500);
-    await pause(page, 1300);
+    await pause(page, 900);
     const amounts = page.getByRole("radio");
     mark("tip");
     if ((await amounts.count()) > 1) await tap(page, amounts.nth(1), 450);
-    await pause(page, 1900);
+    await pause(page, 1500);
     const href = "feed";
 
     // 4 · earn: the creator's side, the 90 % she keeps
@@ -210,9 +210,9 @@ try {
     await page.waitForFunction(() => !/Loading|Chargement/i.test(document.body.innerText) && /\d/.test(document.body.innerText), null, { timeout: 15_000 }).catch(() => {});
     await page.evaluate(() => ((document.documentElement.style.transition = "opacity .45s"), (document.documentElement.style.opacity = "1")));
     mark("earn");
-    await pause(page, 2200);
-    await glide(page, "window", 200, 1200);
-    await pause(page, 2600);
+    await pause(page, 1800);
+    await glide(page, "window", 200, 1100);
+    await pause(page, 1800);
 
     await cdp.send("Page.stopScreencast").catch(() => {});
     await ctx.close();
