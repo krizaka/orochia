@@ -332,7 +332,7 @@ export default function WatchClient() {
               <div className="mt-3 flex items-center gap-4 text-xs text-fg-secondary font-mono">
                 <span className="flex items-center gap-1">
                   <Eye className="h-3.5 w-3.5 text-fg-muted" />
-                  {t("watch.views", { count: number(details.viewsCount) })}
+                  {t("watch.views", { count: details.viewsCount, shown: number(details.viewsCount) })}
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1">

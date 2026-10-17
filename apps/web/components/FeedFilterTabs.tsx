@@ -224,7 +224,7 @@ export function FeedFilterTabs({ initialTab, initialPage, viewer, unavailable = 
                       {video.title}
                     </h3>
                     <div className="mt-2 flex items-center gap-3 text-xs text-fg-on-media/80 font-mono">
-                      <span>{t("feed.views", { count: number(video.viewsCount) })}</span>
+                      <span>{t("feed.views", { count: video.viewsCount, shown: number(video.viewsCount) })}</span>
                       <span>•</span>
                       <span>{t("feed.minutes", { count: Math.max(1, Math.round(video.durationSeconds / 60)) })}</span>
                     </div>

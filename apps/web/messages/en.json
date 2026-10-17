@@ -155,7 +155,10 @@
       "viewers": "Viewers",
       "tips": "Tips",
       "liked": "Liked it",
-      "guests": "+ {count} views from visitors who were not signed in",
+      "guests": {
+        "one": "+ {count} view from a visitor who was not signed in",
+        "other": "+ {count} views from visitors who were not signed in"
+      },
       "noViewers": "No viewer yet",
       "noTips": "No tip yet",
       "noTipsHint": "Tips sent from this story show here with who sent them.",
@@ -1116,7 +1119,10 @@
     "empty": "Nothing new. Follows, comments, tips and messages show up here.",
     "seeAll": "See all notifications",
     "settings": "Notification settings",
-    "unread": "{count} unread",
+    "unread": {
+      "one": "{count} unread",
+      "other": "{count} unread"
+    },
     "loadMore": "Show older",
     "dismiss": "Dismiss",
     "region": "Live notifications",
@@ -1323,8 +1329,14 @@
     "yours": "Your video",
     "edit": "Edit",
     "editTitle": "Edit your video",
-    "views": "{count} views",
-    "tips": "{count} tips",
+    "views": {
+      "one": "{shown} view",
+      "other": "{shown} views"
+    },
+    "tips": {
+      "one": "{count} tip",
+      "other": "{count} tips"
+    },
     "play": "Play {title}",
     "playTitle": "Preview"
   },
@@ -1340,7 +1352,10 @@
     "shortsNext": "Next shorts",
     "grid": "Grid view",
     "cinematic": "Large view",
-    "views": "{count} views",
+    "views": {
+      "one": "{shown} view",
+      "other": "{shown} views"
+    },
     "minutes": "{count} min",
     "watch": "Watch",
     "noThumbnail": "Orochia",
@@ -1669,9 +1684,18 @@
     "share": "Share",
     "copied": "Link copied",
     "report": "Report",
-    "views": "{count} views",
-    "comments": "{count} comments",
-    "shares": "{count} shares",
+    "views": {
+      "one": "{shown} view",
+      "other": "{shown} views"
+    },
+    "comments": {
+      "one": "{count} comment",
+      "other": "{count} comments"
+    },
+    "shares": {
+      "one": "{count} share",
+      "other": "{count} shares"
+    },
     "verified": "Verified creator (18 U.S.C. § 2257 records)",
     "viewProfile": "View profile",
     "protection": {
@@ -1822,7 +1846,10 @@
   "collectionPage": {
     "eyebrow": "Collection",
     "by": "By {name}",
-    "videos": "{count} videos",
+    "videos": {
+      "one": "{count} video",
+      "other": "{count} videos"
+    },
     "empty": "This collection is empty. Use “Save” on any video to add it."
   },
   "verifyGate": {
@@ -1892,7 +1919,10 @@
     "complete": "Uploads complete",
     "label": "Uploads",
     "title": "Uploads",
-    "running": "{count} uploading in the background",
+    "running": {
+      "one": "{count} uploading in the background",
+      "other": "{count} uploading in the background"
+    },
     "finished": "All uploads finished",
     "minimize": "Minimize",
     "pause": "Pause",
@@ -1965,7 +1995,10 @@
     "unlockedOn": "unlocked {date}",
     "treasury": {
       "gross": "Gross volume",
-      "grossHint": "{count} payments",
+      "grossHint": {
+        "one": "{count} payment",
+        "other": "{count} payments"
+      },
       "fees": "Platform fees",
       "feesHint": "{percent}% of gross",
       "creators": "Creator earnings",
@@ -2069,7 +2102,10 @@
     "namePlaceholder": "New list — e.g. Close friends",
     "intro": "Lists are private. Open an invited-only video or collection to a list: whoever you add later gets in, whoever you remove loses access.",
     "none": "No list yet.",
-    "people": "{count} people",
+    "people": {
+      "one": "{count} person",
+      "other": "{count} people"
+    },
     "delete": "Delete {name}",
     "confirmDelete": "Delete? Members lose access",
     "deleted": "List “{name}” deleted"
@@ -2108,12 +2144,18 @@
     "perVideo": "Each video in a collection keeps its own access rule.",
     "loading": "Loading…",
     "empty": "No collection yet. Create one, then use “Save” on any video.",
-    "videos": "{count} videos",
+    "videos": {
+      "one": "{count} video",
+      "other": "{count} videos"
+    },
     "invitedMeta": " · {members} invited · {lists} lists",
     "delete": "Delete {title}",
     "confirmDelete": "Delete?",
     "shared": "Shared with you",
-    "sharedMeta": "@{owner} · {count} videos",
+    "sharedMeta": {
+      "one": "@{owner} · {count} video",
+      "other": "@{owner} · {count} videos"
+    },
     "deleted": "Collection “{title}” deleted"
   },
   "studio": {
@@ -2199,7 +2241,10 @@
     "retry": "Retry",
     "discard": "Remove",
     "you": "You: {text}",
-    "unreadCount": "{count} unread",
+    "unreadCount": {
+      "one": "{count} unread",
+      "other": "{count} unread"
+    },
     "newFrom": "New message from {name}: {text}",
     "reconnecting": "Reconnecting… new messages will arrive as soon as you are back online.",
     "loadOlder": "Show earlier messages",
@@ -2246,8 +2291,14 @@
       "mute": "Mute this group",
       "muteHint": "No notification and no badge for {hours} hours.",
       "muted": "Muted",
-      "members": "{count} members",
-      "membersCount": "{count} members",
+      "members": {
+        "one": "{count} member",
+        "other": "{count} members"
+      },
+      "membersCount": {
+        "one": "{count} member",
+        "other": "{count} members"
+      },
       "owner": "Owner",
       "remove": "Remove",
       "add": "Add people",
@@ -2452,7 +2503,10 @@
     "startingPrice": "Starting price",
     "soldFor": "Sold for",
     "counts": "{bids} bids · {bidders} bidders",
-    "bids": "{count} bids",
+    "bids": {
+      "one": "{count} bid",
+      "other": "{count} bids"
+    },
     "startsIn": "Starts in",
     "endsIn": "Ends in",
     "decisionIn": "Decision within",
@@ -2887,7 +2941,10 @@
       "full": "Your space is full: new uploads are refused until you free some.",
       "unlimited": "No storage limit on your plan."
     },
-    "held": "{count} upload(s) on hold until space is freed — kept, never deleted.",
+    "held": {
+      "one": "{count} upload on hold until space is freed — kept, never deleted.",
+      "other": "{count} uploads on hold until space is freed — kept, never deleted."
+    },
     "paused": "Uploads are paused for everyone while the platform's storage is extended. Try again later.",
     "off": "Storage limits are off on this deployment.",
     "manage": "Manage uploads"
@@ -3198,7 +3255,10 @@
     "audience": {
       "title": "Your audience also watches",
       "hint": "Other creators followed by at least {min} of your viewers — never named.",
-      "line": "{count} other creators share your audience."
+      "line": {
+        "one": "{count} other creator shares your audience.",
+        "other": "{count} other creators share your audience."
+      }
     },
     "weekdays": "Mon Tue Wed Thu Fri Sat Sun",
     "loading": "Loading your insights",
@@ -3244,7 +3304,10 @@
     "collectionTitle": "{title} — a collection by @{owner}",
     "collectionDescription": "A collection of videos curated by @{owner} on Orochia.",
     "creator": "Creator",
-    "creatorDescription": "{name} — independent creator on Orochia, {count} videos.",
+    "creatorDescription": {
+      "one": "{name} — independent creator on Orochia, {count} video.",
+      "other": "{name} — independent creator on Orochia, {count} videos."
+    },
     "creatorOg": "{name} on Orochia"
   },
   "seo": {

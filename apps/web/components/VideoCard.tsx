@@ -93,7 +93,7 @@ export function VideoCard({ aspect, layout, ...props }: VideoCardProps & { aspec
           href: creatorUsername ? `/@${creatorUsername}` : undefined,
           defaultAvatar: { brand: "orochia", seed: creatorName },
         }}
-        meta={t("feed.views", { count: number(viewsCount) })}
+        meta={t("feed.views", { count: viewsCount, shown: number(viewsCount) })}
         action={
           <Button size="sm" shape="rounded" onClick={() => setTipping(true)} className="h-6 gap-1 border-accent/30 bg-accent/10 px-2 text-[10px] text-fg-accent hover:border-accent hover:bg-accent hover:text-on-accent">
             <Sparkles className="h-2.5 w-2.5" aria-hidden />

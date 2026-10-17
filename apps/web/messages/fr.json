@@ -155,7 +155,10 @@
       "viewers": "Spectateurs",
       "tips": "Pourboires",
       "liked": "A aimé",
-      "guests": "+ {count} vues de visiteurs non connectés",
+      "guests": {
+        "one": "+ {count} vue d’un visiteur non connecté",
+        "other": "+ {count} vues de visiteurs non connectés"
+      },
       "noViewers": "Aucun spectateur pour l’instant",
       "noTips": "Aucun pourboire pour l’instant",
       "noTipsHint": "Les pourboires envoyés depuis cette story s’affichent ici, avec le nom de la personne.",
@@ -1116,7 +1119,10 @@
     "empty": "Rien de nouveau. Les abonnements, commentaires, pourboires et messages s’affichent ici.",
     "seeAll": "Voir toutes les notifications",
     "settings": "Paramètres des notifications",
-    "unread": "{count} non lues",
+    "unread": {
+      "one": "{count} non lue",
+      "other": "{count} non lues"
+    },
     "loadMore": "Afficher les plus anciennes",
     "dismiss": "Ignorer",
     "region": "Notifications en direct",
@@ -1323,8 +1329,14 @@
     "yours": "Votre vidéo",
     "edit": "Modifier",
     "editTitle": "Modifier votre vidéo",
-    "views": "{count} vues",
-    "tips": "{count} pourboires",
+    "views": {
+      "one": "{shown} vue",
+      "other": "{shown} vues"
+    },
+    "tips": {
+      "one": "{count} pourboire",
+      "other": "{count} pourboires"
+    },
     "play": "Lire {title}",
     "playTitle": "Aperçu"
   },
@@ -1340,7 +1352,10 @@
     "shortsNext": "Shorts suivants",
     "grid": "Affichage en grille",
     "cinematic": "Grand affichage",
-    "views": "{count} vues",
+    "views": {
+      "one": "{shown} vue",
+      "other": "{shown} vues"
+    },
     "minutes": "{count} min",
     "watch": "Regarder",
     "noThumbnail": "Orochia",
@@ -1669,9 +1684,18 @@
     "share": "Partager",
     "copied": "Lien copié",
     "report": "Signaler",
-    "views": "{count} vues",
-    "comments": "{count} commentaires",
-    "shares": "{count} partages",
+    "views": {
+      "one": "{shown} vue",
+      "other": "{shown} vues"
+    },
+    "comments": {
+      "one": "{count} commentaire",
+      "other": "{count} commentaires"
+    },
+    "shares": {
+      "one": "{count} partage",
+      "other": "{count} partages"
+    },
     "verified": "Créateur vérifié (dossiers de l’article 2257 du titre 18 du U.S. Code)",
     "viewProfile": "Voir le profil",
     "protection": {
@@ -1822,7 +1846,10 @@
   "collectionPage": {
     "eyebrow": "Collection",
     "by": "Par {name}",
-    "videos": "{count} vidéos",
+    "videos": {
+      "one": "{count} vidéo",
+      "other": "{count} vidéos"
+    },
     "empty": "Cette collection est vide. Utilisez « Enregistrer » sur une vidéo pour l’y ajouter."
   },
   "verifyGate": {
@@ -1892,7 +1919,10 @@
     "complete": "Téléversements terminés",
     "label": "Téléversements",
     "title": "Téléversements",
-    "running": "{count} téléversement(s) en cours en arrière-plan",
+    "running": {
+      "one": "{count} téléversement en cours en arrière-plan",
+      "other": "{count} téléversements en cours en arrière-plan"
+    },
     "finished": "Tous les téléversements sont terminés",
     "minimize": "Réduire",
     "pause": "Pause",
@@ -1965,7 +1995,10 @@
     "unlockedOn": "débloquée le {date}",
     "treasury": {
       "gross": "Volume brut",
-      "grossHint": "{count} paiements",
+      "grossHint": {
+        "one": "{count} paiement",
+        "other": "{count} paiements"
+      },
       "fees": "Frais de plateforme",
       "feesHint": "{percent} % du brut",
       "creators": "Revenus des créateurs",
@@ -2069,7 +2102,10 @@
     "namePlaceholder": "Nouvelle liste — p. ex. Proches",
     "intro": "Les listes sont privées. Ouvrez une vidéo ou une collection réservée aux invités à une liste : les personnes que vous y ajoutez plus tard y ont accès, celles que vous retirez le perdent.",
     "none": "Aucune liste pour l’instant.",
-    "people": "{count} personnes",
+    "people": {
+      "one": "{count} personne",
+      "other": "{count} personnes"
+    },
     "delete": "Supprimer {name}",
     "confirmDelete": "Supprimer? Les membres perdent l’accès",
     "deleted": "Liste « {name} » supprimée"
@@ -2108,12 +2144,18 @@
     "perVideo": "Chaque vidéo d’une collection garde sa propre règle d’accès.",
     "loading": "Chargement…",
     "empty": "Aucune collection pour l’instant. Créez-en une, puis utilisez « Enregistrer » sur une vidéo.",
-    "videos": "{count} vidéos",
+    "videos": {
+      "one": "{count} vidéo",
+      "other": "{count} vidéos"
+    },
     "invitedMeta": " · {members} invités · {lists} listes",
     "delete": "Supprimer {title}",
     "confirmDelete": "Supprimer?",
     "shared": "Partagées avec vous",
-    "sharedMeta": "@{owner} · {count} vidéos",
+    "sharedMeta": {
+      "one": "@{owner} · {count} vidéo",
+      "other": "@{owner} · {count} vidéos"
+    },
     "deleted": "Collection « {title} » supprimée"
   },
   "studio": {
@@ -2199,7 +2241,10 @@
     "retry": "Réessayer",
     "discard": "Retirer",
     "you": "Vous : {text}",
-    "unreadCount": "{count} non lus",
+    "unreadCount": {
+      "one": "{count} non lu",
+      "other": "{count} non lus"
+    },
     "newFrom": "Nouveau message de {name} : {text}",
     "reconnecting": "Reconnexion… les nouveaux messages arriveront dès que vous serez de nouveau en ligne.",
     "loadOlder": "Afficher les messages précédents",
@@ -2246,8 +2291,14 @@
       "mute": "Mettre ce groupe en sourdine",
       "muteHint": "Aucune notification ni pastille pendant {hours} heures.",
       "muted": "En sourdine",
-      "members": "{count} membres",
-      "membersCount": "{count} membres",
+      "members": {
+        "one": "{count} membre",
+        "other": "{count} membres"
+      },
+      "membersCount": {
+        "one": "{count} membre",
+        "other": "{count} membres"
+      },
       "owner": "Propriétaire",
       "remove": "Retirer",
       "add": "Ajouter des personnes",
@@ -2452,7 +2503,10 @@
     "startingPrice": "Prix de départ",
     "soldFor": "Vendue pour",
     "counts": "{bids} mises · {bidders} enchérisseurs",
-    "bids": "{count} mises",
+    "bids": {
+      "one": "{count} mise",
+      "other": "{count} mises"
+    },
     "startsIn": "Commence dans",
     "endsIn": "Se termine dans",
     "decisionIn": "Décision d’ici",
@@ -2887,7 +2941,10 @@
       "full": "Votre espace est plein : les nouveaux téléversements sont refusés tant que vous n’en libérez pas.",
       "unlimited": "Aucune limite de stockage sur votre forfait."
     },
-    "held": "{count} téléversement(s) en attente jusqu’à ce que de l’espace soit libéré — conservés, jamais supprimés.",
+    "held": {
+      "one": "{count} téléversement en attente jusqu’à ce que de l’espace soit libéré — conservé, jamais supprimé.",
+      "other": "{count} téléversements en attente jusqu’à ce que de l’espace soit libéré — conservés, jamais supprimés."
+    },
     "paused": "Les téléversements sont suspendus pour tout le monde pendant l’agrandissement du stockage de la plateforme. Réessayez plus tard.",
     "off": "Les limites de stockage sont désactivées sur ce déploiement.",
     "manage": "Gérer les téléversements"
@@ -3198,7 +3255,10 @@
     "audience": {
       "title": "Votre public regarde aussi",
       "hint": "D’autres créateurs suivis par au moins {min} de vos spectateurs — jamais nommés.",
-      "line": "{count} autres créateurs partagent votre public."
+      "line": {
+        "one": "{count} autre créateur partage votre public.",
+        "other": "{count} autres créateurs partagent votre public."
+      }
     },
     "weekdays": "lun mar mer jeu ven sam dim",
     "loading": "Chargement de vos statistiques",
@@ -3244,7 +3304,10 @@
     "collectionTitle": "{title} — une collection de @{owner}",
     "collectionDescription": "Une collection de vidéos réunies par @{owner} sur Orochia.",
     "creator": "Créateur",
-    "creatorDescription": "{name} — créateur indépendant sur Orochia, {count} vidéos.",
+    "creatorDescription": {
+      "one": "{name} — créateur indépendant sur Orochia, {count} vidéo.",
+      "other": "{name} — créateur indépendant sur Orochia, {count} vidéos."
+    },
     "creatorOg": "{name} sur Orochia"
   },
   "seo": {

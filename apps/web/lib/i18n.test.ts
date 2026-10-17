@@ -126,6 +126,16 @@ describe("the French catalogue", () => {
     expect([fr0, fr1, fr2]).toEqual(["0 vue", "1 vue", "2 vues"]);
   });
 
+  it("agrees every count in French and in English: « 1 vue », « 0 vue », « 2 vues » — the figure shown apart from the count that picks the form", () => {
+    const fr = toolsFor("fr").t;
+    const en = toolsFor("en").t;
+    expect([0, 1, 2].map((count) => fr("watch.views", { count, shown: String(count) }))).toEqual(["0 vue", "1 vue", "2 vues"]);
+    expect([1, 2].map((count) => en("watch.views", { count, shown: String(count) }))).toEqual(["1 view", "2 views"]);
+    expect(fr("inbox.unreadCount", { count: 1 })).toBe("1 non lu");
+    expect(fr("inbox.unreadCount", { count: 3 })).toBe("3 non lus");
+    expect(en("auction.bids", { count: 1 })).toBe("1 bid");
+  });
+
   it("keeps the 18+ gate in plain, neutral words", () => {
     expect(toolsFor("fr").t("card.adult")).toBe("18+");
     expect(toolsFor("fr").t("ageGate.enter")).toBe("J’ai 18 ans ou plus — entrer");
