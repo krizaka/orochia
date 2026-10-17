@@ -7,12 +7,13 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (184)
+## Endpoints (186)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/admin/auctions` | session · ADMIN | Every auction for operators (latest first, optionally by status): video, creator, price, bids, timing, outcome. |
 | `DELETE` | `/api/admin/auctions/[id]` | session · ADMIN | Cancels an auction that is open or awaiting its decision, with a recorded reason; the leading bid is released. |
+| `POST` | `/api/admin/conversations/[id]/moderate` | session · ADMIN | Acts on a reported conversation: remove a message, remove a member of a group, close a group. |
 | `GET` | `/api/admin/creators` | session · ADMIN | Creator accounts with their verification state; `?verified=false` lists the review queue. |
 | `PATCH` | `/api/admin/creators/[id]` | session · ADMIN | Records the outcome of a creator's 18 U.S.C. § 2257 review. |
 | `GET` | `/api/admin/documents` | session · ADMIN | A creator's 2257 document (`?ref=private/documents/&lt;uuid&gt;.&lt;ext&gt;`), for operators only; never cached. |
@@ -29,6 +30,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/admin/platform/reset` | session · ADMIN | Factory reset: backs the database up first (unless asked not to), wipes it and rebuilds it from the migrations — development deployments only (DATABASE_ALLOW_RESET, never the indexed production), after the operator typed “reset &lt;database&gt;”. The operator and the owner are kept. |
 | `GET` | `/api/admin/reports` | session · ADMIN | Content reports, newest first; `?status=` filters. |
 | `PATCH` | `/api/admin/reports/[id]` | session · ADMIN | Moves a report through triage (open → in review → resolved). |
+| `GET` | `/api/admin/reports/[id]/context` | session · ADMIN | The message a report names, with ten messages either side (a direct or a group conversation) — and no more. |
 | `GET` | `/api/admin/storage` | session · ADMIN | Platform storage for operators: usage against the cap and alert thresholds, the plans, the largest accounts, the last reconciliation with Bunny, and the state of the abuse defences (rate-limit store, bot challenge). |
 | `POST` | `/api/admin/storage` | session · ADMIN | Reconciles the storage counters with Bunny now (lists the Stream library; at most a few times an hour). |
 | `PATCH` | `/api/admin/storage/[userId]` | session · ADMIN | Sets an account's storage plan (a name of ABUSE_QUOTA_PLANS, or null for the default); its held uploads go online if they fit. |
