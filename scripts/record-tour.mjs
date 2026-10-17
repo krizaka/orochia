@@ -4,7 +4,7 @@
 //   npm run demo:seed                      # the official demo, in its own database (scripts/demo.mjs, cast.json)
 //   npm run build && npm run demo:start    # a production build on that database, on :3100 (no dev overlay)
 //   npm run record:tour                    # every clip in English AND French; `-- alex-story elena-earnings` re-records some,
-//                                          # `LOCALES=fr` only one language. APP_URL, OUT (tour/, one folder per language).
+//                                          # `-- --locales=fr` only one language. APP_URL, OUT (tour/, one folder per language).
 //                                          # Re-run demo:seed before each language's full take: the clips pay, bid and back for real.
 //
 // Two people you can picture yourself as, never the operator: Elena Marlow, a singer-songwriter who films her songs
@@ -44,9 +44,10 @@ const SHOWCASE = path.join(ROOT, "apps/web/public/showcase");
 const CAST = JSON.parse(readFileSync(path.join(ROOT, "scripts/demo/cast.json"), "utf8"));
 const BASE = (process.env.APP_URL || "http://localhost:3100").replace(/\/$/, "");
 const OUT = path.resolve(process.env.OUT || "tour");
-const LOCALES = (process.env.LOCALES || "en,fr").split(",").map((l) => l.trim()).filter(Boolean);
+const ARGS = process.argv.slice(2);
+const LOCALES = (ARGS.find((a) => a.startsWith("--locales="))?.slice(10) || "en,fr").split(",").map((l) => l.trim()).filter(Boolean);
 const LOCAL_MEDIA = process.env.TOUR_LOCAL_MEDIA !== "0";
-const ONLY = process.argv.slice(2);
+const ONLY = ARGS.filter((a) => !a.startsWith("--"));
 const WINDOW = { width: 1120, height: 700 };
 const SCALE = 2; // device pixels per CSS pixel: the capture is sharp on a high-DPI screen
 const FRAME = "1600:1000"; // the published size (16:10, as the window)
