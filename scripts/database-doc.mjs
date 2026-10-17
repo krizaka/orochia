@@ -7,7 +7,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const code = (s) => "`" + s + "`";
-const cell = (s) => String(s).replace(/\|/g, "\\|");
+export const cell = (s) => String(s).replace(/\\/g, "\\\\").replace(/\|/g, "\\|");
 
 /** The schema as data (tables, columns, foreign keys, enums), read from the Drizzle objects. */
 export function readSchema(root) {

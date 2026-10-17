@@ -44,7 +44,8 @@ export function validateOwner(config: OwnerConfig): OwnerConfig {
   const email = config.email.trim().toLowerCase();
   const username = config.username.trim().toLowerCase();
   const name = config.name.trim();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Default user email is not an e-mail address");
+  // 254 is the longest address; the cap also keeps the pattern below linear on a hostile value.
+  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Default user email is not an e-mail address");
   if (!/^[a-z0-9_]{3,30}$/.test(username)) throw new Error("Default user username: 3–30 letters, digits, underscore");
   if (!name || name.length > 100) throw new Error("Default user name is required (100 characters at most)");
   if (config.password !== undefined && config.password.length < 10) throw new Error("Default user password needs 10+ characters");
