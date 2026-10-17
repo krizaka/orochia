@@ -54,7 +54,7 @@ describe("the language of an address", () => {
 
   it("does not touch the API, the media, the well-known files or the native bot-challenge page", async () => {
     const { config } = await import("../proxy");
-    const matcher = new RegExp(`^${config.matcher[0].replace(/\\/g, "\\")}$`);
+    const matcher = new RegExp(`^${config.matcher[0]}$`);
     for (const path of ["/api/health", "/_next/static/a.js", "/.well-known/apple-app-site-association", "/auth/native-challenge", "/robots.txt", "/defaults/avatars/a-256.webp"]) {
       expect(matcher.test(path), path).toBe(false);
     }
