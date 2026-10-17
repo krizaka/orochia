@@ -407,7 +407,8 @@ for (const p of ["/", "/explore", "/explore?q=tokyo", "/explore?tag=acoustic", "
 const plid = (await anon.call("/api/creators/elenavox")).json.playlists[0].id;
 {
   const res = await fetch(`${B}/playlists/${plid}`);
-  check("playlist page → 200", res.status === 200, `${res.status} ${res.url}`);
+  const body = res.status === 200 ? "" : (await res.text()).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").slice(0, 1500);
+  check("playlist page → 200", res.status === 200, `${res.status} ${res.url} ${body}`);
 }
 
 // Bunny Stream webhook (signature v1, keyed with the library's read-only API key)
