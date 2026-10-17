@@ -1,9 +1,11 @@
 import { contentRatings, db, follows, payoutRequests, playlists, profiles, stories,tipsLedger, users, videoAccessGrants, videos } from "@orochia/db";
 import { getCreatorAvailableBalanceCents } from "@orochia/payments";
-import { and, desc, eq, gt, ilike, isNull, ne, or, type SQL,sql } from "drizzle-orm";
+import { and, desc, eq, gt, ilike, inArray, isNull, ne, or, type SQL,sql } from "drizzle-orm";
 
 import type { SessionUser } from "./auth";
-import { type FeedSort, FEED_PAGE_SIZE, FEED_PAGE_MAX, FeedSort as Sort, pageOf, parseFeedCursor } from "./feed-cursor";
+import { FEED_PAGE_MAX, FEED_PAGE_SIZE, type FeedSort, FeedSort as Sort, isRankedSort, pageOf, parseFeedCursor, rankedSlice } from "./feed-cursor";
+import { rankedPool } from "./feed-pool";
+import { feedSettings } from "./feed-settings";
 import { withSignedMedia } from "./media-urls";
 import { socialLinksView } from "./profile";
 import { veilSummary } from "./video-veil";
@@ -97,9 +99,10 @@ export interface FeedPage {
 }
 
 /**
- * One page of a feed from our database (keyset pagination, lib/feed-cursor.ts): `latest` (newest first), `trending` (most
- * viewed first) or `following` (newest of the creators the viewer follows, needs `viewerId`). A page costs one indexed
- * range read of `limit + 1` rows; the library is never listed whole, and Bunny's list API is not asked at all.
+ * One page of a feed from our database: `latest` (newest first, keyset pagination, lib/feed-cursor.ts) and `following`
+ * (newest of the creators the viewer follows, needs `viewerId`) cost one indexed range read of `limit + 1` rows;
+ * `foryou` and `trending` are slices of a ranked pool (lib/feed-pool.ts: velocity, Orazaka's recommendations, a creator
+ * never more than N in a row).  the library is never listed whole, and Bunny's list API is not asked at all.
  */
 export async function feedPage(
   { sort, cursor, limit = FEED_PAGE_SIZE, viewerId }: { sort: FeedSort; cursor?: string | null; limit?: number; viewerId?: string | null },
@@ -107,18 +110,11 @@ export async function feedPage(
 ): Promise<FeedPage> {
   const size = Math.min(Math.max(Math.trunc(limit), 1), FEED_PAGE_MAX);
   const after = parseFeedCursor(cursor, sort);
-  const trending = sort === Sort.Trending;
-  const keyOf = trending ? sql<string>`${videos.viewsCount}::text` : sql<string>`${videos.createdAt}::text`;
+  if (isRankedSort(sort)) return rankedFeedPage(sort, Number(after?.key ?? 0), size, viewerId ?? null, viewerAgeChecked);
   const filters: (SQL | undefined)[] = [listable()];
-  if (after) {
-    filters.push(
-      trending
-        ? sql`(${videos.viewsCount}, ${videos.id}) < (${after.key}::integer, ${after.id}::uuid)`
-        : sql`(${videos.createdAt}, ${videos.id}) < (${after.key}::timestamptz, ${after.id}::uuid)`,
-    );
-  }
+  if (after) filters.push(sql`(${videos.createdAt}, ${videos.id}) < (${after.key}::timestamptz, ${after.id}::uuid)`);
   let query = db
-    .select({ ...videoSummaryColumns, cursorKey: keyOf })
+    .select({ ...videoSummaryColumns, cursorKey: sql<string>`${videos.createdAt}::text` })
     .from(videos)
     .innerJoin(users, eq(users.id, videos.creatorId))
     .$dynamic();
@@ -130,10 +126,30 @@ export async function feedPage(
     .leftJoin(profiles, eq(profiles.userId, videos.creatorId))
     .leftJoin(contentRatings, eq(contentRatings.id, videos.contentRatingId))
     .where(and(...filters))
-    .orderBy(...(trending ? [desc(videos.viewsCount), desc(videos.id)] : [desc(videos.createdAt), desc(videos.id)]))
+    .orderBy(desc(videos.createdAt), desc(videos.id))
     .limit(size + 1);
   const page = pageOf(rows, size, sort);
   return { videos: page.items.map((r) => withSignedMedia(veilSummary(r, viewerAgeChecked))), nextCursor: page.nextCursor };
+}
+
+/** For you and Trending: a slice of the ranked pool (lib/feed-pool.ts), read back in the pool's order. */
+async function rankedFeedPage(sort: FeedSort, offset: number, size: number, viewerId: string | null, viewerAgeChecked: boolean): Promise<FeedPage> {
+  const now = new Date();
+  const settings = await feedSettings(now);
+  const viewer = viewerId ? { id: viewerId, role: "FAN", isAgeVerified: viewerAgeChecked } : null;
+  const pool = await rankedPool(sort as typeof Sort.ForYou | typeof Sort.Trending, viewer, listable() as SQL, settings, now);
+  const slice = rankedSlice(pool, offset, size, sort);
+  if (slice.items.length === 0) return { videos: [], nextCursor: null };
+  const rows = await db
+    .select(videoSummaryColumns)
+    .from(videos)
+    .innerJoin(users, eq(users.id, videos.creatorId))
+    .leftJoin(profiles, eq(profiles.userId, videos.creatorId))
+    .leftJoin(contentRatings, eq(contentRatings.id, videos.contentRatingId))
+    .where(and(listable(), inArray(videos.id, slice.items.map((i) => i.id))));
+  const byId = new Map(rows.map((r) => [r.id, r]));
+  const ordered = slice.items.flatMap((i) => byId.get(i.id) ?? []);
+  return { videos: ordered.map((r) => withSignedMedia(veilSummary(r, viewerAgeChecked))), nextCursor: slice.nextCursor };
 }
 
 export interface VideoSearch {

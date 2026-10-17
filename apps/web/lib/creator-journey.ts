@@ -94,7 +94,7 @@ export function creatorSpaceCta(state: ViewerState, signupOpen = true): Cta | nu
 }
 
 /** The tabs of the home feed (`?feed=`). */
-export type FeedTab = "foryou" | "following" | "trending";
+export type FeedTab = "foryou" | "following" | "trending" | "latest";
 
 /** Which empty state the home feed shows: nothing listed on the platform, or nothing in this tab. */
 export type FeedEmptyKind = "platform" | "tab";

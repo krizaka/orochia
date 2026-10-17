@@ -7,8 +7,8 @@
 export const TabStatus = { Idle: "idle", Loading: "loading", Failed: "failed" } as const;
 export type TabStatus = (typeof TabStatus)[keyof typeof TabStatus];
 
-export type FeedTabId = "latest" | "trending" | "following";
-export const FEED_TABS: readonly FeedTabId[] = ["latest", "trending", "following"];
+export type FeedTabId = "foryou" | "latest" | "trending" | "following";
+export const FEED_TABS: readonly FeedTabId[] = ["foryou", "latest", "trending", "following"];
 
 export interface TabState<T> {
   videos: T[];
@@ -30,7 +30,7 @@ const empty = <T>(): TabState<T> => ({ videos: [], nextCursor: null, loaded: fal
 
 /** All tabs empty but `tab`, which starts from its server-rendered first page. */
 export function feedStateOf<T>(tab: FeedTabId, first: PageData<T>): FeedStates<T> {
-  return { latest: empty(), trending: empty(), following: empty(), [tab]: { videos: first.videos, nextCursor: first.nextCursor, loaded: true, status: "idle" } };
+  return { foryou: empty(), latest: empty(), trending: empty(), following: empty(), [tab]: { videos: first.videos, nextCursor: first.nextCursor, loaded: true, status: "idle" } };
 }
 
 /** There is a page to ask for: the first of a tab never opened, or the one after the cursor. */

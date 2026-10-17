@@ -215,8 +215,7 @@ export async function newVideos(viewer: ExploreViewer | null, limit = 8, offset 
 }
 
 /** Engagement on discoverable videos within the trending window, counted per day (views) and per hour (likes, tips). */
-async function videoEngagement(): Promise<(EngagementBucket & { creatorId: string; createdAt: Date })[]> {
-  const days = TRENDING_WINDOW_DAYS;
+export async function videoEngagement(scope: SQL = discoverableVideo(), days = TRENDING_WINDOW_DAYS): Promise<(EngagementBucket & { creatorId: string; createdAt: Date })[]> {
   const rows = await db.execute<{ item_id: string; kind: EngagementKind; at: Date | string; count: number; creator_id: string; created_at: Date | string }>(sql`
     select e.item_id, e.kind, e.at, e.count, ${videos.creatorId} as creator_id, ${videos.createdAt} as created_at
     from (
@@ -232,7 +231,7 @@ async function videoEngagement(): Promise<(EngagementBucket & { creatorId: strin
     ) e
     join ${videos} on ${videos.id} = e.item_id
     join ${users} on ${users.id} = ${videos.creatorId}
-    where ${discoverableVideo()}
+    where ${scope}
     limit 20000`);
   return rows.rows.map((r) => ({
     itemId: r.item_id,
