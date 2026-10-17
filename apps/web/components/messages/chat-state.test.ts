@@ -13,6 +13,7 @@ const msg = (seq: number, extra: Partial<ChatMessage> = {}): ChatMessage => ({
   recipientId: "you",
   content: `#${seq}`,
   storyId: null,
+  origin: "human",
   deliveredAt: null,
   isRead: false,
   readAt: null,
@@ -59,6 +60,10 @@ describe("the thread", () => {
 describe("the conversation list", () => {
   const conv = (id: string, unread = 0, last?: number): Conversation => ({
     id,
+    kind: "direct",
+    title: null,
+    memberCount: 2,
+    muted: false,
     lastMessageAt: "2026-01-01T00:00:00.000Z",
     otherUser: { id: "you", username: "you", displayName: "You", avatarUrl: null },
     lastMessage: last ? { id: `m${last}`, seq: last, content: "", senderId: me, storyId: null, createdAt: "", deliveredAt: null, isRead: false } : null,
@@ -72,6 +77,12 @@ describe("the conversation list", () => {
     expect(next.map((c) => c.id)).toEqual(["c1", "a"]);
     expect(next[0].unreadCount).toBe(2);
     expect(next[0].lastMessage?.seq).toBe(5);
+  });
+
+  it("counts a group message (no recipient) from someone else as unread, not one's own", () => {
+    const group = { ...conv("c1"), kind: "group" as const, title: "Crew", memberCount: 3 };
+    expect(applyMessageToList([group], msg(5, { senderId: "you", recipientId: null }), me, false)![0].unreadCount).toBe(1);
+    expect(applyMessageToList([group], msg(6, { senderId: me, recipientId: null }), me, false)![0].unreadCount).toBe(0);
   });
 
   it("does not count what the viewer is reading now, nor their own messages, nor an older replay", () => {

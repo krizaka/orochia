@@ -223,3 +223,31 @@ written here, each with the place that carries it. Disagree, or saw that signal?
 - **Signal we are wrong** — Most people switching to Chronological and staying there, or feedback that the picks feel
   unrelated to what they did.
 - **Feedback** — wrong for you? [Discussion #122](https://github.com/krizaka/orochia/discussions/122).
+
+## Group conversations (krizaka/orochia#260, ADR 0002)
+
+- **Decision**: a group takes only the owner's contacts (or a creator's approved fans), at most 50, with an invitation link that lives a week. A non-member gets a 404, never a "forbidden".
+- **Problem**: people wanted to talk to several people at once (a crew, a fan group) without opening a public room.
+- **Principle**: small groups keep accountability and trust — group size and anonymity drive social loafing and harassment (Latané, Williams & Harkins 1979, "Many hands make light the work"; Suler 2004, "The online disinhibition effect"). Adding only known people, and being able to leave or mute in one tap, keeps control with the person.
+- **Refused**: public rooms and discoverable groups (moderation load, an adult platform), adding anyone by username (unsolicited groups), per-message read receipts in a group (pressure to answer; a read cursor is enough for the badge).
+- **Cost**: you cannot add a stranger without an invitation link; the owner is a single point of administration.
+- **Signal we are wrong**: many groups created then abandoned within a day (the creation is too heavy), or reports per group above the 1:1 rate (the invite link spreads too far).
+- Feedback: the pinned GitHub Discussion linked from the app.
+
+## A creator's audience: figures against the period before, and "fewer than 3" instead of a small number
+
+- **Decision** — Insights opens with the creator's audience over the last 28 days (a setting): people, views, likes, tips
+  and the share watched, each against the period before; views and likes per day; the view → like → tip funnel; the
+  videos most people engaged; and who comes back, week after week. Any figure about fewer than 3 people (a setting) says
+  "Fewer than 3", never the number.
+- **Problem** — Raw counts without a comparison do not tell a creator whether things go better; and a "1 tip" on a small
+  channel points at one fan.
+- **Principle** — Comparison to a reference point is how people judge change (Kahneman & Tversky, prospect theory,
+  *Econometrica* 1979); k-anonymity thresholds prevent re-identification from aggregates (Sweeney, "k-anonymity",
+  *IJUFKS* 2002).
+- **Refused** — Per-viewer lists in analytics (the story activity already names viewers to the author, by consent);
+  showing 0 for a hidden figure (a lie); a free date picker (a fixed period that is comparable from week to week).
+- **Cost** — Small channels see "Fewer than 3" for a while; the watched share only counts plays by signed-in viewers.
+- **Signal we are wrong** — Creators asking for exports to compute the same comparisons themselves, or ignoring the
+  section (no clicks on its videos) while opening Earnings.
+- **Feedback** — wrong for you? [Discussion #122](https://github.com/krizaka/orochia/discussions/122).

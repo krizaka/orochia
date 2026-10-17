@@ -1,8 +1,8 @@
 import { randomUUID } from "node:crypto";
 
-import { db, directMessages } from "@orochia/db";
 import { type ConnectionState, eventStream, type EventStreamControls } from "@krizaka/realtime";
-import { and, asc, eq, gt, gte, or, sql } from "drizzle-orm";
+import { db, directMessages } from "@orochia/db";
+import { and, asc, eq, gt, gte, inArray, or, sql } from "drizzle-orm";
 
 import { markDelivered, type MessageView,messageView } from "./messaging";
 import { presenceBeat, presenceCircle, type PresenceEvent,presenceLeave, presenceOf, presenceTopic } from "./presence";
@@ -33,7 +33,12 @@ export function parseCursor(value: string | null | undefined): number | null {
 }
 
 async function missedMessages(userId: string, cursor: number): Promise<MessageView[]> {
-  const mine = or(eq(directMessages.recipientId, userId), eq(directMessages.senderId, userId));
+  const mine = or(
+    eq(directMessages.recipientId, userId),
+    eq(directMessages.senderId, userId),
+    // The groups the account is in.
+    inArray(directMessages.conversationId, sql`(select conversation_id from conversation_members where user_id = ${userId} and left_at is null)`),
+  );
   const rows = await db
     .select()
     .from(directMessages)

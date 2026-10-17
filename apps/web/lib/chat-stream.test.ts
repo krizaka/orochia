@@ -47,7 +47,7 @@ vi.mock("@orochia/db", () => {
 });
 vi.mock("drizzle-orm", () => {
   const op = () => ({});
-  return { and: op, asc: op, eq: op, gt: op, gte: op, or: op, sql: Object.assign(() => ({}), { raw: op }) };
+  return { and: op, asc: op, eq: op, gt: op, gte: op, inArray: op, or: op, sql: Object.assign(() => ({}), { raw: op }) };
 });
 
 const { REPLAY_LIMIT, parseCursor, userStream } = await import("./chat-stream");

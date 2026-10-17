@@ -29,6 +29,8 @@ export function useChat(myId: string | null, activeId: string | null) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [threadState, setThreadState] = useState<{ loading: boolean; hasMore: boolean; error: string | null; loadingOlder: boolean }>({ loading: false, hasMore: false, error: null, loadingOlder: false });
   const [announcement, setAnnouncement] = useState("");
+  /** Who wrote, in a group (display names of the senders loaded so far). */
+  const [names, setNames] = useState<Record<string, string>>({});
 
   const active = useRef(activeId);
   active.current = activeId;
@@ -68,7 +70,8 @@ export function useChat(myId: string | null, activeId: string | null) {
       setThreadState((s) => ({ ...s, loading: false, error: res ? t("inbox.loadFailed") : t("inbox.network") }));
       return;
     }
-    const data = (await res.json()) as { messages: ServerMessage[]; hasMore: boolean };
+    const data = (await res.json()) as { messages: ServerMessage[]; hasMore: boolean; names?: Record<string, string> };
+    if (data.names) setNames((all) => ({ ...all, ...data.names }));
     // Keep what is still on its way from this app; the page read the latest messages (marked read by the server).
     setMessages((current) => mergeMessages(quiet ? current : current.filter((m) => m.local && m.conversationId === conversationId), data.messages));
     setThreadState({ loading: false, hasMore: data.hasMore, error: null, loadingOlder: false });
@@ -83,7 +86,8 @@ export function useChat(myId: string | null, activeId: string | null) {
     const res = await fetch(`/api/conversations/${conversationId}/messages?before=${first.seq}`, { cache: "no-store" }).catch(() => null);
     if (active.current !== conversationId) return;
     if (!res?.ok) return setThreadState((s) => ({ ...s, loadingOlder: false }));
-    const data = (await res.json()) as { messages: ServerMessage[]; hasMore: boolean };
+    const data = (await res.json()) as { messages: ServerMessage[]; hasMore: boolean; names?: Record<string, string> };
+    if (data.names) setNames((all) => ({ ...all, ...data.names }));
     setMessages((current) => mergeMessages(current, data.messages));
     setThreadState((s) => ({ ...s, hasMore: data.hasMore, loadingOlder: false }));
   }, []);
@@ -184,6 +188,11 @@ export function useChat(myId: string | null, activeId: string | null) {
         setConversations((list) => applyReceiptToList(list, myId, receipt));
         return;
       }
+      case "conversation_changed":
+        // A group changed (name, members, mute): the list, and the open conversation's senders.
+        void loadList();
+        if (active.current === String(event.conversationId)) void loadThread(active.current, { quiet: true });
+        return;
       case "read":
         setConversations((list) => markListRead(list, String(event.conversationId)));
         return;
@@ -256,6 +265,7 @@ export function useChat(myId: string | null, activeId: string | null) {
         recipientId: conversation?.otherUser.id ?? "",
         content: text,
         storyId: null,
+        origin: "human",
         deliveredAt: null,
         isRead: false,
         readAt: null,
@@ -340,6 +350,7 @@ export function useChat(myId: string | null, activeId: string | null) {
     messages: activeId ? messages.filter((m) => m.conversationId === activeId) : [],
     thread: threadState,
     announcement,
+    names,
     send,
     retry,
     discard,

@@ -58,7 +58,7 @@ export function applyMessageToList(list: Conversation[], message: ServerMessage,
   if (index < 0) return null;
   const conversation = list[index];
   if (conversation.lastMessage && conversation.lastMessage.seq >= message.seq) return list;
-  const incoming = message.recipientId === myId;
+  const incoming = message.senderId !== myId;
   const updated: Conversation = {
     ...conversation,
     lastMessageAt: message.createdAt,

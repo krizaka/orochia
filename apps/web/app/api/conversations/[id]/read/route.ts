@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { requireUserWithRole } from "@/lib/auth";
 import { errorResponse, jsonError } from "@/lib/http";
-import { conversationFor, markRead } from "@/lib/messaging";
+import { conversationFor, markGroupRead, markRead } from "@/lib/messaging";
 import { limitAction } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -18,8 +18,8 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
     const id = z.string().uuid().safeParse((await props.params).id);
     if (!id.success) return jsonError(404, "Conversation not found");
     const { upTo } = Body.parse(await req.json().catch(() => ({})));
-    await conversationFor(id.data, user.id);
-    const result = await markRead(id.data, user.id, upTo);
+    const { kind } = await conversationFor(id.data, user.id);
+    const result = kind === "group" ? await markGroupRead(id.data, user.id, upTo) : await markRead(id.data, user.id, upTo);
     return NextResponse.json({ success: true, ...result });
   } catch (error) {
     return errorResponse(error, "conversations/[id]/read");

@@ -4,6 +4,9 @@ import { and, eq, inArray, isNotNull, lt, sql } from "drizzle-orm";
 
 import { pseudonymKey } from "../env";
 import { orazakaConfigured, OrazakaUnavailableError } from "../orazaka";
+import { sendAnalyticsEvents } from "../analytics/analytics.client";
+import type { AnalyticsEvent } from "../analytics/analytics.types";
+import { type ProductEvent, toAnalyticsEvent } from "../analytics/analytics.view";
 import { sendErasure, sendEvents } from "./recommendations.client";
 import { type Interaction, toErasure, toRecoEvent } from "./recommendations.events";
 import { type Pseudonym, type RecoEvent, RecoEventKind, type RecommendationSettings, RecoOutboxKind } from "./recommendations.types";
@@ -26,6 +29,14 @@ export async function enqueueInteraction(exec: Executor, interaction: Interactio
     .insert(recoOutbox)
     .values({ id: event.id, dedupKey: dedupKey ?? null, kind: RecoOutboxKind.Event, payload: event })
     .onConflictDoNothing();
+}
+
+/** Records a product event for Orazaka's analytics (ADR-081) — same outbox, same guarantees, its own endpoint. */
+export async function enqueueAnalytics(exec: Executor, event: ProductEvent): Promise<void> {
+  const key = pseudonymKey();
+  if (!key || !orazakaConfigured()) return;
+  const payload = toAnalyticsEvent(event, key);
+  await exec.insert(recoOutbox).values({ id: payload.id, kind: RecoOutboxKind.Analytics, payload }).onConflictDoNothing();
 }
 
 /** Records people and videos the recommender must forget (an account deleted, a video out of discovery). */
@@ -81,6 +92,18 @@ export async function drainOutbox(now: Date, settings: RecommendationSettings): 
       summary.failed += events.length;
       summary.requestCode = failureCode(error);
       await markFailed(events, now, settings, summary.requestCode);
+    }
+  }
+  const analytics = rows.filter((r) => r.kind === RecoOutboxKind.Analytics);
+  if (analytics.length > 0) {
+    try {
+      await sendAnalyticsEvents(analytics.map((r) => r.payload as AnalyticsEvent), settings.syncTimeoutMs);
+      await markSent(analytics.map((r) => r.id), now);
+      summary.sent += analytics.length;
+    } catch (error) {
+      summary.failed += analytics.length;
+      summary.requestCode = failureCode(error);
+      await markFailed(analytics, now, settings, summary.requestCode);
     }
   }
   for (const erasure of rows.filter((r) => r.kind === RecoOutboxKind.Erasure)) {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { requireUserWithRole } from "@/lib/auth";
+import { sendGroupMessage } from "@/lib/groups";
 import { errorResponse, jsonError } from "@/lib/http";
 import { conversationFor, getConversationMessages, MESSAGE_MAX_LENGTH, sendMessage } from "@/lib/messaging";
 import { limitAction } from "@/lib/rate-limit";
@@ -30,8 +31,8 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     const id = z.string().uuid().safeParse((await params).id);
     if (!id.success) return jsonError(404, "Conversation not found");
     const page = Page.parse(Object.fromEntries(req.nextUrl.searchParams));
-    const { messages, hasMore } = await getConversationMessages(id.data, user.id, page);
-    return NextResponse.json({ success: true, messages, hasMore });
+    const { messages, hasMore, names } = await getConversationMessages(id.data, user.id, page);
+    return NextResponse.json({ success: true, messages, hasMore, ...(names ? { names } : {}) });
   } catch (error) {
     return errorResponse(error, "conversations/[id]/messages");
   }
@@ -48,8 +49,11 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     if (!id.success) return jsonError(404, "Conversation not found");
     const body = SendMessageSchema.parse(await req.json());
 
-    const { otherId } = await conversationFor(id.data, user.id);
-    const { duplicate, ...message } = await sendMessage(user.id, otherId, body.content, { clientId: body.clientId });
+    const { kind, otherId } = await conversationFor(id.data, user.id);
+    const { duplicate, ...message } =
+      kind === "group" || !otherId
+        ? await sendGroupMessage(user.id, id.data, body.content, { clientId: body.clientId })
+        : await sendMessage(user.id, otherId, body.content, { clientId: body.clientId });
 
     return NextResponse.json({ success: true, message, duplicate: Boolean(duplicate) }, { status: duplicate ? 200 : 201 });
   } catch (error) {

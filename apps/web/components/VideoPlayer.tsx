@@ -10,6 +10,8 @@ import { isAdultRating } from "@/lib/content-ratings";
 import { money } from "@/lib/money";
 import { orientationOf } from "@/lib/video-aspect";
 
+import { useWatchReport } from "./watch-report";
+
 interface VideoPlayerProps {
   videoId: string;
   streamUrl?: string | null;
@@ -68,6 +70,7 @@ export function VideoPlayer({
   const [qualityLevels, setQualityLevels] = useState<string[]>([]);
   const [selectedQuality, setSelectedQuality] = useState<number>(-1); // -1 = auto
   const [showControls, setShowControls] = useState(true);
+  useWatchReport(videoId, videoRef);
 
   // Initialize HLS Stream
   useEffect(() => {
