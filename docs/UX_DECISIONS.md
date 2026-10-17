@@ -233,3 +233,21 @@ written here, each with the place that carries it. Disagree, or saw that signal?
 - **Cost**: you cannot add a stranger without an invitation link; the owner is a single point of administration.
 - **Signal we are wrong**: many groups created then abandoned within a day (the creation is too heavy), or reports per group above the 1:1 rate (the invite link spreads too far).
 - Feedback: the pinned GitHub Discussion linked from the app.
+
+## A creator's audience: figures against the period before, and "fewer than 3" instead of a small number
+
+- **Decision** — Insights opens with the creator's audience over the last 28 days (a setting): people, views, likes, tips
+  and the share watched, each against the period before; views and likes per day; the view → like → tip funnel; the
+  videos most people engaged; and who comes back, week after week. Any figure about fewer than 3 people (a setting) says
+  "Fewer than 3", never the number.
+- **Problem** — Raw counts without a comparison do not tell a creator whether things go better; and a "1 tip" on a small
+  channel points at one fan.
+- **Principle** — Comparison to a reference point is how people judge change (Kahneman & Tversky, prospect theory,
+  *Econometrica* 1979); k-anonymity thresholds prevent re-identification from aggregates (Sweeney, "k-anonymity",
+  *IJUFKS* 2002).
+- **Refused** — Per-viewer lists in analytics (the story activity already names viewers to the author, by consent);
+  showing 0 for a hidden figure (a lie); a free date picker (a fixed period that is comparable from week to week).
+- **Cost** — Small channels see "Fewer than 3" for a while; the watched share only counts plays by signed-in viewers.
+- **Signal we are wrong** — Creators asking for exports to compute the same comparisons themselves, or ignoring the
+  section (no clicks on its videos) while opening Earnings.
+- **Feedback** — wrong for you? [Discussion #122](https://github.com/krizaka/orochia/discussions/122).

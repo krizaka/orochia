@@ -9,6 +9,7 @@ import { type Pseudonym, type RecommendationSettings, ShelfSource } from "./reco
 const settings: RecommendationSettings = {
   enabled: true, timeoutMs: 800, syncTimeoutMs: 10_000, forYouLimit: 3, similarLimit: 2, outboxBatch: 200, outboxIntervalSeconds: 15,
   retryBaseSeconds: 15, retryMaxSeconds: 3600, maxAttempts: 20, sentRetentionDays: 7, catalogueIntervalSeconds: 300, catalogueBatch: 50,
+  skipWithinSeconds: 3, skipBelowPct: 20, audienceDays: 28, audienceFunnel: ["view", "like", "tip"],
 };
 const video = (id: string) => ({ id }) as ExploreVideo;
 const viewer = { id: "acc-1", role: "MEMBER" };

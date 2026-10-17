@@ -3,9 +3,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import React from "react";
 
+import { AudienceSection } from "@/components/insights/AudienceSection";
 import { buttonVariants, EmptyState, SectionBackdrop } from "@/components/ui";
+import { creatorAudience } from "@/lib/analytics/analytics.audience";
 import { t } from "@/lib/i18n";
 import { creatorInsights } from "@/lib/recommendations/recommendations.insights";
+import { recommendationSettings } from "@/lib/recommendations/recommendations.settings";
 import { InsightsStatus } from "@/lib/recommendations/recommendations.view";
 import { getViewer } from "@/lib/viewer";
 
@@ -35,7 +38,8 @@ export default async function InsightsPage() {
   const { user, state } = await getViewer();
   if (!user) redirect("/login?next=/insights");
   if (state !== "creator") redirect("/dashboard");
-  const view = await creatorInsights(user.id, new Date());
+  const now = new Date();
+  const [view, audience, settings] = await Promise.all([creatorInsights(user.id, now), creatorAudience(user.id, now), recommendationSettings(now)]);
 
   return (
     <div className="pb-16">
@@ -55,6 +59,7 @@ export default async function InsightsPage() {
           />
         ) : (
           <>
+            <AudienceSection view={audience} days={settings?.audienceDays ?? 28} />
             <Block icon={BarChart3} title={t("insights.videos.title")} hint={t("insights.videos.hint")}>
               {view.videos.length === 0 ? (
                 <p className="text-xs text-fg-muted">{t("insights.videos.empty")}</p>

@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (184)
+## Endpoints (185)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -191,6 +191,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/videos/[id]/like` | session · MEMBER / CREATOR / ADMIN | Likes a video you may watch (idempotent). |
 | `POST` | `/api/videos/[id]/shares` | public · session-aware | Counts a share of a video you may watch; the shared link still enforces the video's access. |
 | `GET` | `/api/videos/[id]/stream` | public · session-aware | Authorises a viewer and returns a short-lived signed HLS URL (AGENTS.md §2.A). |
+| `POST` | `/api/videos/[id]/watch` | public · session-aware | The player says how much of a video a signed-in viewer watched when they left it (ADR-081): the share watched goes to Orazaka's analytics (`watch`), and leaving at once is a `SKIP` for the recommender. |
 | `POST` | `/api/videos/create-upload-session` | public · session-aware | — |
 | `POST` | `/api/videos/unlock-video` | session · MEMBER / CREATOR / ADMIN | Starts the purchase of a video unlock. |
 | `POST` | `/api/webhooks/bunny` | signed webhook | Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (MEDIA_STREAM_WEBHOOK_SECRET). |

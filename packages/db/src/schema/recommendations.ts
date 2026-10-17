@@ -15,7 +15,7 @@ import { index, integer, jsonb, pgEnum, pgTable, primaryKey, text, timestamp, un
  */
 
 /** What an outbox row carries: one event, or an erasure (people or items to forget). */
-export const recoOutboxKindEnum = pgEnum("reco_outbox_kind", ["EVENT", "ERASURE"]);
+export const recoOutboxKindEnum = pgEnum("reco_outbox_kind", ["EVENT", "ERASURE", "ANALYTICS"]);
 
 export const recoOutbox = pgTable(
   "reco_outbox",
