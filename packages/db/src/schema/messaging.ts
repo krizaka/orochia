@@ -52,6 +52,8 @@ export const directMessages = pgTable(
     content: text("content").notNull(),
     /** A private reply to a story: the story it answers (the message stays when the story is gone). */
     storyId: uuid("story_id").references(() => stories.id, { onDelete: "set null" }),
+    /** `human` or `ai_assisted` (a reply drafted by an assistant: shown with its disclosure; apps/web/lib/message-origin.ts). */
+    origin: text("origin").default("human").notNull(),
     /** When one of the recipient's apps received it (the second tick). */
     deliveredAt: timestamp("delivered_at", { withTimezone: true }),
     isRead: boolean("is_read").default(false).notNull(),

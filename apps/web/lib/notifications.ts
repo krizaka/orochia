@@ -1,12 +1,14 @@
 import { db, follows, notifications, paymentIntents, profiles, users, videos } from "@orochia/db";
 import { and, count, desc, eq, inArray, isNull, lt, sql } from "drizzle-orm";
+
+import { conversationPath } from "./conversation-path";
 import { appUrl } from "./env";
-import { t, type MessageKey } from "./i18n";
+import { type MessageKey,t } from "./i18n";
 import { sendTemplate } from "./mail";
-import { checkRateLimit } from "./rate-limit";
-import type { NotificationEvent } from "./profile";
 import { emitUserEvent } from "./messaging";
+import type { NotificationEvent } from "./profile";
 import { pushToUser } from "./push";
+import { checkRateLimit } from "./rate-limit";
 
 /**
  * Notifications. Each event is written to the account's notification list (the bell, /notifications), pushed live to
@@ -137,7 +139,7 @@ export async function notifyMessage(recipientId: string, senderId: string, conve
   const who = await nameOf(senderId);
   const { isOnline } = await import("./presence");
   const onScreen = await isOnline(recipientId).catch(() => false);
-  await notify({ userId: recipientId, actorId: senderId, event: "newMessage", vars: { name: who.name }, path: `/messages?c=${conversationId}`, emailThrottleKey: conversationId, push: !onScreen });
+  await notify({ userId: recipientId, actorId: senderId, event: "newMessage", vars: { name: who.name }, path: conversationPath(conversationId), emailThrottleKey: conversationId, push: !onScreen });
 }
 
 /** After a settlement: the creator hears about the tip or the unlock (never about their own payments). */

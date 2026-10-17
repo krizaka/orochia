@@ -256,6 +256,7 @@ export function useChat(myId: string | null, activeId: string | null) {
         recipientId: conversation?.otherUser.id ?? "",
         content: text,
         storyId: null,
+        origin: "human",
         deliveredAt: null,
         isRead: false,
         readAt: null,

@@ -2032,6 +2032,7 @@
     "startFailed": "The conversation could not be started.",
     "sendFailed": "The message could not be sent.",
     "storyReply": "Replied to a story",
+    "aiAssisted": "Drafted with AI assistance",
     "onlineNow": "Online now",
     "presence": {
       "online": "Online",
