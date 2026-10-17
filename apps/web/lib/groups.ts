@@ -5,6 +5,7 @@ import { addDays, addHours } from "date-fns";
 import { and, asc, eq, isNull, sql } from "drizzle-orm";
 import { after } from "next/server";
 
+import { ConversationKind, MemberRole } from "./conversation-kinds";
 import { canAddMembers, INVITE_TTL_DAYS, inviteState, isMuted, MAX_GROUP_MEMBERS, nextOwner, parseGroupTitle } from "./group-rules";
 import { HttpError } from "./http";
 import { conversationFor, emitUnread, emitUserEvent, MESSAGE_MAX_LENGTH, type MessageView,messageView } from "./messaging";
@@ -53,14 +54,14 @@ async function lockGroup(tx: Tx, conversationId: string): Promise<{ archivedAt: 
     sql`select kind, archived_at, title from conversations where id = ${conversationId} for update`,
   );
   const row = result.rows[0];
-  if (!row || row.kind !== "group") throw new HttpError(404, "Conversation not found");
+  if (!row || row.kind !== ConversationKind.Group) throw new HttpError(404, "Conversation not found");
   return { archivedAt: row.archived_at ? new Date(row.archived_at) : null, title: row.title };
 }
 
 async function requireOwner(conversationId: string, userId: string) {
   const access = await conversationFor(conversationId, userId);
-  if (access.kind !== "group") throw new HttpError(404, "Conversation not found");
-  if (access.role !== "owner") throw new HttpError(403, "Only the owner of the group can do this", { code: "GROUP_OWNER_ONLY" });
+  if (access.kind !== ConversationKind.Group) throw new HttpError(404, "Conversation not found");
+  if (access.role !== MemberRole.Owner) throw new HttpError(403, "Only the owner of the group can do this", { code: "GROUP_OWNER_ONLY" });
   return access;
 }
 
@@ -136,7 +137,7 @@ export interface GroupMember {
 
 export async function listMembers(viewerId: string, conversationId: string): Promise<{ title: string | null; archived: boolean; muted: boolean; role: "owner" | "member"; members: GroupMember[] }> {
   const access = await conversationFor(conversationId, viewerId);
-  if (access.kind !== "group") throw new HttpError(404, "Conversation not found");
+  if (access.kind !== ConversationKind.Group) throw new HttpError(404, "Conversation not found");
   const rows = await db
     .select({
       userId: users.id,
@@ -159,7 +160,7 @@ export async function listMembers(viewerId: string, conversationId: string): Pro
     archived: Boolean(group?.archivedAt),
     muted: isMuted(mine?.mutedUntil ?? null, new Date()),
     role: access.role,
-    members: rows.map((r) => ({ userId: r.userId, username: r.username, displayName: r.displayName, avatarUrl: r.avatarUrl, role: r.role === "owner" ? "owner" : "member", joinedAt: r.joinedAt })),
+    members: rows.map((r) => ({ userId: r.userId, username: r.username, displayName: r.displayName, avatarUrl: r.avatarUrl, role: r.role === MemberRole.Owner ? "owner" : "member", joinedAt: r.joinedAt })),
   };
 }
 
@@ -187,14 +188,14 @@ export async function removeMember(actorId: string, conversationId: string, memb
 /** Leaves a group. The owner leaving passes the group on (longest-standing member); alone, the group is closed. */
 export async function leaveGroup(userId: string, conversationId: string): Promise<void> {
   const access = await conversationFor(conversationId, userId);
-  if (access.kind !== "group") throw new HttpError(404, "Conversation not found");
+  if (access.kind !== ConversationKind.Group) throw new HttpError(404, "Conversation not found");
   await db.transaction(async (tx) => {
     await lockGroup(tx, conversationId);
     await tx
       .update(conversationMembers)
       .set({ leftAt: new Date(), role: "member" })
       .where(and(eq(conversationMembers.conversationId, conversationId), eq(conversationMembers.userId, userId)));
-    if (access.role !== "owner") return;
+    if (access.role !== MemberRole.Owner) return;
     const rest = await tx
       .select({ userId: conversationMembers.userId, joinedAt: conversationMembers.joinedAt })
       .from(conversationMembers)
@@ -217,7 +218,7 @@ export async function closeGroup(actorId: string, conversationId: string): Promi
 /** Mutes a group for `hours` (no push, no badge), or unmutes with `null`. */
 export async function setMute(userId: string, conversationId: string, hours: number | null): Promise<void> {
   const access = await conversationFor(conversationId, userId);
-  if (access.kind !== "group") throw new HttpError(404, "Conversation not found");
+  if (access.kind !== ConversationKind.Group) throw new HttpError(404, "Conversation not found");
   await db
     .update(conversationMembers)
     .set({ mutedUntil: hours === null ? null : addHours(new Date(), hours) })
@@ -278,7 +279,7 @@ export async function sendGroupMessage(senderId: string, conversationId: string,
   if (!content) throw new HttpError(400, "Message cannot be empty");
   if (content.length > MESSAGE_MAX_LENGTH) throw new HttpError(400, `Message exceeds ${MESSAGE_MAX_LENGTH} characters limit`);
   const access = await conversationFor(conversationId, senderId);
-  if (access.kind !== "group") throw new HttpError(404, "Conversation not found");
+  if (access.kind !== ConversationKind.Group) throw new HttpError(404, "Conversation not found");
 
   if (options.clientId) {
     const [existing] = await db

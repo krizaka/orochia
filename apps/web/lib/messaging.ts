@@ -1,7 +1,9 @@
 import { blockedUsers, complianceReports, contacts, conversationMembers, conversations, db, directMessages, profiles, users } from "@orochia/db";
+import { compareDesc } from "date-fns";
 import { and, desc, eq, isNull, lt, lte, or, sql } from "drizzle-orm";
 import { after } from "next/server";
 
+import { ConversationKind, MemberRole } from "./conversation-kinds";
 import { HttpError } from "./http";
 import { type MessageOrigin,parseMessageOrigin } from "./message-origin";
 import { notifyMessage } from "./notifications";
@@ -159,9 +161,9 @@ export async function conversationFor(conversationId: string, userId: string): P
   if (!row) throw new HttpError(404, "Conversation not found");
   return {
     id: row.id,
-    kind: row.kind === "group" ? "group" : "direct",
-    otherId: row.kind === "group" ? null : row.p1 === userId ? row.p2 : row.p1,
-    role: row.role === "owner" ? "owner" : "member",
+    kind: row.kind === ConversationKind.Group ? "group" : "direct",
+    otherId: row.kind === ConversationKind.Group ? null : row.p1 === userId ? row.p2 : row.p1,
+    role: row.role === MemberRole.Owner ? "owner" : "member",
   };
 }
 
@@ -398,7 +400,7 @@ export async function listConversations(userId: string): Promise<ConversationSum
     ...(presence[r.other_id] ? { presence: presence[r.other_id] } : {}),
   }));
   const groups = await listGroupSummaries(userId);
-  return [...direct, ...groups].sort((a, b) => b.lastMessageAt.getTime() - a.lastMessageAt.getTime());
+  return [...direct, ...groups].sort((a, b) => compareDesc(a.lastMessageAt, b.lastMessageAt));
 }
 
 /** The groups the account is in (not left): title, member count, last message, unread after its read cursor. */
@@ -468,7 +470,7 @@ export async function getConversationMessages(
   const access = await conversationFor(conversationId, userId);
   const limit = Math.min(Math.max(options.limit ?? 50, 1), 100);
 
-  if (options.before === undefined) await (access.kind === "group" ? markGroupRead(conversationId, userId) : markRead(conversationId, userId));
+  if (options.before === undefined) await (access.kind === ConversationKind.Group ? markGroupRead(conversationId, userId) : markRead(conversationId, userId));
 
   const rows = await db
     .select()
@@ -595,7 +597,7 @@ export async function reportMessage(input: {
     .where(and(eq(directMessages.id, input.messageId), eq(directMessages.conversationId, input.conversationId)))
     .limit(1);
   // Direct: the recipient reports. Group: any member reports another member's message. Never one's own.
-  if (!row || row.senderId === input.reporterId || (access.kind === "direct" && row.recipientId !== input.reporterId)) throw new HttpError(404, "Message not found");
+  if (!row || row.senderId === input.reporterId || (access.kind === ConversationKind.Direct && row.recipientId !== input.reporterId)) throw new HttpError(404, "Message not found");
   const [reporter] = await db.select({ email: users.email }).from(users).where(eq(users.id, input.reporterId)).limit(1);
   // i18n-ignore: operator-facing evidence, read in the admin console
   const details = `${input.details?.trim() || "(no details)"}\n\n--- Reported message from @${row.sender} ---\n${row.content}`.slice(0, 5000);
@@ -603,7 +605,7 @@ export async function reportMessage(input: {
     .insert(complianceReports)
     .values({
       messageId: row.id,
-      videoTitle: access.kind === "group" ? `Group message from @${row.sender}` : `Direct message from @${row.sender}`, // i18n-ignore: operator-facing label
+      videoTitle: access.kind === ConversationKind.Group ? `Group message from @${row.sender}` : `Direct message from @${row.sender}`, // i18n-ignore: operator-facing label
       reason: input.reason,
       details,
       reporterEmail: reporter.email,
