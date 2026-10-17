@@ -198,10 +198,12 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/webhooks/bunny` | signed webhook | Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (MEDIA_STREAM_WEBHOOK_SECRET). |
 | `POST` | `/api/webhooks/payments/[gateway]` | signed webhook | Gateway payment notifications. |
 
-## Database tables (54)
+## Database tables (56)
 
 | Table | Drizzle export | Defined in |
 | :--- | :--- | :--- |
+| `app_config` | `appConfig` | `packages/db/src/schema/app-config.ts` |
+| `app_config_history` | `appConfigHistory` | `packages/db/src/schema/app-config.ts` |
 | `auctions` | `auctions` | `packages/db/src/schema/auctions.ts` |
 | `auction_bids` | `auctionBids` | `packages/db/src/schema/auctions.ts` |
 | `audience_lists` | `audienceLists` | `packages/db/src/schema/audiences.ts` |
