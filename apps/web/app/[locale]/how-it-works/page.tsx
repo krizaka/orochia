@@ -26,7 +26,7 @@ const h2 = "font-display text-2xl font-black tracking-tight text-fg sm:text-3xl"
  */
 export default async function HowItWorksPage({ params }: { params: Promise<{ locale: string }> }) {
   await localeFromParams(params);
-  const { t } = await getI18n();
+  const { t, locale } = await getI18n();
   const s = share();
   return (
     <div className="w-full overflow-x-clip">
@@ -42,7 +42,7 @@ export default async function HowItWorksPage({ params }: { params: Promise<{ loc
               </Button>
             </div>
           </div>
-          <Clip clip="showcase" label={t("howItWorks.heroClip", { share: s })} frameLabel={t("howItWorks.frameLabel")} />
+          <Clip clip="showcase" locale={locale} label={t("howItWorks.heroClip", { share: s })} frameLabel={t("howItWorks.frameLabel")} />
         </div>
       </SectionBackdrop>
 

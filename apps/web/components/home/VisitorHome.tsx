@@ -21,9 +21,9 @@ const HOW_ICONS = { find: <SearchIcon />, choose: <UnlockIcon />, support: <TipI
  * creator side with the share computed from the fee setting, the way in. A member gets the feed itself.
  */
 export async function VisitorHome({ preview, share, joinHref, joinLabel }: { preview: React.ReactNode; share: number; joinHref: string; joinLabel: string }) {
-  const { t } = await getI18n();
+  const { t, locale } = await getI18n();
   const steps = HERO_STEPS.map(({ id, clip }) => {
-    const media = tourRecording(clip);
+    const media = tourRecording(clip, locale);
     return {
       id,
       title: t(`home.visitor.tour.steps.${id}.title`),

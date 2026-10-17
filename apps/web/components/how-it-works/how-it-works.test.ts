@@ -18,12 +18,12 @@ describe("/how-it-works is short: hero, journey, four ways, closing", () => {
 
   it("the journey is the seven steps, in the order they happen, each with a real clip", () => {
     expect(JOURNEY.map((s) => s.id)).toEqual(["find", "watch", "tip", "unlock", "bid", "back", "earn"]);
-    for (const step of JOURNEY) expect(() => tourRecording(step.clip)).not.toThrow();
+    for (const step of JOURNEY) for (const l of ["en", "fr"] as const) expect(() => tourRecording(step.clip, l)).not.toThrow();
   });
 
   it("the four ways are tip, unlock, auction and goal, each one line with its moment from the app", () => {
     expect(WAYS.map((w) => w.id)).toEqual(["tip", "unlock", "auction", "goal"]);
-    for (const way of WAYS) expect(() => tourRecording(way.clip)).not.toThrow();
+    for (const way of WAYS) for (const l of ["en", "fr"] as const) expect(() => tourRecording(way.clip, l)).not.toThrow();
   });
 
   it("every step and way is a single short line (no paragraphs), the share comes from the setting", () => {

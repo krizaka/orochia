@@ -6,7 +6,7 @@
       "credentials": "OROCHIA_CREATOR",
       "username": "qa_creator",
       "displayName": "Lena Voss",
-      "bio": "Night sessions: live jazz, rainy city streets and fires with a guitar. New clip every week.",
+      "bio": "Night sessions: jazz, rainy city streets and fires with a guitar. New clip every week.",
       "niche": "nightlife & music",
       "websiteUrl": "https://example.com/lena-voss",
       "avatar": "painterly-1",
@@ -67,7 +67,7 @@
       "tags": [
         "music",
         "jazz",
-        "live"
+        "club"
       ]
     },
     {

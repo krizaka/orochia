@@ -1,14 +1,16 @@
-// Product tour of the real application, recorded for krizaka.com (public/assets/orochia/tour/<clip>.{webm,mp4,jpg}).
+// Product tour of the real application, shown on the home and /how-it-works (site/products/orochia/tour/<locale>/<clip>.{webm,mp4,jpg}
+// on the CDN; lib/site-media.ts names them).
 //
 //   npm run demo:seed                      # the official demo, in its own database (scripts/demo.mjs, cast.json)
 //   npm run build && npm run demo:start    # a production build on that database, on :3100 (no dev overlay)
-//   npm run record:tour                    # every clip; `-- alex-story elena-earnings` re-records some.
-//                                          # APP_URL, OUT (tour/). Re-run demo:seed before a new full take:
-//                                          # the clips pay, bid and back for real.
+//   npm run record:tour                    # every clip in English AND French; `-- alex-story elena-earnings` re-records some,
+//                                          # `-- --locales=fr` only one language. APP_URL, OUT (tour/, one folder per language).
+//                                          # Re-run demo:seed before each language's full take: the clips pay, bid and back for real.
 //
 // Two people you can picture yourself as, never the operator: Elena Marlow, a singer-songwriter who films her songs
 // (the creator), and Alex Carter, who plays them on repeat (the fan). The clips, in the order of their day:
-//   alex-discover   Explore: the stories of the day, a search, Elena's music video playing
+//   alex-discover   Explore: the ranked feed, a search, Elena's music video playing
+//   alex-watch      the watch page: the player and its compact line under it (creator, likes, tip)
 //   alex-story      Elena's story with the sound on, a like, a $5 tip
 //   alex-unlock     Elena's acoustic session, unlocked for $8 in credits, playing at once
 //   alex-bid        the director's cut auction: Alex bids and takes the lead
@@ -20,14 +22,16 @@
 //   showcase        25 s for the krizaka.com home card, cut from the clips above (run last)
 //
 // Every screen is filmed once its data and pictures are there (no spinner, no empty frame), in a smaller window
-// (1120×700) so the interface reads larger once encoded to 1280×800 at 25 fps: VP9 .webm, H.264 .mp4 (faststart)
-// and a .jpg poster. Sign-in happens outside the recording.
+// (1120×700) at a device scale factor of 2, so the interface reads larger and sharp once encoded to 1600×1000 at 25 fps:
+// VP9 .webm, H.264 .mp4 (faststart) and a .jpg poster. Sign-in happens outside the recording. The interface is in the
+// language of the folder (the address /en or /fr and the NEXT_LOCALE cookie): the words the script looks for are read from
+// messages/<locale>.json (`tr`), never typed twice.
 //
 // Video delivery: when the Bunny CDN of the environment does not serve (TOUR_LOCAL_MEDIA=1, the default), the
 // browser's requests to it are answered with the showcase clip the demo gave that video or story
 // (apps/web/public/showcase, Mixkit licence, apps/web/public/CREDITS.md) packaged as HLS by ffmpeg — the access check,
-// the signed URL and the player are the app's own; only the bytes come from this machine. The upload of
-// elena-publish goes to Bunny for real.
+// the signed URL and the player are the app's own; only the bytes come from this machine. elena-publish's upload is answered by the script (session and Tus endpoint): nothing is sent to Bunny.
+
 import { execFileSync } from "node:child_process";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { existsSync, readFileSync } from "node:fs";
@@ -40,9 +44,39 @@ const SHOWCASE = path.join(ROOT, "apps/web/public/showcase");
 const CAST = JSON.parse(readFileSync(path.join(ROOT, "scripts/demo/cast.json"), "utf8"));
 const BASE = (process.env.APP_URL || "http://localhost:3100").replace(/\/$/, "");
 const OUT = path.resolve(process.env.OUT || "tour");
+const ARGS = process.argv.slice(2);
+const LOCALES = (ARGS.find((a) => a.startsWith("--locales="))?.slice(10) || "en,fr").split(",").map((l) => l.trim()).filter(Boolean);
 const LOCAL_MEDIA = process.env.TOUR_LOCAL_MEDIA !== "0";
-const ONLY = process.argv.slice(2);
+const ONLY = ARGS.filter((a) => !a.startsWith("--"));
 const WINDOW = { width: 1120, height: 700 };
+const SCALE = 2; // device pixels per CSS pixel: the capture is sharp on a high-DPI screen
+const FRAME = "1600:1000"; // the published size (16:10, as the window)
+
+/** The language being recorded; every address and every word the script looks for follows it. */
+let loc = "en";
+const U = (p) => `${BASE}/${loc}${p}`;
+
+/** The UI words of both languages, from the catalogues the app itself reads: a flat map key → text. */
+const flat = (o, pre = "", out = {}) => {
+  for (const [k, v] of Object.entries(o)) typeof v === "string" ? (out[pre + k] = v) : flat(v, `${pre}${k}.`, out);
+  return out;
+};
+const CATALOGUE = Object.fromEntries(["en", "fr"].map((l) => [l, flat(JSON.parse(readFileSync(path.join(ROOT, `apps/web/messages/${l}.json`), "utf8")))]));
+const escape = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+/** A message as a pattern: its {placeholders} stand for anything (an amount: something with a digit). */
+const pattern = (text) => text.split(/(\{[a-zA-Z]+\})/).map((part) => (/^\{(amount|price)\}$/.test(part) ? ".*\\d.*" : /^\{/.test(part) ? ".+" : escape(part))).join("");
+/**
+ * What the screen says for an English message, in the language being recorded. `tr` the whole message, `has` a fragment of it
+ * (every key whose English text matches stands in: a word shared by two keys is looked for in both). Vars fill {placeholders}.
+ */
+function words(en, { exact, vars = {} }) {
+  const keys = Object.keys(CATALOGUE.en).filter((k) => (exact ? CATALOGUE.en[k] === en : CATALOGUE.en[k].includes(en)));
+  if (keys.length === 0) throw new Error(`No message says "${en}" in en.json: the screen's words changed, update the clip.`);
+  const fill = (t) => Object.entries(vars).reduce((acc, [k, v]) => acc.replaceAll(`{${k}}`, v), t);
+  return new RegExp(`${exact ? "^" : ""}(?:${[...new Set(keys.map((k) => fill(CATALOGUE[loc][k])))].map(pattern).join("|")})${exact ? "$" : ""}`, "i");
+}
+const tr = (en, vars) => words(en, { exact: true, vars });
+const has = (en, vars) => words(en, { exact: false, vars });
 
 const person = (key) => CAST.people.find((p) => p.key === key);
 const video = (key) => CAST.videos.find((v) => v.key === key);
@@ -101,7 +135,7 @@ async function localMedia(raw) {
 }
 
 const browser = await chromium.launch();
-await mkdir(OUT, { recursive: true });
+for (const l of LOCALES) await mkdir(path.join(OUT, l), { recursive: true });
 const raw = await mkdtemp(path.join(os.tmpdir(), "orochia-tour-"));
 const pause = (page, ms) => page.waitForTimeout(ms);
 const sessions = new Map();
@@ -109,7 +143,7 @@ let hls = null;
 
 /** A browser context in dark English, signed in as `who`, recording when asked. */
 async function context(who, record) {
-  const ctx = await browser.newContext({ viewport: WINDOW, colorScheme: "dark", storageState: sessions.get(who), recordVideo: record ? { dir: raw, size: WINDOW } : undefined });
+  const ctx = await browser.newContext({ viewport: WINDOW, deviceScaleFactor: SCALE, colorScheme: "dark", locale: loc === "fr" ? "fr-CA" : "en-US", storageState: sessions.get(who) });
   await ctx.addInitScript(() => {
     try {
       localStorage.setItem("kz-theme", "dark");
@@ -123,6 +157,32 @@ async function context(who, record) {
     sessions.set(who, { cookies: (await ctx.storageState()).cookies, origins: [] });
   }
   if (hls) {
+    // The upload of elena-publish: Bunny's Tus endpoint is answered here (create, then each chunk accepted), so the demo
+    // never sends a file to the real library; the app's own session, dock and publish flow run as they do for real.
+    const sizes = new Map();
+    // The signed session is Bunny Stream's (a library this machine does not have): its answer is made up, the rest is the app's.
+    await ctx.route(/\/api\/videos\/create-upload-session/, (route) =>
+      route.request().method() !== "POST"
+        ? route.fallback()
+        : route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({ success: true, videoId: "0de20000-0000-4000-8000-000000000001", session: { tusEndpoint: "https://video.bunnycdn.com/tusupload", headers: { AuthorizationSignature: "demo", AuthorizationExpire: 4102444800, VideoId: "0de20000-0000-4000-8000-000000000001", LibraryId: 1 } } }),
+          }),
+    );
+    await ctx.route(/tusupload/, async (route) => {
+      const req = route.request();
+      const h = { "access-control-allow-origin": "*", "access-control-expose-headers": "*", "tus-resumable": "1.0.0" };
+      const id = req.url().split("?")[0];
+      if (req.method() === "OPTIONS") return route.fulfill({ status: 204, headers: { ...h, "access-control-allow-methods": "*", "access-control-allow-headers": "*" } });
+      if (req.method() === "POST") {
+        sizes.set(`${id}/demo`, 0);
+        return route.fulfill({ status: 201, headers: { ...h, location: `${id}/demo` } });
+      }
+      const key = id;
+      if (req.method() === "PATCH") sizes.set(key, Number(req.headers()["upload-offset"] ?? 0) + (req.postDataBuffer()?.length ?? 0));
+      return route.fulfill({ status: 204, headers: { ...h, "upload-offset": String(sizes.get(key) ?? 0), "upload-length": String(sizes.get(key) ?? 0) } });
+    });
     await ctx.route(/\.b-cdn\.net\//, async (route) => {
       const url = route.request().url().split("?")[0];
       const id = url.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/)?.[0];
@@ -184,14 +244,14 @@ const CLIPS = {
     who: "alex",
     poster: 0.9, // her music video, playing
     async open(page) {
-      await page.goto(`${BASE}/explore`);
+      await page.goto(U(`/explore`));
       return async () => {
         await pause(page, 1400);
         await glide(page, 560, 1700); // trending, then the stories of the day
         await glide(page, 360, 1600);
         await page.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
         await pause(page, 900);
-        const box = page.getByPlaceholder(/Search videos, creators, stories/);
+        const box = page.getByPlaceholder(has("Search videos, creators, stories"));
         await type(page, box, "rain", 110);
         await page.keyboard.press("Enter");
         await settled(page, 1400);
@@ -203,23 +263,41 @@ const CLIPS = {
     },
   },
 
+  "alex-watch": {
+    who: "alex",
+    poster: 0.5, // her concert film, playing
+    async open(page, ids) {
+      await page.goto(U(`/watch/${ids.glassHearts}`));
+      return async () => {
+        await pause(page, 1600);
+        const play = page.getByRole("button", { name: has("Play (Space)") }).first();
+        if (await play.isVisible().catch(() => false)) await press(page, play, 500);
+        await pause(page, 2600);
+        await glide(page, 340, 1800); // the compact line under the player: creator, views, likes, share
+        await pause(page, 1600);
+        await page.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+        await pause(page, 2600);
+      };
+    },
+  },
+
   "alex-story": {
     who: "alex",
     poster: 0.35,
     async open(page) {
-      await page.goto(`${BASE}/@${elena.username}`);
+      await page.goto(U(`/@${elena.username}`));
       return async () => {
         await pause(page, 1200);
-        await press(page, page.getByRole("button", { name: /Watch stories/ }), 600);
+        await press(page, page.getByRole("button", { name: has("Watch stories") }), 600);
         await settled(page, 900);
-        const sound = page.getByRole("button", { name: /Tap for sound|Turn sound on/ }).first();
+        const sound = page.getByRole("button", { name: has("Tap for sound") }).first();
         if (await sound.isVisible().catch(() => false)) await press(page, sound, 300);
         await pause(page, 1600);
-        await press(page, page.getByRole("button", { name: /^Like$/ }).last(), 300);
+        await press(page, page.getByRole("button", { name: tr("Like") }).last(), 300);
         await pause(page, 900);
-        await press(page, page.getByRole("button", { name: new RegExp(`Send a tip to ${elena.displayName}`) }), 300);
+        await press(page, page.getByRole("button", { name: tr("Send a tip to {name}", { name: elena.displayName }) }), 300);
         await pause(page, 1300);
-        await press(page, page.getByRole("button", { name: /^Pay \$/ }));
+        await press(page, page.getByRole("button", { name: tr("Pay {amount}") }));
         await pause(page, 3200);
       };
     },
@@ -228,14 +306,14 @@ const CLIPS = {
   "alex-unlock": {
     who: "alex",
     async open(page, ids) {
-      await page.goto(`${BASE}/watch/${ids.acoustic}`);
+      await page.goto(U(`/watch/${ids.acoustic}`));
       return async () => {
         await pause(page, 1800);
-        await press(page, page.getByRole("button", { name: /Unlock for/ }).first());
+        await press(page, page.getByRole("button", { name: has("Unlock for") }).first());
         await pause(page, 1400);
-        await press(page, page.getByRole("button", { name: /^Pay \$/ }));
+        await press(page, page.getByRole("button", { name: tr("Pay {amount}") }));
         await pause(page, 2400);
-        const play = page.getByRole("button", { name: /^Play/ }).first();
+        const play = page.getByRole("button", { name: has("Play") }).first();
         if (await play.isVisible().catch(() => false)) await press(page, play);
         await pause(page, 5200);
       };
@@ -245,7 +323,7 @@ const CLIPS = {
   "alex-bid": {
     who: "alex",
     async open(page) {
-      await page.goto(`${BASE}/auctions`);
+      await page.goto(U(`/auctions`));
       return async () => {
         await pause(page, 2600);
         await press(page, page.getByText(video(CAST.auction.video).title).first());
@@ -253,7 +331,7 @@ const CLIPS = {
         await settled(page, 2800);
         await press(page, page.getByRole("radio").nth(1)); // the second suggested amount
         await pause(page, 700);
-        await press(page, page.getByRole("button", { name: /Place bid/ }));
+        await press(page, page.getByRole("button", { name: tr("Place bid") }));
         await pause(page, 3000);
         await glide(page, 260, 1600); // the bids: "You" in the lead, the others as aliases
         await pause(page, 1600);
@@ -264,15 +342,15 @@ const CLIPS = {
   "alex-back": {
     who: "alex",
     async open(page) {
-      await page.goto(`${BASE}/challenges`);
+      await page.goto(U(`/challenges`));
       return async () => {
         await pause(page, 2600);
         await press(page, page.getByText(CAST.goal.title).first());
         await page.waitForURL(/\/challenges\/[0-9a-f-]{36}/);
         await settled(page, 2800);
-        await press(page, page.getByRole("radio", { name: /\$25\.00/ }).or(page.getByRole("button", { name: /^\$25\.00$/ })).first());
+        await press(page, page.getByRole("radio", { name: /25[.,]00/ }).or(page.getByRole("button", { name: /^\$25\.00$/ })).first());
         await pause(page, 600);
-        await press(page, page.getByRole("button", { name: /^Pledge/ }));
+        await press(page, page.getByRole("button", { name: has("Pledge {amount}") }));
         await pause(page, 3000);
         await glide(page, 240, 1600); // the latest pledges, "You" first
         await pause(page, 1600);
@@ -284,29 +362,29 @@ const CLIPS = {
     who: "elena",
     poster: 0.55,
     async open(page) {
-      await page.goto(`${BASE}/creator/upload`);
+      await page.goto(U(`/creator/upload`));
       return async () => {
         await pause(page, 1200);
         const chooser = page.waitForEvent("filechooser");
-        await press(page, page.getByText("choose a file"));
+        await press(page, page.getByText(has("choose a file")));
         await (await chooser).setFiles(path.join(SHOWCASE, `${UPLOAD.clip}.mp4`));
         await settled(page, 1200);
-        const title = page.getByPlaceholder(/Give it a name/);
+        const title = page.getByPlaceholder(has("Give it a name people will click"));
         await title.fill("");
         await type(page, title, UPLOAD.title, 45);
         await pause(page, 500);
-        await press(page, page.getByRole("radio", { name: /Paid unlock/ }));
+        await press(page, page.getByRole("radio", { name: has("Paid unlock") }));
         await pause(page, 600);
         const price = page.locator('input[type="number"]').first();
         await press(page, price, 200);
         await price.fill("6");
         await pause(page, 1600); // what the fan pays, the fee, what she keeps
-        const all = page.getByText(/I confirm all three/);
+        const all = page.getByText(has("I confirm all three"));
         if (await all.isVisible().catch(() => false)) await press(page, all);
         else for (const box of await page.getByRole("checkbox").all()) await press(page, box, 200);
         await pause(page, 600);
-        await press(page, page.getByRole("button", { name: /^Publish$/ }));
-        await page.getByText(/Your video is on its way/).waitFor({ timeout: 30_000 });
+        await press(page, page.getByRole("button", { name: tr("Publish") }));
+        await page.getByText(has("Your video is on its way")).waitFor({ timeout: 30_000 });
         await pause(page, 3800);
       };
     },
@@ -315,7 +393,7 @@ const CLIPS = {
   "elena-live": {
     who: "elena",
     async open(page, ids) {
-      await page.goto(`${BASE}/me`);
+      await page.goto(U(`/me`));
       return async () => {
         await pause(page, 2200);
         // Two fans, elsewhere, at this moment — through the app's own API, as their browsers would.
@@ -326,7 +404,7 @@ const CLIPS = {
         const highest = items.find((a) => a.id === ids.auction)?.highestBidCents ?? CAST.auction.startingPriceCents;
         await lina.call("POST", `/api/auctions/${ids.auction}/bids`, { amountCents: highest + 1000 });
         await pause(page, 3400);
-        await press(page, page.getByRole("button", { name: /Notifications/ }).first());
+        await press(page, page.getByRole("button", { name: has("Notifications") }).first());
         await pause(page, 3600);
       };
     },
@@ -335,14 +413,14 @@ const CLIPS = {
   "elena-story": {
     who: "elena",
     async open(page) {
-      await page.goto(`${BASE}/@${elena.username}`);
+      await page.goto(U(`/@${elena.username}`));
       return async () => {
         await pause(page, 1200);
-        await press(page, page.getByRole("button", { name: /Watch stories/ }), 600);
+        await press(page, page.getByRole("button", { name: has("Watch stories") }), 600);
         await settled(page, 1400);
-        await press(page, page.getByRole("button", { name: /^Activity/ }).first());
+        await press(page, page.getByRole("button", { name: has("Activity") }).first());
         await settled(page, 3400);
-        await press(page, page.getByRole("tab", { name: /^Tips/ }).or(page.getByRole("button", { name: /^Tips$/ })).first());
+        await press(page, page.getByRole("tab", { name: tr("Tips") }).or(page.getByRole("button", { name: tr("Tips") })).first());
         await pause(page, 4200);
       };
     },
@@ -352,17 +430,17 @@ const CLIPS = {
     who: "elena",
     poster: 0.2,
     async open(page) {
-      await page.goto(`${BASE}/me/earnings`);
+      await page.goto(U(`/me/earnings`));
       return async () => {
         await pause(page, 2200);
-        await page.getByText(/After the 10% platform fee/).first().hover().catch(() => {});
+        await page.getByText(has("After the {fee}% platform fee")).first().hover().catch(() => {});
         await pause(page, 1400);
         await glide(page, 420, 2000);
         await page.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
         await pause(page, 1000);
-        await press(page, page.getByRole("button", { name: /^Withdraw$/ }).first());
+        await press(page, page.getByRole("button", { name: tr("Withdraw") }).first());
         await pause(page, 1500);
-        await press(page, page.getByRole("button", { name: /^Request \$/ }));
+        await press(page, page.getByRole("button", { name: tr("Request {amount}") }));
         await pause(page, 3400);
       };
     },
@@ -379,10 +457,10 @@ const SHOWCASE_CUTS = [
 ];
 
 /** Encodes a recording to the three published files. */
-function encode(source, target, { start = 0, poster = 0.7, filter = "", hold = 1.2 } = {}) {
+function encode(source, target, { start = 0, poster = 0.7, filter = "", hold = 1.2, input = [] } = {}) {
   // The last frame holds a second: the result of the gesture (a tip sent, a bid in the lead) stays readable.
-  const vf = `${filter}tpad=stop_mode=clone:stop_duration=${hold},fps=25,scale=1280:800:flags=lanczos`;
-  const trim = ["-y", "-loglevel", "error", "-ss", start.toFixed(2), "-i", source, "-vf", vf, "-an"];
+  const vf = `${filter}tpad=stop_mode=clone:stop_duration=${hold},fps=25,scale=${FRAME}:flags=lanczos`;
+  const trim = ["-y", "-loglevel", "error", "-ss", start.toFixed(2), ...input, "-i", source, "-vf", vf, "-an"];
   execFileSync("ffmpeg", [...trim, "-c:v", "libvpx-vp9", "-b:v", "0", "-crf", "40", "-row-mt", "1", "-deadline", "good", "-cpu-used", "2", `${target}.webm`]);
   execFileSync("ffmpeg", [...trim, "-c:v", "libx264", "-crf", "26", "-preset", "slow", "-pix_fmt", "yuv420p", "-movflags", "+faststart", `${target}.mp4`]);
   const duration = Number(execFileSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-of", "default=nw=1:nk=1", `${target}.mp4`]).toString());
@@ -390,29 +468,50 @@ function encode(source, target, { start = 0, poster = 0.7, filter = "", hold = 1
   return duration;
 }
 
-/** Records one clip, then encodes it next to the others. */
+/**
+ * Records one clip, then encodes it next to the others. Playwright's own video is not scaled by the device pixel ratio,
+ * so the frames come from the browser's screencast at the full device resolution (2240×1400): each frame is kept with
+ * its timestamp and the clip is rebuilt at the real pace (ffmpeg concat).
+ */
 async function record(id, ids) {
   const clip = CLIPS[id];
-  const ctx = await context(clip.who, true);
+  const ctx = await context(clip.who, false);
   const page = await ctx.newPage();
-  const opened = Date.now();
   const play = await clip.open(page, ids);
   await settled(page, 1200); // fonts, data, pictures settle before the clip starts
-  const start = (Date.now() - opened) / 1000;
+  const cdp = await ctx.newCDPSession(page);
+  const frames = [];
+  const dir = path.join(raw, id);
+  await mkdir(dir, { recursive: true });
+  cdp.on("Page.screencastFrame", ({ data, metadata, sessionId }) => {
+    frames.push({ t: metadata.timestamp, file: path.join(dir, `${String(frames.length).padStart(5, "0")}.jpg`), data });
+    cdp.send("Page.screencastFrameAck", { sessionId }).catch(() => {});
+  });
+  await cdp.send("Page.startScreencast", { format: "jpeg", quality: 92, maxWidth: WINDOW.width * SCALE, maxHeight: WINDOW.height * SCALE, everyNthFrame: 1 });
   try {
     await play();
+    await pause(page, 300);
   } finally {
+    await cdp.send("Page.stopScreencast").catch(() => {});
     await ctx.close();
   }
-  const source = await page.video().path();
-  await writeFile(path.join(raw, `${id}.path`), source);
-  const duration = encode(source, path.join(OUT, id), { start, poster: clip.poster });
-  process.stdout.write(`✓ ${id}  ${duration.toFixed(1)} s → ${path.relative(process.cwd(), path.join(OUT, id))}.{webm,mp4,jpg}\n`);
+  if (frames.length < 2) throw new Error(`${id}: the screencast gave ${frames.length} frame(s)`);
+  let list = "ffconcat version 1.0\n";
+  for (const [i, f] of frames.entries()) {
+    await writeFile(f.file, Buffer.from(f.data, "base64"));
+    const next = frames[i + 1]?.t ?? f.t + 0.3;
+    list += `file '${f.file}'\nduration ${Math.max(0.02, next - f.t).toFixed(3)}\n`;
+  }
+  list += `file '${frames.at(-1).file}'\n`;
+  const source = path.join(raw, `${id}.ffconcat`);
+  await writeFile(source, list);
+  const duration = encode(source, path.join(OUT, loc, id), { poster: clip.poster, input: ["-f", "concat", "-safe", "0"] });
+  process.stdout.write(`✓ ${id}  ${duration.toFixed(1)} s, ${frames.length} frames → ${path.relative(process.cwd(), path.join(OUT, loc, id))}.{webm,mp4,jpg}\n`);
 }
 
 /** The home card's clip, from the published mp4s (cross-faded). */
 function showcase() {
-  const inputs = SHOWCASE_CUTS.flatMap(([id, from, to]) => ["-ss", String(from), "-t", String(to - from), "-i", path.join(OUT, `${id}.mp4`)]);
+  const inputs = SHOWCASE_CUTS.flatMap(([id, from, to]) => ["-ss", String(from), "-t", String(to - from), "-i", path.join(OUT, loc, `${id}.mp4`)]);
   const fade = 0.4;
   let chain = "";
   let last = "[0:v]";
@@ -426,8 +525,8 @@ function showcase() {
   });
   const joined = path.join(raw, "showcase.mp4");
   execFileSync("ffmpeg", ["-y", "-loglevel", "error", ...inputs, "-filter_complex", chain.replace(/;$/, ""), "-map", "[v]", "-c:v", "libx264", "-crf", "16", "-pix_fmt", "yuv420p", joined]);
-  const duration = encode(joined, path.join(OUT, "showcase"), { poster: 0.3, hold: 0 });
-  process.stdout.write(`✓ showcase  ${duration.toFixed(1)} s → ${path.relative(process.cwd(), path.join(OUT, "showcase"))}.{webm,mp4,jpg}\n`);
+  const duration = encode(joined, path.join(OUT, loc, "showcase"), { poster: 0.3, hold: 0 });
+  process.stdout.write(`✓ showcase  ${duration.toFixed(1)} s → ${path.relative(process.cwd(), path.join(OUT, loc, "showcase"))}.{webm,mp4,jpg}\n`);
 }
 
 try {
@@ -435,11 +534,15 @@ try {
   const [alex, elenaApi] = await Promise.all([api("alex"), api("elena")]);
   ids.acoustic = await videoId(elenaApi, "acoustic");
   ids.neonRain = await videoId(elenaApi, "neonRain");
+  ids.glassHearts = await videoId(elenaApi, "glassHearts");
   ids.auction = (await alex.call("GET", "/api/auctions?tab=open")).items.find((a) => a.title === video(CAST.auction.video).title)?.id;
   hls = LOCAL_MEDIA ? await localMedia(raw) : null;
   const wanted = Object.keys(CLIPS).filter((id) => ONLY.length === 0 || ONLY.includes(id));
-  for (const id of wanted) await record(id, ids);
-  if (ONLY.length === 0 || ONLY.includes("showcase")) showcase();
+  for (loc of LOCALES) {
+    process.stdout.write(`\n▸ ${loc}\n`);
+    for (const id of wanted) await record(id, ids);
+    if (ONLY.length === 0 || ONLY.includes("showcase")) showcase();
+  }
 } finally {
   await browser.close();
   await rm(raw, { recursive: true, force: true });

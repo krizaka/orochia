@@ -24,7 +24,7 @@ describe("a signed-out visitor's home tells one story", () => {
   });
 
   it("plays the real recordings of the app (the demo personas' journey), never a mock-up", () => {
-    expect(HERO_STEPS.map((s) => s.clip)).toEqual(["alex-discover", "showcase", "alex-story", "elena-earnings"]);
+    expect(HERO_STEPS.map((s) => s.clip)).toEqual(["alex-discover", "alex-watch", "alex-story", "elena-earnings"]);
     expect(read("./VisitorHome.tsx")).toContain("tourRecording");
   });
 
