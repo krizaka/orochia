@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-import { credit, diffCreator, isUpgrade, validateDataset } from "./dev-dataset/plan.mjs";
+import { credit, diffCreator, isUpgrade, retag, validateDataset } from "./dev-dataset/plan.mjs";
 
 const dataset = JSON.parse(readFileSync(new URL("./dev-dataset/dataset.json", import.meta.url), "utf8"));
 
@@ -84,5 +84,16 @@ describe("the credit", () => {
     expect(credit({ orazakaRunId: "abc", model: "Wan 2.2 A14B (x) — DigitalOcean" })).toBe("Made with Orazaka · run abc (Wan 2.2 A14B (x)).");
     expect(credit({ orazakaRunId: "abc", sound: "ACE-Step 1.5 (MIT)", soundRunId: "def" })).toBe("Made with Orazaka · run abc · sound: ACE-Step 1.5 (MIT), run def.");
     expect(credit({})).toBeNull();
+  });
+});
+
+describe("what the dataset changes on a video that is already there", () => {
+  it("re-states the tags of the kept videos (a renamed tag reaches the dev site without a re-upload)", () => {
+    const wanted = [{ title: "Slow jazz", tags: ["music", "jazz", "club"] }, { title: "Neon alley", tags: ["night"] }];
+    const have = [{ id: "1", title: "slow jazz" }, { id: "2", title: "Other" }];
+    expect(retag(wanted, have)).toEqual([{ id: "1", tags: ["music", "jazz", "club"] }]);
+  });
+  it("skips a video that is being replaced or deleted", () => {
+    expect(retag([{ title: "A", tags: ["x"] }], [{ id: "1", title: "A" }], new Set(["1"]))).toEqual([]);
   });
 });

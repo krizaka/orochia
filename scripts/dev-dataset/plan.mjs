@@ -87,3 +87,9 @@ export function credit(entry) {
   const upscaled = entry.upscale ? ` · upscaled to ${entry.upscale.to} by ${entry.upscale.model}` : "";
   return `Made with Orazaka · run ${entry.orazakaRunId}${entry.model ? ` (${entry.model.split(" — ")[0]})` : ""}${sound}${upscaled}.`;
 }
+
+/** The kept videos (matched by title) with the tags the dataset now says; `skip` holds ids being replaced or deleted. */
+export function retag(wanted, have, skip = new Set()) {
+  const want = new Map(wanted.map((v) => [v.title.toLowerCase(), v]));
+  return have.filter((h) => !skip.has(h.id) && want.has(h.title.toLowerCase())).map((h) => ({ id: h.id, tags: want.get(h.title.toLowerCase()).tags ?? [] }));
+}

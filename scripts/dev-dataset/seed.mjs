@@ -15,7 +15,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
-import { credit, diffCreator, isUpgrade, validateDataset } from "./plan.mjs";
+import { credit, diffCreator, isUpgrade, retag, validateDataset } from "./plan.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(path.join(here, "../../apps/web/package.json"));
@@ -162,6 +162,11 @@ for (const creator of dataset.creators) {
   for (const h of [...replace, ...(prune ? remove : [])]) {
     const res = await call(`/api/videos/${h.id}`, { method: "DELETE" });
     console.log(`  - ${h.title}: ${res.ok ? "deleted" : `kept (${res.status}: ${(await res.json().catch(() => ({}))).error ?? ""})`}`);
+  }
+  // The tags of what stays follow the dataset (a renamed tag needs no re-upload).
+  for (const k of retag(wanted, have, new Set([...replace, ...(prune ? remove : [])].map((h) => h.id)))) {
+    const res = await call(`/api/videos/${k.id}`, { method: "PATCH", body: JSON.stringify({ tags: k.tags }) });
+    if (!res.ok) console.log(`  ! tags of ${k.id}: refused (${res.status})`);
   }
   for (const v of upload.filter((x) => !missing.includes(x))) {
     try {
