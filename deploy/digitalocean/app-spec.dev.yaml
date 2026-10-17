@@ -73,11 +73,11 @@ services:
       - key: DATABASE_CA_CERT
         scope: RUN_TIME
         value: ${orochia-db.CA_CERT}
-      # One pool per instance (default 5). (instances + 1 during a rolling deploy) × (this + 1 LISTEN) + migrate + admin
+      # One pool per instance (2 in dev: krizaka-dev-pg has 22 usable slots, budget in the orazaka repo docs/DEV_DATABASE.md). (instances + 1 during a rolling deploy) × (this + 1 LISTEN) + migrate + admin
       # ≤ 70 % of the database's usable slots (~22 on the small plans) — docs/DEPLOYMENT.md, "Database connections".
       - key: DATABASE_MAX_CONNECTIONS
         scope: RUN_TIME
-        value: "5"
+        value: "2"
       - key: MEDIA_STREAM_API_KEY
         scope: RUN_TIME
         type: SECRET
