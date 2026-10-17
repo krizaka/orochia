@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { db, profiles, users } from "@orochia/db";
+import { db, profiles, users, videos } from "@orochia/db";
 import { eq } from "drizzle-orm";
 import { requireUserWithRole } from "@/lib/auth";
-import { errorResponse, jsonError } from "@/lib/http";
+import { BANNER_KINDS, resolveBannerChoice, videoBannerEnabled } from "@/lib/banner";
+import { errorResponse, HttpError, jsonError } from "@/lib/http";
 import { presenceSettingChanged } from "@/lib/presence";
 import { SOCIAL_NETWORK_IDS, normalizeWebsite, parseNotificationsOff, parseSocialLinks, profileImageUrl, socialLinksView } from "@/lib/profile";
 
@@ -16,6 +17,16 @@ const ProfileSchema = z.object({
   /** A preset id, an uploaded file's reference (avatars/… or banners/…), the current picture, or null to remove it. */
   avatar: z.string().trim().max(1000).nullable().optional(),
   banner: z.string().trim().max(1000).nullable().optional(),
+  /** A cover that moves (APP_VIDEO_BANNER): a 3-6 s moment of one of your own videos, or an ambient loop. Sending `banner` goes back to a still. */
+  bannerVideo: z
+    .object({
+      kind: z.enum(BANNER_KINDS),
+      videoId: z.string().uuid().nullable().optional(),
+      startSeconds: z.number().min(0).max(86_400).nullable().optional(),
+      endSeconds: z.number().min(0).max(86_400).nullable().optional(),
+      ambientId: z.string().max(60).nullable().optional(),
+    })
+    .optional(),
   websiteUrl: z.string().trim().max(200).nullable().optional(),
   socialLinks: z.record(z.string().max(200).nullable()).optional(),
   directMessagePrivacy: z.enum(["EVERYONE", "CONTACTS_ONLY"]).optional(),
@@ -44,6 +55,11 @@ async function read(userId: string) {
       bio: profiles.bio,
       avatarUrl: profiles.avatarUrl,
       bannerUrl: profiles.bannerUrl,
+      bannerKind: profiles.bannerKind,
+      bannerVideoId: profiles.bannerVideoId,
+      bannerStartSeconds: profiles.bannerStartSeconds,
+      bannerEndSeconds: profiles.bannerEndSeconds,
+      bannerAmbientId: profiles.bannerAmbientId,
       websiteUrl: profiles.websiteUrl,
       socialLinks: profiles.socialLinks,
       emailsOff: profiles.emailsOff,
@@ -91,7 +107,23 @@ export async function PUT(req: NextRequest) {
     if (input.challengeMinCents !== undefined) set.challengeMinCents = input.challengeMinCents;
     if (input.bio !== undefined) set.bio = input.bio || null;
     if (input.avatar !== undefined) set.avatarUrl = profileImageUrl("avatar", input.avatar, current.avatarUrl);
-    if (input.banner !== undefined) set.bannerUrl = profileImageUrl("banner", input.banner, current.bannerUrl);
+    if (input.banner !== undefined) {
+      set.bannerUrl = profileImageUrl("banner", input.banner, current.bannerUrl);
+      // Choosing or removing a still puts the cover back to a still.
+      if (input.bannerVideo === undefined) Object.assign(set, { bannerKind: "image", bannerVideoId: null, bannerStartSeconds: null, bannerEndSeconds: null, bannerAmbientId: null });
+    }
+    if (input.bannerVideo !== undefined) {
+      if (!videoBannerEnabled()) throw new HttpError(404, "Video covers are not available yet");
+      const [video] = input.bannerVideo.videoId ? await db.select().from(videos).where(eq(videos.id, input.bannerVideo.videoId)).limit(1) : [];
+      const resolved = resolveBannerChoice(input.bannerVideo, { userId: user.id, video: video ?? null });
+      set.bannerKind = resolved.kind;
+      set.bannerVideoId = resolved.videoId;
+      set.bannerStartSeconds = resolved.startSeconds;
+      set.bannerEndSeconds = resolved.endSeconds;
+      set.bannerAmbientId = resolved.ambientId;
+      // The still stays as the poster: the video's own thumbnail for a moment of a video.
+      if (resolved.kind === "video_segment" && video?.thumbnailUrl) set.bannerUrl = video.thumbnailUrl;
+    }
     if (input.websiteUrl !== undefined) set.websiteUrl = normalizeWebsite(input.websiteUrl);
     if (input.socialLinks !== undefined) set.socialLinks = parseSocialLinks(input.socialLinks);
     if (input.directMessagePrivacy !== undefined) set.directMessagePrivacy = input.directMessagePrivacy;

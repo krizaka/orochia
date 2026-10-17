@@ -746,6 +746,12 @@
       "summary": "Content reports."
     },
     {
+      "method": "GET",
+      "path": "/api/me/banner-videos",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "The signed-in creator's own videos a cover can use: published, public, free and at least 3 s long."
+    },
+    {
       "method": "POST",
       "path": "/api/me/become-creator",
       "access": "session · MEMBER / CREATOR / ADMIN",
@@ -1535,7 +1541,7 @@
         "runtime": "node",
         "version": "1.0.0",
         "published": false,
-        "description": "The API: 147 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
+        "description": "The API: 148 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
       },
       {
         "id": "orochia-config",

@@ -3233,5 +3233,16 @@
       "smallTitle": "Your audience is still too small to show",
       "smallBody": "Figures appear once at least {min} people have watched your videos in the period — so no one can be singled out."
     }
+  },
+  "movingCover": {
+    "menu": "Use a moment of my video",
+    "title": "A cover that moves",
+    "hint": "Pick one of your published videos, then the {min} to {max} seconds that play on your profile. Nothing to upload: it uses a video you already published.",
+    "none": "You have no published, public and free video of at least 3 seconds yet.",
+    "length": "Length",
+    "seconds": "{count} s",
+    "start": "Starts at",
+    "use": "Use this moment",
+    "failed": "The cover could not be saved."
   }
 }
