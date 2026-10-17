@@ -36,6 +36,14 @@ describe("the video information", () => {
     expect(out).not.toContain("data-testid=\"video-status\"");
     expect(out).not.toContain("ai-badge");
   });
+  it("is built on the Krizaka UI MetaRow, not a local flex line", () => {
+    const src = read("./VideoInfo.tsx");
+    expect(src).toContain('from "@krizaka/ui/meta-row"');
+    expect(src).not.toContain("gap-x-2 gap-y-1.5");
+    const out = html(AI);
+    expect(out).toContain("<ul");
+    expect(out).toContain('data-testid="video-meta"');
+  });
   it("shows a status chip only when the encoding is not ready", () => {
     expect(html(null, "PROCESSING")).toContain("data-testid=\"video-status\"");
   });
