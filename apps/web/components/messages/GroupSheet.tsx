@@ -5,6 +5,7 @@ import React, { useState } from "react";
 
 import { AlertDialog, Avatar, Badge, Button, Checkbox, cn, Dialog, IconButton, Input, Sheet, Spinner, Switch, toast } from "@/components/ui";
 import { responseErrorMessage } from "@/lib/api-errors";
+import { MemberRole } from "@/lib/conversation-kinds";
 import { t } from "@/lib/i18n";
 import { defaultAvatarFor } from "@/lib/presets";
 
@@ -75,7 +76,7 @@ export function GroupSheet({ conversationId, myId, onLeft }: { conversationId: s
     if (res?.ok) setContacts(((await res.json()) as { data: { contacts: Contact[] } }).data.contacts);
   };
 
-  const owner = info?.role === "owner";
+  const owner = info?.role === MemberRole.Owner;
   const inGroup = new Set(info?.members.map((m) => m.userId));
   const addable = (contacts ?? []).filter((c) => !inGroup.has(c.userId));
 
@@ -155,7 +156,7 @@ export function GroupSheet({ conversationId, myId, onLeft }: { conversationId: s
                           <span className="block truncate text-sm font-semibold text-fg">{m.displayName}</span>
                           <span className="block truncate text-[11px] text-fg-secondary">@{m.username}</span>
                         </span>
-                        {m.role === "owner" && <Badge tone="accent" size="sm">{t("inbox.group.owner")}</Badge>}
+                        {m.role === MemberRole.Owner && <Badge tone="accent" size="sm">{t("inbox.group.owner")}</Badge>}
                         {owner && !info.archived && m.userId !== myId && (
                           <Button variant="ghost" size="sm" disabled={busy} onClick={() => void act(`/api/groups/${conversationId}/members/${m.userId}`, { method: "DELETE" })}>
                             {t("inbox.group.remove")}

@@ -6,6 +6,7 @@ import React from "react";
 
 import { timeAgo } from "@/components/notifications/useNotifications";
 import { Badge, cn, EmptyState, Skeleton } from "@/components/ui";
+import { ConversationKind } from "@/lib/conversation-kinds";
 import { conversationPath } from "@/lib/conversation-path";
 import { t } from "@/lib/i18n";
 
@@ -64,7 +65,7 @@ export function ConversationList({
         const last = c.lastMessage;
         const mine = last?.senderId === myId;
         const isTyping = Boolean(typing[c.id]);
-        const isGroup = c.kind === "group";
+        const isGroup = c.kind === ConversationKind.Group;
         const status = isGroup ? t("inbox.group.membersCount", { count: c.memberCount }) : presenceLabel(presence[other.id]);
         const preview = isTyping
           ? t("inbox.typing")

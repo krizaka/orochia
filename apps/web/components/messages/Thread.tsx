@@ -5,6 +5,7 @@ import Link from "next/link";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { AlertDialog, Button, cn, DropdownMenu, EmptyState, IconButton, Skeleton, Textarea, toast } from "@/components/ui";
+import { ConversationKind } from "@/lib/conversation-kinds";
 import { t } from "@/lib/i18n";
 import { isAiAssisted } from "@/lib/message-origin";
 
@@ -105,7 +106,7 @@ export function Thread({ conversation, myId, presence, messages, names = {}, sta
   }
 
   const other = conversation.otherUser;
-  const isGroup = conversation.kind === "group";
+  const isGroup = conversation.kind === ConversationKind.Group;
   const status = isGroup ? t("inbox.group.membersCount", { count: conversation.memberCount }) : presenceLabel(presence);
   const lastMine = [...messages].reverse().find((m) => m.senderId === myId && !m.local);
 

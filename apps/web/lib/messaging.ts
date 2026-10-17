@@ -481,7 +481,7 @@ export async function getConversationMessages(
 
   const hasMore = rows.length > limit;
   const page = rows.slice(0, limit).reverse();
-  if (access.kind !== "group") return { messages: page.map(messageView), hasMore };
+  if (access.kind !== ConversationKind.Group) return { messages: page.map(messageView), hasMore };
   // A group shows who wrote: the display names of the page's senders (people who left included).
   const senderIds = [...new Set(page.map((r) => r.senderId))];
   const named = senderIds.length
