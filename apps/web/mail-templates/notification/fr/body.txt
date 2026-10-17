@@ -5,3 +5,5 @@ Bonjour @{username},
 {link}
 
 Vous recevez ce message parce qu’il est activé dans vos réglages de notifications : {settingsLink}
+{#unsubscribeLink}Se désabonner de ce type d’e-mail : {unsubscribeLink}
+{/unsubscribeLink}
