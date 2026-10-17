@@ -1,0 +1,99 @@
+{
+  "key": "ravi_kapoor",
+  "username": "ravi_kapoor",
+  "displayName": "Ravi Kapoor",
+  "bio": "Spice markets and street-food stalls across India. Steam, sizzle, colour — and the cook who has done this for forty years.",
+  "niche": "Street food & spices",
+  "tags": [
+    "street-food",
+    "spices",
+    "india",
+    "cooking"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a man in his mid 30s with a warm smile and a short beard wearing a mustard shirt in a colourful market, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a colourful spice market with pyramids of red yellow and orange spices and warm sunlight, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Streets & stalls",
+      "description": "India, one plate at a time.",
+      "videos": [
+        "Spice pyramids at the morning market",
+        "Dosa on the hot griddle",
+        "Chai for the whole street",
+        "Tandoor flatbreads"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Spice pyramids at the morning market",
+      "description": "Turmeric, chilli and cumin heaped in perfect cones.",
+      "tags": [
+        "spices",
+        "market",
+        "india",
+        "colour"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of an Indian spice market stall with conical heaps of turmeric, red chilli and cumin in baskets, morning sunbeams, a vendor seen from behind, no text",
+      "motion": "Sunbeams shift across the spice piles, a faint haze of spice dust drifts, gentle slow camera pan."
+    },
+    {
+      "title": "Dosa on the hot griddle",
+      "description": "A thin batter spread in one circle, then folded.",
+      "tags": [
+        "dosa",
+        "street-food",
+        "cooking",
+        "india"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a cook's hands spreading thin dosa batter on a large hot griddle with steam rising, warm light, no face, no text",
+      "motion": "Steam rises as the batter spreads in a spiral and turns golden, slow top-down drift."
+    },
+    {
+      "title": "Chai for the whole street",
+      "description": "A tall pour of tea from one pot to another.",
+      "tags": [
+        "chai",
+        "tea",
+        "street",
+        "pour"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a street vendor pouring steaming milky chai in a long arc between two metal vessels, steam, blurred street behind, face turned away, no text",
+      "motion": "The chai pours in a long steady arc, steam swirls, the street bustles blurred behind, slow camera follow."
+    },
+    {
+      "title": "Tandoor flatbreads",
+      "description": "Dough slapped against the clay wall, ready in a minute.",
+      "tags": [
+        "tandoor",
+        "naan",
+        "bread",
+        "cooking"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a baker slapping dough onto the inside wall of a clay tandoor oven with glowing coals, orange flames and bread blistering, hands only, no face, no text",
+      "motion": "Flames flicker and the flatbread puffs and blisters, steam and sparks drift, slow camera push-in."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Mortar and pestle",
+      "kind": "image",
+      "still": "Vertical photograph of whole spices ground in a stone mortar with a pestle, warm light, no people, no text"
+    },
+    {
+      "caption": "Chilli strings",
+      "kind": "image",
+      "still": "Vertical photograph of red chillies drying in strings against a sunny wall, no people, no text"
+    },
+    {
+      "caption": "Tea glasses",
+      "kind": "image",
+      "still": "Vertical photograph of a tray of small glasses of chai with steam at a roadside stall, no readable text"
+    }
+  ]
+}

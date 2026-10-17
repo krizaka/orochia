@@ -1,0 +1,99 @@
+{
+  "key": "meilin_zhao",
+  "username": "meilin_zhao",
+  "displayName": "Mei Lin Zhao",
+  "bio": "Tea ceremony, calligraphy and the discipline of a slow hand. Steam, ink and silence.",
+  "niche": "Tea & calligraphy",
+  "tags": [
+    "tea",
+    "calligraphy",
+    "ceremony",
+    "calm"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a woman in her late 30s with her hair pinned back wearing a simple linen jacket, a tea set softly blurred behind her, serene expression, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a tea room with a low wooden table, a clay teapot, cups and an ink brush, soft diffuse window light, subject across the middle band",
+  "collections": [
+    {
+      "title": "Leaf & ink",
+      "description": "The slow arts.",
+      "videos": [
+        "Gongfu tea, the first pour",
+        "One stroke, one character",
+        "Rain on the tea house roof",
+        "Unfurling jasmine pearls"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Gongfu tea, the first pour",
+      "description": "Hot water onto leaves that remember the mountain.",
+      "tags": [
+        "tea",
+        "gongfu",
+        "ceremony",
+        "pour"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of hot water being poured from a kettle into a small clay teapot with steam rising, wooden tea tray, no face, no text",
+      "motion": "Water pours in a thin stream and steam swirls up, slow macro drift."
+    },
+    {
+      "title": "One stroke, one character",
+      "description": "A brush loaded with ink, slow and certain.",
+      "tags": [
+        "calligraphy",
+        "ink",
+        "brush",
+        "art"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a hand holding a calligraphy brush above rice paper with a fresh black brush stroke, inkstone and brush rest nearby, soft window light, no face, no readable text",
+      "motion": "The brush glides across the paper leaving a smooth black stroke, subtle push-in."
+    },
+    {
+      "title": "Rain on the tea house roof",
+      "description": "Raindrops, steam and a still cup.",
+      "tags": [
+        "tea",
+        "rain",
+        "calm",
+        "ambient"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a quiet traditional tea house veranda in rain with a steaming cup on a wooden ledge and a misty garden, no people, no text",
+      "motion": "Raindrops fall into the garden and steam curls up from the cup, slow gentle push-in."
+    },
+    {
+      "title": "Unfurling jasmine pearls",
+      "description": "A tight pearl opening into a flower in a glass pot.",
+      "tags": [
+        "tea",
+        "jasmine",
+        "unfurl",
+        "glass"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of jasmine tea pearls unfurling in a clear glass teapot of hot water, soft backlight, no people, no text",
+      "motion": "The tea pearls slowly unfurl and the leaves expand, steam rises, subtle macro drift."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Inkstone morning",
+      "kind": "image",
+      "still": "Vertical photograph of an inkstone with freshly ground black ink and a brush on a wooden desk, soft light, no text"
+    },
+    {
+      "caption": "Cups in a row",
+      "kind": "image",
+      "still": "Vertical photograph of five small clay tea cups on a wooden tray in soft light, no people, no text"
+    },
+    {
+      "caption": "Steam, still",
+      "kind": "image",
+      "still": "Vertical photograph of steam rising from a clay teapot against a dark wall, no people, no text"
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "key": "isabella_rossi",
+  "username": "isabella_rossi",
+  "displayName": "Isabella Rossi",
+  "bio": "Sommelier in Tuscany. Vineyards at dawn, cellar candlelight and the patient science of a good glass.",
+  "niche": "Wine & vineyards",
+  "tags": [
+    "wine",
+    "vineyard",
+    "tuscany",
+    "sommelier"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a woman in her late 30s with wavy chestnut hair holding a wine glass in a stone cellar, candlelight, warm smile, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of rolling Tuscan vineyards with cypress trees in golden morning mist, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "From vine to glass",
+      "description": "A year in Tuscany, in four scenes.",
+      "videos": [
+        "Harvest morning in the vines",
+        "Swirl, sniff, taste",
+        "The cellar, candlelit",
+        "Cypress road at sunset"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Harvest morning in the vines",
+      "description": "Pickers' hands, ripe grapes and a golden mist over the rows.",
+      "tags": [
+        "wine",
+        "harvest",
+        "vineyard",
+        "tuscany"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of vineyard rows in golden morning mist during harvest with crates of grapes and pickers far away seen from behind, Tuscany, no text",
+      "motion": "Mist drifts between the vine rows and sunlight breaks through, pickers move slowly in the distance, gentle push-in."
+    },
+    {
+      "title": "Swirl, sniff, taste",
+      "description": "A glass of red catching the light.",
+      "tags": [
+        "wine",
+        "tasting",
+        "red",
+        "glass"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical close-up photograph of a hand swirling a glass of deep red wine against warm candlelight, shallow depth of field, no face, no text",
+      "motion": "The wine swirls slowly in the glass and the candle light shimmers, subtle macro drift."
+    },
+    {
+      "title": "The cellar, candlelit",
+      "description": "Barrels, cool stone and a lantern.",
+      "tags": [
+        "wine",
+        "cellar",
+        "barrels",
+        "candlelight"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a stone wine cellar with rows of oak barrels lit by a single lantern, a faint haze in the air, no people, no text",
+      "motion": "Lantern light flickers and haze drifts between the barrels, slow push-in down the aisle."
+    },
+    {
+      "title": "Cypress road at sunset",
+      "description": "The long road between the hills as the day closes.",
+      "tags": [
+        "tuscany",
+        "sunset",
+        "landscape",
+        "road"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a Tuscan gravel road lined with cypress trees at sunset over rolling hills, golden light, no people, no text",
+      "motion": "Golden light slowly deepens and the cypress branches sway softly, slow camera rise."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Grapes still cold",
+      "kind": "image",
+      "still": "Vertical photograph of a bunch of dark grapes with dew in a wooden crate, morning light, no text"
+    },
+    {
+      "caption": "Cork pull",
+      "kind": "image",
+      "still": "Vertical close-up photograph of a corkscrew pulling a cork from a wine bottle, warm light, no face, no text"
+    },
+    {
+      "caption": "Terrace lunch",
+      "kind": "image",
+      "still": "Vertical photograph of a stone terrace table with bread, olive oil and two glasses of wine overlooking hills, no people, no text"
+    }
+  ]
+}

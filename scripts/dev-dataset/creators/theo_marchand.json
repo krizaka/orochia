@@ -1,0 +1,99 @@
+{
+  "key": "theo_marchand",
+  "username": "theo_marchand",
+  "displayName": "Théo Marchand",
+  "bio": "Montréal through the seasons: alley murals, snowy staircases, Mile End mornings. Shot on foot, never rushed.",
+  "niche": "Montréal life",
+  "tags": [
+    "montreal",
+    "city",
+    "seasons",
+    "street"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a man in his early 30s with short dark hair and a light stubble, wool coat and scarf, warm winter street light behind him, soft smile, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic view of a snowy Montréal street at dusk with outdoor spiral staircases and warm lit windows, a soft band of subject across the middle, cinematic photograph",
+  "collections": [
+    {
+      "title": "Montréal, four seasons",
+      "description": "Short walks through the city as it changes.",
+      "videos": [
+        "Spiral staircase in the first snow",
+        "Mile End alley mural at sunrise",
+        "Metro platform, last train",
+        "Marché Jean-Talon in late October"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Spiral staircase in the first snow",
+      "description": "The iconic outdoor staircases of the Plateau, white with the first snow of the year, one slow look up the steps.",
+      "tags": [
+        "montreal",
+        "snow",
+        "plateau",
+        "winter"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a wrought-iron outdoor spiral staircase on a Montréal brick duplex covered with fresh snow, blue hour, warm window light, no people, no text",
+      "motion": "Snowflakes drift down gently, the camera slowly tilts up the staircase, window lights glow warmly, subtle natural motion."
+    },
+    {
+      "title": "Mile End alley mural at sunrise",
+      "description": "A back-alley mural waking up with the morning light, steam from a vent, a cyclist passing far away.",
+      "tags": [
+        "montreal",
+        "mural",
+        "mile-end",
+        "morning"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide cinematic photograph of a colourful abstract mural on a brick alley wall in Montréal at sunrise, steam rising from a street vent, a distant cyclist, no text, no lettering",
+      "motion": "Slow push forward along the alley, steam drifts across, the distant cyclist rides slowly away, golden light grows."
+    },
+    {
+      "title": "Metro platform, last train",
+      "description": "Late evening on a quiet Montréal metro platform: tiles, reflections and the train sliding in.",
+      "tags": [
+        "montreal",
+        "metro",
+        "night",
+        "city"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of an empty Montréal metro platform at night, glossy tiles reflecting ceiling lights, a train arriving blurred, a lone commuter far away seen from behind, no text",
+      "motion": "The train glides into the platform, reflections slide across the tiles, the commuter stands still, slow camera drift."
+    },
+    {
+      "title": "Marché Jean-Talon in late October",
+      "description": "Pumpkins, apples and last tomatoes at the market stalls, a grey autumn light and warm coats.",
+      "tags": [
+        "montreal",
+        "market",
+        "autumn",
+        "food"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a farmers market in autumn in Montréal, stalls stacked with pumpkins apples and squash, people in warm coats seen from a distance, soft overcast light, no text, no signage lettering",
+      "motion": "Slow gentle pan across the stalls, people move slowly in the background, leaves blow past, natural handheld feel."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "First snow on the Plateau",
+      "kind": "image",
+      "still": "Vertical photograph of snow falling on a Montréal street with parked cars and glowing streetlights at dusk, no text"
+    },
+    {
+      "caption": "Bagels still warm",
+      "kind": "image",
+      "still": "Vertical close-up photograph of a paper bag of fresh sesame bagels on a wooden counter, steam rising, warm bakery light, no text"
+    },
+    {
+      "caption": "Mont Royal from the lookout",
+      "kind": "image",
+      "still": "Vertical photograph of the Montréal skyline from the Mont Royal lookout in autumn colours at sunset, no text"
+    }
+  ]
+}

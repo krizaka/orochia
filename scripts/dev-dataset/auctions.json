@@ -1,0 +1,137 @@
+{
+  "auctions": [
+    {
+      "creator": "diego_fuentes",
+      "video": "Concert lights from the pit",
+      "startingPriceCents": 500,
+      "hours": 72,
+      "rights": "WATCH",
+      "settlement": "HIGHEST_BID",
+      "state": "open",
+      "bids": [
+        [
+          "julia_santos",
+          600
+        ],
+        [
+          "tina_novak",
+          900
+        ]
+      ]
+    },
+    {
+      "creator": "elena_voss",
+      "video": "Red lip, black coat",
+      "startingPriceCents": 800,
+      "hours": 96,
+      "rights": "WATCH",
+      "settlement": "CREATOR_DECIDES",
+      "state": "open",
+      "bids": [
+        [
+          "paula_gomez",
+          1000
+        ],
+        [
+          "bianca_lopes",
+          1500
+        ]
+      ]
+    },
+    {
+      "creator": "chloe_armand",
+      "video": "Jumping off the stern",
+      "startingPriceCents": 700,
+      "hours": 48,
+      "rights": "WATCH",
+      "settlement": "HIGHEST_BID",
+      "state": "open",
+      "bids": [
+        [
+          "gabriel_roy",
+          800
+        ]
+      ]
+    },
+    {
+      "creator": "tomas_herrera",
+      "video": "Barrel from the beach",
+      "startingPriceCents": 400,
+      "hours": 120,
+      "rights": "DOWNLOAD",
+      "settlement": "HIGHEST_BID",
+      "state": "open",
+      "bids": [
+        [
+          "ivan_petrov",
+          500
+        ],
+        [
+          "quentin_dubois",
+          700
+        ],
+        [
+          "emil_hansen",
+          900
+        ]
+      ]
+    },
+    {
+      "creator": "kenji_watanabe",
+      "video": "Light trails on the bridge",
+      "startingPriceCents": 300,
+      "hours": 1,
+      "rights": "WATCH",
+      "settlement": "HIGHEST_BID",
+      "state": "settle",
+      "bids": [
+        [
+          "omar_haddad",
+          400
+        ],
+        [
+          "chen_wei",
+          550
+        ]
+      ]
+    },
+    {
+      "creator": "ravi_kapoor",
+      "video": "Tandoor flatbreads",
+      "startingPriceCents": 300,
+      "hours": 1,
+      "rights": "WATCH",
+      "settlement": "HIGHEST_BID",
+      "state": "settle",
+      "bids": [
+        [
+          "karim_benali",
+          350
+        ],
+        [
+          "farah_nasser",
+          500
+        ],
+        [
+          "alex_tremblay",
+          650
+        ]
+      ]
+    },
+    {
+      "creator": "andre_costa",
+      "video": "Flame on the orange peel",
+      "startingPriceCents": 600,
+      "hours": 1,
+      "rights": "WATCH",
+      "settlement": "HIGHEST_BID",
+      "state": "settle",
+      "bids": [
+        [
+          "marcus_cole",
+          700
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "key": "mira",
+  "username": "qa_fan2",
+  "credentials": "OROCHIA_FAN2",
+  "existing": true,
+  "displayName": "Mira Castellanos",
+  "rating": null,
+  "avatar": "Portrait of a woman in her late 20s with a long braid and a rain jacket, mountain wind in her hair, bright eyes, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a mountain ridge above the clouds at sunrise with a tiny hiker silhouette, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Slow travel",
+      "description": "Trails, harbours and old towns.",
+      "videos": [
+        "Hiking above the clouds",
+        "Sunrise over the harbour",
+        "The Old Port of Montréal at blue hour",
+        "Chefchaouen from above, then a riad courtyard",
+        "Dawn over Grenoble and the Bastille cable-car"
+      ]
+    },
+    {
+      "title": "Summer by the river",
+      "description": "Picnics and paddles.",
+      "videos": [
+        "Riverside picnic, slow summer afternoon",
+        "Kayaking down a summer river",
+        "Cycling the riverside path at sunset",
+        "A picnic in an olive grove, in miniature"
+      ]
+    }
+  ],
+  "videos": [],
+  "stories": [
+    {
+      "caption": "Boots at the trailhead",
+      "kind": "image",
+      "still": "Vertical photograph of muddy hiking boots at a trailhead sign post in morning light, no people, no readable text"
+    },
+    {
+      "caption": "Harbour light",
+      "kind": "image",
+      "still": "Vertical photograph of fishing boats in a harbour at dawn with soft golden light, no people, no text"
+    },
+    {
+      "caption": "Cloud inversion",
+      "kind": "image",
+      "still": "Vertical photograph of clouds filling a valley below a mountain ridge at sunrise, no people, no text"
+    }
+  ]
+}
