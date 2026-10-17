@@ -8,6 +8,7 @@ import { ClientLayoutShell } from "@/components/ClientLayoutShell";
 import { DevEnvironmentNotice } from "@/components/DevEnvironmentNotice";
 import { JsonLd } from "@/components/JsonLd";
 import { SiteFooter } from "@/components/SiteFooter";
+import { uiVersion } from "@/lib/ui-version";
 import { cn,MotionObserver, ThemeProvider, ThemeScript } from "@/components/ui";
 import { AuthProvider } from "@/lib/auth-context";
 import { I18nProvider } from "@/lib/i18n-client";
@@ -81,7 +82,7 @@ export default async function RootLayout({ children, params }: Props & { childre
           <AuthProvider>
             <ClientLayoutShell>{children}</ClientLayoutShell>
             <MotionObserver />
-            <SiteFooter />
+            <SiteFooter uiVersion={uiVersion()} />
             {!INDEXABLE && <DevEnvironmentNotice />}
           </AuthProvider>
           </I18nProvider>

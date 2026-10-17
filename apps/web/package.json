@@ -23,7 +23,7 @@
     "@krizaka/realtime": "^0.1.0",
     "@krizaka/tailwind": "^3.22.0",
     "@krizaka/tokens": "^3.22.0",
-    "@krizaka/ui": "^3.22.0",
+    "@krizaka/ui": "^3.25.0",
     "@orochia/db": "*",
     "@orochia/media": "*",
     "@orochia/payments": "*",
