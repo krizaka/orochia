@@ -56,6 +56,19 @@ const wanted = [
 console.log(`${wanted.length} accounts in the catalogue (${wanted.filter((w) => w.role === "CREATOR").length} creators, ${wanted.filter((w) => w.role === "MEMBER").length} fans)`);
 if (dry) process.exit(0);
 
+// Accounts that left the catalogue (a creator replaced by another): --drop name,name deletes just those (they own no content).
+if (opt("drop")) {
+  const names = opt("drop").split(",");
+  const { Client: Dropper } = require("pg");
+  const d = new Dropper({ host, port: Number(port ?? 25061), user, password, database, ssl: { rejectUnauthorized: false }, connectionTimeoutMillis: 15000 });
+  await d.connect();
+  try {
+    const res = await d.query("delete from users where username = any($1) and email = any($2)", [names, names.map(emailOf)]);
+    console.log(`accounts: ${res.rowCount} dropped`);
+  } finally {
+    await d.end();
+  }
+}
 if (remove) {
   const { Client: Cleaner } = require("pg");
   const c = new Cleaner({ host, port: Number(port ?? 25061), user, password, database, ssl: { rejectUnauthorized: false }, connectionTimeoutMillis: 15000 });

@@ -2,30 +2,44 @@
   "key": "elena_voss",
   "username": "elena_voss",
   "displayName": "Elena Voss",
-  "bio": "Fashion and evening wear — tailoring, silk and the quiet minutes backstage. Adults only, always tasteful.",
-  "niche": "Fashion & evening wear",
+  "bio": "Fashion, evening wear and the minutes backstage. Tailoring, silk and a camera that loves a good coat. Adults only.",
+  "niche": "Fashion",
   "tags": [
     "fashion",
     "evening-wear",
-    "tailoring",
-    "style"
+    "style",
+    "runway"
   ],
   "rating": "MATURE",
-  "avatar": "Portrait of an elegant woman in her mid 30s with dark hair in a low bun and red lipstick, wearing a black silk evening dress, moody studio light, shoulders-up, photographic, fictional person",
+  "avatar": "Portrait of an elegant woman in her mid 30s with dark hair in a low bun and red lipstick, black silk evening dress, moody studio light, shoulders-up, photographic, fictional person, clearly an adult",
   "banner": "Ultra-wide panoramic photograph of a fashion atelier with garments on rails and soft golden spotlights, an elegant silhouette in the middle band, cinematic",
   "collections": [
     {
       "title": "Evening looks",
-      "description": "Tailoring and glamour, tastefully told.",
+      "description": "Tailoring and glamour.",
       "videos": [
+        "Runway night, the long walk",
         "The black dress, fitting at midnight",
-        "Backstage before the show",
         "Red lip, black coat",
         "Silk robe, hotel suite morning"
       ]
     }
   ],
   "videos": [
+    {
+      "title": "Runway night, the long walk",
+      "description": "A model in a flowing evening gown walks the length of a lit runway.",
+      "tags": [
+        "fashion",
+        "runway",
+        "evening-gown",
+        "show"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide cinematic photograph of a fashion runway show with a model in a flowing red evening gown walking towards the camera between rows of seated guests, dramatic spotlights, tasteful, fictional adults clearly over 25, tasteful, energetic, cinematic, no text",
+      "motion": "The model walks the runway with a confident stride, the gown flows, camera flashes pop in the audience, camera tracks backwards.",
+      "hero": true
+    },
     {
       "title": "The black dress, fitting at midnight",
       "description": "A tailor's pins, a mirror and a silk evening gown being adjusted.",
@@ -40,21 +54,8 @@
       "motion": "The tailor smooths the fabric and the silk catches the light, slow subtle camera drift."
     },
     {
-      "title": "Backstage before the show",
-      "description": "Steam, hairspray and the last look in the mirror.",
-      "tags": [
-        "fashion",
-        "backstage",
-        "runway",
-        "glamour"
-      ],
-      "orientation": "horizontal",
-      "still": "Wide photograph of a backstage fashion show scene with models in elegant gowns seen from behind, makeup mirrors with bulbs, soft warm light, tasteful, fully clothed, no text",
-      "motion": "Models walk past slowly and bulbs glow, hair-spray mist drifts through the light, gentle handheld push-in."
-    },
-    {
       "title": "Red lip, black coat",
-      "description": "A coat collar, a red lip and a night street.",
+      "description": "A coat collar, a red lip and a neon night street.",
       "tags": [
         "fashion",
         "style",
@@ -62,8 +63,8 @@
         "coat"
       ],
       "orientation": "vertical",
-      "still": "Vertical fashion photograph of a woman in a long black coat on a rainy night street with neon reflections, seen in profile with a red lip, tasteful, fully clothed, no text",
-      "motion": "Rain falls softly, her coat sways in the wind, neon reflections shimmer on the wet street, slow camera orbit."
+      "still": "Vertical fashion photograph of a woman in a long black coat on a rainy night street with neon reflections, seen in profile with a red lip, tasteful, fully clothed, fictional adults clearly over 25, tasteful, energetic, cinematic, no text",
+      "motion": "Rain falls softly, her coat sways in the wind, neon reflections shimmer, slow camera orbit."
     },
     {
       "title": "Silk robe, hotel suite morning",
@@ -76,24 +77,34 @@
       ],
       "orientation": "horizontal",
       "still": "Wide photograph of an elegant hotel suite morning with a champagne silk robe draped over a chair, perfume bottle on a table, sheer curtains in window light, no people, tasteful, no text",
-      "motion": "Sheer curtains billow gently in the window light, slow soft push-in, dust motes float."
+      "motion": "Sheer curtains billow gently, slow soft push-in, dust motes float."
     }
   ],
   "stories": [
     {
       "caption": "Fabric swatches",
       "kind": "image",
-      "still": "Vertical photograph of silk and velvet fabric swatches in deep red and black fanned on a table, soft light, no text"
+      "still": "Vertical photograph of silk and velvet swatches in deep red and black fanned on a table, no text"
     },
     {
       "caption": "Heels by the mirror",
       "kind": "image",
-      "still": "Vertical photograph of black high heels beside a gilded mirror in an atelier, warm light, no people, no text"
+      "still": "Vertical photograph of black high heels beside a gilded mirror in an atelier, no people, no text"
+    },
+    {
+      "caption": "Front row",
+      "kind": "image",
+      "still": "Vertical photograph of an empty front-row seat with a programme at a fashion show, no text"
     },
     {
       "caption": "Gown in motion",
       "kind": "image",
       "still": "Vertical photograph of a flowing evening gown on a mannequin in a spotlight, no face, no text"
+    },
+    {
+      "caption": "Garment bag",
+      "kind": "image",
+      "still": "Vertical photograph of a garment bag on a rail backstage, warm light, no people, no text"
     }
   ]
 }

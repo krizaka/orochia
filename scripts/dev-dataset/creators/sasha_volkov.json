@@ -1,0 +1,111 @@
+{
+  "key": "sasha_volkov",
+  "username": "sasha_volkov",
+  "displayName": "Sasha Volkov",
+  "bio": "Festival photographer and stage-light chaser: crowds, lasers and the faces of a good set. Concert and club nights.",
+  "niche": "Concerts & stage lights",
+  "tags": [
+    "concert",
+    "festival",
+    "stage-lights",
+    "crowd"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a person in their mid 30s with short bleached hair and a camera strap, concert lights in purple and blue behind them, grinning, shoulders-up, photographic, fictional person, clearly an adult",
+  "banner": "Ultra-wide panoramic photograph of a concert stage with sweeping coloured beams and a packed crowd silhouette at night, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Lights & crowds",
+      "description": "Concert and club nights.",
+      "videos": [
+        "Concert, front barrier",
+        "Beach club afternoon, glitter and bass",
+        "Wristband tan lines",
+        "Smoke machine, empty stage"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Concert, front barrier",
+      "description": "Beams, smoke and a roaring front row.",
+      "tags": [
+        "concert",
+        "crowd",
+        "stage-lights",
+        "live"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide cinematic photograph of a live rock concert seen from the front barrier with a band in silhouette on stage, sweeping coloured beams, smoke and a roaring crowd of adults with raised hands, no readable faces, no text",
+      "motion": "Beams sweep across the stage, smoke rolls and the crowd surges and jumps with raised hands, camera rises over the barrier.",
+      "hero": true
+    },
+    {
+      "title": "Beach club afternoon, glitter and bass",
+      "description": "Sunlit pool, loungers and a DJ playing to the sand.",
+      "tags": [
+        "beach-club",
+        "party",
+        "dj",
+        "summer"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a sunny beach club with a pool, white loungers, adults in swimwear and party outfits dancing and a DJ booth, turquoise sea behind, tasteful, fictional adults clearly over 25, tasteful, energetic, cinematic, no text",
+      "motion": "People dance by the pool, water splashes, sunlight sparkles, camera glides along the pool edge.",
+      "hero": true
+    },
+    {
+      "title": "Wristband tan lines",
+      "description": "Festival details: wristbands, glitter, sunscreen.",
+      "tags": [
+        "festival",
+        "details",
+        "glitter",
+        "summer"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical close-up photograph of a hand with neon festival wristbands and glitter on the skin, lights blurred in the background, no face, no text",
+      "motion": "Glitter sparkles as the hand waves, coloured lights pulse, subtle macro drift."
+    },
+    {
+      "title": "Smoke machine, empty stage",
+      "description": "An empty stage before the doors open, a smoke machine and beams of light sweeping the haze.",
+      "tags": [
+        "stage",
+        "backstage",
+        "smoke",
+        "lights"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of an empty concert stage with a smoke machine puffing and coloured beams sweeping the haze, no people, no text",
+      "motion": "Smoke billows and beams sweep through it, slow camera push-in."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Ear plugs, always",
+      "kind": "image",
+      "still": "Vertical photograph of foam ear plugs in a hand with festival lights blurred behind, no face, no text"
+    },
+    {
+      "caption": "Crowd from the back",
+      "kind": "image",
+      "still": "Vertical photograph of a concert crowd seen from the back under coloured beams, no readable faces, no text"
+    },
+    {
+      "caption": "Lens flare",
+      "kind": "image",
+      "still": "Vertical photograph of a stage spotlight lens flare through haze, no people, no text"
+    },
+    {
+      "caption": "Flight cases",
+      "kind": "image",
+      "still": "Vertical photograph of black flight cases backstage with coloured light, no people, no text"
+    },
+    {
+      "caption": "Sunrise load-out",
+      "kind": "image",
+      "still": "Vertical photograph of a festival field at sunrise with empty cups and fairy lights, no people, no text"
+    }
+  ]
+}

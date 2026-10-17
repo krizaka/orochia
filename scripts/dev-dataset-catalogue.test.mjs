@@ -50,6 +50,17 @@ describe("the dev dataset catalogue (v2)", () => {
     expect(derivePassword("s", "a_user").length).toBeGreaterThanOrEqual(24);
     expect(emailOf("a_user")).toBe("qa+a_user@orochia.com");
   });
+  it("has the influencer lifestyle cluster: 8 creators, about 30 videos, MATURE ones gated, A14B 720p heroes without a start picture", () => {
+    const life = cat.creators.filter((c) => cat.groups.lifestyle.includes(c.key));
+    expect(life.length).toBeGreaterThanOrEqual(6);
+    expect(life.flatMap((c) => c.videos).length).toBeGreaterThanOrEqual(28);
+    expect(life.filter((c) => c.rating === "MATURE").length).toBeGreaterThanOrEqual(4);
+    expect(life.every((c) => c.stories.length >= 5)).toBe(true);
+    const heroes = buildJobs(cat).filter((j) => j.hero);
+    expect(heroes.length).toBeGreaterThanOrEqual(10);
+    expect(heroes.every((j) => j.model === "wan2.2-t2v-a14b" && j.kind === "clip")).toBe(true);
+    expect(JSON.stringify(cat.creators)).not.toMatch(/GTA|grand theft/i);
+  });
   it("slugs a title for a file name", () => {
     expect(slug("Marché Jean-Talon in late October")).toBe("marche-jean-talon-in-late-october");
   });

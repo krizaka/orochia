@@ -92,9 +92,8 @@
     },
     {
       "caption": "Set coming in",
-      "kind": "clip",
-      "still": "Vertical photograph of a swell lining up on the horizon at dawn, no people, no text",
-      "motion": "The swell approaches slowly and the water shimmers."
+      "kind": "image",
+      "still": "Vertical photograph of a swell lining up on the horizon at dawn, no people, no text"
     }
   ]
 }

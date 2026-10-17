@@ -15,7 +15,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
-import { buildJobs, CLIP, loadCatalogue, seedOf } from "./catalogue.mjs";
+import { buildJobs, CLIP, HERO, loadCatalogue, seedOf } from "./catalogue.mjs";
 import { readEnv } from "./qa-store.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -104,7 +104,7 @@ const todo = jobs.filter((j) => {
   const rec = state.jobs[keyOf(j)];
   if (redo.has(j.id)) return true;
   if (finished(rec)) return false;
-  if (phase === "clips" && !review.approved.includes(j.from)) return false;
+  if (phase === "clips" && !j.hero && !review.approved.includes(j.from)) return false;
   return true;
 });
 console.log(`${phase}: ${jobs.length} in the catalogue, ${todo.length} to make, ${concurrency} in flight`);
@@ -123,6 +123,7 @@ async function submit(job, rec) {
   if (job.kind === "image") {
     return call("POST", "/api/v1/studios/image-generation/runs", { inputs: { prompt: job.prompt, size: job.size, seed, model: job.model } });
   }
+  if (job.hero) return call("POST", "/api/v1/studios/video-generation/runs", { inputs: { prompt: job.prompt, durationSeconds: job.seconds, aspect: job.aspect, seed, model: job.model } });
   const start = await prepareStart(job);
   const form = new FormData();
   form.append("file", new Blob([fs.readFileSync(start)], { type: "image/png" }), path.basename(start));

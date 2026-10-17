@@ -12,6 +12,8 @@ export const STYLE = {
 export const SIZES = { avatar: "1024x1024", banner: "1360x768", vertical: "768x1360", horizontal: "1360x768" };
 /** What the video Studio renders from a still: Wan 2.2 TI2V 5B, 5 s, 24 fps. */
 export const CLIP = { vertical: { aspect: "9:16", width: 704, height: 1280 }, horizontal: { aspect: "16:9", width: 1280, height: 704 }, seconds: 5, model: "wan2.2-ti2v-5b" };
+/** The hero clips (the party showcase): Wan 2.2 A14B at 720p on the pod, text to video, 16 fps. */
+export const HERO = { model: "wan2.2-t2v-a14b", horizontal: { aspect: "16:9", width: 1280, height: 720 }, vertical: { aspect: "9:16", width: 720, height: 1280 } };
 export const IMAGE_MODEL = "flux-2-klein-4b";
 export const RATINGS = ["MATURE", "ADULT"];
 
@@ -112,7 +114,8 @@ export function validateCatalogue(cat, existingTitles = {}) {
 export function buildJobs(cat) {
   const jobs = [];
   const still = (id, prompt, size, role) => jobs.push({ id, kind: "image", role, prompt: `${prompt}. ${STYLE.image}`, size, seed: seedOf(id), model: IMAGE_MODEL });
-  const clip = (id, from, orientation, motion, role) => jobs.push({ id, kind: "clip", role, from, orientation, prompt: `${motion} ${STYLE.clip}`, seed: seedOf(id), seconds: CLIP.seconds, model: CLIP.model, aspect: CLIP[orientation].aspect });
+  const clip = (id, from, orientation, motion, role, hero = false, scene = "") =>
+    jobs.push({ id, kind: "clip", role, from, orientation, hero, prompt: hero ? `${scene}. ${motion} ${STYLE.clip}` : `${motion} ${STYLE.clip}`, seed: seedOf(id), seconds: CLIP.seconds, model: hero ? HERO.model : CLIP.model, aspect: (hero ? HERO : CLIP)[orientation].aspect });
   for (const c of cat.creators) {
     still(`${c.key}/avatar`, c.avatar, SIZES.avatar, "avatar");
     still(`${c.key}/banner`, c.banner, SIZES.banner, "banner");
@@ -120,7 +123,7 @@ export function buildJobs(cat) {
     c.stories.forEach((s, i) => still(`${c.key}/s/${i + 1}`, s.still, SIZES.vertical, "story-still"));
   }
   for (const c of cat.creators) {
-    for (const v of c.videos ?? []) clip(`${c.key}/v/${slug(v.title)}`, `${c.key}/v/${slug(v.title)}`, v.orientation, v.motion, "video");
+    for (const v of c.videos ?? []) clip(`${c.key}/v/${slug(v.title)}`, `${c.key}/v/${slug(v.title)}`, v.orientation, v.motion, "video", Boolean(v.hero), v.still);
     c.stories.forEach((s, i) => {
       if (s.kind === "clip") clip(`${c.key}/s/${i + 1}`, `${c.key}/s/${i + 1}`, "vertical", s.motion, "story");
     });

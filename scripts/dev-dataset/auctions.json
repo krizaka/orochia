@@ -2,7 +2,7 @@
   "auctions": [
     {
       "creator": "diego_fuentes",
-      "video": "Sunset set, hands in the air",
+      "video": "Concert lights from the pit",
       "startingPriceCents": 500,
       "hours": 72,
       "rights": "WATCH",
@@ -21,7 +21,7 @@
     },
     {
       "creator": "elena_voss",
-      "video": "Backstage before the show",
+      "video": "Red lip, black coat",
       "startingPriceCents": 800,
       "hours": 96,
       "rights": "WATCH",
@@ -40,7 +40,7 @@
     },
     {
       "creator": "chloe_armand",
-      "video": "Yacht lunch, Mediterranean",
+      "video": "Jumping off the stern",
       "startingPriceCents": 700,
       "hours": 48,
       "rights": "WATCH",

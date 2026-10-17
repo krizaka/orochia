@@ -92,9 +92,8 @@
     },
     {
       "caption": "Mont Royal from the lookout",
-      "kind": "clip",
-      "still": "Vertical photograph of the Montréal skyline from the Mont Royal lookout in autumn colours at sunset, no text",
-      "motion": "Clouds drift, city lights start to appear, slow subtle push-in."
+      "kind": "image",
+      "still": "Vertical photograph of the Montréal skyline from the Mont Royal lookout in autumn colours at sunset, no text"
     }
   ]
 }
