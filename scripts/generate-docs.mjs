@@ -266,7 +266,14 @@ if (CHECK) {
   const stale = Object.entries(outputs).filter(([p, content]) => read(p) !== content);
   if (stale.length) {
     console.error("✗ docs are stale — run `npm run docs:generate`:");
-    for (const [p] of stale) console.error(`  - ${path.relative(ROOT, p)}`);
+    for (const [p, content] of stale) {
+      console.error(`  - ${path.relative(ROOT, p)}`);
+      // The first lines that differ, so a CI failure says what moved (a newer main, an environment difference).
+      const have = read(p).split("\n");
+      const want = content.split("\n");
+      const at = want.findIndex((line, i) => line !== have[i]);
+      for (let i = Math.max(0, at - 1); i < Math.min(want.length, at + 6); i++) console.error(`    ${i + 1}: committed ${JSON.stringify(have[i])}  generated ${JSON.stringify(want[i])}`);
+    }
     process.exit(1);
   }
   console.log(`✓ docs up to date (${endpoints.length} endpoints, ${tables.length} tables).`);
