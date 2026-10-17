@@ -96,6 +96,7 @@ and is never asked about.
 ## 5. Signed playback
 
 The library has **CDN token authentication** on and only allows the app's domains, so an unsigned URL answers 403.
+The pull zone does **not** block requests without a Referer: a native player (iOS, Android) sends none, and the signature, not the header, is what lets a request in (an unsigned URL is 403 whatever the Referer; a signed one from a foreign Referer is 403 too). `node scripts/media-zone-policy.mjs check --zone <pull-zone-id>` (and `apply`) holds that policy, with `MEDIA_ACCOUNT_API_KEY` in the environment (krizaka/orochia#69).
 After `evaluateVideoAccess` allows the viewer, `/api/videos/[id]/stream` signs a token for the video's directory,
 valid **300 seconds**:
 
