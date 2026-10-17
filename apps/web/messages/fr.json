@@ -874,7 +874,20 @@
       "edit": "Modifier",
       "editAvatar": "Changer la photo de profil",
       "editBanner": "Changer l’image de couverture",
-      "add": "Ajouter une couverture"
+      "add": "Ajouter une couverture",
+      "familiesLabel": "Style",
+      "families": {
+        "all": "Tous",
+        "illustrated": "Illustré",
+        "painterly": "Pictural",
+        "soft3d": "3D doux",
+        "line": "Trait",
+        "abstract": "Abstrait",
+        "places": "Lieux",
+        "textures": "Textures",
+        "moods": "Ambiances de créateurs"
+      },
+      "empty": "Rien ici pour l’instant."
     },
     "identity": {
       "displayName": "Nom affiché",
