@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 54 tables · 27 enums · 15 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 54 tables · 27 enums · 16 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -938,7 +938,7 @@ Every foreign key, read from the schema: what each table points to (through whic
 | `payment_gateway` | `CCBILL`, `SEGPAY`, `CRYPTO`, `STRIPE`, `CREDITS` |
 | `payment_intent_status` | `PENDING`, `SUCCEEDED`, `FAILED` |
 | `payout_status` | `REQUESTED`, `UNDER_REVIEW`, `PROCESSING`, `SETTLED`, `FAILED` |
-| `reco_outbox_kind` | `EVENT`, `ERASURE` |
+| `reco_outbox_kind` | `EVENT`, `ERASURE`, `ANALYTICS` |
 | `report_reason` | `NON_CONSENSUAL`, `UNDERAGE`, `DMCA_COPYRIGHT`, `TERMS_VIOLATION`, `FRAUD_SCAM` |
 | `report_status` | `OPEN`, `IN_REVIEW`, `RESOLVED` |
 | `share_channel` | `LINK`, `X`, `WHATSAPP`, `TELEGRAM`, `EMAIL`, `OTHER` |
@@ -964,3 +964,4 @@ Every foreign key, read from the schema: what each table points to (through whic
 - `0012_recommendations.sql`
 - `0013_message_origin.sql`
 - `0014_conversation_members.sql`
+- `0015_analytics_outbox.sql`

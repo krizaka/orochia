@@ -1237,6 +1237,12 @@
     },
     {
       "method": "POST",
+      "path": "/api/videos/[id]/watch",
+      "access": "public · session-aware",
+      "summary": "The player says how much of a video a signed-in viewer watched when they left it (ADR-081): the share watched goes to Orazaka's analytics (`watch`), and leaving at once is a `SKIP` for the recommender."
+    },
+    {
+      "method": "POST",
       "path": "/api/videos/create-upload-session",
       "access": "public · session-aware",
       "summary": ""
@@ -1370,7 +1376,8 @@
     ],
     "reco_outbox_kind": [
       "EVENT",
-      "ERASURE"
+      "ERASURE",
+      "ANALYTICS"
     ],
     "report_reason": [
       "NON_CONSENSUAL",
@@ -1520,7 +1527,7 @@
         "runtime": "node",
         "version": "1.0.0",
         "published": false,
-        "description": "The API: 144 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
+        "description": "The API: 145 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
       },
       {
         "id": "orochia-config",

@@ -3065,6 +3065,42 @@
       "line": "{count} other creators share your audience."
     },
     "weekdays": "Mon Tue Wed Thu Fri Sat Sun",
-    "loading": "Loading your insights"
+    "loading": "Loading your insights",
+    "audience28": {
+      "title": "Your audience, last {days} days",
+      "hint": "Counted from what people do on your videos — pseudonymous, never a person, nothing shown for fewer than {min} people.",
+      "hidden": "Fewer than {min}",
+      "vsBefore": "vs. the period before",
+      "tiles": {
+        "viewers": "People",
+        "views": "Views",
+        "likes": "Likes",
+        "tips": "Tips",
+        "watched": "Watched on average"
+      },
+      "daily": "Views and likes per day",
+      "day": "Day",
+      "funnel": "From a view to a tip",
+      "funnelHint": "People who viewed, then liked, then tipped within a week.",
+      "funnelEmpty": "The funnel appears once at least {min} people go from a view to a like.",
+      "kinds": {
+        "view": "Viewed",
+        "like": "Liked",
+        "save": "Saved",
+        "share": "Shared",
+        "tip": "Tipped",
+        "unlock": "Unlocked"
+      },
+      "top": "Videos most people engaged",
+      "topEmpty": "A video shows here once at least {min} people liked, saved, shared or tipped it.",
+      "topLine": "{viewers} people · {views} views",
+      "cohorts": "Who comes back",
+      "cohortsHint": "People grouped by the week they first watched you, and the share still watching each week after.",
+      "weekN": "Week {n}",
+      "weeksAfter": "Weeks after",
+      "firstWeek": "First week",
+      "smallTitle": "Your audience is still too small to show",
+      "smallBody": "Figures appear once at least {min} people have watched your videos in the period — so no one can be singled out."
+    }
   }
 }

@@ -22,7 +22,7 @@ export const RecoEventKind = {
 export type RecoEventKind = (typeof RecoEventKind)[keyof typeof RecoEventKind];
 
 /** What an outbox row carries (the `reco_outbox_kind` values). */
-export const RecoOutboxKind = { Event: "EVENT", Erasure: "ERASURE" } as const satisfies Record<string, (typeof recoOutboxKindEnum.enumValues)[number]>;
+export const RecoOutboxKind = { Event: "EVENT", Erasure: "ERASURE", Analytics: "ANALYTICS" } as const satisfies Record<string, (typeof recoOutboxKindEnum.enumValues)[number]>;
 export type RecoOutboxKind = (typeof RecoOutboxKind)[keyof typeof RecoOutboxKind];
 
 /** Why Orazaka put an item in a feed — the reason Orochia may show ("because you liked…"). */
@@ -141,5 +141,11 @@ export const RecommendationSettingsSchema = z.object({
   /** The catalogue reconciler: its period and its batch. */
   catalogueIntervalSeconds: z.number().int().min(30).max(86_400),
   catalogueBatch: z.number().int().min(1).max(100),
+  /** Leaving a video within this many seconds, below `skipBelowPct` watched, is a skip (ADR-081). */
+  skipWithinSeconds: z.number().int().min(1).max(30).default(3),
+  skipBelowPct: z.number().int().min(1).max(50).default(20),
+  /** The creator's audience page: its period, and the funnel it draws (kinds of Orazaka's analytics). */
+  audienceDays: z.number().int().min(7).max(366).default(28),
+  audienceFunnel: z.array(z.string().regex(/^[a-z][a-z0-9_]{1,31}$/)).min(2).max(6).default(["view", "like", "tip"]),
 });
 export type RecommendationSettings = z.infer<typeof RecommendationSettingsSchema>;
