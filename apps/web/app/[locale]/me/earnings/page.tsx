@@ -129,7 +129,7 @@ function EarningsPage() {
               icon={Wallet}
               label={t("earnings.net")}
               value={<MoneyTicker cents={s.netCents} trigger="change" align="start" />}
-              hint={t("earnings.netHint", { fee: s.feePercent, payments: s.payments })}
+              hint={t("earnings.netHint", { keep: 100 - s.feePercent, payments: s.payments })}
               extra={
                 data!.tips.some((d) => d.netCents > 0) && (
                   <Sparkline

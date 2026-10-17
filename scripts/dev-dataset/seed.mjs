@@ -114,6 +114,12 @@ async function waitReady(call, title, minutes = 15) {
   throw new Error(`"${title}" is not READY after ${minutes} min (Bunny is still encoding?)`);
 }
 
+/** The creator's current stories (they last 24 h: a story is posted again when none is left). */
+async function ownStories(call, username) {
+  const res = await (await call(`/api/stories?creator=${encodeURIComponent(username)}&pending=1`)).json().catch(() => ({}));
+  return (res.rings ?? []).flatMap((r) => r.stories ?? r.items ?? []).length;
+}
+
 let failures = 0;
 for (const creator of dataset.creators) {
   if (only && creator.key !== only) continue;
@@ -167,6 +173,28 @@ for (const creator of dataset.creators) {
   for (const k of retag(wanted, have, new Set([...replace, ...(prune ? remove : [])].map((h) => h.id)))) {
     const res = await call(`/api/videos/${k.id}`, { method: "PATCH", body: JSON.stringify({ tags: k.tags }) });
     if (!res.ok) console.log(`  ! tags of ${k.id}: refused (${res.status})`);
+  }
+  // Stories (a vertical clip each, from the same media folder): the demo's step « tip a story » needs one to tip.
+  for (const st of (dataset.stories ?? []).filter((x) => x.creator === creator.key)) {
+    const file = path.join(mediaDir, st.file);
+    if (!fs.existsSync(file)) {
+      console.log(`  ! story ${st.file}: not in ${mediaDir}`);
+      continue;
+    }
+    if ((await ownStories(call, creator.username)) > 0) {
+      console.log(`  = story of @${creator.username} is still up`);
+      continue;
+    }
+    try {
+      const res = await call("/api/stories/upload-session", { method: "POST", body: JSON.stringify({ caption: st.caption, audience: "PUBLIC", sizeBytes: fs.statSync(file).size, durationSeconds: 5 }) });
+      const body = await res.json();
+      if (!res.ok) throw new Error(`session refused (${res.status}): ${body.error ?? ""}`);
+      await sendOriginal(file, body.session);
+      console.log(`  + story « ${st.caption} »`);
+    } catch (error) {
+      failures++;
+      console.log(`  ! story of @${creator.username}: ${error.message}`);
+    }
   }
   for (const v of upload.filter((x) => !missing.includes(x))) {
     try {

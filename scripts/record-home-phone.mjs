@@ -5,9 +5,9 @@
 //
 // The beats (about 22 s, eased scrolls, loopable: a short fade at both ends):
 //   1 feed      the vertical feed, full-screen cards, two swipes with momentum
-//   2 like      a tap on the heart of the playing full-screen card, sound off
-//   3 tip       « Send a tip » on the same card: the sheet with the amount chosen
-//   4 earn      the creator side: her earnings, the 90 % she keeps in the frame
+//   2 story     her story, full screen, sound off
+//   3 tip       « Send a tip » on the story: the sheet with the amount chosen
+//   4 earn      the creator side: her earnings, « You keep 90 % » highlighted
 //
 // Phone viewport 390×844 at a device scale factor of 3, filmed from the browser's screencast (Playwright's own video
 // is not scaled by the pixel ratio). Two named personas of the dev dataset (a fan, a creator), never an operator or a
@@ -36,6 +36,7 @@ for (const line of fs.readFileSync(path.join(os.homedir(), "Documents", "krizaka
   if (m) env[m[1]] = m[2].replace(/^["']|["']$/g, "");
 }
 const PERSONAS = { fan: "OROCHIA_FAN2", creator: "OROCHIA_CREATOR" };
+const HANDLE = JSON.parse(fs.readFileSync(path.join(ROOT, "scripts/dev-dataset/dataset.json"), "utf8")).creators.find((c) => c.key === "lena").username;
 
 const CATALOGUE = Object.fromEntries(["en", "fr"].map((l) => [l, JSON.parse(fs.readFileSync(path.join(ROOT, `apps/web/messages/${l}.json`), "utf8"))]));
 const flat = (o, pre = "", out = {}) => {
@@ -175,24 +176,22 @@ try {
     await glide(page, FEED, card * v2, 1100 + 250 * (v2 - v1 - 1));
     await pause(page, 1300);
 
-    // 2 · a like, then 3 · tip: the sheet over the playing full-screen video, an amount chosen (shown, never paid)
-    const onScreen = async (name) => {
-      const all = await page.getByRole("button", { name }).all();
-      for (const b of all) {
-        const r = await b.boundingBox();
-        if (r && r.x > 300 && r.y > 60 && r.y + r.height < VIEW.height) return b;
-      }
-      throw new Error(`no "${name}" button on the rail in view`);
-    };
+    // 2 · her story: the creator's page, the ring, the story playing full screen; 3 · tip: the sheet over it, an amount chosen
+    // (shown, never paid)
     mark("feed");
-    await tap(page, await onScreen(say(loc, "Like")), 500);
+    await page.goto(`${BASE}/${loc}/@${HANDLE}`);
+    await page.waitForLoadState("networkidle").catch(() => {});
     await pause(page, 1300);
-    await tap(page, await onScreen(say(loc, "Send a tip")), 500);
+    await tap(page, page.getByRole("button", { name: say(loc, "Watch stories ({count})") }).first(), 500);
+    await page.waitForFunction(() => [...document.querySelectorAll("video")].some((v) => v.currentTime > 0.5 && !v.paused), null, { timeout: 12_000 }).catch(() => {});
+    await pause(page, 1500);
+    mark("story");
+    await tap(page, page.getByRole("button", { name: say(loc, "Send a tip to {name}") }).first(), 500);
     await pause(page, 1300);
     const amounts = page.getByRole("radio");
     mark("tip");
     if ((await amounts.count()) > 1) await tap(page, amounts.nth(1), 450);
-    await pause(page, 1700);
+    await pause(page, 1900);
     const href = "feed";
 
     // 4 · earn: the creator's side, the 90 % she keeps
@@ -203,7 +202,7 @@ try {
     await page.goto(`${BASE}/${loc}/me/earnings`);
     await page.waitForLoadState("networkidle").catch(() => {});
     await page.evaluate(() => {
-      const fee = [...document.querySelectorAll("p,span,div")].find((e) => e.children.length === 0 && /\b10\s?%/.test(e.textContent || ""));
+      const fee = [...document.querySelectorAll("p,span,div")].find((e) => e.children.length === 0 && /(?:keep|gardez)\s+\d+\s?%/i.test(e.textContent || ""));
       if (fee) fee.style.cssText += ";outline:2px solid var(--kz-accent,#a855f7);outline-offset:4px;border-radius:8px;background:rgba(168,85,247,.16);transition:background .6s";
     });
     await page.waitForFunction(() => !/Loading|Chargement/i.test(document.body.innerText) && /\d/.test(document.body.innerText), null, { timeout: 15_000 }).catch(() => {});
@@ -230,7 +229,7 @@ try {
     // Three stills, one per beat, for the pull request.
     const first = frames[0].t * 1000;
     const at = (name) => Math.max(0, Math.min(seconds - 0.5, (marks[name] - marks.start) / 1000 + 1.0));
-    for (const [name, when] of [["1-feed", at("feed") - 0.2], ["3-tip", at("tip") + 0.4], ["4-earn", at("earn") + 0.8]]) {
+    for (const [name, when] of [["1-feed", at("feed") - 0.2], ["2-story", at("story") + 0.2], ["3-tip", at("tip") + 0.4], ["4-earn", at("earn") + 0.8]]) {
       execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-ss", when.toFixed(2), "-i", `${target}.mp4`, "-frames:v", "1", "-q:v", "3", path.join(OUT, loc, `still-${name}.jpg`)]);
     }
     // The poster is the feed beat, sharp: the first thing a visitor sees before the clip plays.

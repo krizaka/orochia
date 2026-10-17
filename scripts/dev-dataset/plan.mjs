@@ -12,6 +12,7 @@ export function validateDataset(ds) {
     if (creators.has(c.key)) problems.push(`creator ${c.key}: twice`);
     creators.set(c.key, c);
     for (const field of ["credentials", "username", "displayName", "bio", "niche"]) if (!c[field]) problems.push(`creator ${c.key}: ${field} is empty`);
+    if (/^qa[_\d]|^test|^demo/i.test(c.username ?? "")) problems.push(`creator ${c.key}: the handle (@${c.username}) must read as a person, not a QA account`);
     if (/^qa\b|test|demo/i.test(c.displayName ?? "")) problems.push(`creator ${c.key}: the display name must read as a person, not a test account`);
   }
   const titles = new Set();

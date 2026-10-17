@@ -1176,7 +1176,7 @@
       "all": "All time"
     },
     "net": "Net earnings",
-    "netHint": "After the {fee}% platform fee · {payments} payments",
+    "netHint": "You keep {keep}% of every payment · {payments} payments",
     "available": "Available to withdraw",
     "pending": "{amount} on its way",
     "views": "Total views",

@@ -1176,7 +1176,7 @@
       "all": "Depuis le début"
     },
     "net": "Revenus nets",
-    "netHint": "Après les frais de plateforme de {fee} % · {payments} paiements",
+    "netHint": "Vous gardez {keep} % de chaque paiement · {payments} paiements",
     "available": "Disponible pour un retrait",
     "pending": "{amount} en route",
     "views": "Vues totales",
