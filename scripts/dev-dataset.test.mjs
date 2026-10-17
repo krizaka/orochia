@@ -9,6 +9,11 @@ describe("the dev dataset", () => {
   it("is curated: distinct footage and titles, prompts without faces", () => {
     expect(validateDataset(dataset)).toEqual([]);
   });
+  it("shows no QA handle: a creator's @handle reads as a person", () => {
+    const bad = structuredClone(dataset);
+    bad.creators[0].username = "qa_creator";
+    expect(validateDataset(bad).join()).toMatch(/must read as a person, not a QA account/);
+  });
   it("catches the duplicates it exists to prevent", () => {
     const dup = structuredClone(dataset);
     dup.videos.push({ ...dup.videos[0], title: "Another title for the same footage" });

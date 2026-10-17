@@ -9,7 +9,7 @@ function publicTexts(dataset) {
   const out = [];
   for (const c of dataset.creators ?? dataset.people ?? []) out.push(["bio", c.bio], ["displayName", c.displayName]);
   for (const v of [...(dataset.videos ?? []), ...(dataset.stories ?? [])]) {
-    out.push(["title", v.title], ["description", v.description]);
+    out.push(["title", v.title], ["description", v.description], ["caption", v.caption]);
     for (const t of v.tags ?? []) out.push(["tag", t]);
   }
   return out.filter(([, s]) => typeof s === "string");

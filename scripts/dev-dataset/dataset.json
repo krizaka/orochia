@@ -4,7 +4,7 @@
     {
       "key": "lena",
       "credentials": "OROCHIA_CREATOR",
-      "username": "qa_creator",
+      "username": "lenavoss",
       "displayName": "Lena Voss",
       "bio": "Night sessions: jazz, rainy city streets and fires with a guitar. New clip every week.",
       "niche": "nightlife & music",
@@ -15,7 +15,7 @@
     {
       "key": "noah",
       "credentials": "OROCHIA_CREATOR2",
-      "username": "qa_creator2",
+      "username": "noahrivera",
       "displayName": "Noah Rivera",
       "bio": "Kitchen, beach days and summer evenings: what I cook, where we dance, what we wear.",
       "niche": "food & summer lifestyle",
@@ -26,7 +26,7 @@
     {
       "key": "mira",
       "credentials": "OROCHIA_FAN2",
-      "username": "qa_fan2",
+      "username": "miracastellanos",
       "displayName": "Mira Castellanos",
       "bio": "Trails, harbours and deserts: slow travel, filmed where the signal ends.",
       "niche": "travel & riverside",
@@ -37,7 +37,7 @@
     {
       "key": "kofi",
       "credentials": "OROCHIA_FAN3",
-      "username": "qa_fan3",
+      "username": "kofimensah",
       "displayName": "Kofi Mensah",
       "bio": "Strength and mobility, five minutes at a time, before the city wakes up.",
       "niche": "wellness & fitness",
@@ -48,7 +48,7 @@
     {
       "key": "aiko",
       "credentials": "OROCHIA_FAN4",
-      "username": "qa_fan4",
+      "username": "aikotanaka",
       "displayName": "Aiko Tanaka",
       "bio": "Ink, paint and walls: process clips from a Montreal studio.",
       "niche": "art & design",
@@ -527,5 +527,27 @@
         "aspect": "16:9"
       }
     }
-  }
+  },
+  "stories": [
+    {
+      "creator": "lena",
+      "file": "picnic-olive-grove.mp4",
+      "caption": "A slow Sunday between two shoots."
+    },
+    {
+      "creator": "noah",
+      "file": "bagels.mp4",
+      "caption": "First batch out of the oven."
+    },
+    {
+      "creator": "mira",
+      "file": "spice-alley.mp4",
+      "caption": "Lost in the market, on purpose."
+    },
+    {
+      "creator": "kofi",
+      "file": "skating-pond.mp4",
+      "caption": "First ice of the year."
+    }
+  ]
 }

@@ -434,7 +434,7 @@ const CLIPS = {
       await page.goto(U(`/me/earnings`));
       return async () => {
         await pause(page, 2200);
-        await page.getByText(has("After the {fee}% platform fee")).first().hover().catch(() => {});
+        await page.getByText(has("You keep {keep}% of every payment")).first().hover().catch(() => {});
         await pause(page, 1400);
         await glide(page, 420, 2000);
         await page.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
