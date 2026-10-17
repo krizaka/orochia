@@ -94,3 +94,15 @@ export function retag(wanted, have, skip = new Set()) {
   const want = new Map(wanted.map((v) => [v.title.toLowerCase(), v]));
   return have.filter((h) => !skip.has(h.id) && want.has(h.title.toLowerCase())).map((h) => ({ id: h.id, tags: want.get(h.title.toLowerCase()).tags ?? [] }));
 }
+
+/** A creator's stories to post: the dataset's, only when none of hers is up (a story lasts 24 h, a live one is enough). */
+export function storiesToPost(stories, creatorKey, liveCount) {
+  return liveCount > 0 ? [] : stories.filter((s) => s.creator === creatorKey);
+}
+
+/** Where a story's clip comes from: the media folder when the file is there, else its CDN address (the daily job has no folder). */
+export function storySource(story, exists, mediaDir) {
+  const local = `${mediaDir}/${story.file}`;
+  if (exists(local)) return { local };
+  return story.url ? { url: story.url } : null;
+}

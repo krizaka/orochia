@@ -3,6 +3,7 @@
 // Re-runnable after a database reset: it creates what is missing, keeps what matches, and with --prune deletes the
 // creator's other videos (what they may delete in the app: not an auctioned or challenge-delivered one).
 //
+//   npm run dev:dataset -- --stories-only      (the daily job: repost the demo stories that expired; clips from the CDN)
 //   npm run dev:dataset -- --media-dir <folder with the .mp4 and manifest.json> [--base https://dev.orochia.com]
 //                          [--env-file <QA credentials file>] [--prune] [--dry-run] [--only <creator key>]
 //
@@ -16,7 +17,7 @@ import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
 import { problemOf } from "./thumbnails.mjs";
-import { credit, diffCreator, isUpgrade, retag, validateDataset } from "./plan.mjs";
+import { credit, diffCreator, isUpgrade, retag, storiesToPost, storySource, validateDataset } from "./plan.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(path.join(here, "../../apps/web/package.json"));
@@ -32,6 +33,8 @@ const only = opt("only");
 const profileMedia = opt("profile-media");
 const dry = flag("dry-run");
 const prune = flag("prune");
+// --stories-only: just the stories (the daily renewal job); no media folder needed, the clips come from the CDN.
+const storiesOnly = flag("stories-only");
 
 const dataset = JSON.parse(fs.readFileSync(path.join(here, "dataset.json"), "utf8"));
 const problems = validateDataset(dataset);
@@ -39,11 +42,11 @@ if (problems.length) {
   console.error(`dataset.json: ${problems.length} problem(s)\n - ${problems.join("\n - ")}`);
   process.exit(2);
 }
-if (!mediaDir) {
+if (!mediaDir && !storiesOnly) {
   console.error("--media-dir <folder> is required (the clips made by Orazaka and their manifest.json)");
   process.exit(2);
 }
-const manifest = JSON.parse(fs.readFileSync(path.join(mediaDir, "manifest.json"), "utf8"));
+const manifest = mediaDir ? JSON.parse(fs.readFileSync(path.join(mediaDir, "manifest.json"), "utf8")) : { clips: [] };
 const runOf = (file) => (manifest.clips ?? []).find((c) => c.file === file);
 
 /** KEY=value lines, read into memory only. */
@@ -121,11 +124,47 @@ async function ownStories(call, username) {
   return (res.rings ?? []).flatMap((r) => r.stories ?? r.items ?? []).length;
 }
 
+/**
+ * The creator's stories (a vertical clip each): a story lasts 24 h, so one is posted again when none of hers is up — by
+ * `--stories-only` too, which the daily job (.github/workflows/dev-demo-stories.yml) runs. The clip is read from the media
+ * folder, else downloaded from the CDN.
+ */
+async function postStories(call, creator) {
+  const todo = storiesToPost(dataset.stories ?? [], creator.key, await ownStories(call, creator.username));
+  if (!todo.length) console.log(`  = story of @${creator.username}: ${((dataset.stories ?? []).some((x) => x.creator === creator.key)) ? "still up" : "none in the dataset"}`);
+  for (const st of todo) {
+    try {
+      const source = storySource(st, fs.existsSync, mediaDir ?? "");
+      if (!source) throw new Error(`${st.file} is neither in the media folder nor on the CDN`);
+      let file = source.local;
+      if (source.url) {
+        const res = await fetch(source.url);
+        if (!res.ok) throw new Error(`the clip answers ${res.status}`);
+        file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "story-")), st.file);
+        fs.writeFileSync(file, Buffer.from(await res.arrayBuffer()));
+      }
+      const res = await call("/api/stories/upload-session", { method: "POST", body: JSON.stringify({ caption: st.caption, audience: "PUBLIC", sizeBytes: fs.statSync(file).size, durationSeconds: 5 }) });
+      const body = await res.json();
+      if (!res.ok) throw new Error(`session refused (${res.status}): ${body.error ?? ""}`);
+      await sendOriginal(file, body.session);
+      console.log(`  + story « ${st.caption} »`);
+    } catch (error) {
+      failures++;
+      console.log(`  ! story of @${creator.username}: ${error.message}`);
+    }
+  }
+}
+
 let failures = 0;
 for (const creator of dataset.creators) {
   if (only && creator.key !== only) continue;
   const wanted = dataset.videos.filter((v) => v.creator === creator.key);
   const call = await session(creator.credentials);
+  if (storiesOnly) {
+    console.log(`\n${creator.displayName} (@${creator.username})`);
+    if (!dry) await postStories(call, creator);
+    continue;
+  }
   const have = await listOwn(call);
   const stale = (w, h) => fs.existsSync(path.join(mediaDir, w.file)) && ((Boolean(runOf(w.file)?.sound) && !h.description.includes("sound:")) || isUpgrade(runOf(w.file), h));
   const { upload, remove, replace } = diffCreator(wanted, have, stale);
@@ -175,28 +214,7 @@ for (const creator of dataset.creators) {
     const res = await call(`/api/videos/${k.id}`, { method: "PATCH", body: JSON.stringify({ tags: k.tags }) });
     if (!res.ok) console.log(`  ! tags of ${k.id}: refused (${res.status})`);
   }
-  // Stories (a vertical clip each, from the same media folder): the demo's step « tip a story » needs one to tip.
-  for (const st of (dataset.stories ?? []).filter((x) => x.creator === creator.key)) {
-    const file = path.join(mediaDir, st.file);
-    if (!fs.existsSync(file)) {
-      console.log(`  ! story ${st.file}: not in ${mediaDir}`);
-      continue;
-    }
-    if ((await ownStories(call, creator.username)) > 0) {
-      console.log(`  = story of @${creator.username} is still up`);
-      continue;
-    }
-    try {
-      const res = await call("/api/stories/upload-session", { method: "POST", body: JSON.stringify({ caption: st.caption, audience: "PUBLIC", sizeBytes: fs.statSync(file).size, durationSeconds: 5 }) });
-      const body = await res.json();
-      if (!res.ok) throw new Error(`session refused (${res.status}): ${body.error ?? ""}`);
-      await sendOriginal(file, body.session);
-      console.log(`  + story « ${st.caption} »`);
-    } catch (error) {
-      failures++;
-      console.log(`  ! story of @${creator.username}: ${error.message}`);
-    }
-  }
+  await postStories(call, creator);
   for (const v of upload.filter((x) => !missing.includes(x))) {
     try {
       const file = path.join(mediaDir, v.file);

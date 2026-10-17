@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-import { credit, diffCreator, isUpgrade, retag, validateDataset } from "./dev-dataset/plan.mjs";
+import { credit, diffCreator, isUpgrade, retag, storiesToPost, storySource, validateDataset } from "./dev-dataset/plan.mjs";
 
 const dataset = JSON.parse(readFileSync(new URL("./dev-dataset/dataset.json", import.meta.url), "utf8"));
 
@@ -100,5 +100,31 @@ describe("what the dataset changes on a video that is already there", () => {
   });
   it("skips a video that is being replaced or deleted", () => {
     expect(retag([{ title: "A", tags: ["x"] }], [{ id: "1", title: "A" }], new Set(["1"]))).toEqual([]);
+  });
+});
+
+describe("the demo stories renew themselves (they last 24 h)", () => {
+  const stories = [
+    { creator: "lena", file: "a.mp4", caption: "A", url: "https://cdn/a.mp4" },
+    { creator: "lena", file: "b.mp4", caption: "B", url: "https://cdn/b.mp4" },
+    { creator: "noah", file: "c.mp4", caption: "C", url: "https://cdn/c.mp4" },
+  ];
+  it("posts a creator's stories only when none of hers is up", () => {
+    expect(storiesToPost(stories, "lena", 0).map((s) => s.file)).toEqual(["a.mp4", "b.mp4"]);
+    expect(storiesToPost(stories, "lena", 1)).toEqual([]);
+    expect(storiesToPost(stories, "noah", 0).map((s) => s.file)).toEqual(["c.mp4"]);
+    expect(storiesToPost(stories, "kofi", 0)).toEqual([]);
+  });
+  it("reads the clip from the media folder when it is there, else from the CDN (the scheduled job has no folder)", () => {
+    expect(storySource(stories[0], () => true, "/media")).toEqual({ local: "/media/a.mp4" });
+    expect(storySource(stories[0], () => false, "/media")).toEqual({ url: "https://cdn/a.mp4" });
+    expect(storySource({ creator: "x", file: "z.mp4" }, () => false, "/media")).toBeNull();
+  });
+  it("every story of the dataset has a creator of the dataset and a CDN clip", () => {
+    const keys = new Set(dataset.creators.map((c) => c.key));
+    for (const s of dataset.stories) {
+      expect(keys.has(s.creator)).toBe(true);
+      expect(s.url).toMatch(/^https:\/\/krizaka-assets\.b-cdn\.net\/site\/products\/orochia\/demo-stories\/[a-z-]+\.[0-9a-f]{10}\.mp4$/);
+    }
   });
 });
