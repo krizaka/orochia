@@ -94,7 +94,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `DELETE` | `/api/creators/[username]/follow` | session · MEMBER / CREATOR / ADMIN | Unfollows a creator. |
 | `POST` | `/api/creators/[username]/follow` | session · MEMBER / CREATOR / ADMIN | Follows a creator; the follow stays PENDING until the creator approves it. |
 | `GET` | `/api/explore` | public · session-aware | Explore: without a search, the discovery sections (trending this week, new, stories, creators to follow, open auctions, open challenges, tags); with `q` and/or `tag` (or `view=all`), videos (paged), creators and stories. |
-| `GET` | `/api/feed` | public · session-aware | The public feed and the explore search (`?q=`, `?tag=`, paginated); with the featured creator and popular tags. |
+| `GET` | `/api/feed` | public · session-aware | The feeds, a page at a time. |
 | `GET` | `/api/health` | public | — |
 | `POST` | `/api/legal/report` | public · session-aware | Content reports. |
 | `POST` | `/api/me/become-creator` | session · MEMBER / CREATOR / ADMIN | Opens a creator space for a member: the same account becomes CREATOR, pending its 18 U.S.C. § 2257 review (uploads open once an operator verifies it). |

@@ -132,6 +132,10 @@ jobs:
         run: npx vitest run apps/web/lib/explorer-index.integration.test.ts
         env:
           EXPLORER_IT: "1"
+      - name: Feed pages — keyset pagination over a real PostgreSQL (no row skipped or repeated)
+        run: npx vitest run apps/web/lib/feed-page.integration.test.ts
+        env:
+          FEED_IT: "1"
       - name: Start the app (development server)
         run: |
           npm run dev > web.log 2>&1 &

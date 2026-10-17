@@ -1,0 +1,9 @@
+id: no-hand-made-tab-bar
+valid:
+  - |
+    const a = <Tabs.List aria-label="x" />;
+  - |
+    const a = <nav aria-label="Tags" className="flex gap-2 overflow-x-auto px-4" />;
+invalid:
+  - |
+    const a = <nav aria-label="Tabs" className="mb-6 flex gap-1 overflow-x-auto border-b border-border-default" />;

@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { UrlTabs } from "@/components/UrlTabs";
 import { redirect } from "next/navigation";
 import { CardGrid } from "@krizaka/ui/card-grid";
 import { LinkCard } from "@krizaka/ui/link-card";
@@ -69,45 +70,30 @@ export default async function ChallengesPage(props: { searchParams: Promise<{ ta
       </CardGrid>
       {startKind && user && <ChallengeAutoStart kind={startKind} isCreator={user.role === "CREATOR"} />}
 
-      <nav aria-label={t("challenges.tabsLabel")} className="mb-6 flex gap-1 overflow-x-auto border-b border-border-default">
-        {tabs.map((id) => (
-          <Link
-            key={id}
-            href={id === "open" ? "/challenges" : `/challenges?tab=${id}`}
-            aria-current={tab === id ? "page" : undefined}
-            className={cn(
-              "-mb-px shrink-0 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
-              tab === id
-                ? "border-accent text-fg"
-                : "border-transparent text-fg-secondary hover:text-fg",
+      <UrlTabs label={t("challenges.tabsLabel")} path="/challenges" defaultId="open" active={tab} tabs={tabs.map((id) => ({ id, label: t(`challenges.tabs.${id}`) }))}>
+  
+        {items.length === 0 ? (
+          <div className="kz-fade rounded-3xl border border-dashed border-border-default px-6 py-16 text-center">
+            <Flame className="mx-auto h-8 w-8 text-fg-accent/70" aria-hidden />
+            <p className="mt-3 text-sm font-semibold text-fg">{t(`challenges.empty.${tab}.title`)}</p>
+            <p className="mx-auto mt-1 max-w-md text-xs text-fg-secondary">{t(`challenges.empty.${tab}.body`)}</p>
+            {tab !== "open" && (
+              <Link
+                href="/challenges"
+                className={buttonVariants({ variant: "secondary", shape: "pill", className: "mt-5" })}
+              >
+                {t("challenges.seeOpen")}
+              </Link>
             )}
-          >
-            {t(`challenges.tabs.${id}`)}
-          </Link>
-        ))}
-      </nav>
-
-      {items.length === 0 ? (
-        <div className="kz-fade rounded-3xl border border-dashed border-border-default px-6 py-16 text-center">
-          <Flame className="mx-auto h-8 w-8 text-fg-accent/70" aria-hidden />
-          <p className="mt-3 text-sm font-semibold text-fg">{t(`challenges.empty.${tab}.title`)}</p>
-          <p className="mx-auto mt-1 max-w-md text-xs text-fg-secondary">{t(`challenges.empty.${tab}.body`)}</p>
-          {tab !== "open" && (
-            <Link
-              href="/challenges"
-              className={buttonVariants({ variant: "secondary", shape: "pill", className: "mt-5" })}
-            >
-              {t("challenges.seeOpen")}
-            </Link>
-          )}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((c, i) => (
-            <ChallengeCard key={c.id} challenge={c} index={i} />
-          ))}
-        </div>
-      )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {items.map((c, i) => (
+              <ChallengeCard key={c.id} challenge={c} index={i} />
+            ))}
+          </div>
+        )}
+      </UrlTabs>
     </div>
   );
 }

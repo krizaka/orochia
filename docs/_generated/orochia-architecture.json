@@ -655,7 +655,7 @@
       "method": "GET",
       "path": "/api/feed",
       "access": "public · session-aware",
-      "summary": "The public feed and the explore search (`?q=`, `?tag=`, paginated); with the featured creator and popular tags."
+      "summary": "The feeds, a page at a time."
     },
     {
       "method": "GET",

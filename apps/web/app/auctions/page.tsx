@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { UrlTabs } from "@/components/UrlTabs";
 import { Gavel, ShieldCheck, Timer, Trophy } from "lucide-react";
 import { AuctionCard } from "@/components/auctions/AuctionCard";
 import { orochiaButton, buttonVariants, cn } from "@/components/ui";
@@ -47,45 +48,32 @@ export default async function AuctionsPage(props: { searchParams: Promise<{ tab?
         </ol>
       </header>
 
-      <nav aria-label={t("auctions.tabsLabel")} className="mb-6 flex gap-1 overflow-x-auto border-b border-border-default">
-        {tabs.map((id) => (
-          <Link
-            key={id}
-            href={id === "open" ? "/auctions" : `/auctions?tab=${id}`}
-            aria-current={tab === id ? "page" : undefined}
-            className={cn(
-              "-mb-px shrink-0 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
-              tab === id ? "border-accent text-fg" : "border-transparent text-fg-secondary hover:text-fg",
+      <UrlTabs label={t("auctions.tabsLabel")} path="/auctions" defaultId="open" active={tab} tabs={tabs.map((id) => ({ id, label: t(`auctions.tabs.${id}`) }))}>
+  
+        {items.length === 0 ? (
+          <div className="kz-fade rounded-3xl border border-dashed border-border-default px-6 py-16 text-center">
+            <Gavel className="mx-auto h-8 w-8 text-fg-accent/70" aria-hidden />
+            <p className="mt-3 text-sm font-semibold text-fg">{t(`auctions.empty.${tab}.title`)}</p>
+            <p className="mx-auto mt-1 max-w-md text-xs text-fg-secondary">{t(`auctions.empty.${tab}.body`)}</p>
+            {tab === "selling" && (
+              <Link href="/dashboard?tab=uploads" className={orochiaButton({ variant: "sensual", shape: "pill", className: "mt-5" })}>
+                {t("auctions.empty.selling.cta")}
+              </Link>
             )}
-          >
-            {t(`auctions.tabs.${id}`)}
-          </Link>
-        ))}
-      </nav>
-
-      {items.length === 0 ? (
-        <div className="kz-fade rounded-3xl border border-dashed border-border-default px-6 py-16 text-center">
-          <Gavel className="mx-auto h-8 w-8 text-fg-accent/70" aria-hidden />
-          <p className="mt-3 text-sm font-semibold text-fg">{t(`auctions.empty.${tab}.title`)}</p>
-          <p className="mx-auto mt-1 max-w-md text-xs text-fg-secondary">{t(`auctions.empty.${tab}.body`)}</p>
-          {tab === "selling" && (
-            <Link href="/dashboard?tab=uploads" className={orochiaButton({ variant: "sensual", shape: "pill", className: "mt-5" })}>
-              {t("auctions.empty.selling.cta")}
-            </Link>
-          )}
-          {tab !== "open" && tab !== "selling" && (
-            <Link href="/auctions" className={buttonVariants({ variant: "secondary", shape: "pill", className: "mt-5" })}>
-              {t("auctions.seeOpen")}
-            </Link>
-          )}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {items.map((a, i) => (
-            <AuctionCard key={a.id} auction={a} index={i} />
-          ))}
-        </div>
-      )}
+            {tab !== "open" && tab !== "selling" && (
+              <Link href="/auctions" className={buttonVariants({ variant: "secondary", shape: "pill", className: "mt-5" })}>
+                {t("auctions.seeOpen")}
+              </Link>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {items.map((a, i) => (
+              <AuctionCard key={a.id} auction={a} index={i} />
+            ))}
+          </div>
+        )}
+      </UrlTabs>
     </div>
   );
 }

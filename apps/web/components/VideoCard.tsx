@@ -39,6 +39,8 @@ export interface VideoCardProps {
   isAdult?: boolean;
   /** Shown as chips that open `/explore?tag=…` (Explore passes them; at most three are shown). */
   tags?: string[];
+  /** One of the first cards of a page (the largest contentful paint): its poster loads at once and first. The others are lazy. */
+  priority?: boolean;
   /** In a search: found by its meaning rather than its words (the Explorer, lib/explore-semantic.ts). */
   via?: "text" | "meaning" | "both";
 }
@@ -68,6 +70,8 @@ export function VideoCard({ aspect, layout, ...props }: VideoCardProps & { aspec
         aspect={frame}
         layout={layout}
         poster={thumbnailUrl}
+        loading={props.priority ? "eager" : "lazy"}
+        posterPriority={props.priority ? "high" : "auto"}
         previewSrc={previewAnimationUrl}
         fit={square ? "contain" : "cover"}
         duration={formatDuration(durationSeconds)}

@@ -1,23 +1,28 @@
 "use client";
 
-import { Clapperboard, Flame, LayoutGrid, Rows3, Sparkles, Users } from "lucide-react";
+import { LoadMore, MediaGridSkeleton } from "@krizaka/ui/media-grid";
+import { Clapperboard, Flame, LayoutGrid, Rows3, Smartphone, Sparkles, Users } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React, { useMemo,useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import React, { useReducer, useState, useSyncExternalStore } from "react";
 
 import { Avatar, Badge, buttonVariants, Chip, cn, EmptyState, orochiaButton, Tabs } from "@/components/ui";
 import type { VideoCardProps } from "@/components/VideoCard";
+import { VerticalFeed } from "@/components/feed/VerticalFeed";
 import { VideoGrid } from "@/components/VideoGrid";
 import { useAuth } from "@/lib/auth-context";
 import { feedEmptyActions, type FeedEmptyKind, type FeedTab, type ViewerState } from "@/lib/creator-journey";
+import { type FeedSort } from "@/lib/feed-cursor";
+import { FeedLayout, feedLayoutOf, PHONE_QUERY, viewSearch } from "@/lib/feed-view";
+import { feedReducer, feedStateOf, type FeedTabId, hasMore, type PageData, TabStatus } from "@/lib/feed-state";
 import { t } from "@/lib/i18n";
 import { defaultAvatarFor } from "@/lib/presets";
 import { aspectClassOf, orientationOf } from "@/lib/video-aspect";
 
 interface FeedFilterTabsProps {
-  initialVideos: VideoCardProps[];
-  /** The newest videos of the creators the viewer follows (empty when signed out). */
-  followingVideos?: VideoCardProps[];
+  /** The tab the server opened (from `?feed=`) and its first page. */
+  initialTab: FeedTab;
+  initialPage: PageData<VideoCardProps>;
   /** Who is looking: each one gets their own next step under an empty feed (lib/creator-journey.ts). */
   viewer: ViewerState;
   /** The feed could not be read (the database did not answer): say so, never "no video yet". */
@@ -63,32 +68,65 @@ function FeedEmpty({ viewer, kind, tab }: { viewer: ViewerState; kind: FeedEmpty
   );
 }
 
-export function FeedFilterTabs({ initialVideos, followingVideos = [], viewer, unavailable = false }: FeedFilterTabsProps) {
-  // The open tab lives in the address (?feed=…), so a shared link opens the same feed.
-  const router = useRouter();
+const SORT_OF: Record<FeedTab, FeedSort> = { foryou: "latest", trending: "trending", following: "following" };
+const TAB_OF: Record<FeedTab, FeedTabId> = SORT_OF;
+
+export function FeedFilterTabs({ initialTab, initialPage, viewer, unavailable = false }: FeedFilterTabsProps) {
+  // The open tab lives in the address (?feed=…), so a shared link opens the same feed. Switching tabs rewrites the address in
+  // place (no server round trip): each tab keeps its own pages, and asks for its first one when opened.
   const pathname = usePathname();
   const params = useSearchParams();
   const asked = params.get("feed");
   const activeTab: FeedTab = asked === "trending" || asked === "following" ? asked : "foryou";
+  const [feeds, dispatch] = useReducer(feedReducer<VideoCardProps>, feedStateOf<VideoCardProps>(TAB_OF[initialTab], initialPage));
+  const [viewMode, setViewMode] = useState<"grid" | "cinematic">("grid");
+  // A phone gets the vertical feed (one video per screen) unless the address says ?view=grid. The server renders the grid;
+  // a phone swaps to the vertical feed once it knows its width.
+  const phone = useSyncExternalStore(
+    (notify) => {
+      const query = window.matchMedia(PHONE_QUERY);
+      query.addEventListener("change", notify);
+      return () => query.removeEventListener("change", notify);
+    },
+    () => window.matchMedia(PHONE_QUERY).matches,
+    () => false,
+  );
+  const layout = feedLayoutOf({ phone, view: params.get("view") });
+  const setLayout = (next: FeedLayout) => {
+    const search = viewSearch(new URLSearchParams(params.toString()), next);
+    window.history.replaceState(null, "", `${pathname}${search.size ? `?${search}` : ""}`);
+  };
+  const canFollow = viewer !== "anonymous";
+
+  /** Asks for the next page of a tab (its first, if never opened). Called by a click or a scroll — never by an effect. */
+  const loadPage = async (tab: FeedTab) => {
+    const id = TAB_OF[tab];
+    const state = feeds[id];
+    if (state.status === TabStatus.Loading || !hasMore(state) || (tab === "following" && !canFollow)) return;
+    dispatch({ type: "request", tab: id });
+    try {
+      const query = new URLSearchParams({ sort: SORT_OF[tab] });
+      if (state.nextCursor) query.set("cursor", state.nextCursor);
+      const res = await fetch(`/api/feed?${query}`, { headers: { Accept: "application/json" } });
+      if (!res.ok) throw new Error(String(res.status));
+      const body = (await res.json()) as PageData<VideoCardProps>;
+      dispatch({ type: "received", tab: id, page: { videos: body.videos, nextCursor: body.nextCursor } });
+    } catch {
+      dispatch({ type: "failed", tab: id });
+    }
+  };
+
   const setActiveTab = (tab: FeedTab) => {
     const next = new URLSearchParams(params.toString());
     if (tab === "foryou") next.delete("feed");
     else next.set("feed", tab);
-    router.replace(`${pathname}${next.size ? `?${next}` : ""}`, { scroll: false });
+    window.history.replaceState(null, "", `${pathname}${next.size ? `?${next}` : ""}`);
+    if (!feeds[TAB_OF[tab]].loaded) void loadPage(tab);
   };
-  const [viewMode, setViewMode] = useState<"grid" | "cinematic">("grid");
 
-  const filteredVideos = useMemo(() => {
-    switch (activeTab) {
-      case "trending":
-        return [...initialVideos].sort((a, b) => b.viewsCount - a.viewsCount);
-      case "following":
-        return followingVideos;
-      case "foryou":
-      default:
-        return initialVideos;
-    }
-  }, [activeTab, initialVideos, followingVideos]);
+  const current = feeds[TAB_OF[activeTab]];
+  const filteredVideos = current.videos;
+  const firstPageWaiting = !current.loaded && (activeTab !== "following" || canFollow);
 
   const tabs = [
     { id: "foryou", label: t("feed.tabs.foryou"), icon: Flame },
@@ -96,7 +134,7 @@ export function FeedFilterTabs({ initialVideos, followingVideos = [], viewer, un
     { id: "trending", label: t("feed.tabs.trending"), icon: Sparkles },
   ] as const;
 
-  const empty = filteredVideos.length === 0 && (
+  const empty = !firstPageWaiting && filteredVideos.length === 0 && (
     unavailable ? (
       <EmptyState
         bird="owl"
@@ -111,21 +149,25 @@ export function FeedFilterTabs({ initialVideos, followingVideos = [], viewer, un
         }
       />
     ) : (
-      <FeedEmpty viewer={viewer} kind={initialVideos.length === 0 ? "platform" : "tab"} tab={activeTab} />
+      <FeedEmpty viewer={viewer} kind={activeTab === "foryou" ? "platform" : "tab"} tab={activeTab} />
     )
   );
 
   const content = (
     <>
-      {empty ? (
+      {firstPageWaiting ? (
+        <MediaGridSkeleton label={t("feed.loadingVideos")} count={8} shelfCount={4} className="kz-fade" />
+      ) : empty ? (
         empty
+      ) : layout === FeedLayout.Vertical ? (
+        <VerticalFeed videos={filteredVideos} onNearEnd={() => void loadPage(activeTab)} className="kz-fade" />
       ) : viewMode === "grid" ? (
         /* Shorts shelf for the 9:16, uniform 16:9 grid for the rest */
         <VideoGrid videos={filteredVideos} className="kz-fade" />
       ) : (
         /* Cinematic Immersive Stream Feed */
         <div className="max-w-3xl mx-auto space-y-8 kz-fade">
-          {filteredVideos.map((video) => (
+          {filteredVideos.map((video, index) => (
             <div
               key={video.id}
               className="overflow-hidden rounded-3xl border border-border-default bg-surface-1/80 shadow-2xl transition-all hover:border-accent/40"
@@ -160,6 +202,9 @@ export function FeedFilterTabs({ initialVideos, followingVideos = [], viewer, un
                   <img
                     src={video.thumbnailUrl}
                     alt={video.title}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    fetchPriority={index === 0 ? "high" : undefined}
+                    decoding="async"
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
@@ -200,6 +245,18 @@ export function FeedFilterTabs({ initialVideos, followingVideos = [], viewer, un
           ))}
         </div>
       )}
+    {!firstPageWaiting && !empty && (
+        <LoadMore
+          hasMore={current.nextCursor !== null}
+          loading={current.status === TabStatus.Loading}
+          failed={current.status === TabStatus.Failed}
+          onLoadMore={() => void loadPage(activeTab)}
+          label={t("feed.loadMore")}
+          retryLabel={t("feed.retry")}
+          loadingLabel={t("feed.loadingMore")}
+          endLabel={t("feed.end")}
+        />
+      )}
     </>
   );
 
@@ -216,22 +273,41 @@ export function FeedFilterTabs({ initialVideos, followingVideos = [], viewer, un
           ))}
         </Tabs.List>
 
-        <Chip.Group
-          type="single"
-          required
-          size="sm"
-          label={t("feed.view")}
-          value={viewMode}
-          onValueChange={(v) => setViewMode(v as "grid" | "cinematic")}
-          className="shrink-0 gap-1 self-end sm:self-auto"
-        >
-          <Chip value="grid" aria-label={t("feed.grid")} title={t("feed.grid")} className="w-8 px-0">
-            <LayoutGrid className="h-4 w-4" aria-hidden />
-          </Chip>
-          <Chip value="cinematic" aria-label={t("feed.cinematic")} title={t("feed.cinematic")} className="w-8 px-0">
-            <Rows3 className="h-4 w-4" aria-hidden />
-          </Chip>
-        </Chip.Group>
+        {phone ? (
+          <Chip.Group
+            type="single"
+            required
+            size="sm"
+            label={t("feed.vertical.viewLabel")}
+            value={layout}
+            onValueChange={(v) => setLayout(v as FeedLayout)}
+            className="shrink-0 gap-1 self-end"
+          >
+            <Chip value={FeedLayout.Vertical} aria-label={t("feed.vertical.vertical")} title={t("feed.vertical.vertical")} className="w-8 px-0">
+              <Smartphone className="h-4 w-4" aria-hidden />
+            </Chip>
+            <Chip value={FeedLayout.Grid} aria-label={t("feed.vertical.grid")} title={t("feed.vertical.grid")} className="w-8 px-0">
+              <LayoutGrid className="h-4 w-4" aria-hidden />
+            </Chip>
+          </Chip.Group>
+        ) : (
+          <Chip.Group
+            type="single"
+            required
+            size="sm"
+            label={t("feed.view")}
+            value={viewMode}
+            onValueChange={(v) => setViewMode(v as "grid" | "cinematic")}
+            className="shrink-0 gap-1 self-end sm:self-auto"
+          >
+            <Chip value="grid" aria-label={t("feed.grid")} title={t("feed.grid")} className="w-8 px-0">
+              <LayoutGrid className="h-4 w-4" aria-hidden />
+            </Chip>
+            <Chip value="cinematic" aria-label={t("feed.cinematic")} title={t("feed.cinematic")} className="w-8 px-0">
+              <Rows3 className="h-4 w-4" aria-hidden />
+            </Chip>
+          </Chip.Group>
+        )}
       </div>
 
       {/* One panel per feed; the open one holds the videos */}
