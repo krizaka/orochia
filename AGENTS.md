@@ -393,14 +393,23 @@ orochia/                           npm workspaces
   `en-US`), `messages("branch")` for long structured content (the legal pages) and `t.locale`, which a helper outside a
   component receives as `t` (`apiErrorMessage(t, …)`). Never `toLocaleString("en-US")`, never `new Date().toLocale…([])`.
   `<Rich>` renders `<b>` and `{slot}` links.
-- **Which language a request speaks** (`lib/locales.ts`, `proxy.ts`): the language of a `/fr/…` address (the proxy
-  serves it as the page itself, with the `x-locale` header — the English address stays the unprefixed one, `/en/…`
-  also works), else the reader's choice (the family's cookie `NEXT_LOCALE`, written by the language switch and by the
-  proxy), else their browser's `Accept-Language` (`fr`, `fr-CA` → French), else English (crawlers, API clients). Pages
-  are therefore dynamic. `<html lang>`, the canonical and the hreflang pair (`en`, `fr`, `x-default` = English) follow
-  it (`alternatesFor` in `lib/seo-i18n.ts`, a page's `generateMetadata` uses `pageAlternates("/path")`), the sitemap
-  lists both addresses of every page but the documentation (English only for now), and `<LanguageSwitch>` is in the bar.
-  A route handler that has its `Request` reads `localeOf(req.headers)`.
+- **The language is a path segment, so the pages stay static** (`app/[locale]/…`, `generateStaticParams` for `en` and
+  `fr`, `dynamicParams = false`; the API, `robots`, `sitemap`, `.well-known`, `defaults` and `auth/native-challenge` live
+  outside it). Every page has an address per language (`/en/explore`, `/fr/explore`); `proxy.ts` serves an address
+  without one (old links, the mobile app's, the links inside the pages) as the page of the reader's language — cookie
+  `NEXT_LOCALE`, else `Accept-Language` (`fr`, `fr-CA` → French; the Bill 96 answer), else English — by a rewrite, not a
+  redirect hop, and writes `x-locale` / `x-pathname`. **A layout, a page or a `generateMetadata` that is not
+  `force-dynamic` starts with `await localeFromParams(params)`** (`lib/i18n-server.ts`: it sets the language of the
+  render, so `getI18n()` needs no request); a page that did not set it falls back to the proxy's `x-locale` header,
+  which makes it dynamic. Client components never see the prefix: use `usePathname` from `lib/use-pathname.ts`, not
+  next/navigation's. Nothing in the layout reads `headers()` / `cookies()`. `scripts/check-static-pages.mjs` (CI, after the
+  build) fails when a public page that needs no database drops out of the prerender manifest. `<html lang>`, the
+  canonical (`./`, the page's own address) and each page's hreflang pair (`pageAlternates("/path")`: `en`, `fr`, `x-default`
+  = English) follow it; the sitemap lists both addresses of every page but the documentation (English only for now);
+  `<LanguageSwitch>` is in the bar. A route handler that has its `Request` reads `localeOf(req.headers)`.
+- **A count is a plural set**: `{ "one": "{count} vue", "other": "{count} vues" }` in both catalogues, called with the
+  number (`t("watch.views", { count: n, shown: number(n) })` when the figure shown is formatted apart from the count that
+  picks the form — French counts 0 and 1 as singular).
 - **A notification is stored as an event and its variables**, never as text; a variable that is itself words is stored
   as a key (`i18nVar("notify.newFollower.asks")`) and an amount as cents (`moneyVar(1250)`), said in the language of
   whoever reads it (`lib/notification-vars.ts`).

@@ -34,6 +34,8 @@ jobs:
         run: node scripts/generate-docs.mjs --check
       - name: Production build
         run: npm run build
+      - name: The public pages stay static, in each language
+        run: node scripts/check-static-pages.mjs
         env:
           NEXT_PUBLIC_APP_URL: http://localhost:3000
 
@@ -149,7 +151,7 @@ jobs:
           npm run build
           PORT=3100 npm run start > web-prod.log 2>&1 &
           for i in $(seq 1 60); do curl -s -o /dev/null http://localhost:3100/api/health && break; sleep 2; done
-          for path in / /explore; do
+          for path in / /explore /fr /fr/how-it-works /en/legal/terms; do
             code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:3100$path")
             echo "$path -> $code"
             [ "$code" -lt 500 ] || { tail -100 web-prod.log; exit 1; }
