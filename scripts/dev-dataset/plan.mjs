@@ -72,9 +72,18 @@ export function diffCreator(wanted, have, isStale = () => false) {
   return { upload, remove, replace };
 }
 
+/**
+ * A clip whose file in the media folder is taller than the one the creator has (`manifest.json` records `height`): the HD
+ * version replaces the SD one — removed at Bunny Stream and uploaded again, never kept beside it.
+ */
+export function isUpgrade(entry, have) {
+  return Number(entry?.height) > Number(have?.height || 0) && Number(have?.height || 0) > 0;
+}
+
 /** The credit written under every description: which Orazaka run made the clip. */
 export function credit(entry) {
   if (!entry?.orazakaRunId) return null;
   const sound = entry.sound ? ` · sound: ${entry.sound}${entry.soundRunId ? `, run ${entry.soundRunId}` : ""}` : "";
-  return `Made with Orazaka · run ${entry.orazakaRunId}${entry.model ? ` (${entry.model.split(" — ")[0]})` : ""}${sound}.`;
+  const upscaled = entry.upscale ? ` · upscaled to ${entry.upscale.to} by ${entry.upscale.model}` : "";
+  return `Made with Orazaka · run ${entry.orazakaRunId}${entry.model ? ` (${entry.model.split(" — ")[0]})` : ""}${sound}${upscaled}.`;
 }
