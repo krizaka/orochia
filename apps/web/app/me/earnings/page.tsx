@@ -89,7 +89,7 @@ function EarningsPage() {
   if (!user) {
     return (
       <div className="mx-auto max-w-lg px-4 py-24 text-center">
-        <Link href="/auth/login?next=/earnings" className={orochiaButton({ variant: "sensual", shape: "pill" })}>
+        <Link href="/auth/login?next=/me/earnings" className={orochiaButton({ variant: "sensual", shape: "pill" })}>
           {t("nav.signIn")}
         </Link>
       </div>

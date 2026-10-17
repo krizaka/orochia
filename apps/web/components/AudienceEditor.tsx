@@ -98,7 +98,7 @@ export function AudienceEditor({ endpoint, onChange }: { endpoint: string; onCha
           ))}
         </Select>
         </span>
-        <Link href="/dashboard?tab=lists" className="text-[11px] font-semibold text-fg-accent underline-offset-2 hover:underline">
+        <Link href="/me/lists" className="text-[11px] font-semibold text-fg-accent underline-offset-2 hover:underline">
           {t("audience.manage")}
         </Link>
       </div>

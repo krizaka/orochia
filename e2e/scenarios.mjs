@@ -400,7 +400,7 @@ check("the export carries the account, no password hash", exported.status === 20
 check("the export of an unknown account is a 404", (await admin.call("/api/admin/users/00000000-0000-4000-8000-000000000000/export")).status === 404);
 
 // Pages render
-for (const p of ["/", "/explore", "/explore?q=tokyo", "/explore?tag=acoustic", "/creators/elenavox", "/dashboard", "/watch/" + diaries.id]) {
+for (const p of ["/", "/explore", "/explore?q=tokyo", "/explore?tag=acoustic", "/creators/elenavox", "/me", "/watch/" + diaries.id]) {
   const r = await fetch(B + p);
   check(`page ${p} → 200`, r.status === 200, r.status);
 }
@@ -593,7 +593,7 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
     check("member → the creator application of their account", member.status === 200 && member.html.includes("Open my creator space") && member.html.includes("@alex_vance"));
     check("member → upload leads to the application", (await page(alex, "/creator/upload")).location.endsWith("/creator/apply"));
     for (const [name, who] of [["member", alex], ["verified creator", elena], ["pending creator", me]]) {
-      for (const path of ["/", "/explore", "/dashboard"]) {
+      for (const path of ["/", "/explore", "/me"]) {
         const html = (await page(who, path)).html;
         check(`${name} → ${path} never offers the sign-up form`, html.length > 0 && !signUpLink.test(html));
       }
@@ -601,7 +601,7 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
     const pending = await page(me, "/creator/apply");
     check("pending creator → the status of the 2257 review", pending.status === 200 && pending.html.includes("under review") && !pending.html.includes("Open my creator space"));
     check("pending creator → upload leads to the review status", (await page(me, "/creator/upload")).location.endsWith("/creator/apply"));
-    check("verified creator → the application leads to the studio", (await page(elena, "/creator/apply")).location.includes("/dashboard?tab=uploads"));
+    check("verified creator → the application leads to the studio", (await page(elena, "/creator/apply")).location.includes("/me/videos"));
     check("verified creator → upload opens", (await page(elena, "/creator/upload")).status === 200);
   }
 }
@@ -1419,7 +1419,7 @@ check("sitemap lists public videos and creators", sitemapXml.includes(`/watch/${
 check("sitemap never lists an invited-only video", !sitemapXml.includes(roughCut.id));
 check("invited-only watch page is noindex", /<meta name="robots" content="noindex/.test(await (await fetch(`${B}/watch/${roughCut.id}`)).text()));
 check("public watch page carries a VideoObject", (await (await fetch(`${B}/watch/${noir.id}`)).text()).includes('"@type":"VideoObject"'));
-check("robots.txt keeps accounts out", (await (await fetch(`${B}/robots.txt`)).text()).includes("Disallow: /dashboard"));
+check("robots.txt keeps accounts out", (await (await fetch(`${B}/robots.txt`)).text()).includes("Disallow: /me/"));
 check("llms.txt served", (await fetch(`${B}/llms.txt`)).status === 200);
 
 // Storage quotas (lib/quotas.ts, lib/storage-usage.ts) and abuse defences (lib/abuse/*, lib/rate-limit.ts).

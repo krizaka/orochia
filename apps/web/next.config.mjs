@@ -22,6 +22,8 @@ function commitSha() {
     return "";
   }
 }
+// The private dashboard moved from /dashboard?tab=… (and /earnings, /insights) to real addresses under /me.
+const meRoutes = JSON.parse(readFileSync(new URL("./lib/me-routes.json", import.meta.url), "utf8"));
 const appVersion = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8")).version;
 
 /** @type {import('next').NextConfig} */
@@ -91,7 +93,10 @@ const nextConfig = {
     return [
       { source: "/creators/:username", destination: "/@:username", permanent: true },
       // Earnings and payouts live on one page.
-      { source: "/creator/payouts", destination: "/earnings#payouts", permanent: true },
+      { source: "/creator/payouts", destination: "/me/earnings#payouts", permanent: true },
+      ...Object.entries(meRoutes.tabs).map(([tab, destination]) => ({ source: "/dashboard", has: [{ type: "query", key: "tab", value: tab }], destination, permanent: true })),
+      ...Object.entries(meRoutes.pages).map(([source, destination]) => ({ source, destination, permanent: true })),
+      { source: "/dashboard/:path*", destination: "/me", permanent: true },
     ];
   },
   async headers() {

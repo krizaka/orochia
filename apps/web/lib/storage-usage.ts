@@ -347,7 +347,7 @@ export async function checkPlatformAlerts(options: { force?: boolean } = {}): Pr
       const { notify } = await import("./notifications");
       const admins = await db.select({ id: users.id }).from(users).where(and(eq(users.role, "ADMIN"), sql`${users.suspendedAt} is null`));
       const vars = { percent: String(percent), used: formatBytes(usage.bytes), limit: formatBytes(limit) };
-      await Promise.all(admins.map((a) => notify({ userId: a.id, event: "storageAlert", vars, path: "/dashboard" })));
+      await Promise.all(admins.map((a) => notify({ userId: a.id, event: "storageAlert", vars, path: "/me" })));
     }
     return fresh;
   } catch (error) {
@@ -366,7 +366,7 @@ export async function warnCreatorIfLow(creatorId: string) {
     if (percent === null || percent < 90) return;
     if (!(await checkRateLimit(`storage-low:${creatorId}`, 1, 7 * 86_400)).success) return;
     const { notify } = await import("./notifications");
-    await notify({ userId: creatorId, event: "storageLow", vars: { percent: String(Math.min(100, Math.round(percent))), limit: formatBytes(plan.allowance.bytes ?? 0) }, path: "/dashboard?tab=uploads" });
+    await notify({ userId: creatorId, event: "storageLow", vars: { percent: String(Math.min(100, Math.round(percent))), limit: formatBytes(plan.allowance.bytes ?? 0) }, path: "/me/videos" });
   } catch (error) {
     console.error("quota: creator warning failed", error);
   }

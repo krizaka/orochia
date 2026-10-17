@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Sparkles, Check, Crown, Flame, Shield, Play, Lock, Film, Heart, Share2, Layers } from "lucide-react";
 import type { VideoCardProps } from "@/components/VideoCard";
 import { VideoGrid } from "@/components/VideoGrid";
 import { PlaylistCard, type PlaylistCardProps } from "@/components/PlaylistCard";
-import { TipModal } from "@/components/TipModal";
 import { t } from "@/lib/i18n";
 import { buttonVariants, cn, Tabs } from "@/components/ui";
 import Link from "next/link";
@@ -47,7 +46,6 @@ export function CreatorProfileClient({
   const tabParam = useSearchParams().get("tab");
   const activeTab: ProfileTab = tabParam === "ppv" || tabParam === "playlists" || tabParam === "about" ? tabParam : "all";
   const setActiveTab = (tab: ProfileTab) => router.replace(tab === "all" ? pathname : `${pathname}?tab=${tab}`, { scroll: false });
-  const [isTipModalOpen, setIsTipModalOpen] = useState(false);
 
   const filteredVideos = activeTab === "ppv"
     ? videos.filter((v) => v.visibility === "TIPPED_UNLOCKED")
@@ -124,20 +122,6 @@ export function CreatorProfileClient({
           ))}
         </Tabs.Root>
       </div>
-
-      {/* Tip Modal Trigger */}
-      {videos.length > 0 && (
-        <TipModal
-          isOpen={isTipModalOpen}
-          onClose={() => setIsTipModalOpen(false)}
-          videoId={videos[0].id}
-          creatorName={creator.displayName}
-          minTipAmountCents={creator.minTipAmountCents || 500}
-          onUnlockedSuccess={() => {
-            setIsTipModalOpen(false);
-          }}
-        />
-      )}
     </div>
   );
 }

@@ -52,7 +52,7 @@ export default async function CreatorApplyPage() {
         description: t("creatorSpace.apply.steps.accountMissing.body"),
         status: "current" as const,
         content: (
-          <Link href="/dashboard?tab=settings#settings-profile" className={buttonVariants({ variant: "secondary", size: "sm", shape: "pill" })}>
+          <Link href="/me/settings#settings-profile" className={buttonVariants({ variant: "secondary", size: "sm", shape: "pill" })}>
             {t("creatorSpace.apply.addBirthDate")}
           </Link>
         ),
@@ -126,11 +126,11 @@ export default async function CreatorApplyPage() {
         </div>
 
         <div className="mt-6 flex flex-wrap gap-2">
-          <Link href="/dashboard?tab=settings#settings-profile" className={buttonVariants({ variant: "outline", size: "sm", shape: "pill" })}>
+          <Link href="/me/settings#settings-profile" className={buttonVariants({ variant: "outline", size: "sm", shape: "pill" })}>
             {t("creatorSpace.apply.links.profile")}
           </Link>
           {pending && (
-            <Link href="/earnings" className={buttonVariants({ variant: "outline", size: "sm", shape: "pill" })}>
+            <Link href="/me/earnings" className={buttonVariants({ variant: "outline", size: "sm", shape: "pill" })}>
               {t("creatorSpace.apply.links.payout")}
             </Link>
           )}

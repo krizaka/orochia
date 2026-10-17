@@ -46,7 +46,7 @@ export function OwnerBar({ video, creatorUsername, onSaved }: { video: OwnedVide
       <Button variant="secondary" size="sm" shape="rounded" onClick={() => setEditing(true)} disabled={leaving}>
         <Pencil className="h-4 w-4" aria-hidden /> <span>{t("owner.edit")}</span>
       </Button>
-      <Link href="/dashboard?tab=uploads" className="inline-flex items-center gap-3 rounded-full border border-border-default bg-surface-2/60 px-3 py-1.5 font-mono text-[11px] text-fg-secondary hover:text-fg">
+      <Link href="/me/videos" className="inline-flex items-center gap-3 rounded-full border border-border-default bg-surface-2/60 px-3 py-1.5 font-mono text-[11px] text-fg-secondary hover:text-fg">
         <span className="inline-flex items-center gap-1"><Eye className="h-3 w-3" aria-hidden /> {t("owner.views", { count: compact(video.viewsCount) })}</span>
         <span className="inline-flex items-center gap-1 text-fg-accent"><Sparkles className="h-3 w-3" aria-hidden /> {t("owner.tips", { count: video.tipsCount })}</span>
       </Link>

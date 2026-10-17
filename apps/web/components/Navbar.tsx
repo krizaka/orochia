@@ -69,7 +69,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
       href={href}
       className={cn(
         "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-        (href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href.split("?")[0]) && href !== "/dashboard?tab=settings")
+        (href === "/me" ? pathname === "/me" : pathname.startsWith(href))
           ? "bg-accent/15 text-fg"
           : "text-fg-secondary hover:bg-surface-2 hover:text-fg"
       )}
@@ -155,7 +155,7 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                     {isCreator && (
                       <Link
                         role="menuitem"
-                        href="/earnings"
+                        href="/me/earnings"
                         className="mx-1 mb-1 mt-0.5 flex items-center justify-between rounded-xl bg-linear-to-r from-success/10 to-transparent px-3 py-2.5 ring-1 ring-success/20 transition-colors hover:from-success/20"
                       >
                         <span className="flex items-center gap-2 text-xs font-semibold text-fg">
@@ -165,12 +165,12 @@ export function Navbar({ onOpenSearch }: { onOpenSearch: () => void }) {
                       </Link>
                     )}
                     <div className="my-1 h-px bg-surface-2" />
-                    {menuItem("/dashboard", <LayoutDashboard className="h-4 w-4" />, t("nav.dashboard"))}
+                    {menuItem("/me", <LayoutDashboard className="h-4 w-4" />, t("nav.dashboard"))}
                     {creatorSpace && viewerState !== "creator" && menuItem(creatorSpace.href, <Upload className="h-4 w-4" />, t(creatorSpace.label))}
                     {menuItem("/messages", <MessageSquare className="h-4 w-4" />, t("nav.messages"))}
                     {menuItem("/wallet", <Coins className="h-4 w-4" />, t("nav.wallet"))}
                     {menuItem("/mobile", <AppIcon className="h-4 w-4" />, t("nav.mobile"))}
-                    {menuItem("/dashboard?tab=settings", <Settings className="h-4 w-4" />, t("nav.settings"))}
+                    {menuItem("/me/settings", <Settings className="h-4 w-4" />, t("nav.settings"))}
                     <div className="my-1 h-px bg-surface-2" />
                     <button
                       role="menuitem"

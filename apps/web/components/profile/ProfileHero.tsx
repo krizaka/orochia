@@ -19,8 +19,8 @@ export interface HeroLink {
 }
 
 /**
- * The top of a profile — the public page and the owner's dashboard share it: cover image, avatar overlapping it,
- * name, handle, bio, links, figures and actions. On your own profile the cover and the photo are edited in place
+ * The top of a public profile — light and compact, media comes next: a slim cover, the avatar overlapping it,
+ * name, handle, bio, links, figures and actions, no box around them. On your own profile the cover and the photo are edited in place
  * (hover on a computer, always visible on a phone): quick actions, no settings page needed.
  */
 export function ProfileHero({
@@ -58,9 +58,9 @@ export function ProfileHero({
   };
 
   return (
-    <section className="relative mb-8 overflow-visible rounded-3xl border border-border-default bg-surface-1/60 shadow-2xl shadow-accent/5 backdrop-blur-sm">
+    <section className="relative mb-6">
       {/* Cover */}
-      <div className="group relative h-36 overflow-hidden rounded-t-3xl sm:h-56">
+      <div className="group relative h-28 overflow-hidden rounded-2xl sm:h-44">
         <img src={safeImageSrc(banner) ?? defaultBannerFor(displayName)} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.02]" />
         <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-surface-0/70 via-transparent to-transparent" />
         {editable && (
@@ -77,14 +77,14 @@ export function ProfileHero({
         )}
       </div>
 
-      <div className="relative px-5 pb-6 sm:px-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-end sm:gap-5">
+      <div className="relative px-1 sm:px-2">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex items-end gap-4">
             {/* Avatar, overlapping the cover */}
-            <div className="group relative -mt-14 shrink-0 sm:-mt-20">
+            <div className="group relative -mt-10 shrink-0 sm:-mt-14">
               {/* Inside a ProfileStories (the public page), the picture carries the story ring and opens the stories. */}
               <StoryAvatarRing>
-                <div className="h-28 w-28 overflow-hidden rounded-4xl bg-surface-3 ring-4 ring-border-subtle shadow-2xl shadow-accent/30 sm:h-36 sm:w-36">
+                <div className="h-20 w-20 overflow-hidden rounded-3xl bg-surface-3 ring-4 ring-surface-0 sm:h-28 sm:w-28">
                   <Avatar src={avatar} defaultAvatar={{ brand: "orochia", seed: displayName }} fallbackSrc={defaultAvatarFor(displayName)} alt={displayName} fallback={displayName.charAt(0)} className="h-full w-full rounded-none text-3xl" />
                 </div>
               </StoryAvatarRing>
@@ -101,8 +101,8 @@ export function ProfileHero({
                 />
               )}
             </div>
-            <div className="text-center sm:pb-1 sm:text-left">
-              <h1 className="flex items-center justify-center gap-2 font-display text-2xl font-black tracking-tight text-fg sm:justify-start sm:text-4xl">
+            <div className="min-w-0 pb-1">
+              <h1 className="flex items-center gap-2 font-display text-xl font-black tracking-tight text-fg sm:text-3xl">
                 {displayName}
                 {verified && <BadgeCheck className="h-6 w-6 shrink-0 text-fg-accent" aria-label={t("profile.verified")} />}
               </h1>
@@ -112,14 +112,14 @@ export function ProfileHero({
               </p>
             </div>
           </div>
-          {actions && <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-end sm:pb-1">{actions}</div>}
+          {actions && <div className="flex flex-wrap items-center gap-2 sm:justify-end sm:pb-1">{actions}</div>}
         </div>
 
-        {bio && <p className="mx-auto mt-4 max-w-2xl text-center text-sm leading-relaxed text-fg-secondary sm:mx-0 sm:text-left">{bio}</p>}
+        {bio && <p className="mt-3 max-w-2xl text-sm leading-relaxed text-fg-secondary">{bio}</p>}
 
         {(links.length > 0 || stats.length > 0) && (
-          <div className="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-            <ul className="flex flex-wrap justify-center gap-2 sm:justify-start">
+          <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+            <ul className="flex flex-wrap gap-2">
               {links.map((l) => (
                 <li key={l.network}>
                   <a
@@ -136,11 +136,11 @@ export function ProfileHero({
               ))}
             </ul>
             {stats.length > 0 && (
-              <dl className="flex gap-6 text-center">
+              <dl className="flex gap-6">
                 {stats.map((s) => (
                   <div key={s.label}>
                     <dt className="text-[10px] font-semibold uppercase tracking-wider text-fg-muted">{s.label}</dt>
-                    <dd className="font-mono text-lg font-black text-fg">{s.value}</dd>
+                    <dd className="font-mono text-base font-black text-fg">{s.value}</dd>
                   </div>
                 ))}
               </dl>

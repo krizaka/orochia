@@ -238,7 +238,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[200px_minmax(0,1fr)]">
-      {/* Each section has its own address (/dashboard?tab=settings#settings-links): shareable, reloadable. */}
+      {/* Each section has its own address (/me/settings#settings-links): shareable, reloadable. */}
       <nav aria-label={t("settings.title")} className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:overflow-visible lg:px-0">
         <ul className="flex gap-1 lg:sticky lg:top-24 lg:flex-col">
           {sections.map((id) => (
@@ -477,7 +477,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
         {isCreator && (
           <Section id="payouts" icon={<Wallet className="h-4 w-4" />} title={t("settings.sections.payouts")}>
             <p className="-mt-2 mb-4 text-xs text-fg-secondary">{t("settings.payouts.hint")}</p>
-            <Link href="/earnings#payouts" className={ghost}>
+            <Link href="/me/earnings#payouts" className={ghost}>
               <Wallet className="h-3.5 w-3.5" /> {t("settings.payouts.request")}
             </Link>
           </Section>

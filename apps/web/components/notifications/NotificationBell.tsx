@@ -59,7 +59,7 @@ export function NotificationBell() {
                   <CheckCheck className="h-3.5 w-3.5" aria-hidden /> {t("notifications.markAll")}
                 </Button>
               )}
-              <Link href="/dashboard?tab=settings#settings-notifications" onClick={() => setOpen(false)} aria-label={t("notifications.settings")} title={t("notifications.settings")} className={buttonVariants({ variant: "ghost", size: "icon", shape: "rounded", className: "h-7 w-7" })}>
+              <Link href="/me/settings#settings-notifications" onClick={() => setOpen(false)} aria-label={t("notifications.settings")} title={t("notifications.settings")} className={buttonVariants({ variant: "ghost", size: "icon", shape: "rounded", className: "h-7 w-7" })}>
                 <Settings className="h-3.5 w-3.5" aria-hidden />
               </Link>
             </div>

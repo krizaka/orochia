@@ -758,7 +758,8 @@
     "upload": "Upload",
     "ageCertified": "18+ certified",
     "viewPublic": "View public profile",
-    "loading": "Loading profile…"
+    "loading": "Loading profile…",
+    "tip": "Tip"
   },
   "settings": {
     "title": "Settings",
@@ -1870,7 +1871,37 @@
       "settledHint": "paid to creators",
       "unavailable": "Treasury figures are unavailable."
     },
-    "loading": "Loading your space"
+    "loading": "Loading your space",
+    "group": {
+      "content": "Content",
+      "audience": "Audience",
+      "money": "Money",
+      "account": "Account"
+    },
+    "nav": {
+      "overview": "Overview",
+      "videos": "My videos",
+      "collections": "Collections",
+      "library": "Library",
+      "lists": "Lists",
+      "network": "Network",
+      "invitations": "Invitations",
+      "insights": "Insights",
+      "transactions": "Transactions",
+      "earnings": "Earnings & payouts",
+      "treasury": "Treasury",
+      "settings": "Settings"
+    },
+    "me": {
+      "menuLabel": "Your space",
+      "sectionLabel": "Go to",
+      "recent": "Recent activity",
+      "recentEmpty": "Nothing yet. Your first movements will show here.",
+      "seeAll": "See all",
+      "views": "Views",
+      "tips": "Tips received",
+      "hello": "Welcome back, {name}"
+    }
   },
   "collectionAudience": {
     "PRIVATE": {

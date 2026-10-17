@@ -14,7 +14,7 @@ export default function ProfilePage() {
     if (isLoading) return;
     if (!user) router.replace("/auth/login");
     else if (user.role === "CREATOR") router.replace(`/@${user.username}`);
-    else router.replace("/dashboard");
+    else router.replace("/me");
   }, [user, isLoading, router]);
 
   return (<div className="mx-auto max-w-lg px-4 py-24 text-center text-xs text-fg-muted font-mono">{t("profile.loading")}</div>);

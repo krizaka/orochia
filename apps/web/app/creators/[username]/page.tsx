@@ -11,6 +11,7 @@ import { CreatorProfileClient } from "@/components/CreatorProfileClient";
 import Link from "next/link";
 import { ProfileHero } from "@/components/profile/ProfileHero";
 import { ProfileStories } from "@/components/stories/ProfileStories";
+import { TipCreatorButton } from "@/components/profile/TipCreatorButton";
 import { ShareProfileButton } from "@/components/profile/ShareProfileButton";
 import { StartChallengeButton } from "@/components/challenges/StartChallengeButton";
 import { creatorSpaceCta, viewerStateOf } from "@/lib/creator-journey";
@@ -82,7 +83,7 @@ export default async function CreatorPage(props: { params: Promise<{ username: s
             <>
               {viewer?.id === creator.id ? (
                 <Link
-                  href="/dashboard?tab=settings#settings-profile"
+                  href="/me/settings#settings-profile"
                   className="inline-flex items-center gap-2 rounded-xl border border-border-default px-4 py-2.5 text-xs font-semibold text-fg transition-colors hover:border-accent/60 hover:bg-accent/10"
                 >
                   {t("profile.editProfile")}
@@ -90,6 +91,9 @@ export default async function CreatorPage(props: { params: Promise<{ username: s
               ) : (
                 <>
                   <RelationshipActions username={creator.username} />
+                  {creator.isCreator && creator.isVerified && videos[0] && (
+                    <TipCreatorButton creatorName={creator.displayName} videoId={videos[0].id} minTipAmountCents={creator.minTipAmountCents} />
+                  )}
                   {creator.isCreator && creator.isVerified && (
                     <StartChallengeButton
                       signedIn={Boolean(viewer)}

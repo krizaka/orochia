@@ -1,0 +1,19 @@
+{
+  "tabs": {
+    "overview": "/me",
+    "library": "/me/library",
+    "ledger": "/me/transactions",
+    "uploads": "/me/videos",
+    "network": "/me/network",
+    "playlists": "/me/collections",
+    "lists": "/me/lists",
+    "invitations": "/me/invitations",
+    "treasury": "/me/treasury",
+    "settings": "/me/settings"
+  },
+  "pages": {
+    "/dashboard": "/me",
+    "/earnings": "/me/earnings",
+    "/insights": "/me/insights"
+  }
+}

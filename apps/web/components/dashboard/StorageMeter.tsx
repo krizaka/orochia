@@ -126,7 +126,7 @@ export function StorageMeter({ initial, compact = false, className }: { initial?
           <span>{minutesLine}</span>
           {storage.uploadsPerDay !== null && <span>{t("quota.today", { count: storage.uploadsToday, max: storage.uploadsPerDay })}</span>}
           {alarming && (
-            <Link href="/dashboard?tab=uploads" className="font-semibold text-fg-accent hover:underline focus-visible:underline">
+            <Link href="/me/videos" className="font-semibold text-fg-accent hover:underline focus-visible:underline">
               {t("quota.manage")}
             </Link>
           )}

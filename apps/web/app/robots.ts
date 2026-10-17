@@ -12,7 +12,7 @@ const CRAWLERS = [
 // Read on request: the environment (dev / production origin, APP_SEARCH_INDEXING) decides, not the build.
 export const dynamic = "force-dynamic";
 
-const DISALLOW = ["/api/", "/dashboard", "/creator/", "/profile", "/auth/"];
+const DISALLOW = ["/api/", "/me/", "/creator/", "/profile", "/auth/"];
 
 export default function robots(): MetadataRoute.Robots {
   // A site that is not indexed (dev, preview) shuts the door and advertises nothing: no sitemap line.

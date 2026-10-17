@@ -20,6 +20,8 @@ Public URL, environment, build.
 | `APP_COMMIT_SHA` *(build)* | — |  |  | The commit the image is built from (App Platform: `${_self.COMMIT_HASH}`, its Docker build has no `.git`); else `git rev-parse`. |
 | `APP_SEARCH_INDEXING` *(build)* | — |  | `on` | `off` on dev and preview deployments: every page noindex, robots.txt disallows all. Only production is indexed. |
 | `APP_PUBLIC_ACTIONS` | — |  | `on` | `off` on dev: a signed-out visitor's story views and shares are answered but not counted; sign-in stays as it is. |
+| `APP_IOS_TEAM_ID` | — |  |  | The Apple Team ID (10 characters) in `/.well-known/apple-app-site-association`, so https links open the iOS app. Without it the file is not served (404). |
+| `APP_ANDROID_CERT_SHA256` | — |  |  | Comma-separated SHA-256 fingerprints of the Android signing certificate (`eas credentials`) in `/.well-known/assetlinks.json`, so https links open the Android app. Without it the file is not served (404). |
 | `APP_DEMO_MODE` | — |  |  | Local only: the login page switches between seeded demo accounts; payments settle without a gateway. Ignored in production. |
 
 ### Database — `DATABASE_`
