@@ -21,7 +21,7 @@ export function lumaStats(file) {
 }
 
 /** One thumbnail URL → `null` when it is fine, else why not. */
-export async function problemOf(url, fetchImpl = fetch) {
+export async function problemOf(url, fetchImpl = fetch, statsImpl = lumaStats) {
   if (!url) return "no thumbnail";
   const res = await fetchImpl(url);
   if (res.status !== 200) return `thumbnail answers ${res.status}`;
@@ -29,7 +29,7 @@ export async function problemOf(url, fetchImpl = fetch) {
   const file = path.join(dir, "t.jpg");
   fs.writeFileSync(file, Buffer.from(await res.arrayBuffer()));
   try {
-    const stats = lumaStats(file);
+    const stats = statsImpl(file);
     return isBlank(stats) ? `blank frame (luma ${stats.ylow}-${stats.yhigh})` : null;
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
