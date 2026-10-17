@@ -7,10 +7,7 @@ import { cn, Dialog, DropdownMenu, Sheet, Spinner } from "@/components/ui";
 import { t } from "@/lib/i18n";
 import type { PresetAsset as Preset } from "@/lib/presets";
 
-<<<<<<< HEAD
 import { BannerMomentDialog, type CoverVideo } from "./BannerMomentDialog";
-=======
->>>>>>> origin/main
 import { PresetPicker } from "./PresetPicker";
 
 let presetsCache: Promise<{ avatars: Preset[]; banners: Preset[] }> | null = null;
@@ -45,12 +42,9 @@ export function PictureQuickEdit({
   const input = useRef<HTMLInputElement>(null);
   const [choosing, setChoosing] = useState(false);
   const [presets, setPresets] = useState<Preset[]>([]);
-<<<<<<< HEAD
   const [momentOpen, setMomentOpen] = useState(false);
   const [coverVideos, setCoverVideos] = useState<CoverVideo[]>([]);
   const [loadingVideos, setLoadingVideos] = useState(false);
-=======
->>>>>>> origin/main
   const [loadingPresets, setLoadingPresets] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
