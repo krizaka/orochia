@@ -10,7 +10,7 @@
 // Two people you can picture yourself as, never the operator: Elena Marlow, a singer-songwriter who films her songs
 // (the creator), and Alex Carter, who plays them on repeat (the fan). The clips, in the order of their day:
 //   alex-discover   Explore: the ranked feed, a search, Elena's music video playing
-//   alex-watch      the watch page: the player and its compact line under it (creator, likes, tip)
+//   alex-watch      the watch page: the player playing and its compact line under it (record with --chrome: see below)
 //   alex-story      Elena's story with the sound on, a like, a $5 tip
 //   alex-unlock     Elena's acoustic session, unlocked for $8 in credits, playing at once
 //   alex-bid        the director's cut auction: Alex bids and takes the lead
@@ -134,7 +134,8 @@ async function localMedia(raw) {
   return dir;
 }
 
-const browser = await chromium.launch();
+// `--chrome`: the installed Google Chrome, which plays H.264/HLS (Playwright's Chromium has no proprietary codecs: players stay at 0:00).
+const browser = await chromium.launch(ARGS.includes("--chrome") ? { channel: "chrome" } : {});
 for (const l of LOCALES) await mkdir(path.join(OUT, l), { recursive: true });
 const raw = await mkdtemp(path.join(os.tmpdir(), "orochia-tour-"));
 const pause = (page, ms) => page.waitForTimeout(ms);
@@ -270,7 +271,7 @@ const CLIPS = {
       await page.goto(U(`/watch/${ids.glassHearts}`));
       return async () => {
         await pause(page, 1600);
-        const play = page.getByRole("button", { name: has("Play (Space)") }).first();
+        const play = page.getByRole("button", { name: tr("Play") }).first();
         if (await play.isVisible().catch(() => false)) await press(page, play, 500);
         await pause(page, 2600);
         await glide(page, 340, 1800); // the compact line under the player: creator, views, likes, share

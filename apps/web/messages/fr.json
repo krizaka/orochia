@@ -337,7 +337,7 @@
       "title": "Pourquoi on reste",
       "stories": {
         "title": "Des stories chaque jour",
-        "body": "De courtes vidéos et des photos des créateurs que vous suivez, en ligne pendant 24 heures."
+        "body": "De courtes vidéos et des photos des créateurs que vous suivez, visibles pendant 24 heures."
       },
       "access": {
         "title": "Un accès qui fait sur mesure",
@@ -625,7 +625,7 @@
         "steps": {
           "find": {
             "title": "Trouver des créateurs",
-            "text": "Cherchez, abonnez-vous et voyez leurs stories chaque jour, en ligne pendant 24 heures."
+            "text": "Cherchez, abonnez-vous et voyez leurs stories chaque jour, visibles pendant 24 heures."
           },
           "choose": {
             "title": "Regarder ce qu’ils partagent avec vous",
@@ -1125,7 +1125,7 @@
     },
     "loadMore": "Afficher les plus anciennes",
     "dismiss": "Ignorer",
-    "region": "Notifications en direct",
+    "region": "Mises à jour des notifications",
     "loading": "Chargement de vos notifications"
   },
   "wallet": {
@@ -1553,10 +1553,10 @@
   },
   "explore": {
     "metaTitle": "Explorer les créateurs, les vidéos et les stories",
-    "metaDescription": "Découvrez Orochia : les tendances de la semaine, les nouvelles vidéos, les stories en ligne, les créateurs à suivre, les enchères et les défis en cours.",
+    "metaDescription": "Découvrez Orochia : les tendances de la semaine, les nouvelles vidéos, les stories en cours, les créateurs à suivre, les enchères et les défis en cours.",
     "eyebrow": "Explorer",
     "title": "Trouvez votre prochaine obsession.",
-    "subtitle": "Ce que les gens regardent, aiment et récompensent d’un pourboire cette semaine — nouvelles vidéos, stories en ligne, créateurs à suivre, enchères et défis en cours.",
+    "subtitle": "Ce que les gens regardent, aiment et récompensent d’un pourboire cette semaine — nouvelles vidéos, stories en cours, créateurs à suivre, enchères et défis en cours.",
     "placeholder": "Rechercher des vidéos, des créateurs, des stories",
     "search": "Rechercher",
     "all": "Tout",
@@ -1579,8 +1579,8 @@
         "other": "{count} créateurs"
       },
       "stories": {
-        "one": "{count} story en ligne",
-        "other": "{count} stories en ligne"
+        "one": "{count} story en cours",
+        "other": "{count} stories en cours"
       },
       "videos": "Vidéos",
       "noVideos": "Aucune vidéo ne correspond pour l’instant."
@@ -1605,8 +1605,8 @@
       },
       "stories": {
         "title": "Stories",
-        "description": "Des stories publiques, en ligne pendant 24 heures.",
-        "emptyTitle": "Aucune story en ligne pour l’instant",
+        "description": "Des stories publiques, visibles pendant 24 heures.",
+        "emptyTitle": "Aucune story pour l’instant",
         "emptyBody": "Les stories durent 24 heures. Les stories publiques apparaissent ici dès qu’elles sont partagées."
       },
       "new": {
