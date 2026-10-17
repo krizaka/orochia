@@ -6,7 +6,7 @@ import Link from "next/link";
 
 import { ServerError } from "@/components/errors/ServerError";
 import { cn, OrochiaLogo, ThemeProvider, ThemeScript } from "@/components/ui";
-import { getDictionary, toolsFor } from "@/lib/i18n";
+import { toolsFor } from "@/lib/i18n";
 import { I18nProvider } from "@/lib/i18n-client";
 import { DEFAULT_LOCALE, isLocale, localeFromAcceptLanguage, LOCALE_COOKIE, type Locale } from "@/lib/locales";
 
@@ -34,7 +34,7 @@ export default function GlobalError({ error, retry }: { error: Error & { digest?
         <ThemeScript />
       </head>
       <body className="min-h-screen bg-surface-0 text-fg antialiased">
-        <I18nProvider locale={locale} messages={getDictionary(locale)}>
+        <I18nProvider locale={locale}>
         <ThemeProvider>
           <header className="border-b border-border-default bg-surface-0/80 backdrop-blur-md">
             <div className="mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6">

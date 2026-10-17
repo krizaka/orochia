@@ -1,14 +1,13 @@
 import { Children, cloneElement, isValidElement, type ReactElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { getDictionary } from "./i18n";
 import { I18nProvider } from "./i18n-client";
 import { setTestLocale } from "./i18n-test-server";
 import type { Locale } from "./locales";
 
 /** Wraps an element the way the root layout does, so a client component renders in tests in the language asked. */
 export function inLocale(locale: Locale, element: ReactElement): ReactElement {
-  return <I18nProvider locale={locale} messages={getDictionary(locale)}>{element}</I18nProvider>;
+  return <I18nProvider locale={locale}>{element}</I18nProvider>;
 }
 
 /** The HTML of a client (or plain) component in a language. */

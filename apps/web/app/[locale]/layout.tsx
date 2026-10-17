@@ -10,7 +10,6 @@ import { JsonLd } from "@/components/JsonLd";
 import { SiteFooter } from "@/components/SiteFooter";
 import { cn,MotionObserver, ThemeProvider, ThemeScript } from "@/components/ui";
 import { AuthProvider } from "@/lib/auth-context";
-import { getDictionary } from "@/lib/i18n";
 import { I18nProvider } from "@/lib/i18n-client";
 import { getI18n, setRequestLocale } from "@/lib/i18n-server";
 import { isLocale, LOCALES, localizedPath, ogLocale } from "@/lib/locales";
@@ -78,7 +77,7 @@ export default async function RootLayout({ children, params }: Props & { childre
       <body className="min-h-screen bg-surface-0 text-fg antialiased selection:bg-accent selection:text-on-accent pb-20 md:pb-0 overflow-x-hidden max-w-full w-full relative">
         <JsonLd data={siteGraph(t, locale)} />
         <ThemeProvider>
-          <I18nProvider locale={locale} messages={getDictionary(locale)}>
+          <I18nProvider locale={locale}>
           <AuthProvider>
             <ClientLayoutShell>{children}</ClientLayoutShell>
             <MotionObserver />

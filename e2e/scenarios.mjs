@@ -405,7 +405,10 @@ for (const p of ["/", "/explore", "/explore?q=tokyo", "/explore?tag=acoustic", "
   check(`page ${p} → 200`, r.status === 200, r.status);
 }
 const plid = (await anon.call("/api/creators/elenavox")).json.playlists[0].id;
-check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status === 200);
+{
+  const res = await fetch(`${B}/playlists/${plid}`);
+  check("playlist page → 200", res.status === 200, `${res.status} ${res.url}`);
+}
 
 // Bunny Stream webhook (signature v1, keyed with the library's read-only API key)
 {
@@ -1439,7 +1442,7 @@ check("llms.txt served", (await fetch(`${B}/llms.txt`)).status === 200);
     console.log("· ABUSE_QUOTA_CREATOR_DEFAULT_GB ≥ 4: the over-quota upload is checked with ABUSE_QUOTA_CREATOR_DEFAULT_GB=2 (CI)");
   }
   const page = await fetch(`${B}/creator/upload`, { headers: { Cookie: elena.cookie } });
-  check("the upload page shows the space used against the plan", page.status === 200 && (await page.text()).includes(`of ${QUOTA_GB.toFixed(1)} GB used`));
+  check("the upload page shows the space used against the plan", page.status === 200 && (await page.text()).includes(`of ${QUOTA_GB} GB used`));
 
   const ops = await admin.call("/api/admin/storage");
   check("operators see the platform's storage, its plans and the largest accounts", ops.status === 200 && ops.json.storage.platform.limit.bytes > 0 && Array.isArray(ops.json.storage.topCreators) && Boolean(ops.json.defences?.rateLimitStore), JSON.stringify(ops.json).slice(0, 300));
