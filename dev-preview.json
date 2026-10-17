@@ -1,0 +1,116 @@
+{
+  "$schema": "https://raw.githubusercontent.com/krizaka/.github/main/docs/standards/dev-preview.schema.json",
+  "version": 1,
+  "product": "orochia",
+  "index": "off",
+  "criteria": {
+    "site.healthy": {
+      "evidence": "https://dev.orochia.com/api/health",
+      "checked": "2026-10-16"
+    },
+    "site.signup-closed": {
+      "evidence": "https://github.com/krizaka/orochia/blob/main/apps/web/app/api/auth/register/route.ts",
+      "checked": "2026-10-16"
+    },
+    "site.qa-signin": {
+      "evidence": "https://dev.orochia.com/auth/login",
+      "checked": "2026-10-16"
+    },
+    "journey.core": {
+      "evidence": null,
+      "gap": "No recorded run of the core journey (upload → encode → watch → auction/tip) with request ids; scenarios exist in e2e/.",
+      "issue": "https://github.com/krizaka/orochia/issues/240"
+    },
+    "journey.ai-via-orazaka": {
+      "evidence": null,
+      "gap": "Explorer / recommendations run through Orazaka (ORO-RECO, live on dev) but the trace of a real run is not linked as evidence.",
+      "issue": "https://github.com/krizaka/orochia/issues/226"
+    },
+    "ui.krizaka-ui": {
+      "evidence": null,
+      "gap": "No CI crawl proves NAV-SYS, one footer, dark/light, phone/desktop (axe + Playwright exist, not this crawl).",
+      "issue": "https://github.com/krizaka/orochia/issues/241"
+    },
+    "ui.themes-devices": {
+      "evidence": null,
+      "gap": "No CI crawl proves NAV-SYS, one footer, dark/light, phone/desktop (axe + Playwright exist, not this crawl).",
+      "issue": "https://github.com/krizaka/orochia/issues/241"
+    },
+    "ux.ia-review": {
+      "evidence": null,
+      "gap": "No documented UX/IA review of the web app.",
+      "issue": "https://github.com/krizaka/orochia/issues/242"
+    },
+    "mobile.build": {
+      "evidence": null,
+      "gap": "v0.1.0 exists (APK on tag) but its launch against dev.orochia.com is not recorded; TestFlight waits on Apple (#6, #7).",
+      "issue": "https://github.com/krizaka/orochia-mobile/issues/10"
+    },
+    "mobile.ux-review": {
+      "evidence": null,
+      "gap": "No UX/IA review of the mobile app.",
+      "issue": "https://github.com/krizaka/orochia-mobile/issues/51"
+    },
+    "quality.ci-green": {
+      "evidence": "https://github.com/krizaka/orochia/actions?query=branch%3Amain",
+      "checked": "2026-10-16"
+    },
+    "quality.tests": {
+      "evidence": "https://github.com/krizaka/orochia/actions?query=branch%3Amain",
+      "checked": "2026-10-16"
+    },
+    "security.alerts": {
+      "evidence": null,
+      "gap": "4 open CodeQL high alerts in orochia (polynomial ReDoS packages/db/src/owner.ts, 2× insecure randomness, incomplete sanitization scripts/database-doc.…",
+      "issue": "https://github.com/krizaka/orochia/issues/94"
+    },
+    "docs.current": {
+      "evidence": null,
+      "gap": "README/AGENTS/docs not yet checked against the dev deployment.",
+      "issue": "https://github.com/krizaka/orochia/issues/244"
+    },
+    "seo.family": {
+      "evidence": null,
+      "gap": "node scripts/check-seo-family.mjs --base https://dev.orochia.com --host https://dev.orochia.com --index off fails (empty sitemap / no Sitemap: line wh…",
+      "issue": "https://github.com/krizaka/orochia/issues/246"
+    },
+    "ops.cost": {
+      "evidence": null,
+      "gap": "The organisation's cloud total is ≈ 106 USD/month (> 100 USD target, INFRA-COST 2026-10-16); ops.cost cannot be evidenced for any product until it is …",
+      "issue": "https://github.com/krizaka/.github/issues/79"
+    },
+    "admin.gated": {
+      "evidence": null,
+      "gap": "proxy.ts gates the console but no test proves it (and dev.orochia.com/api/admin/overview answers 401 on the public host: confirm intended).",
+      "issue": "https://github.com/krizaka/orochia-admin/issues/41"
+    },
+    "admin.noindex": {
+      "evidence": "https://admin.orochia.com/robots.txt",
+      "checked": "2026-10-16"
+    },
+    "admin.operator-tasks": {
+      "evidence": null,
+      "gap": "Operator tasks not proven end to end on the real DB: reports and takedown (#5, #220), moderation role (#179), users, payouts/credits, auction rules as…",
+      "issue": "https://github.com/krizaka/orochia-admin/issues/43"
+    },
+    "admin.audit-log": {
+      "evidence": null,
+      "gap": "Audit page exists; not proven for every action.",
+      "issue": "https://github.com/krizaka/orochia-admin/issues/45"
+    },
+    "admin.shell": {
+      "evidence": null,
+      "gap": "Admin shell/themes unverified (#34 design-system redundancy).",
+      "issue": "https://github.com/krizaka/orochia-admin/issues/47"
+    },
+    "admin.ux-review": {
+      "evidence": null,
+      "gap": "No UX/IA review of the console.",
+      "issue": "https://github.com/krizaka/orochia-admin/issues/49"
+    },
+    "admin.ci": {
+      "evidence": "https://github.com/krizaka/orochia-admin/actions?query=branch%3Amain",
+      "checked": "2026-10-16"
+    }
+  }
+}
