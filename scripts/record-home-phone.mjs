@@ -195,10 +195,12 @@ try {
     const href = "feed";
 
     // 4 · earn: the creator's side, the 90 % she keeps
-    await page.keyboard.press("Escape");
-    await pause(page, 400);
+    // The hand-over to the creator's session happens in the dark: the page fades out, the account changes, the next one is loaded.
+    await page.evaluate(() => ((document.documentElement.style.transition = "opacity .3s"), (document.documentElement.style.opacity = "0")));
+    await pause(page, 450);
     await ctx.clearCookies();
     await login(ctx, "creator");
+    await page.addInitScript(() => (document.documentElement.style.opacity = "0")); // the sign-in check and the loading state stay off camera
     await page.goto(`${BASE}/${loc}/me/earnings`);
     await page.waitForLoadState("networkidle").catch(() => {});
     await page.evaluate(() => {
@@ -206,6 +208,7 @@ try {
       if (fee) fee.style.cssText += ";outline:2px solid var(--kz-accent,#a855f7);outline-offset:4px;border-radius:8px;background:rgba(168,85,247,.16);transition:background .6s";
     });
     await page.waitForFunction(() => !/Loading|Chargement/i.test(document.body.innerText) && /\d/.test(document.body.innerText), null, { timeout: 15_000 }).catch(() => {});
+    await page.evaluate(() => ((document.documentElement.style.transition = "opacity .45s"), (document.documentElement.style.opacity = "1")));
     mark("earn");
     await pause(page, 2200);
     await glide(page, "window", 200, 1200);

@@ -16,9 +16,9 @@ export const HERO_STEPS = [{ id: "find" }, { id: "watch" }, { id: "tip" }, { id:
 export const HERO_CLIP: TourClip = "home-phone";
 
 /** Seconds at which each step of the take starts, per language (the recorder's `beats.json`); the take lasts `TAKE_SECONDS`. */
-export const TAKE_BEATS: Record<Locale, readonly number[]> = { en: [0, 6, 11, 16], fr: [0, 6, 11, 16] };
+export const TAKE_BEATS: Record<Locale, readonly number[]> = { en: [0, 7, 17, 22], fr: [0, 7, 17, 22] };
 // @fixed: the take's length is a fact of the recording, checked by a test against the beats.
-export const TAKE_SECONDS = 24;
+export const TAKE_SECONDS = 28;
 
 /** How it works, in three steps; the whole journey is /how-it-works. */
 export const HOW_STEPS = ["find", "choose", "support"] as const;
