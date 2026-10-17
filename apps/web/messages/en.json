@@ -569,7 +569,86 @@
         "hook": "Trim and polish before you publish."
       }
     },
-    "ctaCreate": "Create your free account"
+    "ctaCreate": "Create your free account",
+    "visitor": {
+      "eyebrow": "Orochia · independent creators",
+      "title": "Watch the creators you love, and pay them directly.",
+      "lead": "Videos and stories from independent creators, who choose who sees each one. Tips, unlocks, auctions and challenges: {share}% of every payment goes to the creator.",
+      "tour": {
+        "label": "Orochia, recorded on the real app",
+        "play": "Play the steps",
+        "pause": "Pause the steps",
+        "step": "Step {n} of {total}",
+        "caption": "Recorded on dev.orochia.com with demo accounts (Alex, a fan; Elena, a creator). No real person.",
+        "steps": {
+          "find": {
+            "title": "Find a creator",
+            "text": "Search a word; her video plays.",
+            "alt": "Searching on Orochia: a creator's video found and playing."
+          },
+          "watch": {
+            "title": "Watch",
+            "text": "Videos and stories, in HD, on any screen.",
+            "alt": "The Orochia app playing a creator's video."
+          },
+          "tip": {
+            "title": "Tip her story",
+            "text": "A few dollars, straight to her.",
+            "alt": "A fan sends a tip from a creator's story."
+          },
+          "earn": {
+            "title": "She gets paid",
+            "text": "{share}% of every payment, to her bank.",
+            "alt": "A creator's earnings on Orochia."
+          }
+        }
+      },
+      "preview": {
+        "eyebrow": "Right now",
+        "title": "On Orochia today",
+        "lead": "The real feed, as a visitor sees it. Adult videos stay veiled until the server has checked your age.",
+        "cta": "See the whole feed",
+        "empty": "Nothing is published yet: the first videos appear here as soon as they are."
+      },
+      "how": {
+        "eyebrow": "How it works",
+        "title": "Find, watch, support",
+        "lead": "Three steps for fans; the whole journey, with its recordings, is one click away.",
+        "cta": "The whole journey",
+        "steps": {
+          "find": {
+            "title": "Find creators",
+            "text": "Search, follow, and see their stories every day, up for 24 hours."
+          },
+          "choose": {
+            "title": "Watch what they share with you",
+            "text": "Each creator decides who watches each video: followers, contacts, close friends, or a price."
+          },
+          "support": {
+            "title": "Support them directly",
+            "text": "Tip, unlock, bid or back a challenge. A payment counts only when the provider confirms it."
+          }
+        }
+      },
+      "creators": {
+        "eyebrow": "For creators",
+        "title": "Your fans. Your rules. {share}% for you.",
+        "lead": "Publish videos and stories in HD, decide who watches each one, set your prices, and get paid, on an open-source platform.",
+        "cta": "Start creating",
+        "points": {
+          "upload": "Direct upload to a global video network",
+          "audience": "Followers, contacts and private lists",
+          "paid": "Tips, unlocks, auctions and challenges, {share}% for you"
+        }
+      },
+      "flamingoLabel": "The flamingo's promise",
+      "flamingo": "The flamingo answers, and the payment follows.",
+      "closing": {
+        "title": "Have a look around",
+        "body": "Orochia is for adults only (18+): your age is checked by the server before anything adult plays.",
+        "cta": "Explore creators"
+      }
+    }
   },
   "payments": {
     "method": "Pay with",

@@ -1,8 +1,10 @@
+import { platformFeePercent } from "@orochia/payments";
 import Link from "next/link";
 import React from "react";
 
 import { FeedFilterTabs } from "@/components/FeedFilterTabs";
 import { StoriesRail } from "@/components/home/StoriesRail";
+import { VisitorHome } from "@/components/home/VisitorHome";
 import { Button, cn } from "@/components/ui";
 import { signInHref, signUpHref } from "@/lib/creator-journey";
 import { signupEnabled } from "@/lib/features";
@@ -11,12 +13,14 @@ import { feedSettings } from "@/lib/feed-settings";
 import { t } from "@/lib/i18n";
 import { feedPage } from "@/lib/queries";
 import { getViewer } from "@/lib/viewer";
+import { PREVIEW_SIZE } from "@/lib/visitor-home";
 
 export const metadata = { alternates: { canonical: "/" } };
 export const dynamic = "force-dynamic";
 
 /**
- * Home is the feed, like the platforms people know: For you (Orazaka's recommendations, or trending blended with fresh for a visitor) · Following · Trending (engagement velocity) · Latest (chronological, only when chosen), a Shorts shelf for the vertical clips
+ * A signed-out visitor who did not open a tab gets the visitor's home (components/home/VisitorHome.tsx, five sections: the
+ * promise with the real app, the real feed, how it works, the creator side, the way in). Otherwise home is the feed, like the platforms people know: For you (Orazaka's recommendations, or trending blended with fresh for a visitor) · Following · Trending (engagement velocity) · Latest (chronological, only when chosen), a Shorts shelf for the vertical clips
  * and one uniform 16:9 grid for the rest. A visitor gets one line above it (what this is, Explore / Sign in); the pitch
  * — how it works, the 90 %, the four ways to support — lives on /how-it-works. Everything shown is read from the database:
  * an empty platform shows empty states, never invented creators or figures (AGENTS.md §3.F).
@@ -41,6 +45,21 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const asked = Array.isArray(feed) ? feed[0] : feed;
   const tab = asked === "trending" || asked === "following" || asked === "latest" ? asked : "foryou";
   const { shortsMaxSeconds } = await feedSettings(new Date()).catch(() => ({ shortsMaxSeconds: undefined }));
+  if (!viewer && !asked) {
+    const preview = await feedPage({ sort: FeedSort.ForYou, viewerId: null, limit: PREVIEW_SIZE }, false).catch((error: unknown) => {
+      console.error("[home] preview unavailable:", error);
+      return { videos: [], nextCursor: null };
+    });
+    return (
+      <VisitorHome
+        videos={preview.videos}
+        share={100 - platformFeePercent()}
+        joinHref={signupEnabled() ? signUpHref() : signInHref()}
+        joinLabel={t(signupEnabled() ? "home.intro.join" : "feed.actions.signIn")}
+        shortsMaxSeconds={shortsMaxSeconds}
+      />
+    );
+  }
   const { page, unavailable } = await loadHome(TAB_SORT[tab], viewer?.id ?? null, viewer?.isAgeVerified === true);
   const container = "mx-auto w-full max-w-7xl px-4 sm:px-6";
   return (

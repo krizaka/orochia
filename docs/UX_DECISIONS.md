@@ -251,3 +251,20 @@ written here, each with the place that carries it. Disagree, or saw that signal?
 - **Signal we are wrong** — Creators asking for exports to compute the same comparisons themselves, or ignoring the
   section (no clicks on its videos) while opening Earnings.
 - **Feedback** — wrong for you? [Discussion #122](https://github.com/krizaka/orochia/discussions/122).
+
+## A signed-out visitor's home tells one story in five sections; members get the feed
+
+- **Decision** — A visitor who opens `/` without a tab gets five sections (`components/home/VisitorHome.tsx`,
+  `lib/visitor-home.ts`): the promise in one line with the real app playing (StepShowcase of the demo personas'
+  recordings: find, watch, tip, get paid), the real feed as a visitor sees it (eight items of For you, read from the
+  database, adult ratings veiled), how it works in three steps (→ /how-it-works), the creator side with the share
+  computed from the fee setting and the flamingo's promise as the film says it, the way in. A member, or a visitor who
+  opens a tab (`/?feed=…`, « See the whole feed »), gets the feed itself, unchanged.
+- **Problem** — A first-time visitor met an age gate over a grid of thumbnails with one line of text: nothing said what
+  Orochia is, how fans support creators, or what a creator earns, before asking for a decision.
+- **Principle** — Recognition before commitment: show the product working and the real catalogue first, the details on
+  demand (progressive disclosure; Nielsen, 2006).
+- **Refused** — A marketing page with invented creators or counters (the preview is the real feed), the pitch's long
+  version on the home (it stays on /how-it-works), a second primary action per section.
+- **Cost** — A visitor is one click further from the full feed; the home reads the feed twice for a visitor who then opens it.
+- **Signal we are wrong** — Visitors bounce from the home more than from /?feed=foryou, or never reach a creator's page.

@@ -7,10 +7,9 @@ describe("the visitor's home reads in five seconds", () => {
   it("the phone has four tabs: watch, stories, support, auction", () => {
     expect(read("./showcase/Scenes.tsx")).toContain('export const SCENES = ["feed", "stories", "support", "auction"] as const;');
   });
-  it("the home is the feed: three tabs, a shelf and a grid, one intro line for a visitor and no pitch", () => {
+  it("the home is the feed for a member (and for a visitor who opens a tab); a visitor's home is five sections (visitor-home.test.ts)", () => {
     const page = read("../../app/(home)/page.tsx");
     expect(page).toContain("FeedFilterTabs");
-    expect(page).toContain("home-intro");
     expect(page).not.toMatch(/HomeHero|GetPaid|MobileSection|CreatorsCallToAction|kz-marquee|home\.marquee/);
     expect(read("../VideoGrid.tsx")).toContain("@krizaka/ui/media-grid");
   });
