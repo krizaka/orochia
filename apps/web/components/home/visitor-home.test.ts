@@ -39,4 +39,10 @@ describe("a signed-out visitor's home tells one story", () => {
     for (const s of sections) expect((s.match(/variant="primary"/g) ?? []).length).toBeLessThanOrEqual(1);
     expect(messages.home.visitor.flamingo).toBe("The flamingo answers, and the payment follows.");
   });
+
+  it("loads its proof first: preconnects to the media CDN and preloads the first step's poster at high priority", () => {
+    const view = read("./VisitorHome.tsx");
+    expect(view).toMatch(/preconnect\(new URL\(steps\[0\]!\.poster\)\.origin\)/);
+    expect(view).toMatch(/<link rel="preload" as="image" href=\{steps\[0\]!\.poster\} fetchPriority="high" \/>/);
+  });
 });

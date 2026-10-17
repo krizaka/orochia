@@ -5,6 +5,7 @@ import { Section } from "@krizaka/ui/page";
 import { PageHero } from "@krizaka/ui/page-hero";
 import Link from "next/link";
 import React from "react";
+import { preconnect } from "react-dom";
 
 import { JourneyTour } from "@/components/home/JourneyTour";
 import { Button } from "@/components/ui";
@@ -33,8 +34,11 @@ export function VisitorHome({ videos, share, joinHref, joinLabel, shortsMaxSecon
       video: { webm: media.webm, mp4: media.mp4 },
     };
   });
+  // The first poster is the page's LCP: open the CDN's connection now and fetch it at once (React hoists the link into <head>).
+  preconnect(new URL(steps[0]!.poster).origin);
   return (
     <div className="w-full overflow-x-clip" data-testid="home-intro">
+      <link rel="preload" as="image" href={steps[0]!.poster} fetchPriority="high" />
       {/* 1 · The promise, and the real app as its proof — painted at once (LCP), never revealed. */}
       <PageHero id="hero" eyebrow={t("home.visitor.eyebrow")} title={t("home.visitor.title")} lead={t("home.visitor.lead", { share })}>
         <Button asChild variant="primary" size="lg" shape="cut" shimmer>
