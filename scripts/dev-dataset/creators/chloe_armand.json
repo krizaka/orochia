@@ -1,0 +1,99 @@
+{
+  "key": "chloe_armand",
+  "username": "chloe_armand",
+  "displayName": "Chloé Armand",
+  "bio": "Resort mornings, rooftop pools and long lunches by the sea. Swimwear, sunsets and slow summer living. Adults only.",
+  "niche": "Resort & beach-club lifestyle",
+  "tags": [
+    "resort",
+    "summer",
+    "beach-club",
+    "lifestyle"
+  ],
+  "rating": "MATURE",
+  "avatar": "Portrait of a smiling woman in her early 30s with sun-kissed shoulders and wavy hair, wearing sunglasses pushed up and a white linen shirt, golden hour at a beach club, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a luxury beach club at sunset with white loungers, a turquoise pool and palm trees, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Summer, slowly",
+      "description": "Pools, terraces and the coast.",
+      "videos": [
+        "Infinity pool, early morning",
+        "Beach-club sunset, one cocktail",
+        "Swimsuit season, packing for the coast",
+        "Yacht lunch, Mediterranean"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Infinity pool, early morning",
+      "description": "The pool before anyone arrives: still water, white loungers, a first coffee.",
+      "tags": [
+        "resort",
+        "pool",
+        "morning",
+        "summer"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of an empty infinity pool at a seaside resort at sunrise with white loungers and the sea beyond, soft pink light, no people, no text",
+      "motion": "The water surface ripples gently, light glitters, slow gentle push-in toward the horizon."
+    },
+    {
+      "title": "Beach-club sunset, one cocktail",
+      "description": "A sunset toast on the terrace.",
+      "tags": [
+        "beach-club",
+        "sunset",
+        "cocktail",
+        "summer"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a woman in a flowing sundress seen from behind at a beach club terrace holding a cocktail toward a vivid sunset, tasteful, fully clothed, no face, no text",
+      "motion": "The sunset light shifts, her dress and hair move in the breeze, cocktail glass glints, slow camera drift."
+    },
+    {
+      "title": "Swimsuit season, packing for the coast",
+      "description": "Straw hats, folded linens and a swimsuit — a suitcase before the trip.",
+      "tags": [
+        "swimwear",
+        "packing",
+        "summer",
+        "travel"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical top-down photograph of an open suitcase packed with folded linen clothes, a straw hat, sunglasses and a bikini top, sand-coloured bed sheet, no people, tasteful, no text",
+      "motion": "Sunlight shifts slowly across the suitcase and a sheer curtain moves in the breeze, subtle top-down drift."
+    },
+    {
+      "title": "Yacht lunch, Mediterranean",
+      "description": "A long table on deck, white wine and the sea passing by.",
+      "tags": [
+        "yacht",
+        "lunch",
+        "mediterranean",
+        "luxury"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a long lunch table on a yacht deck with white tablecloth, wine glasses and fruit, blue sea beyond, people seen from a distance in summer clothes, tasteful, no text",
+      "motion": "The yacht glides across the blue sea, sunlight sparkles on the water, tablecloth flutters, slow camera drift."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Sunscreen and a book",
+      "kind": "image",
+      "still": "Vertical photograph of a beach towel with a paperback, sunscreen and sunglasses on warm sand, no people, no text"
+    },
+    {
+      "caption": "Sea breeze",
+      "kind": "image",
+      "still": "Vertical photograph of sheer white curtains blowing at a balcony facing the sea at golden hour, no people, no text"
+    },
+    {
+      "caption": "Rooftop pool, evening",
+      "kind": "image",
+      "still": "Vertical photograph of a rooftop pool at dusk with warm lanterns and a city skyline, no people, no text"
+    }
+  ]
+}

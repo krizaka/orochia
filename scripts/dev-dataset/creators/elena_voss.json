@@ -1,0 +1,99 @@
+{
+  "key": "elena_voss",
+  "username": "elena_voss",
+  "displayName": "Elena Voss",
+  "bio": "Fashion and evening wear — tailoring, silk and the quiet minutes backstage. Adults only, always tasteful.",
+  "niche": "Fashion & evening wear",
+  "tags": [
+    "fashion",
+    "evening-wear",
+    "tailoring",
+    "style"
+  ],
+  "rating": "MATURE",
+  "avatar": "Portrait of an elegant woman in her mid 30s with dark hair in a low bun and red lipstick, wearing a black silk evening dress, moody studio light, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a fashion atelier with garments on rails and soft golden spotlights, an elegant silhouette in the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Evening looks",
+      "description": "Tailoring and glamour, tastefully told.",
+      "videos": [
+        "The black dress, fitting at midnight",
+        "Backstage before the show",
+        "Red lip, black coat",
+        "Silk robe, hotel suite morning"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "The black dress, fitting at midnight",
+      "description": "A tailor's pins, a mirror and a silk evening gown being adjusted.",
+      "tags": [
+        "fashion",
+        "tailoring",
+        "evening-dress",
+        "atelier"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a woman seen from behind in an elegant black silk evening gown being adjusted by a tailor with pins in an atelier, warm light, tasteful, fully clothed, no face, no text",
+      "motion": "The tailor smooths the fabric and the silk catches the light, slow subtle camera drift."
+    },
+    {
+      "title": "Backstage before the show",
+      "description": "Steam, hairspray and the last look in the mirror.",
+      "tags": [
+        "fashion",
+        "backstage",
+        "runway",
+        "glamour"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a backstage fashion show scene with models in elegant gowns seen from behind, makeup mirrors with bulbs, soft warm light, tasteful, fully clothed, no text",
+      "motion": "Models walk past slowly and bulbs glow, hair-spray mist drifts through the light, gentle handheld push-in."
+    },
+    {
+      "title": "Red lip, black coat",
+      "description": "A coat collar, a red lip and a night street.",
+      "tags": [
+        "fashion",
+        "style",
+        "night",
+        "coat"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical fashion photograph of a woman in a long black coat on a rainy night street with neon reflections, seen in profile with a red lip, tasteful, fully clothed, no text",
+      "motion": "Rain falls softly, her coat sways in the wind, neon reflections shimmer on the wet street, slow camera orbit."
+    },
+    {
+      "title": "Silk robe, hotel suite morning",
+      "description": "A silk robe over a chair, window light and a perfume bottle.",
+      "tags": [
+        "fashion",
+        "silk",
+        "morning",
+        "lifestyle"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of an elegant hotel suite morning with a champagne silk robe draped over a chair, perfume bottle on a table, sheer curtains in window light, no people, tasteful, no text",
+      "motion": "Sheer curtains billow gently in the window light, slow soft push-in, dust motes float."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Fabric swatches",
+      "kind": "image",
+      "still": "Vertical photograph of silk and velvet fabric swatches in deep red and black fanned on a table, soft light, no text"
+    },
+    {
+      "caption": "Heels by the mirror",
+      "kind": "image",
+      "still": "Vertical photograph of black high heels beside a gilded mirror in an atelier, warm light, no people, no text"
+    },
+    {
+      "caption": "Gown in motion",
+      "kind": "image",
+      "still": "Vertical photograph of a flowing evening gown on a mannequin in a spotlight, no face, no text"
+    }
+  ]
+}

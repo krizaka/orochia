@@ -1,0 +1,99 @@
+{
+  "key": "lars_henriksen",
+  "username": "lars_henriksen",
+  "displayName": "Lars Henriksen",
+  "bio": "Joinery in a Copenhagen workshop. Oak, chisels and the sound of a plane taking a perfect curl.",
+  "niche": "Woodworking",
+  "tags": [
+    "woodworking",
+    "craft",
+    "joinery",
+    "workshop"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a man in his 40s with a grey beard and kind eyes wearing a canvas apron and safety glasses on his head, workshop light, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a warm wooden workshop with hand tools on a wall and oak planks, sawdust in sunbeams, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "At the bench",
+      "description": "Joints, planes and finishes.",
+      "videos": [
+        "A hand plane and a perfect shaving",
+        "Dovetails by hand",
+        "Workshop, first light",
+        "Oiling a walnut table"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "A hand plane and a perfect shaving",
+      "description": "One long curl of oak coming off the plane.",
+      "tags": [
+        "woodworking",
+        "hand-plane",
+        "oak",
+        "craft"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical close-up photograph of a hand plane taking a long thin curl of pale oak, sawdust in a sunbeam, shallow depth of field, no face, no text",
+      "motion": "The plane glides forward and a long curl of wood rises and spirals off, sawdust glitters in the light."
+    },
+    {
+      "title": "Dovetails by hand",
+      "description": "Saw, chisel and a joint that closes with a whisper.",
+      "tags": [
+        "woodworking",
+        "dovetail",
+        "joinery",
+        "tools"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of two pieces of oak with hand-cut dovetails being fitted together on a workbench with chisels and a saw nearby, warm light, hands only, no text",
+      "motion": "The two boards slide together slowly and the joint closes tight, dust floats, subtle camera push-in."
+    },
+    {
+      "title": "Workshop, first light",
+      "description": "Sunbeams across a quiet workshop before the day starts.",
+      "tags": [
+        "workshop",
+        "morning",
+        "ambient",
+        "wood"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a quiet woodworking shop in morning sunbeams with tools hanging on a wall and sawdust floating, no people, no text",
+      "motion": "Dust motes drift slowly in the sunbeams, light creeps along the wall, slow gentle push-in."
+    },
+    {
+      "title": "Oiling a walnut table",
+      "description": "The first coat of oil makes the grain jump.",
+      "tags": [
+        "woodworking",
+        "walnut",
+        "finish",
+        "oil"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a hand wiping oil onto a walnut tabletop making the grain glow, a rag and a jar of oil, warm light, no face, no text",
+      "motion": "The hand wipes across the walnut and the grain deepens in colour, slow top-down drift."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Chisel set",
+      "kind": "image",
+      "still": "Vertical photograph of a set of chisels in a leather roll on a bench, warm light, no text"
+    },
+    {
+      "caption": "Shavings on the floor",
+      "kind": "image",
+      "still": "Vertical photograph of pale wood shavings curled on a workshop floor in a sunbeam, no text"
+    },
+    {
+      "caption": "Rough-sawn oak",
+      "kind": "image",
+      "still": "Vertical photograph of stacked oak planks in a workshop, warm light, no people, no text"
+    }
+  ]
+}

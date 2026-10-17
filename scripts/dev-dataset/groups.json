@@ -1,0 +1,54 @@
+{
+  "groups": {
+    "food": [
+      "camille_bouchard",
+      "noah",
+      "ravi_kapoor",
+      "isabella_rossi",
+      "andre_costa",
+      "fatima_zahra"
+    ],
+    "city": [
+      "theo_marchand",
+      "kenji_watanabe",
+      "yuki_mori",
+      "lena",
+      "diego_fuentes"
+    ],
+    "maker": [
+      "mateo_silva",
+      "lars_henriksen",
+      "priya_nair",
+      "lea_fontaine",
+      "aiko",
+      "fatima_zahra"
+    ],
+    "outdoors": [
+      "mira",
+      "oskar_nowak",
+      "tomas_herrera",
+      "hannah_brooks",
+      "sven_aaltonen"
+    ],
+    "wellness": [
+      "zoe_lambert",
+      "kofi",
+      "meilin_zhao",
+      "nadia_haddad",
+      "amara_diallo"
+    ],
+    "glamour": [
+      "elena_voss",
+      "chloe_armand",
+      "diego_fuentes",
+      "andre_costa",
+      "yuki_mori"
+    ],
+    "fun": [
+      "sofia_lindqvist",
+      "jamal_okafor",
+      "diego_fuentes",
+      "lena"
+    ]
+  }
+}

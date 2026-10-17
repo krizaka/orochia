@@ -1,0 +1,105 @@
+{
+  "key": "priya_nair",
+  "username": "priya_nair",
+  "displayName": "Priya Nair",
+  "bio": "Developer and desk-setup tinkerer. Clean cables, quiet keyboards, small tools that earn their place.",
+  "niche": "Tech & desk setups",
+  "tags": [
+    "tech",
+    "desk-setup",
+    "coding",
+    "gadgets"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a woman in her early 30s with long black hair and round glasses, soft monitor glow on her face, wearing a dark knit sweater, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a tidy dark desk with a mechanical keyboard, a monitor glowing violet and a small plant, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Hands-on builds",
+      "description": "Small projects on the workbench and the desk.",
+      "videos": [
+        "Building a silent keyboard",
+        "Cable management, finally",
+        "Soldering a tiny macropad"
+      ]
+    },
+    {
+      "title": "Ambient desks",
+      "description": "Quiet scenes for working to.",
+      "videos": [
+        "Desk at night, rain on the window"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Building a silent keyboard",
+      "description": "Switches, lube and a quiet afternoon: assembling a compact keyboard from bare parts.",
+      "tags": [
+        "keyboard",
+        "build",
+        "tech",
+        "diy"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical top-down photograph of hands placing a mechanical keyboard switch onto a green circuit board next to a tray of keycaps, tidy desk, soft light, no face, no text",
+      "motion": "The hand presses the switch down into the board and reaches for the next, slow top-down camera drift, soft glints."
+    },
+    {
+      "title": "Desk at night, rain on the window",
+      "description": "Monitor glow, a mug and rain streaking down the window behind a clean desk.",
+      "tags": [
+        "desk",
+        "night",
+        "setup",
+        "ambient"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide cinematic photograph of a clean desk at night with a glowing monitor showing abstract colourful code shapes, a mug, rain on the window behind, no people, no readable text",
+      "motion": "Rain streaks slowly down the window, steam rises from the mug, monitor light flickers softly, slow push-in."
+    },
+    {
+      "title": "Cable management, finally",
+      "description": "Velcro, clips and a ruthless afternoon: from spaghetti to a clean back of the desk.",
+      "tags": [
+        "cables",
+        "organisation",
+        "desk-setup",
+        "tidy"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of the underside of a standing desk with neatly bundled black cables in a cable tray and velcro straps, a hand tightening a strap, no face, no text",
+      "motion": "The hand tightens a strap and smooths the cable bundle, slow camera drift along the tray."
+    },
+    {
+      "title": "Soldering a tiny macropad",
+      "description": "A hot iron, a bead of solder and a tiny board coming to life.",
+      "tags": [
+        "soldering",
+        "electronics",
+        "macropad",
+        "maker"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide macro photograph of a soldering iron tip touching a small green circuit board with a bead of solder and a wisp of smoke, shallow depth of field, workbench background, no face, no text",
+      "motion": "A wisp of smoke curls up from the iron tip, the solder melts into a bright bead, slow macro push-in."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "New switches, same mug",
+      "kind": "image",
+      "still": "Vertical photograph of a tray of colourful mechanical keyboard switches next to a coffee mug on a desk, soft light, no text"
+    },
+    {
+      "caption": "Standing desk, 7 a.m.",
+      "kind": "image",
+      "still": "Vertical photograph of a standing desk by a window at sunrise with a laptop and a small plant, no people, no text"
+    },
+    {
+      "caption": "Cable tray test",
+      "kind": "image",
+      "still": "Vertical photograph of neatly routed cables under a desk with a small LED glow, no text"
+    }
+  ]
+}

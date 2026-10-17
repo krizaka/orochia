@@ -1,0 +1,100 @@
+{
+  "key": "sven_aaltonen",
+  "username": "sven_aaltonen",
+  "displayName": "Sven Aaltonen",
+  "bio": "Northern Finland: aurora nights, frozen lakes and husky sleds. Cold is a good teacher.",
+  "niche": "Winter & northern lights",
+  "tags": [
+    "winter",
+    "aurora",
+    "finland",
+    "snow"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a man in his 40s with frosty eyebrows and a fur-lined hood, northern lights glowing green behind him, smiling, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of green northern lights over a frozen lake and a small cabin with warm lit windows, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "North",
+      "description": "Cold, light and quiet.",
+      "videos": [
+        "Aurora over the frozen lake",
+        "Husky team at dawn",
+        "Sauna, then snow",
+        "Snow falling on the cabin"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Aurora over the frozen lake",
+      "description": "Green curtains dancing above the ice.",
+      "tags": [
+        "aurora",
+        "northern-lights",
+        "winter",
+        "lake"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of vivid green northern lights over a frozen lake with snowy pine trees and stars, no people, no text",
+      "motion": "The aurora ripples and shifts overhead, stars twinkle, slow gentle camera push-in."
+    },
+    {
+      "title": "Husky team at dawn",
+      "description": "Breath clouds, harnesses and a sled starting to move.",
+      "tags": [
+        "huskies",
+        "sled",
+        "winter",
+        "dawn"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a team of huskies in harnesses pulling a sled across snow at dawn with breath clouds, a musher seen from behind, no face, no text",
+      "motion": "The huskies run forward, breath clouds puff, snow sprays up, steady camera follow."
+    },
+    {
+      "title": "Sauna, then snow",
+      "description": "Steam, a wooden bench and a lake hole in the ice.",
+      "tags": [
+        "sauna",
+        "snow",
+        "finland",
+        "winter"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a wooden lakeside sauna cabin with steam and a ladder leading into an ice hole in a frozen lake, blue twilight, no people, no text",
+      "motion": "Steam drifts from the sauna door and fine snow falls, slow camera push-in."
+    },
+    {
+      "title": "Snow falling on the cabin",
+      "description": "Chimney smoke, warm windows and silence.",
+      "tags": [
+        "cabin",
+        "snow",
+        "cozy",
+        "winter"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a small log cabin in a snowy pine forest at dusk with warm windows and smoke from the chimney, falling snow, no people, no text",
+      "motion": "Snow falls gently, chimney smoke curls upward, windows glow, slow gentle push-in."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Frozen breath",
+      "kind": "image",
+      "still": "Vertical photograph of frost crystals on a wool scarf in cold morning light, no face, no text"
+    },
+    {
+      "caption": "Thermos, ice fishing",
+      "kind": "image",
+      "still": "Vertical photograph of a small hole in the ice on a lake with a fishing line and a thermos, no people, no text"
+    },
+    {
+      "caption": "Sky tonight",
+      "kind": "clip",
+      "still": "Vertical photograph of green aurora ribbons over snowy pines, no people, no text",
+      "motion": "The aurora ribbons slowly shift above the trees."
+    }
+  ]
+}

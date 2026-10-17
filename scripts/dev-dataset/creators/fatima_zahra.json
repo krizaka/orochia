@@ -1,0 +1,99 @@
+{
+  "key": "fatima_zahra",
+  "username": "fatima_zahra",
+  "displayName": "Fatima Zahra",
+  "bio": "Interior design for small apartments: warm light, clever storage and rooms that finally feel finished.",
+  "niche": "Interior design",
+  "tags": [
+    "interior",
+    "design",
+    "home",
+    "decor"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a woman in her mid 30s with dark curly hair and gold earrings, standing in a sunlit modern living room, confident smile, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a bright minimalist living room with a linen sofa, plants and warm afternoon light, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Small spaces",
+      "description": "Makeovers and styling.",
+      "videos": [
+        "Studio apartment, before the makeover",
+        "Studio apartment, after",
+        "Styling a shelf in three minutes",
+        "Lamp light changes everything"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Studio apartment, before the makeover",
+      "description": "A small room, a bad layout and a plan.",
+      "tags": [
+        "interior",
+        "makeover",
+        "studio-apartment",
+        "layout"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a cluttered small studio apartment with mismatched furniture and boxes in flat daylight, no people, no text",
+      "motion": "Slow camera dolly through the room as light shifts from the window, dust floats."
+    },
+    {
+      "title": "Studio apartment, after",
+      "description": "The same room: one sofa, one lamp, much more air.",
+      "tags": [
+        "interior",
+        "makeover",
+        "after",
+        "design"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a bright tidy small studio apartment with a linen sofa, warm lamp, plants and wooden shelves, warm afternoon light, no people, no text",
+      "motion": "Slow camera dolly through the room as warm light glows and curtains move gently."
+    },
+    {
+      "title": "Styling a shelf in three minutes",
+      "description": "Books, one plant and a ceramic: the rule of three.",
+      "tags": [
+        "styling",
+        "shelf",
+        "decor",
+        "tips"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of hands arranging a ceramic vase, books and a small plant on a wooden shelf, warm light, no face, no text",
+      "motion": "Hands place the vase and adjust a book, light shifts, subtle camera push-in."
+    },
+    {
+      "title": "Lamp light changes everything",
+      "description": "The same corner at noon and at night.",
+      "tags": [
+        "lighting",
+        "lamp",
+        "cozy",
+        "interior"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a cozy reading corner with an armchair, a throw and a warm floor lamp glowing at dusk, no people, no text",
+      "motion": "The lamp glows warm as the daylight fades outside the window, slow push-in."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Paint swatches",
+      "kind": "image",
+      "still": "Vertical photograph of paint swatches in warm neutral tones taped to a white wall, no text"
+    },
+    {
+      "caption": "Rug choice",
+      "kind": "image",
+      "still": "Vertical top-down photograph of two woven rug samples on a wooden floor, no people, no text"
+    },
+    {
+      "caption": "Window seat",
+      "kind": "image",
+      "still": "Vertical photograph of a window seat with cushions and a plant in the afternoon light, no people, no text"
+    }
+  ]
+}

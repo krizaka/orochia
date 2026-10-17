@@ -1,0 +1,39 @@
+{
+  "key": "aiko",
+  "username": "qa_fan4",
+  "credentials": "OROCHIA_FAN4",
+  "existing": true,
+  "displayName": "Aiko Tanaka",
+  "rating": null,
+  "avatar": "Portrait of a woman in her late 20s with a short black bob and paint on her cheek wearing a denim apron, art studio light, curious smile, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a bright art studio with canvases and paint pots and a large north window, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Studio & arcade",
+      "description": "Colour, snow and neon.",
+      "videos": [
+        "Plateau staircases on a snowy night",
+        "A tiny spice alley with a sleeping cat, in miniature",
+        "A 1990s arcade at night, a duel on the joystick"
+      ]
+    }
+  ],
+  "videos": [],
+  "stories": [
+    {
+      "caption": "Wet paint",
+      "kind": "image",
+      "still": "Vertical close-up photograph of thick violet oil paint on a palette knife, studio light, no text"
+    },
+    {
+      "caption": "Canvas wall",
+      "kind": "image",
+      "still": "Vertical photograph of blank canvases leaning on a studio wall in soft window light, no people, no text"
+    },
+    {
+      "caption": "Ink bloom",
+      "kind": "image",
+      "still": "Vertical close-up photograph of black ink blooming in clear water, no text"
+    }
+  ]
+}
