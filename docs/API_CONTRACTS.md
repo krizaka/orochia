@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (187)
+## Endpoints (188)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -137,6 +137,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `DELETE` | `/api/me/lists/[id]/members` | session · MEMBER / CREATOR / ADMIN | Removes someone from one of your lists (`?userId=`): what the list opened closes to them. |
 | `GET` | `/api/me/lists/[id]/members` | session · MEMBER / CREATOR / ADMIN | The people in one of your lists. |
 | `POST` | `/api/me/lists/[id]/members` | session · MEMBER / CREATOR / ADMIN | Adds an account to one of your lists by username (idempotent; the list stays private). |
+| `PUT` | `/api/me/locale` | session · ADMIN / CREATOR / MEMBER | Sets the language of the signed-in account (`en` or `fr`), which its e-mails, push and live notifications are written in. |
 | `GET` | `/api/me/network` | session · MEMBER / CREATOR / ADMIN | Your followers, the creators you follow, your contacts and pending requests. |
 | `GET` | `/api/me/notifications` | session · MEMBER / CREATOR / ADMIN | Your notifications, newest first, 25 at a time (`before` = an ISO date to page back), with the unread count. |
 | `POST` | `/api/me/notifications` | session · MEMBER / CREATOR / ADMIN | Marks notifications read: the ones listed, or all of them. |

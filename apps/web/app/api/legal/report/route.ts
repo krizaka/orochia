@@ -8,6 +8,7 @@ import { appUrl } from "@/lib/env";
 import { errorResponse } from "@/lib/http";
 import { sendTemplate } from "@/lib/mail";
 import { limitAction } from "@/lib/rate-limit";
+import { languageFor } from "@/lib/account-locale";
 import { enqueueInteraction } from "@/lib/recommendations/recommendations.outbox";
 import { RecoEventKind } from "@/lib/recommendations/recommendations.types";
 
@@ -79,6 +80,7 @@ export async function POST(req: NextRequest) {
     }
     void sendTemplate("content-report-receipt", {
       to: input.reporterEmail,
+      locale: await languageFor(reporter?.id),
       vars: { ticket: report.id, ticketShort: report.id.slice(0, 8), videoTitle: input.videoTitle, urgent },
     });
 

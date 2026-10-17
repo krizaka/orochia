@@ -13,7 +13,9 @@ import {
 } from "@orochia/db";
 import { and, asc, eq, isNull, sql } from "drizzle-orm";
 import { HttpError, isUniqueViolation } from "./http";
+import { languageFor } from "./account-locale";
 import { appUrl } from "./env";
+import { mailPath } from "./locales";
 import { sendTemplate } from "./mail";
 
 /**
@@ -187,10 +189,10 @@ export async function invitePerson(kind: AudienceTarget, ownerId: string, id: st
       : await db.insert(playlistMembers).values({ playlistId: id, userId: account.id }).onConflictDoNothing().returning({ id: playlistMembers.id });
   if (added.length > 0) {
     const [owner] = await db.select({ username: users.username }).from(users).where(eq(users.id, ownerId)).limit(1);
-    const link = `${appUrl()}/${kind === "video" ? "watch" : "playlists"}/${id}`;
     void sendTemplate("audience-invitation", {
       to: account.email,
-      vars: { owner: owner.username, title: target.title, link, isVideo: kind === "video" },
+      locale: await languageFor(account.id),
+      vars: { owner: owner.username, title: target.title, link: `${appUrl()}${mailPath(`/${kind === "video" ? "watch" : "playlists"}/${id}`, await languageFor(account.id))}`, isVideo: kind === "video" },
     });
   }
   return { userId: account.id };

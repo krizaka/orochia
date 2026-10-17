@@ -24,6 +24,8 @@ export const users = pgTable("users", {
   storagePlan: varchar("storage_plan", { length: 40 }),
   /** When the account's last app closed (written once per visit, never per heartbeat) — the "seen 5 min ago". */
   lastSeenAt: timestamp("last_seen_at", { withTimezone: true }),
+  /** The language the account reads Orochia in (`en` · `fr`): chosen with the language switch or taken from the browser at sign-up. Null = not chosen yet (English). It decides the language of e-mails, push and live notifications. */
+  locale: varchar("locale", { length: 5 }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
