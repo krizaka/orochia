@@ -46,7 +46,7 @@ In an era where centralized Silicon Valley monopolies dictate who may create, wh
 2. **Fair Revenue Split**: Creators retain 90%–100% of all generated value.
 3. **Armor of Consent**: All content is strictly consensual and certified by adult performers (18+).
 4. **Privacy as an Inalienable Right**: No surveillance advertising, no behavioral profiling.
-5. **Decentralized Edge Delivery**: Media streams are protected by time-limited cryptographic tokens.
+5. **Token-protected Edge Delivery**: Media streams are protected by time-limited cryptographic tokens.
 6. **Direct Patron Connection**: Zero algorithmic suppression or shadowbanning.
 7. **Open-Source Stewardship**: Transparent code that anyone can inspect, audit, and run.
 

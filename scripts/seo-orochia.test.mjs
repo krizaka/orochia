@@ -61,3 +61,15 @@ describe("orochia: the family SEO contract", () => {
     expect(JSON.stringify(nodes)).not.toContain("https://krizaka.com");
   });
 });
+
+describe("orochia: what the repository says about itself (GitHub ranks first for the name)", () => {
+  it("is never called decentralised, and the README opens with a neutral one-liner", async () => {
+    const { readFileSync } = await import("node:fs");
+    const readme = readFileSync(new URL("../README.md", import.meta.url), "utf8");
+    const lore = readFileSync(new URL("../docs/MARKET_ANALYSIS_AND_LORE.md", import.meta.url), "utf8");
+    expect(`${readme}\n${lore}`).not.toMatch(/d[ée]centrali[sz]/i);
+    const lead = readme.split("<!-- /krizaka-header -->")[0];
+    expect(lead).toMatch(/\*\*Orochia — an open-source video platform/);
+    expect(lead).not.toMatch(/90 ?%|18\+/);
+  });
+});
