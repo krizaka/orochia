@@ -1613,7 +1613,7 @@
         "runtime": "library",
         "version": "0.1.0",
         "published": true,
-        "description": null
+        "description": "App version compatibility for Krizaka apps and backends: one contract (min/latest version, update mode, maintenance, contract range, 426 Upgrade Required, N-1 with Deprecation/Sunset) for Next.js backends and mobile, desktop and web clients. Twin of the Java building block krizaka-app-config. Zero dependency."
       },
       {
         "id": "krizaka-charts",
