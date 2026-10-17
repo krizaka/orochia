@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
         await db.update(videos).set({ status: "HELD", updatedAt: new Date() }).where(eq(videos.id, video.id));
         console.warn(`quota: video ${video.id} held after encoding (${held} limit)`);
         after(async () => {
-          await notify({ userId: video.creatorId, event: "storageHeld", vars: { title: video.title }, path: "/dashboard?tab=uploads" });
+          await notify({ userId: video.creatorId, event: "storageHeld", vars: { title: video.title }, path: "/me/videos" });
           await checkPlatformAlerts();
         });
         return NextResponse.json({ success: true, videoId: video.id, status: "HELD", reason: held });

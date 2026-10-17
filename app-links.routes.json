@@ -33,6 +33,7 @@
     "/me/videos",
     "/messages",
     "/messages/*",
+    "/messages/join/*",
     "/watch/*",
     "/@*"
   ]
