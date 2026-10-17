@@ -15,6 +15,7 @@ const STATIC: { path: string; priority: number; changeFrequency: "daily" | "week
   { path: "/how-it-works", priority: 0.8, changeFrequency: "weekly" },
   { path: "/mobile", priority: 0.6, changeFrequency: "weekly" },
   { path: "/docs", priority: 0.6, changeFrequency: "weekly" },
+  { path: "/changelog", priority: 0.4, changeFrequency: "weekly" },
   { path: "/legal/terms", priority: 0.3, changeFrequency: "yearly" },
   { path: "/legal/privacy", priority: 0.3, changeFrequency: "yearly" },
   { path: "/legal/2257", priority: 0.3, changeFrequency: "yearly" },

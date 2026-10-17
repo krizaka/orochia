@@ -5,15 +5,18 @@ import Link from "next/link";
 import React from "react";
 
 import { BUILD_INFO } from "@/lib/build-info";
+import { format } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n-client";
+import { localizedPath } from "@/lib/locales";
 
 /**
  * Orochia is independent once deployed: its footer is @krizaka/ui's SiteFooter in product mode (`family={false}`) —
  * Orochia's own column, the publisher line « A Krizaka product » (→ www.krizaka.com), the environment and the version,
  * Montréal. No family columns, no link to another product. The legal links and the 18+ statement end the signature line.
  */
-export function SiteFooter() {
-  const { t } = useI18n();
+export function SiteFooter({ uiVersion = "" }: { uiVersion?: string }) {
+  const { t, locale } = useI18n();
+  const changelog = localizedPath("/changelog", locale);
   const link = (href: string, label: string) => (
     <FamilyFooter.Link asChild>
       <Link href={href}>{label}</Link>
@@ -25,11 +28,11 @@ export function SiteFooter() {
         current="orochia"
         family={false}
         aria-label={t("footer.label")}
-        version={BUILD_INFO.sha ? `${BUILD_INFO.version}+${BUILD_INFO.sha}` : BUILD_INFO.version}
         env={BUILD_INFO.env === "production" ? undefined : BUILD_INFO.env}
         data-testid="app-version"
         legal={
           <>
+            {link(`${changelog}#${BUILD_INFO.version}`, `${format(t("changelog.footerVersion"), { version: BUILD_INFO.version })}${uiVersion ? ` · Krizaka UI ${uiVersion}` : ""}`)}
             <span>{t("footer.adults")}</span>
             {link("/legal/terms", t("footer.terms"))}
             {link("/legal/privacy", t("footer.privacy"))}
