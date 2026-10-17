@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { configuredProviders, fetchProfile, seal, startAuthorization, suggestUsername, unseal } from "./oauth";
 
 afterEach(() => {

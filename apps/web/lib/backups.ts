@@ -1,7 +1,9 @@
 import { gunzipSync, gzipSync } from "node:zlib";
+
 import type { Pool } from "pg";
-import { deletePrivateObject, getPrivateObject, listPrivateObjects, putPrivateObject } from "./storage";
+
 import { HttpError } from "./http";
+import { deletePrivateObject, getPrivateObject, listPrivateObjects, putPrivateObject } from "./storage";
 
 /**
  * Database backups for operators: every table of the `public` schema, row by row, as gzipped JSON, kept in private

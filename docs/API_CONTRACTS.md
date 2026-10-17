@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (173)
+## Endpoints (184)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -95,6 +95,17 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/creators/[username]/follow` | session · MEMBER / CREATOR / ADMIN | Follows a creator; the follow stays PENDING until the creator approves it. |
 | `GET` | `/api/explore` | public · session-aware | Explore: without a search, the discovery sections (trending this week, new, stories, creators to follow, open auctions, open challenges, tags); with `q` and/or `tag` (or `view=all`), videos (paged), creators and stories. |
 | `GET` | `/api/feed` | public · session-aware | The feeds, a page at a time. |
+| `POST` | `/api/groups` | session · ADMIN / CREATOR / MEMBER | Creates a group (the caller is its owner); the members must be the caller's contacts (or, for a creator, approved fans). |
+| `DELETE` | `/api/groups/[id]` | session · ADMIN / CREATOR / MEMBER | Closes the group (owner): nobody writes any more. |
+| `GET` | `/api/groups/[id]` | session · ADMIN / CREATOR / MEMBER | The group: its name, the caller's role and mute, its members. |
+| `PATCH` | `/api/groups/[id]` | session · ADMIN / CREATOR / MEMBER | Renames the group (owner). |
+| `DELETE` | `/api/groups/[id]/invites` | session · ADMIN / CREATOR / MEMBER | Revokes every open invite (owner). |
+| `POST` | `/api/groups/[id]/invites` | session · ADMIN / CREATOR / MEMBER | A new invite link (owner): the token is shown once, and valid for a week. |
+| `POST` | `/api/groups/[id]/leave` | session · ADMIN / CREATOR / MEMBER | Leaves the group (the owner leaving passes it on). |
+| `POST` | `/api/groups/[id]/members` | session · ADMIN / CREATOR / MEMBER | Adds members (owner): contacts, up to 50 in all. |
+| `DELETE` | `/api/groups/[id]/members/[userId]` | session · ADMIN / CREATOR / MEMBER | Removes a member (owner). |
+| `POST` | `/api/groups/[id]/mute` | session · ADMIN / CREATOR / MEMBER | Mutes the group for some hours (no push, no badge), or `hours: null` to unmute. |
+| `POST` | `/api/groups/join` | session · ADMIN / CREATOR / MEMBER | Joins a group with an invite token (`/messages/join/&lt;token&gt;`): the answer is the conversation to open. |
 | `GET` | `/api/health` | public | — |
 | `POST` | `/api/legal/report` | public · session-aware | Content reports. |
 | `POST` | `/api/me/become-creator` | session · MEMBER / CREATOR / ADMIN | Opens a creator space for a member: the same account becomes CREATOR, pending its 18 U.S.C. § 2257 review (uploads open once an operator verifies it). |
@@ -185,7 +196,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/webhooks/bunny` | signed webhook | Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (MEDIA_STREAM_WEBHOOK_SECRET). |
 | `POST` | `/api/webhooks/payments/[gateway]` | signed webhook | Gateway payment notifications. |
 
-## Database tables (52)
+## Database tables (54)
 
 | Table | Drizzle export | Defined in |
 | :--- | :--- | :--- |
@@ -219,6 +230,8 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `conversations` | `conversations` | `packages/db/src/schema/messaging.ts` |
 | `direct_messages` | `directMessages` | `packages/db/src/schema/messaging.ts` |
 | `blocked_users` | `blockedUsers` | `packages/db/src/schema/messaging.ts` |
+| `conversation_members` | `conversationMembers` | `packages/db/src/schema/messaging.ts` |
+| `conversation_invites` | `conversationInvites` | `packages/db/src/schema/messaging.ts` |
 | `notifications` | `notifications` | `packages/db/src/schema/notifications.ts` |
 | `rate_limit_buckets` | `rateLimitBuckets` | `packages/db/src/schema/platform-guard.ts` |
 | `storage_alerts` | `storageAlerts` | `packages/db/src/schema/platform-guard.ts` |

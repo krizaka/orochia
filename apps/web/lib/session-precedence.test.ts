@@ -27,7 +27,8 @@ import { NextRequest } from "next/server";
 
 import { POST as logout } from "@/app/api/auth/logout/route";
 import { POST as verifyEmail } from "@/app/api/auth/verify-email/route";
-import { getSession, sessionTransport, signSessionToken, type SessionUser } from "./auth";
+
+import { getSession, sessionTransport, type SessionUser,signSessionToken } from "./auth";
 
 const SECRET = "test-secret-0123456789-0123456789-abcdef";
 const jordan: SessionUser = { id: "jordan", username: "jordan_0127", email: "jordan@example.com", role: "MEMBER", isAgeVerified: true, emailVerified: false };

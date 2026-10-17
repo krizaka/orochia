@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-
 import { z } from "zod";
 
 import { BREAKER_FAILURES, BREAKER_OPEN_MS, breakerState, callOrazaka, embedTexts, orazakaConfigured, OrazakaUnavailableError, resetBreaker } from "./orazaka";

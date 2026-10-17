@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
+
 import { describe, expect, it } from "vitest";
 
-import { AGE_CHECK_REQUIRED, adultAccessAllowed } from "./adult-access";
+import { adultAccessAllowed,AGE_CHECK_REQUIRED } from "./adult-access";
 
 const author = { id: "author", isAgeVerified: false };
 const fan = { id: "fan", isAgeVerified: true };

@@ -1,5 +1,7 @@
-import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
+
+import { describe, expect, it } from "vitest";
+
 import { usernameWithSuffix } from "./username-suffix";
 
 const USERNAME = /^[a-z0-9_]{3,30}$/;

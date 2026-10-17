@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
-import { readFileSync, readdirSync, statSync } from "fs";
+import { readdirSync, readFileSync, statSync } from "fs";
 import path from "path";
+import { describe, expect, it } from "vitest";
 
 /** Profile pages live at /@username, but the API keeps /api/creators/<username>: a rewrite must never touch API calls. */
 function files(dir: string): string[] {

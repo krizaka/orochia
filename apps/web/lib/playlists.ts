@@ -1,12 +1,13 @@
-import { contentRatings, db, playlists, playlistItems, playlistMembers, playlistAudienceLists, audienceListMembers, videos, users, profiles } from "@orochia/db";
+import { audienceListMembers, contentRatings, db, playlistAudienceLists, playlistItems, playlistMembers, playlists, profiles,users, videos } from "@orochia/db";
 import { and, asc, desc, eq, exists, isNull, or, sql } from "drizzle-orm";
-import { canOpenCollection, evaluateVideoAccess, type CollectionVisibility } from "./access";
+
+import { canOpenCollection, type CollectionVisibility,evaluateVideoAccess } from "./access";
 import { HttpError } from "./http";
 import { withSignedMedia } from "./media-urls";
 import type { VideoSummary } from "./queries";
-import { veilSummary } from "./video-veil";
 import { enqueueInteraction } from "./recommendations/recommendations.outbox";
 import { RecoEventKind } from "./recommendations/recommendations.types";
+import { veilSummary } from "./video-veil";
 
 /**
  * Collections (playlists): any account curates them and decides who opens each one — everyone,

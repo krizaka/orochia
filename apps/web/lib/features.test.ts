@@ -8,10 +8,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 vi.mock("@orochia/db", () => ({ db: {}, users: {}, profiles: {}, hashPassword: vi.fn() }));
 vi.mock("next/headers", () => ({ cookies: async () => ({ get: () => undefined }), headers: async () => new Headers() }));
 
-import { GET as openForm, POST as register } from "@/app/api/auth/register/route";
-import { GET as authConfig } from "@/app/api/auth/providers/route";
 import { POST as completeOauth } from "@/app/api/auth/oauth/complete/route";
+import { GET as authConfig } from "@/app/api/auth/providers/route";
+import { GET as openForm, POST as register } from "@/app/api/auth/register/route";
 import { GET as versionRoute } from "@/app/api/version/route";
+
 import { signupEnabled } from "./features";
 
 afterEach(() => vi.unstubAllEnvs());

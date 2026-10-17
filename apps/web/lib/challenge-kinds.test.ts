@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { challengeKindFromSlug, challengeStartHref, CHALLENGE_STARTS } from "./challenge-kinds";
+import { CHALLENGE_STARTS,challengeKindFromSlug, challengeStartHref } from "./challenge-kinds";
 
 describe("starting a challenge from a card", () => {
   it("every explainer card has an address that preselects its kind", () => {

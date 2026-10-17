@@ -1,5 +1,5 @@
 import { pseudonymKey } from "../env";
-import { trendingVideos, type ExploreViewer, videosByIds } from "../explore";
+import { type ExploreViewer, trendingVideos, videosByIds } from "../explore";
 import { similarVideos } from "../explore-semantic";
 import { fetchForYou, fetchSimilar } from "./recommendations.client";
 import { pseudonymOf } from "./recommendations.pseudonym";

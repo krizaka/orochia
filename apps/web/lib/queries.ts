@@ -3,7 +3,7 @@ import { getCreatorAvailableBalanceCents } from "@orochia/payments";
 import { and, desc, eq, gt, ilike, isNull, ne, or, type SQL,sql } from "drizzle-orm";
 
 import type { SessionUser } from "./auth";
-import { type FeedSort, FEED_PAGE_SIZE, FEED_PAGE_MAX, FeedSort as Sort, pageOf, parseFeedCursor } from "./feed-cursor";
+import { FEED_PAGE_MAX, FEED_PAGE_SIZE, type FeedSort, FeedSort as Sort, pageOf, parseFeedCursor } from "./feed-cursor";
 import { withSignedMedia } from "./media-urls";
 import { socialLinksView } from "./profile";
 import { veilSummary } from "./video-veil";

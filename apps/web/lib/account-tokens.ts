@@ -1,6 +1,7 @@
+import { authTokens, db, users } from "@orochia/db";
 import crypto from "crypto";
-import { db, authTokens, users } from "@orochia/db";
 import { and, eq, gt, isNull, sql } from "drizzle-orm";
+
 import { appUrl } from "./env";
 import { sendTemplate } from "./mail";
 

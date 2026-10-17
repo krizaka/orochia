@@ -6,10 +6,10 @@
  * locally: `docker run -p 6390:6379 valkey/valkey:8-alpine`, REALTIME_REDIS_URL=redis://localhost:6390).
  */
 import { randomUUID } from "node:crypto";
-import { afterAll, describe, expect, it } from "vitest";
 
 import { postgresBus, type RealtimeBus } from "@krizaka/realtime";
 import { redisBus } from "@krizaka/realtime/redis";
+import { afterAll, describe, expect, it } from "vitest";
 
 const enabled = process.env.REALTIME_IT === "1";
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));

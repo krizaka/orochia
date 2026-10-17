@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { buildArgs } from "./video-edit";
 import { DEFAULT_EDIT, parseStoredEdit, type VideoEdit } from "./video-edit-settings";
 
