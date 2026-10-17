@@ -115,10 +115,17 @@
       "breakpoints": true
     },
     {
+<<<<<<< HEAD
       "idx": 16,
       "version": "7",
       "when": 1792247398857,
       "tag": "0016_video_banner",
+=======
+      "idx": 17,
+      "version": "7",
+      "when": 1792249053110,
+      "tag": "0017_app_config",
+>>>>>>> origin/main
       "breakpoints": true
     }
   ]

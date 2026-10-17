@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (186)
+## Endpoints (187)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -109,6 +109,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/groups/join` | session · ADMIN / CREATOR / MEMBER | Joins a group with an invite token (`/messages/join/&lt;token&gt;`): the answer is the conversation to open. |
 | `GET` | `/api/health` | public | — |
 | `POST` | `/api/legal/report` | public · session-aware | Content reports. |
+| `GET` | `/api/me/banner-videos` | session · ADMIN / CREATOR / MEMBER | The signed-in creator's own videos a cover can use: published, public, free and at least 3 s long. |
 | `POST` | `/api/me/become-creator` | session · MEMBER / CREATOR / ADMIN | Opens a creator space for a member: the same account becomes CREATOR, pending its 18 U.S.C. § 2257 review (uploads open once an operator verifies it). |
 | `POST` | `/api/me/birth-date` | session · ADMIN / CREATOR / MEMBER | Records your date of birth (18+) when the account has none yet; once set it cannot be changed here. |
 | `GET` | `/api/me/blocks` | session · ADMIN / CREATOR / MEMBER | Lists the accounts blocked by the signed-in user. |
@@ -198,10 +199,12 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/webhooks/bunny` | signed webhook | Bunny Stream encoding events (https://bunny.net/docs/stream/webhooks), signed v1 with the library's Read-Only API key (MEDIA_STREAM_WEBHOOK_SECRET). |
 | `POST` | `/api/webhooks/payments/[gateway]` | signed webhook | Gateway payment notifications. |
 
-## Database tables (54)
+## Database tables (56)
 
 | Table | Drizzle export | Defined in |
 | :--- | :--- | :--- |
+| `app_config` | `appConfig` | `packages/db/src/schema/app-config.ts` |
+| `app_config_history` | `appConfigHistory` | `packages/db/src/schema/app-config.ts` |
 | `auctions` | `auctions` | `packages/db/src/schema/auctions.ts` |
 | `auction_bids` | `auctionBids` | `packages/db/src/schema/auctions.ts` |
 | `audience_lists` | `audienceLists` | `packages/db/src/schema/audiences.ts` |
