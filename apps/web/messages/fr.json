@@ -3338,7 +3338,7 @@
   },
   "changelog": {
     "metaTitle": "Journal des changements",
-    "metaDescription": "Ce qui a changé dans Orochia, semaine par semaine : nouveautés, corrections, sécurité et ruptures, avec la pull request derrière chaque ligne.",
+    "metaDescription": "Ce qui a changé dans Orochia, semaine par semaine : nouveautés, corrections, sécurité et ruptures, avec la pull request derrière chaque ligne.",
     "eyebrow": "Journal des changements",
     "title": "Ce qui a été livré",
     "lead": "Ce qui a changé dans Orochia, la semaine la plus récente d'abord — lu dans les pull requests fusionnées, pas écrit pour la page.",
