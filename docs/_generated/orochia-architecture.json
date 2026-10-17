@@ -914,6 +914,12 @@
       "summary": "Adds an account to one of your lists by username (idempotent; the list stays private)."
     },
     {
+      "method": "PUT",
+      "path": "/api/me/locale",
+      "access": "session · ADMIN / CREATOR / MEMBER",
+      "summary": "Sets the language of the signed-in account (`en` or `fr`), which its e-mails, push and live notifications are written in."
+    },
+    {
       "method": "GET",
       "path": "/api/me/network",
       "access": "session · MEMBER / CREATOR / ADMIN",
@@ -1541,7 +1547,7 @@
         "runtime": "node",
         "version": "1.0.0",
         "published": false,
-        "description": "The API: 148 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
+        "description": "The API: 149 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
       },
       {
         "id": "orochia-config",

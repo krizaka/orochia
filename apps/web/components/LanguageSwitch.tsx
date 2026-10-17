@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import React from "react";
 
 import { cn } from "@/components/ui";
+import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n-client";
 import { LOCALE_COOKIE, LOCALE_COOKIE_MAX_AGE, localizedPath, type Locale } from "@/lib/locales";
 
@@ -14,14 +15,19 @@ import { LOCALE_COOKIE, LOCALE_COOKIE_MAX_AGE, localizedPath, type Locale } from
  */
 export function LanguageSwitch({ className }: { className?: string }) {
   const { t, locale } = useI18n();
+  const { user } = useAuth();
   const pathname = usePathname();
   const target: Locale = locale === "fr" ? "en" : "fr";
 
-  function choose() {
+  async function choose() {
     try {
       document.cookie = `${LOCALE_COOKIE}=${target}; path=/; max-age=${LOCALE_COOKIE_MAX_AGE}; samesite=lax`;
     } catch {
       // A browser that refuses the cookie still gets the page in the other language through its address.
+    }
+    // A signed-in account keeps the choice: its e-mails, push and notifications are written in that language.
+    if (user) {
+      await fetch("/api/me/locale", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ locale: target }), keepalive: true }).catch(() => undefined);
     }
     // A full navigation, not a client transition: the layout carries the language (the <html lang>, the catalogue).
     window.location.href = `${localizedPath(pathname || "/", target)}${window.location.search}${window.location.hash}`;
@@ -30,7 +36,7 @@ export function LanguageSwitch({ className }: { className?: string }) {
   return (
     <button
       type="button"
-      onClick={choose}
+      onClick={() => void choose()}
      
       aria-label={t("common.language.switchTo")}
       title={t("common.language.switchTo")}

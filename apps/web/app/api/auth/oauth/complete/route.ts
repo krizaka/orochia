@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { setSessionCookie } from "@/lib/auth";
+import { setAccountLocale } from "@/lib/account-locale";
 import { sendVerificationEmail } from "@/lib/account-tokens";
+import { localeOf } from "@/lib/locales";
 import { OAUTH_PENDING_COOKIE, type ProviderProfile, completeSignUp, unseal } from "@/lib/oauth";
 import { clearShortCookie } from "@/lib/oauth-cookies";
 import { assertSignupEnabled } from "@/lib/features";
@@ -29,6 +31,7 @@ export async function POST(req: NextRequest) {
     const input = Complete.parse(await req.json());
     if (isReserved(input.username)) return jsonError(400, "This username is reserved. Choose another one.");
     const { user, needsEmailVerification } = await completeSignUp(pending.profile, { ...input, dateOfBirth: checkDateOfBirth(input.dateOfBirth) });
+    await setAccountLocale(user.id, localeOf(req.headers)).catch(() => undefined);
     if (needsEmailVerification) await sendVerificationEmail(user);
     const response = NextResponse.json({ success: true, next: pending.next, needsEmailVerification }, { status: 201 });
     setSessionCookie(response, user);
