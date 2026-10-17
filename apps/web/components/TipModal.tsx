@@ -128,7 +128,7 @@ export function TipModal({
           <div className="mb-5">
             <div className="mb-2 flex items-baseline justify-between">
               <span className="text-xs font-semibold text-fg-secondary">{t("payments.amount")}</span>
-              {minTipAmountCents > 100 && <span className="text-[11px] text-fg-muted">{t("payments.minimum", { amount: money(minTipAmountCents) })}</span>}
+              {minTipAmountCents > 100 && <span className="text-[11px] text-fg-secondary">{t("payments.minimum", { amount: money(minTipAmountCents) })}</span>}
             </div>
             <RadioGroup.Root label={t("payments.amount")} value={String(selectedAmount)} onValueChange={(v) => setSelectedAmount(Number(v))} className="grid grid-cols-4 gap-2">
               {presets.map((p) => (
