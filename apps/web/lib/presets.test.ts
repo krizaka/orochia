@@ -3,10 +3,10 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_AVATARS, DEFAULT_BANNERS, defaultAvatarFor, defaultBannerFor, safeImageSrc } from "./presets";
 
 describe("default avatars and banners", () => {
-  it("offers 15 avatars and 9 banners, each in the product's own /defaults path", () => {
-    expect(DEFAULT_AVATARS).toHaveLength(15);
-    expect(DEFAULT_BANNERS).toHaveLength(9);
-    expect(new Set(DEFAULT_AVATARS.map((p) => p.id)).size).toBe(15);
+  it("offers about 48 avatars and 32 banners, each in the product's own /defaults path", () => {
+    expect(DEFAULT_AVATARS).toHaveLength(49);
+    expect(DEFAULT_BANNERS).toHaveLength(32);
+    expect(new Set(DEFAULT_AVATARS.map((p) => p.id)).size).toBe(49);
     for (const p of DEFAULT_AVATARS) expect(p.url).toBe(`/defaults/avatars/${p.id}-512.webp`);
     for (const p of DEFAULT_BANNERS) expect(p.url).toBe(`/defaults/banners/${p.id}.webp`);
   });
