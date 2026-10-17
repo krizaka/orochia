@@ -1012,5 +1012,5 @@ Every foreign key, read from the schema: what each table points to (through whic
 - `0013_message_origin.sql`
 - `0014_conversation_members.sql`
 - `0015_analytics_outbox.sql`
-- `0016_video_banner.sql`
 - `0017_app_config.sql`
+- `0018_video_banner.sql`

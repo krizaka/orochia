@@ -1,9 +1,248 @@
 {
-  "id": "237d6784-094b-40b3-9d71-9f2fa845d716",
-  "prevId": "6a6c69e2-ca40-4228-a064-2e5c184ed2c4",
+  "id": "bc6dd5bb-3b80-4dbb-b40a-c41f5bed0a42",
+  "prevId": "a1934ff0-7b5f-40a8-8cc6-67f33c2d9e41",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.app_config": {
+      "name": "app_config",
+      "schema": "",
+      "columns": {
+        "platform": {
+          "name": "platform",
+          "type": "varchar(16)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "min_supported_version": {
+          "name": "min_supported_version",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0.0.0'"
+        },
+        "latest_version": {
+          "name": "latest_version",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0.0.0'"
+        },
+        "update_override": {
+          "name": "update_override",
+          "type": "varchar(8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "store_url": {
+          "name": "store_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "maintenance_on": {
+          "name": "maintenance_on",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "maintenance_message": {
+          "name": "maintenance_message",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "message": {
+          "name": "message",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "contract_min": {
+          "name": "contract_min",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "contract_max": {
+          "name": "contract_max",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "contract_sunset": {
+          "name": "contract_sunset",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "flags": {
+          "name": "flags",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "revision": {
+          "name": "revision",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'seed'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.app_config_history": {
+      "name": "app_config_history",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "platform": {
+          "name": "platform",
+          "type": "varchar(16)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "revision": {
+          "name": "revision",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "min_supported_version": {
+          "name": "min_supported_version",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "latest_version": {
+          "name": "latest_version",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "update_override": {
+          "name": "update_override",
+          "type": "varchar(8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "store_url": {
+          "name": "store_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "maintenance_on": {
+          "name": "maintenance_on",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "maintenance_message": {
+          "name": "maintenance_message",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "message": {
+          "name": "message",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "contract_min": {
+          "name": "contract_min",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "contract_max": {
+          "name": "contract_max",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "contract_sunset": {
+          "name": "contract_sunset",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "flags": {
+          "name": "flags",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "changed_by": {
+          "name": "changed_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "changed_at": {
+          "name": "changed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "app_config_history_revision": {
+          "name": "app_config_history_revision",
+          "nullsNotDistinct": false,
+          "columns": [
+            "platform",
+            "revision"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.profiles": {
       "name": "profiles",
       "schema": "",
