@@ -1528,8 +1528,7 @@
         "other": "{count} public posts"
       },
       "open": "View profile"
-    },
-    "loading": "Loading Explore"
+    }
   },
   "watch": {
     "ageGate": {
