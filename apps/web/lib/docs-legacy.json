@@ -1,0 +1,12 @@
+{
+  "comment": "Old /docs/<slug> addresses whose page moved to /docs/developers/<slug> (308).",
+  "slugs": [
+    "getting-started",
+    "architecture",
+    "media-pipeline",
+    "realtime",
+    "development",
+    "deployment",
+    "ux-decisions"
+  ]
+}

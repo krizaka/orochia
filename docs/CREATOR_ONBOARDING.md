@@ -1,4 +1,10 @@
-# 🪶 Creator onboarding
+---
+title: Creator onboarding: states and checks
+nav: Creator onboarding
+description: The states of an account, the checks and what is not built yet.
+---
+
+# Creator onboarding
 
 There is **one kind of account** on Orochia. Everyone joins as a member (a fan): watch, follow, tip, unlock, bid, back
 challenges, message. Publishing is a **change of role of that same account** — "Open your creator space" — followed by

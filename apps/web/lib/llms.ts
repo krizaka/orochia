@@ -7,7 +7,7 @@ import { absolute, KRIZAKA_URL, SOURCE_URL } from "./seo";
  */
 
 /** The repository's public docs (the bundle lib/docs.ts renders), read here as plain markdown. */
-const DOCS = bundle as { slug: string; title: string; markdown: string }[];
+const DOCS = (bundle as { slug: string; audience: "guide" | "developers"; locale: "en" | "fr"; title: string; markdown: string }[]).filter((d) => d.locale === "en");
 
 const SUMMARY = `> Orochia is an open-source (Apache-2.0), adult-friendly video platform for independent creators,
 > made by Krizaka (Montréal). Creators publish HD videos and decide exactly who watches each one;
@@ -33,7 +33,7 @@ ${SUMMARY}
 - [Home and feed](${absolute("/")}): the public feed
 - [Explore](${absolute("/explore")}): search creators, videos, tags
 - [How it works](${absolute("/how-it-works")}): the platform in a few steps
-- [Documentation](${absolute("/docs")}): architecture, API contracts, database, deployment
+- [Documentation](${absolute("/docs")}): a guide for fans and creators, and the developers' pages — architecture, API contracts, database, deployment
 - [Terms](${absolute("/legal/terms")}) · [Privacy](${absolute("/legal/privacy")}) · [2257](${absolute("/legal/2257")}) · [DMCA](${absolute("/legal/dmca")})
 
 ## For developers and operators
@@ -52,7 +52,7 @@ Sitemap: ${absolute("/sitemap.xml")}
 }
 
 export function llmsFullText(): string {
-  const docs = DOCS.map((d) => `\n---\n\n# ${d.title}\n\nURL: ${absolute(`/docs/${d.slug}`)}\n\n${d.markdown.trim()}\n`).join("");
+  const docs = DOCS.map((d) => `\n---\n\n# ${d.title}\n\nURL: ${absolute(d.audience === "developers" ? `/docs/developers/${d.slug}` : `/docs/${d.slug}`)}\n\n${d.markdown.trim()}\n`).join("");
   return `${llmsText().replace(/\n## Publisher[\s\S]*$/, "")}\n## Documentation (full text)\n${docs}\n---\n\n## Publisher\n\n- [Krizaka](${KRIZAKA_URL}): the company that publishes Orochia\n\nSitemap: ${absolute("/sitemap.xml")}\n`;
 }
 

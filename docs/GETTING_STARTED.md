@@ -1,6 +1,7 @@
 ---
-title: Getting Started
-description: Run Orochia locally in five commands, sign in with the seeded accounts, and know where to go next.
+title: Run it locally
+nav: Getting started
+description: Run Orochia locally in five commands and sign in with the seeded accounts.
 ---
 
 # Getting Started

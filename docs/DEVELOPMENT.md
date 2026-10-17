@@ -1,6 +1,7 @@
 ---
-title: Development Guide
-description: Everyday commands, the database lifecycle (migrations, seed, reset, backups), tests and troubleshooting.
+title: Development guide
+nav: Development
+description: Everyday commands, the database lifecycle, tests and troubleshooting.
 ---
 
 # Development Guide

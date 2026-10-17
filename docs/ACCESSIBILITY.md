@@ -1,3 +1,9 @@
+---
+title: Accessibility: tests and gaps
+nav: Accessibility
+description: What is tested on every change, what was checked by hand, and what is missing.
+---
+
 # Accessibility
 
 Orochia aims at **WCAG 2.2 level AA** on the web (`apps/web`) and in the iOS / Android app

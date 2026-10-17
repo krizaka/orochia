@@ -1,4 +1,10 @@
-# 🔨 Auctions
+---
+title: Auctions: internals
+nav: Auctions
+description: The rules, the state machine, the escrow and the realtime design.
+---
+
+# Auctions
 
 A creator puts one of their videos up for auction between a start and an end. Members bid in **Orochia credits**; the
 price moves **in real time** for everyone watching; when the auction ends, the highest bidder — and only them — gets the video:

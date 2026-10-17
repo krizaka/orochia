@@ -1,3 +1,9 @@
+---
+title: UX decisions
+nav: UX decisions
+description: Each notable experience choice: the problem, the principle, what was refused, the cost.
+---
+
 # UX decisions — why it is built like this
 
 Each notable choice of experience in Orochia: the decision, the problem, the principle behind it (with its source),

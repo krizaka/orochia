@@ -2,6 +2,8 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
+import { docsRedirects } from "./lib/docs-redirects.mjs";
+
 // One .env for the whole monorepo, at its root. Next has already loaded apps/web/.env* by now, and
 // loadEnvFile never overrides a variable that is set, so those (and the real environment) still win.
 const rootEnv = fileURLToPath(new URL("../../.env", import.meta.url));
@@ -102,6 +104,8 @@ const nextConfig = {
       ...Object.entries(meRoutes.tabs).map(([tab, destination]) => ({ source: "/dashboard", has: [{ type: "query", key: "tab", value: tab }], destination, permanent: true })),
       ...Object.entries(meRoutes.pages).map(([source, destination]) => ({ source, destination, permanent: true })),
       { source: "/dashboard/:path*", destination: "/me", permanent: true },
+      // The technical pages of the documentation moved to /docs/developers.
+      ...docsRedirects(),
     ];
   },
   async headers() {

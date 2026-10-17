@@ -1,4 +1,10 @@
-# 🎬 Media Pipeline
+---
+title: Media pipeline
+nav: Media pipeline
+description: Direct-to-Bunny uploads, encoding and signed playback.
+---
+
+# Media Pipeline
 
 Video never passes through the Orochia servers: the browser edits it, sends it straight to **Bunny Stream** over Tus,
 Bunny encodes it and reports back through a signed webhook, and every play is a short-lived signed URL issued only
