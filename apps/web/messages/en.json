@@ -23,8 +23,7 @@
     "pauseBand": "Pause the band",
     "playBand": "Play the band",
     "language": {
-      "switchTo": "Switch to French",
-      "target": "Français"
+      "label": "Language"
     }
   },
   "stories": {
