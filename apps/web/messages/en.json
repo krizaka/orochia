@@ -72,7 +72,7 @@
     },
     "removeArmed": "Tap again to delete",
     "processing": "Processing",
-    "processingHint": "Your story is being encoded. It goes live for 24 hours as soon as it is ready — this page updates by itself.",
+    "processingHint": "Your story is being encoded. It is visible for 24 hours as soon as it is ready — this page updates by itself.",
     "failed": "Not published",
     "failedHint": "This video could not be processed (too long, or the upload did not finish). Remove it and share it again.",
     "viewer": {
@@ -1125,7 +1125,7 @@
     },
     "loadMore": "Show older",
     "dismiss": "Dismiss",
-    "region": "Live notifications",
+    "region": "Notification updates",
     "loading": "Loading your notifications"
   },
   "wallet": {
@@ -1372,7 +1372,7 @@
         },
         "member": {
           "title": "No video yet — the first creators are setting up",
-          "body": "You’re all set: follow creators as they arrive, explore what is already live — or publish yourself by opening a creator space on this account."
+          "body": "You’re all set: follow creators as they arrive, explore what is already published — or publish yourself by opening a creator space on this account."
         },
         "creator-pending": {
           "title": "No video yet — yours could be the first",
@@ -1553,10 +1553,10 @@
   },
   "explore": {
     "metaTitle": "Explore creators, videos and stories",
-    "metaDescription": "Discover Orochia: what is trending this week, new videos, live stories, creators to follow, open auctions and challenges.",
+    "metaDescription": "Discover Orochia: what is trending this week, new videos, current stories, creators to follow, open auctions and challenges.",
     "eyebrow": "Explore",
     "title": "Find your next obsession.",
-    "subtitle": "What people watch, like and tip this week — new videos, live stories, creators to follow, open auctions and challenges.",
+    "subtitle": "What people watch, like and tip this week — new videos, current stories, creators to follow, open auctions and challenges.",
     "placeholder": "Search videos, creators, stories",
     "search": "Search",
     "all": "All",
@@ -1579,8 +1579,8 @@
         "other": "{count} creators"
       },
       "stories": {
-        "one": "{count} live story",
-        "other": "{count} live stories"
+        "one": "{count} current story",
+        "other": "{count} current stories"
       },
       "videos": "Videos",
       "noVideos": "No video matches yet."
@@ -1605,8 +1605,8 @@
       },
       "stories": {
         "title": "Stories",
-        "description": "Public stories, live for 24 hours.",
-        "emptyTitle": "No live story right now",
+        "description": "Public stories, visible for 24 hours.",
+        "emptyTitle": "No story right now",
         "emptyBody": "Stories last 24 hours. Public ones show up here the moment they are shared."
       },
       "new": {

@@ -24,3 +24,19 @@ describe.each([
     expect(hits).toEqual([]);
   });
 });
+
+// The interface says it too: nothing in Orochia is « live » (a story is « current », « visible for 24 hours »).
+// The verb « where you live » is not the claim.
+const flat = (o, out = []) => {
+  for (const v of Object.values(o)) typeof v === "string" ? out.push(v) : flat(v, out);
+  return out;
+};
+describe.each([
+  ["en", /(?<!\b(?:you|I|they|we) )\blive\b/i],
+  ["fr", /\b(?:live|en direct)\b/i],
+])("the %s catalogue", (lang, rule) => {
+  it("has no message that says « live »", () => {
+    const texts = flat(read(`../apps/web/messages/${lang}.json`));
+    expect(texts.filter((t) => rule.test(t))).toEqual([]);
+  });
+});
