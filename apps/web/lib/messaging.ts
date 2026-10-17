@@ -1,6 +1,6 @@
 import { blockedUsers, complianceReports, contacts, conversationMembers, conversations, db, directMessages, profiles, users } from "@orochia/db";
 import { compareDesc } from "date-fns";
-import { and, desc, eq, isNull, lt, lte, or, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull, lt, lte, or, sql } from "drizzle-orm";
 import { after } from "next/server";
 
 import { ConversationKind, MemberRole } from "./conversation-kinds";
@@ -466,7 +466,7 @@ export async function getConversationMessages(
   conversationId: string,
   userId: string,
   options: { before?: number; limit?: number } = {},
-): Promise<{ messages: MessageView[]; hasMore: boolean }> {
+): Promise<{ messages: MessageView[]; hasMore: boolean; names?: Record<string, string> }> {
   const access = await conversationFor(conversationId, userId);
   const limit = Math.min(Math.max(options.limit ?? 50, 1), 100);
 
@@ -480,7 +480,18 @@ export async function getConversationMessages(
     .limit(limit + 1);
 
   const hasMore = rows.length > limit;
-  return { messages: rows.slice(0, limit).reverse().map(messageView), hasMore };
+  const page = rows.slice(0, limit).reverse();
+  if (access.kind !== "group") return { messages: page.map(messageView), hasMore };
+  // A group shows who wrote: the display names of the page's senders (people who left included).
+  const senderIds = [...new Set(page.map((r) => r.senderId))];
+  const named = senderIds.length
+    ? await db
+        .select({ id: users.id, name: sql<string>`coalesce(${profiles.displayName}, ${users.username})` })
+        .from(users)
+        .leftJoin(profiles, eq(profiles.userId, users.id))
+        .where(inArray(users.id, senderIds))
+    : [];
+  return { messages: page.map(messageView), hasMore, names: Object.fromEntries(named.map((n) => [n.id, n.name])) };
 }
 
 /** Tells the sender how far their messages got in a conversation. */

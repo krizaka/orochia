@@ -10,6 +10,7 @@ import { isAiAssisted } from "@/lib/message-origin";
 
 import { dayKey } from "./chat-state";
 import { Ticks } from "./ConversationList";
+import { GroupSheet } from "./GroupSheet";
 import { PresenceAvatar, presenceLabel } from "./PresenceAvatar";
 import { ReportMessageDialog } from "./ReportMessageDialog";
 import { type ChatMessage, type Conversation, type PresenceView, receiptOf } from "./types";
@@ -46,6 +47,8 @@ export interface ThreadProps {
   myId: string;
   presence?: PresenceView;
   messages: ChatMessage[];
+  /** Who wrote, in a group (user id → display name). */
+  names?: Record<string, string>;
   state: { loading: boolean; hasMore: boolean; error: string | null; loadingOlder: boolean };
   typing: boolean;
   onBack: () => void;
@@ -62,7 +65,7 @@ export interface ThreadProps {
  * arrives), receipts on the sender's last message, "typing…", and the composer — Enter sends, Shift + Enter breaks the
  * line; a message that could not leave stays in place with Retry.
  */
-export function Thread({ conversation, myId, presence, messages, state, typing, onBack, onSend, onRetry, onDiscard, onTyping, onLoadOlder, onBlock }: ThreadProps) {
+export function Thread({ conversation, myId, presence, messages, names = {}, state, typing, onBack, onSend, onRetry, onDiscard, onTyping, onLoadOlder, onBlock }: ThreadProps) {
   const [draft, setDraft] = useState("");
   const [reporting, setReporting] = useState<ChatMessage | null>(null);
   const [confirmBlock, setConfirmBlock] = useState(false);
@@ -102,7 +105,8 @@ export function Thread({ conversation, myId, presence, messages, state, typing, 
   }
 
   const other = conversation.otherUser;
-  const status = presenceLabel(presence);
+  const isGroup = conversation.kind === "group";
+  const status = isGroup ? t("inbox.group.membersCount", { count: conversation.memberCount }) : presenceLabel(presence);
   const lastMine = [...messages].reverse().find((m) => m.senderId === myId && !m.local);
 
   const submit = () => {
@@ -137,28 +141,32 @@ export function Thread({ conversation, myId, presence, messages, state, typing, 
             </p>
           </div>
         </div>
+        {isGroup ? (
+          <GroupSheet conversationId={conversation.id} myId={myId} onLeft={onBack} />
+        ) : (
         <DropdownMenu.Root>
-          <DropdownMenu.Trigger asChild>
-            <IconButton shape="rounded" className="h-9 w-9" label={t("inbox.options")}>
-              <MoreIcon size={16} />
-            </IconButton>
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content align="end">
-            <DropdownMenu.Item asChild>
-              <Link href={`/@${other.username}`}>
-                <UserIcon size={15} />
-                {t("inbox.viewProfile")}
-              </Link>
-            </DropdownMenu.Item>
-            {conversation.blockedByMe ? (
-              <DropdownMenu.Item onSelect={() => void unblock()}>{t("inbox.unblock")}</DropdownMenu.Item>
-            ) : (
-              <DropdownMenu.Item tone="danger" onSelect={() => setTimeout(() => setConfirmBlock(true), 0)}>
-                {t("inbox.block")}
+            <DropdownMenu.Trigger asChild>
+              <IconButton shape="rounded" className="h-9 w-9" label={t("inbox.options")}>
+                <MoreIcon size={16} />
+              </IconButton>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content align="end">
+              <DropdownMenu.Item asChild>
+                <Link href={`/@${other.username}`}>
+                  <UserIcon size={15} />
+                  {t("inbox.viewProfile")}
+                </Link>
               </DropdownMenu.Item>
-            )}
-          </DropdownMenu.Content>
-        </DropdownMenu.Root>
+              {conversation.blockedByMe ? (
+                <DropdownMenu.Item onSelect={() => void unblock()}>{t("inbox.unblock")}</DropdownMenu.Item>
+              ) : (
+                <DropdownMenu.Item tone="danger" onSelect={() => setTimeout(() => setConfirmBlock(true), 0)}>
+                  {t("inbox.block")}
+                </DropdownMenu.Item>
+              )}
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+        )}
       </header>
 
       <div
@@ -180,7 +188,7 @@ export function Thread({ conversation, myId, presence, messages, state, typing, 
             <WarningIcon size={16} /> {state.error}
           </p>
         ) : messages.length === 0 ? (
-          <EmptyState className="mt-10" icon={<MessageIcon size={28} />} title={t("inbox.startTitle")} description={t("inbox.sayHello", { username: other.username })} />
+          <EmptyState className="mt-10" icon={<MessageIcon size={28} />} title={t("inbox.startTitle")} description={isGroup ? t("inbox.group.sayHello") : t("inbox.sayHello", { username: other.username })} />
         ) : (
           <>
             {state.hasMore && (
@@ -228,6 +236,7 @@ export function Thread({ conversation, myId, presence, messages, state, typing, 
                           m.local === "failed" && "ring-2 ring-danger/60",
                         )}
                       >
+                        {isGroup && !mine && <p className="mb-0.5 text-[11px] font-bold text-fg-accent">{names[m.senderId] ?? t("inbox.group.someone")}</p>}
                         {m.storyId && <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-wider opacity-75">{t("inbox.storyReply")}</p>}
                         {isAiAssisted(m.origin) && <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-wider opacity-75">{t("inbox.aiAssisted")}</p>}
                         <p className="whitespace-pre-wrap wrap-break-word">{m.content}</p>
@@ -247,7 +256,7 @@ export function Thread({ conversation, myId, presence, messages, state, typing, 
                         </Button>
                       </p>
                     )}
-                    {mine && (m.local === "sending" || m.id === lastMine?.id) && (
+                    {mine && !isGroup && (m.local === "sending" || m.id === lastMine?.id) && (
                       <p className="mt-0.5 flex items-center justify-end gap-1 text-[10px] text-fg-muted">
                         {receipt !== "sending" && receipt !== "failed" && <Ticks receipt={receipt} />}
                         <span>{t(`inbox.status.${receipt}`)}</span>
