@@ -1,0 +1,37 @@
+name: Dev demo stories
+
+# The demo creators of dev.orochia.com post a story that lasts 24 h; the home's tour and the demo need one to be up. Twice a
+# day, a creator whose story has expired posts hers again (scripts/dev-dataset/seed.mjs --stories-only: clips read from
+# the CDN, a story still up is left alone). Dev only: the base is dev.orochia.com. The accounts are the dev dataset's
+# (DEV_DEMO_ENV: their e-mail and password lines, a repository secret, never printed).
+on:
+  schedule:
+    - cron: "17 5,17 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dev-demo-stories
+  cancel-in-progress: false
+
+jobs:
+  renew:
+    name: Repost the demo stories that expired
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Repost
+        env:
+          DEV_DEMO_ENV: ${{ secrets.DEV_DEMO_ENV }}
+        run: |
+          umask 077
+          printf '%s\n' "$DEV_DEMO_ENV" > "$RUNNER_TEMP/demo-accounts"
+          node scripts/dev-dataset/seed.mjs --stories-only --base https://dev.orochia.com --env-file "$RUNNER_TEMP/demo-accounts"

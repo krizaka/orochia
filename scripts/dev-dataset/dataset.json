@@ -532,22 +532,26 @@
     {
       "creator": "lena",
       "file": "picnic-olive-grove.mp4",
-      "caption": "A slow Sunday between two shoots."
+      "caption": "A slow Sunday between two shoots.",
+      "url": "https://krizaka-assets.b-cdn.net/site/products/orochia/demo-stories/picnic-olive-grove.2250f186c3.mp4"
     },
     {
       "creator": "noah",
       "file": "bagels.mp4",
-      "caption": "First batch out of the oven."
+      "caption": "First batch out of the oven.",
+      "url": "https://krizaka-assets.b-cdn.net/site/products/orochia/demo-stories/bagels.2cc9d753f5.mp4"
     },
     {
       "creator": "mira",
       "file": "spice-alley.mp4",
-      "caption": "Lost in the market, on purpose."
+      "caption": "Lost in the market, on purpose.",
+      "url": "https://krizaka-assets.b-cdn.net/site/products/orochia/demo-stories/spice-alley.6d5fe5bd16.mp4"
     },
     {
       "creator": "kofi",
       "file": "skating-pond.mp4",
-      "caption": "First ice of the year."
+      "caption": "First ice of the year.",
+      "url": "https://krizaka-assets.b-cdn.net/site/products/orochia/demo-stories/skating-pond.04c5801692.mp4"
     }
   ]
 }
