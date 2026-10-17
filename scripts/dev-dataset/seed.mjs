@@ -15,7 +15,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
-import { credit, diffCreator, validateDataset } from "./plan.mjs";
+import { credit, diffCreator, isUpgrade, validateDataset } from "./plan.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(path.join(here, "../../apps/web/package.json"));
@@ -120,7 +120,7 @@ for (const creator of dataset.creators) {
   const wanted = dataset.videos.filter((v) => v.creator === creator.key);
   const call = await session(creator.credentials);
   const have = await listOwn(call);
-  const stale = (w, h) => Boolean(runOf(w.file)?.sound) && !h.description.includes("sound:") && fs.existsSync(path.join(mediaDir, w.file));
+  const stale = (w, h) => fs.existsSync(path.join(mediaDir, w.file)) && ((Boolean(runOf(w.file)?.sound) && !h.description.includes("sound:")) || isUpgrade(runOf(w.file), h));
   const { upload, remove, replace } = diffCreator(wanted, have, stale);
   console.log(`\n${creator.displayName} (@${creator.username}): ${have.length} now · ${upload.length} to upload · ${replace.length} to replace (sound) · ${prune ? remove.length : 0} to delete`);
   const missing = upload.filter((v) => !fs.existsSync(path.join(mediaDir, v.file)) || !runOf(v.file));
