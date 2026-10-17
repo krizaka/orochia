@@ -3,16 +3,12 @@
 import { Camera, Clapperboard, ImagePlus, Palette, Trash2 } from "lucide-react";
 import React, { useRef, useState } from "react";
 
-import { cn, Dialog, DropdownMenu, Sheet, Skeleton, Spinner } from "@/components/ui";
+import { cn, Dialog, DropdownMenu, Sheet, Spinner } from "@/components/ui";
 import { t } from "@/lib/i18n";
+import type { PresetAsset as Preset } from "@/lib/presets";
 
 import { BannerMomentDialog, type CoverVideo } from "./BannerMomentDialog";
-
-interface Preset {
-  id: string;
-  name: string;
-  url: string;
-}
+import { PresetPicker } from "./PresetPicker";
 
 let presetsCache: Promise<{ avatars: Preset[]; banners: Preset[] }> | null = null;
 const loadPresets = () =>
@@ -49,6 +45,7 @@ export function PictureQuickEdit({
   const [momentOpen, setMomentOpen] = useState(false);
   const [coverVideos, setCoverVideos] = useState<CoverVideo[]>([]);
   const [loadingVideos, setLoadingVideos] = useState(false);
+  const [loadingPresets, setLoadingPresets] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -107,7 +104,11 @@ export function PictureQuickEdit({
           <DropdownMenu.Item
             onSelect={() => {
               setChoosing(true);
-              void loadPresets().then((p) => setPresets(isAvatar ? p.avatars : p.banners));
+              setLoadingPresets(true);
+              void loadPresets().then((p) => {
+                setPresets(isAvatar ? p.avatars : p.banners);
+                setLoadingPresets(false);
+              });
             }}
           >
             <Palette className="h-4 w-4 text-fg-accent" /> {t(isAvatar ? "settings.pictures.chooseAvatar" : "settings.pictures.chooseBanner")}
@@ -150,24 +151,16 @@ export function PictureQuickEdit({
             <Dialog.Title>{t("settings.pictures.presetsTitle")}</Dialog.Title>
           </Dialog.Header>
           <Dialog.Body>
-            <div className={cn("grid max-h-[60vh] gap-3 overflow-y-auto p-1", isAvatar ? "grid-cols-4" : "grid-cols-2")}>
-              {presets.length === 0
-                ? Array.from({ length: isAvatar ? 15 : 9 }, (_, i) => <Skeleton key={i} shape="rect" className={cn("h-auto rounded-2xl", isAvatar ? "aspect-square" : "aspect-3/1")} />)
-                : presets.map((p) => (
-                    <button
-                      key={p.id}
-                      type="button"
-                      onClick={() => {
-                        setChoosing(false);
-                        void save(p.id, p.url);
-                      }}
-                      aria-pressed={current === p.url}
-                      className={cn("overflow-hidden rounded-2xl ring-2 transition-all hover:scale-[1.03] hover:ring-ring focus-visible:outline-hidden focus-visible:ring-ring", current === p.url ? "ring-accent" : "ring-transparent")}
-                    >
-                      <img src={p.url} alt={p.name} className={cn("w-full object-cover", isAvatar ? "aspect-square" : "aspect-3/1")} />
-                    </button>
-                  ))}
-            </div>
+            <PresetPicker
+              kind={kind}
+              presets={presets}
+              loading={loadingPresets}
+              selectedId={presets.find((p) => p.url === current)?.id ?? null}
+              onPick={(p) => {
+                setChoosing(false);
+                void save(p.id, p.url);
+              }}
+            />
           </Dialog.Body>
         </Sheet>
       </Dialog.Root>
