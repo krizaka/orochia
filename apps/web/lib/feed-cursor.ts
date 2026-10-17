@@ -11,13 +11,16 @@ export const FEED_PAGE_SIZE = 24;
 // @fixed: the most a client may ask for in one page, so no request lists the library
 export const FEED_PAGE_MAX = 48;
 
-export const FeedSort = { Latest: "latest", Trending: "trending", Following: "following" } as const;
+export const FeedSort = { ForYou: "foryou", Latest: "latest", Trending: "trending", Following: "following" } as const;
 export type FeedSort = (typeof FeedSort)[keyof typeof FeedSort];
 export const FEED_SORTS = Object.values(FeedSort) as [FeedSort, ...FeedSort[]];
 
+/** The feeds that are a ranked list (their cursor key is the offset into it) rather than a keyset on a column. */
+export const isRankedSort = (sort: FeedSort) => sort === FeedSort.ForYou || sort === FeedSort.Trending;
+
 export interface FeedCursor {
   sort: FeedSort;
-  /** The sort key of the last row shown: its `created_at` as Postgres prints it (microseconds kept), or its views count. */
+  /** The sort key of the last row shown: its `created_at` as Postgres prints it (microseconds kept), or, for a ranked feed, the offset of the next page in it. */
   key: string;
   id: string;
 }
@@ -42,7 +45,7 @@ export function parseFeedCursor(raw: string | null | undefined, sort: FeedSort):
     throw new z.ZodError([{ code: "custom", message: "Invalid cursor", path: ["cursor"] }]);
   }
   const body = Body.parse(json);
-  const keyShape = sort === FeedSort.Trending ? COUNT : TIMESTAMP;
+  const keyShape = isRankedSort(sort) ? COUNT : TIMESTAMP;
   return z
     .object({ sort: z.literal(sort), key: z.string().regex(keyShape), id: z.string().uuid() })
     .parse({ sort: body.s, key: body.k, id: body.id });
@@ -54,4 +57,12 @@ export function pageOf<T extends { id: string; cursorKey: string }>(rows: readon
   const last = shown[shown.length - 1];
   const items = shown.map(({ cursorKey: _key, ...rest }) => rest);
   return { items, nextCursor: rows.length > limit && last ? encodeFeedCursor({ sort, key: last.cursorKey, id: last.id }) : null };
+}
+
+/** A page of a ranked list: the ids from `offset`, and the cursor of the next page (the offset after them, the last id shown). */
+export function rankedSlice<T extends { id: string }>(pool: readonly T[], offset: number, limit: number, sort: FeedSort): { items: T[]; nextCursor: string | null } {
+  const items = pool.slice(offset, offset + limit);
+  const last = items[items.length - 1];
+  const next = offset + items.length;
+  return { items, nextCursor: last && next < pool.length ? encodeFeedCursor({ sort, key: String(next), id: last.id }) : null };
 }

@@ -17,7 +17,7 @@ import {
 
 const STATES: ViewerState[] = ["anonymous", "member", "creator-pending", "creator", "suspended"];
 const SIGNED_IN: ViewerState[] = ["member", "creator-pending", "creator", "suspended"];
-const TABS: FeedTab[] = ["foryou", "following", "trending"];
+const TABS: FeedTab[] = ["foryou", "following", "trending", "latest"];
 const KINDS: FeedEmptyKind[] = ["platform", "tab"];
 
 /** Every call to action a viewer can meet: the creator space and the empty feed, in every tab. */

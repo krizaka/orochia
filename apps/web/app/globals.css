@@ -199,3 +199,10 @@ html:not([data-navigated]) .kz-page { animation: none; }
 .doc-prose th, .doc-prose td { border: 1px solid var(--kz-border-default); padding: 0.4rem 0.7rem; text-align: left; vertical-align: top; }
 .doc-prose th { background: var(--kz-surface-1); color: var(--kz-text-primary); }
 .doc-prose hr { border: 0; border-top: 1px solid var(--kz-border-subtle); margin: 2rem 0; }
+
+/* Home, vertical feed (a phone): the video owns the screen — the visitor's intro line, the stories rail and the page's padding
+   step aside; the feed tabs float over the top of the first screen (components/FeedFilterTabs.tsx). */
+body:has([data-feed-layout="vertical"]) [data-testid="home-intro"],
+body:has([data-feed-layout="vertical"]) [data-feed-chrome] { display: none; }
+body:has([data-feed-layout="vertical"]) [data-feed-container] { padding: 0; }
+body:has([data-feed-layout="vertical"]) [data-feed-container] > section { margin-top: 0; }

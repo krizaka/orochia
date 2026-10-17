@@ -1235,7 +1235,8 @@
     "tabs": {
       "foryou": "For you",
       "following": "Following",
-      "trending": "Trending"
+      "trending": "Trending",
+      "latest": "Latest"
     },
     "shorts": "Shorts",
     "shortsPrevious": "Previous shorts",
@@ -1277,6 +1278,10 @@
       "tab": {
         "foryou": {
           "title": "Nothing here yet",
+          "body": "Videos picked for you land here."
+        },
+        "latest": {
+          "title": "Nothing here yet",
           "body": "The newest videos land here first."
         },
         "trending": {
@@ -1315,6 +1320,9 @@
       "viewLabel": "Layout",
       "sound": "Turn the sound on",
       "mute": "Turn the sound off",
+      "tapForSound": "Tap for sound",
+      "play": "Play",
+      "pause": "Pause",
       "fullscreen": "Full screen",
       "like": "Like",
       "comment": "Comments",

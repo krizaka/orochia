@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { ZodError } from "zod";
 
-import { encodeFeedCursor, FEED_PAGE_SIZE, FeedSort, pageOf, parseFeedCursor } from "./feed-cursor";
+import { encodeFeedCursor, FEED_PAGE_SIZE, FeedSort, pageOf, parseFeedCursor, rankedSlice } from "./feed-cursor";
 
 const ID = "6b1f5c2e-2d1a-4f3b-9a55-0d2f6a1e9c10";
 const row = (n: number) => ({ id: `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`, title: `v${n}`, cursorKey: `2026-10-16 20:00:00.${String(1000 - n).padStart(6, "0")}+00` });
@@ -51,5 +51,29 @@ describe("pageOf", () => {
     expect(pageOf([row(1), row(2)], FEED_PAGE_SIZE, FeedSort.Latest)).toMatchObject({ nextCursor: null });
     expect(pageOf(Array.from({ length: FEED_PAGE_SIZE }, (_, i) => row(i)), FEED_PAGE_SIZE, FeedSort.Latest).nextCursor).toBeNull();
     expect(pageOf([], FEED_PAGE_SIZE, FeedSort.Latest)).toEqual({ items: [], nextCursor: null });
+  });
+});
+
+describe("rankedSlice (For you and Trending are ranked lists)", () => {
+  const pool = Array.from({ length: 7 }, (_, i) => ({ id: `00000000-0000-4000-8000-${String(i).padStart(12, "0")}` }));
+  it("walks the whole list once, page by page, through the cursor", () => {
+    const seen: string[] = [];
+    let cursor: string | null = null;
+    for (let guard = 0; guard < 10; guard++) {
+      const offset: number = Number(parseFeedCursor(cursor, FeedSort.ForYou)?.key ?? 0);
+      const page: { items: { id: string }[]; nextCursor: string | null } = rankedSlice(pool, offset, 3, FeedSort.ForYou);
+      seen.push(...page.items.map((i) => i.id));
+      cursor = page.nextCursor;
+      if (!cursor) break;
+    }
+    expect(seen).toEqual(pool.map((p) => p.id));
+  });
+  it("its cursor is bound to its feed", () => {
+    const { nextCursor } = rankedSlice(pool, 0, 3, FeedSort.ForYou);
+    expect(() => parseFeedCursor(nextCursor, FeedSort.Trending)).toThrow(ZodError);
+  });
+  it("an empty or exhausted list has no next page", () => {
+    expect(rankedSlice([], 0, 3, FeedSort.Trending)).toEqual({ items: [], nextCursor: null });
+    expect(rankedSlice(pool, 5, 3, FeedSort.Trending).nextCursor).toBeNull();
   });
 });

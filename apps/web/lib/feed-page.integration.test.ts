@@ -47,7 +47,7 @@ describe.skipIf(!enabled)("feedPage (keyset pagination)", () => {
     await db.delete(videos).where(like(videos.bunnyVideoId, `${TAG}-%`));
   });
 
-  async function walk(sort: "latest" | "trending", size: number) {
+  async function walk(sort: "latest" | "trending" | "foryou", size: number) {
     const seen: string[] = [];
     let cursor: string | null = null;
     let pages = 0;
@@ -61,7 +61,7 @@ describe.skipIf(!enabled)("feedPage (keyset pagination)", () => {
     return seen;
   }
 
-  it.each([FeedSort.Latest, FeedSort.Trending] as const)("%s: every listable video once, none skipped across pages of 4, the unlisted never", async (sort) => {
+  it.each([FeedSort.Latest, FeedSort.Trending, FeedSort.ForYou] as const)("%s: every listable video once, none skipped across pages of 4, the unlisted never", async (sort) => {
     const seen = (await walk(sort, 4)).filter((id) => listed.includes(id) || true);
     const mine = seen.filter((id) => listed.includes(id));
     expect(new Set(seen).size).toBe(seen.length); // no repeat anywhere in the library

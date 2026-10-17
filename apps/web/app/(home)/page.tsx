@@ -6,8 +6,9 @@ import { StoriesRail } from "@/components/home/StoriesRail";
 import { Button, cn } from "@/components/ui";
 import { signInHref, signUpHref } from "@/lib/creator-journey";
 import { signupEnabled } from "@/lib/features";
-import { t } from "@/lib/i18n";
 import { FeedSort } from "@/lib/feed-cursor";
+import { feedSettings } from "@/lib/feed-settings";
+import { t } from "@/lib/i18n";
 import { feedPage } from "@/lib/queries";
 import { getViewer } from "@/lib/viewer";
 
@@ -15,12 +16,12 @@ export const metadata = { alternates: { canonical: "/" } };
 export const dynamic = "force-dynamic";
 
 /**
- * Home is the feed, like the platforms people know: For you · Following · Trending, a Shorts shelf for the vertical clips
+ * Home is the feed, like the platforms people know: For you (Orazaka's recommendations, or trending blended with fresh for a visitor) · Following · Trending (engagement velocity) · Latest (chronological, only when chosen), a Shorts shelf for the vertical clips
  * and one uniform 16:9 grid for the rest. A visitor gets one line above it (what this is, Explore / Sign in); the pitch
  * — how it works, the 90 %, the four ways to support — lives on /how-it-works. Everything shown is read from the database:
  * an empty platform shows empty states, never invented creators or figures (AGENTS.md §3.F).
  */
-const TAB_SORT = { foryou: FeedSort.Latest, trending: FeedSort.Trending, following: FeedSort.Following } as const;
+const TAB_SORT = { foryou: FeedSort.ForYou, latest: FeedSort.Latest, trending: FeedSort.Trending, following: FeedSort.Following } as const;
 
 /** The open tab's first page, read on the server; the next pages come one at a time (`/api/feed?sort=…&cursor=…`). */
 async function loadHome(sort: FeedSort, viewerId: string | null, viewerAgeChecked: boolean) {
@@ -38,7 +39,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const { user: viewer, state: viewerState } = await getViewer();
   const { feed } = await searchParams;
   const asked = Array.isArray(feed) ? feed[0] : feed;
-  const tab = asked === "trending" || asked === "following" ? asked : "foryou";
+  const tab = asked === "trending" || asked === "following" || asked === "latest" ? asked : "foryou";
+  const { shortsMaxSeconds } = await feedSettings(new Date()).catch(() => ({ shortsMaxSeconds: undefined }));
   const { page, unavailable } = await loadHome(TAB_SORT[tab], viewer?.id ?? null, viewer?.isAgeVerified === true);
   const container = "mx-auto w-full max-w-7xl px-4 sm:px-6";
   return (
@@ -64,10 +66,10 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           </div>
         </div>
       )}
-      <div className={cn(container, "py-6 sm:py-8")}>
-        {viewer && <StoriesRail />}
+      <div data-feed-container className={cn(container, "py-6 sm:py-8")}>
+        {viewer && <div data-feed-chrome><StoriesRail /></div>}
         <section aria-label={t("feed.label")} className={viewer ? "mt-6" : undefined}>
-          <FeedFilterTabs initialTab={tab} initialPage={page} viewer={viewerState} unavailable={unavailable} />
+          <FeedFilterTabs initialTab={tab} initialPage={page} viewer={viewerState} unavailable={unavailable} shortsMaxSeconds={shortsMaxSeconds} />
         </section>
       </div>
     </div>

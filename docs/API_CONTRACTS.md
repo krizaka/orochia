@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (185)
+## Endpoints (186)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -95,6 +95,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/creators/[username]/follow` | session · MEMBER / CREATOR / ADMIN | Follows a creator; the follow stays PENDING until the creator approves it. |
 | `GET` | `/api/explore` | public · session-aware | Explore: without a search, the discovery sections (trending this week, new, stories, creators to follow, open auctions, open challenges, tags); with `q` and/or `tag` (or `view=all`), videos (paged), creators and stories. |
 | `GET` | `/api/feed` | public · session-aware | The feeds, a page at a time. |
+| `POST` | `/api/feed/events` | public · session-aware | A slide of the vertical feed left the screen: `&#123; videoId, visit, watchedPct, dwellMs &#125;`. |
 | `POST` | `/api/groups` | session · ADMIN / CREATOR / MEMBER | Creates a group (the caller is its owner); the members must be the caller's contacts (or, for a creator, approved fans). |
 | `DELETE` | `/api/groups/[id]` | session · ADMIN / CREATOR / MEMBER | Closes the group (owner): nobody writes any more. |
 | `GET` | `/api/groups/[id]` | session · ADMIN / CREATOR / MEMBER | The group: its name, the caller's role and mute, its members. |

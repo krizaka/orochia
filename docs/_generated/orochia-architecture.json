@@ -661,6 +661,12 @@
     },
     {
       "method": "POST",
+      "path": "/api/feed/events",
+      "access": "public · session-aware",
+      "summary": "A slide of the vertical feed left the screen: `{ videoId, visit, watchedPct, dwellMs }`."
+    },
+    {
+      "method": "POST",
       "path": "/api/groups",
       "access": "session · ADMIN / CREATOR / MEMBER",
       "summary": "Creates a group (the caller is its owner); the members must be the caller's contacts (or, for a creator, approved fans)."
@@ -1527,7 +1533,7 @@
         "runtime": "node",
         "version": "1.0.0",
         "published": false,
-        "description": "The API: 145 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
+        "description": "The API: 146 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
       },
       {
         "id": "orochia-config",

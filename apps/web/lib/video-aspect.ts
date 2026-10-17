@@ -22,5 +22,23 @@ export const ASPECT_CLASS: Record<VideoOrientation, string> = {
 
 export const aspectClassOf = (width?: number | null, height?: number | null) => ASPECT_CLASS[orientationOf(width, height)];
 
-/** The kit's frame for a source: a vertical clip fills 9:16 (the Shorts shelf), anything else 16:9 (a square one is drawn whole over a blurred copy). */
-export const frameOf = (width?: number | null, height?: number | null): "portrait" | "landscape" => (orientationOf(width, height) === "vertical" ? "portrait" : "landscape");
+/**
+ * The format of a video — the one rule every list reads: a vertical clip (9:16) up to `shortsMaxSeconds` is a Short; a
+ * square (1:1) or horizontal (16:9) one, an unknown size, or a vertical clip longer than the limit is a Video.
+ */
+export type VideoFormat = "short" | "video";
+
+export function formatOf(width: number | null | undefined, height: number | null | undefined, durationSeconds: number, shortsMaxSeconds: number): VideoFormat {
+  return orientationOf(width, height) === "vertical" && durationSeconds <= shortsMaxSeconds ? "short" : "video";
+}
+
+/** The kit's frame for a source: a Short fills 9:16 (the Shorts shelf), anything else 16:9. */
+export const frameOf = (width?: number | null, height?: number | null, durationSeconds = 0, shortsMaxSeconds = Number.POSITIVE_INFINITY): "portrait" | "landscape" =>
+  formatOf(width, height, durationSeconds, shortsMaxSeconds) === "short" ? "portrait" : "landscape";
+
+/**
+ * How a picture fills its tile: always cover (a square clip is cropped to the 16:9 tile around its centre, never letterboxed
+ * with side bars) — except a vertical clip that is not a Short, whose slice would show nothing: it is drawn whole.
+ */
+export const tileFitOf = (width: number | null | undefined, height: number | null | undefined, frame: "portrait" | "landscape"): "cover" | "contain" =>
+  frame === "landscape" && orientationOf(width, height) === "vertical" ? "contain" : "cover";

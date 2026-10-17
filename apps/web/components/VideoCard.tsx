@@ -11,7 +11,7 @@ import { isAdultRating } from "@/lib/content-ratings";
 import { t } from "@/lib/i18n";
 import { money } from "@/lib/money";
 import { defaultAvatarFor } from "@/lib/presets";
-import { frameOf, orientationOf } from "@/lib/video-aspect";
+import { frameOf, tileFitOf } from "@/lib/video-aspect";
 import { qualityOf } from "@/lib/video-quality";
 import type { VideoVisibility } from "@/lib/visibility";
 
@@ -59,8 +59,7 @@ export function VideoCard({ aspect, layout, ...props }: VideoCardProps & { aspec
   const { id, title, creatorName, creatorUsername, creatorAvatar, thumbnailUrl, previewAnimationUrl, width, height, durationSeconds, viewsCount, minTipAmountCents, isBlurred = false } = props;
   const [tipping, setTipping] = useState(false);
   const [revealed, setRevealed] = useState(!isBlurred);
-  const frame = aspect ?? frameOf(width, height);
-  const square = orientationOf(width, height) === "square";
+  const frame = aspect ?? frameOf(width, height, durationSeconds);
   return (
     <>
       <KitVideoCard
@@ -73,7 +72,7 @@ export function VideoCard({ aspect, layout, ...props }: VideoCardProps & { aspec
         loading={props.priority ? "eager" : "lazy"}
         posterPriority={props.priority ? "high" : "auto"}
         previewSrc={previewAnimationUrl}
-        fit={square ? "contain" : "cover"}
+        fit={tileFitOf(width, height, frame)}
         duration={formatDuration(durationSeconds)}
         badges={<><AccessBadges {...props} /><QualityBadge resolutions={props.resolutions} width={width} height={height} /></>}
         blurred={isBlurred && !revealed}

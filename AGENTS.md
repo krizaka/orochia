@@ -150,6 +150,16 @@ orochia/                           npm workspaces
   allowed to watch it. Adult ratings are veiled for visitors whose age the server has not checked. Search is PostgreSQL
   full-text (`search_vector`, GIN, `orochia_unaccent`, simple + English + French); tags are normalised by `lib/tags.ts`
   on every write and in the address (`/explore?tag=`); ranking is pure (`lib/ranking.ts`).
+- **The home feed is ranked, never just « newest »** (`lib/feed-ranking.ts` pure and tested, `lib/feed-pool.ts` the candidates,
+  parameters = the `feed` domain of `app_settings`, `lib/feed-settings.ts`, bounds and defaults there): **For you** is
+  Orazaka's recommendations (ADR-078) re-weighted by recency for a signed-in viewer, a blend of trending and fresh for a
+  visitor; **Trending** is engagement velocity; **Latest** is chronological and only an explicit tab (`?feed=latest`);
+  **Following** is chronological. Every list but Latest keeps a creator to `maxConsecutivePerCreator` in a row (default 2);
+  official brand accounts get no boost. The format rule is one function (`formatOf`, `lib/video-aspect.ts`: 9:16 up to
+  `shortsMaxSeconds` is a Short, 1:1 and 16:9 are Videos); a square clip is cover-cropped in its 16:9 tile, never letterboxed.
+  The phone's vertical feed fills the screen (tabs float over it), a 16:9 clip is a centred player over blur
+  (`LandscapeSlide`), the first tap unmutes, and each slide that leaves reports its watched share to the recommendation
+  outbox (`/api/feed/events` → SKIP or VIEW, `classifyWatch`, signed-in only).
 - **18+ is gated by the server, never by the visitor's word** (`lib/adult-access.ts`, applied by `lib/access.ts`; the
   ratings are the shared list of `lib/content-ratings.ts`, MATURE / ADULT). For such an item the stream
   (`evaluateVideoAccess`, whatever the visibility), unlock / tip / purchase intents, auction bids, challenge pledges,

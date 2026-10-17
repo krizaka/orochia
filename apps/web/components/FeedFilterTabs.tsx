@@ -1,20 +1,20 @@
 "use client";
 
 import { LoadMore, MediaGridSkeleton } from "@krizaka/ui/media-grid";
-import { Clapperboard, Flame, LayoutGrid, Rows3, Smartphone, Sparkles, Users } from "lucide-react";
+import { Clapperboard, Clock, Flame, LayoutGrid, Rows3, Smartphone, Sparkles, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import React, { useReducer, useState, useSyncExternalStore } from "react";
 
+import { VerticalFeed } from "@/components/feed/VerticalFeed";
 import { Avatar, Badge, buttonVariants, Chip, cn, EmptyState, orochiaButton, Tabs } from "@/components/ui";
 import type { VideoCardProps } from "@/components/VideoCard";
-import { VerticalFeed } from "@/components/feed/VerticalFeed";
 import { VideoGrid } from "@/components/VideoGrid";
 import { useAuth } from "@/lib/auth-context";
 import { feedEmptyActions, type FeedEmptyKind, type FeedTab, type ViewerState } from "@/lib/creator-journey";
 import { type FeedSort } from "@/lib/feed-cursor";
-import { FeedLayout, feedLayoutOf, PHONE_QUERY, viewSearch } from "@/lib/feed-view";
 import { feedReducer, feedStateOf, type FeedTabId, hasMore, type PageData, TabStatus } from "@/lib/feed-state";
+import { FeedLayout, feedLayoutOf, PHONE_QUERY, viewSearch } from "@/lib/feed-view";
 import { t } from "@/lib/i18n";
 import { defaultAvatarFor } from "@/lib/presets";
 import { aspectClassOf, orientationOf } from "@/lib/video-aspect";
@@ -27,6 +27,8 @@ interface FeedFilterTabsProps {
   viewer: ViewerState;
   /** The feed could not be read (the database did not answer): say so, never "no video yet". */
   unavailable?: boolean;
+  /** The Shorts limit (`feed` settings): a vertical clip longer than this is a Video. */
+  shortsMaxSeconds?: number;
 }
 
 /**
@@ -68,16 +70,16 @@ function FeedEmpty({ viewer, kind, tab }: { viewer: ViewerState; kind: FeedEmpty
   );
 }
 
-const SORT_OF: Record<FeedTab, FeedSort> = { foryou: "latest", trending: "trending", following: "following" };
+const SORT_OF: Record<FeedTab, FeedSort> = { foryou: "foryou", latest: "latest", trending: "trending", following: "following" };
 const TAB_OF: Record<FeedTab, FeedTabId> = SORT_OF;
 
-export function FeedFilterTabs({ initialTab, initialPage, viewer, unavailable = false }: FeedFilterTabsProps) {
+export function FeedFilterTabs({ initialTab, initialPage, viewer, unavailable = false, shortsMaxSeconds }: FeedFilterTabsProps) {
   // The open tab lives in the address (?feed=…), so a shared link opens the same feed. Switching tabs rewrites the address in
   // place (no server round trip): each tab keeps its own pages, and asks for its first one when opened.
   const pathname = usePathname();
   const params = useSearchParams();
   const asked = params.get("feed");
-  const activeTab: FeedTab = asked === "trending" || asked === "following" ? asked : "foryou";
+  const activeTab: FeedTab = asked === "trending" || asked === "following" || asked === "latest" ? asked : "foryou";
   const [feeds, dispatch] = useReducer(feedReducer<VideoCardProps>, feedStateOf<VideoCardProps>(TAB_OF[initialTab], initialPage));
   const [viewMode, setViewMode] = useState<"grid" | "cinematic">("grid");
   // A phone gets the vertical feed (one video per screen) unless the address says ?view=grid. The server renders the grid;
@@ -132,6 +134,7 @@ export function FeedFilterTabs({ initialTab, initialPage, viewer, unavailable = 
     { id: "foryou", label: t("feed.tabs.foryou"), icon: Flame },
     { id: "following", label: t("feed.tabs.following"), icon: Users },
     { id: "trending", label: t("feed.tabs.trending"), icon: Sparkles },
+    { id: "latest", label: t("feed.tabs.latest"), icon: Clock },
   ] as const;
 
   const empty = !firstPageWaiting && filteredVideos.length === 0 && (
@@ -160,10 +163,10 @@ export function FeedFilterTabs({ initialTab, initialPage, viewer, unavailable = 
       ) : empty ? (
         empty
       ) : layout === FeedLayout.Vertical ? (
-        <VerticalFeed videos={filteredVideos} onNearEnd={() => void loadPage(activeTab)} className="kz-fade" />
+        <VerticalFeed videos={filteredVideos} shortsMaxSeconds={shortsMaxSeconds} onNearEnd={() => void loadPage(activeTab)} className="kz-fade" />
       ) : viewMode === "grid" ? (
         /* Shorts shelf for the 9:16, uniform 16:9 grid for the rest */
-        <VideoGrid videos={filteredVideos} className="kz-fade" />
+        <VideoGrid videos={filteredVideos} shortsMaxSeconds={shortsMaxSeconds} className="kz-fade" />
       ) : (
         /* Cinematic Immersive Stream Feed */
         <div className="max-w-3xl mx-auto space-y-8 kz-fade">
@@ -261,10 +264,17 @@ export function FeedFilterTabs({ initialTab, initialPage, viewer, unavailable = 
   );
 
   return (
-    <Tabs.Root variant="pills" value={activeTab} onValueChange={(tab) => setActiveTab(tab as FeedTab)} className="gap-6">
+    <Tabs.Root variant="pills" value={activeTab} onValueChange={(tab) => setActiveTab(tab as FeedTab)} data-feed-layout={layout} className={cn(layout === FeedLayout.Vertical ? "relative gap-0" : "gap-6")}>
       {/* The feeds (pills, in the address) and the view (grid or cinema) */}
-      <div className="flex max-w-full flex-col items-start justify-between gap-4 overflow-hidden border-b border-border-default pb-4 sm:flex-row sm:items-center">
-        <Tabs.List aria-label={t("feed.label")} className="max-w-full touch-pan-x">
+      {/* In the vertical feed the tabs float over the top of the first screen: the video owns the screen, the feeds stay one tap away. */}
+      <div
+        data-feed-tabs
+        className={cn(
+          "flex max-w-full flex-col items-start justify-between gap-4 overflow-hidden border-b border-border-default pb-4 sm:flex-row sm:items-center",
+          layout === FeedLayout.Vertical && "pointer-events-none absolute inset-x-0 top-0 z-20 flex-row items-center gap-2 border-0 bg-linear-to-b from-scrim to-transparent px-2 pb-6 pt-2 *:pointer-events-auto",
+        )}
+      >
+        <Tabs.List aria-label={t("feed.label")} className="max-w-full touch-pan-x overflow-x-auto">
           {tabs.map(({ id, label, icon: Icon }) => (
             <Tabs.Trigger key={id} value={id} className="font-bold">
               <Icon className="h-3.5 w-3.5 text-fg-accent" aria-hidden />
