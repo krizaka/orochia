@@ -8,9 +8,9 @@
 
 # Orochia
 
-**Creators get paid. Every cent, exactly once.**
+**Orochia — an open-source video platform: upload, encode and stream.**
 
-The creator video platform: direct-to-CDN 4K streaming, server-side access control, gateway-confirmed payments settled exactly once on a double-entry ledger, and built-in 18+ compliance.
+Direct-to-CDN 4K streaming, server-side access control, and gateway-confirmed payments settled exactly once on a double-entry ledger.
 
 [![CI](https://github.com/krizaka/orochia/actions/workflows/ci.yml/badge.svg)](https://github.com/krizaka/orochia/actions/workflows/ci.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/krizaka/orochia/badge)](https://scorecard.dev/viewer/?uri=github.com/krizaka/orochia)
