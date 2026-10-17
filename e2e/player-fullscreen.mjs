@@ -4,12 +4,12 @@
  * tap must reach the platform's fullscreen — the container where the browser has it (Android), the video's own
  * `webkitEnterFullscreen` on iPhone, where a container cannot be fullscreened.
  *
- *   APP_URL=https://dev.orochia.com WATCH_PATH=/watch/<id> npm run test:e2e:player
+ *   APP_URL=https://dev.orochia.com npm run test:e2e:player -- /watch/<id>
  */
 import { chromium, devices, webkit } from "playwright";
 
 const B = (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
-const WATCH = process.env.WATCH_PATH || "/watch/a7f32d84-e3b7-49e9-8e14-21c11781bdcf";
+const WATCH = process.argv[2] || "/watch/a7f32d84-e3b7-49e9-8e14-21c11781bdcf";
 let failures = 0;
 const check = (name, cond, extra = "") => { console.log(`${cond ? "✓" : "✗"} ${name}${cond ? "" : "  " + extra}`); if (!cond) failures++; };
 
