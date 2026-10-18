@@ -109,3 +109,18 @@ describe("connection loss", () => {
     expect(options.maxLifetimeSeconds).toBe(MAX_CONNECTION_LIFETIME_SECONDS);
   });
 });
+
+describe("directDatabaseUrl (LISTEN and migrations stay off the transaction pooler)", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("is DATABASE_DIRECT_URL when set, DATABASE_URL otherwise", async () => {
+    const { directDatabaseUrl } = await freshModule();
+    vi.stubEnv("DATABASE_URL", "postgresql://u:p@host:25061/pool-orochia");
+    vi.stubEnv("DATABASE_DIRECT_URL", "");
+    expect(directDatabaseUrl()).toBe("postgresql://u:p@host:25061/pool-orochia");
+    vi.stubEnv("DATABASE_DIRECT_URL", " postgresql://u:p@host:25060/orochia_db ");
+    expect(directDatabaseUrl()).toBe("postgresql://u:p@host:25060/orochia_db");
+  });
+});
