@@ -1,6 +1,6 @@
 import { Client } from "pg";
 import { connectionConfig } from "./connection";
-import { databaseUrl, getDb, isDatabaseUnavailable } from "./client";
+import { directDatabaseUrl, getDb, isDatabaseUnavailable } from "./client";
 import { sql } from "drizzle-orm";
 
 /**
@@ -79,7 +79,7 @@ export function listenChannel(channel: string, onMessage: (payload: string) => v
   const connect = async () => {
     let next: Client;
     try {
-      next = new Client({ ...connectionConfig(databaseUrl()), application_name: "orochia-listen", keepAlive: true, keepAliveInitialDelayMillis: 10_000, connectionTimeoutMillis: 5_000 });
+      next = new Client({ ...connectionConfig(directDatabaseUrl()), application_name: "orochia-listen", keepAlive: true, keepAliveInitialDelayMillis: 10_000, connectionTimeoutMillis: 5_000 });
     } catch (error) {
       console.warn(`[listen] ${channel}: ${(error as Error).message}`);
       return retry();

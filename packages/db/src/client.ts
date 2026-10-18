@@ -26,6 +26,15 @@ export function databaseUrl(): string {
   return DEV_DATABASE_URL;
 }
 
+/**
+ * A session-capable (direct) connection for what a transaction pooler breaks: LISTEN/NOTIFY and migrations.
+ * DATABASE_DIRECT_URL when set (DATABASE_URL then points at a PgBouncer transaction pool), else DATABASE_URL.
+ */
+export function directDatabaseUrl(): string {
+  const url = process.env.DATABASE_DIRECT_URL;
+  return url && url.trim() ? url.trim() : databaseUrl();
+}
+
 /** DATABASE_MAX_CONNECTIONS as a positive integer (default 5, at most 50). */
 export function poolSize(value: string | undefined = process.env.DATABASE_MAX_CONNECTIONS): number {
   const raw = value?.trim();
