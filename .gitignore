@@ -56,3 +56,6 @@ docs/screenshots/
 
 # Generated at build (apps/web/scripts/gen-docs-bundle.mjs)
 apps/web/lib/docs-bundle.generated.json
+
+# Vitest JSON report (written by every local run)
+.vitest/
