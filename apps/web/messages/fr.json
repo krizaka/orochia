@@ -3157,15 +3157,34 @@
   "docs": {
     "meta": {
       "title": "Documentation",
-      "description": "Comment Orochia est construite et comment l’exécuter : prise en main, architecture, accueil des créateurs, enchères, défis, chaîne de traitement des médias, temps réel, appli mobile, accessibilité et déploiement."
+      "description": "Le guide d’Orochia pour les fans et les créateurs — prise en main, l’appli, les crédits, les enchères, les défis, être payé, la sécurité — et les pages pour les développeurs : architecture, chaîne de traitement des médias, temps réel, déploiement."
     },
     "eyebrow": "Documentation",
     "title": "Orochia, documentée",
-    "lead": "Orochia est à code source ouvert. Ces pages sont la documentation du dépôt lui-même — comment ça marche, pourquoi c’est construit ainsi et comment l’exécuter vous-même.",
+    "lead": "Un guide pour les fans et les créateurs, et les pages du projet à code source ouvert pour les développeurs.",
     "source": "Lire le code source sur GitHub",
     "editOnGithub": "Modifier cette page sur GitHub",
     "back": "Toute la documentation",
-    "navLabel": "Pages de documentation"
+    "navLabel": "Pages de documentation",
+    "breadcrumbLabel": "Fil d’Ariane",
+    "onThisPage": "Sur cette page",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "collectionsTitle": "Choisissez votre porte d’entrée",
+    "popularTitle": "Les plus lues",
+    "groups": {
+      "guide": "Guide",
+      "developers": "Développeurs"
+    },
+    "collections": {
+      "guide": "Pour les fans et les créateurs : votre compte, l’appli, les crédits, les enchères, les défis, être payé et rester en sécurité.",
+      "developers": "Pour le projet à code source ouvert : architecture, développement, déploiement, chaîne de traitement des médias, temps réel et état technique de l’appli mobile."
+    },
+    "promise": {
+      "label": "Des mots simples",
+      "text": "Le guide dit ce que fait Orochia, sans jargon. L’intérieur du fonctionnement se trouve dans les pages pour les développeurs."
+    },
+    "englishOnly": "Les pages pour les développeurs sont rédigées en anglais."
   },
   "mobile": {
     "meta": {

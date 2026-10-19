@@ -1,4 +1,10 @@
-# ⚡ Realtime — how Orochia stays live
+---
+title: Realtime
+nav: Realtime
+description: The bus, the streams, reconnection and presence.
+---
+
+# Realtime — how Orochia stays live
 
 A message lands, a bid moves the price, a pledge fills the pot, someone comes online: the screens that care hear of it
 in well under a second, on the web and in the app, without polling. This page describes **what runs** — the bus, the

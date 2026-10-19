@@ -3157,15 +3157,34 @@
   "docs": {
     "meta": {
       "title": "Documentation",
-      "description": "How Orochia is built and how to run it: getting started, architecture, creator onboarding, auctions, challenges, the media pipeline, realtime, the mobile app, accessibility and deployment."
+      "description": "The Orochia guide for fans and creators — getting started, the app, credits, auctions, challenges, getting paid, safety — and the developers' pages: architecture, media pipeline, realtime, deployment."
     },
     "eyebrow": "Documentation",
     "title": "Orochia, documented",
-    "lead": "Orochia is open source. These pages are the repository's own documentation — how it works, why it is built that way, and how to run it yourself.",
+    "lead": "A guide for fans and creators, and the pages of the open-source project for developers.",
     "source": "Read the source on GitHub",
     "editOnGithub": "Edit this page on GitHub",
     "back": "All documentation",
-    "navLabel": "Documentation pages"
+    "navLabel": "Documentation pages",
+    "breadcrumbLabel": "Breadcrumb",
+    "onThisPage": "On this page",
+    "previous": "Previous",
+    "next": "Next",
+    "collectionsTitle": "Choose your way in",
+    "popularTitle": "Most read",
+    "groups": {
+      "guide": "Guide",
+      "developers": "Developers"
+    },
+    "collections": {
+      "guide": "For fans and creators: your account, the app, credits, auctions, challenges, getting paid and staying safe.",
+      "developers": "For the open-source project: architecture, development, deployment, the media pipeline, realtime and the mobile app's technical state."
+    },
+    "promise": {
+      "label": "Plain words",
+      "text": "The Guide says what Orochia does and has no jargon. The inside of how it works is in the developers' pages."
+    },
+    "englishOnly": "The developers' pages are written in English."
   },
   "mobile": {
     "meta": {

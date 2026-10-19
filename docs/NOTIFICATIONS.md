@@ -1,4 +1,10 @@
-# 🔔 Notifications & push
+---
+title: Notifications and push
+nav: Notifications
+description: How an event reaches the bell, the open page, the phone and the inbox.
+---
+
+# Notifications & push
 
 Something happens — a follower, a tip, an unlock, a bid, a pledge, a message — and the person it concerns hears of it
 **wherever they are**: on an open page (in the second), on their phone (even with the app closed), by e-mail (at the

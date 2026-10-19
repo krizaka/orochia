@@ -1,4 +1,10 @@
-# 🔥 Challenges
+---
+title: Challenges: internals
+nav: Challenges
+description: The three kinds, the state machine and the escrow.
+---
+
+# Challenges
 
 Fans put credits behind something they want to see; a creator makes it. A challenge is **custom content with a game
 around it**: a pot that fills in real time, a clock, a leaderboard of backers — and one rule that makes it fair for

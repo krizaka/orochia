@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-import { DOCS } from "@/lib/docs";
+import { AUDIENCES, docHref, docsOf } from "@/lib/docs";
 import { localizedPath } from "@/lib/locales";
 import { sitemapEntries } from "@/lib/queries";
 import { absolute } from "@/lib/seo";
@@ -33,7 +33,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const statics = [
     ...STATIC.map((s) => ({ ...page(s.path), lastModified: now, changeFrequency: s.changeFrequency, priority: s.priority })),
-    ...DOCS.map((d) => ({ url: absolute(localizedPath(`/docs/${d.slug}`, "en")), lastModified: now, changeFrequency: "weekly" as const, priority: 0.5 })),
+    // The Guide has an English and a French page (hreflang alternates); the developers' pages are in English only.
+    ...AUDIENCES.flatMap((audience) =>
+      docsOf(audience).map((d) => ({
+        ...(audience === "guide" ? page(docHref(d)) : { url: absolute(localizedPath(docHref(d), "en")) }),
+        lastModified: now,
+        changeFrequency: "weekly" as const,
+        priority: audience === "guide" ? 0.6 : 0.4,
+      })),
+    ),
   ];
   try {
     const { videos, creators, collections } = await sitemapEntries();
