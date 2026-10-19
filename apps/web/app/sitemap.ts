@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 import { DOCS } from "@/lib/docs";
 import { localizedPath } from "@/lib/locales";
 import { sitemapEntries } from "@/lib/queries";
-import { absolute, INDEXABLE } from "@/lib/seo";
+import { absolute } from "@/lib/seo";
 
 // Read from the database on request (cached an hour): the build never needs one.
 export const dynamic = "force-dynamic";
@@ -30,8 +30,6 @@ const page = (path: string) => ({
 
 /** Public pages only: listed videos, their creators, public collections. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // A site that is not indexed (dev, preview) lists nothing.
-  if (!INDEXABLE) return [];
   const now = new Date();
   const statics = [
     ...STATIC.map((s) => ({ ...page(s.path), lastModified: now, changeFrequency: s.changeFrequency, priority: s.priority })),

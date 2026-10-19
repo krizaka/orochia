@@ -28,18 +28,22 @@ describe("orochia: the family SEO contract", () => {
     for (const bot of AI_CRAWLERS) expect(robotsText(robots())).toContain(`User-Agent: ${bot}\nAllow: /`);
   });
 
-  it("a deployment that is not indexed (dev) shuts the door and advertises no sitemap", async () => {
+  it("a deployment that is not indexed (dev) shuts the door but still serves a correct sitemap line (family contract, orochia#246)", async () => {
     const { robots } = await load("off");
     const text = robotsText(robots());
     expect(auditRobots(text, { host: HOST, index: false })).toEqual([]);
-    expect(text).not.toMatch(/sitemap/i);
+    expect(text).toContain(`Sitemap: ${HOST}/sitemap.xml`);
+    expect(text).toMatch(/User-Agent: \*\nDisallow: \/\n/);
   });
 
-  it("a deployment that is not indexed lists no page in its sitemap", async () => {
+  it("a deployment that is not indexed still lists its public pages, each with a lastmod", async () => {
     vi.resetModules();
+    vi.stubEnv("NEXT_PUBLIC_APP_URL", HOST);
     vi.stubEnv("APP_SEARCH_INDEXING", "off");
     const sitemap = (await import("../apps/web/app/sitemap.ts")).default;
-    expect(await sitemap()).toEqual([]);
+    const entries = await sitemap();
+    expect(entries.length).toBeGreaterThan(0);
+    expect(entries.every((e) => e.lastModified)).toBe(true);
   });
 
   it("llms.txt and llms-full.txt follow llmstxt.org, use the deployment's origin and link the family", async () => {

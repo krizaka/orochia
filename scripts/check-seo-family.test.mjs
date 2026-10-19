@@ -25,9 +25,9 @@ test("robots.txt: a missing AI crawler, a missing Sitemap line and a blanket Dis
 
 test("a site that is not indexed must say so in robots, meta and header", () => {
   const off = `User-Agent: *\nDisallow: /\n`;
-  assert.deepEqual(auditRobots(off, { host: HOST, index: false }), []);
-  // a site that is not indexed advertises nothing: a sitemap line is a finding
-  assert.ok(auditRobots(`${off}Sitemap: ${HOST}/sitemap.xml\n`, { host: HOST, index: false }).some((p) => p.includes("sitemap")));
+  // noindex sites still serve correct files for the day they open: the Sitemap line is expected, the door stays shut
+  assert.deepEqual(auditRobots(`${off}\nSitemap: ${HOST}/sitemap.xml\n`, { host: HOST, index: false }), []);
+  assert.ok(auditRobots(off, { host: HOST, index: false }).some((p) => p.includes("Sitemap")));
   assert.ok(auditRobots(robots, { host: HOST, index: false }).length > 0);
   assert.ok(auditHtml(page(), "/", { ...opts, index: false }).some((p) => p.includes("noindex")));
   assert.deepEqual(auditHtml(page({ robotsMeta: "noindex, nofollow" }), "/", { ...opts, index: false }), []);
