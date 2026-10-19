@@ -37,7 +37,7 @@ Stories are short and last 24 hours. A ring around a creator's picture means the
 
 A contact is a two-way link: one person asks, the other accepts. A creator can share videos with their contacts only.
 
-You decide who can send you messages in **Settings, Privacy**. Accounts you block cannot message you, follow you or ask to be your contact. You manage them in **Settings, Blocked accounts**.
+You decide who can send you messages in **Settings, Privacy**. Accounts you block cannot message you, follow you or ask to be your contact. You manage them in **Settings, Blocked accounts**. Conversations and groups are explained in [Messages and groups](/docs/messages).
 
 ## Unlocking and tipping
 

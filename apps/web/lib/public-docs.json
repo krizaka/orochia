@@ -3,6 +3,7 @@
   {"slug": "mobile", "audience": "guide", "file": "guide/mobile.md"},
   {"slug": "vocabulary", "audience": "guide", "file": "guide/vocabulary.md"},
   {"slug": "watching", "audience": "guide", "file": "guide/watching.md"},
+  {"slug": "messages", "audience": "guide", "file": "guide/messages.md"},
   {"slug": "credits", "audience": "guide", "file": "guide/credits.md"},
   {"slug": "auctions", "audience": "guide", "file": "guide/auctions.md"},
   {"slug": "challenges", "audience": "guide", "file": "guide/challenges.md"},
@@ -24,5 +25,19 @@
   {"slug": "challenges", "audience": "developers", "file": "CHALLENGES.md"},
   {"slug": "creator-onboarding", "audience": "developers", "file": "CREATOR_ONBOARDING.md"},
   {"slug": "accessibility", "audience": "developers", "file": "ACCESSIBILITY.md"},
-  {"slug": "ux-decisions", "audience": "developers", "file": "UX_DECISIONS.md"}
+  {"slug": "ux-decisions", "audience": "developers", "file": "UX_DECISIONS.md"},
+  {"slug": "start", "audience": "guide", "locale": "fr", "file": "guide/fr/start.md"},
+  {"slug": "mobile", "audience": "guide", "locale": "fr", "file": "guide/fr/mobile.md"},
+  {"slug": "vocabulary", "audience": "guide", "locale": "fr", "file": "guide/fr/vocabulary.md"},
+  {"slug": "watching", "audience": "guide", "locale": "fr", "file": "guide/fr/watching.md"},
+  {"slug": "messages", "audience": "guide", "locale": "fr", "file": "guide/fr/messages.md"},
+  {"slug": "credits", "audience": "guide", "locale": "fr", "file": "guide/fr/credits.md"},
+  {"slug": "auctions", "audience": "guide", "locale": "fr", "file": "guide/fr/auctions.md"},
+  {"slug": "challenges", "audience": "guide", "locale": "fr", "file": "guide/fr/challenges.md"},
+  {"slug": "creator-onboarding", "audience": "guide", "locale": "fr", "file": "guide/fr/creator-onboarding.md"},
+  {"slug": "notifications", "audience": "guide", "locale": "fr", "file": "guide/fr/notifications.md"},
+  {"slug": "account-and-privacy", "audience": "guide", "locale": "fr", "file": "guide/fr/account-and-privacy.md"},
+  {"slug": "safety", "audience": "guide", "locale": "fr", "file": "guide/fr/safety.md"},
+  {"slug": "accessibility", "audience": "guide", "locale": "fr", "file": "guide/fr/accessibility.md"},
+  {"slug": "faq", "audience": "guide", "locale": "fr", "file": "guide/fr/faq.md"}
 ]

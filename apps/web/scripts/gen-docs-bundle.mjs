@@ -28,12 +28,27 @@ export function parseDoc(raw) {
   }
   const heading = /^#\s+(.+)$/m.exec(body)?.[1];
   const title = meta.title || heading || "Untitled";
+  const markdown = body.replace(/^\s*#\s+.+\n/, "").trim();
   return {
     title,
     nav: meta.nav || title,
-    description: meta.description || "",
-    markdown: body.replace(/^\s*#\s+.+\n/, "").trim(),
+    // Every page has a description (search engines, social cards): the front matter's, else the first paragraph.
+    description: meta.description || firstParagraph(markdown),
+    markdown,
   };
+}
+
+/** The first paragraph of prose (no heading, list, table, quote, fence or image), as one plain line of at most 160 characters. */
+export function firstParagraph(markdown) {
+  const para = markdown
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .find((p) => p && !/^(#|[-*>|`!]|\d+\.|<)/.test(p));
+  if (!para) return "";
+  const plain = para.replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[`*_]/g, "").replace(/\s+/g, " ").trim();
+  if (plain.length <= 160) return plain;
+  const cut = plain.slice(0, 157);
+  return `${cut.slice(0, cut.lastIndexOf(" ") > 80 ? cut.lastIndexOf(" ") : 157)}…`;
 }
 
 export function buildBundle(list = JSON.parse(readFileSync(LIST, "utf8")), dir = DOCS_DIR) {

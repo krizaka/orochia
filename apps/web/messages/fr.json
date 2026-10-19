@@ -3152,7 +3152,7 @@
   "docs": {
     "meta": {
       "title": "Documentation",
-      "description": "Le guide d’Orochia pour les fans et les créateurs — prise en main, l’appli, les crédits, les enchères, les défis, être payé, la sécurité — et les pages pour les développeurs : architecture, chaîne de traitement des médias, temps réel, déploiement."
+      "description": "Le guide d’Orochia pour les fans et les créateurs — prise en main, l’appli, les crédits, les enchères, les défis, être payé, la sécurité — et les pages pour les développeurs : architecture, chaîne de traitement des médias, temps réel, déploiement."
     },
     "eyebrow": "Documentation",
     "title": "Orochia, documentée",
@@ -3172,8 +3172,8 @@
       "developers": "Développeurs"
     },
     "collections": {
-      "guide": "Pour les fans et les créateurs : votre compte, l’appli, les crédits, les enchères, les défis, être payé et rester en sécurité.",
-      "developers": "Pour le projet à code source ouvert : architecture, développement, déploiement, chaîne de traitement des médias, temps réel et état technique de l’appli mobile."
+      "guide": "Pour les fans et les créateurs : votre compte, l’appli, les crédits, les enchères, les défis, être payé et rester en sécurité.",
+      "developers": "Pour le projet à code source ouvert : architecture, développement, déploiement, chaîne de traitement des médias, temps réel et état technique de l’appli mobile."
     },
     "promise": {
       "label": "Des mots simples",

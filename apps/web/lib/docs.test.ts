@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { buildBundle, parseDoc } from "../scripts/gen-docs-bundle.mjs";
+import { buildBundle, firstParagraph, parseDoc } from "../scripts/gen-docs-bundle.mjs";
 import { docHref, docsOf, EMOJI, findDoc, renderDoc, renderDocPage, resolveDocHref } from "./docs";
 import { docsRedirects } from "./docs-redirects.mjs";
 import allowList from "./public-docs.json";
@@ -29,6 +29,19 @@ describe("docs bundle", () => {
     const dir = mkdtempSync(join(tmpdir(), "docs-"));
     writeFileSync(join(dir, "A.md"), "# A\n");
     expect(() => buildBundle([{ slug: "b", file: "B.md" }], dir)).toThrow();
+  });
+});
+
+describe("every page has a description (meta description, social cards)", () => {
+  it("falls back to the first paragraph of prose, plain and short", () => {
+    expect(firstParagraph("## A heading\n\nThe **first** paragraph, with a [link](x.md).\n\nSecond.")).toBe("The first paragraph, with a link.");
+    expect(firstParagraph("| a | b |\n| - | - |\n\n- item\n\nReal text here.")).toBe("Real text here.");
+    expect(firstParagraph("```\ncode\n```")).toBe("");
+    expect(firstParagraph(`${"word ".repeat(60)}`).length).toBeLessThanOrEqual(161);
+  });
+
+  it("is in the bundle for every public page, in both languages", () => {
+    for (const doc of buildBundle() as { slug: string; locale: string; description: string }[]) expect(doc.description.length, `${doc.locale}/${doc.slug}`).toBeGreaterThan(20);
   });
 });
 
@@ -63,6 +76,37 @@ describe("docs routes", () => {
     const known = new Set(bundle.map(docHref));
     for (const doc of bundle) {
       for (const m of doc.markdown.matchAll(/\]\((\/docs\/[a-z0-9/-]+)(#[^)]*)?\)/g)) expect(known.has(m[1]), `${doc.slug} links to ${m[1]}`).toBe(true);
+    }
+  });
+});
+
+describe("the Guide in French (orochia: the Guide is true in both languages)", () => {
+  const all = buildBundle() as { slug: string; audience: string; locale: string; markdown: string; title: string; nav: string }[];
+  const en = all.filter((d) => d.audience === "guide" && d.locale === "en");
+  const fr = all.filter((d) => d.audience === "guide" && d.locale === "fr");
+  const sections = (md: string) => md.split("\n").filter((l) => /^## /.test(l)).length;
+  const links = (md: string) => [...md.matchAll(/\]\((\/[a-z0-9/#-]+)\)/g)].map((m) => m[1]).sort();
+  const images = (md: string) => [...md.matchAll(/!\[[^\]]*\]\(([^)\s]+)/g)].map((m) => m[1]).sort();
+
+  it("every English Guide page has a French twin, and only those", () => {
+    expect(fr.map((d) => d.slug)).toEqual(en.map((d) => d.slug));
+  });
+
+  it("a twin keeps the structure: the same sections, links and pictures", () => {
+    for (const page of en) {
+      const twin = fr.find((d) => d.slug === page.slug)!;
+      expect(sections(twin.markdown), `${page.slug}: sections`).toBe(sections(page.markdown));
+      expect(links(twin.markdown), `${page.slug}: links`).toEqual(links(page.markdown));
+      expect(images(twin.markdown), `${page.slug}: pictures`).toEqual(images(page.markdown));
+    }
+  });
+
+  it("is written to the reader as « vous », in Orochia's own French words", () => {
+    for (const page of fr) {
+      expect(page.markdown, page.slug).not.toMatch(/(?<![\p{L}])(tu|ton|ta|tes|toi)(?![\p{L}])/iu);
+      expect(page.markdown, page.slug).not.toMatch(/e-mail|\bstory board\b/i);
+      expect(page.title, page.slug).not.toBe("");
+      expect(page.nav.length, `${page.slug}: ${page.nav}`).toBeLessThanOrEqual(28);
     }
   });
 });
