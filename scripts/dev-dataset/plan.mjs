@@ -89,6 +89,13 @@ export function credit(entry) {
   return `Made with Orazaka · run ${entry.orazakaRunId}${entry.model ? ` (${entry.model.split(" — ")[0]})` : ""}${sound}${upscaled}.`;
 }
 
+/** The same run as data (`videos.ai_provenance`, orochia#268): what the AI badge reads; null for a clip no run made. */
+export function provenance(entry) {
+  if (!entry?.orazakaRunId) return null;
+  const model = entry.model?.split(" — ")[0]?.slice(0, 120);
+  return { generator: "orazaka", runId: entry.orazakaRunId, ...(model ? { model } : {}) };
+}
+
 /** The kept videos (matched by title) with the tags the dataset now says; `skip` holds ids being replaced or deleted. */
 export function retag(wanted, have, skip = new Set()) {
   const want = new Map(wanted.map((v) => [v.title.toLowerCase(), v]));

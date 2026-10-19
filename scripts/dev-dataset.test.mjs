@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-import { credit, diffCreator, isUpgrade, retag, storiesToPost, storySource, validateDataset } from "./dev-dataset/plan.mjs";
+import { credit, diffCreator, provenance, isUpgrade, retag, storiesToPost, storySource, validateDataset } from "./dev-dataset/plan.mjs";
 
 const dataset = JSON.parse(readFileSync(new URL("./dev-dataset/dataset.json", import.meta.url), "utf8"));
 
@@ -78,6 +78,20 @@ describe("replacing an SD clip by its HD version", () => {
     const { upload, replace } = diffCreator(wanted, have, (w, h) => isUpgrade({ height: heights[w.title] }, h));
     expect(replace.map((h) => h.id)).toEqual(["1"]);
     expect(upload.map((v) => v.title)).toEqual(["Slow jazz"]);
+  });
+});
+
+describe("the provenance (orochia#268): the same run as data, for the AI badge", () => {
+  it("names the generator, the run and the model (the part before the host), nothing else", () => {
+    expect(provenance({ orazakaRunId: "abc123", model: "Wan 2.2 A14B (x) — DigitalOcean" })).toEqual({ generator: "orazaka", runId: "abc123", model: "Wan 2.2 A14B (x)" });
+    expect(provenance({ orazakaRunId: "abc123" })).toEqual({ generator: "orazaka", runId: "abc123" });
+  });
+  it("is absent for a clip no run made", () => {
+    expect(provenance({})).toBeNull();
+    expect(provenance(undefined)).toBeNull();
+  });
+  it("keeps the model within what the API accepts (120 characters)", () => {
+    expect(provenance({ orazakaRunId: "abcdef", model: "m".repeat(300) }).model.length).toBe(120);
   });
 });
 

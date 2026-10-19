@@ -17,7 +17,7 @@ import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
 import { problemOf } from "./thumbnails.mjs";
-import { credit, diffCreator, isUpgrade, retag, storiesToPost, storySource, validateDataset } from "./plan.mjs";
+import { credit, diffCreator, provenance, isUpgrade, retag, storiesToPost, storySource, validateDataset } from "./plan.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(path.join(here, "../../apps/web/package.json"));
@@ -228,6 +228,7 @@ for (const creator of dataset.creators) {
           minTipAmountCents: v.minTipAmountCents ?? 0,
           tags: v.tags,
           sizeBytes: fs.statSync(file).size,
+          ...(provenance(runOf(v.file)) ? { aiProvenance: provenance(runOf(v.file)) } : {}),
         }),
       });
       const body = await created.json();
