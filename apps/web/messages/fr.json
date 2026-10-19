@@ -844,7 +844,12 @@
     "ageCertified": "18+ certifié",
     "viewPublic": "Voir le profil public",
     "loading": "Chargement du profil…",
-    "tip": "Pourboire"
+    "tip": "Pourboire",
+    "viewAs": {
+      "cta": "Voir comme le public",
+      "banner": "Vous voyez votre page comme le public la voit. Vous seul voyez cette barre.",
+      "back": "Retour à ma page"
+    }
   },
   "settings": {
     "title": "Paramètres",
