@@ -18,8 +18,9 @@ const PRIVATE = ["/me/", "/creator/", "/profile", "/auth/"];
 const DISALLOW = ["/api/", ...PRIVATE, ...LOCALES.flatMap((locale) => PRIVATE.map((path) => `/${locale}${path}`))];
 
 export default function robots(): MetadataRoute.Robots {
-  // A site that is not indexed (dev, preview) shuts the door and advertises nothing: no sitemap line.
-  if (!INDEXABLE) return { rules: [{ userAgent: "*", disallow: "/" }] };
+  // A site that is not indexed (dev, preview) shuts the door but still serves correct files for the day it opens: the
+  // family contract (scripts/check-seo-family.mjs) wants its Sitemap line.
+  if (!INDEXABLE) return { rules: [{ userAgent: "*", disallow: "/" }], sitemap: `${SITE_URL}/sitemap.xml` };
   return {
     rules: CRAWLERS.map((userAgent) => ({ userAgent, allow: "/", disallow: DISALLOW })),
     sitemap: `${SITE_URL}/sitemap.xml`,
