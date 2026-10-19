@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { buttonVariants, EmptyState } from "@/components/ui";
 import { appUrl } from "@/lib/env";
-import { t } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { verifyUnsubscribe } from "@/lib/unsubscribe";
 
 export const metadata: Metadata = { title: "Unsubscribe", robots: { index: false, follow: false } };
@@ -12,6 +12,7 @@ export const metadata: Metadata = { title: "Unsubscribe", robots: { index: false
 /** `/unsubscribe?t=<token>`: from an e-mail's link — says which kind of e-mail stops, and one button does it. */
 export default async function UnsubscribePage({ searchParams }: { searchParams: Promise<{ t?: string; done?: string }> }) {
   const { t: token = "", done } = await searchParams;
+  const { t } = await getI18n();
   const who = verifyUnsubscribe(token);
   const settings = `${appUrl()}/dashboard?tab=settings#settings-notifications`;
   if (!who) return <Frame><EmptyState icon={<MessageIcon size={32} />} title={t("unsubscribe.invalidTitle")} description={t("unsubscribe.invalidBody")} /></Frame>;

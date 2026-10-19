@@ -927,7 +927,7 @@
       "presenceHint": "Vos contacts, les personnes avec qui vous échangez et vos abonnés approuvés voient quand vous êtes en ligne ou votre dernière présence. Désactivez cette option et vous ne verrez pas la leur non plus."
     },
     "notifications": {
-      "intro": "Choisissez ce qui vous parvient, dans l’appli (la cloche) et par courriel. Tout est activé par défaut.",
+      "intro": "Choisissez ce qui vous parvient, dans l’app (la cloche et votre téléphone) et par courriel. Les courriels de sécurité sont toujours envoyés.",
       "all": "Tout",
       "events": {
         "newFollower": "Quelqu’un vous suit ou demande à vous suivre",
@@ -960,7 +960,7 @@
         "storageLow": "Votre espace de stockage est presque plein",
         "storageHeld": "Un téléversement est en attente parce que votre espace est plein"
       },
-      "inApp": "Dans l’appli",
+      "inApp": "Appli",
       "byEmail": "Par courriel",
       "frequency": "Nombre de courriels",
       "frequencies": {
@@ -968,7 +968,31 @@
         "HOURLY": "Au plus un par heure",
         "NONE": "Aucun courriel d’activité"
       },
-      "frequencyHint": "Les courriels du compte (sécurité, mot de passe) sont toujours envoyés."
+      "frequencyHint": "Les courriels du compte (sécurité, mot de passe) sont toujours envoyés.",
+      "categories": {
+        "messages": "Messages",
+        "follows": "Personnes et communauté",
+        "earnings": "Pourboires et revenus",
+        "auctionsChallenges": "Enchères et défis",
+        "account": "Compte et sécurité"
+      },
+      "categoryHints": {
+        "messages": "Nouveaux messages privés et messages de groupe.",
+        "follows": "Abonnés, demandes de contact, commentaires et nouvelles vidéos des créateurs que vous suivez.",
+        "earnings": "Pourboires reçus et vidéos débloquées.",
+        "auctionsChallenges": "Offres, résultats et chaque étape d’un défi."
+      },
+      "securityNote": "Avis de connexion, de mot de passe et de stockage. Toujours actifs.",
+      "presets": {
+        "label": "Préréglages",
+        "all": "Tout",
+        "essentials": "L’essentiel",
+        "securityOnly": "Seulement la sécurité",
+        "allHint": "Tout vous parvient, dans l’app et par courriel.",
+        "essentialsHint": "Tout dans l’app. Par courriel, seulement les messages, les revenus et votre compte.",
+        "securityOnlyHint": "Seulement les avis de votre compte et de sécurité.",
+        "custom": "Votre propre choix."
+      }
     },
     "payouts": {
       "hint": "Votre mode de versement, vos revenus, vos exportations et vos retraits se trouvent sur la page Revenus.",
@@ -3392,5 +3416,15 @@
     "feedDescription": "Ce que Orochia a livré, semaine par semaine.",
     "footerVersion": "v{version}",
     "langTag": "fr-CA"
+  },
+  "unsubscribe": {
+    "title": "Arrêter les courriels « {category} » ?",
+    "body": "Vous ne recevrez plus ce type de courriel. Vous gardez vos notifications dans l’app, et les courriels de sécurité sont toujours envoyés. Vous pouvez changer cela à tout moment dans vos paramètres.",
+    "confirm": "Me désabonner",
+    "doneTitle": "Fini les courriels « {category} »",
+    "doneBody": "C’est fait. Vous pouvez les réactiver dans vos paramètres de notifications.",
+    "settings": "Paramètres des notifications",
+    "invalidTitle": "Ce lien ne fonctionne pas",
+    "invalidBody": "Il est peut-être endommagé. Ouvrez vos paramètres de notifications pour choisir ce que vous recevez."
   }
 }

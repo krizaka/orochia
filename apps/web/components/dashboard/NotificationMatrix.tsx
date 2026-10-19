@@ -3,7 +3,7 @@
 import React from "react";
 
 import { Chip, cn, Switch } from "@/components/ui";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { applyPreset, CATEGORIES, type Category, eventsOf, matrixFromOff, offFromMatrix, type Preset, presetOf, PRESETS, SECURITY_CATEGORY } from "@/lib/notification-matrix";
 
 /**
@@ -25,6 +25,7 @@ export function NotificationMatrix({
   emailDisabled: boolean;
   onChange: (next: { inAppOff?: string[]; emailsOff?: string[] }) => void;
 }) {
+  const { t } = useI18n();
   const matrix = matrixFromOff(inAppOff, emailsOff);
   const preset = presetOf(matrix);
   const categories = CATEGORIES.filter((c) => isCreator || c !== "earnings");

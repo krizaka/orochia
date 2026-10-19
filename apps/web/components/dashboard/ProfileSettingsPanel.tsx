@@ -378,7 +378,7 @@ export function ProfileSettingsPanel({ isCreator }: { isCreator: boolean }) {
             onChange={(next) => {
               if (next.inAppOff) setInAppOff(next.inAppOff);
               if (next.emailsOff) setEmailsOff(next.emailsOff);
-              void prefs.run(() => put(next));
+              void prefs.run(() => put(t, next));
             }}
           />
 
