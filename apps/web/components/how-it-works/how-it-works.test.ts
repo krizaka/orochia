@@ -41,7 +41,7 @@ describe("/how-it-works is short: hero, journey, four ways, closing", () => {
 
 describe("the version lives in the footer, not the bar", () => {
   it("the bar no longer carries the build chip", () => {
-    const nav = read("../Navbar.tsx");
+    const nav = read("../AppRail.tsx");
     expect(nav).not.toContain("BuildBadge");
   });
 });

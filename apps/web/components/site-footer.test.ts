@@ -28,7 +28,7 @@ describe("the footer (@krizaka/ui's SiteFooter, NAV-SYS)", () => {
 
 describe("the bar", () => {
   it("carries no family switcher (a deployed product is independent) and no build badge (the version is in the footer)", () => {
-    const src = readFileSync(new URL("./Navbar.tsx", import.meta.url), "utf8");
+    const src = readFileSync(new URL("./AppBar.tsx", import.meta.url), "utf8");
     expect(src).not.toContain("NavBar.Family");
     expect(src).not.toContain("BuildBadge");
   });
