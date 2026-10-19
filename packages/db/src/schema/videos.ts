@@ -10,6 +10,7 @@ import {
   index,
   uniqueIndex,
   boolean,
+  jsonb,
 } from "drizzle-orm/pg-core";
 import { users } from "./users";
 import { contentRatings } from "./reference-data";
@@ -52,6 +53,8 @@ export const videos = pgTable(
     /** Frames per second of the source, read from the Stream API with the size (null until encoded). */
     framerate: real("framerate"),
     tags: text("tags").array(),
+    /** How an AI-made clip was made (generator, run id, model, hardware): the badge reads it, not the description (#268). */
+    aiProvenance: jsonb("ai_provenance").$type<{ generator: "orazaka"; runId: string; model?: string; hardware?: string }>(),
     /** Taken down by an operator (DMCA, terms): hidden everywhere and never signed for playback. */
     removedAt: timestamp("removed_at", { withTimezone: true }),
     removalReason: text("removal_reason"),

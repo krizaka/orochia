@@ -8,7 +8,7 @@ description: Every table, column, index, foreign key and enum of the Orochia Pos
 > Generated from `packages/db/src/schema` by `scripts/generate-docs.mjs` — do not hand-edit.
 > To change the schema: edit it, `npm run db:generate`, review the SQL, `npm run db:migrate` — see the Development guide.
 
-PostgreSQL 16 · 56 tables · 27 enums · 19 migrations (`packages/db/drizzle`).
+PostgreSQL 16 · 56 tables · 27 enums · 20 migrations (`packages/db/drizzle`).
 
 ## Relationships
 
@@ -941,6 +941,7 @@ Every foreign key, read from the schema: what each table points to (through whic
 | `height` | integer | yes |  |  |
 | `framerate` | real | yes |  |  |
 | `tags` | text[] | yes |  |  |
+| `ai_provenance` | jsonb | yes |  |  |
 | `removed_at` | timestamp with time zone | yes |  |  |
 | `removal_reason` | text | yes |  |  |
 | `search_vector` | tsvector | yes |  |  |
@@ -1016,3 +1017,4 @@ Every foreign key, read from the schema: what each table points to (through whic
 - `0017_app_config.sql`
 - `0018_video_banner.sql`
 - `0019_user_locale.sql`
+- `0020_video_ai_provenance.sql`
