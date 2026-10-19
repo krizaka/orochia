@@ -46,7 +46,7 @@ export const VIDEO_RECHECK_AFTER_MS = 20_000;
  * would — poster, preview, length, renditions, READY/FAILED, the quota hold and the "your video is online" notice.
  * Each video is claimed (its updated_at moved) before the call. Never throws.
  */
-export async function reconcileVideos(options: { creatorId?: string; limit?: number; client?: Pick<BunnyStreamClient, "getVideo" | "deleteVideo"> } = {}) {
+export async function reconcileVideos(options: { creatorId?: string; videoId?: string; limit?: number; client?: Pick<BunnyStreamClient, "getVideo" | "deleteVideo"> } = {}) {
   if (!process.env.MEDIA_STREAM_API_KEY?.trim()) return { checked: 0, settled: 0 };
   const stale = new Date(Date.now() - VIDEO_RECHECK_AFTER_MS);
   const candidates = await db
@@ -59,6 +59,7 @@ export async function reconcileVideos(options: { creatorId?: string; limit?: num
         isNull(videos.removedAt),
         lt(videos.updatedAt, stale),
         options.creatorId ? eq(videos.creatorId, options.creatorId) : undefined,
+        options.videoId ? eq(videos.id, options.videoId) : undefined,
       ),
     )
     .orderBy(asc(videos.updatedAt))
