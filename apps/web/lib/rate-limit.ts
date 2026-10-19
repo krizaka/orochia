@@ -35,13 +35,20 @@ export interface RateLimitStore {
 }
 
 const MAX_KEYS = 10_000;
+/** When the table is full of live windows, this share of it is dropped — the cheapest to forget (orochia#254). */
+const EVICT_SHARE = 0.1;
 
 export function memoryStore(): RateLimitStore {
   const windows = new Map<string, RateLimitHit>();
   const evict = (now: number) => {
     if (windows.size < MAX_KEYS) return;
     for (const [key, value] of windows) if (value.resetAt <= now) windows.delete(key);
-    if (windows.size >= MAX_KEYS) windows.clear();
+    if (windows.size < MAX_KEYS) return;
+    // Still full of live windows (a flood of keys, or a very busy day). Never wipe everyone's counters — that would
+    // hand every throttled account and address a fresh start: drop the cheapest to forget, the fewest hits first, the
+    // oldest first among equals. A lock-out or a heavy counter outlives a flood of one-hit keys.
+    const cheapest = [...windows].sort(([, a], [, b]) => a.count - b.count || a.resetAt - b.resetAt).slice(0, Math.ceil(MAX_KEYS * EVICT_SHARE));
+    for (const [key] of cheapest) windows.delete(key);
   };
   return {
     name: "memory",
