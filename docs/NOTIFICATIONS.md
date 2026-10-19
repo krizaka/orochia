@@ -129,3 +129,12 @@ packages/db/src/schema/push.ts           push_devices
 krizaka/orochia-mobile src/lib/push.ts   permission, token, registration, tap → screen
 krizaka/orochia-mobile src/lib/notification-prefs.ts, src/app/settings/notifications.tsx   preferences by kind
 ```
+
+## Language
+
+An account keeps the language it reads Orochia in (`users.locale`, `en` or `fr`; chosen with the language switch,
+`PUT /api/me/locale`, or taken from the page at sign-up). A notification is stored as an event and its variables, and written
+when it leaves the server — live (SSE), push and e-mail — in the **recipient's** language, never the one of whoever caused
+it; the bell is written in the language of the page. Words inside variables are stored as keys (`i18nVar`) and amounts as
+cents (`moneyVar`). E-mails use the matching `fr` template and link to the French address (`/fr/…`) so the page opens in the
+same language on any device. An invitation to someone without an account uses the inviter's language.

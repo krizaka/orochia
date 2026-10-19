@@ -64,3 +64,9 @@ export function localeOf(headers: Pick<Headers, "get">): Locale {
   if (isLocale(chosen)) return chosen;
   return localeFromAcceptLanguage(headers.get("accept-language"));
 }
+
+/**
+ * A path as an e-mail links to it: French readers land on the French page even on a device without the cookie; English
+ * ones keep the plain address (which any browser serves in its language, English by default).
+ */
+export const mailPath = (path: string, locale: Locale): string => (locale === DEFAULT_LOCALE ? path : localizedPath(path, locale));
