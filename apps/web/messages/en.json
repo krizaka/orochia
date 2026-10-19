@@ -844,7 +844,12 @@
     "ageCertified": "18+ certified",
     "viewPublic": "View public profile",
     "loading": "Loading profile…",
-    "tip": "Tip"
+    "tip": "Tip",
+    "viewAs": {
+      "cta": "View as the public",
+      "banner": "You are viewing your page as the public sees it. Only you see this bar.",
+      "back": "Back to my page"
+    }
   },
   "settings": {
     "title": "Settings",
