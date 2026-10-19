@@ -8,7 +8,7 @@
 // With --remove it deletes those accounts instead (run cleanup.mjs first: videos go through the app so Bunny is emptied too).
 // Passwords are never chosen or printed: each is derived from OROCHIA_DATASET_SECRET (generated into the QA store on the first run)
 // and the username, so seed-catalogue.mjs signs in with the same value. One connection, one transaction. Refuses a production URL
-// (the host must be the shared development cluster named by --allow-host or DATASET_DB_HOST_SUFFIX).
+// (the host must be the shared development cluster named by --allow-host or DATABASE_DEV_HOST_SUFFIX).
 import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
@@ -31,7 +31,7 @@ const remove = flag("remove");
 // The pooled development database, from PGHOST / PGPORT / PGUSER / PGPASSWORD / PGDATABASE (never an argument, never printed).
 const { PGHOST: host, PGPORT: port, PGUSER: user, PGPASSWORD: password, PGDATABASE: database } = process.env;
 if (!host || !user || !password || !database) throw new Error("PGHOST, PGUSER, PGPASSWORD and PGDATABASE are not set (the pooled development database)");
-const suffix = process.env.DATASET_DB_HOST_SUFFIX ?? ".db.ondigitalocean.com";
+const suffix = process.env.DATABASE_DEV_HOST_SUFFIX ?? ".db.ondigitalocean.com";
 if (!host.endsWith(suffix) || /prod/i.test(database)) throw new Error(`refusing ${host}/${database}: not the development cluster`);
 
 const KEY_LENGTH = 64;
