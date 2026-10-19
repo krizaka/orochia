@@ -1,0 +1,37 @@
+// The events an account can be told about. Pure data, no import: a client component (the settings matrix) reads it too,
+// which it could not through lib/profile.ts (that module reaches the storage layer).
+
+/** Every e-mail an account can receive about activity — all on by default, each can be turned off. */
+export const NOTIFICATION_EVENTS = [
+  "newFollower",
+  "contactRequest",
+  "newComment",
+  "commentReply",
+  "newMessage",
+  "tipReceived",
+  "videoUnlocked",
+  "videoReady",
+  "creatorPublished",
+  "auctionAnnounced",
+  "auctionNewBid",
+  "auctionOutbid",
+  "auctionWon",
+  "auctionDecision",
+  "auctionSold",
+  "auctionUnsold",
+  "auctionDeclined",
+  "challengeAnnounced",
+  "challengeRequested",
+  "challengePledged",
+  "challengeFunded",
+  "challengeAccepted",
+  "challengeApplied",
+  "challengeChosen",
+  "challengeDelivered",
+  "challengeReleased",
+  "challengeClosed",
+  "storageLow",
+  "storageHeld",
+  "storageAlert",
+] as const;
+export type NotificationEvent = (typeof NOTIFICATION_EVENTS)[number];

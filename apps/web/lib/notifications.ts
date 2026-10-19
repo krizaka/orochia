@@ -8,9 +8,11 @@ import { DEFAULT_LOCALE, isLocale, mailPath } from "./locales";
 import { sendTemplate } from "./mail";
 import { emitUserEvent } from "./messaging";
 import { i18nVar, moneyVar } from "./notification-vars";
+import { categoryOf, unsubscribable } from "./notification-matrix";
 import type { NotificationEvent } from "./profile";
 import { pushToUser } from "./push";
 import { checkRateLimit } from "./rate-limit";
+import { unsubscribeLink } from "./unsubscribe";
 
 /**
  * Notifications. Each event is written to the account's notification list (the bell, /notifications), pushed live to
@@ -98,15 +100,20 @@ export async function notify(input: { userId: string; event: NotificationEvent; 
     }
     if (!(await claimEmail(userId, to.frequency))) return;
     const all = { ...localizeVars(tools, vars), username: to.username };
+    // One click to stop this kind of e-mail (the security category has no such link), in the body and for mail clients.
+    const category = categoryOf(event);
+    const unsubscribe = unsubscribable(category) ? unsubscribeLink(userId, category) : null;
     await sendTemplate("notification", {
       to: to.email,
       locale: tools.locale,
+      ...(unsubscribe ? { headers: { "List-Unsubscribe": `<${unsubscribe}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" } } : {}),
       vars: {
         username: to.username,
         subject: tools.t(`notify.${event}.subject` as MessageKey, all),
         body: tools.t(`notify.${event}.body` as MessageKey, all),
         link: `${appUrl()}${mailPath(path, tools.locale)}`,
         settingsLink: `${appUrl()}${mailPath("/me/settings#settings-notifications", tools.locale)}`,
+        unsubscribeLink: unsubscribe ?? "",
       },
     });
   } catch (error) {

@@ -16,6 +16,8 @@ export interface Mail {
   text: string;
   html?: string;
   replyTo?: string;
+  /** Extra headers, e.g. `List-Unsubscribe` + `List-Unsubscribe-Post` (RFC 8058 one-click). */
+  headers?: Record<string, string>;
 }
 
 /**
@@ -47,7 +49,7 @@ async function sendWithResend(mail: Mail, recipients: string[], env: NodeJS.Proc
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${env.MAIL_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: fromAddress(env), to: recipients, subject: mail.subject, text: mail.text, ...(mail.html ? { html: mail.html } : {}), ...(mail.replyTo ? { reply_to: mail.replyTo } : {}) }),
+    body: JSON.stringify({ from: fromAddress(env), to: recipients, subject: mail.subject, text: mail.text, ...(mail.html ? { html: mail.html } : {}), ...(mail.replyTo ? { reply_to: mail.replyTo } : {}), ...(mail.headers ? { headers: mail.headers } : {}) }),
     signal: AbortSignal.timeout(8000),
   });
   if (!res.ok) console.error(`mail: resend refused (${res.status}) ${(await res.text()).slice(0, 300)}`);
@@ -78,6 +80,7 @@ export async function sendMail(mail: Mail, env: NodeJS.ProcessEnv = process.env)
   form.append("from", fromAddress(env));
   for (const to of recipients) form.append("to", to);
   if (mail.replyTo) form.append("h:Reply-To", mail.replyTo);
+  for (const [name, value] of Object.entries(mail.headers ?? {})) form.append(`h:${name}`, value);
   form.append("subject", mail.subject);
   form.append("text", mail.text);
   if (mail.html) form.append("html", mail.html);
@@ -103,6 +106,7 @@ export interface TemplateMail<Id extends MailTemplateId> {
   locale?: MailLocale;
   vars: MailVars<Id>;
   replyTo?: string;
+  headers?: Record<string, string>;
 }
 
 /**
@@ -117,5 +121,5 @@ export async function sendTemplate<Id extends MailTemplateId>(id: Id, mail: Temp
     console.error(`mail: template ${id} could not be rendered, nothing sent`, error);
     return false;
   }
-  return sendMail({ to: mail.to, replyTo: mail.replyTo, subject: rendered.subject, text: rendered.text, html: rendered.html }, env);
+  return sendMail({ to: mail.to, replyTo: mail.replyTo, headers: mail.headers, subject: rendered.subject, text: rendered.text, html: rendered.html }, env);
 }

@@ -296,24 +296,38 @@ written here, each with the place that carries it. Disagree, or saw that signal?
   creator*: tip, unlock, bid in an auction, put credits behind a challenge. (3) *Talk*: private messages and small groups.
   (4) *Create and get paid*: upload, stories, earnings, payouts. (5) *Keep the account in order*: wallet, notifications,
   language, privacy.
-- **Decision** — The top bar has **three sections** — Explore, Auctions, Challenges — plus search, language, theme and, on
-  the right, one action (Upload for a creator, Sign in for a visitor); the account menu holds the person's own things
-  (profile, earnings for a creator, Dashboard, Messages, Wallet, Settings, sign out) and **one platform link, the app**
-  (decided with the simplified home, 2026-10-17: the app is in the footer and in the account menu, never in the bar). On a
-  phone the bar is five places: Home, Explore, Create (the centre action), Saved (or Messages), Account. Docs, legal and
-  « How it works » live in the footer, never in the bar or the account menu. `components/navbar-ia.test.ts` guards it.
+- **Decision** — The app has **four destinations** — Home, Explore, Auctions, Challenges — in a rail on a desktop and in the
+  bottom tab bar on a phone (Create at its foot, five places in all); the top bar (`AppHeader`) holds only search, language,
+  theme and, for an account, messages, the bell and the account menu (a visitor: Upload, Sign in, Join). The account menu holds
+  the person's own things (profile, earnings with the balance for a creator, Dashboard, Messages, Wallet, Settings, sign out)
+  and **one platform link, the app** (decided with the simplified home, 2026-10-17: the app is in the footer and in the
+  account menu, never in the bar). Docs, legal and « How it works » live in the footer, never in the rail, the bar or the
+  account menu. `lib/app-nav.ts` is the data and `lib/app-nav.test.ts` guards its shape (at most five phone places, the
+  account links, no hand-made bar).
 - **Problem** — The review looked for mixed concepts. It found one candidate: *The app* (a platform page) sits in the
   account menu next to the person's own wallet and settings.
 - **Principle** — A menu names one kind of thing (Hick 1952: fewer, well-grouped choices are chosen faster; Nielsen's
   « match between the system and the real world »); a platform page is a page you look for, not part of your account.
 - **Kept** — The app link stays in the account menu: it was decided deliberately with the simplified home and is guarded by
-  `home-simple.test.ts`; a signed-in person who wants the app looks in their own menu. It is the one platform entry there,
-  and the test refuses a second one.
+  `home-simple.test.ts` and `lib/app-nav.test.ts`; a signed-in person who wants the app looks in their own menu. It is the one
+  platform entry there.
 - **Refused** — A fourth and fifth bar section (Messages, Wallet) — they are personal and already one tap away in the
-  account menu and on the phone's tab bar; merging Auctions and Challenges (both spend credits, but they are different
+  header (messages) and the account menu (wallet); merging Auctions and Challenges (both spend credits, but they are different
   verbs: bidding and backing a goal — people look for them by those words); a docs entry in the bar.
 - **Cost** — The account menu holds one entry that is not about the account.
 - **Signal we are wrong** — People never opening the app entry from the menu while the footer's link is used (then remove
   it from the menu), or Auctions and Challenges getting almost no entries from the bar while Explore carries both.
 - **What is still open** — The signed-in bar (`Navbar.tsx`) is the app's own header, not yet on `AppShell`/`AppHeader`
   (the signed-in-apps pass of KUI-ADOPT, krizaka/orochia#307); the review of its content is done, its code is the debt.
+
+## Notifications as a matrix (krizaka/orochia#261)
+
+- **Decision**: five categories × two channels (the app, e-mail), three presets (everything · the essentials · nothing but security), the security category shown and locked, and a one-click « unsubscribe from this kind of e-mail » link (and `List-Unsubscribe` header) in every notification e-mail.
+- **Problem**: 27 events × 2 switches was a wall of options; people could not tell what they would stop receiving, and e-mail felt like spam.
+- **Principle**: fewer, meaningful choices with good defaults beat exhaustive controls (Hick's law, Hick 1952; defaults decide most outcomes, Johnson & Goldstein 2003, "Do defaults save lives?"). One-click unsubscribe is the mail ecosystem's rule (RFC 8058) and protects the sender's reputation.
+- **Refused**: a per-event matrix as the main screen (kept in the data, not on the screen); turning security e-mails off; a login to unsubscribe (the signed link is the authorisation).
+- **Cost**: a person cannot silence one event of a category from the screen (the stored lists still can).
+- **Signal we are wrong**: many people on « Custom », or complaints about missing a specific event.
+- **What changed under this review** — The hand-made bar (`Navbar.tsx`, the bottom tab bar) became `@krizaka/ui`'s `RailNav`,
+  `AppHeader` and `AccountMenu` (orochia#320) the same day: Messages left the phone's tab bar for the header (one tap
+  away), which the review's « five places » now reads as Home, Explore, Auctions, Challenges, Create.

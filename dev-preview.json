@@ -17,14 +17,12 @@
       "checked": "2026-10-16"
     },
     "journey.core": {
-      "evidence": null,
-      "gap": "No recorded run of the core journey (upload → encode → watch → auction/tip) with request ids; scenarios exist in e2e/.",
-      "issue": "https://github.com/krizaka/orochia/issues/240"
+      "evidence": "https://github.com/krizaka/orochia/pull/324",
+      "checked": "2026-10-19"
     },
     "journey.ai-via-orazaka": {
-      "evidence": null,
-      "gap": "Explorer / recommendations run through Orazaka (ORO-RECO, live on dev) but the trace of a real run is not linked as evidence.",
-      "issue": "https://github.com/krizaka/orochia/issues/226"
+      "evidence": "https://github.com/krizaka/orochia/blob/main/apps/web/lib/explorer-run.json",
+      "checked": "2026-10-19"
     },
     "ui.krizaka-ui": {
       "evidence": null,
@@ -32,14 +30,12 @@
       "issue": "https://github.com/krizaka/orochia/issues/241"
     },
     "ui.themes-devices": {
-      "evidence": null,
-      "gap": "No CI crawl proves NAV-SYS, one footer, dark/light, phone/desktop (axe + Playwright exist, not this crawl).",
-      "issue": "https://github.com/krizaka/orochia/issues/241"
+      "evidence": "https://github.com/krizaka/orochia/pull/316",
+      "checked": "2026-10-19"
     },
     "ux.ia-review": {
-      "evidence": null,
-      "gap": "No documented UX/IA review of the web app.",
-      "issue": "https://github.com/krizaka/orochia/issues/242"
+      "evidence": "https://github.com/krizaka/orochia/blob/main/docs/UX_DECISIONS.md",
+      "checked": "2026-10-19"
     },
     "mobile.build": {
       "evidence": null,
@@ -60,19 +56,16 @@
       "checked": "2026-10-16"
     },
     "security.alerts": {
-      "evidence": null,
-      "gap": "4 open CodeQL high alerts in orochia (polynomial ReDoS packages/db/src/owner.ts, 2× insecure randomness, incomplete sanitization scripts/database-doc.…",
-      "issue": "https://github.com/krizaka/orochia/issues/94"
+      "evidence": "https://github.com/krizaka/orochia/security",
+      "checked": "2026-10-19"
     },
     "docs.current": {
-      "evidence": null,
-      "gap": "README/AGENTS/docs not yet checked against the dev deployment.",
-      "issue": "https://github.com/krizaka/orochia/issues/244"
+      "evidence": "https://github.com/krizaka/orochia/issues/244",
+      "checked": "2026-10-19"
     },
     "seo.family": {
-      "evidence": null,
-      "gap": "node scripts/check-seo-family.mjs --base https://dev.orochia.com --host https://dev.orochia.com --index off fails (empty sitemap / no Sitemap: line wh…",
-      "issue": "https://github.com/krizaka/orochia/issues/246"
+      "evidence": "https://github.com/krizaka/orochia/issues/246",
+      "checked": "2026-10-19"
     },
     "ops.cost": {
       "evidence": null,
@@ -80,9 +73,8 @@
       "issue": "https://github.com/krizaka/.github/issues/78"
     },
     "admin.gated": {
-      "evidence": null,
-      "gap": "proxy.ts gates the console but no test proves it (and dev.orochia.com/api/admin/overview answers 401 on the public host: confirm intended).",
-      "issue": "https://github.com/krizaka/orochia-admin/issues/41"
+      "evidence": "https://github.com/krizaka/orochia-admin/pull/58",
+      "checked": "2026-10-19"
     },
     "admin.noindex": {
       "evidence": "https://admin.orochia.com/robots.txt",
@@ -94,9 +86,8 @@
       "issue": "https://github.com/krizaka/orochia-admin/issues/43"
     },
     "admin.audit-log": {
-      "evidence": null,
-      "gap": "Audit page exists; not proven for every action.",
-      "issue": "https://github.com/krizaka/orochia-admin/issues/45"
+      "evidence": "https://github.com/krizaka/orochia-admin/pull/57",
+      "checked": "2026-10-19"
     },
     "admin.shell": {
       "evidence": null,
@@ -104,9 +95,8 @@
       "issue": "https://github.com/krizaka/orochia-admin/issues/47"
     },
     "admin.ux-review": {
-      "evidence": null,
-      "gap": "No UX/IA review of the console.",
-      "issue": "https://github.com/krizaka/orochia-admin/issues/49"
+      "evidence": "https://github.com/krizaka/orochia-admin/blob/main/docs/UX_DECISIONS.md",
+      "checked": "2026-10-19"
     },
     "admin.ci": {
       "evidence": "https://github.com/krizaka/orochia-admin/actions?query=branch%3Amain",

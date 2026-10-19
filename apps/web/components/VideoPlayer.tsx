@@ -126,15 +126,12 @@ export function VideoPlayer({
     };
   }, [streamUrl, isPaywalled, isGated]);
 
+  // The media element is the truth: play/pause state follows its events (native controls, fullscreen, a refused play()).
   const togglePlay = () => {
-    if (!videoRef.current) return;
-    if (isPlaying) {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      videoRef.current.play();
-      setIsPlaying(true);
-    }
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) void video.play().catch(() => setIsPlaying(false));
+    else video.pause();
   };
 
   const handleTimeUpdate = () => {
@@ -210,13 +207,14 @@ export function VideoPlayer({
         fullscreen
           ? "h-dvh w-dvw max-h-none max-w-none rounded-none border-0"
           : orientationOf(width, height) === "vertical"
-          ? "mx-auto aspect-[9/16] max-h-[calc(100dvh-5rem)] max-w-[min(100%,28rem)]"
+          ? "mx-auto aspect-[9/16] max-h-[calc(100dvh-13rem-env(safe-area-inset-bottom))] max-w-[min(100%,28rem)] md:max-h-[calc(100dvh-5rem)]"
           : orientationOf(width, height) === "square"
-            ? "mx-auto aspect-square max-h-[calc(100dvh-5rem)]"
+            ? "mx-auto aspect-square max-h-[calc(100dvh-13rem-env(safe-area-inset-bottom))] md:max-h-[calc(100dvh-5rem)]"
             : "aspect-video",
       )}
-      onMouseEnter={() => setShowControls(true)}
-      onMouseLeave={() => isPlaying && setShowControls(false)}
+      // A mouse hides the controls while playing; a finger never does (iOS swallows the first tap after a hover change).
+      onPointerEnter={(e) => e.pointerType === "mouse" && setShowControls(true)}
+      onPointerLeave={(e) => e.pointerType === "mouse" && isPlaying && setShowControls(false)}
     >
       {/* 18+ Rating Badge Top Left */}
       {(isAdult || isAdultRating(contentRatingId)) && (
@@ -234,6 +232,8 @@ export function VideoPlayer({
         poster={posterUrl || undefined}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
         onEnded={() => setIsPlaying(false)}
         className={cn(
           "h-full w-full object-contain cursor-pointer transition-all duration-500",
@@ -292,7 +292,7 @@ export function VideoPlayer({
         </div>
       )}
 
-      {/* Custom Video Controls */}
+      {/* Custom Video Controls. On a phone the player ends above the fixed tab bar (MobileBottomNav, 4rem + safe area): sized by the 13rem above, so the bar never covers the controls. */}
       {!isPaywalled && !isGated && (
         <div
           className={cn(

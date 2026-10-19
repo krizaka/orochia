@@ -144,3 +144,9 @@ when it leaves the server — live (SSE), push and e-mail — in the **recipient
 it; the bell is written in the language of the page. Words inside variables are stored as keys (`i18nVar`) and amounts as
 cents (`moneyVar`). E-mails use the matching `fr` template and link to the French address (`/fr/…`) so the page opens in the
 same language on any device. An invitation to someone without an account uses the inviter's language.
+
+## Preferences as a matrix, and unsubscribing (krizaka/orochia#261)
+
+`lib/notification-matrix.ts` groups the events into five categories (messages · people and community · tips and earnings · auctions and challenges · account and security) and two channels (the app = bell + push, and e-mail). It is a view over the same two stored lists (`profiles.in_app_off`, `profiles.emails_off`); the sender is unchanged. The account category cannot be switched off, and the security e-mails (verification, password reset) are not notifications: no setting touches them.
+
+Every notification e-mail carries a signed one-click link (`/unsubscribe?t=…`, `lib/unsubscribe.ts`: account + category, HMAC with the session secret, no expiry) and the `List-Unsubscribe` / `List-Unsubscribe-Post: List-Unsubscribe=One-Click` headers (RFC 8058). `POST /api/unsubscribe` adds the category's events to `emails_off`; there is no link for the security category. The e-mail engine moves to `@krizaka/email` with krizaka/orochia#255 once it is released.
