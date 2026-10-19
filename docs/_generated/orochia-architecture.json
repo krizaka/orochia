@@ -170,6 +170,12 @@
       "summary": "Cancels an auction that is open or awaiting its decision, with a recorded reason; the leading bid is released."
     },
     {
+      "method": "POST",
+      "path": "/api/admin/conversations/[id]/moderate",
+      "access": "session · ADMIN",
+      "summary": "Acts on a reported conversation: remove a message, remove a member of a group, close a group."
+    },
+    {
       "method": "GET",
       "path": "/api/admin/creators",
       "access": "session · ADMIN",
@@ -264,6 +270,12 @@
       "path": "/api/admin/reports/[id]",
       "access": "session · ADMIN",
       "summary": "Moves a report through triage (open → in review → resolved)."
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/reports/[id]/context",
+      "access": "session · ADMIN",
+      "summary": "The message a report names, with ten messages either side (a direct or a group conversation) — and no more."
     },
     {
       "method": "GET",
@@ -1541,7 +1553,7 @@
         "runtime": "node",
         "version": "1.0.0",
         "published": false,
-        "description": "The API: 148 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
+        "description": "The API: 150 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
       },
       {
         "id": "orochia-config",
