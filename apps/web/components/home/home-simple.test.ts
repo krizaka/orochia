@@ -22,9 +22,9 @@ describe("the visitor's home reads in five seconds", () => {
     expect(read("../../messages/en.json")).not.toMatch(/4K/);
   });
   it("the top bar lists fans' destinations only; the app is in the footer and the account menu", () => {
-    const nav = read("../Navbar.tsx");
-    expect(nav).not.toContain('navLink("/mobile"');
-    expect(nav).toContain('menuItem("/mobile"');
+    const nav = read("../../lib/app-nav.ts");
+    expect(nav.split("export function isCurrent")[0]).not.toMatch(/RAIL_ITEMS[\s\S]*\/mobile[\s\S]*as const/);
+    expect(nav).toContain('link("mobile", "/mobile"');
     expect(read("../SiteFooter.tsx")).toContain('link("/mobile"');
   });
 });
