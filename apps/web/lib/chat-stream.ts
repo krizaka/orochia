@@ -4,8 +4,10 @@ import { type ConnectionState, eventStream, type EventStreamControls } from "@kr
 import { db, directMessages } from "@orochia/db";
 import { and, asc, eq, gt, gte, inArray, or, sql } from "drizzle-orm";
 
+import { trailing } from "./circle-cache";
 import { markDelivered, type MessageView,messageView } from "./messaging";
-import { presenceBeat, presenceCircle, type PresenceEvent,presenceLeave, presenceOf, presenceTopic } from "./presence";
+import { isHiddenPresence } from "./presence-rules";
+import { forgetCircle, presenceBeat, presenceCircle, type PresenceEvent,presenceLeave, presenceOf, presenceTopic } from "./presence";
 import { streamTimings, subscribe } from "./realtime";
 
 /**
@@ -23,6 +25,8 @@ import { streamTimings, subscribe } from "./realtime";
  */
 
 export const REPLAY_LIMIT = 500;
+/** A burst of `circle_changed` rebuilds the circle once, this long after the last one. */
+const CIRCLE_REBUILD_DEBOUNCE_MS = 1000;
 /** Messages committed shortly before the cursor's may have been numbered earlier but committed later: replay them too. */
 const REPLAY_OVERLAP = sql`interval '10 seconds'`;
 
@@ -81,6 +85,8 @@ export function userStream(userId: string, options: { cursor: number | null }): 
     onHeartbeat: () => void presenceBeat(userId, connectionId, state),
     start: async ({ send, signal }: EventStreamControls) => {
       const offs: (() => void)[] = [];
+      const refollow = trailing(() => void follow(), CIRCLE_REBUILD_DEBOUNCE_MS);
+      offs.push(refollow.cancel);
       let replaying = options.cursor !== null;
       const held: UserEvent[] = [];
       /** Messages sent by the replay: their live event (published while the replay ran, or late) is not sent twice. */
@@ -95,7 +101,11 @@ export function userStream(userId: string, options: { cursor: number | null }): 
           }
           return;
         }
-        if (event.type === "circle_changed") void follow();
+        if (event.type === "circle_changed") {
+          // Another instance changed it: forget our copy, and rebuild once after a burst of changes (#158).
+          forgetCircle(userId);
+          refollow();
+        }
         if ((event.type === "new_message" || event.type === "message_sent") && event.message) {
           if (replayed.has(event.message.id)) return;
           send({ id: `m${event.message.seq}`, data: event });
@@ -129,6 +139,11 @@ export function userStream(userId: string, options: { cursor: number | null }): 
           presenceOffs.set(
             id,
             subscribe<PresenceEvent>(presenceTopic(id), (event) => {
+              // Someone hid their presence (offline, with no time): this account's circle changed too, on any instance.
+              if (isHiddenPresence(event)) {
+                forgetCircle(userId);
+                refollow();
+              }
               if (circle.has(event.userId)) send({ data: event });
             }),
           );
@@ -138,6 +153,7 @@ export function userStream(userId: string, options: { cursor: number | null }): 
         send({ data: { type: "presence_snapshot", presence: await presenceOf([...next]) } });
       };
       offs.push(() => presenceOffs.forEach((off) => off()));
+
 
       send({ event: "connected", data: { connectionId, resumed: options.cursor !== null, serverNow: new Date().toISOString() } });
 

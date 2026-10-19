@@ -1099,6 +1099,12 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
     check("the owner leaves: the group goes to the longest-standing member", (await elena.call(`/api/groups/${gid}/leave`, "POST")).status === 200 && (await sam.call(`/api/groups/${gid}`)).json.group.role === "owner");
     check("a closed group takes no new message", (await sam.call(`/api/groups/${gid}`, "DELETE")).status === 200 && (await sam.call(`/api/conversations/${gid}/messages`, "POST", { content: "late", clientId: crypto.randomUUID() })).status === 409);
   
+    // Limits: a burst of messages is refused (429) whatever the conversation, and the refusal costs no database write.
+    const burst = [];
+    for (let i = 0; i < 25; i++) burst.push((await sam.call(`/api/conversations/${gid}/messages`, "POST", { content: `burst ${i}`, clientId: crypto.randomUUID() })).status);
+    check("a burst of messages is limited (429)", burst.includes(429), burst.join(","));
+    check("…and the first ones were not", burst[0] !== 429);
+
     // Limits: creating groups is rationed per account.
     let last;
     for (let i = 0; i < 12; i++) last = await admin.call("/api/groups", "POST", { title: "x", memberIds: [] });
