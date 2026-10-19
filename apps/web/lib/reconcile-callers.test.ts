@@ -10,7 +10,15 @@ describe("a lost Bunny webhook is caught up where a creator looks at their uploa
     ["the dashboard API (the creator's own uploads)", "../app/api/me/dashboard/route.ts"],
     ["the upload session", "../app/api/videos/create-upload-session/route.ts"],
     ["the public creator profile", "../app/[locale]/creators/[username]/page.tsx"],
+    ["a video's own details (an upload polled by id never waited for a dashboard visit, orochia#277)", "../app/api/videos/[id]/details/route.ts"],
   ])("%s", (_name, file) => {
     expect(read(file)).toContain("reconcileVideos(");
+  });
+});
+
+describe("the details route asks about that one video only", () => {
+  it("passes the video id to reconcileVideos", () => {
+    expect(read("../app/api/videos/[id]/details/route.ts")).toMatch(/reconcileVideos\(\{[^}]*videoId:/);
+    expect(read("./video-reconcile.ts")).toMatch(/videoId\?: string/);
   });
 });

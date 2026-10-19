@@ -91,7 +91,8 @@ lost delivery used to leave a story PENDING_UPLOAD forever — invisible, even t
 Same catch-up for videos (`reconcileVideos`, `lib/video-reconcile.ts`): a creator's page asks the Stream API about their
 videos that are unsettled, or READY without a poster, and applies the answer as the webhook would (poster, preview,
 length, renditions, READY/FAILED, quota hold). A video whose id is not a Bunny GUID (seed placeholders) holds no media
-and is never asked about.
+and is never asked about. A video polled by its id (`GET /api/videos/<id>/details`) while still PENDING_UPLOAD or
+PROCESSING is reconciled on that read — one video, not the creator's list — so an upload never waits for a dashboard visit.
 
 ## 5. Signed playback
 
