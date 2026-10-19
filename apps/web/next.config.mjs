@@ -114,6 +114,8 @@ const nextConfig = {
     const robotsHeader = process.env.APP_SEARCH_INDEXING === "off" ? [{ key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" }] : [];
     return [
       { source: "/:path*", headers: [...securityHeaders, ...robotsHeader] },
+      // admin.<domain> is the operator console (app/console): never indexed, whatever APP_SEARCH_INDEXING says.
+      { source: "/:path*", has: [{ type: "host", value: "admin\\..*" }], headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
       // A page is written in the language of its address, its cookie or the browser's: caches must tell them apart.
       { source: "/((?!_next/static|_next/image).*)", headers: [{ key: "Vary", value: "Accept-Language, Cookie" }] },
     ];

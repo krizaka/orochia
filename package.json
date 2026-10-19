@@ -14,7 +14,7 @@
     "start": "npm run start -w apps/web",
     "lint": "npm run lint --workspaces --if-present && npm run check:app-links && npm run check:i18n && npm run ratchet && npm run lint:sg:test && npm run lint:sg",
     "check:app-links": "node scripts/check-app-links.mjs",
-    "check:i18n": "krizaka-i18n check apps/web/messages && krizaka-i18n scan apps/web/app apps/web/components apps/web/lib --allow Orochia,OROCHIA,Krizaka,KRIZAKA,Bunny,PayPal,USDT,BTC,IBAN,BIC --skip /app/api/",
+    "check:i18n": "krizaka-i18n check apps/web/messages && krizaka-i18n scan apps/web/app apps/web/components apps/web/lib --allow Orochia,OROCHIA,Krizaka,KRIZAKA,Bunny,PayPal,USDT,BTC,IBAN,BIC --skip /app/api/ --skip /app/console/ --skip /console/",
     "ratchet": "krizaka-ratchet",
     "ratchet:update": "krizaka-ratchet --update",
     "typecheck": "node apps/web/scripts/gen-docs-bundle.mjs && npm run lint --workspaces --if-present && tsc --noEmit -p apps/web/tsconfig.json",

@@ -1,7 +1,10 @@
 # 🛡️ Admin Console
 
-The operator console ([krizaka/orochia-admin](https://github.com/krizaka/orochia-admin)) is a **separate application**
-with its own database, its own single account and its own network gate. It never touches Orochia's database: every
+The operator console (`apps/web/app/console`; it was the repository `krizaka/orochia-admin`, now archived) is served by
+the platform's app **on its own host, `admin.<domain>`** — one App Platform app, one process — with its own database,
+its own single account and its own network gate. `proxy.ts` rewrites that host into `/console` only for the addresses of
+`AUTH_ALLOWED_IPS` (403 for the others, sign-in included; only `/api/health` and `/robots.txt` are open), and `/console`
+answers 404 on every other host. It never touches Orochia's database: every
 decision goes through Orochia's admin API (`/api/admin/*`, listed in the [API reference](API_CONTRACTS.md)), server
 side, with a service token the browser never sees. What an operator decides is recorded in the console's own log.
 

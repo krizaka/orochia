@@ -1,0 +1,37 @@
+/* Platform wiring (study §2.4), in this order: Tailwind, the Krizaka preset (tokens --kz-*, role utilities, motion),
+   the @krizaka/ui primitives as a Tailwind source, then the Orochia identity (overrides of the --kz-* roles) and the
+   Orochia brand (accent text, info, the section gradient — the same file as the web app).
+   Dark is the default; light is html.light, set by ThemeScript / ThemeProvider (@krizaka/ui/theme). */
+@import "tailwindcss";
+@import "@krizaka/tailwind";
+@import "@krizaka/ui/tailwind.css";
+@import "@krizaka/orochia-design-system/theme.css";
+@import "@krizaka/tokens/brands/orochia.css";
+
+body {
+  color: var(--kz-text-primary);
+  background: var(--kz-surface-0);
+  font-family: var(--kz-font-sans);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--kz-accent);
+  color: var(--kz-on-accent);
+}
+
+/* Scrollbars follow the theme. */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--kz-surface-0);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--kz-border-default);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--kz-border-strong);
+}

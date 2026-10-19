@@ -36,7 +36,7 @@ export const ENV_CONTEXTS = {
   ABUSE: "Abuse defences — rate limits, bot challenge, sign-up rules, storage quotas",
   OBSERVABILITY: "Observability — metrics",
   AI: "AI — the Orazaka engine the Explorer calls (embeddings), never a model provider",
-  OPERATOR: "Operator console — the admin API",
+  OPERATOR: "Operator console — the admin API, and the console served on admin.<domain>",
 } as const;
 export type EnvContext = keyof typeof ENV_CONTEXTS;
 
@@ -206,6 +206,13 @@ export const ENV_VARS: readonly EnvVar[] = [
   v("AI_ENGINE_API_KEY", "AI", "optional", z.string().regex(/^oz_/, "an Orazaka API key (oz_…)"), "Orochia's Orazaka service key, scoped `ai:embed reco:sync reco:read` (embeddings, the recommender — ADR-078). Without it Orochia does not call Orazaka.", { secret: true }),
   v("AI_PSEUDONYM_KEY", "AI", "recommended", secret32, "The HMAC key that turns an account id into the pseudonym Orazaka's recommender knows (never the id itself). Without it in production nothing is sent to the recommender; rotating it forgets every profile.", { secret: true, default: "derived from AUTH_SESSION_SECRET" }),
   // ── OPERATOR ──
+  v("OPERATOR_API_URL", "OPERATOR", "optional", url, "The platform API the console (admin.<domain>, `app/console`) operates: this deployment's own public address (`/api/admin/*`).", { default: "http://localhost:3000" }),
+  v("NEXT_PUBLIC_OPERATOR_PLATFORM_URL", "OPERATOR", "optional", url, "The platform's public site, for the console's links to a video, a profile or the home.", { build: true, default: "http://localhost:3000" }),
+  v("DATABASE_CONSOLE_URL", "DATABASE", "optional", text, "The operator console's own database (operator account, sessions, operator log) — never the platform's. Unset: the console cannot sign anyone in."),
+  v("AUTH_OPERATOR_EMAIL", "AUTH", "optional", z.string().email(), "The console's single operator account: nobody signs up, there is no other user."),
+  v("AUTH_OPERATOR_NAME", "AUTH", "optional", text, "The operator's display name."),
+  v("AUTH_OPERATOR_PASSWORD", "AUTH", "optional", z.string().min(12, "must be at least 12 characters"), "The operator's password (12+ characters), brought in line at sign-in.", { secret: true }),
+  v("AUTH_ALLOWED_IPS", "AUTH", "recommended", text, "Comma-separated client addresses (`do-connecting-ip`) allowed to reach the console host (admin.<domain>), sign-in included. Empty in production: nobody."),
   v("OPERATOR_API_TOKEN", "OPERATOR", "recommended", secret32, "Service token of the operator console (32+ characters, the same value on both deployments): opens ADMIN routes only, acting as the owner. Unset: refused.", { secret: true }),
 ];
 

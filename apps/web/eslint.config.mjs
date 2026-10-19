@@ -18,6 +18,8 @@ const config = [
       // set after the fetch resolves, which this rule cannot see through the useCallback. Synchronous
       // external reads use useSyncExternalStore instead (see AgeVerificationModal).
       "react-hooks/set-state-in-effect": "off",
+      // A `_`-prefixed argument is intentionally ignored (a server action's previous state — the operator console).
+      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
     },
   },
 ];
