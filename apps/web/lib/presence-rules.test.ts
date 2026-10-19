@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { realtimeConfig } from "./env";
-import { type PresenceFacts, presenceVisible } from "./presence-rules";
+import { isHiddenPresence, type PresenceFacts, presenceVisible } from "./presence-rules";
 
 const base: PresenceFacts = {
   viewerId: "v",
@@ -52,5 +52,14 @@ describe("realtime configuration", () => {
     expect(() => realtimeConfig({ REALTIME_BUS: "redis" })).toThrow(/REALTIME_REDIS_URL/);
     expect(() => realtimeConfig({ REALTIME_BUS: "kafka" })).toThrow(/REALTIME_BUS/);
     expect(realtimeConfig({ REALTIME_BUS: "redis", REALTIME_REDIS_URL: "rediss://cache:25061" })).toMatchObject({ kind: "redis", redisUrl: "rediss://cache:25061" });
+  });
+});
+
+describe("a presence event that says someone hid their presence", () => {
+  it("is offline with no time — a person who left carries the time they were last seen", () => {
+    expect(isHiddenPresence({ state: "offline", lastSeenAt: null })).toBe(true);
+    expect(isHiddenPresence({ state: "offline", lastSeenAt: "2026-10-19T12:00:00Z" })).toBe(false);
+    expect(isHiddenPresence({ state: "online", lastSeenAt: null })).toBe(false);
+    expect(isHiddenPresence({ state: "away", lastSeenAt: null })).toBe(false);
   });
 });

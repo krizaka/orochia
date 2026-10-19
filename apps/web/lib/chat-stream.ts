@@ -6,6 +6,7 @@ import { and, asc, eq, gt, gte, inArray, or, sql } from "drizzle-orm";
 
 import { trailing } from "./circle-cache";
 import { markDelivered, type MessageView,messageView } from "./messaging";
+import { isHiddenPresence } from "./presence-rules";
 import { forgetCircle, presenceBeat, presenceCircle, type PresenceEvent,presenceLeave, presenceOf, presenceTopic } from "./presence";
 import { streamTimings, subscribe } from "./realtime";
 
@@ -139,7 +140,7 @@ export function userStream(userId: string, options: { cursor: number | null }): 
             id,
             subscribe<PresenceEvent>(presenceTopic(id), (event) => {
               // Someone hid their presence (offline, with no time): this account's circle changed too, on any instance.
-              if (event.state === "offline" && event.lastSeenAt === null) {
+              if (isHiddenPresence(event)) {
                 forgetCircle(userId);
                 refollow();
               }
