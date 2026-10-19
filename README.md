@@ -16,9 +16,9 @@ Direct-to-CDN 4K streaming, server-side access control, and gateway-confirmed pa
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/krizaka/orochia/badge)](https://scorecard.dev/viewer/?uri=github.com/krizaka/orochia)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Orochia](https://img.shields.io/badge/part%20of-Orochia-7c3aed)](https://dev.orochia.com)
-[![Docs](https://img.shields.io/badge/docs-krizaka.com%2Fdocs%2Forochia-7c3aed)](https://www.krizaka.com/docs/orochia)
+[![Docs](https://img.shields.io/badge/docs-dev.orochia.com%2Fdocs-7c3aed)](https://dev.orochia.com/docs)
 
-[Try it](https://dev.orochia.com) · [Documentation](https://www.krizaka.com/docs/orochia) · [Video tour](https://dev.orochia.com) · [Website](https://www.krizaka.com) · [Krizaka on GitHub](https://github.com/krizaka)
+[Try it](https://dev.orochia.com) · [Documentation](https://dev.orochia.com/docs) · [Video tour](https://dev.orochia.com) · [Website](https://www.krizaka.com) · [Krizaka on GitHub](https://github.com/krizaka)
 
 </div>
 <!-- /krizaka-header -->
@@ -106,24 +106,25 @@ flowchart LR
 ```text
 orochia
 ├── .github/
-│   ├── workflows/ (ci.yml, release.yml)
-│   └── ISSUE_TEMPLATE/ (bug_report.yml, feature_request.yml)
+│   ├── workflows/ (ci.yml · release.yml · scorecard.yml · app-links-live.yml · dev-demo-stories.yml)
+│   ├── ISSUE_TEMPLATE/ (bug_report.yml, feature_request.yml)
+│   └── dependabot.yml
 ├── apps/
-│   └── web/ (Next.js 16 App Router, HLS Video Player, Creator Studio, Payouts)
+│   └── web/ (Next.js 16 App Router: the web app, its API routes, the mail templates, messages/en.json + fr.json)
 ├── packages/
-│   ├── db/ (Drizzle ORM schema, PostgreSQL migrations, Seed factory)
+│   ├── db/ (Drizzle ORM schema, PostgreSQL migrations, seed)
 │   ├── media/ (Bunny.net Stream SDK wrapper, Tus signing, HMAC token auth)
-│   ├── payments/ (CCBill, Segpay, Crypto, Stripe adapters, Double-entry ledger)
-│   └── config/ (Shared ESLint, TypeScript, and Tailwind configurations)
+│   ├── payments/ (CCBill, Segpay, Crypto, Stripe adapters, the credits, the double-entry ledger)
+│   └── config/ (shared ESLint, TypeScript and Tailwind configurations)
+├── e2e/ (the feature scenarios, axe accessibility, the UI crawl, the iPhone player check)
+├── scripts/ (generators and checks: docs, SEO family, app links; the dev dataset; recordings; journey-dev)
+├── rules/ · rule-tests/ (the ast-grep code rules and their tests)
 ├── deploy/
-│   ├── docker/ (Multi-stage Dockerfile, docker-compose.dev.yml, docker-compose.prod.yml)
+│   ├── docker/ (multi-stage Dockerfile, docker-compose.dev.yml, docker-compose.prod.yml)
 │   └── digitalocean/ (app-spec.dev.yaml · app-spec.production.yaml — one App Platform app per environment)
-├── docs/
-│   ├── ARCHITECTURE.md
-│   ├── MEDIA_PIPELINE.md
-│   └── DEPLOYMENT.md
-├── README.md
-└── LICENSE
+├── docs/ (the documentation of dev.orochia.com/docs: guide/ for fans and creators, the rest for developers)
+├── AGENTS.md · README.md · LICENSE
+```
 ```
 
 ---
