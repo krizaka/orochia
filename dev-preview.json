@@ -60,14 +60,12 @@
       "checked": "2026-10-19"
     },
     "docs.current": {
-      "evidence": null,
-      "gap": "README/AGENTS/docs not yet checked against the dev deployment.",
-      "issue": "https://github.com/krizaka/orochia/issues/244"
+      "evidence": "https://github.com/krizaka/orochia/issues/244",
+      "checked": "2026-10-19"
     },
     "seo.family": {
-      "evidence": null,
-      "gap": "node scripts/check-seo-family.mjs --base https://dev.orochia.com --host https://dev.orochia.com --index off fails (empty sitemap / no Sitemap: line wh…",
-      "issue": "https://github.com/krizaka/orochia/issues/246"
+      "evidence": "https://github.com/krizaka/orochia/issues/246",
+      "checked": "2026-10-19"
     },
     "ops.cost": {
       "evidence": null,
