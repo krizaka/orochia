@@ -15,6 +15,18 @@ export const BunnyConfigSchema = z.object({
 
 export type BunnyConfig = z.infer<typeof BunnyConfigSchema>;
 
+/** How an AI-made clip was made — stored as data (videos.ai_provenance), read by the AI badge. */
+export const AiProvenanceSchema = z
+  .object({
+    generator: z.literal("orazaka"),
+    runId: z.string().min(6).max(80),
+    model: z.string().min(1).max(120).optional(),
+    hardware: z.string().min(1).max(120).optional(),
+  })
+  .strict();
+
+export type AiProvenance = z.infer<typeof AiProvenanceSchema>;
+
 export const CreateUploadSessionSchema = z.object({
   title: z.string().min(3).max(255),
   description: z.string().optional(),
@@ -23,6 +35,8 @@ export const CreateUploadSessionSchema = z.object({
   tags: z.array(z.string()).default([]),
   contentRatingId: z.string().max(30).optional(),
   isBlurred: z.boolean().optional().default(false),
+  /** Set when the clip was made with Orazaka: the badge reads it, never the description. */
+  aiProvenance: AiProvenanceSchema.optional(),
   /** Size of the file about to be sent, refused above the video limit. */
   sizeBytes: z.number().int().positive().max(UPLOAD_LIMITS.video.maxBytes),
   /** Its length when the browser could read it (checked against the plan's video time before signing). */

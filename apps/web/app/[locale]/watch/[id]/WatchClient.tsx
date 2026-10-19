@@ -42,6 +42,8 @@ interface VideoDetails {
   id: string;
   title: string;
   description: string | null;
+  /** How an AI-made clip was made (orochia#268); null for a human upload. */
+  aiProvenance?: { generator: "orazaka"; runId: string; model?: string; hardware?: string } | null;
   creatorName: string;
   creatorUsername: string;
   creatorAvatar: string | null;
@@ -371,7 +373,7 @@ export default function WatchClient() {
                 </div>
               </div>
 
-              <VideoInfo video={{ width: details.width, height: details.height, resolutions: details.resolutions, framerate: details.framerate, durationSeconds: details.durationSeconds, createdAt: details.createdAt, status: details.status, description: details.description }} />
+              <VideoInfo video={{ width: details.width, height: details.height, resolutions: details.resolutions, framerate: details.framerate, durationSeconds: details.durationSeconds, createdAt: details.createdAt, status: details.status, description: details.description, aiProvenance: details.aiProvenance }} />
 
               {withoutCredit(details.description) && (
                 <p className="mt-4 text-sm text-fg-secondary leading-relaxed bg-surface-2/30 rounded-2xl p-4 border border-border-subtle whitespace-pre-line shadow-xs">

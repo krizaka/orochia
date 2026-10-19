@@ -6,7 +6,7 @@ import { Popover } from "@krizaka/ui/popover";
 import { Check, Copy, Sparkles } from "lucide-react";
 import React from "react";
 
-import { type AiCredit, parseAiCredit, shortRunId } from "@/lib/ai-credit";
+import { type AiCredit, aiCreditOf, type StoredAiProvenance, shortRunId } from "@/lib/ai-credit";
 import type { Translator } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n-client";
 import { aspectLabel, qualityOf } from "@/lib/video-quality";
@@ -20,13 +20,15 @@ export interface VideoInfoData {
   createdAt: string;
   status?: string | null;
   description?: string | null;
+  /** The stored provenance of an AI-made clip (orochia#268); the description's credit line is only the fallback. */
+  aiProvenance?: StoredAiProvenance | null;
 }
 
 const clock = (secs: number) => `${Math.floor(secs / 60)}:${String(Math.floor(secs % 60)).padStart(2, "0")}`;
 
 /** The credit line Orazaka-made clips carry in their description ("Made with Orazaka — run <id> (<model>)."). */
-export function creditOf(description?: string | null): string | null {
-  return parseAiCredit(description)?.line ?? null;
+export function creditOf(description?: string | null, aiProvenance?: StoredAiProvenance | null): string | null {
+  return aiCreditOf({ description, aiProvenance })?.line ?? null;
 }
 
 function statusLabel(t: Translator, status: string): string {
@@ -119,7 +121,7 @@ export function VideoInfo({ video }: { video: VideoInfoData }) {
   const { t, date } = useI18n();
   const q = qualityOf(video.resolutions, video.width, video.height);
   const aspect = aspectLabel(video.width, video.height);
-  const credit = parseAiCredit(video.description);
+  const credit = aiCreditOf(video);
   const fps = fpsOf(t, video.framerate);
   const uploaded = date(video.createdAt);
   const notReady = video.status && video.status !== "READY" ? statusLabel(t, video.status) : null;

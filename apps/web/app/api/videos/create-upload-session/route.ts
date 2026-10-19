@@ -78,6 +78,7 @@ export async function POST(req: NextRequest) {
         tags: normalizeTags(input.tags),
         contentRatingId: input.contentRatingId || null,
         isBlurred: input.isBlurred || false,
+        aiProvenance: input.aiProvenance ?? null,
       })
       .returning();
 
