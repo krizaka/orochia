@@ -1173,6 +1173,12 @@
     },
     {
       "method": "POST",
+      "path": "/api/unsubscribe",
+      "access": "public",
+      "summary": "One-click unsubscribe for one category of e-mail."
+    },
+    {
+      "method": "POST",
       "path": "/api/uploads",
       "access": "session · role depends on the request",
       "summary": "Stores an avatar or a profile banner (any account), a thumbnail, a story image or a 2257 document (creators); size and type checked per kind."
@@ -1559,7 +1565,7 @@
         "runtime": "node",
         "version": "1.0.0",
         "published": false,
-        "description": "The API: 151 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
+        "description": "The API: 152 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
       },
       {
         "id": "orochia-config",

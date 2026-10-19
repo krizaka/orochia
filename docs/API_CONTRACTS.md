@@ -7,7 +7,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (190)
+## Endpoints (191)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
@@ -180,6 +180,7 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 | `POST` | `/api/stories/[id]/tip` | session · MEMBER / CREATOR / ADMIN | Tips a creator from one of their stories. |
 | `POST` | `/api/stories/[id]/view` | public · session-aware | Counts a view of a story you may see — once per viewer, never the creator's own. |
 | `POST` | `/api/stories/upload-session` | session · CREATOR / ADMIN | Starts a video story: records it and returns a Tus session straight to Bunny (stories collection). |
+| `POST` | `/api/unsubscribe` | public | One-click unsubscribe for one category of e-mail. |
 | `POST` | `/api/uploads` | session · role depends on the request | Stores an avatar or a profile banner (any account), a thumbnail, a story image or a 2257 document (creators); size and type checked per kind. |
 | `DELETE` | `/api/users/[username]/block` | session · ADMIN / CREATOR / MEMBER | Unblocks a previously blocked user. |
 | `POST` | `/api/users/[username]/block` | session · ADMIN / CREATOR / MEMBER | Blocks or unblocks a user: toggles block state on POST. |
