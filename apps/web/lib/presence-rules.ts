@@ -44,3 +44,7 @@ export function presenceVisible(f: PresenceFacts): boolean {
 
 /** The largest circle a stream follows (most recent relationships first). */
 export const PRESENCE_CIRCLE_LIMIT = 300;
+
+const OFFLINE = "offline" as const;
+/** A presence event with no time: the person hid their presence (a person who left carries the time they were last seen). */
+export const isHiddenPresence = (event: { state: string; lastSeenAt: string | null }): boolean => event.state === OFFLINE && event.lastSeenAt === null;

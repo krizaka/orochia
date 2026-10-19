@@ -4,7 +4,7 @@ import { and, count, desc, eq, inArray, isNull, lt, sql } from "drizzle-orm";
 import { conversationPath } from "./conversation-path";
 import { appUrl } from "./env";
 import { type I18nTools, type MessageKey, toolsFor } from "./i18n";
-import { DEFAULT_LOCALE, type Locale } from "./locales";
+import { DEFAULT_LOCALE, isLocale, mailPath } from "./locales";
 import { sendTemplate } from "./mail";
 import { emitUserEvent } from "./messaging";
 import { i18nVar, moneyVar } from "./notification-vars";
@@ -34,6 +34,7 @@ async function recipient(userId: string) {
       emailsOff: profiles.emailsOff,
       inAppOff: profiles.inAppOff,
       frequency: profiles.emailFrequency,
+      locale: users.locale,
     })
     .from(users)
     .leftJoin(profiles, eq(profiles.userId, users.id))
@@ -62,13 +63,7 @@ export function notificationText(tools: Pick<I18nTools, "t" | "money">, event: s
   return tools.t(`notify.${event}.body` as MessageKey, localizeVars(tools, vars));
 }
 
-/**
- * The language a notification is written in when it leaves the server (live, push, e-mail): the recipient's own.
- * Their chosen language is not stored yet, so it is the default one; the bell is written in the language of the page.
- */
-async function recipientLocale(_userId: string): Promise<Locale> {
-  return DEFAULT_LOCALE;
-}
+
 
 /** Claims the right to send an activity e-mail now, under the account's frequency (atomic across instances). */
 async function claimEmail(userId: string, frequency: string | null): Promise<boolean> {
@@ -88,7 +83,8 @@ export async function notify(input: { userId: string; event: NotificationEvent; 
   try {
     const to = await recipient(userId);
     if (!to || to.suspended) return;
-    const tools = toolsFor(await recipientLocale(userId));
+    // Written when it leaves the server (live, push, e-mail) in the recipient's own language; the bell, in the page's.
+    const tools = toolsFor(isLocale(to.locale) ? to.locale : DEFAULT_LOCALE);
     if (wants(to.inAppOff, event)) {
       const [row] = await db.insert(notifications).values({ userId, event, actorId: input.actorId ?? null, vars, path }).returning();
       emitUserEvent(userId, { type: "notification", notification: { id: row.id, event, text: notificationText(tools, event, vars), path, createdAt: row.createdAt, readAt: null } });
@@ -104,12 +100,13 @@ export async function notify(input: { userId: string; event: NotificationEvent; 
     const all = { ...localizeVars(tools, vars), username: to.username };
     await sendTemplate("notification", {
       to: to.email,
+      locale: tools.locale,
       vars: {
         username: to.username,
         subject: tools.t(`notify.${event}.subject` as MessageKey, all),
         body: tools.t(`notify.${event}.body` as MessageKey, all),
-        link: `${appUrl()}${path}`,
-        settingsLink: `${appUrl()}/me/settings#settings-notifications`,
+        link: `${appUrl()}${mailPath(path, tools.locale)}`,
+        settingsLink: `${appUrl()}${mailPath("/me/settings#settings-notifications", tools.locale)}`,
       },
     });
   } catch (error) {

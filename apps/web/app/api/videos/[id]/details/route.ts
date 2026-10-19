@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { videoDetails } from "@/lib/queries";
+import { reconcileVideos } from "@/lib/video-reconcile";
 import { getCurrentUser } from "@/lib/auth";
 import { hasLiked } from "@/lib/engagement";
 import { adultViewer, evaluateVideoAccess } from "@/lib/access";
@@ -20,8 +21,14 @@ export async function GET(_req: NextRequest, props: { params: Promise<{ id: stri
     const id = z.string().uuid().safeParse(params.id);
     if (!id.success) return jsonError(404, "Video not found");
     const viewer = await getCurrentUser();
-    const video = await videoDetails(id.data, viewer?.isAgeVerified === true);
+    let video = await videoDetails(id.data, viewer?.isAgeVerified === true);
     if (!video) return jsonError(404, "Video not found");
+    // A lost Bunny webhook must not leave an upload polled by its id unsettled until the creator opens the dashboard
+    // (orochia#277): ask Bunny about this one video, then read it again.
+    if (video.status === "PENDING_UPLOAD" || video.status === "PROCESSING") {
+      const { settled } = await reconcileVideos({ videoId: video.id, limit: 1 }).catch(() => ({ settled: 0 }));
+      if (settled > 0) video = (await videoDetails(id.data, viewer?.isAgeVerified === true)) ?? video;
+    }
     // An invited-only video does not exist for those it was not shared with.
     if (video.visibility === "INVITED_ONLY" && !(await evaluateVideoAccess(video.id, viewer?.id)).allowed) {
       return jsonError(404, "Video not found");

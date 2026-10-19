@@ -1,0 +1,112 @@
+{
+  "key": "diego_fuentes",
+  "username": "diego_fuentes",
+  "displayName": "Diego Fuentes",
+  "bio": "Electro DJ and festival host. Stage lights, rooftop sunsets and the first drop of the night. Adults only.",
+  "niche": "Electro & festivals",
+  "tags": [
+    "electro",
+    "festival",
+    "dj",
+    "rooftop"
+  ],
+  "rating": "MATURE",
+  "avatar": "Portrait of a charismatic man in his mid 30s with a trimmed beard and headphones around his neck, colourful stage lasers behind him, open shirt, shoulders-up, photographic, fictional person, clearly an adult",
+  "banner": "Ultra-wide panoramic photograph of a festival main stage with laser beams and a huge crowd with raised hands at night, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Stage & rooftop",
+      "description": "Electro nights and sunsets.",
+      "videos": [
+        "Festival main stage, the drop",
+        "Rooftop electro at sunset",
+        "Fader slide, close up",
+        "Concert lights from the pit"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Festival main stage, the drop",
+      "description": "Lasers, smoke and thousands of hands at the exact second the beat drops.",
+      "tags": [
+        "electro",
+        "festival",
+        "crowd",
+        "lasers"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide cinematic photograph of a night electronic festival main stage with laser beams, confetti cannons and a huge crowd of adults with raised hands seen from the back, no readable faces, no text",
+      "motion": "The beat drops: lasers sweep, confetti bursts and the crowd jumps with raised hands, camera swoops forward over the crowd.",
+      "hero": true
+    },
+    {
+      "title": "Rooftop electro at sunset",
+      "description": "A DJ booth on a rooftop, a pink sky and a dancing crowd.",
+      "tags": [
+        "rooftop",
+        "electro",
+        "sunset",
+        "dj"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a rooftop party at sunset with a DJ booth, a pink and orange sky over the city skyline and adults dancing, tasteful party outfits, no text",
+      "motion": "The crowd dances as the sky shifts to pink, lights flicker on, camera glides across the rooftop.",
+      "hero": true
+    },
+    {
+      "title": "Fader slide, close up",
+      "description": "Hands, faders and coloured LEDs.",
+      "tags": [
+        "dj",
+        "mixer",
+        "closeup",
+        "electro"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical close-up photograph of DJ hands on a mixer sliding a fader with colourful LED lights reflecting, shallow depth of field, no face, no text",
+      "motion": "The hand slides the fader slowly while LED lights pulse in colour, subtle macro drift."
+    },
+    {
+      "title": "Concert lights from the pit",
+      "description": "A wall of stage lights seen from the front of the crowd.",
+      "tags": [
+        "concert",
+        "stage-lights",
+        "crowd",
+        "night"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph from the front of a concert crowd looking up at a stage covered in beams of coloured light and haze, silhouettes of raised hands, no readable faces, no text",
+      "motion": "Beams of light swing across the haze and hands wave in silhouette, camera rises slowly."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Soundcheck",
+      "kind": "image",
+      "still": "Vertical photograph of an empty festival stage with beams of light and haze before opening, no people, no text"
+    },
+    {
+      "caption": "Wristbands",
+      "kind": "image",
+      "still": "Vertical photograph of neon festival wristbands on a wrist, close-up, no face, no text"
+    },
+    {
+      "caption": "Crowd, 2 a.m.",
+      "kind": "clip",
+      "still": "Vertical photograph of a festival crowd at night with raised hands under lasers, seen from the back, no readable faces, no text",
+      "motion": "Lasers sweep over the crowd, hands wave."
+    },
+    {
+      "caption": "Headphones on",
+      "kind": "image",
+      "still": "Vertical photograph of studio headphones on a DJ controller with coloured light, no people, no text"
+    },
+    {
+      "caption": "Sunrise set",
+      "kind": "image",
+      "still": "Vertical photograph of a beach stage at sunrise with a DJ silhouette, no readable faces, no text"
+    }
+  ]
+}

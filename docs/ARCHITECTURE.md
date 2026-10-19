@@ -1,4 +1,10 @@
-# 🏛️ Orochia Architecture Specification
+---
+title: Architecture
+nav: Architecture
+description: How access, payments, the ledger and compliance fit together.
+---
+
+# Orochia Architecture Specification
 
 Orochia is an adult-friendly, high-performance open-source video streaming and creator community platform designed by **Krizaka**. It decouples media transcoding and delivery to **Bunny.net Stream Edge CDN** while maintaining strict zero-trust access control, tokenized HMAC authorization, and an atomic financial ledger across adult-compliant payment processors.
 

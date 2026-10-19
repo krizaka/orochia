@@ -1,4 +1,10 @@
-# ⚡ Realtime — how Orochia stays live
+---
+title: Realtime
+nav: Realtime
+description: The bus, the streams, reconnection and presence.
+---
+
+# Realtime — how Orochia stays live
 
 A message lands, a bid moves the price, a pledge fills the pot, someone comes online: the screens that care hear of it
 in well under a second, on the web and in the app, without polling. This page describes **what runs** — the bus, the
@@ -89,7 +95,7 @@ bell, the Messages badge and the inbox (`apps/web/lib/realtime-client.ts`), held
 | `read` · `unread` | the reader's apps | a conversation read elsewhere · the account's unread total (the badge) |
 | `typing` | the other participant | `conversationId`, `userId`, `typing` — never stored |
 | `presence` · `presence_snapshot` | the circle | `userId`, `state` (`online` · `away` · `offline`), `lastSeenAt` · the whole circle at once |
-| `circle_changed` · `resync` | the stream | rebuild presence (a block, a setting) · reload (too much missed) |
+| `circle_changed` · `resync` | the stream | rebuild presence (a block, a setting) — the first at once, a burst once more after 1 s · reload (too much missed) |
 | `notification` | the account | `id`, `event`, `text`, `path`, `createdAt` — the bell and a toast ([NOTIFICATIONS.md](NOTIFICATIONS.md)) |
 
 ### An auction — `GET /api/auctions/:id/stream` (public)
@@ -196,7 +202,7 @@ Valkey). Nothing else changes.
 packages/db/src/listen.ts                  the LISTEN / NOTIFY primitives handed to the bus
 apps/web/lib/realtime.ts                   the door: picks the bus, publish / subscribe / sseResponse
 apps/web/lib/chat-stream.ts                the account's stream: replay, delivery, presence heartbeat, circle filter
-apps/web/lib/presence.ts · presence-rules.ts   circle, presence views, last seen · who sees whom
+apps/web/lib/presence.ts · presence-rules.ts   circle (kept 30 s per account, forgotten at once on a change — `circle-cache.ts`), presence views, last seen · who sees whom
 apps/web/lib/messaging.ts                  messages, receipts, unread, typing, reports, blocks
 apps/web/lib/auctions.ts · challenges.ts   announceBid / announcePledge / state changes
 apps/web/lib/realtime-client.ts            the browser's single shared stream, activity (away / online)

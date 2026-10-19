@@ -1,0 +1,99 @@
+{
+  "key": "yuki_mori",
+  "username": "yuki_mori",
+  "displayName": "Yuki Mori",
+  "bio": "Tokyo street style: layers, sneakers and the little details people walk past. Always one outfit, always the rain.",
+  "niche": "Street style, Tokyo",
+  "tags": [
+    "streetwear",
+    "tokyo",
+    "style",
+    "fashion"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a person in their mid 20s with a sleek bob haircut dyed charcoal, oversized jacket, neon signs blurred behind them, calm expression, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a rainy Tokyo crossing at night with neon signs and umbrellas, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Tokyo after the rain",
+      "description": "Style and street scenes.",
+      "videos": [
+        "Shibuya crossing, umbrellas",
+        "Layers: a Harajuku outfit, step by step",
+        "Vending machine glow, 2 a.m.",
+        "Sneaker wall, Ura-Hara"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Shibuya crossing, umbrellas",
+      "description": "A crossing in the rain, umbrellas flowing like a river.",
+      "tags": [
+        "tokyo",
+        "shibuya",
+        "rain",
+        "city"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a busy rainy Tokyo crossing at night seen from above with many transparent umbrellas and neon reflections on wet asphalt, no readable text",
+      "motion": "People cross in waves with umbrellas, rain streaks fall and neon reflections shimmer, slow camera drift."
+    },
+    {
+      "title": "Layers: a Harajuku outfit, step by step",
+      "description": "Oversize jacket, wide trousers, one loud pair of sneakers.",
+      "tags": [
+        "streetwear",
+        "harajuku",
+        "outfit",
+        "sneakers"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical full-length photograph of a person seen from behind in layered streetwear with oversized jacket and bright sneakers walking down a Tokyo alley, no face, no readable text",
+      "motion": "The person walks slowly away down the alley, jacket sways, lights glow softly, steady camera follows."
+    },
+    {
+      "title": "Vending machine glow, 2 a.m.",
+      "description": "A vending machine casting colour on an empty alley.",
+      "tags": [
+        "tokyo",
+        "night",
+        "vending-machine",
+        "ambient"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a glowing vending machine in a quiet narrow Tokyo alley at 2am with wet pavement reflections, no people, no readable text",
+      "motion": "Light flickers softly on the wet pavement and a faint mist drifts, slow push-in."
+    },
+    {
+      "title": "Sneaker wall, Ura-Hara",
+      "description": "Rows of sneakers on a wall and a hand picking one pair.",
+      "tags": [
+        "sneakers",
+        "shopping",
+        "tokyo",
+        "style"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a shop wall with rows of colourful sneakers, a hand reaching for a pair, soft shop lighting, no face, no readable text or logos",
+      "motion": "The hand lifts a sneaker from the wall, light glints across the rows, subtle slow pan."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Rain jacket",
+      "kind": "image",
+      "still": "Vertical photograph of a transparent raincoat hung on a hook with neon light reflecting, no people, no text"
+    },
+    {
+      "caption": "Konbini run",
+      "kind": "image",
+      "still": "Vertical photograph of a small convenience store interior at night with glowing shelves, no people, no readable text"
+    },
+    {
+      "caption": "Platform lights",
+      "kind": "image",
+      "still": "Vertical photograph of a Tokyo train platform at night with a train passing blurred, no readable text"
+    }
+  ]
+}

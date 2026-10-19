@@ -206,3 +206,10 @@ body:has([data-feed-layout="vertical"]) [data-testid="home-intro"],
 body:has([data-feed-layout="vertical"]) [data-feed-chrome] { display: none; }
 body:has([data-feed-layout="vertical"]) [data-feed-container] { padding: 0; }
 body:has([data-feed-layout="vertical"]) [data-feed-container] > section { margin-top: 0; }
+
+/* Documentation: a screenshot of the app in a phone frame (an image titled "phone" in the markdown) and the numbered steps. */
+.doc-prose .doc-phone { display: block; width: min(100%, 15rem); margin: 1.25rem 0 1.5rem; }
+.doc-prose .doc-phone img { display: block; width: 100%; height: auto; border-radius: 2rem; border: 6px solid var(--orochia-device-edge); background: var(--orochia-device-core); }
+.doc-prose .doc-phone-caption { display: block; margin-top: 0.5rem; font-size: 0.8rem; color: var(--kz-text-muted, var(--kz-text-secondary)); }
+.doc-prose ol > li { margin-bottom: 0.35rem; padding-left: 0.2rem; }
+.doc-prose ol > li::marker { font-weight: 700; color: var(--kz-text-primary); }

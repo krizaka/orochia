@@ -1,0 +1,112 @@
+{
+  "key": "valentina_cruz",
+  "username": "valentina_cruz",
+  "displayName": "Valentina Cruz",
+  "bio": "Tulum beach parties, boho dresses and sunrise sets. Palm shade, white sand and a very good playlist. Adults only.",
+  "niche": "Tulum beach parties",
+  "tags": [
+    "tulum",
+    "beach-party",
+    "boho",
+    "sunset"
+  ],
+  "rating": "MATURE",
+  "avatar": "Portrait of a radiant woman in her early 30s with long dark wavy hair and a flower behind her ear, wearing a white boho crochet top, Tulum beach at golden hour, shoulders-up, photographic, fictional person, clearly an adult",
+  "banner": "Ultra-wide panoramic photograph of a Tulum beach party at sunset with palm-thatched cabanas, string lights and adults dancing on white sand far away, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Tulum",
+      "description": "Parties, sand and cenotes.",
+      "videos": [
+        "Tulum beach party, golden hour",
+        "Sunrise set on the sand",
+        "Boho dress in the shallows",
+        "Cenote swim"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Tulum beach party, golden hour",
+      "description": "White sand, a DJ under palm thatch and adults dancing in boho outfits.",
+      "tags": [
+        "tulum",
+        "beach-party",
+        "dance",
+        "golden-hour"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide cinematic photograph of a Tulum beach party at golden hour with palm-thatched cabanas, a DJ booth, string lights and adults dancing on white sand in boho beach outfits and swimwear, turquoise Caribbean sea behind, tasteful, fictional adults clearly over 25, tasteful, energetic, cinematic, no text",
+      "motion": "The crowd dances on the white sand, string lights twinkle, waves roll in, camera swoops slowly over the party.",
+      "hero": true
+    },
+    {
+      "title": "Sunrise set on the sand",
+      "description": "A DJ and a small crowd greeting the first light.",
+      "tags": [
+        "tulum",
+        "sunrise",
+        "dj",
+        "beach"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a small beach DJ set at sunrise in Tulum with silhouettes of adults dancing barefoot on white sand and a pink sky, no text",
+      "motion": "The sky brightens to orange, the silhouettes sway and the waves glow, slow push-in.",
+      "hero": true
+    },
+    {
+      "title": "Boho dress in the shallows",
+      "description": "A flowing white dress and ankle-deep turquoise water.",
+      "tags": [
+        "boho",
+        "beach",
+        "fashion",
+        "tulum"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a woman in a flowing white boho dress seen from behind walking in ankle-deep turquoise water at golden hour, tasteful, adult, no text",
+      "motion": "Her dress and hair flow in the sea breeze as she walks, small waves lap, steady camera follow."
+    },
+    {
+      "title": "Cenote swim",
+      "description": "Jungle light and a clear freshwater pool.",
+      "tags": [
+        "cenote",
+        "tulum",
+        "swim",
+        "nature"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a woman in a simple swimsuit seen from behind at the edge of a sunlit cenote with clear emerald water and hanging jungle roots, tasteful, adult, no text",
+      "motion": "Light shafts move on the emerald water and ripples spread as she steps in, camera rises slowly."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Cabana shade",
+      "kind": "image",
+      "still": "Vertical photograph of white linen cabana curtains moving in the breeze on a Tulum beach, no people, no text"
+    },
+    {
+      "caption": "Palm shadow",
+      "kind": "image",
+      "still": "Vertical photograph of palm shadows on white sand with footprints, no people, no text"
+    },
+    {
+      "caption": "Mezcal sunset",
+      "kind": "clip",
+      "still": "Vertical photograph of a mezcal cocktail with orange slice on a wooden table at sunset on the beach, no people, no text",
+      "motion": "The sea glitters behind the glass."
+    },
+    {
+      "caption": "String lights",
+      "kind": "image",
+      "still": "Vertical photograph of warm string lights above a beach dance floor at dusk, no readable faces, no text"
+    },
+    {
+      "caption": "Sunrise feet",
+      "kind": "image",
+      "still": "Vertical photograph of bare feet in white sand at sunrise with sea foam, no face, no text"
+    }
+  ]
+}

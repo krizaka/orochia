@@ -295,6 +295,8 @@ export async function creatorVideos(creatorId: string, limit = 24, viewerAgeChec
 export interface VideoDetails extends VideoSummary {
   description: string | null;
   tags: string[] | null;
+  /** How an AI-made clip was made (the badge's data); null for a human upload. */
+  aiProvenance: { generator: "orazaka"; runId: string; model?: string; hardware?: string } | null;
   /** Frames per second read from the file, and the encoding state: for the info panel. */
   framerate: number | null;
   status: string;
@@ -313,6 +315,7 @@ export async function videoDetails(videoId: string, viewerAgeChecked = false): P
       ...videoSummaryColumns,
       description: videos.description,
       tags: videos.tags,
+      aiProvenance: videos.aiProvenance,
       framerate: videos.framerate,
       status: videos.status,
       creatorId: videos.creatorId,

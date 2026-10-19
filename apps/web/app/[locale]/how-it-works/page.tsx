@@ -42,7 +42,7 @@ export default async function HowItWorksPage({ params }: { params: Promise<{ loc
               </Button>
             </div>
           </div>
-          <Clip clip="showcase" locale={locale} label={t("howItWorks.heroClip", { share: s })} frameLabel={t("howItWorks.frameLabel")} />
+          <Clip priority clip="showcase" locale={locale} label={t("howItWorks.heroClip", { share: s })} frameLabel={t("howItWorks.frameLabel")} />
         </div>
       </SectionBackdrop>
 

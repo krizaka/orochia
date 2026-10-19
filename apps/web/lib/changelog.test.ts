@@ -41,6 +41,13 @@ describe("/changelog", () => {
     }
   });
 
+  it("is its own canonical in its language, with its alternates (the family SEO contract, orochia#246)", () => {
+    const page = read("app/[locale]/changelog/page.tsx");
+    expect(page).toContain('await pageAlternates("/changelog")');
+    expect(page).toMatch(/alternates: \{ \.\.\.\(await pageAlternates/);
+    expect(page).toContain('"application/rss+xml"');
+  });
+
   it("the footer's version links /changelog#<version>, the page owns that anchor", () => {
     expect(read("components/SiteFooter.tsx")).toContain("`${changelog}#${BUILD_INFO.version}`");
     expect(read("components/ChangelogBody.tsx")).toContain("<span id={version}>");

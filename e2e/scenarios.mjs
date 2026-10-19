@@ -606,6 +606,16 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
   }
 }
 
+// Language: an account keeps the language it reads Orochia in (e-mails, push and notifications follow it)
+{
+  check("language: a visitor cannot set one", (await fetch(`${B}/api/me/locale`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ locale: "fr" }) })).status === 401);
+  check("language: an account sets French", (await alex.call("/api/me/locale", "PUT", { locale: "fr" })).json.locale === "fr");
+  check("language: only English and French", (await alex.call("/api/me/locale", "PUT", { locale: "de" })).status === 400);
+  check("language: a page answers in French at /fr, in English at /en", (await (await fetch(`${B}/fr/legal/terms`)).text()).includes("Conditions d’utilisation") && (await (await fetch(`${B}/en/legal/terms`)).text()).includes("Terms of Service"));
+  check("language: an address without one follows the browser", (await (await fetch(`${B}/legal/terms`, { headers: { "Accept-Language": "fr-CA" } })).text()).includes("Conditions d’utilisation"));
+  await alex.call("/api/me/locale", "PUT", { locale: "en" });
+}
+
 // Profile: links, pictures, date of birth, notifications, public pages
 {
   const tooYoung = new Date(Date.now() - 17 * 365.25 * 86400000).toISOString().slice(0, 10);
@@ -1089,6 +1099,12 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
     check("the owner leaves: the group goes to the longest-standing member", (await elena.call(`/api/groups/${gid}/leave`, "POST")).status === 200 && (await sam.call(`/api/groups/${gid}`)).json.group.role === "owner");
     check("a closed group takes no new message", (await sam.call(`/api/groups/${gid}`, "DELETE")).status === 200 && (await sam.call(`/api/conversations/${gid}/messages`, "POST", { content: "late", clientId: crypto.randomUUID() })).status === 409);
   
+    // Limits: a burst of messages is refused (429) whatever the conversation, and the refusal costs no database write.
+    const burst = [];
+    for (let i = 0; i < 25; i++) burst.push((await sam.call(`/api/conversations/${gid}/messages`, "POST", { content: `burst ${i}`, clientId: crypto.randomUUID() })).status);
+    check("a burst of messages is limited (429)", burst.includes(429), burst.join(","));
+    check("…and the first ones were not", burst[0] !== 429);
+
     // Limits: creating groups is rationed per account.
     let last;
     for (let i = 0; i < 12; i++) last = await admin.call("/api/groups", "POST", { title: "x", memberIds: [] });

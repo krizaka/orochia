@@ -1,7 +1,9 @@
 import crypto from "crypto";
 import { db, authTokens, users } from "@orochia/db";
 import { and, eq, gt, isNull, sql } from "drizzle-orm";
+import { languageFor } from "./account-locale";
 import { appUrl } from "./env";
+import { DEFAULT_LOCALE, type Locale, mailPath } from "./locales";
 import { sendTemplate } from "./mail";
 
 /**
@@ -51,18 +53,20 @@ export async function consumeToken(token: string, purpose: TokenPurpose): Promis
 }
 
 /** The links e-mailed to the account: always on this environment's public origin (NEXT_PUBLIC_APP_URL). */
-export const verificationLink = (token: string) => `${appUrl()}/auth/verify?token=${token}`;
-export const resetLink = (token: string) => `${appUrl()}/auth/reset-password?token=${token}`;
+export const verificationLink = (token: string, locale: Locale = DEFAULT_LOCALE) => `${appUrl()}${mailPath("/auth/verify", locale)}?token=${token}`;
+export const resetLink = (token: string, locale: Locale = DEFAULT_LOCALE) => `${appUrl()}${mailPath("/auth/reset-password", locale)}?token=${token}`;
 
 export async function sendVerificationEmail(user: { id: string; email: string; username: string }): Promise<string> {
-  const link = verificationLink(await issueToken(user.id, "VERIFY_EMAIL"));
-  await sendTemplate("email-verification", { to: user.email, vars: { username: user.username, link } });
+  const locale = await languageFor(user.id);
+  const link = verificationLink(await issueToken(user.id, "VERIFY_EMAIL"), locale);
+  await sendTemplate("email-verification", { to: user.email, locale, vars: { username: user.username, link } });
   return link;
 }
 
 export async function sendPasswordResetEmail(user: { id: string; email: string; username: string }): Promise<string> {
-  const link = resetLink(await issueToken(user.id, "RESET_PASSWORD"));
-  await sendTemplate("password-reset", { to: user.email, vars: { username: user.username, link } });
+  const locale = await languageFor(user.id);
+  const link = resetLink(await issueToken(user.id, "RESET_PASSWORD"), locale);
+  await sendTemplate("password-reset", { to: user.email, locale, vars: { username: user.username, link } });
   return link;
 }
 

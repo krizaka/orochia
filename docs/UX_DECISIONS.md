@@ -1,3 +1,9 @@
+---
+title: UX decisions
+nav: UX decisions
+description: Each notable experience choice: the problem, the principle, what was refused, the cost.
+---
+
 # UX decisions — why it is built like this
 
 Each notable choice of experience in Orochia: the decision, the problem, the principle behind it (with its source),
@@ -268,3 +274,18 @@ written here, each with the place that carries it. Disagree, or saw that signal?
   version on the home (it stays on /how-it-works), a second primary action per section.
 - **Cost** — A visitor is one click further from the full feed; the home reads the feed twice for a visitor who then opens it.
 - **Signal we are wrong** — Visitors bounce from the home more than from /?feed=foryou, or never reach a creator's page.
+
+## « View as the public » on your own profile (krizaka/orochia#263)
+
+- **Decision** — Next to « Edit profile » on your own page, « View as the public » opens `/@username?as=public`: the page is
+  read as a visitor (no age check lifted, no playlist you alone can see) and drawn without any owner control, under a bar that
+  says so and leads back. Only the owner gets it; the same address for anyone else is the normal page. « As a follower » and
+  « as a member of my circle » come with the relationship status and closed circles (the rest of #263).
+- **Problem** — People set a picture, a banner, a bio and links without knowing what the public sees; a closed or half-filled
+  profile is only discovered by logging out.
+- **Principle** — Visibility of system status and a preview before commitment (Nielsen, 1994): the result of a setting is shown
+  where it lives, one tap away, never by signing out.
+- **Refused** — A second page for the preview (it would drift from the real one); a preview that changes data; a public
+  address that exposes the preview to others.
+- **Cost** — The preview reads the page twice for the owner who uses it; it does not yet show what a follower sees.
+- **Signal we are wrong** — Owners still sign out to check their page, or ask for « as a follower ».

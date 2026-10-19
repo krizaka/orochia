@@ -52,6 +52,11 @@ describe("the video information", () => {
     expect(html(AI)).toContain("ai-badge");
     expect(html(AI)).toContain("AI-generated");
   });
+  it("wears the AI badge from the stored provenance, without a credit line in the description (orochia#268)", () => {
+    const out = htmlIn("en", React.createElement(VideoInfo, { video: { ...base, description: "A drone glide.", aiProvenance: { generator: "orazaka", runId: RUN, model: "Wan 2.2 A14B" } } }));
+    expect(out).toContain("ai-badge");
+    expect(creditOf("A drone glide.", { generator: "orazaka", runId: RUN })).toContain(RUN);
+  });
   it("keeps the run id truncated with a copy button in the popover", () => {
     const src = read("./VideoInfo.tsx");
     expect(src).toContain("shortRunId(credit.runId)");

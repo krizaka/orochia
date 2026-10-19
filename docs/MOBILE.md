@@ -1,4 +1,10 @@
-# 📱 Mobile — the Orochia app for iOS and Android
+---
+title: Mobile app: technical state
+nav: Mobile app
+description: What was built and run in the Orochia app, platform by platform.
+---
+
+# Mobile — the Orochia app for iOS and Android
 
 The app is [`krizaka/orochia-mobile`](https://github.com/krizaka/orochia-mobile): Expo SDK 57, React Native 0.86,
 Expo Router. It is a **client of the Orochia API** — the same server, the same rules as orochia.com: access, prices,

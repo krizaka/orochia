@@ -7,7 +7,8 @@ import { VideoCard, type VideoCardProps } from "@/components/VideoCard";
 import { useI18n } from "@/lib/i18n-client";
 import { frameOf } from "@/lib/video-aspect";
 
-const FIRST_ROW = 4;
+// Only the first two posters are preloaded at high priority (a phone shows one; the rest of the row loads as it is in view).
+const FIRST_ROW = 2;
 
 /**
  * Every list of videos of the product: the Shorts (9:16, up to the limit) on a shelf, the others — square ones cover-cropped around their centre, no grey bars — in one uniform 16:9 grid (the kit's
@@ -15,7 +16,7 @@ const FIRST_ROW = 4;
  */
 export function VideoGrid({ videos, layout = "grid", shortsMaxSeconds, className }: { videos: VideoCardProps[]; layout?: "grid" | "list"; /** The Shorts limit (`feed` settings, lib/video-aspect.ts `formatOf`): a longer vertical clip sits in the 16:9 grid. */ shortsMaxSeconds?: number; className?: string }) {
   const { t } = useI18n();
-  // The first row is on the first screen: its posters are not lazy. Everything below the fold is.
+  // The first cards are on the first screen: their posters are not lazy. Everything else is.
   const first = new Set(videos.slice(0, FIRST_ROW).map((v) => v.id));
   return (
     <MediaGrid

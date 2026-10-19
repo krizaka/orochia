@@ -1,0 +1,99 @@
+{
+  "key": "sofia_lindqvist",
+  "username": "sofia_lindqvist",
+  "displayName": "Sofia Lindqvist",
+  "bio": "Physical comedy with props: bad ideas, rubber chickens and a very patient cat. No dialogue needed.",
+  "niche": "Comedy sketches",
+  "tags": [
+    "comedy",
+    "sketch",
+    "funny",
+    "props"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a woman in her late 20s with short blond hair and a mischievous grin, wearing a bright yellow raincoat indoors, playful lighting, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a colourful prop table with a rubber chicken, a tiny top hat, a banana and confetti, playful studio lighting, subject across the middle band",
+  "collections": [
+    {
+      "title": "Short sketches",
+      "description": "No words, only props and timing.",
+      "videos": [
+        "The great sandwich disaster",
+        "A cat's opinion of Mondays",
+        "Umbrella versus the wind",
+        "Rubber chicken audition"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "The great sandwich disaster",
+      "description": "A sandwich, gravity and one wrong decision. Physical comedy, no words.",
+      "tags": [
+        "comedy",
+        "sketch",
+        "food",
+        "funny"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a cluttered kitchen counter with a tall absurd sandwich leaning like a tower, a pair of hands hovering nervously around it, playful light, no face, no text",
+      "motion": "The towering sandwich wobbles slowly and a slice slides off, the hands flutter anxiously, slight comedic camera push-in."
+    },
+    {
+      "title": "A cat's opinion of Mondays",
+      "description": "The cat watches a laptop, then slowly pushes the mug off the desk.",
+      "tags": [
+        "cat",
+        "comedy",
+        "monday",
+        "pets"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a fluffy grey cat sitting on a desk next to a laptop and a mug, staring at the camera with a judgemental look, soft window light, no text",
+      "motion": "The cat slowly extends a paw towards the mug and nudges it, the mug slides to the edge, subtle camera push-in."
+    },
+    {
+      "title": "Umbrella versus the wind",
+      "description": "An umbrella turns inside out at the worst possible time.",
+      "tags": [
+        "comedy",
+        "umbrella",
+        "wind",
+        "street"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a windy rainy city street with a person seen from behind struggling with a bright umbrella being turned inside out, leaves flying, no face, no text",
+      "motion": "Wind whips the umbrella inside out, rain blows sideways, leaves swirl, handheld comedic camera shake."
+    },
+    {
+      "title": "Rubber chicken audition",
+      "description": "A very serious casting call for a very unserious bird.",
+      "tags": [
+        "comedy",
+        "audition",
+        "props",
+        "sketch"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a rubber chicken sitting on a stool in front of a plain backdrop under a spotlight, a clapperboard blank beside it, playful tone, no people, no text",
+      "motion": "The spotlight flickers and a few feathers drift down, slow dramatic push-in on the chicken."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Rehearsal, take 14",
+      "kind": "image",
+      "still": "Vertical photograph of a living room floor covered with props, a tripod and a camera, playful chaos, no people, no text"
+    },
+    {
+      "caption": "Costume check",
+      "kind": "image",
+      "still": "Vertical photograph of a rack of silly costumes including a dinosaur suit and a wig, studio light, no text"
+    },
+    {
+      "caption": "Cat approves",
+      "kind": "image",
+      "still": "Vertical photograph of a fluffy cat sitting on a clapperboard prop looking bored, soft light, no text"
+    }
+  ]
+}

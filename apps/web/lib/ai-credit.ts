@@ -22,6 +22,27 @@ export function parseAiCredit(description?: string | null): AiCredit | null {
   return { line, runId, model: model || null, hardware: hardware || null };
 }
 
+/** The structured provenance a video stores (`videos.ai_provenance`, orochia#268). */
+export interface StoredAiProvenance {
+  generator: "orazaka";
+  runId: string;
+  model?: string | null;
+  hardware?: string | null;
+}
+
+/**
+ * The credit of a video: the stored provenance first, the description's line only for clips made before the field
+ * existed. The line is built from the data, so both read the same.
+ */
+export function aiCreditOf(video: { aiProvenance?: StoredAiProvenance | null; description?: string | null }): AiCredit | null {
+  const p = video.aiProvenance;
+  if (p?.runId) {
+    const inner = [p.model, p.hardware].filter(Boolean).join(" on ");
+    return { line: `Made with Orazaka — run ${p.runId}${inner ? ` (${inner})` : ""}.`, runId: p.runId, model: p.model ?? null, hardware: p.hardware ?? null };
+  }
+  return parseAiCredit(video.description);
+}
+
 /** `6351addc-…`: the first group of the id, the rest elided. */
 export function shortRunId(runId: string): string {
   const head = runId.split("-")[0] ?? runId;

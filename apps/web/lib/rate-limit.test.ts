@@ -24,6 +24,33 @@ describe("the memory store", () => {
   });
 });
 
+describe("the memory store under a flood of keys (orochia#254)", () => {
+  it("never forgets a throttled key when 10,000 other keys arrive: the least valuable entries go, not everyone's", async () => {
+    const store = memoryStore();
+    await store.set("lock:alice", 9, 3600, 0);
+    for (let i = 0; i < 10_500; i++) await store.hit(`flood:${i}`, 60, 1);
+    expect(await store.peek("lock:alice", 2)).toEqual({ count: 9, resetAt: 3_600_000 });
+  });
+
+  it("evicts what is cheapest to forget first — single hits, oldest first — and keeps the heavy counters", async () => {
+    const store = memoryStore();
+    for (let i = 0; i < 5; i++) await store.hit("heavy", 3600, 0);
+    for (let i = 0; i < 10_001; i++) await store.hit(`once:${i}`, 60, 1 + i);
+    expect((await store.peek("heavy", 10))?.count).toBe(5);
+    expect(await store.peek("once:0", 10)).toBeNull(); // the oldest single hit made room
+    expect(await store.peek("once:10000", 10_000)).not.toBeNull();
+  });
+
+  it("an expired window never blocks the table: expired keys are dropped before anything else", async () => {
+    const store = memoryStore();
+    for (let i = 0; i < 10_000; i++) await store.hit(`old:${i}`, 1, 0);
+    await store.set("lock", 4, 600, 5_000);
+    for (let i = 0; i < 20; i++) await store.hit(`new:${i}`, 60, 5_000);
+    expect((await store.peek("lock", 5_001))?.count).toBe(4);
+    expect(await store.peek("old:0", 5_001)).toBeNull();
+  });
+});
+
 describe("checkRateLimit", () => {
   it("refuses past the limit and says when to retry", async () => {
     useRateLimitStore(memoryStore());
