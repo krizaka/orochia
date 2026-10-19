@@ -138,6 +138,11 @@ export function userStream(userId: string, options: { cursor: number | null }): 
           presenceOffs.set(
             id,
             subscribe<PresenceEvent>(presenceTopic(id), (event) => {
+              // Someone hid their presence (offline, with no time): this account's circle changed too, on any instance.
+              if (event.state === "offline" && event.lastSeenAt === null) {
+                forgetCircle(userId);
+                refollow();
+              }
               if (circle.has(event.userId)) send({ data: event });
             }),
           );

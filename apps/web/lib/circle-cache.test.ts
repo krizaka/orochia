@@ -53,17 +53,28 @@ describe("the presence circle cache (#158: a reconnect storm must not hit Postgr
   });
 });
 
-describe("trailing debounce (circle_changed bursts)", () => {
-  it("runs once, after the burst", () => {
+describe("a burst of circle_changed rebuilds the circle at once, then once more", () => {
+  it("runs the first call immediately and folds the rest of the burst into one run at the end of the window", () => {
     vi.useFakeTimers();
     const run = vi.fn();
     const call = trailing(run, 1000);
     call();
+    expect(run).toHaveBeenCalledTimes(1); // a single change is followed at once: the next presence event is heard
+    call();
     call();
     call();
     vi.advanceTimersByTime(999);
-    expect(run).not.toHaveBeenCalled();
+    expect(run).toHaveBeenCalledTimes(1);
     vi.advanceTimersByTime(2);
+    expect(run).toHaveBeenCalledTimes(2);
+    vi.advanceTimersByTime(5000);
+    expect(run).toHaveBeenCalledTimes(2);
+  });
+  it("a lone call runs once", () => {
+    vi.useFakeTimers();
+    const run = vi.fn();
+    trailing(run, 1000)();
+    vi.advanceTimersByTime(5000);
     expect(run).toHaveBeenCalledTimes(1);
   });
   it("can be cancelled when the stream closes", () => {
@@ -71,8 +82,22 @@ describe("trailing debounce (circle_changed bursts)", () => {
     const run = vi.fn();
     const call = trailing(run, 1000);
     call();
+    call();
     call.cancel();
     vi.advanceTimersByTime(5000);
-    expect(run).not.toHaveBeenCalled();
+    expect(run).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("hiding one's presence forgets the circles that contain the account", () => {
+  it("drops every cached circle with that account in it, and its own", async () => {
+    const circles: Record<string, string[]> = { mia: ["elena", "sam"], elena: ["mia"], sam: ["mia"], zoe: ["leo"] };
+    const load = vi.fn(async (id: string) => circles[id]);
+    const cache = createCircleCache({ ttlMs: 30_000, now: () => 0, load });
+    for (const id of Object.keys(circles)) await cache.get(id);
+    cache.invalidateContaining("mia");
+    expect(cache.size()).toBe(1); // only zoe's survives
+    circles.elena = [];
+    expect(await cache.get("elena")).toEqual([]);
   });
 });

@@ -89,6 +89,8 @@ export const presenceCircle = (viewerId: string, limit = PRESENCE_CIRCLE_LIMIT):
   limit === PRESENCE_CIRCLE_LIMIT ? circles().get(viewerId) : loadPresenceCircle(viewerId, limit);
 
 export const forgetCircle = (userId: string) => circles().invalidate(userId);
+/** The account hid its presence (or came back): its own circle and every circle that has it in it are rebuilt. */
+export const forgetCirclesWith = (userId: string) => circles().invalidateContaining(userId);
 
 /** The presence of `ids` as `viewerId` may see it: people outside the circle are simply absent from the answer. */
 export async function presenceFor(viewerId: string, ids: string[]): Promise<Record<string, PresenceView>> {
@@ -179,5 +181,7 @@ export function circleChanged(...userIds: string[]) {
 export async function presenceSettingChanged(userId: string, shows: boolean) {
   const state = shows ? ((await realtimeBus().presence.get([userId])).get(userId)?.state ?? "offline") : "offline";
   if (!shows || state !== "offline") await publish(presenceTopic(userId), { type: "presence", userId, state, lastSeenAt: null } satisfies PresenceEvent);
+  // The circles that hold this account (Elena's, with Mia in it) are read from memory: forget them before anyone reads.
+  forgetCirclesWith(userId);
   circleChanged(userId);
 }
