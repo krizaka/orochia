@@ -1,20 +1,26 @@
 import { MessageIcon } from "@krizaka/icons";
 import type { Metadata } from "next";
 import Link from "next/link";
+import React from "react";
 
 import { buttonVariants, EmptyState } from "@/components/ui";
 import { appUrl } from "@/lib/env";
-import { getI18n } from "@/lib/i18n-server";
+import { getI18n, localeFromParams } from "@/lib/i18n-server";
 import { verifyUnsubscribe } from "@/lib/unsubscribe";
 
-export const metadata: Metadata = { title: "Unsubscribe", robots: { index: false, follow: false } };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  await localeFromParams(params);
+  const { t } = await getI18n();
+  return { title: t("unsubscribe.settings"), robots: { index: false, follow: false } };
+}
 
 /** `/unsubscribe?t=<token>`: from an e-mail's link — says which kind of e-mail stops, and one button does it. */
-export default async function UnsubscribePage({ searchParams }: { searchParams: Promise<{ t?: string; done?: string }> }) {
+export default async function UnsubscribePage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ t?: string; done?: string }> }) {
+  await localeFromParams(params);
   const { t: token = "", done } = await searchParams;
   const { t } = await getI18n();
   const who = verifyUnsubscribe(token);
-  const settings = `${appUrl()}/dashboard?tab=settings#settings-notifications`;
+  const settings = `${appUrl()}/me/settings#settings-notifications`;
   if (!who) return <Frame><EmptyState icon={<MessageIcon size={32} />} title={t("unsubscribe.invalidTitle")} description={t("unsubscribe.invalidBody")} /></Frame>;
   const category = t(`settings.notifications.categories.${who.category}`);
   return (
