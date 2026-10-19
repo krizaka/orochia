@@ -4,12 +4,13 @@ import { ChangelogBody } from "@/components/ChangelogBody";
 import { BUILD_INFO } from "@/lib/build-info";
 import { CHANGELOG_REPO, loadReleases } from "@/lib/changelog";
 import { getI18n, localeFromParams } from "@/lib/i18n-server";
+import { pageAlternates } from "@/lib/seo-i18n";
 import { uiVersion } from "@/lib/ui-version";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   await localeFromParams(params);
   const { t } = await getI18n();
-  return { title: t("changelog.metaTitle"), description: t("changelog.metaDescription"), alternates: { types: { "application/rss+xml": "/changelog/feed.xml" } } };
+  return { title: t("changelog.metaTitle"), description: t("changelog.metaDescription"), alternates: { ...(await pageAlternates("/changelog")), types: { "application/rss+xml": "/changelog/feed.xml" } } };
 }
 
 /** `/changelog` (changelog template): the weeks of merged work, read from GitHub (refreshed hourly). */
