@@ -12,7 +12,17 @@ import {
   SECURITY_CATEGORY,
   unsubscribable,
 } from "./notification-matrix";
-import { NOTIFICATION_EVENTS } from "./profile";
+import { NOTIFICATION_EVENTS } from "./notification-events";
+
+describe("the matrix is client-safe (it is read by a client component: no server module behind it)", () => {
+  it("imports nothing that reaches the storage layer", async () => {
+    const { readFileSync } = await import("node:fs");
+    for (const file of ["./notification-matrix.ts", "./notification-events.ts"]) {
+      const src = readFileSync(new URL(file, import.meta.url), "utf8");
+      expect(src, file).not.toMatch(/from "\.\/(profile|storage|db|http)"/);
+    }
+  });
+});
 
 describe("five categories, two channels (krizaka/orochia#261)", () => {
   it("names the five categories of the issue", () => {

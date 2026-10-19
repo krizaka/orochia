@@ -119,40 +119,8 @@ export function checkDateOfBirth(isoDate: string, today = new Date()): string {
 
 // ── Notifications ───────────────────────────────────────────────────────────────────────────────
 
-/** Every e-mail an account can receive about activity — all on by default, each can be turned off. */
-export const NOTIFICATION_EVENTS = [
-  "newFollower",
-  "contactRequest",
-  "newComment",
-  "commentReply",
-  "newMessage",
-  "tipReceived",
-  "videoUnlocked",
-  "videoReady",
-  "creatorPublished",
-  "auctionAnnounced",
-  "auctionNewBid",
-  "auctionOutbid",
-  "auctionWon",
-  "auctionDecision",
-  "auctionSold",
-  "auctionUnsold",
-  "auctionDeclined",
-  "challengeAnnounced",
-  "challengeRequested",
-  "challengePledged",
-  "challengeFunded",
-  "challengeAccepted",
-  "challengeApplied",
-  "challengeChosen",
-  "challengeDelivered",
-  "challengeReleased",
-  "challengeClosed",
-  "storageLow",
-  "storageHeld",
-  "storageAlert",
-] as const;
-export type NotificationEvent = (typeof NOTIFICATION_EVENTS)[number];
+export { NOTIFICATION_EVENTS, type NotificationEvent } from "./notification-events";
+import { NOTIFICATION_EVENTS, type NotificationEvent } from "./notification-events";
 
 export function parseNotificationsOff(input: unknown): NotificationEvent[] {
   if (!Array.isArray(input)) return [];

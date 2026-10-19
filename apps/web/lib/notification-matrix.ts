@@ -1,5 +1,4 @@
-import type { NotificationEvent } from "./profile";
-import { NOTIFICATION_EVENTS } from "./profile";
+import { NOTIFICATION_EVENTS, type NotificationEvent } from "./notification-events";
 
 /**
  * Notifications as a matrix: five categories × two channels (krizaka/orochia#261). The channels are the app (the bell
