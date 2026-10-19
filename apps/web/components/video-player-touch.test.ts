@@ -7,9 +7,9 @@ import { describe, expect, it } from "vitest";
 const src = readFileSync(join(__dirname, "VideoPlayer.tsx"), "utf8");
 
 describe("VideoPlayer on a touch screen", () => {
-  it("never calls requestFullscreen on the container by hand (missing on iPhone): it goes through toggleFullscreen", () => {
+  it("never calls requestFullscreen on the container by hand (missing on iPhone): it goes through enterFullscreen (player-fullscreen)", () => {
     expect(src).not.toMatch(/\.requestFullscreen\(/);
-    expect(src).toMatch(/toggleFullscreen\(containerRef\.current, videoRef\.current\)/);
+    expect(src).toMatch(/enterFullscreen\(video, container, doc\)/);
   });
 
   it("does not hide the controls on hover handlers (iOS swallows the first tap after a hover change)", () => {
