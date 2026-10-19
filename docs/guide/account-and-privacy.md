@@ -31,6 +31,10 @@ Open **Settings**. You will find:
 | Blocked accounts | People who cannot message you, follow you or ask to be your contact |
 | Challenges | For creators: dares and minimum offers |
 
+## Your language
+
+Orochia speaks English and French. Use the language control (the globe) in the bar of the website. Your account keeps the language you read Orochia in: the e-mails and the push notifications are written in it, whoever caused them. The bell follows the language of the page you are on.
+
 ## Your data
 
 Read the [Privacy Policy](/legal/privacy) for what Orochia keeps and why. The page also says how to ask about your data.

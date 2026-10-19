@@ -31,6 +31,10 @@ Ouvrez **Paramètres**. Vous y trouverez :
 | Comptes bloqués | Les personnes qui ne peuvent ni vous écrire, ni vous suivre, ni vous demander en contact |
 | Défis | Pour les créateurs : demandes et offres minimales |
 
+## Votre langue
+
+Orochia parle français et anglais. Utilisez le sélecteur de langue (le globe) dans la barre du site. Votre compte garde la langue dans laquelle vous lisez Orochia : les courriels et les notifications push y sont rédigés, quelle que soit la personne à l’origine de l’événement. La cloche suit la langue de la page que vous consultez.
+
 ## Vos données
 
 Lisez la [politique de confidentialité](/legal/privacy) pour savoir ce qu’Orochia conserve et pourquoi. La page explique aussi comment poser une question sur vos données.

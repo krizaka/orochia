@@ -14,12 +14,18 @@ When something happens that concerns you, Orochia tells you. A new follower, a t
 
 ## Choose what you get
 
-Everything is on at first. You can turn each kind off.
+Everything is on at first. You choose by kind, in two places: **App** (the bell, the small messages and the push together) and **E-mail**.
 
-- **On the website,** open **Settings**, then **Notifications**. You can set each event, in the app and by e-mail, and the e-mail pace.
+- **On the website,** open **Settings**, then **Notifications**. You see five kinds: messages; people and community; tips and earnings; auctions and challenges; account and security. Each has a switch for the app and one for e-mail, and you set the e-mail pace.
+- **Presets** set them all at once: **Everything**, **The essentials** (everything in the app, and by e-mail only messages, earnings and your account) and **Nothing but security**. Change one switch and the page says it is your own choice.
+- **Account and security** is shown and cannot be turned off: sign-in, password and storage notices always reach you.
 - **In the app,** open **You**, then **Notification settings**. You can turn kinds on or off: messages, followers and contacts, comments, tips and unlocks, videos, auctions, challenges and storage.
 
-The "in the app" choice covers the bell, the small messages and the push together. A push only repeats what the bell shows.
+A push only repeats what the bell shows.
+
+## Stop one kind of e-mail in one tap
+
+Every notification e-mail has an **Unsubscribe** link. It stops that kind of e-mail at once, with no sign-in. You keep the notifications in the app, and you can turn the e-mail back on in **Settings, Notifications**.
 
 ## Messages
 
