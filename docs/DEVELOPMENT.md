@@ -147,3 +147,15 @@ npm run mail:templates:push      # dry run against Bunny Storage; -- --apply pub
 | A page reloads again and again | A stale build cache (often after `npm run build`): stop the server, `rm -rf apps/web/.next`, `npm run dev` |
 | Thumbnails or draft clips answer 403 | Bunny's allowed domains do not include `localhost` (library → Security) |
 | Uploaded videos stay "processing" | Bunny's webhook cannot reach `localhost` — use a tunnel (see *Video features locally*). Video stories catch up on their own (the rail asks Bunny) |
+
+## The core journey on dev — `npm run journey:dev`
+
+`scripts/journey-dev.mjs` replays the product's core journey on the real dev backend (dev.orochia.com), through the public
+API, as two demo personas (a creator and a fan, never an operator): **upload** a 6-second synthetic test clip (made by
+ffmpeg, titled as such) through Orochia's own Tus session to Bunny Stream, **encode** (it waits for READY), **watch** (a
+signed HLS master playlist that answers), **tip** in credits (the fan's wallet moves by the amount), **earnings** (the
+creator's ledger moves by the share — 90 % at the default fee — written once). It prints the edge's request id (`cf-ray`) of
+every call, writes them with `--report <file.json>`, films the fan's watch page with `--record <dir>`, and removes the clip
+at the end unless `--keep`. Credentials are read from the secret store (`secret.sh @orochia OROCHIA_CREATOR_*`,
+`OROCHIA_FAN2_*`) and never printed. Its rules are tested in `scripts/journey.test.mjs`. This is the evidence of the Dev
+preview criterion `journey.core`.

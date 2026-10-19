@@ -24,6 +24,7 @@
     "test:e2e": "node e2e/scenarios.mjs",
     "test:e2e:player": "node e2e/player-fullscreen.mjs",
     "test:a11y": "node e2e/a11y.mjs",
+    "journey:dev": "node scripts/journey-dev.mjs",
     "check": "npm run lint && npm run typecheck && npm test && npm run docs:generate -- --check",
     "db:up": "docker compose -f deploy/docker/docker-compose.dev.yml up -d --wait",
     "db:down": "docker compose -f deploy/docker/docker-compose.dev.yml down",
