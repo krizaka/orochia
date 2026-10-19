@@ -47,6 +47,7 @@ export function AppBar({ onOpenSearch }: { onOpenSearch: () => void }) {
 
   return (
     <AppHeader
+      className="kz-appbar"
       name="Orochia"
       mark={<OrochiaLogo size={26} />}
       homeLink={<Link href="/" aria-label="Orochia" />}
