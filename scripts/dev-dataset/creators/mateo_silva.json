@@ -1,0 +1,99 @@
+{
+  "key": "mateo_silva",
+  "username": "mateo_silva",
+  "displayName": "Mateo Silva",
+  "bio": "Miniature worlds, one centimetre at a time: dioramas of workshops, markets and kitchens, hand-built and lit by tiny lamps.",
+  "niche": "Miniatures & dioramas",
+  "tags": [
+    "miniature",
+    "diorama",
+    "craft",
+    "tiny"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a man in his late 30s with curly dark hair and a magnifying visor pushed up on his forehead, workshop light, wearing a leather apron, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic tilt-shift photograph of a handcrafted miniature town diorama with tiny lit windows on a workbench, subject across the middle band",
+  "collections": [
+    {
+      "title": "Dioramas",
+      "description": "Small worlds, built by hand.",
+      "videos": [
+        "A bakery the size of a shoebox",
+        "Night market in miniature",
+        "The tiny workshop, lamp on",
+        "Rainy street, one centimetre tall"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "A bakery the size of a shoebox",
+      "description": "Tiny loaves, a glowing oven and a baker figurine: a miniature Montréal bakery at work.",
+      "tags": [
+        "miniature",
+        "bakery",
+        "diorama",
+        "tilt-shift"
+      ],
+      "orientation": "horizontal",
+      "still": "Handcrafted tilt-shift miniature diorama of a tiny bakery with an oven fire glowing and a baker figurine, extremely shallow depth of field, warm soft light, no text",
+      "motion": "The oven fire flickers and flour dust floats slowly, the baker figurine makes a small slow gesture, subtle camera push-in, figures keep their shape."
+    },
+    {
+      "title": "Night market in miniature",
+      "description": "Lanterns, food stalls and tiny crowds on a hand-built night market.",
+      "tags": [
+        "miniature",
+        "night-market",
+        "lanterns",
+        "craft"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical handcrafted tilt-shift miniature diorama of an Asian night market with glowing paper lanterns and tiny food stalls, shallow depth of field, warm light, no text",
+      "motion": "Lantern lights flicker softly, steam from a tiny stall drifts upward, subtle slow tilt down, figures stay still."
+    },
+    {
+      "title": "The tiny workshop, lamp on",
+      "description": "A miniature carpenter's workshop with a desk lamp and wood shavings on the floor.",
+      "tags": [
+        "miniature",
+        "workshop",
+        "woodwork",
+        "diorama"
+      ],
+      "orientation": "horizontal",
+      "still": "Handcrafted miniature diorama of a carpenter's workshop with tiny tools and wood shavings, a small desk lamp casting warm light, tilt-shift look, no text",
+      "motion": "The lamp light flickers slightly and wood dust floats slowly, gentle slow camera push-in."
+    },
+    {
+      "title": "Rainy street, one centimetre tall",
+      "description": "A miniature rainy street, wet asphalt made with resin, tiny umbrellas.",
+      "tags": [
+        "miniature",
+        "rain",
+        "street",
+        "resin"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical handcrafted miniature diorama of a rainy city street with tiny umbrellas, wet reflective asphalt and glowing shop windows, tilt-shift, no text",
+      "motion": "Rain droplets shimmer and reflections ripple on the wet street, slow gentle tilt-up along the street."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Paint still wet",
+      "kind": "image",
+      "still": "Vertical close-up photograph of a hand painting a tiny brick wall on a miniature building with a fine brush, magnifier lamp light, no face, no text"
+    },
+    {
+      "caption": "Scale check",
+      "kind": "image",
+      "still": "Vertical macro photograph of a miniature loaf of bread next to a coin for scale on a workbench, no text"
+    },
+    {
+      "caption": "Lights on",
+      "kind": "image",
+      "still": "Vertical tilt-shift photograph of a miniature street at dusk with tiny glowing windows, no text"
+    }
+  ]
+}

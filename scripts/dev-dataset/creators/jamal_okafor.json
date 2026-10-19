@@ -1,0 +1,99 @@
+{
+  "key": "jamal_okafor",
+  "username": "jamal_okafor",
+  "displayName": "Jamal Okafor",
+  "bio": "Dancer and choreographer. Studio floors, rooftops and street corners — always moving, always mid-beat.",
+  "niche": "Dance",
+  "tags": [
+    "dance",
+    "choreography",
+    "movement",
+    "street"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a man in his late 20s with a short fade haircut and warm brown skin, athletic jacket, studio lights behind him, confident gaze, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a dance studio with mirrors and warm spotlights, a dancer silhouette mid-leap in the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Floor to rooftop",
+      "description": "Choreography in four places.",
+      "videos": [
+        "Rooftop contemporary at golden hour",
+        "Studio floorwork, mirror wall",
+        "Street cypher, tennis shoes only",
+        "Salsa night, the last song"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Rooftop contemporary at golden hour",
+      "description": "A short contemporary piece on a rooftop, the city blazing orange behind.",
+      "tags": [
+        "dance",
+        "contemporary",
+        "rooftop",
+        "golden-hour"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide cinematic photograph of a dancer in silhouette performing a graceful leap on a city rooftop at golden hour, long shadows, skyline glowing orange, no face visible, no text",
+      "motion": "The dancer leaps and glides across the rooftop in slow graceful motion, warm light flares, steady slow camera orbit."
+    },
+    {
+      "title": "Studio floorwork, mirror wall",
+      "description": "Slow floorwork in a mirrored studio, light sliding across the wooden floor.",
+      "tags": [
+        "dance",
+        "floorwork",
+        "studio",
+        "contemporary"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a dancer in black clothes in a low floorwork pose in a mirrored dance studio with warm side light, seen from behind, no face visible, no text",
+      "motion": "The dancer flows slowly from one low pose to the next, light slides across the floor, steady camera."
+    },
+    {
+      "title": "Street cypher, tennis shoes only",
+      "description": "Quick footwork on wet pavement under a streetlight.",
+      "tags": [
+        "dance",
+        "street",
+        "footwork",
+        "hiphop"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical low-angle photograph of sneakers mid-step on wet city pavement under a streetlight at night, water splashing, no face, no text",
+      "motion": "The feet shuffle quickly and splash water, reflections of neon ripple, low camera follows the movement."
+    },
+    {
+      "title": "Salsa night, the last song",
+      "description": "A crowded floor, spinning skirts and warm bulb light.",
+      "tags": [
+        "dance",
+        "salsa",
+        "latin",
+        "night"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of couples dancing salsa on a wooden floor under strings of warm bulb lights, skirts spinning, motion blur, people seen from a distance, no text",
+      "motion": "Couples spin and sway to the rhythm, skirts swirl, warm bulbs glow, gentle slow camera drift."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Warm-up",
+      "kind": "image",
+      "still": "Vertical photograph of dancers stretching on a wooden studio floor in warm morning light, seen from behind, no text"
+    },
+    {
+      "caption": "Shoes by the door",
+      "kind": "image",
+      "still": "Vertical photograph of worn dance shoes lined up by a studio door, soft light, no text"
+    },
+    {
+      "caption": "Sixteen counts",
+      "kind": "image",
+      "still": "Vertical photograph of a dancer in silhouette against a large window at sunset, arms raised, no face visible, no text"
+    }
+  ]
+}

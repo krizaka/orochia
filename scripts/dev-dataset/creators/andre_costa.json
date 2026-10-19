@@ -1,0 +1,111 @@
+{
+  "key": "andre_costa",
+  "username": "andre_costa",
+  "displayName": "André Costa",
+  "bio": "Bartender in a neon Miami 80s bar. Stirred, shaken, never rushed. Adults only.",
+  "niche": "Neon Miami nights & cocktails",
+  "tags": [
+    "miami",
+    "cocktails",
+    "neon",
+    "nightlife"
+  ],
+  "rating": "MATURE",
+  "avatar": "Portrait of a charming bartender in his mid 30s with a groomed beard and rolled-up sleeves behind a neon bar in pink and teal light, smile, shoulders-up, photographic, fictional person, clearly an adult",
+  "banner": "Ultra-wide panoramic photograph of a retro neon bar in a neon Miami 80s style with pink and teal tube lights and palm-leaf wallpaper, a copper shaker in the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Miami nights",
+      "description": "Neon, rain and ice.",
+      "videos": [
+        "Neon Miami 80s, last call",
+        "Old fashioned, stirred slow",
+        "Flame on the orange peel",
+        "Palm trees and a white convertible"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Neon Miami 80s, last call",
+      "description": "A retro-crime bar in pink and teal neon, a shaker and a rainy window.",
+      "tags": [
+        "miami",
+        "neon",
+        "80s",
+        "cocktail"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide cinematic photograph of a retro bar in a neon Miami 80s aesthetic with pink and teal neon tubes, palm motifs, a bartender shaking a cocktail in silhouette and rain on the window, no text, no logos, fictional adults clearly over 25, tasteful, energetic, cinematic",
+      "motion": "The bartender shakes and pours, neon tubes buzz and flicker, rain streaks the window, camera glides along the bar.",
+      "hero": true
+    },
+    {
+      "title": "Old fashioned, stirred slow",
+      "description": "Ice, bitters and a spiral of orange peel.",
+      "tags": [
+        "cocktail",
+        "old-fashioned",
+        "whisky",
+        "bar"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a bartender's hand stirring an amber old fashioned in a mixing glass with a long bar spoon, neon pink bar lights, no face, no text",
+      "motion": "The spoon stirs slowly and ice clinks, an orange peel twists and its oil mists in the light."
+    },
+    {
+      "title": "Flame on the orange peel",
+      "description": "A flare of citrus oil over a glass.",
+      "tags": [
+        "cocktail",
+        "flame",
+        "citrus",
+        "garnish"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a hand squeezing an orange peel over a lit match making a small flare above a cocktail glass, dark bar with teal neon behind, no face, no text",
+      "motion": "The peel is squeezed and a small flare lights the glass, sparks fade, subtle macro drift."
+    },
+    {
+      "title": "Palm trees and a white convertible",
+      "description": "A night drive down an ocean boulevard under pink neon.",
+      "tags": [
+        "miami",
+        "80s",
+        "convertible",
+        "night"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide cinematic photograph of a white vintage convertible driving down an ocean boulevard at night in a neon Miami 80s style, pink and teal neon signs without readable text, palm trees, wet road reflections, no people visible, no logos",
+      "motion": "The convertible drives past, neon reflections slide across the wet road, palm trees sway, camera tracks alongside.",
+      "hero": true
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Neon tubes",
+      "kind": "image",
+      "still": "Vertical photograph of pink and teal neon tubes on a dark brick wall, neon Miami 80s style, no text"
+    },
+    {
+      "caption": "Bitters shelf",
+      "kind": "image",
+      "still": "Vertical photograph of apothecary bitters bottles in pink neon light, no text"
+    },
+    {
+      "caption": "Rain on the Cadillac",
+      "kind": "image",
+      "still": "Vertical photograph of a vintage white car under a pink neon sign in light rain at night, no readable text, no logos, no people"
+    },
+    {
+      "caption": "Ice sphere",
+      "kind": "image",
+      "still": "Vertical photograph of a clear ice sphere in a rocks glass with amber drink, neon light, no people, no text"
+    },
+    {
+      "caption": "Last garnish",
+      "kind": "image",
+      "still": "Vertical photograph of a cocktail with a rosemary sprig and smoke curling in teal neon, no people, no text"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "key": "lena",
+  "username": "qa_creator",
+  "credentials": "OROCHIA_CREATOR",
+  "existing": true,
+  "displayName": "Lena Voss",
+  "rating": null,
+  "avatar": "Portrait of a woman in her early 30s with dark wavy hair and a leather jacket, neon pink and blue night light on her face, relaxed smile, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a jazz club stage with a double bass, warm spotlights and haze, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "After hours",
+      "description": "Music and nights.",
+      "videos": [
+        "Slow jazz in a small club",
+        "City at night, neon in the rain",
+        "Acoustic guitar by the fire",
+        "A creator's studio at night, neon and haze",
+        "A vintage ribbon microphone in a quiet room"
+      ]
+    },
+    {
+      "title": "Summer nights",
+      "description": "Rooftops and beaches.",
+      "videos": [
+        "Rooftop summer party at dusk",
+        "Beach-club sunset, DJ and dancing crowd",
+        "Sparklers on the beach after dark"
+      ]
+    }
+  ],
+  "videos": [],
+  "stories": [
+    {
+      "caption": "Soundcheck",
+      "kind": "image",
+      "still": "Vertical photograph of an empty jazz club stage with a double bass and a spotlight, haze, no people, no text"
+    },
+    {
+      "caption": "Rain on the window",
+      "kind": "image",
+      "still": "Vertical photograph of neon light through a rain-streaked window at night, no people, no text"
+    },
+    {
+      "caption": "Guitar by the fire",
+      "kind": "image",
+      "still": "Vertical photograph of an acoustic guitar leaning against a stone fireplace with glowing embers, no people, no text"
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "key": "chloe_armand",
+  "username": "chloe_armand",
+  "displayName": "Chloé Armand",
+  "bio": "Boat parties, sunsets and swimwear on the Mediterranean. Long days on deck, good music, golden hour. Adults only.",
+  "niche": "Boat parties & swimwear",
+  "tags": [
+    "boat-party",
+    "swimwear",
+    "summer",
+    "yacht"
+  ],
+  "rating": "MATURE",
+  "avatar": "Portrait of a glamorous woman in her early 30s with sun-kissed skin and wavy hair, sunglasses pushed up, wearing a white linen shirt over a swimsuit, golden hour on a yacht deck, shoulders-up, photographic, fictional person, clearly an adult",
+  "banner": "Ultra-wide panoramic photograph of a party yacht at sunset on turquoise water with people in swimwear dancing on the deck far away, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Boat days",
+      "description": "Swimwear, sea and sunsets.",
+      "videos": [
+        "Boat party, swimwear on the sundeck",
+        "Champagne spray off the bow",
+        "Jumping off the stern",
+        "Anchor down, sunset playlist"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Boat party, swimwear on the sundeck",
+      "description": "A sundeck full of dancing adults in swimwear, the sea sparkling and the music loud.",
+      "tags": [
+        "boat-party",
+        "swimwear",
+        "yacht",
+        "summer"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide cinematic photograph of a luxury party yacht sundeck with adults in stylish swimwear dancing and holding drinks, turquoise sea sparkling, bright sun, tasteful, fictional adults clearly over 25, tasteful, energetic, cinematic, no text",
+      "motion": "People dance and raise their glasses on the moving deck, sea spray and sunlight sparkle, the boat cuts through blue water, camera glides along the deck.",
+      "hero": true
+    },
+    {
+      "title": "Champagne spray off the bow",
+      "description": "A toast, a cork and a golden-hour spray over the bow.",
+      "tags": [
+        "champagne",
+        "boat-party",
+        "sunset",
+        "luxury"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a woman in a chic one-piece swimsuit and sunglasses seen in three-quarter back view on a yacht bow spraying champagne into golden-hour light, tasteful, fictional adults clearly over 25, tasteful, energetic, cinematic, no text",
+      "motion": "Champagne sprays in an arc glittering in the light, her hair moves in the sea breeze, the bow rises over small waves, steady camera.",
+      "hero": true
+    },
+    {
+      "title": "Jumping off the stern",
+      "description": "Friends in swimwear jumping from the back of the boat into clear water.",
+      "tags": [
+        "boat-party",
+        "swim",
+        "summer",
+        "friends"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of adults in swimwear mid-jump from the stern of a yacht into clear turquoise water, bright sunlight, seen from a distance, tasteful, no text",
+      "motion": "They leap one after the other and hit the water in bursts of spray, the boat idles, light flickers on the sea."
+    },
+    {
+      "title": "Anchor down, sunset playlist",
+      "description": "The boat stops, the music turns slow, and the sky goes orange.",
+      "tags": [
+        "sunset",
+        "yacht",
+        "chill",
+        "music"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of an anchored yacht at sunset with silhouettes of adults lounging on the deck under string lights, orange sky over calm sea, no text",
+      "motion": "The sky glows orange and the water ripples, string lights twinkle, silhouettes sway gently, slow camera push-in."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Deck, 4 p.m.",
+      "kind": "image",
+      "still": "Vertical photograph of white loungers and colourful towels on a yacht deck in bright sun, no people, no text"
+    },
+    {
+      "caption": "Straw hat season",
+      "kind": "image",
+      "still": "Vertical photograph of a woman seen from behind in a straw hat and a sarong on a yacht rail looking at the sea, tasteful, adult, no text"
+    },
+    {
+      "caption": "Ice bucket",
+      "kind": "clip",
+      "still": "Vertical photograph of a champagne bucket and two glasses on a deck table at golden hour, no people, no text",
+      "motion": "Ice glints and bubbles rise in the glasses, slow push-in."
+    },
+    {
+      "caption": "Anchor drop",
+      "kind": "image",
+      "still": "Vertical photograph of crystal-clear turquoise water seen from a yacht swim platform, no people, no text"
+    },
+    {
+      "caption": "Last light on the bow",
+      "kind": "image",
+      "still": "Vertical photograph of a yacht bow in orange sunset light with a small flag, no people, no text"
+    }
+  ]
+}

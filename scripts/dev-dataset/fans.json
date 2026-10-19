@@ -1,0 +1,176 @@
+{
+  "fans": [
+    {
+      "username": "alex_tremblay",
+      "displayName": "Alex Tremblay",
+      "interests": [
+        "food",
+        "city",
+        "lifestyle"
+      ]
+    },
+    {
+      "username": "bianca_lopes",
+      "displayName": "Bianca Lopes",
+      "interests": [
+        "wellness",
+        "glamour"
+      ]
+    },
+    {
+      "username": "chen_wei",
+      "displayName": "Chen Wei",
+      "interests": [
+        "maker",
+        "outdoors",
+        "lifestyle"
+      ]
+    },
+    {
+      "username": "dara_osei",
+      "displayName": "Dara Osei",
+      "interests": [
+        "fun",
+        "city"
+      ]
+    },
+    {
+      "username": "emil_hansen",
+      "displayName": "Emil Hansen",
+      "interests": [
+        "outdoors",
+        "maker",
+        "lifestyle"
+      ]
+    },
+    {
+      "username": "farah_nasser",
+      "displayName": "Farah Nasser",
+      "interests": [
+        "food",
+        "wellness"
+      ]
+    },
+    {
+      "username": "gabriel_roy",
+      "displayName": "Gabriel Roy",
+      "interests": [
+        "city",
+        "glamour",
+        "lifestyle"
+      ]
+    },
+    {
+      "username": "hana_sato",
+      "displayName": "Hana Sato",
+      "interests": [
+        "maker",
+        "food"
+      ]
+    },
+    {
+      "username": "ivan_petrov",
+      "displayName": "Ivan Petrov",
+      "interests": [
+        "outdoors",
+        "fun",
+        "lifestyle"
+      ]
+    },
+    {
+      "username": "julia_santos",
+      "displayName": "Julia Santos",
+      "interests": [
+        "glamour",
+        "fun"
+      ]
+    },
+    {
+      "username": "karim_benali",
+      "displayName": "Karim Benali",
+      "interests": [
+        "food",
+        "outdoors",
+        "lifestyle"
+      ]
+    },
+    {
+      "username": "lucie_martin",
+      "displayName": "Lucie Martin",
+      "interests": [
+        "wellness",
+        "maker"
+      ]
+    },
+    {
+      "username": "marcus_cole",
+      "displayName": "Marcus Cole",
+      "interests": [
+        "city",
+        "fun",
+        "lifestyle"
+      ]
+    },
+    {
+      "username": "noor_ali",
+      "displayName": "Noor Ali",
+      "interests": [
+        "wellness",
+        "food"
+      ]
+    },
+    {
+      "username": "omar_haddad",
+      "displayName": "Omar Haddad",
+      "interests": [
+        "maker",
+        "city",
+        "lifestyle"
+      ]
+    },
+    {
+      "username": "paula_gomez",
+      "displayName": "Paula Gomez",
+      "interests": [
+        "glamour",
+        "wellness"
+      ]
+    },
+    {
+      "username": "quentin_dubois",
+      "displayName": "Quentin Dubois",
+      "interests": [
+        "outdoors",
+        "city",
+        "lifestyle"
+      ]
+    },
+    {
+      "username": "rosa_alvarez",
+      "displayName": "Rosa Alvarez",
+      "interests": [
+        "fun",
+        "food"
+      ]
+    },
+    {
+      "username": "samir_khan",
+      "displayName": "Samir Khan",
+      "interests": [
+        "maker",
+        "outdoors",
+        "food",
+        "lifestyle"
+      ]
+    },
+    {
+      "username": "tina_novak",
+      "displayName": "Tina Novak",
+      "interests": [
+        "fun",
+        "glamour",
+        "city"
+      ]
+    }
+  ]
+}

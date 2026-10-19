@@ -1,0 +1,56 @@
+{
+  "key": "noah",
+  "username": "qa_creator2",
+  "credentials": "OROCHIA_CREATOR2",
+  "existing": true,
+  "displayName": "Noah Rivera",
+  "rating": null,
+  "avatar": "Portrait of a man in his mid 30s with curly brown hair and a chef's apron, warm kitchen light, friendly grin, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a bustling home kitchen counter with fresh pasta, herbs and tomatoes, warm light, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "Kitchen & tea",
+      "description": "Hands at work.",
+      "videos": [
+        "Fresh pasta from scratch",
+        "Street food tour in Tokyo",
+        "Pouring mint tea in golden light"
+      ]
+    },
+    {
+      "title": "Summer lifestyle",
+      "description": "Beach days and dresses.",
+      "videos": [
+        "Dancing on the beach at golden hour",
+        "Summer dresses on the boardwalk",
+        "Poolside afternoon with friends"
+      ]
+    },
+    {
+      "title": "Miniatures",
+      "description": "Tiny worlds, vertical.",
+      "videos": [
+        "A tiny Montréal bagel bakery, in miniature",
+        "Two grandmothers, a tablecloth and mint tea, in miniature"
+      ]
+    }
+  ],
+  "videos": [],
+  "stories": [
+    {
+      "caption": "Pasta water",
+      "kind": "image",
+      "still": "Vertical photograph of a pot of boiling salted water with steam on a stove, warm kitchen light, no people, no text"
+    },
+    {
+      "caption": "Market haul",
+      "kind": "image",
+      "still": "Vertical photograph of a canvas bag of vegetables, lemons and herbs on a kitchen counter, no people, no text"
+    },
+    {
+      "caption": "Latte art",
+      "kind": "image",
+      "still": "Vertical top-down photograph of a latte with leaf-shaped milk art in a ceramic cup, no text"
+    }
+  ]
+}

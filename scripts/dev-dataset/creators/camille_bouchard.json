@@ -1,0 +1,99 @@
+{
+  "key": "camille_bouchard",
+  "username": "camille_bouchard",
+  "displayName": "Camille Bouchard",
+  "bio": "Pâtissière from Québec City. Maple, butter, patience — and a very honest oven.",
+  "niche": "Pastry & Quebec cuisine",
+  "tags": [
+    "pastry",
+    "baking",
+    "maple",
+    "quebec"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a woman in her late 20s with auburn hair tied up and flour on her cheek, wearing a linen apron, laughing in a bright bakery, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic flat lay of a pastry table with croissants, maple tarts and a rolling pin on marble, soft morning light, subject across the middle band, photograph",
+  "collections": [
+    {
+      "title": "Bench & oven",
+      "description": "Doughs, tarts and glazes, start to finish.",
+      "videos": [
+        "Laminating croissant dough",
+        "Maple tarte au sucre, from the oven",
+        "Dipping éclairs in chocolate",
+        "Saturday morning bakery run"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Laminating croissant dough",
+      "description": "Butter, folds and a cold marble counter: how croissant layers are made, in one slow minute.",
+      "tags": [
+        "croissant",
+        "baking",
+        "pastry",
+        "dough"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical top-down photograph of hands folding a sheet of croissant dough with a visible butter layer on a floured marble counter, warm light, no face, no text",
+      "motion": "The hands fold the dough over slowly and press it flat, flour dust floats, gentle top-down camera drift."
+    },
+    {
+      "title": "Maple tarte au sucre, from the oven",
+      "description": "A sugar pie bubbling out of the oven, cooled on a rack by the window.",
+      "tags": [
+        "maple",
+        "tarte",
+        "dessert",
+        "quebec"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a golden maple sugar pie on a cooling rack next to a snowy window in a cosy kitchen, steam rising, no people, no text",
+      "motion": "Steam rises slowly from the pie, soft snow falls outside the window, subtle slow push-in."
+    },
+    {
+      "title": "Dipping éclairs in chocolate",
+      "description": "A tray of éclairs, glossy ganache and a steady hand.",
+      "tags": [
+        "eclair",
+        "chocolate",
+        "pastry",
+        "patisserie"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical close-up photograph of a hand dipping a choux éclair into glossy dark chocolate glaze over a bowl, shallow depth of field, kitchen background blurred, no face, no text",
+      "motion": "The éclair lifts out of the glaze, a thick ribbon of chocolate drips back down slowly, shallow focus, subtle camera drift."
+    },
+    {
+      "title": "Saturday morning bakery run",
+      "description": "Racks of loaves, a chalkboard-free counter and the first customers of the day.",
+      "tags": [
+        "bakery",
+        "bread",
+        "morning",
+        "montreal"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph inside a small artisan bakery at opening time, racks of crusty loaves and baguettes, warm light through the window, a baker behind the counter seen from behind, no text, no signage",
+      "motion": "Slow push-in along the bread racks, light shifts, the baker moves a tray slowly, steam drifts."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Test batch, number 7",
+      "kind": "image",
+      "still": "Vertical photograph of a tray of golden brioche buns just out of the oven on a wooden table, soft window light, no text"
+    },
+    {
+      "caption": "Maple syrup pour",
+      "kind": "image",
+      "still": "Vertical close-up photograph of amber maple syrup pouring over a stack of pancakes, warm light, no text"
+    },
+    {
+      "caption": "Flour everywhere",
+      "kind": "image",
+      "still": "Vertical photograph of a floured wooden counter with a rolling pin and a bowl of eggs, morning light, no people, no text"
+    }
+  ]
+}

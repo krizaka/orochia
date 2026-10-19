@@ -1,0 +1,193 @@
+{
+  "challenges": [
+    {
+      "kind": "GOAL",
+      "creator": "theo_marchand",
+      "title": "A winter film of the Plateau staircases",
+      "description": "Fund a full 4K short walking every iconic staircase of the Plateau in the snow. All or nothing.",
+      "deliverable": "VIDEO",
+      "deliveryDays": 21,
+      "goalCents": 30000,
+      "deadlineDays": 14,
+      "reward": "EVERYONE",
+      "pledges": [
+        [
+          "alex_tremblay",
+          2500
+        ],
+        [
+          "gabriel_roy",
+          4000
+        ],
+        [
+          "marcus_cole",
+          1500
+        ],
+        [
+          "omar_haddad",
+          3000
+        ]
+      ]
+    },
+    {
+      "kind": "GOAL",
+      "creator": "mateo_silva",
+      "title": "Build a miniature Montréal metro station",
+      "description": "A one-metre diorama of a metro platform with working lights. Backers get the build log first.",
+      "deliverable": "VIDEO",
+      "deliveryDays": 30,
+      "goalCents": 50000,
+      "deadlineDays": 21,
+      "reward": "BACKERS",
+      "pledges": [
+        [
+          "chen_wei",
+          5000
+        ],
+        [
+          "hana_sato",
+          3500
+        ],
+        [
+          "samir_khan",
+          2000
+        ],
+        [
+          "lucie_martin",
+          1000
+        ]
+      ]
+    },
+    {
+      "kind": "GOAL",
+      "creator": "hannah_brooks",
+      "title": "One week on the Pacific coast, the full cut",
+      "description": "Seven days, one van, no schedule. The full unedited cut if the goal is reached.",
+      "deliverable": "VIDEO",
+      "deliveryDays": 28,
+      "goalCents": 40000,
+      "deadlineDays": 18,
+      "reward": "EVERYONE",
+      "pledges": [
+        [
+          "emil_hansen",
+          3000
+        ],
+        [
+          "ivan_petrov",
+          2500
+        ],
+        [
+          "quentin_dubois",
+          2000
+        ]
+      ]
+    },
+    {
+      "kind": "GOAL",
+      "creator": "isabella_rossi",
+      "title": "Harvest diary: ten days in the vines",
+      "description": "A short story every day of the harvest, from the first cut to the first press.",
+      "deliverable": "STORY",
+      "deliveryDays": 20,
+      "goalCents": 20000,
+      "deadlineDays": 12,
+      "reward": "BACKERS",
+      "pledges": [
+        [
+          "farah_nasser",
+          2000
+        ],
+        [
+          "karim_benali",
+          3500
+        ],
+        [
+          "alex_tremblay",
+          1500
+        ]
+      ]
+    },
+    {
+      "kind": "REQUEST",
+      "creator": "camille_bouchard",
+      "from": "hana_sato",
+      "title": "A croissant with a maple glaze, start to finish",
+      "description": "Could you film the lamination and the maple glaze in one go, with the oven in the shot?",
+      "deliverable": "VIDEO",
+      "deliveryDays": 10,
+      "offerCents": 4000
+    },
+    {
+      "kind": "REQUEST",
+      "creator": "jamal_okafor",
+      "from": "dara_osei",
+      "title": "Rooftop piece with a live-jazz feel",
+      "description": "A contemporary piece on the roof at dusk, slow and warm, to a jazz tempo.",
+      "deliverable": "VIDEO",
+      "deliveryDays": 12,
+      "offerCents": 6000
+    },
+    {
+      "kind": "REQUEST",
+      "creator": "sven_aaltonen",
+      "from": "emil_hansen",
+      "title": "The sauna and the ice hole, at dawn",
+      "description": "The whole ritual at first light: steam, the walk, the dive, the quiet after.",
+      "deliverable": "VIDEO",
+      "deliveryDays": 14,
+      "offerCents": 5000
+    },
+    {
+      "kind": "REQUEST",
+      "creator": "andre_costa",
+      "from": "gabriel_roy",
+      "title": "Three drinks, one story each",
+      "description": "Stir three classic cocktails and tell where each one comes from, one short story each.",
+      "deliverable": "STORY",
+      "deliveryDays": 7,
+      "offerCents": 3000
+    },
+    {
+      "kind": "OPEN_CALL",
+      "from": "tina_novak",
+      "title": "Show us your city in 60 seconds",
+      "description": "Any creator: one minute of your own city the way you love it, no clichés. The best one is picked.",
+      "deliverable": "VIDEO",
+      "deliveryDays": 14,
+      "offerCents": 8000,
+      "deadlineDays": 10,
+      "applicants": [
+        "kenji_watanabe",
+        "yuki_mori",
+        "theo_marchand"
+      ]
+    },
+    {
+      "kind": "OPEN_CALL",
+      "from": "samir_khan",
+      "title": "A tool you made yourself",
+      "description": "Show a tool, a jig or a gadget you built for your own craft, and how you use it.",
+      "deliverable": "VIDEO",
+      "deliveryDays": 12,
+      "offerCents": 5000,
+      "deadlineDays": 8,
+      "applicants": [
+        "aiko",
+        "priya_nair",
+        "mateo_silva"
+      ]
+    },
+    {
+      "kind": "OPEN_CALL",
+      "from": "rosa_alvarez",
+      "title": "The best comfort food, in a story",
+      "description": "One story of the dish that feels like home, ten seconds to make us hungry.",
+      "deliverable": "STORY",
+      "deliveryDays": 7,
+      "offerCents": 2500,
+      "deadlineDays": 6,
+      "applicants": []
+    }
+  ]
+}

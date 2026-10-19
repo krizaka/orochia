@@ -1,0 +1,99 @@
+{
+  "key": "hannah_brooks",
+  "username": "hannah_brooks",
+  "displayName": "Hannah Brooks",
+  "bio": "Van life across Canada and the Pacific coast. Campfires, coffee on the tailgate and roads without a plan.",
+  "niche": "Van life & camping",
+  "tags": [
+    "vanlife",
+    "camping",
+    "roadtrip",
+    "outdoors"
+  ],
+  "rating": null,
+  "avatar": "Portrait of a woman in her early 30s with a wool beanie and windswept hair, forest campsite behind her, sunlit freckles, shoulders-up, photographic, fictional person",
+  "banner": "Ultra-wide panoramic photograph of a camper van parked beside a mountain lake at sunrise with mist on the water, subject across the middle band, cinematic",
+  "collections": [
+    {
+      "title": "On the road",
+      "description": "Camps, builds and drives.",
+      "videos": [
+        "Coffee on the tailgate",
+        "Campfire, marshmallows, stars",
+        "Building a bed that folds away",
+        "Coastal highway, windows down"
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "title": "Coffee on the tailgate",
+      "description": "A kettle, a view and nowhere to be.",
+      "tags": [
+        "vanlife",
+        "coffee",
+        "morning",
+        "camping"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of a camper van's open back doors with a steaming coffee pot on a camp stove and a misty mountain lake view, no people, warm light, no text",
+      "motion": "Steam rises from the coffee pot and mist drifts over the lake, slow camera push-in."
+    },
+    {
+      "title": "Campfire, marshmallows, stars",
+      "description": "A fire crackling under the Milky Way.",
+      "tags": [
+        "campfire",
+        "stars",
+        "camping",
+        "night"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide photograph of a campfire in a forest clearing at night with a camper van and the Milky Way above the trees, people as small silhouettes, no text",
+      "motion": "Fire flickers, sparks rise and stars twinkle in the sky, slow camera tilt."
+    },
+    {
+      "title": "Building a bed that folds away",
+      "description": "Plywood, hinges and a very small bedroom.",
+      "tags": [
+        "vanlife",
+        "diy",
+        "build",
+        "interior"
+      ],
+      "orientation": "vertical",
+      "still": "Vertical photograph of the interior of a camper van with a wooden fold-away bed being built, hands holding a drill, warm light, no face, no text",
+      "motion": "The hands lower the wooden bed frame and tighten a screw, light shifts, subtle camera drift."
+    },
+    {
+      "title": "Coastal highway, windows down",
+      "description": "A van on a cliff road above the surf.",
+      "tags": [
+        "roadtrip",
+        "coast",
+        "highway",
+        "vanlife"
+      ],
+      "orientation": "horizontal",
+      "still": "Wide aerial-style photograph of a camper van driving along a curving coastal highway above turquoise surf at golden hour, no text",
+      "motion": "The van drives along the cliff road, the surf sparkles below, slow tracking camera."
+    }
+  ],
+  "stories": [
+    {
+      "caption": "Trail map",
+      "kind": "image",
+      "still": "Vertical photograph of a paper map and a compass on a camper van table, warm light, no text"
+    },
+    {
+      "caption": "Dinner on one burner",
+      "kind": "image",
+      "still": "Vertical photograph of a small pan of pasta on a camp stove outdoors at dusk, no text"
+    },
+    {
+      "caption": "Lake at dawn",
+      "kind": "image",
+      "still": "Vertical photograph of a still mountain lake at dawn with a canoe on the shore, no people, no text"
+    }
+  ]
+}
