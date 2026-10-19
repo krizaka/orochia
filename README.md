@@ -16,9 +16,9 @@ Direct-to-CDN 4K streaming, server-side access control, and gateway-confirmed pa
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/krizaka/orochia/badge)](https://scorecard.dev/viewer/?uri=github.com/krizaka/orochia)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Orochia](https://img.shields.io/badge/part%20of-Orochia-7c3aed)](https://dev.orochia.com)
-[![Docs](https://img.shields.io/badge/docs-krizaka.com%2Fdocs%2Forochia-7c3aed)](https://www.krizaka.com/docs/orochia)
+[![Docs](https://img.shields.io/badge/docs-dev.orochia.com%2Fdocs-7c3aed)](https://dev.orochia.com/docs)
 
-[Try it](https://dev.orochia.com) · [Documentation](https://www.krizaka.com/docs/orochia) · [Video tour](https://dev.orochia.com) · [Website](https://www.krizaka.com) · [Krizaka on GitHub](https://github.com/krizaka)
+[Try it](https://dev.orochia.com) · [Documentation](https://dev.orochia.com/docs) · [Video tour](https://dev.orochia.com) · [Website](https://www.krizaka.com) · [Krizaka on GitHub](https://github.com/krizaka)
 
 </div>
 <!-- /krizaka-header -->
