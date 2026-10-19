@@ -3418,10 +3418,10 @@
     "langTag": "fr-CA"
   },
   "unsubscribe": {
-    "title": "Arrêter les courriels « {category} » ?",
+    "title": "Arrêter les courriels « {category} » ?",
     "body": "Vous ne recevrez plus ce type de courriel. Vous gardez vos notifications dans l’app, et les courriels de sécurité sont toujours envoyés. Vous pouvez changer cela à tout moment dans vos paramètres.",
     "confirm": "Me désabonner",
-    "doneTitle": "Fini les courriels « {category} »",
+    "doneTitle": "Fini les courriels « {category} »",
     "doneBody": "C’est fait. Vous pouvez les réactiver dans vos paramètres de notifications.",
     "settings": "Paramètres des notifications",
     "invalidTitle": "Ce lien ne fonctionne pas",
