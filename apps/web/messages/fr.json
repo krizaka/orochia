@@ -23,8 +23,7 @@
     "pauseBand": "Mettre le bandeau en pause",
     "playBand": "Relancer le bandeau",
     "language": {
-      "switchTo": "Passer à l’anglais",
-      "target": "English"
+      "label": "Langue"
     }
   },
   "stories": {

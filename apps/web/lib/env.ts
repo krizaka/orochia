@@ -91,6 +91,7 @@ export const ENV_VARS: readonly EnvVar[] = [
   v("APP_DEMO_MODE", "APP", "optional", bool, "Local only: the login page switches between seeded demo accounts; payments settle without a gateway. Ignored in production."),
   // ── DATABASE ──
   v("DATABASE_URL", "DATABASE", "required", text, "PostgreSQL 16 connection string."),
+  v("DATABASE_DIRECT_URL", "DATABASE", "optional", text, "Direct (session) connection for LISTEN/NOTIFY and migrations when DATABASE_URL is a PgBouncer transaction pool. Defaults to DATABASE_URL."),
   v("DATABASE_CA_CERT", "DATABASE", "recommended", text, "CA of a managed PostgreSQL (PEM; App Platform: `${<db>.CA_CERT}`): TLS is verified against it."),
   v("DATABASE_MAX_CONNECTIONS", "DATABASE", "optional", int(1, 50), "Connections one instance's pool may hold — see *Database connections*.", { default: "5" }),
   v("DATABASE_ALLOW_RESET", "DATABASE", "optional", bool, "Factory reset from the admin console, and rebuild by the release job when migrations were squashed. Never honoured on the indexed production."),

@@ -13,7 +13,7 @@ import { ensureOwner, ownerFromEnv } from "./owner";
 import { applyMigrations, databaseResetAllowed, dropPublicObjects, historyState, loadMigrations } from "./migrations";
 
 async function main(): Promise<void> {
-  const connectionString = process.env.DATABASE_URL;
+  const connectionString = process.env.DATABASE_DIRECT_URL?.trim() || process.env.DATABASE_URL;
   if (!connectionString) throw new Error("DATABASE_URL is required");
   const migrationsFolder = process.env.DATABASE_MIGRATIONS_DIR ?? path.resolve(__dirname, "drizzle");
   const pool = new Pool({ ...connectionConfig(connectionString), application_name: "orochia-migrate", max: 1 });

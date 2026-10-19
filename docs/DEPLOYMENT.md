@@ -32,6 +32,7 @@ PostgreSQL.
 | Variable | Production | Secret | Default | What it does |
 | :--- | :---: | :---: | :--- | :--- |
 | `DATABASE_URL` | ✓ |  |  | PostgreSQL 16 connection string. |
+| `DATABASE_DIRECT_URL` | — |  |  | Direct (session) connection for LISTEN/NOTIFY and migrations when DATABASE_URL is a PgBouncer transaction pool. Defaults to DATABASE_URL. |
 | `DATABASE_CA_CERT` | recommended |  |  | CA of a managed PostgreSQL (PEM; App Platform: `${<db>.CA_CERT}`): TLS is verified against it. |
 | `DATABASE_MAX_CONNECTIONS` | — |  | `5` | Connections one instance's pool may hold — see *Database connections*. |
 | `DATABASE_ALLOW_RESET` | — |  |  | Factory reset from the admin console, and rebuild by the release job when migrations were squashed. Never honoured on the indexed production. |
