@@ -25,6 +25,7 @@ import { signMediaUrl } from "./media-urls";
 import { type EngagementBucket, type EngagementKind,rankCreators, rankStories, rankTrending, TRENDING_WINDOW_DAYS, trendingScores } from "./ranking";
 import { matches, rank, startsWith } from "./search";
 import { normalizeTag, TAG_SYNONYMS } from "./tags";
+import { createTtlMemo, type TtlMemo } from "./ttl-memo";
 import type { VideoVisibility } from "./visibility";
 
 /**
@@ -517,6 +518,18 @@ export async function exploreSections(viewer: ExploreViewer | null): Promise<Exp
  * the sections it could not answer (`unavailable`, empty in `sections`), never the page (lib/degrade.ts).
  */
 export async function exploreSectionsSettled(viewer: ExploreViewer | null): Promise<{ sections: ExploreSections; unavailable: Set<keyof ExploreSections> }> {
+  // Every visitor sees the same sections (no account, no veil lifted): one load per half minute per instance, never
+  // an incomplete one (ORO-PERF). A signed-in viewer's sections are personal and are never kept.
+  if (viewer === null) return visitorSections.get("visitor", () => loadExploreSections(null));
+  return loadExploreSections(viewer);
+}
+
+type SettledSections = { sections: ExploreSections; unavailable: Set<keyof ExploreSections> };
+const VISITOR_SECTIONS_TTL_MS = 30_000; // @fixed: signed thumbnail links live for hours; a half minute of staleness is invisible
+const memoHolder = globalThis as unknown as { __orochiaVisitorSections?: TtlMemo<SettledSections> };
+const visitorSections = (memoHolder.__orochiaVisitorSections ??= createTtlMemo<SettledSections>({ ttlMs: VISITOR_SECTIONS_TTL_MS, max: 1, keep: (v) => v.unavailable.size === 0 }));
+
+async function loadExploreSections(viewer: ExploreViewer | null): Promise<SettledSections> {
   const unavailable = new Set<keyof ExploreSections>();
   const part = async <K extends keyof ExploreSections>(key: K, load: () => Promise<ExploreSections[K]>): Promise<ExploreSections[K]> => {
     const loaded = await unlessUnavailable(load);
