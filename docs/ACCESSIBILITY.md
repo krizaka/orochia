@@ -39,6 +39,14 @@ And in the unit tests: `apps/web/lib/text-contrast.test.ts` refuses a fill colou
 `text-success`…) — coloured words use the text roles of @krizaka/tailwind (`text-fg-accent`…), ≥ 4.5:1 on every surface
 in both themes. The colour tokens themselves are contrast-tested in [@krizaka/tokens](https://github.com/krizaka/krizaka-ui).
 
+### Web layout and family contract — `npm run test:ui-crawl` (`e2e/ui-crawl.mjs`, in the CI's e2e job)
+
+The same key screens, dark and light, phone and desktop, against the seeded app: **no console error or uncaught error,
+no horizontal scroll, exactly one footer that names Krizaka, a `<nav>` landmark, no broken picture, no empty tile, no
+hard-coded colour in an inline style**. `OUT=<scratch folder>` keeps a capture of every screen — the set goes to Bunny
+(`pr-assets/orochia/dev-preview/`), never to git. It is the evidence of the Dev preview criteria `ui.themes-devices`
+(and, with `npm run lint`, `ui.krizaka-ui`).
+
 ### Mobile — the render tests (`src/test/a11y.ts`, `src/__tests__/a11y.test.tsx` in orochia-mobile)
 
 Every key screen is rendered in the states a person meets — the 18+ gate, sign-in, the account signed in, sign-up,
