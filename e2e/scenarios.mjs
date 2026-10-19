@@ -608,7 +608,7 @@ check("playlist page → 200", (await fetch(`${B}/playlists/${plid}`)).status ==
 
 // Language: an account keeps the language it reads Orochia in (e-mails, push and notifications follow it)
 {
-  check("language: a visitor cannot set one", (await anon.call("/api/me/locale", "PUT", { locale: "fr" })).status === 401);
+  check("language: a visitor cannot set one", (await fetch(`${B}/api/me/locale`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ locale: "fr" }) })).status === 401);
   check("language: an account sets French", (await alex.call("/api/me/locale", "PUT", { locale: "fr" })).json.locale === "fr");
   check("language: only English and French", (await alex.call("/api/me/locale", "PUT", { locale: "de" })).status === 400);
   check("language: a page answers in French at /fr, in English at /en", (await (await fetch(`${B}/fr/legal/terms`)).text()).includes("Conditions d’utilisation") && (await (await fetch(`${B}/en/legal/terms`)).text()).includes("Terms of Service"));
