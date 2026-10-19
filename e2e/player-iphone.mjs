@@ -5,7 +5,7 @@
  * and full screen must reach the <video>'s `webkitEnterFullscreen` (iPhone Safari has no fullscreen on a container).
  *
  *   APP_URL=https://dev.orochia.com npm run test:player-iphone    # APP_URL defaults to http://localhost:3000
- *   RECORD_DIR=/tmp/clip …                                         # also records a short video of the run
+ *   OUT=/tmp/clip …                                         # also records a short video of the run
  */
 const BASE = (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
 const DEVICE = process.env.APP_E2E_DEVICE || "iPhone 17";
@@ -26,7 +26,7 @@ if (!watchId) {
 }
 
 const browser = await webkit.launch();
-const context = await browser.newContext({ ...devices[DEVICE], ...(process.env.RECORD_DIR ? { recordVideo: { dir: process.env.RECORD_DIR, size: { width: 390, height: 844 } } } : {}) });
+const context = await browser.newContext({ ...devices[DEVICE], ...(process.env.OUT ? { recordVideo: { dir: process.env.OUT, size: { width: 390, height: 844 } } } : {}) });
 const page = await context.newPage();
 const errors = [];
 page.on("pageerror", (e) => errors.push(e.message));
