@@ -8,7 +8,7 @@
  *   RECORD_DIR=/tmp/clip …                                         # also records a short video of the run
  */
 const BASE = (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
-const DEVICE = process.env.IPHONE || "iPhone 17";
+const DEVICE = process.env.APP_E2E_DEVICE || "iPhone 17";
 
 let webkit, devices;
 try {
