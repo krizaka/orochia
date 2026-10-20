@@ -42,3 +42,10 @@ describe("the signed-in bars are @krizaka/ui's, none is hand-made", () => {
     for (const piece of ["NotificationBell", "MessagesButton", "onOpenSearch", "balanceCents"]) expect(bar).toContain(piece);
   });
 });
+
+describe("the app bar on a phone", () => {
+  it("shows the mark alone, not a truncated word, below 640 px", () => {
+    expect(read("../components/AppBar.tsx")).toContain('className="kz-appbar"');
+    expect(read("../app/[locale]/globals.css")).toMatch(/max-width:\s*639\.98px\)\s*\{\s*\.kz-appbar a > span:not\(\[data-brand-mark\]\)\s*\{\s*display:\s*none/);
+  });
+});
