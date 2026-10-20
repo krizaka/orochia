@@ -37,9 +37,9 @@
       "checked": "2026-10-19"
     },
     "mobile.build": {
-      "evidence": null,
-      "gap": "v0.1.0 exists (APK on tag) but its launch against dev.orochia.com is not recorded; TestFlight waits on Apple (#6, #7).",
-      "issue": "https://github.com/krizaka/orochia-mobile/issues/10"
+      "evidence": "https://krizaka-assets.b-cdn.net/pr-assets/orochia-mobile/mobile-store/orochia-android.mp4",
+      "checked": "2026-10-20",
+      "note": "EAS Android preview APK (internal distribution) https://expo.dev/accounts/oussamaabid/projects/orochia/builds/82a51094-ac6b-452e-9673-a14ac3461721 (orochia-mobile#78: fixes an Android Home crash found while recording) installed on an Android 16 emulator, 18+ gate, signs in as the persona against dev.orochia.com (clip: gate, Home, Challenges, Auctions; credentials typed off-camera). iOS store build 1 (EAS-managed credentials) https://expo.dev/accounts/oussamaabid/projects/orochia/builds/39e47cd7-1ec5-48c3-b1f4-992f4d3ad70d is ready; internal TestFlight waits for the App Store Connect app record."
     },
     "mobile.ux-review": {
       "evidence": null,
