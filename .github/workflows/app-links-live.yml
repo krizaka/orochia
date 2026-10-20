@@ -2,9 +2,20 @@ name: App links (live)
 
 # Universal links / App Links are checked against the deployed site (the files, Apple's CDN, Google's Digital Asset
 # Links API): after every push to main (the deploy takes a few minutes, the job retries) and every day.
+# A push runs it only when the app-links definition or what serves it changes (CI-COST: it ran after every merge and
+# retried for up to 24 minutes while the deploy landed); the daily run still catches any other drift.
 on:
   push:
     branches: [main]
+    paths:
+      - app-links.json
+      - apps/web/app/.well-known/**
+      - apps/web/lib/app-links.ts
+      - apps/web/lib/env.ts
+      - apps/web/proxy.ts
+      - scripts/check-app-links.mjs
+      - deploy/**
+      - .github/workflows/app-links-live.yml
   schedule:
     - cron: "23 6 * * *"
   workflow_dispatch:

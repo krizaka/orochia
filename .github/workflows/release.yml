@@ -12,6 +12,7 @@ jobs:
   docker-build-push:
     name: Build & Push GHCR Image
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     permissions:
       contents: write
       packages: write
