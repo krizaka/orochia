@@ -2,7 +2,7 @@
 /**
  * Time to first frame of a watch page, and whether any « authoris… » sentence shows while it loads.
  *
- *   APP_URL=http://localhost:3100 node e2e/player-first-frame.mjs /watch/<id> [--runs 5] [--rtt 80] [--record <dir>]
+ *   APP_URL=http://localhost:3100 node e2e/player-first-frame.mjs /watch/<id> [--runs 5] [--rtt 80] [--referer https://dev.orochia.com/] [--record <dir>]
  *
  * First frame = the first `loadeddata` of the page's <video>, in ms since navigation start (the same clock before and
  * after a change). `--rtt` adds that much latency to every request (a phone on 4G is ~80-150 ms), which is where a
@@ -17,9 +17,13 @@ const WATCH = args.find((a) => a.startsWith("/watch/")) || "/watch/d0ade287-beea
 const RUNS = Number(flag("--runs", 5));
 const RTT = Number(flag("--rtt", 0));
 const RECORD = flag("--record", "");
+// Bunny's referrer list holds `localhost` without a port: a local run presents the dev site's address to the CDN instead.
+const REFERER = flag("--referer", "");
+// Or, better: `--map-host local.orochia.com` resolves that name to this machine, so APP_URL=http://local.orochia.com:3100 is a host Bunny allows (*.orochia.com).
+const MAP_HOST = flag("--map-host", "");
 
 async function once(profile, record) {
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({ channel: process.env.PW_CHANNEL || undefined, args: MAP_HOST ? [`--host-resolver-rules=MAP ${MAP_HOST} 127.0.0.1`] : [] });
   const context = await browser.newContext({
     ...(profile === "phone" ? devices["Pixel 7"] : { viewport: { width: 1280, height: 800 } }),
     ...(record ? { recordVideo: { dir: record, size: profile === "phone" ? { width: 412, height: 915 } : { width: 1280, height: 800 } } } : {}),
@@ -38,10 +42,12 @@ async function once(profile, record) {
     await cdp.send("Network.enable");
     await cdp.send("Network.emulateNetworkConditions", { offline: false, latency: RTT, downloadThroughput: (6 * 1024 * 1024) / 8, uploadThroughput: (2 * 1024 * 1024) / 8 });
   }
+  if (REFERER) await page.route(/b-cdn\.net/, (route) => route.continue({ headers: { ...route.request().headers(), referer: REFERER } }));
   await page.goto(B + WATCH, { waitUntil: "commit" });
   await page.waitForFunction(() => window.__ff !== null, null, { timeout: 30000 });
   const out = await page.evaluate(() => ({ ff: window.__ff, sentence: window.__text }));
   if (record) {
+    await page.getByRole("button", { name: /18 or older/ }).click({ timeout: 3000 }).catch(() => {});
     // Let the person see it play: tap play like a viewer would, a few seconds.
     await page.getByRole("button", { name: /^play$/i }).first().click({ timeout: 4000 }).catch(() => {});
     await page.waitForTimeout(3500);
