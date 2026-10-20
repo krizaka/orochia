@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Badge, Button, cn, IconButton, OrochiaLogo, Slider, Spinner } from "@/components/ui";
 import { isAdultRating } from "@/lib/content-ratings";
 import { useI18n } from "@/lib/i18n-client";
-import { applyQuality, AUTO, choiceFromStorage, levelOptions, nativeOptions, type NativeVariant, parseMasterPlaylist, type QualityOption, readStoredQuality, storeQuality } from "@/lib/player-quality";
+import { applyQuality, AUTO, choiceFromStorage, levelOptions, nativeOptions, type NativeVariant, nominalLines, parseMasterPlaylist, type QualityOption, readStoredQuality, storeQuality } from "@/lib/player-quality";
 import { orientationOf } from "@/lib/video-aspect";
 
 import { AiChip, aiChipVisible } from "./player/AiChip";
@@ -185,7 +185,7 @@ export function VideoPlayer({
       // What Auto is playing now, said beside « Auto » in the menu.
       hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
         const level = hls?.levels[data.level];
-        if (level) setAutoHeight(level.width ? Math.min(level.width, level.height) : level.height);
+        if (level) setAutoHeight(nominalLines(level.width ? Math.min(level.width, level.height) : level.height));
       });
 
       hls.on(Hls.Events.ERROR, (event, data) => {

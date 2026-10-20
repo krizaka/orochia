@@ -133,5 +133,6 @@ describe("the player's layout: the controls stay clear of the marks", () => {
     expect(player).toContain("storeQuality(");
     expect(player).toContain("sessionStorage");
     expect(player).toContain("parseMasterPlaylist(");
+    expect(player).toContain("setAutoHeight(nominalLines("); // « Auto (720p) », not « Auto (704p) »
   });
 });
