@@ -25,9 +25,8 @@
       "checked": "2026-10-19"
     },
     "ui.krizaka-ui": {
-      "evidence": null,
-      "gap": "No CI crawl proves NAV-SYS, one footer, dark/light, phone/desktop (axe + Playwright exist, not this crawl).",
-      "issue": "https://github.com/krizaka/orochia/issues/241"
+      "evidence": "https://github.com/krizaka/orochia/pull/320",
+      "checked": "2026-10-19"
     },
     "ui.themes-devices": {
       "evidence": "https://github.com/krizaka/orochia/pull/316",
