@@ -9,11 +9,8 @@ const H = 169;
 /** Below this mean gradient a frame is a placeholder or blank, not content. */
 export const SKELETON_GRADIENT = 4;
 
-/** `{ gradient, std, mean }` of a still (an image file) or of the raw gray bytes `raw` (W × H). */
-export function frameStats(source) {
-  const raw = Buffer.isBuffer(source)
-    ? source
-    : execFileSync("ffmpeg", ["-v", "error", "-i", source, "-vf", `scale=${W}:${H}:flags=area,format=gray`, "-f", "rawvideo", "-"], { maxBuffer: 1e7 });
+/** `{ gradient, std, mean }` of the raw gray bytes `raw` (W × H). */
+export function frameStats(raw) {
   let grad = 0;
   let n = 0;
   let sum = 0;
@@ -29,6 +26,13 @@ export function frameStats(source) {
   }
   const mean = sum / n;
   return { gradient: +(grad / n).toFixed(2), std: +Math.sqrt(sq / n - mean * mean).toFixed(2), mean: +mean.toFixed(1) };
+}
+
+/** The same for an image file (sharp: no ffmpeg needed, so a test can read a poster anywhere). */
+export async function stillStats(file) {
+  const { default: sharp } = await import("sharp");
+  const raw = await sharp(file).resize(W, H, { fit: "fill", kernel: "lanczos3" }).grayscale().raw().toBuffer();
+  return frameStats(raw);
 }
 
 export const isSkeleton = (stats) => stats.gradient < SKELETON_GRADIENT;

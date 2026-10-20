@@ -3,14 +3,14 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, test } from "vitest";
 
-import { frameStats, isSkeleton } from "./frame-quality.mjs";
+import { isSkeleton, stillStats } from "./frame-quality.mjs";
 
 const fixture = (name) => new URL(`./fixtures/${name}`, import.meta.url).pathname;
 
-test("a loading skeleton (grey placeholder blocks) is told from content, even the darkest screen", () => {
-  expect(isSkeleton(frameStats(fixture("frame-skeleton.jpg")))).toBe(true);
-  expect(isSkeleton(frameStats(fixture("frame-content.jpg")))).toBe(false);
-  expect(isSkeleton(frameStats(fixture("frame-content-dark.jpg")))).toBe(false);
+test("a loading skeleton (grey placeholder blocks) is told from content, even the darkest screen", async () => {
+  expect(isSkeleton(await stillStats(fixture("frame-skeleton.jpg")))).toBe(true);
+  expect(isSkeleton(await stillStats(fixture("frame-content.jpg")))).toBe(false);
+  expect(isSkeleton(await stillStats(fixture("frame-content-dark.jpg")))).toBe(false);
 });
 
 test("a black frame is not content either", () => {
@@ -36,7 +36,7 @@ for (const locale of ["en", "fr"]) {
     }
     const file = join(mkdtempSync(join(tmpdir(), "poster-")), "poster.jpg");
     writeFileSync(file, bytes);
-    const stats = frameStats(file);
+    const stats = await stillStats(file);
     expect(isSkeleton(stats), `the poster looks like a loading state (gradient ${stats.gradient})`).toBe(false);
   });
 }

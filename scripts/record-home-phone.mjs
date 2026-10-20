@@ -19,7 +19,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { badMoments, frameStats, isSkeleton, settledTime } from "./frame-quality.mjs";
+import { badMoments, isSkeleton, settledTime, stillStats } from "./frame-quality.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
@@ -254,7 +254,7 @@ try {
     const posterAt = settledTime(`${target}.mp4`, 0.8, Math.max(1.5, feedEnd));
     if (posterAt === null) throw new Error(`${loc}: no settled content frame in the feed beat for the poster`);
     execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-ss", posterAt.toFixed(2), "-i", `${target}.mp4`, "-frames:v", "1", "-q:v", "2", `${target}.jpg`]);
-    if (isSkeleton(frameStats(`${target}.jpg`))) throw new Error(`${loc}: the poster is a placeholder`);
+    if (isSkeleton(await stillStats(`${target}.jpg`))) throw new Error(`${loc}: the poster is a placeholder`);
     const size = ["webm", "mp4"].map((e) => `${e} ${(fs.statSync(`${target}.${e}`).size / 1e6).toFixed(2)} MB`).join(" · ");
     process.stdout.write(`✓ ${loc}  ${seconds.toFixed(1)} s, ${frames.length} frames, ${size} (${href})\n`);
     fs.rmSync(work, { recursive: true, force: true });
