@@ -92,6 +92,7 @@ Video streaming, storage, CDN, editor drafts.
 | `MEDIA_STORAGE_ENDPOINT` | — |  | `storage.bunnycdn.com` | Storage API host of the zone's region. |
 | `MEDIA_STORAGE_ZONE_ID` | — |  |  | The zone's numeric id for reconciliation (else searched by name). |
 | `MEDIA_CDN_HOSTNAME` | ✓ |  |  | Pull zone hostname that serves the storage zone. |
+| `MEDIA_WATERMARK_SINCE` | — |  |  | ISO date from which the Stream library burns the Orochia watermark into new encodes (scripts/bunny-library.mjs --watermark on). Videos created from then on do not get the player's own overlay (one mark, not two). Unset = the burned-in watermark is off. |
 | `MEDIA_ACCOUNT_API_KEY` | — | ✓ |  | Account API key: reconciliation also records the library's and the zone's billed totals. |
 | `MEDIA_DRAFT_RETENTION_DAYS` | — |  | `30` | Days an editor draft is kept, then removed with its files. |
 | `MEDIA_DRAFTS_MAX_PER_USER` | — |  | `20` | Editor drafts an account may keep. |
