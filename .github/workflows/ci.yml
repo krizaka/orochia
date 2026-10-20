@@ -17,6 +17,7 @@ jobs:
   verify:
     name: Lint · Typecheck · Unit tests · Build
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
@@ -42,6 +43,7 @@ jobs:
   database:
     name: Migrations & seed on PostgreSQL 16
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     services:
       postgres:
         image: pgvector/pgvector:pg16
@@ -73,6 +75,7 @@ jobs:
   e2e:
     name: Feature scenarios (API, real sessions, PostgreSQL 16)
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     services:
       postgres:
         image: pgvector/pgvector:pg16
