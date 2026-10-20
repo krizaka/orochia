@@ -3,6 +3,7 @@
 //   node scripts/bunny-library.mjs check                       prints the drift between the library and this file, exits 1 if any
 //   node scripts/bunny-library.mjs apply                       applies the player look (colours, controls, captions): idempotent
 //   node scripts/bunny-library.mjs apply --watermark on        …and burns the Orochia mark into NEW encodes
+//   node scripts/bunny-library.mjs apply --watermark on --refresh-image   …uploads the (faded) mark again, e.g. after its opacity changed
 //   node scripts/bunny-library.mjs apply --watermark off       …or removes it (new encodes only; see docs/MEDIA_PIPELINE.md §7)
 //   add --dry-run to print the payload without sending anything; --library <id> (default MEDIA_STREAM_LIBRARY_ID).
 // MEDIA_ACCOUNT_API_KEY (the Bunny account key) comes from the environment, never from an argument, never printed.
@@ -24,12 +25,21 @@ export const PLAYER_SETTINGS = Object.freeze({
 });
 
 /**
- * The watermark's box, in percent of the picture. Bunny has ONE box per library and reads width and height as a share of
- * each axis, so the mark's shape depends on the clip's: a square box (10 × 10 %) is an oval 1.78 : 1 on 9:16 and 16:9
- * alike — the same, mild, distortion for both orientations — where a box made square for 9:16 alone was 3 : 1 on 16:9.
- * Bottom-right, ~3 % from the edges.
+ * The watermark's box, in percent of the picture (orochia#349). Bunny has ONE box per library and reads its width and
+ * height as a share of each axis, then fits the mark inside without stretching it: a square box (7 × 7 %) gives a mark
+ * of 7 % of the SHORT side on 16:9 and 9:16 alike. Top-left, ~3 % from the edges: never the bottom-right, where the
+ * player's controls and full-screen button are (it sat there at 87 / 87, 10 × 10 %), nor the top-right, where the
+ * player draws the AI chip and the rating; captions are at the bottom.
  */
-export const WATERMARK_BOX = Object.freeze({ WatermarkPositionLeft: 87, WatermarkPositionTop: 87, WatermarkWidth: 10, WatermarkHeight: 10 });
+export const WATERMARK_BOX = Object.freeze({ WatermarkPositionLeft: 3, WatermarkPositionTop: 3, WatermarkWidth: 7, WatermarkHeight: 7 });
+/** The mark is burned at this share of its own opacity (Bunny has no opacity setting: the image carries it): quiet, still legible. */
+export const WATERMARK_OPACITY = 0.55;
+
+/** The mark's PNG with its alpha multiplied by `opacity` (sharp: the colours stay, only the transparency changes). */
+export async function fadeWatermark(png, opacity = WATERMARK_OPACITY) {
+  const { default: sharp } = await import("sharp");
+  return sharp(png).ensureAlpha().linear([1, 1, 1, opacity], [0, 0, 0, 0]).png().toBuffer();
+}
 
 /** The fields of `desired` that `library` does not hold yet (an idempotent PATCH: empty once applied). */
 export function libraryPatch(library, desired) {
@@ -41,13 +51,13 @@ export function libraryPatch(library, desired) {
 }
 
 /** What `apply` must do for `watermark` ("keep" | "on" | "off"): the library patch and whether to upload / delete the image. */
-export function plan(library, watermark = "keep") {
+export function plan(library, watermark = "keep", { refreshImage = false } = {}) {
   const desired = { ...PLAYER_SETTINGS };
   if (watermark === "on") Object.assign(desired, WATERMARK_BOX);
   const patch = libraryPatch(library, desired);
   return {
     patch,
-    uploadWatermark: watermark === "on" && library.HasWatermark !== true,
+    uploadWatermark: watermark === "on" && (library.HasWatermark !== true || refreshImage),
     deleteWatermark: watermark === "off" && library.HasWatermark === true,
   };
 }
@@ -94,12 +104,12 @@ async function main() {
     console.log(`Watermark: ${library.HasWatermark ? "on" : "off"} (new encodes only).`);
     process.exit(lines.length ? 1 : 0);
   }
-  const todo = plan(library, watermark);
+  const todo = plan(library, watermark, { refreshImage: args.includes("--refresh-image") });
   console.log(JSON.stringify({ library: libraryId, ...todo }, null, 2));
   if (args.includes("--dry-run")) return;
   if (todo.uploadWatermark) {
     const png = Buffer.from(await (await fetch(WATERMARK_IMAGE_URL)).arrayBuffer());
-    await api.uploadWatermark(png);
+    await api.uploadWatermark(await fadeWatermark(png));
   }
   if (Object.keys(todo.patch).length) await api.update(todo.patch);
   if (todo.deleteWatermark) await api.deleteWatermark();

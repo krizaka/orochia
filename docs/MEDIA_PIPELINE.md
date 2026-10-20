@@ -185,8 +185,15 @@ Two layers, both code:
 
 - **Our player is the face** (`apps/web/components/VideoPlayer.tsx`): `<video>` + hls.js over the signed HLS, its controls on
   `@krizaka/ui` tokens (the Orochia brand), a quiet `Spinner` over the poster while it loads (no sentence), a retry after
-  three fatal stream errors, and the Orochia mark (`OrochiaLogo`, bottom-right, 40 % opacity, scaled with the player,
-  lifted above the controls while they show, gone in full screen). The watch page signs the stream **on the server** with the
+  three fatal stream errors, and the Orochia mark (`OrochiaLogo`, **top-left**, 50 % opacity, scaled with the player,
+  gone in full screen; never beside the controls). **Top-right** it draws the 18+ rating and, for a clip made with
+  Orazaka, the « AI-generated » chip (`components/player/AiChip.tsx`: Krizaka UI scrim chip, 8 px, in the interface
+  language; shown at the start, on hover or touch and while paused — the AI disclosure is drawn by the player, **never
+  burned into the picture**). **Quality** (`components/player/QualityMenu.tsx`, `lib/player-quality.ts`): Auto plus each
+  rendition of the stream, named by the short side, switched at once through hls.js `currentLevel`, remembered for the
+  session (`sessionStorage` `kz-orochia-quality`), a badge (HD / QHD / 4K) only from 1080 up; on iPhone Safari's native
+  HLS (no level API) the master playlist's variants are read and played directly, and the menu says so when it cannot.
+  The watch page signs the stream **on the server** with the
   page (`lib/stream-access.ts`, shared with `GET /api/videos/:id/stream`): no client round-trip before play.
 - **Bunny's own embed player and the burned-in watermark** are the Stream library's settings, applied by
   `scripts/bunny-library.mjs` (tested by `scripts/bunny-library.test.mjs`; `MEDIA_ACCOUNT_API_KEY` from the environment):
@@ -205,7 +212,7 @@ Two layers, both code:
 every rendition (HLS and MP4): it also shows on the site's own playback and on every download or reshared copy, which is
 the point (a clip that leaves keeps the mark, like TikTok's). Videos already encoded are never touched — enabling it
 re-encodes nothing and costs nothing; removing it (`--watermark off`) does not clean videos encoded while it was on.
-Bunny has one box per library, read as a share of each axis (`WATERMARK_BOX`: right/top 87 %, 10 × 10 %): the mark is the same mild oval (1.78 : 1) on a 9:16 and a 16:9 clip — per-orientation sizing is not in the API. To avoid a second mark over the burned one, the player skips its
+Bunny has one box per library, read as a share of each axis (`WATERMARK_BOX`: left/top 3 %, 7 × 7 % — the **top-left** corner, so it never meets the controls, the full-screen button or the captions at the bottom, nor the AI chip at the top right, orochia#349): Bunny fits the mark inside the box without stretching it, so it is 7 % of the short side on a 9:16 and a 16:9 clip alike. Bunny has no opacity setting: the image is faded (`WATERMARK_OPACITY`, 55 %) before it is uploaded (`--watermark on --refresh-image` after changing it). To avoid a second mark over the burned one, the player skips its
 overlay on videos created since `MEDIA_WATERMARK_SINCE` (`lib/watermark.ts`): set it to the day `--watermark on` was run, unset it
 with `--watermark off`.
 

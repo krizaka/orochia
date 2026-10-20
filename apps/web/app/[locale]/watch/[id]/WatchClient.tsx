@@ -16,7 +16,7 @@ import { VideoComments } from "@/components/VideoComments";
 import { PlayerError, PlayerLoading, VideoPlayer } from "@/components/VideoPlayer";
 import { OwnerBar } from "@/components/watch/OwnerBar";
 import { VideoInfo } from "@/components/watch/VideoInfo";
-import { withoutCredit } from "@/lib/ai-credit";
+import { aiCreditOf, withoutCredit } from "@/lib/ai-credit";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor } from "@/lib/presets";
@@ -31,6 +31,8 @@ export interface WatchInitial {
   height: number | null;
   /** The video was encoded with the library's burned-in watermark: the player draws no second mark. */
   burnedWatermark: boolean;
+  /** Made with Orazaka (stored provenance or credit line): the player wears the AI chip from the first paint. */
+  aiGenerated?: boolean;
 }
 
 /** The refusals the page answers with a gate of its own; anything else that is not allowed is a failure (retry). */
@@ -261,6 +263,7 @@ export default function WatchClient({ initial }: { initial?: WatchInitial }) {
               streamUrl={stream?.streamUrl}
               posterUrl={posterUrl}
               burnedWatermark={initial?.burnedWatermark}
+              aiGenerated={initial?.aiGenerated || (details ? aiCreditOf(details) !== null : false)}
               width={frame.width}
               height={frame.height}
               title={title}
