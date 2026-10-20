@@ -112,6 +112,8 @@ async function run(profile, theme, locale) {
   const pick = async (id) => {
     await menuButton.click();
     await page.locator(`[role="menuitemradio"][data-quality="${id}"]`).click();
+    // A short clip may have ended while the test looked at the menu: start it over so the new rendition shows a frame.
+    await page.evaluate(() => { const v = document.querySelector("video"); if (v.ended || v.currentTime > v.duration - 2) v.currentTime = 0; void v.play().catch(() => {}); });
   };
   const renditions = items.filter((i) => i.id !== "auto");
   const lowest = renditions[renditions.length - 1];
