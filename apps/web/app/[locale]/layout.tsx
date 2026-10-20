@@ -70,12 +70,12 @@ export default async function RootLayout({ children, params }: Props & { childre
   setRequestLocale(requested);
   const { t, locale } = await getI18n();
   return (
-    <html lang={locale} suppressHydrationWarning className={cn(outfit.variable, jakarta.variable, "overflow-x-hidden max-w-full w-full")}>
+    <html lang={locale} suppressHydrationWarning className={cn(outfit.variable, jakarta.variable, "overflow-x-clip max-w-full w-full")}>
       <head>
         {/* Applies the persisted theme (`kz-theme`: dark · light · system) before the first paint: no flash. */}
         <ThemeScript />
       </head>
-      <body className="min-h-screen bg-surface-0 text-fg antialiased selection:bg-accent selection:text-on-accent pb-20 md:pb-0 overflow-x-hidden max-w-full w-full relative">
+      <body className="min-h-screen bg-surface-0 text-fg antialiased selection:bg-accent selection:text-on-accent pb-20 md:pb-0 overflow-x-clip max-w-full w-full relative">
         <JsonLd data={siteGraph(t, locale)} />
         <ThemeProvider>
           <I18nProvider locale={locale}>

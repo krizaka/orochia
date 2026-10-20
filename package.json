@@ -31,6 +31,7 @@
     "test:e2e": "node e2e/scenarios.mjs",
     "test:e2e:player": "node e2e/player-fullscreen.mjs",
     "test:a11y": "node e2e/a11y.mjs",
+    "test:rail": "node e2e/rail-fixed.mjs",
     "journey:dev": "node scripts/journey-dev.mjs",
     "test:ui-crawl": "node e2e/ui-crawl.mjs",
     "test:player-iphone": "node e2e/player-iphone.mjs",
