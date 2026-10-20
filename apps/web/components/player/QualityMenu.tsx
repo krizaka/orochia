@@ -101,7 +101,7 @@ export function QualityMenu({ options, value, onSelect, autoHeight, native = fal
             setOpen(true);
           }
         }}
-        className="inline-flex h-11 touch-manipulation items-center gap-1.5 rounded-lg px-2 text-current hover:bg-accent-soft hover:text-fg-accent focus-visible:outline-2 focus-visible:outline-accent sm:h-8"
+        className="inline-flex h-11 touch-manipulation items-center gap-1.5 rounded-sm px-2 text-current hover:bg-accent-soft hover:text-fg-accent focus-visible:outline-2 focus-visible:outline-accent sm:h-8"
       >
         <Settings className="h-5 w-5" aria-hidden />
         <span className="font-mono text-xs" aria-hidden>{currentLabel}</span>
@@ -114,7 +114,7 @@ export function QualityMenu({ options, value, onSelect, autoHeight, native = fal
           aria-label={t("player.quality.menu")}
           onKeyDown={onMenuKeyDown}
           className={cn(
-            "absolute bottom-full right-0 z-40 mb-2 min-w-40 max-w-[min(18rem,calc(100vw-2rem))] overflow-y-auto rounded-lg border border-fg-on-media/15 bg-scrim-strong p-1 text-fg-on-media shadow-xl backdrop-blur-md",
+            "absolute bottom-full right-0 z-40 mb-2 min-w-40 max-w-[min(18rem,calc(100vw-2rem))] overflow-y-auto rounded-sm border border-fg-on-media/15 bg-scrim-strong p-1 text-fg-on-media shadow-xl backdrop-blur-md",
             panelClassName,
           )}
         >
