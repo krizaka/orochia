@@ -43,6 +43,11 @@ services:
       - key: APP_VIDEO_BANNER
         scope: RUN_TIME
         value: "on"
+      # The Stream library burns the Orochia watermark into videos encoded from this date (scripts/bunny-library.mjs --watermark on):
+      # those videos get no second mark from the player (lib/watermark.ts). Unset it with `--watermark off`.
+      - key: MEDIA_WATERMARK_SINCE
+        scope: RUN_TIME
+        value: "2026-10-19T21:20:00Z"
       # Factory reset from the admin console (backup first). Never honoured on the indexed production.
       - key: DATABASE_ALLOW_RESET
         scope: RUN_TIME

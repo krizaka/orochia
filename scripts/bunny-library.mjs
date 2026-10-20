@@ -24,11 +24,12 @@ export const PLAYER_SETTINGS = Object.freeze({
 });
 
 /**
- * The watermark's box, in percent of the picture (Bunny reads both axes as a share of the frame, so the box is square
- * for one shape only). Orochia is phone-first: shaped for a 9:16 clip, bottom-right, ~9 % of the width. On a 16:9 clip
- * it is a little wide — the mark's PNG is square with transparent margin, so the glyph stays readable.
+ * The watermark's box, in percent of the picture. Bunny has ONE box per library and reads width and height as a share of
+ * each axis, so the mark's shape depends on the clip's: a square box (10 × 10 %) is an oval 1.78 : 1 on 9:16 and 16:9
+ * alike — the same, mild, distortion for both orientations — where a box made square for 9:16 alone was 3 : 1 on 16:9.
+ * Bottom-right, ~3 % from the edges.
  */
-export const WATERMARK_BOX = Object.freeze({ WatermarkPositionLeft: 85, WatermarkPositionTop: 90, WatermarkWidth: 12, WatermarkHeight: 7 });
+export const WATERMARK_BOX = Object.freeze({ WatermarkPositionLeft: 87, WatermarkPositionTop: 87, WatermarkWidth: 10, WatermarkHeight: 10 });
 
 /** The fields of `desired` that `library` does not hold yet (an idempotent PATCH: empty once applied). */
 export function libraryPatch(library, desired) {

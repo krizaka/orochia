@@ -205,12 +205,11 @@ Two layers, both code:
 every rendition (HLS and MP4): it also shows on the site's own playback and on every download or reshared copy, which is
 the point (a clip that leaves keeps the mark, like TikTok's). Videos already encoded are never touched — enabling it
 re-encodes nothing and costs nothing; removing it (`--watermark off`) does not clean videos encoded while it was on.
-Its box is a share of the frame on **both** axes (`WATERMARK_BOX`: right 85 %, top 90 %, 12 × 7 %): it is shaped for the
-phone's 9:16 clip and reads a little flat on a 16:9 one. To avoid a second mark over the burned one, the player skips its
+Bunny has one box per library, read as a share of each axis (`WATERMARK_BOX`: right/top 87 %, 10 × 10 %): the mark is the same mild oval (1.78 : 1) on a 9:16 and a 16:9 clip — per-orientation sizing is not in the API. To avoid a second mark over the burned one, the player skips its
 overlay on videos created since `MEDIA_WATERMARK_SINCE` (`lib/watermark.ts`): set it to the day `--watermark on` was run, unset it
 with `--watermark off`.
 
 - **Recommendation**: on for production uploads (what leaves the site is branded), decided by the owner; on for dev from
   2026-10-19 for new uploads. **Turn it off**: `--watermark off`, unset `MEDIA_WATERMARK_SINCE`.
-- Watch for **JIT encoding** (`JitEncodingEnabled` on the library): a rendition of an old video encoded on first request
-  would carry the watermark. Check a sample after enabling; never re-encode existing videos without a decision (cost).
+- **JIT encoding** (`JitEncodingEnabled`), checked 2026-10-20: a rendition of an old video that was never encoded is not produced on request (the CDN answers 404), and an old video's rendition missing from `availableResolutions` (480p of a pre-watermark clip) came back without the mark. No leak seen; never re-encode existing videos without a decision (cost).
+- The dev app sets `MEDIA_WATERMARK_SINCE` in `deploy/digitalocean/app-spec.dev.yaml` (the `web` service). Mind `doctl apps update`: edit the service, not the `migrate` job.
