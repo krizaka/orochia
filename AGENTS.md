@@ -487,7 +487,8 @@ orochia/                           npm workspaces
   (`@krizaka/intl`).
 - **Krizaka motion signature** (`@krizaka/ui/motion.css`, loaded by `@krizaka/tailwind`; shared with krizaka.com): one easing `--kz-ease`; every page enters on navigation (`app/template.tsx`; the first load paints at once — `data-navigated`, `ClientLayoutShell`); sections and cards rise into
   view with `data-reveal` (stagger with `--kz-delay`; `MotionObserver` in the layout drives it); headline words roll
-  (`RotatingWord`); primary actions carry `kz-sheen`; cards `kz-spotlight` / `kz-lift`; bands `kz-marquee`. What opens
+  (`RotatingWord`); bands `kz-marquee`. A hover changes a colour, never a position (krizaka-ui#393): no lift, no zoom, no
+  light following the pointer, no `shimmer`/`magnetic`, no `shape="cut"`. What opens
   over the page enters the same way: backdrops `kz-overlay`, dialogs `kz-dialog` (built into `Dialog` and `Sheet`), menus and
   popovers `kz-pop`, a view swapped in place `kz-fade`. Every `transition-*` utility uses `--kz-ease` by default
   (Tailwind config): no `ease-*` / `duration-*` per component unless it means something. Motion

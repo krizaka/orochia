@@ -212,8 +212,6 @@ export function AuctionPanel({
                 loading={busy}
                 status={ended}
                 announce={ended === "success" ? t("auction.placed") : undefined}
-                shimmer
-                magnetic
                 className="shrink-0"><Gavel className="h-4 w-4" />
                 {t("auction.placeBid")}
               </Button>

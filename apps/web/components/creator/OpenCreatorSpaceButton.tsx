@@ -33,7 +33,7 @@ export function OpenCreatorSpaceButton({ disabled = false }: { disabled?: boolea
 
   return (
     <div className="flex flex-col items-start gap-2">
-      <Button variant="sensual" size="lg" shimmer onClick={open} loading={state === "working"} disabled={disabled} className="font-bold">
+      <Button variant="sensual" size="lg" onClick={open} loading={state === "working"} disabled={disabled} className="font-bold">
         {state === "working" ? t("creatorSpace.apply.working") : t("creatorSpace.apply.cta")}
       </Button>
       {error && (

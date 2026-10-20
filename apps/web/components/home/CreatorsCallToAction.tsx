@@ -34,7 +34,7 @@ export async function CreatorsCallToAction({ share }: { share: number }) {
         </ul>
         <div className="mt-9 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row">
           {signupEnabled() && (
-            <Button asChild variant="primary" size="lg" shimmer className="gap-2 shadow-lg">
+            <Button asChild variant="primary" size="lg" className="gap-2 shadow-lg">
               <Link href={signUpHref(CREATOR_APPLY_PATH)}>
                 <UploadIcon size={18} /> {t("home.creators.cta")}
               </Link>

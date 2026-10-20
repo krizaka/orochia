@@ -32,11 +32,11 @@ export function JoinGroup({ token }: { token: string }) {
       <EmptyState icon={<MessageIcon size={32} />} title={t("inbox.group.joinTitle")} description={t("inbox.group.joinBody")} />
       <div className="mt-6 flex flex-col items-center gap-3">
         {!isLoading && !user ? (
-          <Button variant="primary" shape="cut" onClick={() => router.push(`/auth/login?next=${encodeURIComponent(`/messages/join/${token}`)}`)}>
+          <Button variant="primary" onClick={() => router.push(`/auth/login?next=${encodeURIComponent(`/messages/join/${token}`)}`)}>
             {t("inbox.group.joinSignIn")}
           </Button>
         ) : (
-          <Button variant="primary" shape="cut" loading={busy} disabled={isLoading} onClick={() => void join()}>
+          <Button variant="primary" loading={busy} disabled={isLoading} onClick={() => void join()}>
             {t("inbox.group.join")}
           </Button>
         )}

@@ -114,7 +114,7 @@ export async function GetPaid({ fee }: { fee: number }) {
                   key={key}
                   data-reveal
                   style={{ ["--kz-delay" as string]: `${i * 90}ms` }}
-                  className="kz-spotlight kz-lift flex flex-col rounded-3xl border border-border-default bg-surface-1/70 p-5 backdrop-blur-xl sm:p-6"
+                  className="flex flex-col rounded-3xl border border-border-default bg-surface-1/70 p-5 backdrop-blur-xl sm:p-6"
                 >
                   <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-soft text-fg-accent">
                     <Icon size={22} nodeColor="var(--kz-accent-2)" />
@@ -156,7 +156,7 @@ export async function GetPaid({ fee }: { fee: number }) {
 
         <div data-reveal className="mt-12 flex flex-col items-center justify-center gap-3 sm:flex-row">
           {signupEnabled() && (
-            <Button asChild variant="primary" size="lg" shimmer className="w-full gap-2 sm:w-auto">
+            <Button asChild variant="primary" size="lg" className="w-full gap-2 sm:w-auto">
               <Link href={signUpHref(CREATOR_APPLY_PATH)}>
                 <PayoutIcon size={18} /> {t("home.paid.cta")}
               </Link>

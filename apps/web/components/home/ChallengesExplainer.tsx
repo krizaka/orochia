@@ -25,8 +25,8 @@ export async function ChallengesExplainer() {
     days: CHALLENGE_MAX_DELIVERY_DAYS,
   };
   return (
-    <div className="kz-spotlight relative overflow-hidden rounded-3xl border border-border-default bg-surface-1/70 p-6 backdrop-blur-xl sm:p-8">
-      <CardGrid min={220} light>
+    <div className="relative overflow-hidden rounded-3xl border border-border-default bg-surface-1/70 p-6 backdrop-blur-xl sm:p-8">
+      <CardGrid min={220}>
         {CHALLENGE_STARTS.map(({ slug, messageKey }) => {
           const Icon = ICONS[slug];
           return (
@@ -47,7 +47,7 @@ export async function ChallengesExplainer() {
           <p className="font-display text-lg font-bold text-fg">{t("home.challenges.pitch")}</p>
           <p className="mt-1 text-sm text-fg-secondary">{t("home.challenges.body", vars)}</p>
         </div>
-        <Button asChild variant="primary" shape="cut" shimmer className="shrink-0 gap-2">
+        <Button asChild variant="primary" className="shrink-0 gap-2">
           <Link href="/challenges">
             <ChallengeIcon size={18} /> {t("home.challenges.cta")}
           </Link>

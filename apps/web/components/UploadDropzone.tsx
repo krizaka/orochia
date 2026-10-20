@@ -379,7 +379,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                   isDragging ? "scale-[1.01] border-accent bg-accent/10" : "border-border-strong hover:border-accent/60 hover:bg-accent/4",
                 )}
               >
-                <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-accent to-accent-2 text-white shadow-lg shadow-accent/25 transition-transform group-hover:-translate-y-1">
+                <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-accent to-accent-2 text-white shadow-lg shadow-accent/25 transition-transform">
                   <UploadCloud className="h-7 w-7" />
                 </span>
                 <p className="text-sm font-semibold text-fg">{isDragging ? t("publish.drop.dragging") : t("publish.drop.title")}</p>
@@ -603,7 +603,6 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
               loading={starting || uploading}
               progress={uploading ? (upload?.progress ?? 0) / 100 : null}
               shimmer={!missing && !uploading}
-              magnetic
             >
               {uploading ? t("publish.uploading", { progress: upload?.progress ?? 0 }) : missing ? t("publish.missing", { what: missing.toLowerCase() }) : t("publish.submit")}
             </Button>

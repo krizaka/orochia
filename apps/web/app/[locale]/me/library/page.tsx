@@ -21,7 +21,7 @@ export default function MeLibrary() {
         <li key={video.id}>
           <Link href={`/watch/${video.id}`} className="group block">
             <div className="aspect-video overflow-hidden rounded-xl bg-surface-3">
-              {video.thumbnailUrl && <img src={video.thumbnailUrl} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" />}
+              {video.thumbnailUrl && <img src={video.thumbnailUrl} alt="" className="h-full w-full object-cover transition-transform" />}
             </div>
             <h3 className="mt-2 line-clamp-1 text-sm font-bold text-fg">{video.title}</h3>
             <p className="text-xs text-fg-secondary">{video.creatorName}</p>

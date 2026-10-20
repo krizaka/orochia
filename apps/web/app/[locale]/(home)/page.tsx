@@ -77,10 +77,10 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
               <span className="font-semibold text-fg">{t("home.intro.line")}</span> {t("home.intro.sub")}
             </p>
             <div className="flex shrink-0 gap-2">
-              <Button asChild variant="primary" size="md" shape="cut">
+              <Button asChild variant="primary" size="md">
                 <Link href="/explore">{t("home.ctaExplore")}</Link>
               </Button>
-              <Button asChild variant="secondary" size="md" shape="cut">
+              <Button asChild variant="secondary" size="md">
                 <Link href={signupEnabled() ? signUpHref() : signInHref()}>{t(signupEnabled() ? "home.intro.join" : "feed.actions.signIn")}</Link>
               </Button>
               <Button asChild variant="ghost" size="md">
