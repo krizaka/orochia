@@ -43,7 +43,7 @@ describe("every entry point that plays, unlocks or pays for a video goes through
     expect(read(file)).toMatch(/assertAdultAccess\w*\(/);
   });
   it("the stream answers the stable code", () => {
-    expect(read("app/api/videos/[id]/stream/route.ts")).toMatch(/code/);
+    expect(read("lib/stream-access.ts")).toMatch(/code: access\.code/);
   });
   it("stories are not signed for an unchecked viewer", () => {
     expect(read("lib/stories.ts")).toMatch(/adultAccessAllowed|assertAdultAccess/);

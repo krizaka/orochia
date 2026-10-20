@@ -11,23 +11,30 @@ import { RelationshipActions } from "@/components/RelationshipActions";
 import { ReportModal } from "@/components/ReportModal";
 import { SaveToPlaylist } from "@/components/SaveToPlaylist";
 import { TipModal } from "@/components/TipModal";
-import { Avatar, Button, buttonVariants, cn, orochiaButton, Skeleton } from "@/components/ui";
+import { Avatar, Button, buttonVariants, cn, orochiaButton } from "@/components/ui";
 import { VideoComments } from "@/components/VideoComments";
-import { VideoPlayer } from "@/components/VideoPlayer";
+import { PlayerError, PlayerLoading, VideoPlayer } from "@/components/VideoPlayer";
 import { OwnerBar } from "@/components/watch/OwnerBar";
 import { VideoInfo } from "@/components/watch/VideoInfo";
 import { withoutCredit } from "@/lib/ai-credit";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n-client";
 import { defaultAvatarFor } from "@/lib/presets";
+import type { StreamAccess } from "@/lib/stream-access";
 import type { VideoVisibility } from "@/lib/visibility";
 
-interface StreamAccess {
-  allowed: boolean;
-  streamUrl?: string;
-  reason?: string;
-  minTipAmountCents?: number;
+/** What the server knew when it rendered the page: the signed stream and the poster's frame (see page.tsx). */
+export interface WatchInitial {
+  stream?: StreamAccess;
+  poster: string | null;
+  width: number | null;
+  height: number | null;
+  /** The video was encoded with the library's burned-in watermark: the player draws no second mark. */
+  burnedWatermark: boolean;
 }
+
+/** The refusals the page answers with a gate of its own; anything else that is not allowed is a failure (retry). */
+const GATE_REASONS = new Set(["PAYWALL_REQUIRED", "CONTACTS_ONLY", "FOLLOWERS_ONLY", "INVITED_ONLY", "AUCTION", "CHALLENGE", "AGE_CHECK_REQUIRED"]);
 
 interface RelatedVideo {
   id: string;
@@ -83,7 +90,7 @@ const useLargeScreen = () => useSyncExternalStore(subscribeLarge, () => window.m
 
 const formatDuration = (secs: number) => `${Math.floor(secs / 60)}:${String(Math.floor(secs % 60)).padStart(2, "0")}`;
 
-export default function WatchClient() {
+export default function WatchClient({ initial }: { initial?: WatchInitial }) {
   const { t, date, number } = useI18n();
   const { id: videoId } = useParams<{ id: string }>();
   const searchParams = useSearchParams();
@@ -91,8 +98,7 @@ export default function WatchClient() {
 
   const [details, setDetails] = useState<VideoDetails | null>(null);
   const [notFound, setNotFound] = useState(false);
-  const [stream, setStream] = useState<StreamAccess | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [stream, setStream] = useState<StreamAccess | null>(initial?.stream ?? null);
   const [isTipModalOpen, setIsTipModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -107,7 +113,7 @@ export default function WatchClient() {
       const res = await fetch(`/api/videos/${videoId}/stream`, { cache: "no-store" });
       setStream((await res.json()) as StreamAccess);
     } catch {
-      setStream({ allowed: false });
+      setStream({ allowed: false, reason: "ERROR" });
     }
   }, [videoId]);
 
@@ -120,24 +126,25 @@ export default function WatchClient() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      setIsLoading(true);
+      // The details and the stream are asked together (the stream already came with the page when the server could sign it).
+      const streaming = initial?.stream ? Promise.resolve() : fetchStreamAccess();
       const res = await fetch(`/api/videos/${videoId}/details`, { cache: "no-store" });
       if (cancelled) return;
       if (res.status === 404) {
         setNotFound(true);
-        setIsLoading(false);
         return;
       }
       const data = (await res.json()) as { video?: VideoDetails; liked?: boolean };
       setDetails(data.video ?? null);
       setLiked(Boolean(data.liked));
-      await fetchStreamAccess();
-      if (!cancelled) setIsLoading(false);
-    })().catch(() => setIsLoading(false));
+      await streaming;
+    })().catch(() => {
+      /* the player keeps its loading state until the details arrive; a refresh retries */
+    });
     return () => {
       cancelled = true;
     };
-  }, [videoId, fetchStreamAccess]);
+  }, [videoId, fetchStreamAccess, initial?.stream]);
 
   // Back from the gateway: the webhook may land a few seconds after the redirect.
   useEffect(() => {
@@ -209,6 +216,11 @@ export default function WatchClient() {
   const isAuction = stream ? !stream.allowed && stream.reason === "AUCTION" : false;
   const isChallenge = stream ? !stream.allowed && stream.reason === "CHALLENGE" : false;
   const isAgeGated = stream ? !stream.allowed && stream.reason === "AGE_CHECK_REQUIRED" : false;
+  const streamFailed = stream ? !stream.allowed && !GATE_REASONS.has(stream.reason ?? "") : false;
+  // The player stands as soon as the stream is known and allowed: the details only complete the page around it.
+  const playerReady = Boolean(stream) && (Boolean(details) || stream?.allowed === true);
+  const posterUrl = details?.thumbnailUrl ?? initial?.poster ?? undefined;
+  const frame = { width: details?.width ?? initial?.width, height: details?.height ?? initial?.height };
   const auctionPanel = auctionState.auction && (
     <AuctionPanel auction={auctionState.auction} skewMs={auctionState.skewMs} pulse={auctionState.pulse} onChanged={() => void auctionState.reload()} onOwnBid={auctionState.onOwnBid} />
   );
@@ -229,11 +241,10 @@ export default function WatchClient() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-          {isLoading || !details ? (
-            <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border-subtle" aria-busy="true">
-              <Skeleton shape="rect" className="absolute inset-0 h-full rounded-2xl" />
-              <span className="absolute inset-0 flex items-center justify-center font-mono text-xs text-fg-muted">{t("watch.verifying")}</span>
-            </div>
+          {!playerReady ? (
+            <PlayerLoading posterUrl={posterUrl} width={frame.width} height={frame.height} />
+          ) : streamFailed ? (
+            <PlayerError width={frame.width} height={frame.height} onRetry={() => void fetchStreamAccess()} />
           ) : isAgeGated ? (
             <div role="alert" className="flex aspect-video w-full flex-col items-center justify-center gap-3 rounded-2xl border border-border-subtle bg-surface-2/60 p-6 text-center">
               <h2 className="text-lg font-semibold text-fg">{t("watch.ageGate.title")}</h2>
@@ -248,9 +259,10 @@ export default function WatchClient() {
             <VideoPlayer
               videoId={videoId}
               streamUrl={stream?.streamUrl}
-              posterUrl={details.thumbnailUrl ?? undefined}
-              width={details.width}
-              height={details.height}
+              posterUrl={posterUrl}
+              burnedWatermark={initial?.burnedWatermark}
+              width={frame.width}
+              height={frame.height}
               title={title}
               isPaywalled={isPaywalled}
               minTipAmountCents={minTipAmountCents}
@@ -269,11 +281,13 @@ export default function WatchClient() {
                     <Gavel className="h-4 w-4" /> {t("player.auctionCta")}
                   </a>
                 ) : (
+                details ? (
                 <RelationshipActions
                   username={details.creatorUsername}
                   show={isFollowersOnly ? ["follow"] : ["contact"]}
                   onChange={() => void fetchStreamAccess()}
                 />
+                ) : null
                 )
               }
               onUnlockRequested={() => setIsTipModalOpen(true)}

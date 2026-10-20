@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 
 import { JsonLd } from "@/components/JsonLd";
+import { getCurrentUser } from "@/lib/auth";
 import { getI18n } from "@/lib/i18n-server";
 import { videoDetails } from "@/lib/queries";
 import { absolute, NOINDEX, videoSchema } from "@/lib/seo";
 import { pageAlternates } from "@/lib/seo-i18n";
+import { resolveStreamAccess } from "@/lib/stream-access";
+import { hasBurnedWatermark } from "@/lib/watermark";
 
 import WatchClient from "./WatchClient";
 
@@ -36,15 +40,30 @@ export async function generateMetadata(props: { params: Promise<{ id: string }> 
   };
 }
 
-/** The watch page: metadata and VideoObject on the server, the player and its access checks on the client. */
+/**
+ * The access decision and the signed HLS URL, on the server with the page: the player has its source in the first HTML,
+ * with no client round-trip before the first frame. A failure here is not an answer: the client asks again.
+ */
+async function initialStream(id: string) {
+  if (!UUID.test(id)) return undefined;
+  try {
+    const user = await getCurrentUser();
+    const { status, body } = await resolveStreamAccess(id, user, await headers());
+    return status === 404 || status === 409 ? undefined : body;
+  } catch {
+    return undefined;
+  }
+}
+
+/** The watch page: metadata, VideoObject and the signed stream on the server, the player and its controls on the client. */
 export default async function WatchPage(props: { params: Promise<{ id: string }> }) {
   const { t } = await getI18n();
   const { id } = await props.params;
-  const video = await listedVideo(id);
+  const [video, stream] = await Promise.all([listedVideo(id), initialStream(id)]);
   return (
     <>
       {video && <JsonLd data={videoSchema(video, t)} />}
-      <WatchClient />
+      <WatchClient initial={{ stream, poster: video?.thumbnailUrl ?? null, width: video?.width ?? null, height: video?.height ?? null, burnedWatermark: hasBurnedWatermark(video?.createdAt, process.env.MEDIA_WATERMARK_SINCE) }} />
     </>
   );
 }

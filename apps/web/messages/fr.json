@@ -1704,7 +1704,6 @@
     "backToFeed": "Retour au fil",
     "paymentReceived": "Paiement reçu — la vidéo se débloquera dès que le fournisseur de paiement l’aura confirmé.",
     "paymentCancelled": "Paiement annulé. Rien n’a été facturé.",
-    "verifying": "Vérification de votre accès…",
     "unlock": "Débloquer",
     "tip": "Laisser un pourboire",
     "like": "J’aime",
@@ -1764,7 +1763,10 @@
     "auctionCta": "Voir l’enchère",
     "challengeTitle": "Réalisée pour un défi",
     "challengeBody": "Ses contributeurs l’ont financée, et eux seuls la regardent. Soutenez le prochain pour en faire partie.",
-    "challengeCta": "Voir les défis en cours"
+    "challengeCta": "Voir les défis en cours",
+    "errorTitle": "Cette vidéo n’a pas pu s’ouvrir",
+    "errorBody": "La connexion s’est interrompue avant le chargement de la vidéo. Réessayez dans un instant.",
+    "retry": "Réessayer"
   },
   "comments": {
     "title": "Commentaires",
