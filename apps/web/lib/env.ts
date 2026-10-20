@@ -133,6 +133,7 @@ export const ENV_VARS: readonly EnvVar[] = [
   v("MEDIA_STORAGE_ENDPOINT", "MEDIA", "optional", text, "Storage API host of the zone's region.", { default: "storage.bunnycdn.com" }),
   v("MEDIA_STORAGE_ZONE_ID", "MEDIA", "optional", int(1, Number.MAX_SAFE_INTEGER), "The zone's numeric id for reconciliation (else searched by name)."),
   v("MEDIA_CDN_HOSTNAME", "MEDIA", "required", text, "Pull zone hostname that serves the storage zone."),
+  v("MEDIA_WATERMARK_SINCE", "MEDIA", "optional", text, "ISO date from which the Stream library burns the Orochia watermark into new encodes (scripts/bunny-library.mjs --watermark on). Videos created from then on do not get the player's own overlay (one mark, not two). Unset = the burned-in watermark is off.", {}),
   v("MEDIA_ACCOUNT_API_KEY", "MEDIA", "optional", text, "Account API key: reconciliation also records the library's and the zone's billed totals.", { secret: true }),
   v("MEDIA_DRAFT_RETENTION_DAYS", "MEDIA", "optional", int(1, 365), "Days an editor draft is kept, then removed with its files.", { default: "30" }),
   v("MEDIA_DRAFTS_MAX_PER_USER", "MEDIA", "optional", int(1, 200), "Editor drafts an account may keep.", { default: "20" }),

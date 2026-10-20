@@ -331,3 +331,19 @@ written here, each with the place that carries it. Disagree, or saw that signal?
 - **What changed under this review** — The hand-made bar (`Navbar.tsx`, the bottom tab bar) became `@krizaka/ui`'s `RailNav`,
   `AppHeader` and `AccountMenu` (orochia#320) the same day: Messages left the phone's tab bar for the header (one tap
   away), which the review's « five places » now reads as Home, Explore, Auctions, Challenges, Create.
+
+## A video loads as a picture, never a sentence (watch page, 2026-10-19)
+
+- **Decision**: while a video opens, the player's box shows the poster under a quiet Krizaka `Spinner` — no text, same box as the player so nothing jumps; the signed stream comes with the page (server-side), so most of the time there is no wait at all. A refusal keeps its gate (unlock, follow, sign in); a failure says so in plain words and offers « Try again ».
+- **Problem**: the watch page showed « Checking your access… » on every load: a technical state the person did not ask for, worse than waiting.
+- **Principle**: do not expose the system's inner states; show progress as continuity (the poster stays) and keep words for what the person can act on (Nielsen's « visibility of system status » concerns the status that matters to the task, not the machinery behind it).
+- **Refused**: a text-only « Loading… » (still a sentence); a bare black box; a retry loop without end.
+- **Cost**: the page asks the database for the access decision at render time (one query it used to make through the API anyway).
+- **Signal we are wrong**: a spinner that lasts without an error, or people reporting a blank player.
+
+## The Orochia mark on the player (2026-10-19)
+
+- **Decision**: a low-opacity Orochia mark bottom-right of the player, scaled with it, lifted above the controls while they show and hidden in full screen; copies that leave the site carry the library's burned-in watermark instead (never both on the same video).
+- **Principle**: a signature, not a banner — recognisable at 40 % opacity and out of the way of the controls (Fitts: the corner holds the fullscreen target, so the mark moves, the target does not).
+- **Cost**: the mark is absent in full screen (immersion over branding); burned-in watermark applies to every new upload of the library.
+- **Signal we are wrong**: complaints that it covers the picture, or creators asking to opt out.

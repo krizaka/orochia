@@ -1704,7 +1704,6 @@
     "backToFeed": "Back to the feed",
     "paymentReceived": "Payment received — the video unlocks as soon as the payment provider confirms it.",
     "paymentCancelled": "Payment cancelled. Nothing was charged.",
-    "verifying": "Checking your access…",
     "unlock": "Unlock",
     "tip": "Send a tip",
     "like": "Like",
@@ -1764,7 +1763,10 @@
     "auctionCta": "See the auction",
     "challengeTitle": "Made for a challenge",
     "challengeBody": "Its backers paid for it, and only they watch it. Back the next one to be in.",
-    "challengeCta": "See open challenges"
+    "challengeCta": "See open challenges",
+    "errorTitle": "This video could not be opened",
+    "errorBody": "The connection dropped before the video could load. Try again in a moment.",
+    "retry": "Try again"
   },
   "comments": {
     "title": "Comments",

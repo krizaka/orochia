@@ -178,3 +178,39 @@ platform's cap. The platform alerts every ADMIN account once per threshold cross
 bell, push, e-mail, log); a creator is told once a week when they pass 90 % (`storageLow`). The dashboard and the
 upload page show the gauge (`StorageMeter`, `GET /api/me/storage`); operators read `GET /api/admin/storage` (usage,
 plans, largest accounts, last reconciliation, the state of the abuse defences).
+
+## 7. The player's face and the watermark
+
+Two layers, both code:
+
+- **Our player is the face** (`apps/web/components/VideoPlayer.tsx`): `<video>` + hls.js over the signed HLS, its controls on
+  `@krizaka/ui` tokens (the Orochia brand), a quiet `Spinner` over the poster while it loads (no sentence), a retry after
+  three fatal stream errors, and the Orochia mark (`OrochiaLogo`, bottom-right, 40 % opacity, scaled with the player,
+  lifted above the controls while they show, gone in full screen). The watch page signs the stream **on the server** with the
+  page (`lib/stream-access.ts`, shared with `GET /api/videos/:id/stream`): no client round-trip before play.
+- **Bunny's own embed player and the burned-in watermark** are the Stream library's settings, applied by
+  `scripts/bunny-library.mjs` (tested by `scripts/bunny-library.test.mjs`; `MEDIA_ACCOUNT_API_KEY` from the environment):
+
+  ```bash
+  node scripts/bunny-library.mjs check                      # the drift between the library and the file, exit 1 if any
+  node scripts/bunny-library.mjs apply                      # the player look (key colour = Orochia accent #7c3aed, controls, font): idempotent
+  node scripts/bunny-library.mjs apply --watermark on       # + burn the Orochia mark into NEW encodes (PUT /watermark + position)
+  node scripts/bunny-library.mjs apply --watermark off      # remove it (DELETE /watermark)
+  ```
+
+  Libraries: `orochia` (773325) is the only Stream library of the account. Orazaka's gallery and the brand films are
+  Storage-zone files (krizaka-assets), not Stream: they have no player to configure.
+
+**Burned-in watermark, what it is and is not.** Bunny burns it at encoding, for **new uploads only**, library-wide, into
+every rendition (HLS and MP4): it also shows on the site's own playback and on every download or reshared copy, which is
+the point (a clip that leaves keeps the mark, like TikTok's). Videos already encoded are never touched — enabling it
+re-encodes nothing and costs nothing; removing it (`--watermark off`) does not clean videos encoded while it was on.
+Its box is a share of the frame on **both** axes (`WATERMARK_BOX`: right 85 %, top 90 %, 12 × 7 %): it is shaped for the
+phone's 9:16 clip and reads a little flat on a 16:9 one. To avoid a second mark over the burned one, the player skips its
+overlay on videos created since `MEDIA_WATERMARK_SINCE` (`lib/watermark.ts`): set it to the day `--watermark on` was run, unset it
+with `--watermark off`.
+
+- **Recommendation**: on for production uploads (what leaves the site is branded), decided by the owner; on for dev from
+  2026-10-19 for new uploads. **Turn it off**: `--watermark off`, unset `MEDIA_WATERMARK_SINCE`.
+- Watch for **JIT encoding** (`JitEncodingEnabled` on the library): a rendition of an old video encoded on first request
+  would carry the watermark. Check a sample after enabling; never re-encode existing videos without a decision (cost).

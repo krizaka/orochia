@@ -1,16 +1,67 @@
 "use client";
 
 import Hls from "hls.js";
-import { Gavel, Lock, Maximize, Pause, Play, Sparkles, Users, Volume2, VolumeX } from "lucide-react";
+import { Gavel, Lock, Maximize, Pause, Play, RotateCcw, Sparkles, Users, Volume2, VolumeX } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
-import { Badge, Button, cn, IconButton, Slider } from "@/components/ui";
+import { Badge, Button, cn, IconButton, OrochiaLogo, Slider, Spinner } from "@/components/ui";
 import { isAdultRating } from "@/lib/content-ratings";
 import { useI18n } from "@/lib/i18n-client";
 import { orientationOf } from "@/lib/video-aspect";
 
 import { DOCUMENT_FULLSCREEN_EVENTS, enterFullscreen, exitFullscreen, type FullscreenDocument, type FullscreenTarget, type FullscreenVideo, isFullscreen, VIDEO_FULLSCREEN_EVENTS } from "./player-fullscreen";
 import { useWatchReport } from "./watch-report";
+
+/** The player's box, one for the loading state, the error and the player itself: nothing moves when the video arrives. */
+function frameClass(width?: number | null, height?: number | null, fullscreen = false) {
+  const shape = orientationOf(width, height);
+  return cn(
+    "theme-dark relative w-full overflow-hidden rounded-2xl bg-black border border-border-subtle shadow-2xl",
+    fullscreen
+      ? "h-dvh w-dvw max-h-none max-w-none rounded-none border-0"
+      : shape === "vertical"
+        ? "mx-auto aspect-[9/16] max-h-[calc(100dvh-13rem-env(safe-area-inset-bottom))] max-w-[min(100%,28rem)] md:max-h-[calc(100dvh-5rem)]"
+        : shape === "square"
+          ? "mx-auto aspect-square max-h-[calc(100dvh-13rem-env(safe-area-inset-bottom))] md:max-h-[calc(100dvh-5rem)]"
+          : "aspect-video",
+  );
+}
+
+/** Failures that are the player's own: this many fatal errors in a row and it offers a retry instead of looping. */
+const MAX_FATAL_ERRORS = 3;
+
+/**
+ * Before the player stands (the details are on their way): the poster and a quiet Krizaka spinner. No text — the
+ * wait is a picture, never a sentence — and the same box as the player, so nothing jumps.
+ */
+export function PlayerLoading({ posterUrl, width, height }: { posterUrl?: string | null; width?: number | null; height?: number | null }) {
+  return (
+    <div className={frameClass(width, height)} aria-busy="true" data-testid="player-loading">
+      {posterUrl && (
+         
+        <img src={posterUrl} alt="" className="absolute inset-0 h-full w-full object-contain" />
+      )}
+      <div className="absolute inset-0 flex items-center justify-center bg-scrim/30">
+        <Spinner size="lg" />
+      </div>
+    </div>
+  );
+}
+
+/** The video could not be opened (not a refusal: a failure). Clear words and one action. */
+export function PlayerError({ onRetry, width, height }: { onRetry: () => void; width?: number | null; height?: number | null }) {
+  const { t } = useI18n();
+  return (
+    <div className={cn(frameClass(width, height), "flex flex-col items-center justify-center gap-3 p-6 text-center")} role="alert" data-testid="player-error">
+      <h3 className="text-base font-bold text-fg sm:text-lg">{t("player.errorTitle")}</h3>
+      <p className="max-w-md text-sm text-fg-secondary">{t("player.errorBody")}</p>
+      <Button variant="primary" shape="rounded" onClick={onRetry} className="gap-2 rounded-xl px-5">
+        <RotateCcw className="h-4 w-4" aria-hidden />
+        <span>{t("player.retry")}</span>
+      </Button>
+    </div>
+  );
+}
 
 interface VideoPlayerProps {
   videoId: string;
@@ -35,6 +86,8 @@ interface VideoPlayerProps {
   contentRatingId?: string | null;
   isBlurred?: boolean;
   isAdult?: boolean;
+  /** Encoded with the Stream library's burned-in watermark (lib/watermark.ts): no second mark over it. */
+  burnedWatermark?: boolean;
 }
 
 export function VideoPlayer({
@@ -56,6 +109,7 @@ export function VideoPlayer({
   contentRatingId,
   isBlurred = false,
   isAdult = false,
+  burnedWatermark = false,
 }: VideoPlayerProps) {
   const { t, money } = useI18n();
   const isGated = isContactsOnly || isFollowersOnly || isInvitedOnly || isAuction || isChallenge;
@@ -72,6 +126,11 @@ export function VideoPlayer({
   const [selectedQuality, setSelectedQuality] = useState<number>(-1); // -1 = auto
   const [showControls, setShowControls] = useState(true);
   const [fullscreen, setFullscreen] = useState(false);
+  // The first frame is on screen (poster until then, behind a spinner); `buffering` is a stall after that.
+  const [ready, setReady] = useState(false);
+  const [buffering, setBuffering] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   useWatchReport(videoId, videoRef);
 
   // Initialize HLS Stream
@@ -80,6 +139,9 @@ export function VideoPlayer({
 
     const video = videoRef.current;
     let hls: Hls | null = null;
+    let fatalErrors = 0;
+    setReady(false);
+    setFailed(false);
 
     if (Hls.isSupported()) {
       hls = new Hls({
@@ -98,6 +160,11 @@ export function VideoPlayer({
 
       hls.on(Hls.Events.ERROR, (event, data) => {
         if (data.fatal) {
+          if (++fatalErrors >= MAX_FATAL_ERRORS) {
+            hls?.destroy();
+            setFailed(true);
+            return;
+          }
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
               console.warn("Fatal network error encountered, recovering...", data);
@@ -124,7 +191,7 @@ export function VideoPlayer({
         hls.destroy();
       }
     };
-  }, [streamUrl, isPaywalled, isGated]);
+  }, [streamUrl, isPaywalled, isGated, attempt]);
 
   // The media element is the truth: play/pause state follows its events (native controls, fullscreen, a refused play()).
   const togglePlay = () => {
@@ -137,6 +204,17 @@ export function VideoPlayer({
   const handleTimeUpdate = () => {
     if (!videoRef.current) return;
     setCurrentTime(videoRef.current.currentTime);
+  };
+
+  // The first frame: stamped on the element (`data-first-frame-ms`, since navigation start) so a test reads the wait.
+  const handleFirstFrame = () => {
+    setReady(true);
+    setBuffering(false);
+    const video = videoRef.current;
+    if (video && !video.dataset.firstFrameMs) {
+      video.dataset.firstFrameMs = String(Math.round(performance.now()));
+      performance.mark("orochia:first-frame");
+    }
   };
 
   const handleLoadedMetadata = () => {
@@ -202,16 +280,7 @@ export function VideoPlayer({
   return (
     <div
       ref={containerRef}
-      className={cn(
-        "theme-dark relative w-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-2xl group select-none",
-        fullscreen
-          ? "h-dvh w-dvw max-h-none max-w-none rounded-none border-0"
-          : orientationOf(width, height) === "vertical"
-          ? "mx-auto aspect-[9/16] max-h-[calc(100dvh-13rem-env(safe-area-inset-bottom))] max-w-[min(100%,28rem)] md:max-h-[calc(100dvh-5rem)]"
-          : orientationOf(width, height) === "square"
-            ? "mx-auto aspect-square max-h-[calc(100dvh-13rem-env(safe-area-inset-bottom))] md:max-h-[calc(100dvh-5rem)]"
-            : "aspect-video",
-      )}
+      className={cn(frameClass(width, height, fullscreen), "@container group select-none")}
       // A mouse hides the controls while playing; a finger never does (iOS swallows the first tap after a hover change).
       onPointerEnter={(e) => e.pointerType === "mouse" && setShowControls(true)}
       onPointerLeave={(e) => e.pointerType === "mouse" && isPlaying && setShowControls(false)}
@@ -232,6 +301,12 @@ export function VideoPlayer({
         poster={posterUrl || undefined}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
+        onLoadedData={handleFirstFrame}
+        onPlaying={() => {
+          setBuffering(false);
+          handleFirstFrame();
+        }}
+        onWaiting={() => setBuffering(true)}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onEnded={() => setIsPlaying(false)}
@@ -243,13 +318,48 @@ export function VideoPlayer({
         playsInline
       />
 
+      {/* Loading: the poster stays under a quiet spinner (no words) until the first frame, and again on a stall. */}
+      {!isPaywalled && !isGated && !failed && streamUrl && (!ready || buffering) && (
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-scrim/30" data-testid="player-spinner">
+          <Spinner size="lg" />
+        </div>
+      )}
+
+      {/* The stream could not be opened after a few tries: say so, offer a retry. */}
+      {!isPaywalled && !isGated && failed && (
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-3 bg-scrim-strong p-6 text-center" role="alert" data-testid="player-error">
+          <h3 className="text-base font-bold text-fg-on-media sm:text-lg">{t("player.errorTitle")}</h3>
+          <p className="max-w-md text-sm text-fg-on-media/80">{t("player.errorBody")}</p>
+          <Button variant="primary" shape="rounded" onClick={() => setAttempt((n) => n + 1)} className="gap-2 rounded-xl px-5">
+            <RotateCcw className="h-4 w-4" aria-hidden />
+            <span>{t("player.retry")}</span>
+          </Button>
+        </div>
+      )}
+
+      {/* The Orochia mark: a quiet signature in the bottom-right corner, scaled with the player, lifted above the controls
+          while they show (never over them) and gone in full screen, where nothing should compete with the picture.
+          Copies leaving the site carry the burned-in watermark of the Stream library instead (scripts/bunny-library.mjs). */}
+      {!isPaywalled && !isGated && !fullscreen && !burnedWatermark && (
+        <span
+          aria-hidden
+          data-testid="player-watermark"
+          className={cn(
+            "pointer-events-none absolute right-[3cqw] z-10 h-[clamp(1.25rem,6cqw,2.5rem)] w-[clamp(1.25rem,6cqw,2.5rem)] opacity-40 transition-[bottom] duration-300",
+            showControls ? "bottom-[clamp(5rem,16cqw,6rem)]" : "bottom-[3cqw]",
+          )}
+        >
+          <OrochiaLogo size={40} animated={false} className="h-full w-full" />
+        </span>
+      )}
+
       {/* Sensitive Content Gate Overlay */}
       {isBlurred && !revealed && (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-scrim-strong backdrop-blur-lg p-6 text-center">
           <div className="h-14 w-14 rounded-2xl bg-danger/20 border border-danger/30 flex items-center justify-center text-fg-danger mb-3">
             <span className="font-mono font-black text-xl">18+</span>
           </div>
-          <h3 className="text-lg font-bold text-white mb-1">{t("player.sensitiveTitle")}</h3>
+          <h3 className="text-lg font-bold text-fg-on-media mb-1">{t("player.sensitiveTitle")}</h3>
           <p className="text-xs text-fg-secondary max-w-sm mb-5">
             {t("player.sensitiveBody")}
           </p>
@@ -265,7 +375,7 @@ export function VideoPlayer({
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-accent/30 to-accent-2/30 border border-accent/30 mb-4 shadow-lg shadow-accent/20">
             <Lock className="h-8 w-8 text-fg-accent" />
           </div>
-          <h3 className="text-xl font-bold text-white mb-1">{t("player.paidTitle")}</h3>
+          <h3 className="text-xl font-bold text-fg-on-media mb-1">{t("player.paidTitle")}</h3>
           <p className="text-sm text-fg-secondary max-w-md mb-6">
             {t("player.paidBody")}
           </p>
@@ -282,7 +392,7 @@ export function VideoPlayer({
           <div className="flex h-11 w-11 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-scrim-strong border border-fg-on-media/20 mb-2 sm:mb-4">
             {isAuction ? <Gavel className="h-5 w-5 sm:h-8 sm:w-8 text-fg-accent" /> : <Users className="h-5 w-5 sm:h-8 sm:w-8 text-fg-on-media/80" />}
           </div>
-          <h3 className="text-base sm:text-xl font-bold text-white mb-1">
+          <h3 className="text-base sm:text-xl font-bold text-fg-on-media mb-1">
             {t(isAuction ? "player.auctionTitle" : isChallenge ? "player.challengeTitle" : isInvitedOnly ? "player.invitedTitle" : isFollowersOnly ? "player.followersTitle" : "player.contactsTitle")}
           </h3>
           <p className="hidden sm:block text-sm text-fg-secondary max-w-md mb-6">
@@ -296,7 +406,7 @@ export function VideoPlayer({
       {!isPaywalled && !isGated && (
         <div
           className={cn(
-            "absolute bottom-0 left-0 right-0 z-20 bg-linear-to-t from-black/90 via-black/40 to-transparent p-4 transition-opacity duration-300",
+            "absolute bottom-0 left-0 right-0 z-20 bg-linear-to-t from-scrim-strong via-scrim to-transparent p-4 text-fg-on-media transition-opacity duration-300",
             showControls ? "opacity-100" : "opacity-0"
           )}
         >
@@ -314,16 +424,16 @@ export function VideoPlayer({
             />
           </div>
 
-          <div className="flex items-center justify-between text-white text-sm">
+          <div className="flex items-center justify-between text-sm text-fg-on-media">
             <div className="flex items-center gap-4">
               {/* Play / Pause Button */}
-              <IconButton onClick={togglePlay} className="h-8 w-8 text-current hover:bg-white/10 hover:text-fg-accent" label={isPlaying ? t("player.pause") : t("player.play")}>
+              <IconButton onClick={togglePlay} className="h-8 w-8 text-current hover:bg-accent-soft hover:text-fg-accent" label={isPlaying ? t("player.pause") : t("player.play")}>
                 {isPlaying ? <Pause className="h-5 w-5" aria-hidden /> : <Play className="h-5 w-5" aria-hidden />}
               </IconButton>
 
               {/* Volume Controls */}
               <div className="flex items-center gap-2 group/vol">
-                <IconButton onClick={toggleMute} className="h-8 w-8 text-current hover:bg-white/10 hover:text-fg-accent" label={isMuted || volume === 0 ? t("player.unmute") : t("player.mute")}>
+                <IconButton onClick={toggleMute} className="h-8 w-8 text-current hover:bg-accent-soft hover:text-fg-accent" label={isMuted || volume === 0 ? t("player.unmute") : t("player.mute")}>
                   {isMuted || volume === 0 ? (
                     <VolumeX className="h-5 w-5" />
                   ) : (
@@ -350,7 +460,7 @@ export function VideoPlayer({
 
             <div className="flex items-center gap-3">
               {/* Fullscreen Button */}
-              <IconButton onClick={toggleFullscreen} className="relative z-30 h-11 w-11 touch-manipulation text-current sm:h-8 sm:w-8 hover:bg-white/10 hover:text-fg-accent" label={t("player.fullscreen")}>
+              <IconButton onClick={toggleFullscreen} className="relative z-30 h-11 w-11 touch-manipulation text-current sm:h-8 sm:w-8 hover:bg-accent-soft hover:text-fg-accent" label={t("player.fullscreen")}>
                 <Maximize className="h-5 w-5" aria-hidden />
               </IconButton>
             </div>
