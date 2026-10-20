@@ -19,6 +19,8 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { badMoments, isSkeleton, settledTime, stillStats } from "./frame-quality.mjs";
+
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
 const opt = (name, fallback) => (args.some((a) => a.startsWith(`--${name}=`)) ? args.find((a) => a.startsWith(`--${name}=`)).split("=")[1] : args.includes(`--${name}`) ? args[args.indexOf(`--${name}`) + 1] : fallback);
@@ -30,11 +32,9 @@ const SCALE = 3;
 const FRAME = "780:1688"; // published size: twice the CSS pixels, sharp on a phone and small on the wire
 
 // The personas: a fan (Mira Castellanos) and a creator (Lena Voss) of the dev dataset (scripts/dev-dataset/dataset.json).
-const env = {};
-for (const line of fs.readFileSync(path.join(os.homedir(), "Documents", "krizaka", ["qa", "env"].join(".")), "utf8").split("\n")) {
-  const m = /^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/.exec(line);
-  if (m) env[m[1]] = m[2].replace(/^["']|["']$/g, "");
-}
+const SECRET = path.join(os.homedir(), ".krizaka-worktrees", "tools", "secret.sh"); // never printed
+const secret = (key) => execFileSync(SECRET, ["@qa", key], { encoding: "utf8" }).trim();
+const env = new Proxy({}, { get: (_, key) => (typeof key === "string" ? secret(key) : undefined) });
 const PERSONAS = { fan: "OROCHIA_FAN2", creator: "OROCHIA_CREATOR" };
 const HANDLE = JSON.parse(fs.readFileSync(path.join(ROOT, "scripts/dev-dataset/dataset.json"), "utf8")).creators.find((c) => c.key === "lena").username;
 
@@ -162,8 +162,11 @@ try {
     const frames = [];
     const marks = {};
     const mark = (name) => (marks[name] = Date.now());
+    // While a page loads (its skeleton, a sign-in, a session hand-over) frames are not kept: the last good frame stays on
+    // screen and the take cuts to the loaded page. A loading state is never filmed.
+    let hold = false;
     cdp.on("Page.screencastFrame", ({ data, metadata, sessionId }) => {
-      frames.push({ t: metadata.timestamp, data });
+      if (!hold) frames.push({ t: metadata.timestamp, data });
       cdp.send("Page.screencastFrameAck", { sessionId }).catch(() => {});
     });
     await cdp.send("Page.startScreencast", { format: "jpeg", quality: 90, maxWidth: VIEW.width * SCALE, maxHeight: VIEW.height * SCALE, everyNthFrame: 1 });
@@ -179,10 +182,17 @@ try {
     // 2 · her story: the creator's page, the ring, the story playing full screen; 3 · tip: the sheet over it, an amount chosen
     // (shown, never paid)
     mark("feed");
+    hold = true;
     await page.goto(`${BASE}/${loc}/@${HANDLE}`);
     await page.waitForLoadState("networkidle").catch(() => {});
-    await pause(page, 700);
-    await tap(page, page.getByRole("button", { name: say(loc, "Watch stories ({count})") }).first(), 500);
+    const stories = page.getByRole("button", { name: say(loc, "Watch stories ({count})") }).first();
+    await stories.waitFor({ state: "visible", timeout: 20_000 });
+    await page.waitForFunction(() => [...document.images].every((i) => i.complete) && !document.querySelector("[aria-busy='true'], .animate-pulse"), null, { timeout: 15_000 }).catch(() => {});
+    await pause(page, 600);
+    hold = false;
+    await page.evaluate(() => (window.scrollBy(0, 1), window.scrollBy(0, -1))); // a fresh frame of the loaded page
+    await pause(page, 900);
+    await tap(page, stories, 500);
     await page.waitForFunction(() => [...document.querySelectorAll("video")].some((v) => v.currentTime > 0.5 && !v.paused), null, { timeout: 12_000 }).catch(() => {});
     await pause(page, 1100);
     mark("story");
@@ -195,20 +205,20 @@ try {
     const href = "feed";
 
     // 4 · earn: the creator's side, the 90 % she keeps
-    // The hand-over to the creator's session happens in the dark: the page fades out, the account changes, the next one is loaded.
-    await page.evaluate(() => ((document.documentElement.style.transition = "opacity .3s"), (document.documentElement.style.opacity = "0")));
-    await pause(page, 450);
+    // The hand-over to the creator's session (sign-in, loading) is not filmed: the take cuts to the loaded earnings page.
+    hold = true;
     await ctx.clearCookies();
     await login(ctx, "creator");
-    await page.addInitScript(() => (document.documentElement.style.opacity = "0")); // the sign-in check and the loading state stay off camera
     await page.goto(`${BASE}/${loc}/me/earnings`);
     await page.waitForLoadState("networkidle").catch(() => {});
     await page.evaluate(() => {
       const fee = [...document.querySelectorAll("p,span,div")].find((e) => e.children.length === 0 && /(?:keep|gardez)\s+\d+\s?%/i.test(e.textContent || ""));
       if (fee) fee.style.cssText += ";outline:2px solid var(--kz-accent,#a855f7);outline-offset:4px;border-radius:8px;background:rgba(168,85,247,.16);transition:background .6s";
     });
-    await page.waitForFunction(() => !/Loading|Chargement/i.test(document.body.innerText) && /\d/.test(document.body.innerText), null, { timeout: 15_000 }).catch(() => {});
-    await page.evaluate(() => ((document.documentElement.style.transition = "opacity .45s"), (document.documentElement.style.opacity = "1")));
+    await page.waitForFunction(() => !/Loading|Chargement/i.test(document.body.innerText) && /\d/.test(document.body.innerText) && !document.querySelector(".animate-pulse"), null, { timeout: 15_000 }).catch(() => {});
+    await pause(page, 600);
+    hold = false;
+    await page.evaluate(() => (window.scrollBy(0, 1), window.scrollBy(0, -1)));
     mark("earn");
     await pause(page, 1800);
     await glide(page, "window", 200, 1100);
@@ -222,7 +232,7 @@ try {
     frames.forEach((f, i) => {
       const file = path.join(work, `${String(i).padStart(5, "0")}.jpg`);
       fs.writeFileSync(file, Buffer.from(f.data, "base64"));
-      list += `file '${file}'\nduration ${Math.max(0.02, (frames[i + 1]?.t ?? f.t + 0.3) - f.t).toFixed(3)}\n`;
+      list += `file '${file}'\nduration ${Math.min(0.9, Math.max(0.02, (frames[i + 1]?.t ?? f.t + 0.3) - f.t)).toFixed(3)}\n`;
     });
     list += `file '${path.join(work, `${String(frames.length - 1).padStart(5, "0")}.jpg`)}'\n`;
     const source = path.join(work, "take.ffconcat");
@@ -235,8 +245,16 @@ try {
     for (const [name, when] of [["1-feed", at("feed") - 0.2], ["2-story", at("story") + 0.2], ["3-tip", at("tip") + 0.4], ["4-earn", at("earn") + 0.8]]) {
       execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-ss", when.toFixed(2), "-i", `${target}.mp4`, "-frames:v", "1", "-q:v", "3", path.join(OUT, loc, `still-${name}.jpg`)]);
     }
-    // The poster is the feed beat, sharp: the first thing a visitor sees before the clip plays.
-    fs.copyFileSync(path.join(OUT, loc, "still-1-feed.jpg"), `${target}.jpg`);
+    // A take that shows a loading state (skeleton blocks) or nothing is refused: it is never published.
+    const bad = badMoments(`${target}.mp4`);
+    if (bad.length) throw new Error(`${loc}: the take shows a loading state or a blank screen at ${bad.map((b) => `${b.t}s (${b.gradient})`).join(", ")}`);
+    // The poster is the feed beat, sharp (the first thing a visitor sees before the clip plays, and the blurred backdrop
+    // behind the phone): the richest frame of that beat, checked not to be a placeholder.
+    const feedEnd = (marks.feed - marks.start) / 1000;
+    const posterAt = settledTime(`${target}.mp4`, 0.8, Math.max(1.5, feedEnd));
+    if (posterAt === null) throw new Error(`${loc}: no settled content frame in the feed beat for the poster`);
+    execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-ss", posterAt.toFixed(2), "-i", `${target}.mp4`, "-frames:v", "1", "-q:v", "2", `${target}.jpg`]);
+    if (isSkeleton(await stillStats(`${target}.jpg`))) throw new Error(`${loc}: the poster is a placeholder`);
     const size = ["webm", "mp4"].map((e) => `${e} ${(fs.statSync(`${target}.${e}`).size / 1e6).toFixed(2)} MB`).join(" · ");
     process.stdout.write(`✓ ${loc}  ${seconds.toFixed(1)} s, ${frames.length} frames, ${size} (${href})\n`);
     fs.rmSync(work, { recursive: true, force: true });
