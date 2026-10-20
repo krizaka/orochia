@@ -33,14 +33,14 @@ export function StartChallengeButton({
   if (!signedIn) {
     const next = creatorUsername ? `/@${creatorUsername}` : "/challenges";
     return (
-      <Link href={`/auth/login?next=${encodeURIComponent(next)}`} className={orochiaButton({ variant: look, shape: "pill", className: "kz-sheen" })}>
+      <Link href={`/auth/login?next=${encodeURIComponent(next)}`} className={orochiaButton({ variant: look, shape: "pill" })}>
         <Flame className="h-4 w-4" aria-hidden /> {text}
       </Link>
     );
   }
   return (
     <>
-      <Button variant={variant} shimmer onClick={() => setOpen(true)}>
+      <Button variant={variant} onClick={() => setOpen(true)}>
         <Flame className="h-4 w-4" aria-hidden />
         {text}
       </Button>

@@ -91,7 +91,7 @@ export function StoryAvatarRing({ children, className }: { children: React.React
       type="button"
       onClick={stories.open}
       aria-label={t("stories.profile.open", { count: live.length })}
-      className={cn("group/ring relative block rounded-[2.35rem] p-[3px] outline-none transition-transform hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface-0", className)}
+      className={cn("group/ring relative block rounded-[2.35rem] p-[3px] outline-none transition-transform active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface-0", className)}
     >
       <span aria-hidden className={cn("absolute inset-0 rounded-[2.35rem]", unseen ? "bg-linear-to-tr from-accent via-accent-2 to-accent-2" : "bg-border-strong")} />
       <span className="relative block rounded-4xl bg-surface-1 p-[3px]">{children}</span>
@@ -132,7 +132,7 @@ export function ProfileStoriesRow() {
               onClick={() => stories.openStory(s.id)}
               aria-label={s.caption || t("stories.profile.story")}
               className={cn(
-                "relative block h-28 w-[4.5rem] overflow-hidden rounded-2xl border bg-surface-2 outline-none transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-accent",
+                "relative block h-28 w-[4.5rem] overflow-hidden rounded-2xl border bg-surface-2 outline-none transition-transform focus-visible:ring-2 focus-visible:ring-accent",
                 s.seen || stories.ring?.isOwn ? "border-border-default" : "border-accent",
               )}
             >

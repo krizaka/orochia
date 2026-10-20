@@ -71,7 +71,7 @@ export function ProfileHero({
     <section className="relative mb-6">
       {/* Cover */}
       <div className="group relative h-28 overflow-hidden rounded-2xl sm:h-44">
-        <img src={safeImageSrc(banner) ?? defaultBannerFor(displayName)} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.02]" />
+        <img src={safeImageSrc(banner) ?? defaultBannerFor(displayName)} alt="" className="h-full w-full object-cover transition-transform duration-700" />
         {bannerVideo && banner === bannerUrl && <BannerVideo poster={safeImageSrc(banner) ?? defaultBannerFor(displayName)} video={bannerVideo} />}
         <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-surface-0/70 via-transparent to-transparent" />
         {editable && (

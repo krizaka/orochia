@@ -44,7 +44,7 @@ function FeedEmpty({ viewer, kind, tab }: { viewer: ViewerState; kind: FeedEmpty
     <div
       data-testid="feed-empty"
       data-viewer={viewer}
-      className="kz-spotlight relative overflow-hidden rounded-3xl border border-border-default bg-surface-2/40 px-6 py-10 text-center"
+      className="relative overflow-hidden rounded-3xl border border-border-default bg-surface-2/40 px-6 py-10 text-center"
     >
       <div aria-hidden className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-accent to-accent-2 shadow-lg shadow-accent/30">
         <Clapperboard className="h-6 w-6 text-on-accent" aria-hidden />
@@ -211,7 +211,7 @@ export function FeedFilterTabs({ initialTab, initialPage, viewer, unavailable = 
                     loading={index === 0 ? "eager" : "lazy"}
                     fetchPriority={index === 0 ? "high" : undefined}
                     decoding="async"
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="h-full w-full object-cover transition-transform duration-500"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-accent/15 via-media to-accent-2/15 text-fg-accent">
@@ -236,7 +236,7 @@ export function FeedFilterTabs({ initialTab, initialPage, viewer, unavailable = 
               <div className="flex items-center justify-between p-4 bg-surface-2/40">
                 <Link
                   href={`/watch/${video.id}`}
-                  className="inline-flex items-center gap-2 rounded-2xl bg-linear-to-r from-accent to-accent-2 px-5 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-accent/30 hover:scale-105 transition-all"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-linear-to-r from-accent to-accent-2 px-5 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-accent/30 transition-all"
                 >
                   <span>{t("feed.watch")}</span>
                 </Link>

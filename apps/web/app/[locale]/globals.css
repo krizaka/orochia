@@ -164,7 +164,7 @@ h1, h2, h3, h4, .font-display {
 /* The first load paints at once; pages enter with kz-page from the first navigation on (ClientLayoutShell). */
 html:not([data-navigated]) .kz-page { animation: none; }
 
-/* The Krizaka motion signature (kz-page, data-reveal, kz-word, kz-sheen, kz-spotlight, kz-lift, kz-marquee,
+/* The Krizaka motion signature (kz-page, data-reveal, kz-word, kz-marquee,
    kz-overlay / kz-dialog / kz-pop / kz-fade, --kz-ease) comes from @krizaka/tailwind (@krizaka/ui/motion.css). */
 
 /* A like on a story: the heart pops once (the only motion of the action). Stops under reduced motion. */

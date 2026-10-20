@@ -34,7 +34,7 @@ export default async function UnsubscribePage({ params, searchParams }: { params
         {!done && (
           <form method="post" action="/api/unsubscribe">
             <input type="hidden" name="t" value={token} />
-            <button type="submit" className={buttonVariants({ variant: "primary", shape: "cut" })}>
+            <button type="submit" className={buttonVariants({ variant: "primary" })}>
               {t("unsubscribe.confirm")}
             </button>
           </form>

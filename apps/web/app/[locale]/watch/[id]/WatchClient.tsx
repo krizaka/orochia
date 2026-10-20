@@ -435,7 +435,7 @@ export default function WatchClient({ initial }: { initial?: WatchInitial }) {
                   <Link key={video.id} href={`/watch/${video.id}`} className="flex gap-3 items-center group">
                     <div className="h-16 w-24 rounded-lg bg-surface-3 overflow-hidden shrink-0">
                       {video.thumbnailUrl && (
-                        <img src={video.thumbnailUrl} alt="" className="h-full w-full object-cover group-hover:scale-105 transition-transform" />
+                        <img src={video.thumbnailUrl} alt="" className="h-full w-full object-cover transition-transform" />
                       )}
                     </div>
                     <div>
@@ -458,7 +458,7 @@ export default function WatchClient({ initial }: { initial?: WatchInitial }) {
                   <Link key={video.id} href={`/watch/${video.id}`} className="flex gap-3 items-center group">
                     <div className="h-16 w-24 rounded-lg bg-surface-3 overflow-hidden shrink-0">
                       {video.thumbnailUrl && (
-                        <img src={video.thumbnailUrl} alt="" className="h-full w-full object-cover group-hover:scale-105 transition-transform" />
+                        <img src={video.thumbnailUrl} alt="" className="h-full w-full object-cover transition-transform" />
                       )}
                     </div>
                     <div>

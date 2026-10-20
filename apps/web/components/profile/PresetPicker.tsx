@@ -52,7 +52,7 @@ export function PresetPicker({
                 aria-pressed={p.id === selectedId}
                 onClick={() => onPick(p)}
                 className={cn(
-                  "overflow-hidden rounded-2xl ring-2 transition-all hover:scale-[1.03] hover:ring-ring focus-visible:outline-hidden focus-visible:ring-ring",
+                  "overflow-hidden rounded-2xl ring-2 transition-all hover:ring-ring focus-visible:outline-hidden focus-visible:ring-ring",
                   p.id === selectedId ? "ring-ring" : "ring-transparent"
                 )}
               >

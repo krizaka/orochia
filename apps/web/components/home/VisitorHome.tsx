@@ -36,10 +36,10 @@ export async function VisitorHome({ preview, share, joinHref, joinLabel }: { pre
       <link rel="preload" as="image" href={take.poster} fetchPriority="high" />
       {/* 1 · The promise, and the real app as its proof — painted at once (LCP), never revealed. */}
       <PageHero id="hero" eyebrow={t("home.visitor.eyebrow")} title={t("home.visitor.title")} lead={t("home.visitor.lead", { share })}>
-        <Button asChild variant="primary" size="lg" shape="cut" shimmer>
+        <Button asChild variant="primary" size="lg">
           <Link href="/explore">{t("home.ctaExplore")}</Link>
         </Button>
-        <Button asChild variant="secondary" size="lg" shape="cut">
+        <Button asChild variant="secondary" size="lg">
           <Link href={joinHref}>{joinLabel}</Link>
         </Button>
         <figure className="m-0 mt-8 flex basis-full flex-col gap-3">
@@ -56,7 +56,7 @@ export async function VisitorHome({ preview, share, joinHref, joinLabel }: { pre
         lead={t("home.visitor.preview.lead")}
         divider
         actions={
-          <Button asChild variant="secondary" size="md" shape="cut">
+          <Button asChild variant="secondary" size="md">
             <Link href="/?feed=foryou">{t("home.visitor.preview.cta")}</Link>
           </Button>
         }
@@ -72,7 +72,7 @@ export async function VisitorHome({ preview, share, joinHref, joinLabel }: { pre
         lead={t("home.visitor.how.lead")}
         divider
         actions={
-          <Button asChild variant="secondary" size="md" shape="cut">
+          <Button asChild variant="secondary" size="md">
             <Link href="/how-it-works">{t("home.visitor.how.cta")}</Link>
           </Button>
         }
@@ -106,7 +106,7 @@ export async function VisitorHome({ preview, share, joinHref, joinLabel }: { pre
           ))}
         </ul>
         <div className="mt-6 flex flex-wrap items-center gap-6">
-          <Button asChild variant="primary" size="md" shape="cut">
+          <Button asChild variant="primary" size="md">
             <Link href="/creator/apply">{t("home.visitor.creators.cta")}</Link>
           </Button>
         </div>
@@ -120,7 +120,7 @@ export async function VisitorHome({ preview, share, joinHref, joinLabel }: { pre
       {/* 5 · The way in. */}
       <Section id="closing" spacing="sm">
         <CtaPanel title={t("home.visitor.closing.title")} body={t("home.visitor.closing.body")}>
-          <Button asChild variant="primary" size="lg" shape="cut">
+          <Button asChild variant="primary" size="lg">
             <Link href="/explore">{t("home.visitor.closing.cta")}</Link>
           </Button>
         </CtaPanel>
