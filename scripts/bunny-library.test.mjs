@@ -40,6 +40,8 @@ describe("the burned-in watermark", () => {
     const { WatermarkPositionLeft: left, WatermarkPositionTop: top, WatermarkWidth: w, WatermarkHeight: h } = WATERMARK_BOX;
     expect(left + w).toBeLessThanOrEqual(100);
     expect(top + h).toBeLessThanOrEqual(100);
+    // one box for 9:16 and 16:9: equal shares keep the distortion the same (1.78:1) on both, never 3:1 on one
+    expect(w).toBe(h);
     expect(left).toBeGreaterThan(50);
     expect(top).toBeGreaterThan(50);
     expect(plan({ ...applied, HasWatermark: true, ...WATERMARK_BOX }, "on")).toEqual({ patch: {}, uploadWatermark: false, deleteWatermark: false });
