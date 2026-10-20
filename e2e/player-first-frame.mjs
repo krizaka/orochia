@@ -2,11 +2,11 @@
 /**
  * Time to first frame of a watch page, and whether any « authoris… » sentence shows while it loads.
  *
- *   APP_URL=http://localhost:3100 node e2e/player-first-frame.mjs /watch/<id> [--runs 5] [--rtt 80] [--referer https://dev.orochia.com/] [--record <dir>]
+ *   APP_URL=http://localhost:3100 node e2e/player-first-frame.mjs /watch/<id> [--runs 5] [--rtt 80] [--referer https://dev.orochia.com/] [--record <dir>] [--chrome]
  *
  * First frame = the first `loadeddata` of the page's <video>, in ms since navigation start (the same clock before and
  * after a change). `--rtt` adds that much latency to every request (a phone on 4G is ~80-150 ms), which is where a
- * client round-trip before play shows. `--record <dir>` saves a video of one extra run on a desktop and a phone profile.
+ * client round-trip before play shows. Playwright's Chromium has no H.264: pass `--chrome` to use the installed Chrome. `--record <dir>` saves a video of one extra run on a desktop and a phone profile.
  */
 import { chromium, devices } from "playwright";
 
@@ -23,7 +23,7 @@ const REFERER = flag("--referer", "");
 const MAP_HOST = flag("--map-host", "");
 
 async function once(profile, record) {
-  const browser = await chromium.launch({ channel: process.env.PW_CHANNEL || undefined, args: MAP_HOST ? [`--host-resolver-rules=MAP ${MAP_HOST} 127.0.0.1`] : [] });
+  const browser = await chromium.launch({ channel: args.includes("--chrome") ? "chrome" : undefined, args: MAP_HOST ? [`--host-resolver-rules=MAP ${MAP_HOST} 127.0.0.1`] : [] });
   const context = await browser.newContext({
     ...(profile === "phone" ? devices["Pixel 7"] : { viewport: { width: 1280, height: 800 } }),
     ...(record ? { recordVideo: { dir: record, size: profile === "phone" ? { width: 412, height: 915 } : { width: 1280, height: 800 } } } : {}),
