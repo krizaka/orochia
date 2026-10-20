@@ -30,7 +30,7 @@ export function AiChip({ visible }: { visible: boolean }) {
       aria-label={t("player.ai.label")}
       data-testid="player-ai-chip"
       className={cn(
-        "pointer-events-none gap-1 rounded-lg px-2 py-1 text-[11px] font-medium normal-case tracking-normal ring-1 ring-inset ring-fg-on-media/15 transition-opacity duration-300",
+        "pointer-events-none gap-1 rounded-sm px-2 py-1 text-[11px] font-medium normal-case tracking-normal ring-1 ring-inset ring-fg-on-media/15 transition-opacity duration-300",
         visible ? "opacity-100" : "opacity-0",
       )}
     >

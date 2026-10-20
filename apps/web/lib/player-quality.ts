@@ -38,7 +38,18 @@ export interface HlsLike {
   autoLevelEnabled?: boolean;
 }
 
-const shortSide = (l: LevelLike) => (l.width && l.width > 0 ? Math.min(l.width, l.height) : l.height);
+const RUNGS = [144, 240, 360, 480, 720, 1080, 1440, 2160, 4320];
+
+/**
+ * The name of a rendition: its short side snapped to the standard rung it stands for, as Bunny names it (a 352×198
+ * 240p, a 844×474 480p, a 704-wide 720p) — a viewer picks « 480p », never « 474p ». Far from any rung, the size itself.
+ */
+export function nominalLines(lines: number): number {
+  const rung = RUNGS.reduce((a, b) => (Math.abs(Math.log(b / lines)) < Math.abs(Math.log(a / lines)) ? b : a));
+  return Math.abs(rung - lines) / lines <= 0.25 ? rung : lines;
+}
+
+const shortSide = (l: LevelLike) => nominalLines(l.width && l.width > 0 ? Math.min(l.width, l.height) : l.height);
 
 /** `HD` ≥ 1080, `QHD` ≥ 1440, `4K` ≥ 2160 (with the thresholds' slack); nothing below Full HD. */
 export function qualityBadge(lines: number): string | null {
@@ -126,7 +137,7 @@ export function parseMasterPlaylist(text: string, baseUrl: string): NativeVarian
     const res = line.match(/RESOLUTION=(\d+)x(\d+)/i);
     const uri = lines.slice(i + 1).find((l) => l && !l.startsWith("#"));
     if (!res || !uri) return;
-    found.push({ height: Math.min(Number(res[1]), Number(res[2])), url: new URL(uri, baseUrl).toString() });
+    found.push({ height: nominalLines(Math.min(Number(res[1]), Number(res[2]))), url: new URL(uri, baseUrl).toString() });
   });
   return found.sort((a, b) => b.height - a.height);
 }

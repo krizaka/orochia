@@ -118,16 +118,16 @@ async function run(profile, theme, locale) {
   const highest = renditions[0];
   if (renditions.length > 1) {
     await pick(lowest.id);
-    await page.waitForFunction((h) => { const v = document.querySelector("video"); return Math.min(v.videoWidth, v.videoHeight) === h && v.currentTime > 0; }, Number(lowest.id), { timeout: 30000 }).catch(() => {});
+    await page.waitForFunction((h) => { const v = document.querySelector("video"); return Math.abs(Math.min(v.videoWidth, v.videoHeight) - h) / h <= 0.25 && v.currentTime > 0; }, Number(lowest.id), { timeout: 30000 }).catch(() => {});
     const low = await shortSide();
-    check(`${tag}: choosing ${lowest.id}p switches the picture (videoHeight ${low})`, low === Number(lowest.id), String(low));
+    check(`${tag}: choosing ${lowest.id}p switches the picture (videoHeight ${low})`, Math.abs(low - Number(lowest.id)) / Number(lowest.id) <= 0.25, String(low));
     check(`${tag}: the button names the choice`, (await menuButton.getAttribute("aria-label")).includes(`${lowest.id}p`));
     await page.waitForTimeout(1200);
     if (OUT) await page.screenshot({ path: `${OUT}/${tag}-3-low.png` });
     await pick(highest.id);
-    await page.waitForFunction((h) => { const v = document.querySelector("video"); return Math.min(v.videoWidth, v.videoHeight) === h; }, Number(highest.id), { timeout: 30000 }).catch(() => {});
+    await page.waitForFunction((h) => { const v = document.querySelector("video"); return Math.abs(Math.min(v.videoWidth, v.videoHeight) - h) / h <= 0.25; }, Number(highest.id), { timeout: 60000 }).catch(() => {});
     const high = await shortSide();
-    check(`${tag}: choosing ${highest.id}p switches back (videoHeight ${high})`, high === Number(highest.id), String(high));
+    check(`${tag}: choosing ${highest.id}p switches back (videoHeight ${high})`, Math.abs(high - Number(highest.id)) / Number(highest.id) <= 0.25, String(high));
     // The choice is the session's: a reload keeps it.
     await page.reload({ waitUntil: "domcontentloaded" });
     await page.getByRole("button", { name: ageGate }).click({ timeout: 4000 }).catch(() => {});

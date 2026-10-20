@@ -7,6 +7,7 @@ import {
   type HlsLike,
   levelOptions,
   menuKeyStep,
+  nominalLines,
   parseMasterPlaylist,
   qualityBadge,
   readStoredQuality,
@@ -18,6 +19,17 @@ const L = (width: number, height: number, bitrate = width * height) => ({ width,
 const LANDSCAPE = [L(426, 240), L(640, 360), L(854, 480), L(1280, 720), L(1920, 1080)];
 // A 9:16 clip: the level's `height` is the long side; Bunny (and the viewer) name a rendition by the short side.
 const PORTRAIT = [L(240, 426), L(360, 640), L(720, 1280), L(1080, 1920)];
+
+describe("the names of the renditions", () => {
+  it("snaps a rendition's real short side to the standard rung Bunny names it by (198 → 240, 474 → 480, 704 → 720)", () => {
+    expect([198, 240, 360, 474, 480, 704, 720, 1080, 2160].map(nominalLines)).toEqual([240, 240, 360, 480, 480, 720, 720, 1080, 2160]);
+    expect(nominalLines(1000)).toBe(1080);
+    expect(nominalLines(100)).toBe(100); // far from every rung: the size itself
+  });
+  it("names the levels of a 4K clip's ladder by their rung, never by an odd number", () => {
+    expect(levelOptions([L(352, 198), L(844, 474), L(1280, 720), L(1920, 1080)]).map((o) => o.label)).toEqual(["Auto", "1080p", "720p", "480p", "240p"]);
+  });
+});
 
 describe("the quality picker's options (levels → menu)", () => {
   it("is Auto first, then every rendition best to worst, labelled by the short side", () => {

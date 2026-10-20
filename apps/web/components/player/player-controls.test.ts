@@ -29,9 +29,9 @@ describe("the AI chip (the disclosure, in the Krizaka UI language)", () => {
     expect(fr_).toContain("Généré par IA");
     expect(fr_).toContain("Vidéo générée par IA");
   });
-  it("is a quiet chip of 8 px (rounded-lg), not a pill, not shouting capitals", () => {
+  it("is a quiet chip of 8 px (rounded-sm in the 3.32 scale), not a pill, not shouting capitals", () => {
     const out = htmlIn("en", React.createElement(AiChip, { visible: true }));
-    expect(out).toContain("rounded-lg");
+    expect(out).toContain("rounded-sm");
     expect(out).not.toContain("rounded-full");
     expect(out).toContain("normal-case");
   });
