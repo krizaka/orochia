@@ -2,13 +2,16 @@
 
 import Hls from "hls.js";
 import { Gavel, Lock, Maximize, Pause, Play, RotateCcw, Sparkles, Users, Volume2, VolumeX } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { Badge, Button, cn, IconButton, OrochiaLogo, Slider, Spinner } from "@/components/ui";
 import { isAdultRating } from "@/lib/content-ratings";
 import { useI18n } from "@/lib/i18n-client";
+import { applyQuality, AUTO, choiceFromStorage, levelOptions, nativeOptions, type NativeVariant, parseMasterPlaylist, type QualityOption, readStoredQuality, storeQuality } from "@/lib/player-quality";
 import { orientationOf } from "@/lib/video-aspect";
 
+import { AiChip, aiChipVisible } from "./player/AiChip";
+import { QualityMenu } from "./player/QualityMenu";
 import { DOCUMENT_FULLSCREEN_EVENTS, enterFullscreen, exitFullscreen, type FullscreenDocument, type FullscreenTarget, type FullscreenVideo, isFullscreen, VIDEO_FULLSCREEN_EVENTS } from "./player-fullscreen";
 import { useWatchReport } from "./watch-report";
 
@@ -88,6 +91,8 @@ interface VideoPlayerProps {
   isAdult?: boolean;
   /** Encoded with the Stream library's burned-in watermark (lib/watermark.ts): no second mark over it. */
   burnedWatermark?: boolean;
+  /** Made with an AI generator (the stored provenance): the player wears the « AI-generated » chip, the video never does. */
+  aiGenerated?: boolean;
 }
 
 export function VideoPlayer({
@@ -110,6 +115,7 @@ export function VideoPlayer({
   isBlurred = false,
   isAdult = false,
   burnedWatermark = false,
+  aiGenerated = false,
 }: VideoPlayerProps) {
   const { t, money } = useI18n();
   const isGated = isContactsOnly || isFollowersOnly || isInvitedOnly || isAuction || isChallenge;
@@ -122,8 +128,14 @@ export function VideoPlayer({
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
-  const [qualityLevels, setQualityLevels] = useState<string[]>([]);
-  const [selectedQuality, setSelectedQuality] = useState<number>(-1); // -1 = auto
+  // The quality picker: the renditions of the stream (hls.js levels, or the master playlist's variants on native HLS).
+  const hlsRef = useRef<Hls | null>(null);
+  const nativeVariantsRef = useRef<NativeVariant[]>([]);
+  const [qualityOptions, setQualityOptions] = useState<QualityOption[]>([]);
+  const [qualityId, setQualityId] = useState<string>(AUTO);
+  const [autoHeight, setAutoHeight] = useState<number | null>(null);
+  const [nativeHls, setNativeHls] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [fullscreen, setFullscreen] = useState(false);
   // The first frame is on screen (poster until then, behind a spinner); `buffering` is a stall after that.
@@ -140,8 +152,14 @@ export function VideoPlayer({
     const video = videoRef.current;
     let hls: Hls | null = null;
     let fatalErrors = 0;
+    let nativeAbort: AbortController | null = null;
     setReady(false);
     setFailed(false);
+    setQualityOptions([]);
+    setAutoHeight(null);
+    setNativeHls(false);
+    const remembered = readStoredQuality(typeof window === "undefined" ? null : window.sessionStorage);
+    setQualityId(remembered);
 
     if (Hls.isSupported()) {
       hls = new Hls({
@@ -150,12 +168,24 @@ export function VideoPlayer({
         backBufferLength: 90,
       });
 
+      hlsRef.current = hls;
       hls.loadSource(streamUrl);
       hls.attachMedia(video);
 
       hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-        const levels = data.levels.map((l) => `${l.height}p`);
-        setQualityLevels(["Auto", ...levels]);
+        const options = levelOptions(data.levels);
+        setQualityOptions(options);
+        // The session's choice applies to this clip too (the nearest rendition it has).
+        const choice = choiceFromStorage(options, remembered);
+        if (choice && choice.id !== AUTO && hls) {
+          applyQuality(hls, choice);
+          setQualityId(choice.id);
+        } else setQualityId(AUTO);
+      });
+      // What Auto is playing now, said beside « Auto » in the menu.
+      hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
+        const level = hls?.levels[data.level];
+        if (level) setAutoHeight(level.width ? Math.min(level.width, level.height) : level.height);
       });
 
       hls.on(Hls.Events.ERROR, (event, data) => {
@@ -182,16 +212,63 @@ export function VideoPlayer({
         }
       });
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      // Native Safari HLS support
+      // Native Safari HLS: no level API. Play the master; read it for the renditions it holds so the picker can offer
+      // them (a rendition's own playlist is played directly), and say so when it cannot.
       video.src = streamUrl;
+      setNativeHls(true);
+      const abort = new AbortController();
+      nativeAbort = abort;
+      fetch(streamUrl, { signal: abort.signal })
+        .then((r) => (r.ok ? r.text() : ""))
+        .then((text) => {
+          const variants = parseMasterPlaylist(text, streamUrl);
+          nativeVariantsRef.current = variants;
+          const options = nativeOptions(variants);
+          setQualityOptions(options);
+          const choice = choiceFromStorage(options, remembered);
+          if (choice && choice.id !== AUTO) {
+            setQualityId(choice.id);
+            video.src = variants[choice.level]?.url ?? streamUrl;
+          }
+        })
+        .catch(() => {
+          /* the master could not be read: Auto only, said in the menu */
+        });
     }
 
     return () => {
+      nativeAbort?.abort();
       if (hls) {
         hls.destroy();
       }
+      hlsRef.current = null;
+      nativeVariantsRef.current = [];
     };
   }, [streamUrl, isPaywalled, isGated, attempt]);
+
+  // Picking a quality: hls.js switches level at once; native HLS plays the rendition's own playlist from where it was.
+  const selectQuality = useCallback((option: QualityOption) => {
+    setQualityId(option.id);
+    storeQuality(typeof window === "undefined" ? null : window.sessionStorage, option.id);
+    const hls = hlsRef.current;
+    if (hls) {
+      applyQuality(hls, option);
+      return;
+    }
+    const video = videoRef.current;
+    if (!video || !streamUrl) return;
+    const resume = video.currentTime;
+    const wasPlaying = !video.paused;
+    video.src = option.id === AUTO ? streamUrl : (nativeVariantsRef.current[option.level]?.url ?? streamUrl);
+    video.addEventListener(
+      "loadedmetadata",
+      () => {
+        video.currentTime = resume;
+        if (wasPlaying) void video.play().catch(() => setIsPlaying(false));
+      },
+      { once: true },
+    );
+  }, [streamUrl]);
 
   // The media element is the truth: play/pause state follows its events (native controls, fullscreen, a refused play()).
   const togglePlay = () => {
@@ -285,14 +362,16 @@ export function VideoPlayer({
       onPointerEnter={(e) => e.pointerType === "mouse" && setShowControls(true)}
       onPointerLeave={(e) => e.pointerType === "mouse" && isPlaying && setShowControls(false)}
     >
-      {/* 18+ Rating Badge Top Left */}
-      {(isAdult || isAdultRating(contentRatingId)) && (
-        <div className="absolute top-4 left-4 z-20">
+      {/* Top right: the 18+ rating and the AI disclosure (a chip drawn by the player, never burned into the video).
+          Top left belongs to the Orochia mark; the bottom to the controls and the captions. */}
+      <div className="absolute right-3 top-3 z-20 flex items-center gap-2">
+        {(isAdult || isAdultRating(contentRatingId)) && (
           <Badge size="sm" className="bg-danger/90 font-mono font-black text-white shadow-md ring-0 backdrop-blur-md">
             18+
           </Badge>
-        </div>
-      )}
+        )}
+        {aiGenerated && !isPaywalled && !isGated && <AiChip visible={aiChipVisible({ isPlaying, showControls: showControls || menuOpen, currentTime })} />}
+      </div>
 
       {/* HTML5 Video Element */}
       <video
@@ -337,17 +416,14 @@ export function VideoPlayer({
         </div>
       )}
 
-      {/* The Orochia mark: a quiet signature in the bottom-right corner, scaled with the player, lifted above the controls
-          while they show (never over them) and gone in full screen, where nothing should compete with the picture.
-          Copies leaving the site carry the burned-in watermark of the Stream library instead (scripts/bunny-library.mjs). */}
+      {/* The Orochia mark, for videos without the burned-in one: a quiet signature in the TOP-left corner, where it never
+          meets the controls (bottom) nor the captions, the rating or the AI chip (top right), the same place and size
+          as the Stream library's watermark (scripts/bunny-library.mjs WATERMARK_BOX). Gone in full screen. */}
       {!isPaywalled && !isGated && !fullscreen && !burnedWatermark && (
         <span
           aria-hidden
           data-testid="player-watermark"
-          className={cn(
-            "pointer-events-none absolute right-[3cqw] z-10 h-[clamp(1.25rem,6cqw,2.5rem)] w-[clamp(1.25rem,6cqw,2.5rem)] opacity-40 transition-[bottom] duration-300",
-            showControls ? "bottom-[clamp(5rem,16cqw,6rem)]" : "bottom-[3cqw]",
-          )}
+          className="pointer-events-none absolute left-[3cqw] top-[3cqw] z-10 size-[clamp(1.25rem,6cqmin,2.5rem)] opacity-50"
         >
           <OrochiaLogo size={40} animated={false} className="h-full w-full" />
         </span>
@@ -407,7 +483,7 @@ export function VideoPlayer({
         <div
           className={cn(
             "absolute bottom-0 left-0 right-0 z-20 bg-linear-to-t from-scrim-strong via-scrim to-transparent p-4 text-fg-on-media transition-opacity duration-300",
-            showControls ? "opacity-100" : "opacity-0"
+            showControls || menuOpen ? "opacity-100" : "opacity-0"
           )}
         >
           {/* Progress Timeline Slider */}
@@ -458,7 +534,17 @@ export function VideoPlayer({
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1 sm:gap-2">
+              {/* Quality: Auto and each rendition of the stream (hls.js levels, or the master's variants on native HLS). */}
+              <QualityMenu
+                options={qualityOptions}
+                value={qualityId}
+                onSelect={selectQuality}
+                autoHeight={autoHeight}
+                native={nativeHls}
+                onOpenChange={setMenuOpen}
+                panelClassName={orientationOf(width, height) === "horizontal" ? "max-h-[max(7.5rem,calc(56cqw-6.5rem))]" : "max-h-72"}
+              />
               {/* Fullscreen Button */}
               <IconButton onClick={toggleFullscreen} className="relative z-30 h-11 w-11 touch-manipulation text-current sm:h-8 sm:w-8 hover:bg-accent-soft hover:text-fg-accent" label={t("player.fullscreen")}>
                 <Maximize className="h-5 w-5" aria-hidden />

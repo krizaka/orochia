@@ -1766,7 +1766,18 @@
     "challengeCta": "Voir les défis en cours",
     "errorTitle": "Cette vidéo n’a pas pu s’ouvrir",
     "errorBody": "La connexion s’est interrompue avant le chargement de la vidéo. Réessayez dans un instant.",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "ai": {
+      "chip": "Généré par IA",
+      "label": "Vidéo générée par IA"
+    },
+    "quality": {
+      "menu": "Qualité vidéo",
+      "button": "Qualité : {value}",
+      "auto": "Auto",
+      "autoNow": "Auto ({height}p)",
+      "native": "Votre appareil choisit la qualité tout seul."
+    }
   },
   "comments": {
     "title": "Commentaires",

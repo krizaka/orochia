@@ -35,6 +35,7 @@
     "journey:dev": "node scripts/journey-dev.mjs",
     "test:ui-crawl": "node e2e/ui-crawl.mjs",
     "test:player-iphone": "node e2e/player-iphone.mjs",
+    "test:player-quality": "node e2e/player-quality.mjs",
     "check": "npm run lint && npm run typecheck && npm test && npm run docs:generate -- --check",
     "db:up": "docker compose -f deploy/docker/docker-compose.dev.yml up -d --wait",
     "db:down": "docker compose -f deploy/docker/docker-compose.dev.yml down",

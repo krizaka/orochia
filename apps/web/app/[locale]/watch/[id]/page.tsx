@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 
 import { JsonLd } from "@/components/JsonLd";
+import { aiCreditOf } from "@/lib/ai-credit";
 import { getCurrentUser } from "@/lib/auth";
 import { getI18n } from "@/lib/i18n-server";
 import { videoDetails } from "@/lib/queries";
@@ -63,7 +64,7 @@ export default async function WatchPage(props: { params: Promise<{ id: string }>
   return (
     <>
       {video && <JsonLd data={videoSchema(video, t)} />}
-      <WatchClient initial={{ stream, poster: video?.thumbnailUrl ?? null, width: video?.width ?? null, height: video?.height ?? null, burnedWatermark: hasBurnedWatermark(video?.createdAt, process.env.MEDIA_WATERMARK_SINCE) }} />
+      <WatchClient initial={{ stream, poster: video?.thumbnailUrl ?? null, width: video?.width ?? null, height: video?.height ?? null, burnedWatermark: hasBurnedWatermark(video?.createdAt, process.env.MEDIA_WATERMARK_SINCE), aiGenerated: video ? aiCreditOf(video) !== null : false }} />
     </>
   );
 }

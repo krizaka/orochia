@@ -70,13 +70,14 @@ describe("a video loading", () => {
 });
 
 describe("the Orochia watermark", () => {
-  it("is the mark of @krizaka/ui, low opacity, scaled with the player, bottom-right and lifted above the controls", () => {
+  it("is the mark of @krizaka/ui, low opacity, scaled with the player, top-left (orochia#349: never beside the controls)", () => {
     expect(player).toMatch(/<OrochiaLogo[^>]*animated=\{false\}/);
     expect(player).toMatch(/data-testid="player-watermark"/);
-    expect(player).toMatch(/right-\[3cqw\]/);
-    expect(player).toMatch(/opacity-40/);
-    expect(player).toMatch(/h-\[clamp\(/);
-    expect(player).toMatch(/showControls \? "bottom-\[clamp\(5rem/);
+    expect(player).toMatch(/left-\[3cqw\]/);
+    expect(player).toMatch(/top-\[3cqw\]/);
+    expect(player).toMatch(/opacity-50/);
+    expect(player).toMatch(/size-\[clamp\(/);
+    expect(player).not.toMatch(/bottom-\[clamp\(5rem/);
     expect(player).toMatch(/pointer-events-none/);
   });
 

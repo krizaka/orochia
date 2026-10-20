@@ -1766,7 +1766,18 @@
     "challengeCta": "See open challenges",
     "errorTitle": "This video could not be opened",
     "errorBody": "The connection dropped before the video could load. Try again in a moment.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "ai": {
+      "chip": "AI-generated",
+      "label": "AI-generated video"
+    },
+    "quality": {
+      "menu": "Video quality",
+      "button": "Quality: {value}",
+      "auto": "Auto",
+      "autoNow": "Auto ({height}p)",
+      "native": "Your device picks the quality by itself."
+    }
   },
   "comments": {
     "title": "Comments",

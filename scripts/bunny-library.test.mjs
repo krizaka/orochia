@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { BRAND_ACCENT, bunnyLibraryApi, drift, libraryPatch, PLAYER_SETTINGS, plan, WATERMARK_BOX } from "./bunny-library.mjs";
+import { BRAND_ACCENT, bunnyLibraryApi, drift, fadeWatermark, libraryPatch, PLAYER_SETTINGS, plan, WATERMARK_BOX, WATERMARK_OPACITY } from "./bunny-library.mjs";
 
 // The Stream library's look is code, not clicks: the payload below is exactly what is sent to Bunny, idempotent.
 const bare = { Id: 1, Name: "orochia", PlayerKeyColor: "#ff7755", Controls: "play", HasWatermark: false };
@@ -33,18 +33,35 @@ describe("the burned-in watermark", () => {
     expect(Object.keys(plan(bare).patch).some((k) => k.startsWith("Watermark"))).toBe(false);
   });
 
-  it("on: uploads the mark once and places it bottom-right within the frame", () => {
+  it("on: uploads the mark once and places it top-left, small, clear of the controls (bottom) and the AI chip / rating (top right)", () => {
     const on = plan(bare, "on");
     expect(on.uploadWatermark).toBe(true);
     expect(on.patch).toMatchObject(WATERMARK_BOX);
     const { WatermarkPositionLeft: left, WatermarkPositionTop: top, WatermarkWidth: w, WatermarkHeight: h } = WATERMARK_BOX;
-    expect(left + w).toBeLessThanOrEqual(100);
-    expect(top + h).toBeLessThanOrEqual(100);
-    // one box for 9:16 and 16:9: equal shares keep the distortion the same (1.78:1) on both, never 3:1 on one
+    // one box for 9:16 and 16:9: equal shares keep the mark the same size on both (Bunny fits it, never stretches: 7 % of the short side)
     expect(w).toBe(h);
-    expect(left).toBeGreaterThan(50);
-    expect(top).toBeGreaterThan(50);
+    expect(w).toBeLessThanOrEqual(8);
+    // the top-left corner, inset a little: never the bottom-right (the player's controls and full-screen button) nor the right half (the AI chip)
+    expect(left).toBeGreaterThanOrEqual(2);
+    expect(top).toBeGreaterThanOrEqual(2);
+    expect(left + w).toBeLessThanOrEqual(15);
+    expect(top + h).toBeLessThanOrEqual(15);
     expect(plan({ ...applied, HasWatermark: true, ...WATERMARK_BOX }, "on")).toEqual({ patch: {}, uploadWatermark: false, deleteWatermark: false });
+  });
+
+  it("on --refresh-image: uploads the (re-faded) image again even when the library already has one", () => {
+    expect(plan({ ...applied, HasWatermark: true, ...WATERMARK_BOX }, "on", { refreshImage: true }).uploadWatermark).toBe(true);
+  });
+
+  it("fades the mark's own alpha (quiet, never opaque) and leaves its colours alone", async () => {
+    const { default: sharp } = await import("sharp");
+    const solid = await sharp({ create: { width: 4, height: 4, channels: 4, background: { r: 120, g: 60, b: 200, alpha: 1 } } }).png().toBuffer();
+    const faded = await fadeWatermark(solid, WATERMARK_OPACITY);
+    const { data } = await sharp(faded).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    expect([data[0], data[1], data[2]]).toEqual([120, 60, 200]);
+    expect(Math.abs(data[3] / 255 - WATERMARK_OPACITY)).toBeLessThan(0.02);
+    expect(WATERMARK_OPACITY).toBeLessThan(0.8);
+    expect(WATERMARK_OPACITY).toBeGreaterThan(0.3);
   });
 
   it("off: removes it, only when there is one (reversible: new encodes only)", () => {
