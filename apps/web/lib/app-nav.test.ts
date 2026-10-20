@@ -49,3 +49,17 @@ describe("the app bar on a phone", () => {
     expect(read("../app/[locale]/globals.css")).toMatch(/max-width:\s*639\.98px\)\s*\{\s*\.kz-appbar a > span:not\(\[data-brand-mark\]\)\s*\{\s*display:\s*none/);
   });
 });
+
+describe("the rail stays put while the page scrolls", () => {
+  // `overflow-x: hidden` on html or body makes them scroll containers, and a `position: sticky` rail then sticks to a box
+  // that never scrolls: it left with the page (dev.orochia.com, 2026-10-20). `clip` clips without a scroll container.
+  it("html and body clip their horizontal overflow, never hide it", () => {
+    const css = read("../app/[locale]/globals.css");
+    const layout = read("../app/[locale]/layout.tsx");
+    for (const src of [css, layout]) {
+      expect(src).not.toMatch(/overflow-x:\s*hidden|overflow-x-hidden/);
+    }
+    expect(css).toMatch(/html\s*\{[^}]*overflow-x:\s*clip/);
+    expect(css).toMatch(/body\s*\{[^}]*overflow-x:\s*clip/);
+  });
+});
