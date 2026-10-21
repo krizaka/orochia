@@ -2,7 +2,7 @@
 
 > **Single source of truth** for architecture, code and agent-behaviour rules across the **Orochia** repositories:
 > [`krizaka/orochia`](https://github.com/krizaka/orochia) (this one — web app, API, packages),
-> [`krizaka/orochia-admin`](https://github.com/krizaka/orochia-admin) (operator console),
+> [`krizaka/orochia-admin`](https://github.com/krizaka/orochia-admin) (archived: the operator console now lives in this repository, `apps/web/app/console`),
 > [`krizaka/orochia-design-system`](https://github.com/krizaka/orochia-design-system) (tokens & components) and
 > [`krizaka/orochia-mobile`](https://github.com/krizaka/orochia-mobile) (the iOS and Android app, Expo).
 > Those carry a short `AGENTS.md` that scopes them and defers here.
@@ -100,10 +100,16 @@ orochia/                           npm workspaces
   (the seed writes ledger rows the way `packages/payments` settles them, without importing it).
 - Route handlers stay thin: **every rule that decides access lives in `lib/access.ts`, `lib/social.ts`,
   `lib/playlists.ts` or a package** — never inline in a route or a component.
-- `orochia-admin` never touches Orochia's database: it is a server-side BFF over `/api/admin/*`, calling as a service
-  (`Authorization: Bearer OPERATOR_API_TOKEN`, `lib/operator.ts`: ADMIN routes only, acting as the owner). It has
-  its own small database for its single operator account, sessions and operator log, and lets only `ADMIN_ALLOWED_IPS`
-  in. Any new operator capability is an admin endpoint here first.
+- **The operator console is served by this app, on `admin.<domain>`** (COST-ADMIN-MERGE, orochia#232; it was the
+  repository and App Platform app `orochia-admin`, −5 USD/month). It lives in `apps/web/app/console` (a root layout of
+  its own, beside `app/[locale]`) with its code in `apps/web/console/`; `proxy.ts` rewrites the whole admin host into
+  `/console` after `console/lib/gate.ts` (`AUTH_ALLOWED_IPS`: any other address gets 403, sign-in included; only
+  `/api/health` and `/robots.txt` are open) and answers **404 to `/console` on every other host** — pure rules in
+  `console/lib/host.ts`, guarded by `console/lib/gate.test.ts`. The console never touches Orochia's database: it is a
+  server-side BFF over `/api/admin/*`, calling as a service (`Authorization: Bearer OPERATOR_API_TOKEN`,
+  `console/lib/orochia.ts`: ADMIN routes only, acting as the owner). It has its own small database
+  (`DATABASE_CONSOLE_URL`) for its single operator account, sessions and operator log. English only, outside the
+  i18n scan. Any new operator capability is an admin endpoint here first.
 - **Shared UI comes from npm, never from a copy.** `@krizaka/orochia-design-system` (repo `orochia-design-system`) is
   the Orochia kit; `@krizaka/ui` (repo `krizaka-ui`) is the Krizaka brand layer under it — the marks and the motion
   signature, shared with krizaka.com and Orazaka. The apps depend on caret ranges; new shared UI is built in the

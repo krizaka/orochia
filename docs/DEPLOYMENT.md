@@ -42,6 +42,7 @@ PostgreSQL.
 | `DATABASE_CA_CERT` | recommended |  |  | CA of a managed PostgreSQL (PEM; App Platform: `${<db>.CA_CERT}`): TLS is verified against it. |
 | `DATABASE_MAX_CONNECTIONS` | — |  | `5` | Connections one instance's pool may hold — see *Database connections*. |
 | `DATABASE_ALLOW_RESET` | — |  |  | Factory reset from the admin console, and rebuild by the release job when migrations were squashed. Never honoured on the indexed production. |
+| `DATABASE_CONSOLE_URL` | — |  |  | The operator console's own database (operator account, sessions, operator log) — never the platform's. Unset: the console cannot sign anyone in. |
 
 ### Authentication — `AUTH_`
 
@@ -70,6 +71,10 @@ Sessions, owner account, sign-in providers.
 | `AUTH_GOOGLE_CLIENT_SECRET` | — | ✓ |  | Sign in with Google: the OAuth client secret. |
 | `AUTH_FACEBOOK_APP_ID` | — |  |  | Sign in with Facebook — offered only with its secret too. |
 | `AUTH_FACEBOOK_APP_SECRET` | — | ✓ |  | Sign in with Facebook: the app secret. |
+| `AUTH_OPERATOR_EMAIL` | — |  |  | The console's single operator account: nobody signs up, there is no other user. |
+| `AUTH_OPERATOR_NAME` | — |  |  | The operator's display name. |
+| `AUTH_OPERATOR_PASSWORD` | — | ✓ |  | The operator's password (12+ characters), brought in line at sign-in. |
+| `AUTH_ALLOWED_IPS` | recommended |  |  | Comma-separated client addresses (`do-connecting-ip`) allowed to reach the console host (admin.&lt;domain&gt;), sign-in included. Empty in production: nobody. |
 
 ### Media — `MEDIA_`
 
@@ -209,10 +214,12 @@ The Orazaka engine the Explorer calls (embeddings), never a model provider.
 
 ### Operator console — `OPERATOR_`
 
-The admin API.
+The admin API, and the console served on admin.<domain>.
 
 | Variable | Production | Secret | Default | What it does |
 | :--- | :---: | :---: | :--- | :--- |
+| `OPERATOR_API_URL` | — |  | `http://localhost:3000` | The platform API the console (admin.&lt;domain&gt;, `app/console`) operates: this deployment's own public address (`/api/admin/*`). |
+| `NEXT_PUBLIC_OPERATOR_PLATFORM_URL` *(build)* | — |  | `http://localhost:3000` | The platform's public site, for the console's links to a video, a profile or the home. |
 | `OPERATOR_API_TOKEN` | recommended | ✓ |  | Service token of the operator console (32+ characters, the same value on both deployments): opens ADMIN routes only, acting as the owner. Unset: refused. |
 
 A missing required value makes the requests that need it answer **503** and logs the variable name, and a deployment
@@ -250,6 +257,18 @@ them (`deploy_on_push`). A spec file is only for creating the app or changing it
 database, the list of variables): `doctl apps update <APP_ID> --spec …` replaces the whole spec, and the
 `SECRET` entries have no value in the file — check them in the app afterwards.
 
+### Monthly cost (checked 2026-10-19)
+
+| Component | Size | USD / month |
+| :--- | :--- | ---: |
+| `orochia-dev` web (also serves the operator console on admin.orochia.com since COST-ADMIN-MERGE, orochia#232) | `basic-xxs` | 5 |
+| `orochia-dev` migrate job | `basic-xxs`, billed while it runs | 0 |
+| shared dev PostgreSQL cluster `krizaka-dev-pg` | `db-s-1vcpu-1gb`, shared by every product (counted once in the org total) | 15 |
+| ~~`orochia-admin-dev`~~ | retired after 48 h of the merged app live | ~~5~~ 0 |
+
+Orochia's own line is 5 USD/month (20 with its share of the database), down from 10 (25). The organisation's table is
+`structure-couts-infrastructure.md` (company vault); GPU work is pay-per-use on RunPod, never an app here.
+
 The spec has no Redis: rate limits are shared through PostgreSQL (`ABUSE_RATE_LIMIT_STORE=postgres`) and the realtime bus
 is PostgreSQL LISTEN/NOTIFY (`REALTIME_BUS=postgres`). Both hold for a few instances; see *Realtime* for when to add
 a Valkey cache.
@@ -285,8 +304,9 @@ probes):
 | App Platform dev database (orochia-dev, measured) | 25 (3) | 22 | 15 | 1 instance: (1 + 1) × 6 + 2 = **14** ✓ |
 | Managed PostgreSQL `db-s-1vcpu-1gb` | 25 (3) | 22 | 15 | 1 instance ✓ — a 2nd needs a bigger plan or a pooler |
 
-Measured on dev after the fix (2026-10-12): 5 `orochia-web` connections under load, one process, one pool. The admin
-console (orochia-admin) has its own database and is not in this budget.
+Measured on dev after the fix (2026-10-12): 5 `orochia-web` connections under load, one process, one pool. The operator
+console (`app/console`, served on admin.<domain> by the same process) has its own database and its own pool
+(5 connections at most), and is not in this budget.
 
 When the database refuses connections (53300, restarting, unreachable), the server logs **one line** every 30 s
 (`[db] database unavailable: 53300 … (N more since the last report)`) rather than a stack per query, and the pages
