@@ -1,8 +1,10 @@
 "use client";
 
 import { Badge } from "@krizaka/ui/badge";
-import { type Outcome, areaOf } from "@/console/lib/audit-outcome";
 import { DataTable, type DataTableColumn,DataTableColumnsMenu, DataTableExport, DataTableFilters } from "@krizaka/ui/data-table";
+
+import { areaOf,type Outcome } from "@/console/lib/audit-outcome";
+import { whenLong } from "@/console/lib/format";
 
 export interface AuditRow {
   id: string;
@@ -17,7 +19,7 @@ export interface AuditRow {
 
 const TONE = { ok: "success", refused: "warning", failed: "danger" } as const;
 
-const when = (iso: string) => new Date(iso).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "medium" });
+const when = whenLong;
 
 const columns: DataTableColumn<AuditRow>[] = [
   { id: "at", header: "When", sortable: true, value: (r) => r.at, cell: (r) => <span className="whitespace-nowrap font-mono text-xs">{when(r.at)}</span> },

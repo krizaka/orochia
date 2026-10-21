@@ -5,6 +5,7 @@ import { ConfirmDialog } from "@/console/components/ConfirmDialog";
 import { ExplorerRunsTable } from "@/console/components/tables";
 import { Empty, PageTitle, Panel, Stat } from "@/console/components/ui";
 import { coverage } from "@/console/lib/explorer-view";
+import { whenLong } from "@/console/lib/format";
 import { orochia } from "@/console/lib/orochia";
 
 interface ExplorerStatus {
@@ -17,7 +18,7 @@ interface ExplorerStatus {
   runs: { id: string; kind: string; orazakaRunId: string | null; model: string | null; inputs: number; promptTokens: number; status: string; durationMs: number; createdAt: string }[];
 }
 
-const when = (iso: string) => new Date(iso).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "medium" });
+const when = whenLong;
 
 /**
  * The Explorer on Orazaka: proof that Orochia's search and recommendations run on the engine — the engine's host, the

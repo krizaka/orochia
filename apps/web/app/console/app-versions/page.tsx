@@ -4,6 +4,7 @@ import { publishAppVersion,rollbackAppVersion } from "@/app/console/actions";
 import { AppVersionForm, type AppVersionRecord } from "@/console/components/AppVersionForm";
 import { ConfirmDialog } from "@/console/components/ConfirmDialog";
 import { cn, Empty, PageTitle, Panel, strong } from "@/console/components/ui";
+import { whenShort } from "@/console/lib/format";
 import { orochia } from "@/console/lib/orochia";
 
 interface HistoryEntry extends AppVersionRecord {
@@ -12,7 +13,7 @@ interface HistoryEntry extends AppVersionRecord {
   changedAt: string;
 }
 
-const when = (iso: string) => new Date(iso).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" });
+const when = whenShort;
 
 /** The platforms Orochia's apps run on. */
 const PLATFORMS = ["ios", "android"] as const;
