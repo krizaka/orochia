@@ -1,6 +1,6 @@
 # 🛡️ Admin Console
 
-The operator console (`apps/web/app/console`; it was the repository `krizaka/orochia-admin`, now archived) is served by
+The operator console (`apps/web/app/console`; it was the repository orochia-admin, archived and deleted on 2026-10-23) is served by
 the platform's app **on its own host, `admin.<domain>`** — one App Platform app, one process — with its own database,
 its own single account and its own network gate. `proxy.ts` rewrites that host into `/console` only for the addresses of
 `AUTH_ALLOWED_IPS` (403 for the others, sign-in included; only `/api/health` and `/robots.txt` are open), and `/console`
@@ -10,7 +10,7 @@ side, with a service token the browser never sees. What an operator decides is r
 
 ```architecture
 product: orochia
-focus: orochia-admin
+focus: orochia-web
 mode: runtime
 ```
 
@@ -88,15 +88,14 @@ Every decision — done or refused, with its target and detail — is written to
 
 ## Run it locally
 
-Start Orochia first, with the same `OPERATOR_API_TOKEN` in its `.env`, then:
+The console is part of the web app: start Orochia with the same `OPERATOR_API_TOKEN` in its `.env`, then open the
+admin host on the dev port (browsers resolve `*.localhost` to this machine):
 
 ```bash
-git clone https://github.com/krizaka/orochia-admin.git && cd orochia-admin
-cp .env.example .env.local      # its database, the operator account, the token shared with Orochia
-docker exec orochia-postgres-dev psql -U orochia_user -d orochia_db -c "CREATE DATABASE orochia_admin"
-npm install
-npm run dev                     # http://localhost:3001 — sign in with ADMIN_EMAIL / ADMIN_PASSWORD
+npm run dev                     # Orochia on http://localhost:3000
+# the console: http://admin.localhost:3000 — sign in with the operator account
 ```
 
-Locally (outside production) an empty `ADMIN_ALLOWED_IPS` lets every address in. On a deployment, `deploy/Dockerfile`
-builds a standalone image (port 3001); `ADMIN_PASSWORD` and `OPERATOR_API_TOKEN` are app secrets, never in git.
+Locally (outside production) an empty `ADMIN_ALLOWED_IPS` lets every address in. On a deployment the console is served by
+the web app itself (`deploy/digitalocean/app-spec.dev.yaml`, the `admin.<domain>` alias); `ADMIN_PASSWORD` and
+`OPERATOR_API_TOKEN` are app secrets, never in git.

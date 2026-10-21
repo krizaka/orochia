@@ -72,7 +72,7 @@
       "note": "Measured 2026-10-21 with doctl over every App Platform app of the team: Orochia's dev deployment is one basic-xxs web app (5 USD) plus its share of the shared dev database (15 USD, counted once in the org total); the operator console is served by it on admin.orochia.com since the 2026-10-21 cutover (orochia#334), and the old app orochia-admin-dev (5 USD) is deleted from 2026-10-23T13:00Z after its 48 h rollback window. Organisation recurring cloud about 97 USD/month before and about 87 after both old admin apps are deleted (ceiling 100, GPU apart); the private cost table (§ 6.2) carries the same figures."
     },
     "admin.gated": {
-      "evidence": "https://github.com/krizaka/orochia-admin/pull/58",
+      "evidence": "https://github.com/krizaka/orochia/blob/main/apps/web/console/lib/gate.test.ts",
       "checked": "2026-10-19"
     },
     "admin.noindex": {
@@ -96,11 +96,11 @@
       "note": "The console is the Krizaka UI shell: AppShell (sidebar, a drawer on a phone) with the DEV badge in the header and AuthLayout for the sign-in (orochia#364, test console/components/shell.test.ts). Live crawl 64/64 clean (16 screens x dark/light x desktop/phone, e2e/console-crawl.mjs, from an allowed address): DEV badge on every screen, one h1, no console error, no horizontal scroll. It found and fixed a hydration mismatch (orochia#367). Captures of the screens without account data are on Bunny under pr-assets/orochia/devpreview-admin-shell/."
     },
     "admin.ux-review": {
-      "evidence": "https://github.com/krizaka/orochia-admin/blob/main/docs/UX_DECISIONS.md",
+      "evidence": "https://github.com/krizaka/orochia/blob/main/docs/UX_DECISIONS.md",
       "checked": "2026-10-19"
     },
     "admin.ci": {
-      "evidence": "https://github.com/krizaka/orochia-admin/actions?query=branch%3Amain",
+      "evidence": "https://github.com/krizaka/orochia/actions?query=branch%3Amain",
       "checked": "2026-10-16"
     }
   }

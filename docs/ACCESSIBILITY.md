@@ -69,7 +69,7 @@ Recorded on **2026-10-13** (krizaka/orochia#130), on the development seed.
 | Reflow and 200 % zoom (web) | 11 key pages at 320 and 640 CSS px (= 400 % and 200 % zoom of a 1280 px window); root text at 200 % | No horizontal scroll, no overflow |
 | Reduced motion (web) | `prefers-reduced-motion: reduce` on the 11 key pages | No animation left running |
 | Screen reader names (app) | render checks above | The story's previous / next zones were unnamed → **fixed**; four small buttons under 44 pt → **fixed** (orochia-mobile#33) |
-| Operator console | axe (WCAG 2.2 A/AA) on sign-in and the ten screens, dark and light; keyboard | 19 contrast failures (accent, muted, success/warning text) and no skip link → **fixed** (orochia-admin#21) |
+| Operator console | axe (WCAG 2.2 A/AA) on sign-in and the ten screens, dark and light; keyboard | 19 contrast failures (accent, muted, success/warning text) and no skip link → **fixed** (formerly orochia-admin#21) |
 | VoiceOver (iOS simulator), TalkBack (Android emulator), larger text, reduce motion (app) | see §3 | **Not yet recorded** — [orochia-mobile#34](https://github.com/krizaka/orochia-mobile/issues/34) |
 
 ## 3. Known gaps
@@ -80,7 +80,7 @@ Recorded on **2026-10-13** (krizaka/orochia#130), on the development seed.
 - **Captions**: videos have no captions yet; Bunny Stream's captions arrive with Explore phase 1 (#59).
 - **Stories** advance on their own (like every stories format); a screen-reader user moves with the named
   *Previous story* / *Next story* buttons, but the timer does not yet pause while VoiceOver or TalkBack is on.
-- **The operator console** ([orochia-admin](https://github.com/krizaka/orochia-admin)) had its pass by hand (§2) and a
+- **The operator console** (`apps/web/app/console`, formerly the orochia-admin repository) had its pass by hand (§2) and a
   unit test keeps its words in the text roles; an axe step in its CI needs a running Orochia behind it — not yet.
 - **French**: the interface is English only for now (#74); a screen reader set to French reads English words.
 - Fixes that belong to the shared kit are asked there and carried here until they ship: focus back to the opener

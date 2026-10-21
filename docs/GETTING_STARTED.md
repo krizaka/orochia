@@ -49,13 +49,8 @@ account demonstrates and the database commands (`db:status`, `db:reset`, `db:stu
 
 ## 4. The admin console
 
-The operator console is a separate repository, [`krizaka/orochia-admin`](https://github.com/krizaka/orochia-admin):
-
-```bash
-git clone https://github.com/krizaka/orochia-admin.git && cd orochia-admin
-npm install
-OPERATOR_API_URL=http://localhost:3000 npm run dev -- -p 3001     # sign in with the administrator account
-```
+The operator console is part of the web app (`apps/web/app/console`, served on the admin host). Run it as in
+[ADMIN_CONSOLE.md](ADMIN_CONSOLE.md#run-it-locally): `npm run dev`, then `http://admin.localhost:3000`.
 
 ## 5. Quality gates
 

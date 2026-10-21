@@ -118,15 +118,6 @@ const model = {
         "Direct-to-Bunny streaming with short-lived signed URLs, server-side access control, gateway-confirmed unlocks and an idempotent double-entry ledger.",
     },
     {
-      name: "orochia-admin",
-      repo: "krizaka/orochia-admin",
-      url: "https://github.com/krizaka/orochia-admin",
-      port: 3001,
-      role: "Control plane: 2257 records, moderation & treasury",
-      stack: ["Next.js 16 App Router", "Tailwind CSS", "Lucide Icons"],
-      description: "Administrative console for performer records, content reports and platform revenue.",
-    },
-    {
       name: "orochia-design-system",
       repo: "krizaka/orochia-design-system",
       url: "https://github.com/krizaka/orochia-design-system",

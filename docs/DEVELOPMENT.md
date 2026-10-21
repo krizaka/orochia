@@ -25,7 +25,7 @@ Clone the admin console and the design system next to this repository with `npm 
 | App | Directory | Port | Start |
 | :--- | :--- | :--- | :--- |
 | Web app & API | `orochia/` | 3000 | `npm run dev` |
-| Admin console | `../orochia-admin/` | 3001 | `OPERATOR_API_URL=http://localhost:3000 npm run dev -- -p 3001` |
+| Operator console | `apps/web/app/console` (admin host, same app) | 3000 | see [ADMIN_CONSOLE.md](ADMIN_CONSOLE.md#run-it-locally) |
 | Design system showcase | `../orochia-design-system/` | 3002 | `npm run dev` |
 
 ## Accounts of the development seed

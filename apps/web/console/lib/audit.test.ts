@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 
 import { collectRequestIds, noteRequestId } from "./request-ids";
 
-// Dev preview `admin.audit-log` (orochia-admin#45): every operator action writes an audit row — who, what, when, the
+// Dev preview `admin.audit-log` (formerly orochia-admin#45): every operator action writes an audit row — who, what, when, the
 // request id of the call to Orochia — and the console shows it.
 const read = (rel: string) => readFileSync(join(__dirname, "..", "..", rel.startsWith("app/") ? `app/console/${rel.slice(4)}` : `console/${rel}`), "utf8");
 
