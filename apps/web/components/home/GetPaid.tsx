@@ -54,7 +54,7 @@ export async function GetPaid({ fee }: { fee: number }) {
     >
       <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28">
         <div data-reveal className="mx-auto max-w-3xl text-center">
-          <p className="inline-flex items-center gap-2 rounded-full border border-border-default bg-surface-1/70 px-3.5 py-1.5 text-xs font-semibold text-fg-accent backdrop-blur-md">
+          <p className="inline-flex items-center gap-2 rounded-sm border border-border-default bg-surface-1/70 px-3.5 py-1.5 text-xs font-semibold text-fg-accent ">
             <Share90Icon size={16} nodeColor="var(--kz-accent-2)" /> {t("home.paid.eyebrow")}
           </p>
           <h2 id="get-paid" className="mt-5 scroll-mt-24 font-display text-3xl font-black leading-tight tracking-tight text-fg sm:text-5xl">
@@ -67,7 +67,7 @@ export async function GetPaid({ fee }: { fee: number }) {
           {/* The split: the object, the two figures, the bar and one sentence that says it with money. */}
           <figure
             data-reveal
-            className="relative flex flex-col overflow-hidden rounded-[2rem] border border-border-default bg-surface-1/70 p-6 backdrop-blur-xl sm:p-8"
+            className="relative flex flex-col overflow-hidden rounded-[2rem] border border-border-default bg-surface-1/70 p-6 sm:p-8"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -97,8 +97,8 @@ export async function GetPaid({ fee }: { fee: number }) {
                 value: t("home.paid.hub.value", { amount: money(splitPlatformFee(gross, fee).netAmountCents) }),
               }))}
             />
-            <div role="img" aria-label={t("home.paid.split.label", { share, fee })} className="flex h-2.5 overflow-hidden rounded-full bg-surface-3">
-              <span className="h-full rounded-full bg-linear-to-r from-accent to-accent-2" style={{ width: `${share}%` }} />
+            <div role="img" aria-label={t("home.paid.split.label", { share, fee })} className="flex h-2.5 overflow-hidden rounded-sm bg-surface-3">
+              <span className="h-full rounded-sm bg-linear-to-r from-accent to-accent-2" style={{ width: `${share}%` }} />
             </div>
             <figcaption className="mt-4 text-sm leading-relaxed text-fg-secondary">
               {t("home.paid.split.example", { amount: money(10_00), net: money(example.netAmountCents), fee: money(example.platformFeeCents) })}
@@ -114,7 +114,7 @@ export async function GetPaid({ fee }: { fee: number }) {
                   key={key}
                   data-reveal
                   style={{ ["--kz-delay" as string]: `${i * 90}ms` }}
-                  className="flex flex-col rounded-3xl border border-border-default bg-surface-1/70 p-5 backdrop-blur-xl sm:p-6"
+                  className="flex flex-col rounded-3xl border border-border-default bg-surface-1/70 p-5 sm:p-6"
                 >
                   <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-soft text-fg-accent">
                     <Icon size={22} nodeColor="var(--kz-accent-2)" />
@@ -134,7 +134,7 @@ export async function GetPaid({ fee }: { fee: number }) {
         {/* Why it can be trusted. */}
         <ul className="mt-6 grid gap-px overflow-hidden rounded-3xl border border-border-default bg-border-default sm:grid-cols-2 lg:grid-cols-4">
           {PROOFS.map(([key, Icon], i) => (
-            <li key={key} data-reveal style={{ ["--kz-delay" as string]: `${i * 80}ms` }} className="flex gap-3.5 bg-surface-1/90 p-5 backdrop-blur-xl">
+            <li key={key} data-reveal style={{ ["--kz-delay" as string]: `${i * 80}ms` }} className="flex gap-3.5 bg-surface-1/90 p-5 ">
               <Icon size={20} className="mt-0.5 shrink-0 text-fg-accent" nodeColor="var(--kz-accent-2)" />
               <span>
                 <span className="block text-sm font-bold text-fg">{t(`home.paid.proofs.${key}.title`, { minimum: money(PAYOUT_MINIMUM_CENTS) })}</span>
@@ -162,7 +162,7 @@ export async function GetPaid({ fee }: { fee: number }) {
               </Link>
             </Button>
           )}
-          <Link href="/challenges" className={cn(buttonVariants({ variant: "outline", size: "lg", shape: "pill" }), "w-full gap-2 bg-surface-1/60 backdrop-blur-md sm:w-auto")}>
+          <Link href="/challenges" className={cn(buttonVariants({ variant: "outline", size: "lg", shape: "pill" }), "w-full gap-2 bg-surface-1/60 sm:w-auto")}>
             {t("home.paid.ctaChallenges")}
           </Link>
         </div>

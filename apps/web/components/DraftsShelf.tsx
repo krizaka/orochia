@@ -53,7 +53,7 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
 
   return (
     <section aria-labelledby={`drafts-${kind}`} className="rounded-2xl border border-accent/25 bg-accent/6 p-3">
-      <h3 id={`drafts-${kind}`} className="mb-2 px-1 text-xs font-bold uppercase tracking-wider text-fg-accent">
+      <h3 id={`drafts-${kind}`} className="mb-2 px-1 text-xs font-bold text-fg-accent">
         {t("editor.drafts.title")} · {drafts.length}
       </h3>
       <ul className="flex gap-2.5 overflow-x-auto pb-1">
@@ -89,7 +89,7 @@ export function DraftsShelf({ kind, refresh = 0, onOpen }: { kind: DraftKind; re
                   )}
                 </span>
                 {d.hasMusic && (
-                  <span className="absolute left-1.5 top-1.5 rounded-full bg-scrim p-1 text-fg-on-media">
+                  <span className="absolute left-1.5 top-1.5 rounded-sm bg-scrim p-1 text-fg-on-media">
                     <Music2 className="h-3 w-3" />
                   </span>
                 )}

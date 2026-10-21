@@ -133,7 +133,7 @@ export function AuctionPanel({
 
         <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-fg-accent">{priceLabel}</p>
+            <p className="text-[11px] font-semibold text-fg-accent">{priceLabel}</p>
             {/* The current bid rolls digit by digit to each new bid (SSE), and is announced once; still under reduced motion. */}
             <p data-pulse={pulse} className="font-display text-4xl font-black tabular-nums tracking-tight text-fg">
               <MoneyTicker cents={price} trigger="change" announce={open} align="start" />
@@ -145,13 +145,13 @@ export function AuctionPanel({
           <div className="text-right">
             {a.phase === "UPCOMING" && (
               <>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-fg-secondary">{t("auction.startsIn")}</p>
+                <p className="text-[11px] font-semibold text-fg-secondary">{t("auction.startsIn")}</p>
                 <Countdown label={t("auction.startsIn")} target={a.startsAt} skewMs={skewMs} />
               </>
             )}
             {open && (
               <>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-fg-secondary">{t("auction.endsIn")}</p>
+                <p className="text-[11px] font-semibold text-fg-secondary">{t("auction.endsIn")}</p>
                 <Countdown label={t("auction.endsIn")} target={a.endsAt} skewMs={skewMs} />
               </>
             )}
@@ -162,7 +162,7 @@ export function AuctionPanel({
             )}
             {a.phase === "AWAITING_DECISION" && a.decisionDeadline && (
               <>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-fg-secondary">{t("auction.decisionIn")}</p>
+                <p className="text-[11px] font-semibold text-fg-secondary">{t("auction.decisionIn")}</p>
                 <Countdown label={t("auction.decisionIn")} target={a.decisionDeadline} skewMs={skewMs} size="sm" urgentBelowMs={3600_000} />
               </>
             )}
@@ -291,7 +291,7 @@ export function AuctionPanel({
 
         {/* History */}
         <div>
-          <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wider text-fg-secondary">{t("auction.history")}</h3>
+          <h3 className="mb-2 text-[11px] font-bold text-fg-secondary">{t("auction.history")}</h3>
           {a.recentBids.length === 0 ? (
             <p className="rounded-2xl border border-dashed border-border-default px-4 py-5 text-center text-xs text-fg-muted">
               {a.phase === "UPCOMING" ? t("auction.noBidsYetUpcoming") : t("auction.noBidsYet")}

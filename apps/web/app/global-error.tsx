@@ -36,11 +36,11 @@ export default function GlobalError({ error, retry }: { error: Error & { digest?
       <body className="min-h-screen bg-surface-0 text-fg antialiased">
         <I18nProvider locale={locale}>
         <ThemeProvider>
-          <header className="border-b border-border-default bg-surface-0/80 backdrop-blur-md">
+          <header className="border-b border-border-default bg-surface-0/80 ">
             <div className="mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6">
               <Link href="/" aria-label={t("errorPages.home")} className="inline-flex items-center gap-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
                 <OrochiaLogo size={30} />
-                <span className="font-display text-base font-black tracking-wider text-fg sm:text-lg">
+                <span className="font-display text-base font-black text-fg sm:text-lg">
                   OROCHIA<span className="text-fg-accent">.</span>
                 </span>
               </Link>

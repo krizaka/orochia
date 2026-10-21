@@ -53,7 +53,7 @@ export default async function PlaylistPage(props: { params: Promise<{ id: string
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div className="rounded-3xl border border-border-default bg-linear-to-r from-accent/20 via-surface-1 to-accent-2/15 p-6 sm:p-10">
-        <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-fg-accent">
+        <p className="inline-flex items-center gap-2 text-[10px] font-bold text-fg-accent">
           <ListVideo className="h-3.5 w-3.5" /> {t("collectionPage.eyebrow")} · <CollectionAudienceBadge visibility={playlist.visibility} />
         </p>
         <h1 className="mt-2 text-2xl sm:text-3xl font-black text-fg font-display">{playlist.title}</h1>

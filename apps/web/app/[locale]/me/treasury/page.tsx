@@ -30,7 +30,7 @@ export default function MeTreasury() {
     <dl className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3">
       {cells.map(([label, value, hint]) => (
         <div key={label}>
-          <dt className="text-[11px] font-semibold uppercase tracking-wider text-fg-secondary">{label}</dt>
+          <dt className="text-[11px] font-semibold text-fg-secondary">{label}</dt>
           <dd className="mt-1 font-mono text-2xl font-black text-fg-success">{value}</dd>
           <span className="text-[11px] text-fg-muted">{hint}</span>
         </div>

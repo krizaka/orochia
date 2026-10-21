@@ -91,7 +91,7 @@ export default async function ExplorePage(props: { searchParams: Promise<Params>
     <div className="pb-16">
       <SectionBackdrop as="header" className="overflow-hidden px-4 pb-8 pt-10 sm:px-6 sm:pt-14">
         <div className="relative mx-auto max-w-7xl">
-          <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-fg-accent">
+          <p className="inline-flex items-center gap-2 text-[10px] font-bold text-fg-accent">
             <Sparkles className="h-3.5 w-3.5" aria-hidden /> {t("explore.eyebrow")}
           </p>
           <h1 className="mt-2 max-w-2xl font-display text-3xl font-black tracking-tight text-fg sm:text-5xl">{t("explore.title")}</h1>
@@ -107,7 +107,7 @@ export default async function ExplorePage(props: { searchParams: Promise<Params>
                 maxLength={100}
                 placeholder={t("explore.placeholder")}
                 aria-label={t("explore.placeholder")}
-                className="h-12 rounded-2xl bg-surface-1/90 pl-11 pr-4 shadow-lg backdrop-blur-md"
+                className="h-12 rounded-2xl bg-surface-1/90 pl-11 pr-4 shadow-lg "
               />
             </div>
             {tag && <input type="hidden" name="tag" value={tag} />}

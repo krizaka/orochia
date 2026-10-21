@@ -20,7 +20,7 @@ export function ChallengeCard({ challenge: c, index = 0 }: { challenge: Challeng
       <Link href={`/challenges/${c.id}`}>
         <Card.Body className="gap-4 p-5">
           <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-fg-accent">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-fg-accent">
               <KindIcon className="h-3.5 w-3.5" aria-hidden /> {t(`challenge.kind.${c.kind}`)}
             </span>
             <ChallengeStageBadge stage={c.stage} />

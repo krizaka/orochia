@@ -376,8 +376,8 @@ export function StoryViewer({
           <div className="pointer-events-none relative z-20 px-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-4">
             <div className="mb-3 flex gap-1" aria-hidden>
               {ring.stories.map((s, i) => (
-                <div key={s.id} className="h-0.5 flex-1 overflow-hidden rounded-full bg-fg-on-media/30">
-                  <div className="h-full rounded-full bg-fg-on-media" style={{ width: i < position.story ? "100%" : i === position.story ? `${progress}%` : "0%" }} />
+                <div key={s.id} className="h-0.5 flex-1 overflow-hidden rounded-sm bg-fg-on-media/30">
+                  <div className="h-full rounded-sm bg-fg-on-media" style={{ width: i < position.story ? "100%" : i === position.story ? `${progress}%` : "0%" }} />
                 </div>
               ))}
             </div>
@@ -449,7 +449,7 @@ export function StoryViewer({
                 <button
                   type="button"
                   onClick={toggleSound}
-                  className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full bg-scrim-strong px-3.5 py-1.5 text-xs font-semibold text-fg-on-media outline-none transition-colors hover:bg-scrim focus-visible:ring-2 focus-visible:ring-fg-on-media/80"
+                  className="pointer-events-auto inline-flex items-center gap-1.5 rounded-sm bg-scrim-strong px-3.5 py-1.5 text-xs font-semibold text-fg-on-media outline-none transition-colors hover:bg-scrim focus-visible:ring-2 focus-visible:ring-fg-on-media/80"
                 >
                   <VolumeX className="h-3.5 w-3.5" aria-hidden />
                   {t("stories.viewer.tapForSound")}
@@ -517,14 +517,14 @@ export function StoryViewer({
                     enterKeyHint="send"
                     autoComplete="off"
                     placeholder={t("stories.viewer.replyPlaceholder", { name: ring.displayName })}
-                    className="h-full w-full rounded-full border border-fg-on-media/35 bg-scrim pl-10 pr-4 text-sm text-fg-on-media outline-none transition-colors placeholder:text-fg-on-media/65 focus:border-fg-on-media/80"
+                    className="h-full w-full rounded-sm border border-fg-on-media/35 bg-scrim pl-10 pr-4 text-sm text-fg-on-media outline-none transition-colors placeholder:text-fg-on-media/65 focus:border-fg-on-media/80"
                   />
                 </span>
                 {replying && reply.trim() ? (
                   <button
                     type="submit"
                     disabled={sending}
-                    className="h-11 shrink-0 rounded-full bg-fg-on-media px-4 text-xs font-bold text-media outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-60"
+                    className="h-11 shrink-0 rounded-sm bg-fg-on-media px-4 text-xs font-bold text-media outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-60"
                   >
                     {sending ? t("stories.viewer.sending") : t("stories.viewer.send")}
                   </button>
@@ -536,7 +536,7 @@ export function StoryViewer({
                       aria-pressed={story.liked}
                       aria-label={story.liked ? t("stories.viewer.unlike") : t("stories.viewer.like")}
                       className={cn(
-                        "flex h-11 shrink-0 items-center gap-1.5 rounded-full px-3 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-fg-on-media/80",
+                        "flex h-11 shrink-0 items-center gap-1.5 rounded-sm px-3 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-fg-on-media/80",
                         story.liked ? "bg-danger/25 text-fg-danger" : "bg-scrim text-fg-on-media hover:bg-scrim-strong",
                       )}
                     >
@@ -547,7 +547,7 @@ export function StoryViewer({
                       type="button"
                       onClick={() => setPanel("tip")}
                       aria-label={t("stories.viewer.tip", { name: ring.displayName })}
-                      className="flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-linear-to-r from-accent to-accent-2 px-3.5 text-xs font-bold text-on-accent shadow-lg shadow-accent/30 outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-fg-on-media/80"
+                      className="flex h-11 shrink-0 items-center gap-1.5 rounded-sm bg-linear-to-r from-accent to-accent-2 px-3.5 text-xs font-bold text-on-accent shadow-lg shadow-accent/30 outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-fg-on-media/80"
                     >
                       <TipIcon size={18} />
                       <span className="hidden min-[380px]:inline">{t("stories.viewer.tipShort")}</span>
@@ -558,7 +558,7 @@ export function StoryViewer({
             ) : (
               <Link
                 href={`/auth/login?next=${encodeURIComponent(`${pathname}?story=${story.id}`)}`}
-                className="pointer-events-auto flex h-11 items-center justify-center rounded-full bg-scrim text-xs font-semibold text-fg-on-media outline-none transition-colors hover:bg-scrim-strong focus-visible:ring-2 focus-visible:ring-fg-on-media/80"
+                className="pointer-events-auto flex h-11 items-center justify-center rounded-sm bg-scrim text-xs font-semibold text-fg-on-media outline-none transition-colors hover:bg-scrim-strong focus-visible:ring-2 focus-visible:ring-fg-on-media/80"
               >
                 {t("stories.viewer.signInToReact")}
               </Link>

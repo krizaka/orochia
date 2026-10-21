@@ -45,7 +45,7 @@ export function PresenceAvatar({
           aria-hidden
           data-presence={state}
           className={cn(
-            "absolute bottom-0 right-0 block rounded-full ring-2 ring-surface-1",
+            "absolute bottom-0 right-0 block rounded-sm ring-2 ring-surface-1",
             size === "lg" ? "h-3.5 w-3.5" : "h-3 w-3",
             state === "online" ? "bg-success" : "border-2 border-warning bg-surface-1",
           )}

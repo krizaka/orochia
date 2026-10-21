@@ -58,7 +58,7 @@ export function SocialSignIn() {
           <FacebookMark /> {t("auth.social.facebook")}
         </a>
       )}
-      <div className="flex items-center gap-3 py-1 text-[11px] uppercase tracking-wider text-fg-muted">
+      <div className="flex items-center gap-3 py-1 text-[11px] text-fg-muted">
         <span className="h-px flex-1 bg-surface-3" /> {t("auth.social.or")} <span className="h-px flex-1 bg-surface-3" />
       </div>
     </div>

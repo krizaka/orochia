@@ -36,7 +36,7 @@ export function UsernameField({ value, onChange, className }: { value: string; o
 
   return (
     <Field.Root className={className}>
-      <Field.Label htmlFor={id} className="uppercase tracking-wider">
+      <Field.Label htmlFor={id} className="">
         {t("auth.register.username")}
       </Field.Label>
       <div className="relative">

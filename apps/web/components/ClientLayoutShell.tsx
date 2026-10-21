@@ -30,7 +30,7 @@ export function ClientLayoutShell({ children }: { children: React.ReactNode }) {
       {/* The first Tab skips the navigation (WCAG 2.4.1) — @krizaka/ui's SkipLink when it ships (krizaka/krizaka-ui#134). */}
       <a
         href="#content"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-[100] focus:rounded-full focus:bg-surface-1 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-fg focus:shadow-lg focus:outline-2 focus:outline-ring"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-[100] focus:rounded-sm focus:bg-surface-1 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-fg focus:shadow-lg focus:outline-2 focus:outline-ring"
       >
         {t("common.skipToContent")}
       </a>

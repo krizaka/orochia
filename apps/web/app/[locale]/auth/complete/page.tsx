@@ -94,12 +94,12 @@ export default function CompleteSignUpPage() {
         {error && <p role="alert" className="rounded-xl border border-danger/30 bg-danger/10 p-3 text-xs text-fg-danger">{error}</p>}
         <UsernameField value={username} onChange={setUsername} />
         <Field.Root>
-          <Field.Label htmlFor="displayName" className="uppercase tracking-wider">{t("auth.register.displayName")}</Field.Label>
+          <Field.Label htmlFor="displayName" className="">{t("auth.register.displayName")}</Field.Label>
           <Input id="displayName" required value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="rounded-xl px-3.5" />
         </Field.Root>
         {pending.needsEmail ? (
           <Field.Root>
-            <Field.Label htmlFor="email" className="uppercase tracking-wider">{t("auth.complete.email")}</Field.Label>
+            <Field.Label htmlFor="email" className="">{t("auth.complete.email")}</Field.Label>
             <Input id="email" required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="rounded-xl px-3.5" autoComplete="email" aria-describedby="email-hint" />
             <Field.Hint id="email-hint" className="text-[11px]">{t("auth.complete.emailHint", { provider: providerName })}</Field.Hint>
           </Field.Root>

@@ -51,7 +51,7 @@ export function NotificationMatrix({
       <p className="mt-2 text-[11px] text-fg-secondary">{preset ? t(`settings.notifications.presets.${preset}Hint`) : t("settings.notifications.presets.custom")}</p>
 
       <div className="mt-4 overflow-hidden rounded-2xl border border-border-default">
-        <div className="grid grid-cols-[minmax(0,1fr)_64px_64px] items-center gap-2 border-b border-border-default bg-surface-2 px-4 py-2.5 text-[10px] font-bold uppercase tracking-wider text-fg-secondary sm:grid-cols-[minmax(0,1fr)_96px_96px]">
+        <div className="grid grid-cols-[minmax(0,1fr)_64px_64px] items-center gap-2 border-b border-border-default bg-surface-2 px-4 py-2.5 text-[10px] font-bold text-fg-secondary sm:grid-cols-[minmax(0,1fr)_96px_96px]">
           <span />
           <span className="text-center">{t("settings.notifications.inApp")}</span>
           <span className="text-center">{t("settings.notifications.byEmail")}</span>

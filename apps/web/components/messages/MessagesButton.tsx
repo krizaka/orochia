@@ -30,7 +30,7 @@ export function MessagesButton() {
     >
       <MessageIcon size={16} />
       {unread > 0 && (
-        <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent-2 px-1 text-[10px] font-bold text-on-accent ring-2 ring-surface-0">
+        <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-sm bg-accent-2 px-1 text-[10px] font-bold text-on-accent ring-2 ring-surface-0">
           {unread > 99 ? "99+" : unread}
         </span>
       )}

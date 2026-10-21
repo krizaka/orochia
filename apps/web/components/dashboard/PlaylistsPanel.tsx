@@ -140,7 +140,7 @@ export function PlaylistsPanel() {
 
       {shared && shared.length > 0 && (
         <section>
-          <h3 className="mb-2 text-[10px] font-bold uppercase tracking-widest text-fg-muted">{t("playlistsPanel.shared")}</h3>
+          <h3 className="mb-2 text-[10px] font-bold text-fg-muted">{t("playlistsPanel.shared")}</h3>
           <ul className="glass-panel divide-y divide-border-subtle rounded-3xl px-5">
             {shared.map((p) => (
               <li key={p.id} className="flex items-center justify-between gap-3 py-3.5">

@@ -90,7 +90,7 @@ export function StorageMeter({ initial, compact = false, className }: { initial?
   return (
     <section className={cn("glass-panel rounded-2xl p-5", className)} aria-labelledby="storage-meter-title">
       <div className="flex items-center justify-between gap-3">
-        <h3 id="storage-meter-title" className="flex items-center gap-2 text-[11px] font-mono uppercase text-fg-secondary">
+        <h3 id="storage-meter-title" className="flex items-center gap-2 text-[11px] font-mono text-fg-secondary">
           <ServerIcon size={14} />
           {t("quota.title")}
         </h3>

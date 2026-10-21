@@ -110,10 +110,10 @@ function WalletPage() {
         {/* Balance + buy */}
         <section className="overflow-hidden rounded-[1.75rem] border border-border-default bg-surface-1/60 shadow-xl shadow-accent/5">
           <div className="relative overflow-hidden bg-linear-to-br from-accent/30 via-transparent to-accent-2/25 px-6 py-7">
-            <p className="text-xs font-semibold uppercase tracking-wider text-fg-accent">{t("wallet.balance")}</p>
+            <p className="text-xs font-semibold text-fg-accent">{t("wallet.balance")}</p>
             <p className="mt-1 font-display text-5xl font-black tabular-nums tracking-tight text-fg">{wallet ? money(wallet.balanceCents) : "—"}</p>
             {wallet && wallet.heldCents > 0 && (
-              <Link href="/auctions?tab=bidding" className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-border-strong bg-surface-1/60 px-3 py-1 text-[11px] font-semibold text-fg-accent transition-colors hover:border-accent hover:text-fg">
+              <Link href="/auctions?tab=bidding" className="mt-2 inline-flex items-center gap-1.5 rounded-sm border border-border-strong bg-surface-1/60 px-3 py-1 text-[11px] font-semibold text-fg-accent transition-colors hover:border-accent hover:text-fg">
                 <Gavel className="h-3 w-3" aria-hidden /> {t("wallet.held", { amount: money(wallet.heldCents) })}
               </Link>
             )}

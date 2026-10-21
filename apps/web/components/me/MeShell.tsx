@@ -82,7 +82,7 @@ export function MeShell({ children }: { children: React.ReactNode }) {
           </div>
           {isCreator && (
             <Link href="/me/earnings" className="text-right" aria-label={t("profile.balance")}>
-              <span className="block text-[10px] font-semibold uppercase tracking-wider text-fg-secondary">{t("profile.balance")}</span>
+              <span className="block text-[10px] font-semibold text-fg-secondary">{t("profile.balance")}</span>
               <span className="font-mono text-lg font-black text-fg-success">{money(user.balanceCents)}</span>
             </Link>
           )}
@@ -118,7 +118,7 @@ export function MeShell({ children }: { children: React.ReactNode }) {
             <div className="sticky top-24 space-y-6">
               {groups.map((g) => (
                 <div key={g.id}>
-                  <h2 className="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-fg-muted">{t(g.label)}</h2>
+                  <h2 className="px-3 pb-1 text-[10px] font-bold text-fg-muted">{t(g.label)}</h2>
                   <ul className="space-y-0.5">
                     {g.items.map((i) => {
                       const Icon = ICONS[i.icon];

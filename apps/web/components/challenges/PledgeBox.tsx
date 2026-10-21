@@ -94,7 +94,7 @@ export function PledgeBox({ c, onPledged }: { c: ChallengeView; onPledged: (bala
             min={1}
             aria-label={t("challenge.pledge.custom")}
             placeholder={t("challenge.pledge.custom")}
-            className="w-28 rounded-full bg-transparent py-1.5 pl-6 pr-3 font-mono text-xs"
+            className="w-28 rounded-sm bg-transparent py-1.5 pl-6 pr-3 font-mono text-xs"
           />
         </span>
       </div>

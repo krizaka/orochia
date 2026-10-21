@@ -104,19 +104,19 @@ export const Stage = forwardRef<
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,transparent_33.2%,rgba(255,255,255,0.35)_33.3%,transparent_33.4%,transparent_66.6%,rgba(255,255,255,0.35)_66.7%,transparent_66.8%),linear-gradient(to_bottom,transparent_33.2%,rgba(255,255,255,0.35)_33.3%,transparent_33.4%,transparent_66.6%,rgba(255,255,255,0.35)_66.7%,transparent_66.8%)]" />
         )}
         {pannable && !dragging && (
-          <span className="pointer-events-none absolute left-1/2 top-3 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full bg-scrim px-3 py-1.5 text-[11px] font-medium text-fg-on-media backdrop-blur-md">
+          <span className="pointer-events-none absolute left-1/2 top-3 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-sm bg-scrim px-3 py-1.5 text-[11px] font-medium text-fg-on-media ">
             <Hand className="h-3.5 w-3.5" /> {t("editor.reposition")}
           </span>
         )}
         {!playing && !progress && (
           <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-black/45 text-white ring-1 ring-white/20 backdrop-blur-md">
+            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-black/45 text-white ring-1 ring-white/20 ">
               <Play className="ml-1 h-7 w-7" fill="currentColor" />
             </span>
           </span>
         )}
         {progress && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-scrim-strong px-6 text-center text-fg-on-media backdrop-blur-xs" role="status" aria-live="polite">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-scrim-strong px-6 text-center text-fg-on-media " role="status" aria-live="polite">
             <div className="relative h-20 w-20">
               <svg viewBox="0 0 36 36" className="h-20 w-20 -rotate-90">
                 <circle cx="18" cy="18" r="15.5" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="3" />

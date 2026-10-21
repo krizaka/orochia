@@ -79,7 +79,7 @@ export function AiBadge({ credit }: { credit: AiCredit }) {
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
-        <button type="button" data-testid="ai-badge" aria-label={t("info.ai.title")} className="rounded-full focus-visible:outline-2 focus-visible:outline-accent">
+        <button type="button" data-testid="ai-badge" aria-label={t("info.ai.title")} className="rounded-sm focus-visible:outline-2 focus-visible:outline-accent">
           <Badge tone="accent" size="md">
             <Sparkles className="size-3" aria-hidden />
             {t("info.ai.badge")}

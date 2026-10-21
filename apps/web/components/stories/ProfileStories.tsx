@@ -108,7 +108,7 @@ export function ProfileStoriesRow() {
   if (items.length === 0 && !stories.canAdd) return null;
   return (
     <section aria-label={t("stories.profile.title")} className="mt-5">
-      <h2 className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-fg-secondary">
+      <h2 className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold text-fg-secondary">
         <Story24hIcon size={14} className="text-fg-accent" />
         {t("stories.profile.title")}
       </h2>
@@ -149,7 +149,7 @@ export function ProfileStoriesRow() {
                 />
               )}
               {s.state !== "ready" && (
-                <span className="absolute inset-x-1 bottom-1 rounded-full bg-scrim px-1 py-0.5 text-center text-[9px] font-semibold text-fg-on-media">
+                <span className="absolute inset-x-1 bottom-1 rounded-sm bg-scrim px-1 py-0.5 text-center text-[9px] font-semibold text-fg-on-media">
                   {t(s.state === "processing" ? "stories.processing" : s.state === "held" ? "stories.held" : "stories.failed")}
                 </span>
               )}

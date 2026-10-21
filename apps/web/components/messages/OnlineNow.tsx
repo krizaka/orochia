@@ -16,7 +16,7 @@ export function OnlineNow({ people, onOpen }: { people: OnlinePerson[]; onOpen: 
   if (people.length === 0) return null;
   return (
     <section aria-labelledby="online-now" className="border-b border-border-default px-4 py-3">
-      <h2 id="online-now" className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-fg-secondary">
+      <h2 id="online-now" className="mb-2 text-[11px] font-semibold text-fg-secondary">
         {t("inbox.onlineNow")}
       </h2>
       <ul className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-1">

@@ -23,7 +23,7 @@ export function BirthDateField({ value, onChange, className }: { value: string; 
   const id = useId();
   return (
     <Field.Root className={className}>
-      <Field.Label htmlFor={id} className="uppercase tracking-wider">
+      <Field.Label htmlFor={id} className="">
         {t("auth.register.birthDate")}
       </Field.Label>
       <div className="relative">

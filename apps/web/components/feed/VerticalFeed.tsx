@@ -28,7 +28,7 @@ function sendWatch(report: WatchReport, leaving: boolean) {
   else void fetch("/api/feed/events", { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true }).catch(() => undefined);
 }
 
-const RAIL_BUTTON = "h-11 min-h-11 w-11 min-w-11 bg-scrim text-fg-on-media backdrop-blur-md hover:bg-scrim";
+const RAIL_BUTTON = "h-11 min-h-11 w-11 min-w-11 bg-scrim text-fg-on-media hover:bg-scrim";
 
 /**
  * The phone's feed: one video per screen, snap-scrolling (@krizaka/ui `ShortFeed` / `VerticalVideo`). The video in view plays

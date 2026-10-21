@@ -47,7 +47,7 @@ export default function NotFound() {
             maxLength={100}
             placeholder={t("errorPages.searchPlaceholder")}
             aria-label={t("errorPages.searchPlaceholder")}
-            className="h-12 rounded-2xl bg-surface-1/90 pl-11 pr-4 shadow-lg backdrop-blur-md"
+            className="h-12 rounded-2xl bg-surface-1/90 pl-11 pr-4 shadow-lg "
           />
         </div>
         <Button type="submit" variant="sensual" size="lg" shape="rounded" className="rounded-2xl px-5">

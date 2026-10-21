@@ -56,7 +56,7 @@ export default function ForgotPasswordPage() {
           </>
         ) : (
           <form onSubmit={submit} className="mt-5 space-y-4">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-fg-secondary">
+            <label className="block text-xs font-semibold text-fg-secondary">
               {t("auth.forgot.email")}
               <div className="relative mt-1.5">
                 <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-fg-muted" aria-hidden />

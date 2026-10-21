@@ -20,7 +20,7 @@ export async function StoryTile({ story, index = 0 }: { story: ExploreStory; ind
           <Card.Image src={story.posterUrl} fallback={<StoryIcon size={36} />} className={cn(story.isBlurred && "scale-110 blur-xl")} />
           <div className="absolute inset-0 bg-linear-to-t from-scrim-strong via-transparent to-scrim/40" aria-hidden />
           <Card.Overlay corner="top-left" className="flex items-center gap-2">
-            <span className="rounded-full bg-linear-to-tr from-accent to-accent-2 p-0.5">
+            <span className="rounded-sm bg-linear-to-tr from-accent to-accent-2 p-0.5">
               <Avatar src={story.creatorAvatar} defaultAvatar={{ brand: "orochia", seed: story.creatorName }} fallbackSrc={defaultAvatarFor(story.creatorName)} alt="" fallback={story.creatorName.charAt(0)} className="h-8 w-8 rounded-full border-2 border-media" />
             </span>
           </Card.Overlay>
@@ -31,7 +31,7 @@ export async function StoryTile({ story, index = 0 }: { story: ExploreStory; ind
             </Badge>
           </Card.Overlay>
           {story.isBlurred && (
-            <span className="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-[10px] font-bold uppercase tracking-wider text-fg-on-media">
+            <span className="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-[10px] font-bold text-fg-on-media">
               {t("card.sensitive")}
             </span>
           )}

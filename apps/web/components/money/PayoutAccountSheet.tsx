@@ -81,7 +81,7 @@ export function PayoutAccountSheet({ open, onClose, onSaved }: { open: boolean; 
                   placeholder="FR"
                   autoComplete="country"
                   maxLength={2}
-                  className={cn(field, "uppercase")}
+                  className={cn(field, "")}
                 />
               </label>
             </div>

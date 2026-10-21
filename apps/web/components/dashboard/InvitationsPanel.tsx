@@ -123,7 +123,7 @@ export function InvitationsPanel() {
           <div className="mt-4 rounded-2xl border border-success/30 bg-success/10 p-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-fg-success">
+                <span className="text-[11px] font-bold text-fg-success">
                   {t("invites.ready")}
                 </span>
                 <p className="text-xs font-mono text-fg-success mt-0.5 select-all">
@@ -156,7 +156,7 @@ export function InvitationsPanel() {
 
       {/* Invitations History Table */}
       <div className="glass-panel rounded-3xl p-6 sm:p-8">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-fg-secondary mb-4">
+        <h3 className="text-xs font-bold text-fg-secondary mb-4">
           {t("invites.sent")} <span className="font-mono text-fg-muted">({invitations.length})</span>
         </h3>
 

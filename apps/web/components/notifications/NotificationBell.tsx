@@ -31,7 +31,7 @@ export function NotificationBell() {
   const [open, setOpen] = useState(false);
 
   const badge = unread > 0 && (
-    <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent-2 px-1 text-[10px] font-bold text-on-accent ring-2 ring-surface-0">
+    <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-sm bg-accent-2 px-1 text-[10px] font-bold text-on-accent ring-2 ring-surface-0">
       {unread > 99 ? "99+" : unread}
     </span>
   );
@@ -51,7 +51,7 @@ export function NotificationBell() {
             {badge}
           </IconButton>
         </Popover.Trigger>
-        <Popover.Content align="end" aria-label={t("notifications.title")} className="w-[380px] overflow-hidden rounded-2xl bg-surface-1/95 p-0 shadow-2xl backdrop-blur-2xl">
+        <Popover.Content align="end" aria-label={t("notifications.title")} className="w-[380px] overflow-hidden rounded-2xl bg-surface-1/95 p-0 shadow-2xl ">
           <div className="flex items-center justify-between border-b border-border-subtle px-4 py-3">
             <h2 className="text-sm font-bold text-fg">{t("notifications.title")}</h2>
             <div className="flex items-center gap-1">

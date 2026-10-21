@@ -50,7 +50,7 @@ export function ChallengeClient({ id }: { id: string }) {
         <div className="min-w-0 space-y-5">
           <header className="space-y-3" data-reveal>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-fg-accent">
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-fg-accent">
                 <KindIcon className="h-3.5 w-3.5" aria-hidden /> {t(`challenge.kind.${c.kind}`)}
               </span>
               <ChallengeStageBadge stage={c.stage} />
@@ -78,14 +78,14 @@ export function ChallengeClient({ id }: { id: string }) {
 
           <p className="whitespace-pre-line text-sm leading-relaxed text-fg-secondary">{c.description}</p>
           <ul className="flex flex-wrap gap-2 text-[11px] font-semibold text-fg-secondary">
-            <li className="inline-flex items-center gap-1 rounded-full border border-border-default px-2.5 py-1">
+            <li className="inline-flex items-center gap-1 rounded-sm border border-border-default px-2.5 py-1">
               <Clapperboard className="h-3 w-3" aria-hidden /> {t(`challenge.deliverable.${c.deliverable}`)}
             </li>
-            <li className="inline-flex items-center gap-1 rounded-full border border-border-default px-2.5 py-1">
+            <li className="inline-flex items-center gap-1 rounded-sm border border-border-default px-2.5 py-1">
               {c.reward === "BACKERS" ? <Lock className="h-3 w-3" aria-hidden /> : <Users className="h-3 w-3" aria-hidden />}{" "}
               {t(`challenge.reward.${c.reward}`)}
             </li>
-            <li className="inline-flex items-center gap-1 rounded-full border border-border-default px-2.5 py-1">
+            <li className="inline-flex items-center gap-1 rounded-sm border border-border-default px-2.5 py-1">
               <Timer className="h-3 w-3" aria-hidden /> {t("challenge.deliveryDays", { days: c.deliveryDays })}
             </li>
           </ul>
@@ -111,7 +111,7 @@ export function ChallengeClient({ id }: { id: string }) {
           <ChallengeActions c={c} onChanged={() => void reload()} />
 
           <section className={panel}>
-            <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-fg-secondary">{t("challenge.recent")}</h2>
+            <h2 className="mb-3 text-xs font-bold text-fg-secondary">{t("challenge.recent")}</h2>
             {c.recentPledges.length === 0 ? (
               <p className="text-sm text-fg-muted">{t("challenge.noPledges")}</p>
             ) : (
@@ -155,14 +155,14 @@ export function ChallengeClient({ id }: { id: string }) {
           </div>
           {c.viewer.canPledge && <PledgeBox c={c} onPledged={() => void reload()} />}
           <section className={panel} aria-labelledby="challenge-journey">
-            <h2 id="challenge-journey" className="mb-3 text-xs font-bold uppercase tracking-wider text-fg-secondary">
+            <h2 id="challenge-journey" className="mb-3 text-xs font-bold text-fg-secondary">
               {t("challenge.journey")}
             </h2>
             <Stepper steps={challengeJourney(c.kind, c.stage).map((step) => ({ title: t(`challenge.stage.${step.stage}`), status: step.status }))} />
           </section>
           {c.topBackers.length > 0 && (
             <section className={panel}>
-              <h2 className="mb-3 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-fg-secondary">
+              <h2 className="mb-3 flex items-center gap-1.5 text-xs font-bold text-fg-secondary">
                 <Crown className="h-3.5 w-3.5 text-fg-warning" aria-hidden /> {t("challenge.leaderboard")}
               </h2>
               <ol className="space-y-1.5">

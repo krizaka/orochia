@@ -68,8 +68,8 @@ function Video({ name, className = "", still }: { name: string; className?: stri
 function Tap({ x, y, show }: { x: string; y: string; show: boolean }) {
   if (!show) return null;
   return (
-    <span aria-hidden className="sc-tap pointer-events-none absolute z-40 h-9 w-9 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/90 bg-white/35 shadow-lg shadow-black/40 backdrop-blur-sm" style={{ left: x, top: y }}>
-      <span className="sc-ripple absolute inset-0 rounded-full border-2 border-white" />
+    <span aria-hidden className="sc-tap pointer-events-none absolute z-40 h-9 w-9 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/90 bg-white/35 shadow-lg shadow-black/40 " style={{ left: x, top: y }}>
+      <span className="sc-ripple absolute inset-0 rounded-sm border-2 border-white" />
     </span>
   );
 }
@@ -77,7 +77,7 @@ function Tap({ x, y, show }: { x: string; y: string; show: boolean }) {
 function Toast({ children, show }: { children: React.ReactNode; show: boolean }) {
   if (!show) return null;
   return (
-    <div className="sc-toast absolute inset-x-4 top-12 z-30 flex items-center gap-2 rounded-2xl border border-white/15 bg-surface-0/85 px-3 py-2.5 text-[11px] font-semibold text-white shadow-2xl backdrop-blur-xl">
+    <div className="sc-toast absolute inset-x-4 top-12 z-30 flex items-center gap-2 rounded-2xl border border-white/15 bg-surface-0/85 px-3 py-2.5 text-[11px] font-semibold text-white shadow-2xl ">
       {children}
     </div>
   );
@@ -161,7 +161,7 @@ function Stories({ still }: { still: boolean }) {
       <div className={shade} />
       <div className="absolute inset-x-3 top-10 z-20 flex gap-1">
         {names.map((n, i) => (
-          <span key={n} className="h-[3px] flex-1 overflow-hidden rounded-full bg-white/30">
+          <span key={n} className="h-[3px] flex-1 overflow-hidden rounded-sm bg-white/30">
             <span className={cn(
               "block h-full bg-white",
               i < step || still ? "w-full" : i === step ? "sc-fill" : "w-0"
@@ -174,12 +174,12 @@ function Stories({ still }: { still: boolean }) {
           <BadgeCheck className="h-3.5 w-3.5" />
         </span>
         <span className="text-[11px] font-bold">{t("home.showcase.ui.storyBadge")}</span>
-        <span className="flex items-center gap-1 rounded-full bg-black/40 px-2 py-0.5 text-[10px] font-semibold backdrop-blur-md">
+        <span className="flex items-center gap-1 rounded-sm bg-black/40 px-2 py-0.5 text-[10px] font-semibold ">
           <Clock className="h-2.5 w-2.5" /> {t("home.showcase.ui.storyExpires")}
         </span>
       </div>
       <div className="absolute inset-x-3 bottom-5 z-20 flex items-center gap-2">
-        <span className="flex-1 rounded-full border border-white/40 bg-black/25 px-3.5 py-2.5 text-[11px] text-white/85 backdrop-blur-md">{t("home.showcase.ui.reply")}</span>
+        <span className="flex-1 rounded-sm border border-white/40 bg-black/25 px-3.5 py-2.5 text-[11px] text-white/85 ">{t("home.showcase.ui.reply")}</span>
         <Heart className="h-6 w-6 text-white" />
         <Send className="h-5.5 w-5.5 text-white" />
       </div>
@@ -202,10 +202,10 @@ function Tip({ still, share }: { still: boolean; share: number }) {
       <CreatorLine caption={t("home.showcase.ui.caption2")} />
       <Rail liked={false} pulseTip={step === 1} />
       <div className={cn(
-        "absolute inset-x-0 bottom-0 z-30 rounded-t-3xl border-t border-white/10 bg-surface-0/95 p-4 pb-6 backdrop-blur-2xl transition-transform duration-500",
+        "absolute inset-x-0 bottom-0 z-30 rounded-t-3xl border-t border-white/10 bg-surface-0/95 p-4 pb-6 transition-transform duration-500",
         open ? "translate-y-0" : "translate-y-full"
       )} style={{ transitionTimingFunction: "cubic-bezier(.16,1,.3,1)" }}>
-        <span className="mx-auto mb-3 block h-1 w-10 rounded-full bg-white/25" />
+        <span className="mx-auto mb-3 block h-1 w-10 rounded-sm bg-white/25" />
         <p className="text-[13px] font-bold text-white">{t("home.showcase.ui.tipTitle")}</p>
         <div className="mt-3 grid grid-cols-4 gap-2">
           {AMOUNTS.map((a, i) => (
@@ -273,18 +273,18 @@ function Auction({ still }: { still: boolean }) {
       <div className="relative h-[52%] shrink-0 overflow-hidden">
         <Video name="auction" still={still} />
         <div className={shade} />
-        <span className="absolute left-3 top-11 z-20 flex items-center gap-1 rounded-full bg-accent px-2.5 py-1 text-[10px] font-bold text-white shadow-lg">
+        <span className="absolute left-3 top-11 z-20 flex items-center gap-1 rounded-sm bg-accent px-2.5 py-1 text-[10px] font-bold text-white shadow-lg">
           <Gavel className="h-3 w-3" /> {t("home.showcase.ui.auctionBadge")}
         </span>
         <span className={cn(
-          "absolute right-3 top-11 z-20 rounded-full px-2.5 py-1 font-mono text-[11px] font-bold text-white shadow-lg",
-          extended ? "sc-pop bg-warning" : "bg-scrim backdrop-blur-md"
+          "absolute right-3 top-11 z-20 rounded-sm px-2.5 py-1 font-mono text-[11px] font-bold text-white shadow-lg",
+          extended ? "sc-pop bg-warning" : "bg-scrim "
         )}>
           {mm}:{ss}
         </span>
       </div>
       <div className="flex flex-1 flex-col px-4 pt-3 text-white">
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-fg-secondary">{t("home.showcase.ui.currentBid")}</p>
+        <p className="text-[10px] font-semibold text-fg-secondary">{t("home.showcase.ui.currentBid")}</p>
         <p key={price} className="sc-pop font-display text-3xl font-black tabular-nums">${(price / 100).toFixed(0)}</p>
         <ul className="mt-2 space-y-1.5">
           {rows
