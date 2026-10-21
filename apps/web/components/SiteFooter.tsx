@@ -14,7 +14,7 @@ import { localizedPath } from "@/lib/locales";
  * Orochia's own column, the publisher line « A Krizaka product » (→ www.krizaka.com), the environment and the version,
  * Montréal. No family columns, no link to another product. The legal links and the 18+ statement end the signature line.
  */
-export function SiteFooter({ uiVersion = "" }: { uiVersion?: string }) {
+export function SiteFooter({ uiVersion = "", devNotice = false }: { uiVersion?: string; devNotice?: boolean }) {
   const { t, locale } = useI18n();
   const changelog = localizedPath("/changelog", locale);
   const link = (href: string, label: string) => (
@@ -33,6 +33,7 @@ export function SiteFooter({ uiVersion = "" }: { uiVersion?: string }) {
         legal={
           <>
             {link(`${changelog}#${BUILD_INFO.version}`, `${format(t("changelog.footerVersion"), { version: BUILD_INFO.version })}${uiVersion ? ` · Krizaka UI ${uiVersion}` : ""}`)}
+            {devNotice && <span data-testid="dev-environment-notice">{t("footer.devNotice")}</span>}
             <span>{t("footer.adults")}</span>
             {link("/legal/terms", t("footer.terms"))}
             {link("/legal/privacy", t("footer.privacy"))}

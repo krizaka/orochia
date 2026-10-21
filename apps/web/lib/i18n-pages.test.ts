@@ -2,7 +2,6 @@ import { createElement } from "react";
 import { Shield } from "lucide-react";
 import { describe, expect, it, vi } from "vitest";
 
-import { DevEnvironmentNotice } from "@/components/DevEnvironmentNotice";
 import { LegalDocument, legalMetadata } from "@/components/legal/LegalDocument";
 import NotFound from "@/app/[locale]/not-found";
 import { generateMetadata as mobileMetadata } from "@/app/[locale]/mobile/page";
@@ -59,10 +58,5 @@ describe("the key pages render in each language", () => {
     expect(meta.title).toBe("L’appli mobile Orochia");
     expect(meta.alternates?.canonical).toBe("/fr/mobile");
     expect(meta.alternates?.languages).toEqual({ en: "/en/mobile", fr: "/fr/mobile", "x-default": "/en/mobile" });
-  });
-
-  it("renders a server notice in the language of the request", async () => {
-    expect(await serverHtmlIn("fr", DevEnvironmentNotice, {})).toContain("Environnement de développement");
-    expect(await serverHtmlIn("en", DevEnvironmentNotice, {})).toContain("Development environment");
   });
 });

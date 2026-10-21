@@ -5,7 +5,6 @@ import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 
 import { ClientLayoutShell } from "@/components/ClientLayoutShell";
-import { DevEnvironmentNotice } from "@/components/DevEnvironmentNotice";
 import { JsonLd } from "@/components/JsonLd";
 import { SiteFooter } from "@/components/SiteFooter";
 import { uiVersion } from "@/lib/ui-version";
@@ -82,8 +81,7 @@ export default async function RootLayout({ children, params }: Props & { childre
           <AuthProvider>
             <ClientLayoutShell>{children}</ClientLayoutShell>
             <MotionObserver />
-            <SiteFooter uiVersion={uiVersion()} />
-            {!INDEXABLE && <DevEnvironmentNotice />}
+            <SiteFooter uiVersion={uiVersion()} devNotice={!INDEXABLE} />
           </AuthProvider>
           </I18nProvider>
         </ThemeProvider>
