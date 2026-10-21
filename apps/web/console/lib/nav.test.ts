@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 
 import { NAV_SECTIONS, navItems } from "./nav";
 
-// Dev preview `admin.ux-review` (orochia-admin#49): the operator's jobs map to at most about five sections, no mixed
+// Dev preview `admin.ux-review` (formerly orochia-admin#49): the operator's jobs map to at most about five sections, no mixed
 // concepts, no orphan entry (docs/UX_DECISIONS.md).
 const appDir = join(__dirname, "..", "..", "app", "console");
 const pages = readdirSync(appDir, { withFileTypes: true })

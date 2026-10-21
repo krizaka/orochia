@@ -2,7 +2,7 @@
 
 > **Single source of truth** for architecture, code and agent-behaviour rules across the **Orochia** repositories:
 > [`krizaka/orochia`](https://github.com/krizaka/orochia) (this one — web app, API, packages),
-> [`krizaka/orochia-admin`](https://github.com/krizaka/orochia-admin) (archived: the operator console now lives in this repository, `apps/web/app/console`),
+> the former `krizaka/orochia-admin` (retired and deleted on 2026-10-23: the operator console lives in this repository, `apps/web/app/console`),
 > [`krizaka/orochia-design-system`](https://github.com/krizaka/orochia-design-system) (tokens & components) and
 > [`krizaka/orochia-mobile`](https://github.com/krizaka/orochia-mobile) (the iOS and Android app, Expo).
 > Those carry a short `AGENTS.md` that scopes them and defers here.

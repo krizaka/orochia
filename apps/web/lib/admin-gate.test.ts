@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-// Dev preview `admin.gated` (orochia-admin#41): the operator's endpoints are reachable only by an ADMIN (the console's
+// Dev preview `admin.gated` (formerly orochia-admin#41): the operator's endpoints are reachable only by an ADMIN (the console's
 // service token acts as the owner), never from the public host without it; the console's own pages are not served here.
 const api = join(__dirname, "..", "app", "api", "admin");
 const routes = (dir: string): string[] =>

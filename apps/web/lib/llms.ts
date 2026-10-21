@@ -39,7 +39,7 @@ ${SUMMARY}
 ## For developers and operators
 
 - [Source code](${SOURCE_URL}): web app and API, Next.js + PostgreSQL (Apache-2.0)
-- [Operator console](https://github.com/krizaka/orochia-admin) and [design system](https://github.com/krizaka/orochia-design-system)
+- [Design system](https://github.com/krizaka/orochia-design-system)
 - Self-hostable: Docker Compose or DigitalOcean App Platform; Bunny Stream for video delivery.
 - Full text of the documentation: ${absolute("/llms-full.txt")}
 

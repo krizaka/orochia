@@ -18,19 +18,6 @@
       "description": "Direct-to-Bunny streaming with short-lived signed URLs, server-side access control, gateway-confirmed unlocks and an idempotent double-entry ledger."
     },
     {
-      "name": "orochia-admin",
-      "repo": "krizaka/orochia-admin",
-      "url": "https://github.com/krizaka/orochia-admin",
-      "port": 3001,
-      "role": "Control plane: 2257 records, moderation & treasury",
-      "stack": [
-        "Next.js 16 App Router",
-        "Tailwind CSS",
-        "Lucide Icons"
-      ],
-      "description": "Administrative console for performer records, content reports and platform revenue."
-    },
-    {
       "name": "orochia-design-system",
       "repo": "krizaka/orochia-design-system",
       "url": "https://github.com/krizaka/orochia-design-system",
@@ -1530,10 +1517,6 @@
         "url": "https://github.com/krizaka/orochia"
       },
       {
-        "name": "orochia-admin",
-        "url": "https://github.com/krizaka/orochia-admin"
-      },
-      {
         "name": "orochia-design-system",
         "url": "https://github.com/krizaka/orochia-design-system"
       },
@@ -1543,18 +1526,6 @@
       }
     ],
     "modules": [
-      {
-        "id": "orochia-admin",
-        "name": "@krizaka/orochia-admin",
-        "role": "client",
-        "owner": "orochia",
-        "repository": "orochia-admin",
-        "path": ".",
-        "runtime": "node",
-        "version": "1.0.0",
-        "published": false,
-        "description": "Operator console for Orochia: 2257 creator verification, content reports, payouts and treasury"
-      },
       {
         "id": "orochia-mobile",
         "name": "orochia-mobile",
@@ -1724,6 +1695,18 @@
         "description": "Money, numbers, dates and plurals formatted the same way in every Krizaka product: zero dependency, built on Intl, money from integer minor units only."
       },
       {
+        "id": "krizaka-pacer",
+        "name": "@krizaka/pacer",
+        "role": "design",
+        "owner": "krizaka",
+        "repository": "pacer",
+        "path": "node_modules/@krizaka/pacer",
+        "runtime": "library",
+        "version": "0.1.0",
+        "published": true,
+        "description": "Cadence for every Krizaka app: debounce and throttle (functions and React hooks), a job queue with concurrency, priority, retries with backoff, pause and resume per job, and a client rate limiter that learns from a server's Problem Details — TanStack Pacer (beta) behind the Krizaka facade."
+      },
+      {
         "id": "krizaka-push",
         "name": "@krizaka/push",
         "role": "design",
@@ -1788,8 +1771,8 @@
         "name": "PostgreSQL (console)",
         "role": "data",
         "owner": "external",
-        "repository": "orochia-admin",
-        "path": "lib/db.ts",
+        "repository": "orochia",
+        "path": "apps/web/console/lib/db.ts",
         "runtime": "postgresql",
         "version": null,
         "published": false,
@@ -1930,31 +1913,6 @@
     ],
     "dependencies": [
       {
-        "from": "orochia-admin",
-        "to": "krizaka-charts",
-        "version": "0.1.0"
-      },
-      {
-        "from": "orochia-admin",
-        "to": "krizaka-tailwind",
-        "version": "3.10.0"
-      },
-      {
-        "from": "orochia-admin",
-        "to": "krizaka-tokens",
-        "version": "3.10.0"
-      },
-      {
-        "from": "orochia-admin",
-        "to": "krizaka-ui",
-        "version": "3.10.0"
-      },
-      {
-        "from": "orochia-admin",
-        "to": "orochia-design-system",
-        "version": "4.1.1"
-      },
-      {
         "from": "orochia-api",
         "to": "orochia-db"
       },
@@ -1969,32 +1927,47 @@
       {
         "from": "orochia-design-system",
         "to": "krizaka-tailwind",
-        "version": "2.2.0"
+        "version": "3.28.0"
       },
       {
         "from": "orochia-design-system",
         "to": "krizaka-tokens",
-        "version": "2.3.0"
+        "version": "3.28.0"
       },
       {
         "from": "orochia-design-system",
         "to": "krizaka-ui",
-        "version": "2.2.0"
+        "version": "3.28.0"
+      },
+      {
+        "from": "orochia-mobile",
+        "to": "krizaka-app-config",
+        "version": "0.1.0"
       },
       {
         "from": "orochia-mobile",
         "to": "krizaka-charts",
+        "version": "0.5.0"
+      },
+      {
+        "from": "orochia-mobile",
+        "to": "krizaka-i18n",
+        "version": "0.2.2"
+      },
+      {
+        "from": "orochia-mobile",
+        "to": "krizaka-pacer",
         "version": "0.1.0"
       },
       {
         "from": "orochia-mobile",
         "to": "krizaka-tokens",
-        "version": "2.4.0"
+        "version": "3.28.0"
       },
       {
         "from": "orochia-mobile",
         "to": "krizaka-ui",
-        "version": "2.4.0"
+        "version": "3.28.0"
       },
       {
         "from": "orochia-mobile",
@@ -2067,12 +2040,6 @@
       }
     ],
     "flows": [
-      {
-        "from": "orochia-admin",
-        "to": "orochia-api",
-        "kind": "http",
-        "via": "/api/admin/* · service token"
-      },
       {
         "from": "orochia-api",
         "to": "bunny-stream",
@@ -2200,16 +2167,28 @@
         "via": "notification"
       },
       {
-        "from": "orochia-admin",
+        "from": "orochia-api",
+        "to": "postgresql",
+        "kind": "sql",
+        "via": "@orochia/db · Drizzle"
+      },
+      {
+        "from": "orochia-web",
         "to": "admin-postgresql",
         "kind": "sql",
         "via": "operator accounts · sessions"
       },
       {
         "from": "orochia-api",
-        "to": "postgresql",
-        "kind": "sql",
-        "via": "@orochia/db · Drizzle"
+        "to": "orochia-mobile",
+        "kind": "sse",
+        "via": "/api/auctions/[id]/stream"
+      },
+      {
+        "from": "orochia-api",
+        "to": "orochia-mobile",
+        "kind": "sse",
+        "via": "/api/challenges/[id]/stream"
       },
       {
         "from": "orochia-api",

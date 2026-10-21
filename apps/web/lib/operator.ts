@@ -4,7 +4,7 @@ import { HttpError } from "./http";
 import type { SessionUser } from "./auth";
 
 /**
- * The operator console (krizaka/orochia-admin) calls the admin API as a service: `Authorization: Bearer <token>` with
+ * The operator console (apps/web/app/console, on the admin host) calls the admin API as a service: `Authorization: Bearer <token>` with
  * OPERATOR_API_TOKEN (32+ characters, shared by the two deployments only). The console has its own single
  * operator account; here its calls act as the platform owner (AUTH_OWNER_EMAIL), who must exist and be an ADMIN.
  * Without the variable, no token is accepted. The token opens ADMIN routes only (requireUserWithRole).

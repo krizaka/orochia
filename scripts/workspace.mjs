@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * The Orochia repositories, side by side — `npm run workspace -- <command>`:
- *   clone    clones the missing repositories next to this one (../orochia-admin, …)
+ *   clone    clones the missing repositories next to this one (../orochia-design-system, …)
  *   status   branch, ahead/behind and local changes of each repository
  *   pull     fast-forwards every clean repository
  */

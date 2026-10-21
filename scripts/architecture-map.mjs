@@ -187,9 +187,9 @@ export function buildArchitectureMap(root, workspace, previous = null) {
   if (dbPkg?.dependencies?.pg) {
     modules.push({ id: "postgresql", name: "PostgreSQL", role: "data", owner: "external", repository: "orochia", path: "packages/db", runtime: "postgresql", version: null, published: false, description: "The Orochia database: accounts, videos, the ledger, auctions, challenges — and the realtime bus (LISTEN/NOTIFY). Schema and migrations in packages/db." });
   }
-  const admin = siblings.find((r) => r.name === "orochia-admin");
-  if (admin && json(path.join(sibling(admin.name), "package.json"))?.dependencies?.pg) {
-    modules.push({ id: "admin-postgresql", name: "PostgreSQL (console)", role: "data", owner: "external", repository: "orochia-admin", path: "lib/db.ts", runtime: "postgresql", version: null, published: false, description: "The console's own database: its operator account and sessions — never the Orochia data, which it reaches through the admin API." });
+  // The operator console (apps/web/app/console) keeps its own database, in this repository since it moved here.
+  if (fs.existsSync(path.join(root, "apps/web/console/lib/db.ts"))) {
+    modules.push({ id: "admin-postgresql", name: "PostgreSQL (console)", role: "data", owner: "external", repository: "orochia", path: "apps/web/console/lib/db.ts", runtime: "postgresql", version: null, published: false, description: "The console's own database: its operator account and sessions — never the Orochia data, which it reaches through the admin API." });
   }
 
   // ── external services, when the code calls them ─────────────────────────────────────────────
@@ -234,8 +234,8 @@ export function buildArchitectureMap(root, workspace, previous = null) {
     for (const s of streamUsedBy(code)) flow("orochia-api", r.name, "sse", s);
     if (/expo-video/.test(read(path.join(sibling(r.name), "package.json")))) flow(r.name, "bunny-stream", "http", "HLS playback · signed URL");
     if (/expo-notifications/.test(read(path.join(sibling(r.name), "package.json")))) flow("expo-push", r.name, "push", "notification");
-    if (r.name === "orochia-admin" && has("admin-postgresql")) flow(r.name, "admin-postgresql", "sql", "operator accounts · sessions");
   }
+  if (has("admin-postgresql")) flow("orochia-web", "admin-postgresql", "sql", "operator accounts · sessions");
   // The API → its clients, over Server-Sent Events.
   for (const s of streamUsedBy(webClient)) flow("orochia-api", "orochia-web", "sse", s);
   // The API ↔ PostgreSQL: queries through @orochia/db, events back through LISTEN/NOTIFY.
