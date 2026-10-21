@@ -39,7 +39,7 @@ export default async function AppVersionsPage() {
               <div className="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
                 <Panel>{record ? <AppVersionForm record={record} action={publishAppVersion} /> : <Empty>No parameters for this platform.</Empty>}</Panel>
                 <Panel>
-                  <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-fg-secondary">History</h3>
+                  <h3 className="mb-3 text-xs font-bold text-fg-secondary">History</h3>
                   {history.length === 0 ? (
                     <Empty>No revision.</Empty>
                   ) : (

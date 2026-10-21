@@ -28,7 +28,7 @@ export function BuildBadge({ info = BUILD_INFO }: { info?: BuildInfo }) {
         rel="noreferrer"
         aria-label={`Version ${label}. ${notice}. Opens the commit on GitHub.`}
         data-testid="build-badge"
-        className="inline-flex shrink-0 rounded-full focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+        className="inline-flex shrink-0 rounded-md focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
       >
         <NavBar.Badge env={info.env} className="inline-flex" />
       </a>

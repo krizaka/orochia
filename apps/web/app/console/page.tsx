@@ -57,7 +57,7 @@ export default async function OverviewPage() {
             href={queue.href}
             className={cn("rounded-xl border p-5 shadow-md transition-colors hover:border-border-strong", queue.urgent ? "border-danger/40 bg-danger/10" : "border-border-default bg-surface-2")}
           >
-            <span className="text-[11px] font-mono uppercase tracking-wider text-fg-secondary">{queue.label}</span>
+            <span className="text-[11px] font-mono text-fg-secondary">{queue.label}</span>
             <p className={cn("mt-2 font-display text-3xl font-black tabular-nums", queue.urgent ? "text-fg-danger" : "text-fg")}>{queue.value}</p>
           </Link>
         ))}

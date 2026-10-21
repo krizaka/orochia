@@ -48,7 +48,7 @@ export function Panel({ children, className }: { children: React.ReactNode; clas
   );
 }
 
-export const th = "py-2 pr-4 text-left text-[10px] uppercase tracking-wider text-fg-secondary font-semibold";
+export const th = "py-2 pr-4 text-left text-[10px] text-fg-secondary font-semibold";
 export const td = "py-2.5 pr-4 text-xs text-fg-secondary align-top";
 /** Table bodies: a subtle rule between rows. */
 export const tbody = "divide-y divide-border-subtle";

@@ -52,10 +52,10 @@ export function AdminSidebar() {
         <div className="h-16 flex items-center px-6 border-b border-border-default gap-2.5">
           <OrochiaLogo size={40} />
           <div>
-            <span className="text-sm font-black tracking-wider text-fg font-display">
+            <span className="text-sm font-black text-fg font-display">
               OROCHIA<span className="text-fg-accent">.</span>
             </span>
-            <span className="block text-[10px] font-mono text-fg-secondary uppercase tracking-widest leading-none">
+            <span className="block text-[10px] font-mono text-fg-secondary leading-none">
               Control Plane
             </span>
           </div>
@@ -66,7 +66,7 @@ export function AdminSidebar() {
           {NAV_SECTIONS.map((section) => (
             <div key={section.id}>
               {section.id !== "overview" && (
-                <p id={`nav-${section.id}`} className="px-3.5 pb-1 text-[10px] font-mono font-semibold uppercase tracking-widest text-fg-secondary">
+                <p id={`nav-${section.id}`} className="px-3.5 pb-1 text-[10px] font-mono font-semibold text-fg-secondary">
                   {section.label}
                 </p>
               )}
