@@ -1,0 +1,8 @@
+{
+  "app": "orochia-dev",
+  "url": "https://dev.orochia.com",
+  "health": "/api/health",
+  "indexing": "off",
+  "spec": "deploy/digitalocean/app-spec.dev.yaml",
+  "product": "orochia"
+}

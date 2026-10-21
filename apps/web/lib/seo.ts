@@ -10,7 +10,7 @@ import type { Locale } from "./locales";
  */
 
 /** The public origin. Build time reads it too, so it never throws: production sets NEXT_PUBLIC_APP_URL. */
-export const SITE_URL = (process.env.NEXT_PUBLIC_APP_URL || "https://orochia.com").replace(/\/$/, "");
+export const SITE_URL = (process.env.NEXT_PUBLIC_APP_URL || "https://www.orochia.com").replace(/\/$/, "");
 export const SITE_NAME = "Orochia";
 /**
  * APP_SEARCH_INDEXING=off (dev and preview environments, read at build time): every page is noindex and

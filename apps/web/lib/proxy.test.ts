@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
 import { describe, expect, it } from "vitest";
 
+import { afterEach, vi } from "vitest";
+
 import { proxy } from "../proxy";
 
 const call = (path: string, init: Record<string, string> = {}) =>
@@ -59,5 +61,36 @@ describe("the language of an address", () => {
       expect(matcher.test(path), path).toBe(false);
     }
     for (const path of ["/", "/explore", "/fr/explore", "/watch/1", "/@ada", "/auth/login"]) expect(matcher.test(path), path).toBe(true);
+  });
+});
+
+describe("dev.orochia.com sends its pages to www; the API and the apps' calls stay (epic krizaka/.github#119)", () => {
+  afterEach(() => vi.unstubAllEnvs());
+  const dev = (path: string, method = "GET") => {
+    vi.stubEnv("APP_DEV_HOST", "dev.orochia.com");
+    vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://www.orochia.com");
+    return proxy(new NextRequest(`https://dev.orochia.com${path}`, { method, headers: { host: "dev.orochia.com" } }));
+  };
+
+  it("a page answers 308 to the same path and query on www, noindex", () => {
+    const res = dev("/en/explore?q=neon");
+    expect(res.status).toBe(308);
+    expect(res.headers.get("location")).toBe("https://www.orochia.com/en/explore?q=neon");
+    expect(res.headers.get("x-robots-tag")).toContain("noindex");
+    expect(dev("/watch/1").headers.get("location")).toBe("https://www.orochia.com/watch/1");
+  });
+
+  it("the API, /.well-known, the native bot-challenge page, robots.txt and anything that is not a page keep serving", () => {
+    for (const path of ["/api/health", "/api/webhooks/payments/crypto", "/.well-known/assetlinks.json", "/auth/native-challenge", "/robots.txt"]) {
+      expect(dev(path).status, path).toBe(200);
+      expect(dev(path).headers.get("location"), path).toBeNull();
+    }
+    expect(dev("/en/sign-in", "POST").headers.get("location")).toBeNull();
+  });
+
+  it("without APP_DEV_HOST nothing changes, and www is served as it is", () => {
+    vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://www.orochia.com");
+    const res = proxy(new NextRequest("https://www.orochia.com/en/explore", { headers: { host: "www.orochia.com" } }));
+    expect(res.headers.get("location")).toBeNull();
   });
 });
