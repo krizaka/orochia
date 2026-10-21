@@ -257,16 +257,16 @@ them (`deploy_on_push`). A spec file is only for creating the app or changing it
 database, the list of variables): `doctl apps update <APP_ID> --spec …` replaces the whole spec, and the
 `SECRET` entries have no value in the file — check them in the app afterwards.
 
-### Monthly cost (checked 2026-10-19)
+### Monthly cost (measured 2026-10-21 with doctl)
 
 | Component | Size | USD / month |
 | :--- | :--- | ---: |
 | `orochia-dev` web (also serves the operator console on admin.orochia.com since COST-ADMIN-MERGE, orochia#232) | `basic-xxs` | 5 |
 | `orochia-dev` migrate job | `basic-xxs`, billed while it runs | 0 |
 | shared dev PostgreSQL cluster `krizaka-dev-pg` | `db-s-1vcpu-1gb`, shared by every product (counted once in the org total) | 15 |
-| ~~`orochia-admin-dev`~~ | retired after 48 h of the merged app live | ~~5~~ 0 |
+| ~~`orochia-admin-dev`~~ | admin.orochia.com cut over to `orochia-dev` on 2026-10-21; deleted from 2026-10-23T13:00Z (48 h of rollback) | ~~5~~ 0 |
 
-Orochia's own line is 5 USD/month (20 with its share of the database), down from 10 (25). The organisation's table is
+Orochia's own line is 5 USD/month (20 with its share of the database), down from 10 (25). Measured the same day over every App Platform app of the team (`doctl apps list`, instance sizes at their list price): the organisation's recurring cloud for apps and the shared database is about 90 USD/month with both old admin apps still up and about 80 once they are deleted; with the other lines of the private cost table (about 7) it is about 97 and 87 (ceiling 100, GPU apart). The organisation's table is
 `structure-couts-infrastructure.md` (company vault); GPU work is pay-per-use on RunPod, never an app here.
 
 The spec has no Redis: rate limits are shared through PostgreSQL (`ABUSE_RATE_LIMIT_STORE=postgres`) and the realtime bus
