@@ -9,6 +9,7 @@ import {
   ExternalLink,
   Gauge,
   Gavel,
+  ListChecks,
   HardDrive,
   History,
   LayoutDashboard,
@@ -27,6 +28,7 @@ import { NAV_SECTIONS, type NavIcon } from "@/console/lib/nav";
 
 const ICONS: Record<NavIcon, typeof LayoutDashboard> = {
   overview: LayoutDashboard,
+  tasks: ListChecks,
   compliance: ShieldCheck,
   moderation: AlertTriangle,
   treasury: Wallet,

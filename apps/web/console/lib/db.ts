@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS admin_audit (
 );
 ALTER TABLE admin_audit ADD COLUMN IF NOT EXISTS actor text;
 ALTER TABLE admin_audit ADD COLUMN IF NOT EXISTS request_id text;
+ALTER TABLE admin_audit ADD COLUMN IF NOT EXISTS outcome text;
 CREATE INDEX IF NOT EXISTS admin_audit_at_idx ON admin_audit (at DESC);
 `;
 

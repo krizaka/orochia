@@ -22,10 +22,10 @@ export async function POST(req: NextRequest) {
   try {
     const token = await signIn(email, password);
     if (!token) {
-      await audit("sign-in", email.slice(0, 200), false, ip);
+      await audit("sign-in", email.slice(0, 200), "refused", ip);
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
-    await audit("sign-in", null, true, ip, { actor: email.slice(0, 200) });
+    await audit("sign-in", null, "ok", ip, { actor: email.slice(0, 200) });
     const response = NextResponse.json({ success: true });
     response.cookies.set(sessionCookie(token));
     return response;

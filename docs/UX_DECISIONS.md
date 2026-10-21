@@ -391,3 +391,24 @@ moderation), the app draws what it answers. Its decisions are written here, with
 - **Signal we are wrong**: the hop is the step where people stop (watch the *Add credits* funnel).
 - **Carried by**: `src/app/me/[section].tsx`, `src/lib/links.ts`; the universal links `scripts/check-app-links.mjs` guards in CI.
 
+## Console — Tasks, the operator's queue (2026-10-21)
+
+- **Decision**: the console opens on *Overview* and has one more screen next to it, *Tasks*: the list of what waits for the
+  operator, each with its urgency (*now*, *soon*), its count and one link to the screen that does it. It is **derived**, never
+  typed: the platform's counters (open reports, creators awaiting 2257 verification, payouts in progress, videos that failed or
+  are held, files Bunny lost) and the console's own audit (an action of the last day that Orochia refused or could not do and
+  that no later success on the same target fixed, with its request id). The audit log gains an *Outcome* (ok · refused · failed)
+  and an *Area* column and opens on one outcome from a task (`/audit?outcome=failed`).
+- **Problem**: an operator who has to open six screens to find out whether anything needs them stops opening them; and a
+  refused action that nobody sees again is a decision that silently did not happen.
+- **Principle**: visibility of system status (Nielsen, 1994); one queue per person, not one per screen (the "inbox" pattern of
+  every operations tool); the audit is the one memory of what was attempted (krizaka/orazaka ADR-085, same shape in every Krizaka
+  console).
+- **Refused**: a hand-kept to-do list (a second source of truth that drifts); push notifications to the operator (one operator,
+  one desk); counting payouts or reports as tasks in the sidebar's badges (the number would say more than the screen).
+- **Cost**: one more call per visit (the overview and the storage snapshot the Overview already reads); a failed action stays in the
+  queue for a day, then falls off — the audit keeps it.
+- **Signal we are wrong**: the operator opens *Overview* first and never *Tasks*, or a queue that matters is missing from the list.
+- **Carried by**: `apps/web/console/lib/tasks.ts` (pure) and `audit-outcome.ts`, `app/console/tasks/page.tsx`; tests
+  `console/lib/tasks.test.ts`, `audit.test.ts`, `nav.test.ts` (the screen is in the navigation, once).
+
