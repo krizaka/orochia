@@ -15,7 +15,7 @@ describe("the environment badge (NAV-SYS)", () => {
   });
   it("the header carries no family switcher", async () => {
     const { readFileSync } = await import("node:fs");
-    const src = readFileSync(new URL("./AdminHeader.tsx", import.meta.url), "utf8") + readFileSync(new URL("./AdminSidebar.tsx", import.meta.url), "utf8");
+    const src = readFileSync(new URL("./ConsoleShell.tsx", import.meta.url), "utf8");
     expect(src).not.toMatch(/NavBar\.Family|site-footer/);
   });
 });

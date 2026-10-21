@@ -34,6 +34,7 @@
     "test:rail": "node e2e/rail-fixed.mjs",
     "journey:dev": "node scripts/journey-dev.mjs",
     "test:ui-crawl": "node e2e/ui-crawl.mjs",
+    "test:console-crawl": "node e2e/console-crawl.mjs",
     "test:player-iphone": "node e2e/player-iphone.mjs",
     "test:player-quality": "node e2e/player-quality.mjs",
     "check": "npm run lint && npm run typecheck && npm test && npm run docs:generate -- --check",
