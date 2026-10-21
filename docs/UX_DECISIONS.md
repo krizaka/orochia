@@ -347,3 +347,47 @@ written here, each with the place that carries it. Disagree, or saw that signal?
 - **Principle**: a signature, not a banner — recognisable at 40 % opacity and out of the way of the controls (Fitts: the corner holds the fullscreen target, so the mark moves, the target does not).
 - **Cost**: the mark is absent in full screen (immersion over branding); burned-in watermark applies to every new upload of the library.
 - **Signal we are wrong**: complaints that it covers the picture, or creators asking to opt out.
+
+---
+
+## Phone — the Orochia app
+
+The app (`krizaka/orochia-mobile`, Expo) is a client of this platform's API: the server holds every rule (access, money,
+moderation), the app draws what it answers. Its decisions are written here, with the web's, so the two stay one product.
+
+### Five tabs at the thumb, the web's words (2026-10-21)
+
+- **Decision**: Home · Challenges · Auctions · Messages · You, in a tab bar at the bottom edge, each an icon **and** a word
+  that is never cut (five at most, twelve letters at most, in English and in French). The app opens on Home (the stories
+  rail and the feed); the unread counts sit on Messages and You as badges. The person's notifications, wallet, public page and
+  settings are one tap under You.
+- **Problem**: on a phone a menu behind a button at the top puts the most-used places at the hardest corner to reach with one
+  hand, and a hidden menu is opened less than a visible one.
+- **Principle**: most people hold a phone in one hand and reach the lower half of the screen (Hoober, *How Do Users Really Hold
+  Mobile Devices?*, 2013); a bar of three to five items beats a hidden drawer for discoverability (Nielsen Norman Group,
+  *Hamburger Menus and Hidden Navigation Hurt UX Metrics*, 2016); an icon alone is ambiguous, an icon with its label is not (NN/g,
+  *Icon Usability*, 2014). The words are the web's (*Home*, *Challenges*, *Auctions*; in French *Accueil*, *Défis*, *Enchères*, *Vous*) so a
+  link or a push that opens the app lands on a place the person already knows (match between the system and the real world,
+  Nielsen, 1994).
+- **Refused**: a drawer; an *Explore* tab and a *Create* button (the web rail has them: browsing by category and uploading a
+  video are done at a desk, and the feed already carries what is new); a sixth tab; icon-only tabs.
+- **Cost**: no category browse or search on the phone yet, and a creator uploads from the web; the web's *Explore* and
+  *Create* are one link away (`openPath`).
+- **Signal we are wrong**: people open Home only to scroll to find a category, or creators ask where to upload from the phone.
+- **Carried by**: `orochia-mobile/src/lib/tabs.ts` (the tabs as data) and `src/app/(tabs)/_layout.tsx`; test
+  `src/__tests__/nav-shape.test.ts` (five at most, Home first, You last, every tab a screen, short words in both languages).
+
+### One thumb, one job per screen; the long jobs go to the web
+
+- **Decision**: a screen of the app does one thing — watch, bid, pledge, read, answer — with its main action in the lower half;
+  what is long or sensitive (paying, a creator's earnings detail, the verification, the private space's lists) opens the web
+  page in the system browser under the same address (`/me/<section>`), so a shared link always lands on the right screen.
+- **Problem**: a phone form of a long job is a worse form (typing, camera permissions, card entry), and a second set of rules
+  to keep in step.
+- **Principle**: do not duplicate what the other device does better; one mental model across devices (Norman, 2013); payments
+  stay in the provider's checkout, never collected by the app.
+- **Refused**: a web view of the whole web app; card fields in the app; a phone-only version of a rule.
+- **Cost**: a hop to the browser for those jobs.
+- **Signal we are wrong**: the hop is the step where people stop (watch the *Add credits* funnel).
+- **Carried by**: `src/app/me/[section].tsx`, `src/lib/links.ts`; the universal links `scripts/check-app-links.mjs` guards in CI.
+
