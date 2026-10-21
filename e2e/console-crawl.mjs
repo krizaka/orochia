@@ -4,17 +4,17 @@
  * on a desktop and a phone viewport — the Krizaka UI shell with its DEV badge, no console error, no horizontal scroll, no
  * broken picture, no empty tile, no hard-coded colour, and the five sections of console/lib/nav.ts in the sidebar. The console is
  * gated by address, so this runs from an allowed address (a GitHub runner is refused: dev-preview-live.yml proves that
- * gate); the operator is read from the environment (E2E_ADMIN_USER, E2E_ADMIN_SECRET), never printed.
+ * gate); the operator is read from the environment (AUTH_OPERATOR_EMAIL, AUTH_OPERATOR_PASSWORD), never printed.
  *
  *   OUT=<dir> npm run test:console-crawl
  */
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 
-const BASE = (process.env.CONSOLE_URL || "https://admin.orochia.com").replace(/\/$/, "");
+const BASE = (process.env.APP_CONSOLE_URL || "https://admin.orochia.com").replace(/\/$/, "");
 const OUT = process.env.OUT || "";
-const USER = process.env.E2E_ADMIN_USER;
-const SECRET = process.env.E2E_ADMIN_SECRET;
+const USER = process.env.AUTH_OPERATOR_EMAIL;
+const SECRET = process.env.AUTH_OPERATOR_PASSWORD;
 const THEMES = ["dark", "light"];
 const VIEWPORTS = { desktop: { width: 1440, height: 900 }, phone: { width: 390, height: 844 } };
 const SCREENS = ["/", "/tasks", "/compliance", "/creators", "/users", "/moderation", "/catalogue", "/treasury", "/auctions", "/operations", "/storage", "/explorer", "/app-versions", "/platform", "/audit"];
@@ -30,7 +30,7 @@ try {
   process.exit(2);
 }
 if (!(USER && SECRET)) {
-  process.stderr.write("✗ set E2E_ADMIN_USER and E2E_ADMIN_SECRET (an operator account)\n");
+  process.stderr.write("✗ set AUTH_OPERATOR_EMAIL and AUTH_OPERATOR_PASSWORD (an operator account)\n");
   process.exit(2);
 }
 
