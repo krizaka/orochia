@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { areaOf, outcomeOf, type AuditEntry } from "./audit-outcome";
+import { areaOf, type AuditEntry,outcomeOf } from "./audit-outcome";
 import { deriveTasks, type TaskInput } from "./tasks";
 
 // Dev preview `admin.operator-tasks`: the operator's queue is derived from what the platform and the audit say — never

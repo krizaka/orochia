@@ -6,6 +6,7 @@ import { reconcileStorage } from "@/app/console/actions";
 import { ConfirmDialog } from "@/console/components/ConfirmDialog";
 import { StorageAccountsTable } from "@/console/components/tables";
 import { cn, Empty, PageTitle, Panel, Stat, type Tone } from "@/console/components/ui";
+import { whenShort } from "@/console/lib/format";
 import { orochia } from "@/console/lib/orochia";
 
 type Level = "ok" | "warning" | "critical" | "full" | "unlimited";
@@ -76,7 +77,7 @@ const size = (bytes: number | null) =>
 const GB = 1024 ** 3;
 const GB_FORMAT = { style: "unit", unit: "gigabyte" } as const;
 const minutes = (seconds: number | null) => (seconds === null ? "unlimited" : `${Math.round(seconds / 60).toLocaleString("en-US")} min`);
-const when = (iso: string) => new Date(iso).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" });
+const when = whenShort;
 
 const LEVEL: Record<Level, { label: string; tone: Tone }> = {
   ok: { label: "Room to grow", tone: "success" },
