@@ -13,8 +13,9 @@ describe("App Platform dev spec — the console served by the platform app", () 
     for (const b of sensitive) expect(b, b.split("\n")[0]).toMatch(/type: SECRET/);
   });
 
-  it("serves admin.orochia.com from this app, beside the platform's primary domain", () => {
-    expect(spec).toMatch(/- domain: dev\.orochia\.com\s+type: PRIMARY/);
+  it("serves admin.orochia.com from this app, beside the platform's primary domain (www since epic krizaka/.github#119)", () => {
+    expect(spec).toMatch(/- domain: www\.orochia\.com\s+type: PRIMARY/);
+    expect(spec).toMatch(/- domain: dev\.orochia\.com\s+type: ALIAS/);
     expect(spec).toMatch(/- domain: admin\.orochia\.com\s+type: ALIAS/);
     expect(spec).toMatch(/key: AUTH_ALLOWED_IPS/);
   });

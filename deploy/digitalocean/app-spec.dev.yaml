@@ -5,15 +5,35 @@
 # Secret values live in the app (Settings → Environment Variables), entered once; pushes to the branch redeploy.
 name: orochia-dev
 region: tor
-# NEXT_PUBLIC_APP_URL = ${APP_URL}, the primary domain once it is active.
+# NEXT_PUBLIC_APP_URL = ${APP_URL}, the primary domain once it is active (www.orochia.com since epic krizaka/.github#119).
 domains:
-  # DNS stays at the registrar (Porkbun): add the CNAME App Platform shows for this name.
-  - domain: dev.orochia.com
+  # DNS stays at the registrar (Porkbun): www = CNAME and the apex = ALIAS to this app's host.
+  - domain: www.orochia.com
     type: PRIMARY
+  - domain: orochia.com
+    type: ALIAS
+  # The development address: every page goes to www (308); the API (mobile app, webhooks), /.well-known and the native
+  # bot-challenge page keep serving (APP_DEV_HOST, apps/web/lib/dev-host.ts).
+  - domain: dev.orochia.com
+    type: ALIAS
   # The operator console (app/console) is served by this same app on admin.<domain>: the proxy rewrites that host into
   # /console behind AUTH_ALLOWED_IPS, and /console is a 404 on every other host (apps/web/console/lib/gate.ts).
   - domain: admin.orochia.com
     type: ALIAS
+# The apex leads to www (308); every other host is the app's.
+ingress:
+  rules:
+    - match:
+        authority:
+          exact: orochia.com
+      redirect:
+        authority: www.orochia.com
+        redirect_code: 308
+    - match:
+        path:
+          prefix: /
+      component:
+        name: web
 services:
   - name: web
     github:
@@ -31,8 +51,6 @@ services:
       period_seconds: 10
       timeout_seconds: 5
       failure_threshold: 3
-    routes:
-      - path: /
     envs:
       - key: NODE_ENV
         value: production
@@ -40,6 +58,9 @@ services:
       - key: APP_SEARCH_INDEXING
         scope: RUN_AND_BUILD_TIME
         value: "off"
+      - key: APP_DEV_HOST
+        scope: RUN_TIME
+        value: dev.orochia.com
       - key: APP_PUBLIC_ACTIONS
         scope: RUN_TIME
         value: "off"

@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 
 import { consoleGate } from "./console/lib/gate";
+import { devRedirect, isDevHost } from "./lib/dev-host";
 import { isLocale, LOCALE_COOKIE, LOCALE_COOKIE_MAX_AGE, LOCALE_HEADER, localeOf, PATH_HEADER, stripLocalePrefix } from "./lib/locales";
 
 /**
@@ -18,6 +19,15 @@ export function proxy(request: NextRequest) {
   const console = consoleGate(request);
   if (console) return console;
   const { pathname, search } = request.nextUrl;
+  // dev.orochia.com (APP_DEV_HOST): a page goes to the same path on www (308); the API and the rest keep serving (lib/dev-host.ts).
+  if (isDevHost(request.headers.get("host") ?? request.nextUrl.host)) {
+    const to = devRedirect(request.method, pathname, search, process.env.NEXT_PUBLIC_APP_URL ?? "https://www.orochia.com");
+    if (to) {
+      const redirect = NextResponse.redirect(to, 308);
+      redirect.headers.set("x-robots-tag", "noindex, nofollow, noarchive");
+      return redirect;
+    }
+  }
   const { locale: asked, path } = stripLocalePrefix(pathname);
   const headers = new Headers(request.headers);
   headers.delete(LOCALE_HEADER);
