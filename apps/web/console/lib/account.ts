@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 
 import { cookies, headers } from "next/headers";
 
+import { type AuditEntry, legacyOutcome, type Outcome } from "./audit-outcome";
 import { sql } from "./db";
 
 /**
@@ -107,17 +108,19 @@ export async function currentAdmin(): Promise<AdminIdentity | null> {
 
 /** Records an operator decision in the console's log (never throws). */
 /** Who did it (the operator's e-mail) and which calls to Orochia it made (the edge's request ids) ride along with what was done. */
-export async function audit(action: string, target: string | null, ok: boolean, detail?: string, who?: { actor?: string | null; requestIds?: string[] }) {
+export async function audit(action: string, target: string | null, outcome: Outcome, detail?: string, who?: { actor?: string | null; requestIds?: string[] }) {
   try {
-    await sql(`INSERT INTO admin_audit (action, target, ok, detail, actor, request_id) VALUES ($1, $2, $3, $4, $5, $6)`, [action, target, ok, detail?.slice(0, 1000) ?? null, who?.actor ?? null, who?.requestIds?.length ? who.requestIds.join(",").slice(0, 300) : null]);
+    await sql(`INSERT INTO admin_audit (action, target, ok, detail, actor, request_id, outcome) VALUES ($1, $2, $3, $4, $5, $6, $7)`, [action, target, outcome === "ok", detail?.slice(0, 1000) ?? null, who?.actor ?? null, who?.requestIds?.length ? who.requestIds.join(",").slice(0, 300) : null, outcome]);
   } catch (error) {
     console.error("[admin] audit failed", error);
   }
 }
 
-export async function recentAudit(limit = 50) {
-  return sql<{ at: Date; action: string; target: string | null; ok: boolean; detail: string | null; actor: string | null; request_id: string | null }>(
-    `SELECT at, action, target, ok, detail, actor, request_id FROM admin_audit ORDER BY at DESC LIMIT $1`,
+/** The operator log, newest first. A row written before the outcome existed says `ok`, or `refused` (Orochia's answer). */
+export async function recentAudit(limit = 50): Promise<(Omit<AuditEntry, "at" | "requestId"> & { at: Date; request_id: string | null })[]> {
+  const rows = await sql<{ at: Date; action: string; target: string | null; ok: boolean; outcome: Outcome | null; detail: string | null; actor: string | null; request_id: string | null }>(
+    `SELECT at, action, target, ok, outcome, detail, actor, request_id FROM admin_audit ORDER BY at DESC LIMIT $1`,
     [limit],
   );
+  return rows.map(({ ok, outcome, ...r }) => ({ ...r, outcome: outcome ?? legacyOutcome(ok) }));
 }

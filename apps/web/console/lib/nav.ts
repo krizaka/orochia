@@ -4,6 +4,7 @@
  */
 export type NavIcon =
   | "overview"
+  | "tasks"
   | "compliance"
   | "moderation"
   | "treasury"
@@ -31,7 +32,11 @@ export interface NavSection {
 }
 
 export const NAV_SECTIONS: NavSection[] = [
-  { id: "overview", label: "Overview", items: [{ label: "Overview", href: "/", icon: "overview" }] },
+  { id: "overview", label: "Overview", items: [
+      { label: "Overview", href: "/", icon: "overview" },
+      { label: "Tasks", href: "/tasks", icon: "tasks" },
+    ],
+  },
   {
     id: "people",
     label: "People",

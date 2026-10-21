@@ -89,7 +89,7 @@ describe("app versions (krizaka/.github#75)", () => {
       flags: { voice: true },
       reason: "ship 1.4",
     });
-    expect(audit).toHaveBeenCalledWith("app versions → ios", "ios", true, "ship 1.4", { actor: "ana@example.com", requestIds: [] });
+    expect(audit).toHaveBeenCalledWith("app versions → ios", "ios", "ok", "ship 1.4", { actor: "ana@example.com", requestIds: [] });
   });
 
   it("refuses flags that are not JSON, before calling Orochia", async () => {
@@ -103,7 +103,7 @@ describe("app versions (krizaka/.github#75)", () => {
     orochia.mockRejectedValueOnce(new ApiError(400, "latestVersion is older than minSupportedVersion"));
     const state = await publishAppVersion(null, form({ ...filled, minSupportedVersion: "9.0.0" }));
     expect(state).toMatchObject({ ok: false, error: "latestVersion is older than minSupportedVersion" });
-    expect(audit).toHaveBeenCalledWith("app versions → ios", "ios", false, "latestVersion is older than minSupportedVersion", { actor: "ana@example.com", requestIds: [] });
+    expect(audit).toHaveBeenCalledWith("app versions → ios", "ios", "refused", "latestVersion is older than minSupportedVersion", { actor: "ana@example.com", requestIds: [] });
   });
 
   it("restores an earlier revision with its reason", async () => {

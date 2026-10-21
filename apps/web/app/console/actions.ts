@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 
 import { audit, currentAdmin } from "@/console/lib/account";
+import { outcomeOf } from "@/console/lib/audit-outcome";
 import { moderationBody } from "@/console/lib/conversation-moderation";
 import { ApiError, orochia } from "@/console/lib/orochia";
 import { collectRequestIds } from "@/console/lib/request-ids";
@@ -27,10 +28,10 @@ async function attempt(paths: string[], run: () => Promise<string | void>, log?:
   const outcome = calls.value;
   if ("error" in outcome) {
     unstable_rethrow(outcome.error);
-    if (log) await audit(log.action, log.target ?? null, false, outcome.error instanceof Error ? outcome.error.message : String(outcome.error), { actor, requestIds: calls.ids });
+    if (log) await audit(log.action, log.target ?? null, outcomeOf(outcome.error), outcome.error instanceof Error ? outcome.error.message : String(outcome.error), { actor, requestIds: calls.ids });
     return { ok: false, error: outcome.error instanceof ApiError ? outcome.error.message : "Something went wrong. Try again.", at: Date.now() };
   }
-  if (log) await audit(log.action, log.target ?? null, true, log.detail ?? outcome.message ?? undefined, { actor, requestIds: calls.ids });
+  if (log) await audit(log.action, log.target ?? null, "ok", log.detail ?? outcome.message ?? undefined, { actor, requestIds: calls.ids });
   for (const p of paths) revalidatePath(p);
   return { ok: true, message: outcome.message || undefined, at: Date.now() };
 }

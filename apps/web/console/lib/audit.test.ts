@@ -56,10 +56,19 @@ describe("every operator action is audited", () => {
     expect(db).toContain("actor text");
     expect(db).toContain("request_id text");
     const account = read("lib/account.ts");
-    expect(account).toMatch(/INSERT INTO admin_audit \(action, target, ok, detail, actor, request_id\)/);
+    expect(account).toMatch(/INSERT INTO admin_audit \(action, target, ok, detail, actor, request_id, outcome\)/);
     const table = read("components/AuditTable.tsx");
     expect(table).toContain('header: "Who"');
     expect(table).toContain('header: "Request"');
+  });
+
+  it("the row also says what it came to (ok, refused, failed) and which area it belongs to; the log filters on both", () => {
+    expect(read("lib/db.ts")).toContain("outcome text");
+    const actions = read("app/actions.ts");
+    expect(actions).toContain("outcomeOf(");
+    const table = read("components/AuditTable.tsx");
+    expect(table).toContain('header: "Outcome"');
+    expect(table).toContain('header: "Area"');
   });
 
   it("the call to Orochia notes the edge's request id", () => {

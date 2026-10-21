@@ -15,10 +15,10 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
   const requestIds = [res.headers.get("cf-ray") ?? ""].filter(Boolean);
   const body = (await res.json().catch(() => null)) as { export?: unknown } | null;
   if (!res.ok || !body?.export) {
-    await audit("account export", id, false, `Orochia answered ${res.status}`, { actor: admin.email, requestIds });
+    await audit("account export", id, res.status >= 400 && res.status < 500 ? "refused" : "failed", `Orochia answered ${res.status}`, { actor: admin.email, requestIds });
     return new Response("Export not available", { status: res.status === 404 ? 404 : 502 });
   }
-  await audit("account exported", id, true, undefined, { actor: admin.email, requestIds });
+  await audit("account exported", id, "ok", undefined, { actor: admin.email, requestIds });
   return new Response(JSON.stringify(body.export, null, 2), {
     headers: { "Content-Type": "application/json; charset=utf-8", "Content-Disposition": `attachment; filename="orochia-account-${id}.json"`, "Cache-Control": "no-store" },
   });

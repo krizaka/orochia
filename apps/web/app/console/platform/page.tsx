@@ -107,7 +107,7 @@ export default async function PlatformPage() {
         {log.length === 0 ? (
           <Empty>Nothing logged yet.</Empty>
         ) : (
-          <AuditTable rows={log.map((e, i) => ({ id: `${new Date(e.at).getTime()}-${i}`, at: new Date(e.at).toISOString(), action: e.action, target: e.target, ok: e.ok, detail: e.detail, actor: e.actor, requestId: e.request_id }))} />
+          <AuditTable rows={log.map((e, i) => ({ id: `${new Date(e.at).getTime()}-${i}`, at: new Date(e.at).toISOString(), action: e.action, target: e.target, outcome: e.outcome, detail: e.detail, actor: e.actor, requestId: e.request_id }))} />
         )}
       </section>
 
