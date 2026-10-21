@@ -159,6 +159,30 @@
   "apiEndpoints": [
     {
       "method": "GET",
+      "path": "/api/admin/app-config",
+      "access": "session · ADMIN",
+      "summary": "The parameters of every platform (the console's App versions screen)."
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/app-config/[platform]",
+      "access": "session · ADMIN",
+      "summary": "Publishes the parameters of a platform as its next revision, with a reason; the history keeps every one."
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/app-config/[platform]/history",
+      "access": "session · ADMIN",
+      "summary": "The revisions of a platform, newest first, each with its reason and who published it."
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/app-config/[platform]/rollback",
+      "access": "session · ADMIN",
+      "summary": "Publishes an earlier revision again, as a new one: the history is never rewritten."
+    },
+    {
+      "method": "GET",
       "path": "/api/admin/auctions",
       "access": "session · ADMIN",
       "summary": "Every auction for operators (latest first, optionally by status): video, creator, price, bids, timing, outcome."
@@ -1565,7 +1589,7 @@
         "runtime": "node",
         "version": "1.0.0",
         "published": false,
-        "description": "The API: 152 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
+        "description": "The API: 156 route handlers — access control, signed media URLs, payments and the ledger, auctions, challenges, realtime. Deployed with the pages, one process."
       },
       {
         "id": "orochia-config",
