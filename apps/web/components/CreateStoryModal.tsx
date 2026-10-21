@@ -282,7 +282,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
             )}
             {file && !isImage && !edited && <p className="text-xs text-fg-warning">{t("stories.create.editFirst")}</p>}
 
-            <label className="block text-xs font-semibold uppercase tracking-wider text-fg-secondary">
+            <label className="block text-xs font-semibold text-fg-secondary">
               {t("stories.create.caption")} <span className="normal-case tracking-normal text-fg-muted">— {t("common.optional")}</span>
               <Textarea
                 value={caption}
@@ -295,7 +295,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
             </label>
 
             <fieldset>
-              <legend className="mb-2 text-xs font-semibold uppercase tracking-wider text-fg-secondary">{t("stories.create.audience")}</legend>
+              <legend className="mb-2 text-xs font-semibold text-fg-secondary">{t("stories.create.audience")}</legend>
               <Chip.Group type="single" required label={t("stories.create.audience")} value={audience} onValueChange={(v) => setAudience(v as typeof audience)} className="grid grid-cols-2 gap-2">
                 {AUDIENCES.map((a) => (
                   <Chip key={a} value={a} className="h-auto rounded-xl py-2.5">
@@ -325,7 +325,7 @@ export function CreateStoryModal({ isOpen, onClose, onSuccess }: { isOpen: boole
 
             <div className="rounded-xl border border-border-default bg-surface-2/50 p-3 space-y-2.5">
               <label className="block">
-                <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-fg-secondary">{t("stories.create.rating")}</span>
+                <span className="mb-1 block text-[11px] font-semibold text-fg-secondary">{t("stories.create.rating")}</span>
                 <Select
                   value={ratingId}
                   onChange={(e) => {

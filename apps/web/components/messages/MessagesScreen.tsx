@@ -89,7 +89,7 @@ export function MessagesScreen({ conversationId }: { conversationId: string | nu
         </p>
       )}
 
-      <div className="grid h-[calc(100dvh-8rem-env(safe-area-inset-bottom))] grid-cols-1 overflow-hidden border-border-default bg-surface-1/80 backdrop-blur-xl sm:h-[calc(100dvh-12rem)] sm:min-h-[520px] sm:rounded-3xl sm:border sm:shadow-2xl lg:grid-cols-12">
+      <div className="grid h-[calc(100dvh-8rem-env(safe-area-inset-bottom))] grid-cols-1 overflow-hidden border-border-default bg-surface-1/80 sm:h-[calc(100dvh-12rem)] sm:min-h-[520px] sm:rounded-3xl sm:border sm:shadow-2xl lg:grid-cols-12">
         <aside className={cn("flex min-h-0 flex-col border-border-default lg:col-span-4 lg:border-r", activeId ? "hidden lg:flex" : "flex")}>
           <div className="border-b border-border-default p-3 sm:p-4">
             <form

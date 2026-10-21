@@ -146,7 +146,7 @@ export function GroupSheet({ conversationId, myId, onLeft }: { conversationId: s
                 </div>
 
                 <section aria-labelledby="group-members">
-                  <h3 id="group-members" className="mb-2 text-xs font-bold uppercase tracking-wider text-fg-secondary">
+                  <h3 id="group-members" className="mb-2 text-xs font-bold text-fg-secondary">
                     {t("inbox.group.members", { count: info.members.length })}
                   </h3>
                   <ul className="divide-y divide-border-subtle">
@@ -171,7 +171,7 @@ export function GroupSheet({ conversationId, myId, onLeft }: { conversationId: s
                 {owner && !info.archived && (
                   <>
                     <section aria-labelledby="group-add">
-                      <h3 id="group-add" className="mb-2 text-xs font-bold uppercase tracking-wider text-fg-secondary">
+                      <h3 id="group-add" className="mb-2 text-xs font-bold text-fg-secondary">
                         {t("inbox.group.add")}
                       </h3>
                       {addable.length === 0 ? (
@@ -214,7 +214,7 @@ export function GroupSheet({ conversationId, myId, onLeft }: { conversationId: s
                     </section>
 
                     <section aria-labelledby="group-invite">
-                      <h3 id="group-invite" className="mb-2 text-xs font-bold uppercase tracking-wider text-fg-secondary">
+                      <h3 id="group-invite" className="mb-2 text-xs font-bold text-fg-secondary">
                         {t("inbox.group.invite")}
                       </h3>
                       <p className="mb-2 text-[11px] text-fg-secondary">{t("inbox.group.inviteHint")}</p>

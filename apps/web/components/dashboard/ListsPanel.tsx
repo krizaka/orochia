@@ -81,7 +81,7 @@ function Members({ list, onChange }: { list: List; onChange: () => void }) {
       ) : (
         <ul className="flex flex-wrap gap-1.5">
           {members.map((m) => (
-            <li key={m.userId} className="inline-flex items-center gap-1 rounded-full bg-surface-2 py-1 pl-3 pr-1 text-[11px] text-fg">
+            <li key={m.userId} className="inline-flex items-center gap-1 rounded-sm bg-surface-2 py-1 pl-3 pr-1 text-[11px] text-fg">
               @{m.username}
               <IconButton disabled={busy} onClick={() => remove(m.userId)} className="h-5 w-5 hover:bg-transparent hover:text-fg-danger" label={t("lists.removeMember", { username: m.username })}>
                 <X className="h-3 w-3" aria-hidden />

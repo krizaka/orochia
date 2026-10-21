@@ -20,7 +20,7 @@ export async function CreatorsCallToAction({ share }: { share: number }) {
     >
       <div data-reveal className="mx-auto flex max-w-3xl flex-col items-center px-4 py-20 text-center sm:px-6 sm:py-28">
         <OrochiaLogo size={56} />
-        <p className="mt-6 text-xs font-semibold uppercase tracking-wider text-fg-accent">{t("home.creators.eyebrow")}</p>
+        <p className="mt-6 text-xs font-semibold text-fg-accent">{t("home.creators.eyebrow")}</p>
         <h2 id="home-creators" className="mt-3 font-display text-3xl font-black leading-tight tracking-tight text-fg sm:text-5xl">
           {t("home.creators.title")}
         </h2>
@@ -40,7 +40,7 @@ export async function CreatorsCallToAction({ share }: { share: number }) {
               </Link>
             </Button>
           )}
-          <Link href="/explore" className={cn(buttonVariants({ variant: "outline", size: "lg", shape: "pill" }), "gap-2 bg-surface-1/60 backdrop-blur-md")}>
+          <Link href="/explore" className={cn(buttonVariants({ variant: "outline", size: "lg", shape: "pill" }), "gap-2 bg-surface-1/60 ")}>
             {t("home.ctaExplore")} <ForwardIcon size={18} />
           </Link>
         </div>

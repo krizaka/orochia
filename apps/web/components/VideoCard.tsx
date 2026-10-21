@@ -48,7 +48,7 @@ export interface VideoCardProps {
 export const formatDuration = (secs: number) => `${Math.floor(secs / 60)}:${String(Math.floor(secs % 60)).padStart(2, "0")}`;
 
 /** Badges on a picture sit on the strong veil, light text in both themes (the overlay is a `.theme-dark` island). */
-const ON_MEDIA = "bg-scrim-strong normal-case tracking-normal backdrop-blur-md";
+const ON_MEDIA = "bg-scrim-strong normal-case tracking-normal ";
 
 /**
  * A video in a grid or on the Shorts shelf: the kit's aspect-aware `VideoCard` (one body height, one stretched link),
@@ -78,8 +78,8 @@ export function VideoCard({ aspect, layout, ...props }: VideoCardProps & { aspec
         blurred={isBlurred && !revealed}
         overlay={
           isBlurred && !revealed ? (
-            <div className="flex w-full flex-col items-center justify-center bg-scrim p-3 text-center backdrop-blur-md">
-              <span className="mb-1 text-[10px] font-bold uppercase tracking-wider text-fg-accent">{t("card.sensitive")}</span>
+            <div className="flex w-full flex-col items-center justify-center bg-scrim p-3 text-center ">
+              <span className="mb-1 text-[10px] font-bold text-fg-accent">{t("card.sensitive")}</span>
               <Button size="sm" onClick={() => setRevealed(true)} className="h-7 border-0 bg-scrim-strong px-3 text-[11px] text-fg-on-media hover:bg-scrim">
                 {t("card.reveal")}
               </Button>

@@ -52,7 +52,7 @@ export default function ResetPasswordPage() {
                 { value: password, set: setPassword, label: t("auth.reset.password") },
                 { value: confirm, set: setConfirm, label: t("auth.reset.confirm") },
               ].map((f) => (
-                <label key={f.label} className="block text-xs font-semibold uppercase tracking-wider text-fg-secondary">
+                <label key={f.label} className="block text-xs font-semibold text-fg-secondary">
                   {f.label}
                   <div className="relative mt-1.5">
                     <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-fg-muted" aria-hidden />

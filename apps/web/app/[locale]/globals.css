@@ -6,6 +6,7 @@
    4. the Orochia identity — the --kz-* roles with the Obsidian Velvet Noir values, the kit's composites. */
 @import "tailwindcss";
 @import "@krizaka/tailwind";
+@import "@krizaka/fonts/css";     /* the Cahier faces: Atkinson Hyperlegible Next (text), Courier Prime (mono) — krizaka-ui ADR-004 */
 @import "@krizaka/ui/tailwind.css";
 @import "@krizaka/orochia-design-system/theme.css";
 /* 5. The Orochia brand of @krizaka/tokens (BRAND.md): accent-text, on-accent, ring and the section gradient of
@@ -17,7 +18,7 @@
 
 /* The app's typefaces are loaded by next/font (app/layout.tsx: --font-jakarta, --font-outfit); the roles read them. */
 :root {
-  --kz-font-sans: var(--font-jakarta), "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --kz-font-sans: var(--font-jakarta), "Atkinson Hyperlegible Next", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --kz-font-display: var(--font-outfit), Outfit, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
@@ -50,18 +51,16 @@
   --color-google-hover: var(--orochia-google-hover);
   --color-on-google: var(--orochia-on-google);
 }
-/* --orochia-backdrop-*  the footage behind the home's sections (components/home/BackdropMedia): how far it is blurred
-                        (depth of field: something moves, nobody is recognisable) and how much of it shows. On the light
+/* --orochia-backdrop-veil  the footage behind the home's sections (components/home/BackdropMedia): how much of it shows —
+                        printed, never blurred (Cahier, krizaka-ui ADR-004: @krizaka/ui draws it desaturated and quiet). On the light
                         theme it is screened onto the section: only its coloured light shows, its shadows vanish — dark
                         footage would otherwise muddy the page. */
 :root {
-  --orochia-backdrop-blur: 28px;
   --orochia-backdrop-veil: 0.7;
 }
 html.light {
   --orochia-backdrop-veil: 1;
 }
-.orochia-depth { --kz-backdrop-blur: var(--orochia-backdrop-blur); }
 .orochia-backdrop-veil { opacity: var(--orochia-backdrop-veil); }
 html.light .orochia-depth > .kz-backdrop-media { mix-blend-mode: screen; }
 /* Section backdrops end exactly on the page surface (the Orochia brand's last stop is a shade off surface-0, which
@@ -131,8 +130,6 @@ h1, h2, h3, h4, .font-display {
 /* Glassmorphic panel */
 .glass-panel {
   background: var(--orochia-glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--orochia-glass-border);
   transition: border-color 0.2s var(--kz-ease), box-shadow 0.2s var(--kz-ease), transform 0.2s var(--kz-ease);
 }
@@ -192,7 +189,7 @@ html:not([data-navigated]) .kz-page { animation: none; }
 .doc-prose ol { list-style: decimal; padding-left: 1.4rem; }
 .doc-prose a { color: var(--kz-accent-text, var(--kz-accent)); text-decoration: underline; text-underline-offset: 2px; }
 .doc-prose code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85em; padding: 0.1em 0.35em; border-radius: 6px; background: var(--kz-surface-2); color: var(--kz-text-primary); }
-.doc-prose pre { overflow-x: auto; padding: 1rem; border-radius: 14px; background: var(--kz-surface-1); border: 1px solid var(--kz-border-default); }
+.doc-prose pre { overflow-x: auto; padding: 1rem; border-radius: 0; background: var(--kz-surface-1); border: 1px solid var(--kz-border-default); }
 .doc-prose pre code { padding: 0; background: none; }
 .doc-prose blockquote { border-left: 3px solid var(--kz-accent); padding-left: 1rem; color: var(--kz-text-secondary); }
 .doc-prose table { display: block; overflow-x: auto; border-collapse: collapse; font-size: 0.85rem; }

@@ -23,7 +23,7 @@ export function ErrorReference({ digest }: { digest: string }) {
     }
   };
   return (
-    <div className="inline-flex items-center gap-2 rounded-full border border-border-default bg-surface-1/80 py-1 pl-4 pr-1 text-xs backdrop-blur-md">
+    <div className="inline-flex items-center gap-2 rounded-sm border border-border-default bg-surface-1/80 py-1 pl-4 pr-1 text-xs ">
       <span className="text-fg-muted">{t("errorPages.reference")}</span>
       <code className="select-all font-mono text-fg">{digest}</code>
       <IconButton size="sm" label={copied ? t("errorPages.copied") : t("errorPages.copyReference")} onClick={copy}>

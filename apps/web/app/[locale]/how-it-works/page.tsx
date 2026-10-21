@@ -33,7 +33,7 @@ export default async function HowItWorksPage({ params }: { params: Promise<{ loc
       <SectionBackdrop direction="up" dome={false} aria-labelledby="how-title">
         <div className={cn(container, "grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-2")}>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-fg-accent">{t("howItWorks.eyebrow")}</p>
+            <p className="text-xs font-semibold text-fg-accent">{t("howItWorks.eyebrow")}</p>
             <h1 id="how-title" className="mt-2 font-display text-4xl font-black tracking-tight text-fg sm:text-5xl">{t("howItWorks.title")}</h1>
             <p className="mt-5 max-w-xl text-base leading-relaxed text-fg-secondary sm:text-lg">{t("howItWorks.lead")}</p>
             <div className="mt-8">

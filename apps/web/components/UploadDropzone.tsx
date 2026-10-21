@@ -409,7 +409,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 <span className={label}>{t("publish.fields.tags")}</span>
                 <div className={cn(field, "flex flex-wrap items-center gap-1.5 py-2")} onClick={(e) => (e.currentTarget.querySelector("input") as HTMLInputElement | null)?.focus()}>
                   {tags.map((tag) => (
-                    <span key={tag} className="flex items-center gap-1 rounded-full bg-accent/15 py-0.5 pl-2.5 pr-1 text-xs font-semibold text-fg-accent">
+                    <span key={tag} className="flex items-center gap-1 rounded-sm bg-accent/15 py-0.5 pl-2.5 pr-1 text-xs font-semibold text-fg-accent">
                       #{tag}
                       <IconButton label={t("publish.removeTag", { tag })} onClick={() => setTags(tags.filter((x) => x !== tag))} className="h-5 w-5 text-current hover:bg-surface-3">
                         <X className="h-3 w-3" aria-hidden />
@@ -436,7 +436,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
                 <span className="mt-1 block text-[11px] text-fg-muted">{t("publish.fields.tagsHint")}</span>
                 {suggestedTags.length > 0 && (
                   <div className="mt-2.5">
-                    <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-fg-muted">{t("publish.fields.tagsSuggested")}</span>
+                    <span className="mb-1.5 block text-[11px] font-semibold text-fg-muted">{t("publish.fields.tagsSuggested")}</span>
                     <div className="flex flex-wrap gap-1.5" role="group" aria-label={t("publish.fields.tagsSuggested")}>
                       {suggestedTags.map((tag) => (
                         <Chip key={tag} size="sm" selected={false} onSelectedChange={() => addTag(tag)} aria-label={t("publish.addTag", { tag })}>
@@ -592,7 +592,7 @@ export function UploadDropzone({ platformFeePercent }: { platformFeePercent: num
               </div>
             </div>
           </div>
-          <div className="fixed inset-x-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-30 border-t border-border-default bg-surface-1/90 p-3 backdrop-blur-xl md:bottom-0 lg:static lg:mt-4 lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
+          <div className="fixed inset-x-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-30 border-t border-border-default bg-surface-1/90 p-3 md:bottom-0 lg:static lg:mt-4 lg:border-0 lg:bg-transparent lg:p-0 lg:">
             <Button
               type="submit"
               variant="sensual"

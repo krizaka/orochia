@@ -14,7 +14,7 @@ export function LedgerTable({ lines, isCreator }: { lines: LedgerLine[]; isCreat
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-xs">
-        <thead className="text-[10px] uppercase tracking-wider text-fg-muted">
+        <thead className="text-[10px] text-fg-muted">
           <tr>
             <th className="py-2 pr-4">{t("dashboard.ledger.date")}</th>
             <th className="py-2 pr-4">{t("dashboard.ledger.type")}</th>

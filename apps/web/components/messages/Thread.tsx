@@ -209,7 +209,7 @@ export function Thread({ conversation, myId, presence, messages, names = {}, sta
                 return (
                   <li key={m.clientId ?? m.id}>
                     {separator && (
-                      <p className="my-4 text-center text-[10px] font-semibold uppercase tracking-wider text-fg-muted">{separator}</p>
+                      <p className="my-4 text-center text-[10px] font-semibold text-fg-muted">{separator}</p>
                     )}
                     <div className={cn("group flex items-end gap-1.5", mine ? "justify-end" : "justify-start")}>
                       {!mine && !m.local && (
@@ -240,8 +240,8 @@ export function Thread({ conversation, myId, presence, messages, names = {}, sta
                         )}
                       >
                         {isGroup && !mine && <p className="mb-0.5 text-[11px] font-bold text-fg-accent">{names[m.senderId] ?? t("inbox.group.someone")}</p>}
-                        {m.storyId && <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-wider opacity-75">{t("inbox.storyReply")}</p>}
-                        {isAiAssisted(m.origin) && <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-wider opacity-75">{t("inbox.aiAssisted")}</p>}
+                        {m.storyId && <p className="mb-0.5 text-[10px] font-semibold opacity-75">{t("inbox.storyReply")}</p>}
+                        {isAiAssisted(m.origin) && <p className="mb-0.5 text-[10px] font-semibold opacity-75">{t("inbox.aiAssisted")}</p>}
                         <p className="whitespace-pre-wrap wrap-break-word">{m.content}</p>
                         <p className={cn("mt-0.5 text-right text-[10px]", mine ? "text-on-accent/80" : "text-fg-muted")}>
                           <time dateTime={m.createdAt}>{clock(m.createdAt)}</time>

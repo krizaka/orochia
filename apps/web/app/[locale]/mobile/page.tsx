@@ -23,7 +23,7 @@ export default async function MobilePage({ params }: { params: Promise<{ locale:
     <div className="w-full overflow-x-clip">
       <SectionBackdrop direction="up" dome={false} aria-labelledby="mobile-title">
         <div className={cn(container, "py-16 sm:py-24")}>
-          <p className="text-xs font-semibold uppercase tracking-wider text-fg-accent">{t("mobile.eyebrow")}</p>
+          <p className="text-xs font-semibold text-fg-accent">{t("mobile.eyebrow")}</p>
           <h1 id="mobile-title" className="mt-2 max-w-3xl font-display text-4xl font-black tracking-tight text-fg sm:text-5xl">{t("mobile.title")}</h1>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-fg-secondary sm:text-lg">{t("mobile.lead")}</p>
           <p className="mt-4 text-xs text-fg-muted">{t("mobile.recordedOn")}</p>

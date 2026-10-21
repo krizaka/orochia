@@ -12,7 +12,7 @@ export async function MobileSection() {
   return (
     <SectionBackdrop direction="up" dome={false} aria-labelledby="home-mobile" id="mobile">
       <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6">
-        <p className="text-xs font-semibold uppercase tracking-wider text-fg-accent">{t("mobile.eyebrow")}</p>
+        <p className="text-xs font-semibold text-fg-accent">{t("mobile.eyebrow")}</p>
         <h2 id="home-mobile" className="mt-2 max-w-3xl font-display text-3xl font-black tracking-tight text-fg sm:text-4xl">{t("mobile.title")}</h2>
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-fg-secondary">{t("mobile.lead")}</p>
         <ul tabIndex={0} aria-label={t("mobile.stepsTitle")} className="-mx-4 mt-8 flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0 lg:grid lg:grid-cols-4 lg:overflow-visible focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent">

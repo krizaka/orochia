@@ -86,14 +86,14 @@ export function FloatingUploadBar() {
       <div className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-50">
         <button
           onClick={() => setIsDockMinimized(false)}
-          className="flex items-center gap-3 px-4 py-2.5 rounded-full bg-surface-1/95 border border-accent/30 text-fg shadow-2xl backdrop-blur-xl hover:border-accent/60 transition-all group"
+          className="flex items-center gap-3 px-4 py-2.5 rounded-sm bg-surface-1/95 border border-accent/30 text-fg shadow-2xl hover:border-accent/60 transition-all group"
           title={t("uploads.expand")}
         >
           <Progress variant="ring" size="sm" value={activeCount > 0 ? totalProgress : 100} label={t("uploads.label")} className="h-6 w-6" />
           <span className="text-xs font-semibold">
             {activeCount > 0 ? t("uploads.uploading", { progress: totalProgress }) : t("uploads.complete")}
           </span>
-          <span className="text-[10px] bg-accent/30 text-fg-accent font-mono px-2 py-0.5 rounded-full">
+          <span className="text-[10px] bg-accent/30 text-fg-accent font-mono px-2 py-0.5 rounded-sm">
             {uploads.length}
           </span>
           <ChevronUp className="h-3.5 w-3.5 text-fg-secondary group-hover:text-fg transition-colors" />
@@ -105,7 +105,7 @@ export function FloatingUploadBar() {
   return (
     <aside
       aria-label={t("uploads.label")}
-      className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-96 rounded-2xl border border-border-default bg-surface-1/95 p-4 shadow-2xl text-fg backdrop-blur-2xl"
+      className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-96 rounded-2xl border border-border-default bg-surface-1/95 p-4 shadow-2xl text-fg "
     >
       {/* Header */}
       <div className="flex items-center justify-between pb-3 border-b border-border-default">
@@ -114,7 +114,7 @@ export function FloatingUploadBar() {
             <UploadCloud className="h-4 w-4" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-fg uppercase tracking-wider">
+            <h4 className="text-xs font-bold text-fg ">
               {t("uploads.title")}
             </h4>
             <p className="text-[10px] text-fg-secondary">

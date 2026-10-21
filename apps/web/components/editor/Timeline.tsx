@@ -67,7 +67,7 @@ export function Timeline({
     <div className="select-none">
       <div className="mb-2 flex items-center justify-between font-mono text-[11px] tabular-nums text-fg-secondary">
         <span>{clock(start)}</span>
-        <span className="rounded-full bg-accent/15 px-2.5 py-0.5 font-sans text-xs font-semibold text-fg-accent">{t("editor.kept", { length: (end - start).toFixed(1) })}</span>
+        <span className="rounded-sm bg-accent/15 px-2.5 py-0.5 font-sans text-xs font-semibold text-fg-accent">{t("editor.kept", { length: (end - start).toFixed(1) })}</span>
         <span>{clock(end)}</span>
       </div>
       <div
@@ -89,7 +89,7 @@ export function Timeline({
         <div className="pointer-events-none absolute inset-y-0 border-y-[3px] border-white" style={{ left: `${pct(start)}%`, right: `${100 - pct(end)}%` }} />
 
         {/* Playhead */}
-        <div className="pointer-events-none absolute -inset-y-1.5 w-[3px] -translate-x-1/2 rounded-full bg-white shadow-[0_0_6px_rgba(0,0,0,0.9)]" style={{ left: `${pct(time)}%` }} />
+        <div className="pointer-events-none absolute -inset-y-1.5 w-[3px] -translate-x-1/2 rounded-sm bg-white shadow-[0_0_6px_rgba(0,0,0,0.9)]" style={{ left: `${pct(time)}%` }} />
 
         {(["start", "end"] as const).map((which) => (
           <div

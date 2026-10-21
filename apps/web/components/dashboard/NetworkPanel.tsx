@@ -43,7 +43,7 @@ function Row({ p, children }: { p: Person; children?: React.ReactNode }) {
 function Section({ title, empty, people, render }: { title: string; empty: string; people: Person[]; render: (p: Person) => React.ReactNode }) {
   return (
     <div className="glass-panel rounded-3xl p-5">
-      <h3 className="text-xs font-bold uppercase tracking-widest text-fg-secondary">
+      <h3 className="text-xs font-bold text-fg-secondary">
         {title} <span className="ml-1 font-mono text-fg-muted">{people.length}</span>
       </h3>
       {people.length === 0 ? <p className="mt-3 text-xs text-fg-muted">{empty}</p> : <ul className="mt-2 divide-y divide-border-subtle">{people.map(render)}</ul>}

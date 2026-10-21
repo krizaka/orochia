@@ -165,7 +165,7 @@ export function TipModal({
           {creditsShort !== null && (
             <div role="alert" className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-warning/30 bg-warning/10 px-4 py-3 text-xs text-fg-warning">
               <span>{t("wallet.short", { balance: money(creditsShort) })}</span>
-              <Link href="/wallet" className="shrink-0 rounded-full bg-warning px-3 py-1.5 font-bold text-surface-0">
+              <Link href="/wallet" className="shrink-0 rounded-sm bg-warning px-3 py-1.5 font-bold text-surface-0">
                 {t("wallet.add")}
               </Link>
             </div>

@@ -30,7 +30,7 @@ export function FeedSkeleton() {
         <div aria-hidden className="mb-6 flex items-center justify-between gap-4 border-b border-border-default pb-4">
           <div className="flex gap-2">
             {[0, 1, 2].map((i) => (
-              <Skeleton key={i} className="h-9 w-24 rounded-full" />
+              <Skeleton key={i} className="h-9 w-24 rounded-sm" />
             ))}
           </div>
           <Skeleton className="hidden h-8 w-16 rounded-lg sm:block" />
@@ -56,11 +56,11 @@ export function WatchSkeleton() {
             <Skeleton className="h-3.5 w-40" />
             <Skeleton className="h-3 w-24" />
           </div>
-          <Skeleton className="h-9 w-24 rounded-full" />
+          <Skeleton className="h-9 w-24 rounded-sm" />
         </div>
         <div className="mt-4 flex gap-2">
           {[0, 1, 2].map((i) => (
-            <Skeleton key={i} className="h-9 w-20 rounded-full" />
+            <Skeleton key={i} className="h-9 w-20 rounded-sm" />
           ))}
         </div>
       </div>

@@ -112,7 +112,7 @@ export function AudienceEditor({ endpoint, onChange }: { endpoint: string; onCha
       ) : (
         <ul className="flex flex-wrap gap-1.5">
           {attached.map((l) => (
-            <li key={l.id} className="inline-flex items-center gap-1 rounded-full bg-accent/15 py-1 pl-3 pr-1 text-[11px] text-fg-accent">
+            <li key={l.id} className="inline-flex items-center gap-1 rounded-sm bg-accent/15 py-1 pl-3 pr-1 text-[11px] text-fg-accent">
               <ListChecks className="h-3 w-3" aria-hidden /> {l.name} · {l.membersCount}
               <IconButton disabled={busy} onClick={() => call(`${endpoint}?listId=${l.id}`, "DELETE")} className="h-5 w-5 text-current hover:bg-transparent hover:text-fg-danger" label={t("audience.removeList", { name: l.name })}>
                 <X className="h-3 w-3" aria-hidden />
@@ -120,7 +120,7 @@ export function AudienceEditor({ endpoint, onChange }: { endpoint: string; onCha
             </li>
           ))}
           {people?.map((p) => (
-            <li key={p.userId} className="inline-flex items-center gap-1 rounded-full bg-surface-2 py-1 pl-3 pr-1 text-[11px] text-fg">
+            <li key={p.userId} className="inline-flex items-center gap-1 rounded-sm bg-surface-2 py-1 pl-3 pr-1 text-[11px] text-fg">
               @{p.username}
               <IconButton disabled={busy} onClick={() => call(`${endpoint}?userId=${p.userId}`, "DELETE")} className="h-5 w-5 hover:bg-transparent hover:text-fg-danger" label={t("audience.withdraw", { username: p.username })}>
                 <X className="h-3 w-3" aria-hidden />

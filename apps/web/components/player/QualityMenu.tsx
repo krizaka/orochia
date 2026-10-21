@@ -114,7 +114,7 @@ export function QualityMenu({ options, value, onSelect, autoHeight, native = fal
           aria-label={t("player.quality.menu")}
           onKeyDown={onMenuKeyDown}
           className={cn(
-            "absolute bottom-full right-0 z-40 mb-2 min-w-40 max-w-[min(18rem,calc(100vw-2rem))] overflow-y-auto rounded-sm border border-fg-on-media/15 bg-scrim-strong p-1 text-fg-on-media shadow-xl backdrop-blur-md",
+            "absolute bottom-full right-0 z-40 mb-2 min-w-40 max-w-[min(18rem,calc(100vw-2rem))] overflow-y-auto rounded-sm border border-fg-on-media/15 bg-scrim-strong p-1 text-fg-on-media shadow-xl ",
             panelClassName,
           )}
         >

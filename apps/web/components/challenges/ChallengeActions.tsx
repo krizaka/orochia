@@ -184,7 +184,7 @@ export function ChallengeActions({ c, onChanged }: { c: ChallengeView; onChanged
       )}
       {c.applications.length > 0 && (
         <div>
-          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-fg-secondary">
+          <p className="mb-2 text-xs font-bold text-fg-secondary">
             {t(v.canAssign ? "challenge.actions.pickTitle" : "challenge.actions.applicationsTitle")}
           </p>
           <ul className="space-y-2">
@@ -196,7 +196,7 @@ export function ChallengeActions({ c, onChanged }: { c: ChallengeView; onChanged
                     {a.creator.name}
                   </Link>
                   {a.note && <p className="mt-0.5 text-xs text-fg-secondary">{a.note}</p>}
-                  <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-fg-accent">
+                  <p className="mt-0.5 text-[10px] font-semibold text-fg-accent">
                     {t(`challenge.application.${a.status as "PENDING"}`)}
                   </p>
                 </div>

@@ -93,7 +93,7 @@ export function PictureQuickEdit({
             disabled={busy}
             aria-label={t(isAvatar ? "settings.pictures.editAvatar" : "settings.pictures.editBanner")}
             className={cn(
-              "flex items-center gap-1.5 rounded-full bg-scrim text-fg-on-media shadow-lg ring-1 ring-white/20 backdrop-blur-md transition-all hover:bg-black/80 focus-visible:opacity-100 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 data-[state=open]:opacity-100!",
+              "flex items-center gap-1.5 rounded-sm bg-scrim text-fg-on-media shadow-lg ring-1 ring-white/20 transition-all hover:bg-black/80 focus-visible:opacity-100 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 data-[state=open]:opacity-100!",
               isAvatar ? "h-9 w-9 justify-center" : "px-3.5 py-2 text-xs font-semibold",
             )}
           >

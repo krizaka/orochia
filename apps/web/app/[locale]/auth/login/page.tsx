@@ -100,7 +100,7 @@ export default function LoginPage() {
         <div className="relative mb-4"><SocialSignIn /></div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Field.Root>
-            <Field.Label htmlFor="identifier" className="uppercase tracking-wider">
+            <Field.Label htmlFor="identifier" className="">
               {t("auth.login.identifier")}
             </Field.Label>
             <div className="relative">
@@ -120,7 +120,7 @@ export default function LoginPage() {
 
           <Field.Root>
             <div className="flex items-center justify-between">
-              <Field.Label htmlFor="password" className="uppercase tracking-wider">
+              <Field.Label htmlFor="password" className="">
                 {t("auth.login.password")}
               </Field.Label>
               <Link href="/auth/forgot-password" className="text-xs text-fg-accent hover:underline">

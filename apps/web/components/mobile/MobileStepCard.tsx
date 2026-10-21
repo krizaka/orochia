@@ -17,7 +17,7 @@ export async function MobileStepCard({ id, index }: { id: MobileStep; index: num
           <PhoneClip id={id} label={t(`mobile.steps.${id}.goal`)} alt={t(`mobile.steps.${id}.alt`)} />
         </div>
         <div className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-wider text-fg-accent">
+          <p className="text-xs font-semibold text-fg-accent">
             {t("mobile.step")} {index + 1}
           </p>
           <h3 id={titleId} className="font-display text-2xl font-black tracking-tight text-fg sm:text-3xl">
@@ -25,7 +25,7 @@ export async function MobileStepCard({ id, index }: { id: MobileStep; index: num
           </h3>
           <p className="max-w-xl text-base leading-relaxed text-fg-secondary">{t(`mobile.steps.${id}.purpose`)}</p>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-fg-muted">{t("mobile.notice")}</p>
+            <p className="text-xs font-semibold text-fg-muted">{t("mobile.notice")}</p>
             <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-fg-secondary marker:text-fg-accent">
               {notice.map((n) => (
                 <li key={n}>{n}</li>

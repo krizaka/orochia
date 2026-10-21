@@ -1652,6 +1652,18 @@
         "description": "Krizaka's data visualisation: typed, declarative React charts (line, area, bar, pie, radar, heatmap, calendar, sankey, funnel, gauge, sparkline, candlestick, treemap, scatter, geo map, 3D globe) on the --kz-* tokens and the brand palettes — an accessible data table, a written summary and keyboard navigation in every chart, SSR without layout shift, and React Native for the simple types."
       },
       {
+        "id": "krizaka-fonts",
+        "name": "@krizaka/fonts",
+        "role": "design",
+        "owner": "krizaka",
+        "repository": "fonts",
+        "path": "node_modules/@krizaka/fonts",
+        "runtime": "library",
+        "version": "0.3.0",
+        "published": true,
+        "description": "The Krizaka typefaces, self-hosted: Young Serif (display), Atkinson Hyperlegible Next (text), Courier Prime (mono) — WOFF2 subsets (latin, latin-ext) with metric-matched fallbacks for the web, static TrueType for React Native / Expo, SIL OFL 1.1."
+      },
+      {
         "id": "krizaka-i18n",
         "name": "@krizaka/i18n",
         "role": "design",
@@ -1671,9 +1683,9 @@
         "repository": "krizaka-ui",
         "path": "node_modules/@krizaka/icons",
         "runtime": "library",
-        "version": "0.1.0",
+        "version": null,
         "published": true,
-        "description": "The Krizaka signature icons: one drawing language (24 grid, cut corners, a node at the core) for every Krizaka product — React (tree-shakable, server-safe) and React Native (react-native-svg)."
+        "description": null
       },
       {
         "id": "krizaka-intl",
@@ -1981,13 +1993,18 @@
       },
       {
         "from": "orochia-web",
+        "to": "krizaka-fonts",
+        "version": "0.3.0"
+      },
+      {
+        "from": "orochia-web",
         "to": "krizaka-i18n",
         "version": "0.1.0"
       },
       {
         "from": "orochia-web",
         "to": "krizaka-icons",
-        "version": "0.1.0"
+        "version": "^0.7.0"
       },
       {
         "from": "orochia-web",

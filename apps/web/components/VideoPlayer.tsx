@@ -366,7 +366,7 @@ export function VideoPlayer({
           Top left belongs to the Orochia mark; the bottom to the controls and the captions. */}
       <div className="absolute right-3 top-3 z-20 flex items-center gap-2">
         {(isAdult || isAdultRating(contentRatingId)) && (
-          <Badge size="sm" className="bg-danger/90 font-mono font-black text-white shadow-md ring-0 backdrop-blur-md">
+          <Badge size="sm" className="bg-danger/90 font-mono font-black text-white shadow-md ring-0 ">
             18+
           </Badge>
         )}
@@ -431,7 +431,7 @@ export function VideoPlayer({
 
       {/* Sensitive Content Gate Overlay */}
       {isBlurred && !revealed && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-scrim-strong backdrop-blur-lg p-6 text-center">
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-scrim-strong p-6 text-center">
           <div className="h-14 w-14 rounded-2xl bg-danger/20 border border-danger/30 flex items-center justify-center text-fg-danger mb-3">
             <span className="font-mono font-black text-xl">18+</span>
           </div>
@@ -447,7 +447,7 @@ export function VideoPlayer({
 
       {/* Paywall Overlay State */}
       {isPaywalled && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-scrim-strong backdrop-blur-md p-6 text-center">
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-scrim-strong p-6 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-accent/30 to-accent-2/30 border border-accent/30 mb-4 shadow-lg shadow-accent/20">
             <Lock className="h-8 w-8 text-fg-accent" />
           </div>
@@ -464,7 +464,7 @@ export function VideoPlayer({
 
       {/* Contacts-only / followers-only gate */}
       {!isPaywalled && isGated && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-scrim-strong backdrop-blur-md p-6 text-center">
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-scrim-strong p-6 text-center">
           <div className="flex h-11 w-11 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-scrim-strong border border-fg-on-media/20 mb-2 sm:mb-4">
             {isAuction ? <Gavel className="h-5 w-5 sm:h-8 sm:w-8 text-fg-accent" /> : <Users className="h-5 w-5 sm:h-8 sm:w-8 text-fg-on-media/80" />}
           </div>

@@ -139,7 +139,7 @@ export function ProfileHero({
                     target="_blank"
                     rel="noopener noreferrer nofollow ugc"
                     title={t("profile.visit", { network: t(`profile.networks.${l.network}` as MessageKey), handle: l.handle })}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-border-default bg-surface-2 px-3 py-1.5 text-xs font-semibold text-fg transition-colors hover:border-accent/60 hover:bg-accent/10 hover:text-fg"
+                    className="inline-flex items-center gap-1.5 rounded-sm border border-border-default bg-surface-2 px-3 py-1.5 text-xs font-semibold text-fg transition-colors hover:border-accent/60 hover:bg-accent/10 hover:text-fg"
                   >
                     <SocialIcon network={l.network} className="h-3.5 w-3.5" />
                     {l.network === "website" ? l.handle : `@${l.handle}`}
@@ -151,7 +151,7 @@ export function ProfileHero({
               <dl className="flex gap-6">
                 {stats.map((s) => (
                   <div key={s.label}>
-                    <dt className="text-[10px] font-semibold uppercase tracking-wider text-fg-muted">{s.label}</dt>
+                    <dt className="text-[10px] font-semibold text-fg-muted">{s.label}</dt>
                     <dd className="font-mono text-base font-black text-fg">{s.value}</dd>
                   </div>
                 ))}

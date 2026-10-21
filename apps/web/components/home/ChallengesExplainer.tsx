@@ -25,7 +25,7 @@ export async function ChallengesExplainer() {
     days: CHALLENGE_MAX_DELIVERY_DAYS,
   };
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-border-default bg-surface-1/70 p-6 backdrop-blur-xl sm:p-8">
+    <div className="relative overflow-hidden rounded-3xl border border-border-default bg-surface-1/70 p-6 sm:p-8">
       <CardGrid min={220}>
         {CHALLENGE_STARTS.map(({ slug, messageKey }) => {
           const Icon = ICONS[slug];

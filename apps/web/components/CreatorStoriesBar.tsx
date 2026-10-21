@@ -39,7 +39,7 @@ function StoriesRail() {
     <>
       <CreateStoryModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} onSuccess={load} />
 
-      <div className="relative mb-8 overflow-hidden rounded-2xl border border-border-default bg-surface-1/60 p-3 sm:p-4 backdrop-blur-xl max-w-full">
+      <div className="relative mb-8 overflow-hidden rounded-2xl border border-border-default bg-surface-1/60 p-3 sm:p-4 max-w-full">
         <div className="flex items-center gap-3.5 sm:gap-5 overflow-x-auto scrollbar-none py-1 px-1 overscroll-x-contain touch-pan-x">
           {isCreator && (
             <button type="button" onClick={() => setIsCreateOpen(true)} className="group flex shrink-0 flex-col items-center gap-1.5 rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-accent">
@@ -72,7 +72,7 @@ function StoriesRail() {
                   <Avatar src={r.avatarUrl} defaultAvatar={{ brand: "orochia", seed: r.displayName }} fallbackSrc={defaultAvatarFor(r.displayName)} fallback={r.displayName.charAt(0)} className="h-full w-full rounded-[12px]" />
                 </div>
                 {r.isOwn && r.stories.some((s) => s.state === "processing") && (
-                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-surface-3 px-1.5 py-px text-[9px] font-semibold text-fg-secondary">
+                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-sm bg-surface-3 px-1.5 py-px text-[9px] font-semibold text-fg-secondary">
                     {t("stories.processing")}
                   </span>
                 )}

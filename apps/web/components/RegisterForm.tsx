@@ -107,7 +107,7 @@ export function RegisterForm() {
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <UsernameField value={username} onChange={setUsername} />
             <Field.Root>
-              <Field.Label htmlFor="displayName" className="uppercase tracking-wider">
+              <Field.Label htmlFor="displayName" className="">
                 {t("auth.register.displayName")}
               </Field.Label>
               <Input
@@ -122,7 +122,7 @@ export function RegisterForm() {
           </div>
 
           <Field.Root>
-            <Field.Label htmlFor="email" className="uppercase tracking-wider">
+            <Field.Label htmlFor="email" className="">
               {t("auth.register.email")}
             </Field.Label>
             <div className="relative">
@@ -141,7 +141,7 @@ export function RegisterForm() {
           </Field.Root>
 
           <Field.Root>
-            <Field.Label htmlFor="password" className="uppercase tracking-wider">
+            <Field.Label htmlFor="password" className="">
               {t("auth.register.password")}
             </Field.Label>
             <div className="relative">

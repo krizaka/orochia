@@ -84,8 +84,8 @@ export function SaveToPlaylist({ videoId }: { videoId: string }) {
         <ListPlus className="h-4 w-4" aria-hidden /> {t("collections.save")}
       </Button>
       {open && (
-        <div className="absolute right-0 z-40 mt-2 w-72 rounded-2xl border border-border-default bg-surface-1/95 p-3 shadow-2xl backdrop-blur-xl">
-          <p className="px-1 pb-2 text-[10px] font-bold uppercase tracking-widest text-fg-muted">{t("collections.saveTo")}</p>
+        <div className="absolute right-0 z-40 mt-2 w-72 rounded-2xl border border-border-default bg-surface-1/95 p-3 shadow-2xl ">
+          <p className="px-1 pb-2 text-[10px] font-bold text-fg-muted">{t("collections.saveTo")}</p>
           <div className="max-h-56 space-y-1 overflow-y-auto">
             {lists === null && <p className="px-1 py-2 text-xs text-fg-muted">{t("collections.loading")}</p>}
             {lists?.length === 0 && <p className="px-1 py-2 text-xs text-fg-muted">{t("collections.none")}</p>}

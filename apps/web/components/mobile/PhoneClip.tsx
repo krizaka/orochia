@@ -19,7 +19,7 @@ export function PhoneClip({ id, label, alt, caption }: { id: MobileStep; label: 
       </div>
       {caption && (
         <figcaption className="space-y-1 text-center">
-          <span className="block text-xs font-bold uppercase tracking-wider text-fg-accent">{label}</span>
+          <span className="block text-xs font-bold text-fg-accent">{label}</span>
           <span className="block text-sm leading-relaxed text-fg-secondary">{caption}</span>
         </figcaption>
       )}

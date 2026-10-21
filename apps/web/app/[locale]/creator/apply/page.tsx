@@ -98,7 +98,7 @@ export default async function CreatorApplyPage() {
   return (
     <SectionBackdrop direction="down" aria-labelledby="creator-apply-title">
       <div className="mx-auto w-full max-w-3xl px-4 pb-20 pt-10 sm:px-6 sm:pt-14">
-        <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-fg-accent">
+        <p className="flex items-center gap-2 text-xs font-semibold text-fg-accent">
           <CreatorIcon size={16} nodeColor="var(--kz-accent-2)" /> {t("creatorSpace.apply.eyebrow")}
         </p>
         <h1 id="creator-apply-title" className="mt-2 font-display text-3xl font-black tracking-tight text-fg sm:text-4xl">
@@ -108,7 +108,7 @@ export default async function CreatorApplyPage() {
           {pending ? t("creatorSpace.apply.pending.lead") : t("creatorSpace.apply.member.lead", { username: user.username })}
         </p>
 
-        <div className="mt-8 rounded-3xl border border-border-default bg-surface-1/80 p-5 backdrop-blur-xl sm:p-7">
+        <div className="mt-8 rounded-3xl border border-border-default bg-surface-1/80 p-5 sm:p-7">
           <Stepper aria-label={t("creatorSpace.apply.steps.label")} steps={steps} />
         </div>
 

@@ -37,7 +37,7 @@ export function HomeSectionHeader({
       {href && linkLabel && (
         <Link
           href={href}
-          className="group inline-flex items-center gap-1 rounded-full px-1 py-1 text-sm font-semibold text-fg-accent transition-colors hover:text-fg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+          className="group inline-flex items-center gap-1 rounded-sm px-1 py-1 text-sm font-semibold text-fg-accent transition-colors hover:text-fg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
         >
           {linkLabel}
           <ChevronRightIcon size={16} className="transition-transform" />

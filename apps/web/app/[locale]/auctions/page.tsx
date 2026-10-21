@@ -35,7 +35,7 @@ export default async function AuctionsPage(props: { searchParams: Promise<{ tab?
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <header className="mb-8 grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end" data-reveal>
         <div>
-          <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-fg-accent">
+          <p className="inline-flex items-center gap-2 text-[10px] font-bold text-fg-accent">
             <Gavel className="h-3.5 w-3.5" /> {t("auctions.eyebrow")}
           </p>
           <h1 className="mt-2 font-display text-2xl font-black text-fg sm:text-3xl">{t("auctions.title")}</h1>

@@ -23,7 +23,7 @@ export async function AuctionsExplainer() {
   const minutes = AUCTION_SOFT_CLOSE_MS / 60_000;
   const hours = AUCTION_DECISION_WINDOW_MS / 3_600_000;
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-border-default bg-surface-1/70 p-6 backdrop-blur-xl sm:p-8">
+    <div className="relative overflow-hidden rounded-3xl border border-border-default bg-surface-1/70 p-6 sm:p-8">
       <ol className="relative grid gap-7 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
         <span aria-hidden className="ae-rail absolute left-5.5 top-5.5 hidden h-px w-[calc(100%-2.75rem)] lg:block" />
         {STEPS.map(([key, Icon], i) => (

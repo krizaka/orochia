@@ -48,7 +48,7 @@ export function ProductShowcase({ share }: { share: number }) {
       role="region"
     >
       <Tabs.Content value={scene} tabIndex={-1} className="relative flex-none rounded-none focus:outline-none focus-visible:ring-0">
-        <div aria-hidden className="sc-aura absolute -inset-12 -z-10 rounded-full bg-linear-to-tr from-accent/45 via-accent-2/30 to-accent-2/35 blur-3xl" />
+        <div aria-hidden className="sc-aura absolute -inset-12 -z-10 rounded-sm bg-linear-to-tr from-accent/45 via-accent-2/30 to-accent-2/35 blur-3xl" />
         <div className="sc-float relative h-[560px] w-[264px] rounded-[3rem] bg-linear-to-b from-device-edge via-device-core to-device-edge p-[3px] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.85)] sm:h-[600px] sm:w-[284px]">
           <div className="theme-dark relative h-full w-full overflow-hidden rounded-[2.85rem] border-[7px] border-black bg-black">
             <div aria-hidden className="absolute inset-x-0 top-0 z-50 flex h-9 items-center justify-between px-6 text-[11px] font-semibold text-white">
@@ -57,11 +57,11 @@ export function ProductShowcase({ share }: { share: number }) {
                 <StatusGlyphs />
               </span>
             </div>
-            <div aria-hidden className="absolute left-1/2 top-2 z-50 h-[22px] w-[84px] -translate-x-1/2 rounded-full bg-black" />
+            <div aria-hidden className="absolute left-1/2 top-2 z-50 h-[22px] w-[84px] -translate-x-1/2 rounded-sm bg-black" />
             <div key={scene} className="sc-scene absolute inset-0" aria-hidden>
               <Screen scene={scene} share={share} still={still} />
             </div>
-            <div aria-hidden className="absolute bottom-1.5 left-1/2 z-50 h-1 w-24 -translate-x-1/2 rounded-full bg-white/70" />
+            <div aria-hidden className="absolute bottom-1.5 left-1/2 z-50 h-1 w-24 -translate-x-1/2 rounded-sm bg-white/70" />
           </div>
         </div>
       </Tabs.Content>

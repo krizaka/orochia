@@ -179,7 +179,7 @@ export function StoryInsights({
           </Tabs.Root>
 
           <section className="rounded-2xl border border-border-default bg-surface-2/50 p-3">
-            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-fg-secondary">{t("stories.create.audience")}</h3>
+            <h3 className="mb-2 text-xs font-semibold text-fg-secondary">{t("stories.create.audience")}</h3>
             {locked ? (
               <p className="text-xs text-fg-secondary">{t("stories.insights.audienceLocked")}</p>
             ) : (

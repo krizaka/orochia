@@ -55,7 +55,7 @@ export async function LegalDocument({ id, icon: Icon }: { id: LegalDocId; icon: 
       </Link>
 
       <header className="mb-10" data-reveal>
-        <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold text-fg-accent">
+        <span className="mb-4 inline-flex items-center gap-2 rounded-sm border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold text-fg-accent">
           <Icon className="h-3.5 w-3.5" aria-hidden /> {badge}
         </span>
         <h1 className="font-display text-3xl font-black text-fg sm:text-4xl">{title}</h1>

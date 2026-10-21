@@ -22,9 +22,9 @@ export function AuctionCard({ auction: a, index = 0 }: { auction: AuctionCardVie
         <Card.Media>
           <Card.Image src={a.thumbnailUrl} fallback={<Gavel className="h-10 w-10" />} />
           <Card.Overlay corner="top-left" className="theme-dark">
-            <AuctionStatusBadge phase={a.phase} className="bg-scrim-strong backdrop-blur-md" />
+            <AuctionStatusBadge phase={a.phase} className="bg-scrim-strong " />
             {a.leading && (
-              <Badge tone="success" size="md" className="bg-scrim-strong backdrop-blur-md">
+              <Badge tone="success" size="md" className="bg-scrim-strong ">
                 <Trophy className="h-3 w-3" aria-hidden /> {t(a.phase === "SOLD" ? "auction.phase.SOLD" : "auction.leading")}
               </Badge>
             )}
