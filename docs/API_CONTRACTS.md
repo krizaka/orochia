@@ -7,10 +7,14 @@ description: Every HTTP endpoint of the Orochia web app, with the access rule th
 
 > Generated from code by `scripts/generate-docs.mjs` — do not hand-edit.
 
-## Endpoints (191)
+## Endpoints (195)
 
 | Method | Path | Access | Summary |
 | :--- | :--- | :--- | :--- |
+| `GET` | `/api/admin/app-config` | session · ADMIN | The parameters of every platform (the console's App versions screen). |
+| `PUT` | `/api/admin/app-config/[platform]` | session · ADMIN | Publishes the parameters of a platform as its next revision, with a reason; the history keeps every one. |
+| `GET` | `/api/admin/app-config/[platform]/history` | session · ADMIN | The revisions of a platform, newest first, each with its reason and who published it. |
+| `POST` | `/api/admin/app-config/[platform]/rollback` | session · ADMIN | Publishes an earlier revision again, as a new one: the history is never rewritten. |
 | `GET` | `/api/admin/auctions` | session · ADMIN | Every auction for operators (latest first, optionally by status): video, creator, price, bids, timing, outcome. |
 | `DELETE` | `/api/admin/auctions/[id]` | session · ADMIN | Cancels an auction that is open or awaiting its decision, with a recorded reason; the leading bid is released. |
 | `POST` | `/api/admin/conversations/[id]/moderate` | session · ADMIN | Acts on a reported conversation: remove a message, remove a member of a group, close a group. |
