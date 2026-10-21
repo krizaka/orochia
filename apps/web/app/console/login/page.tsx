@@ -1,8 +1,8 @@
 "use client";
 
 import { OrochiaLogo } from "@krizaka/orochia-design-system";
+import { AuthLayout } from "@krizaka/ui/auth-layout";
 import { Button } from "@krizaka/ui/button";
-import { Card } from "@krizaka/ui/card";
 import { Field, Input } from "@krizaka/ui/field";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { Suspense, useState } from "react";
@@ -35,31 +35,34 @@ function LoginForm() {
   };
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center px-4">
-      <Card.Root tone="elevated" radius="xl" className="w-full max-w-sm shadow-lg">
-        <Card.Body padding="lg">
-          <form onSubmit={submit} className="space-y-4">
-            <div className="text-center">
-              <OrochiaLogo size={72} className="mx-auto mb-2" />
-              <h1 className="font-display text-xl font-bold text-fg">Orochia Control Plane</h1>
-              <p className="mt-1 text-xs text-fg-secondary">The operator account only</p>
-            </div>
-            <Field.Root>
-              <Field.Label htmlFor="email">E-mail</Field.Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="username" required />
-            </Field.Root>
-            <Field.Root>
-              <Field.Label htmlFor="password">Password</Field.Label>
-              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required />
-            </Field.Root>
-            {error && <Field.Error>{error}</Field.Error>}
-            <Button type="submit" variant="primary" loading={busy} className="w-full">
-              {busy ? "Signing in…" : "Sign in"}
-            </Button>
-          </form>
-        </Card.Body>
-      </Card.Root>
-    </div>
+    <AuthLayout
+      brand={
+        <>
+          <OrochiaLogo size={32} />
+          Orochia
+        </>
+      }
+      title="Orochia Control Plane"
+      description="The operator account only"
+      promise="The operator's desk."
+      aside="Reports, verifications, payouts and the audit of every decision, on the real platform."
+      asideFooter="© Krizaka · Montréal"
+    >
+      <form onSubmit={submit} className="space-y-4">
+        <Field.Root>
+          <Field.Label htmlFor="email">E-mail</Field.Label>
+          <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="username" required />
+        </Field.Root>
+        <Field.Root>
+          <Field.Label htmlFor="password">Password</Field.Label>
+          <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required />
+        </Field.Root>
+        {error && <Field.Error>{error}</Field.Error>}
+        <Button type="submit" variant="primary" loading={busy} className="w-full">
+          {busy ? "Signing in…" : "Sign in"}
+        </Button>
+      </form>
+    </AuthLayout>
   );
 }
 
