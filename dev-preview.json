@@ -42,9 +42,9 @@
       "note": "EAS Android preview APK (internal distribution) https://expo.dev/accounts/oussamaabid/projects/orochia/builds/82a51094-ac6b-452e-9673-a14ac3461721 (orochia-mobile#78: fixes an Android Home crash found while recording) installed on an Android 16 emulator, 18+ gate, signs in as the persona against dev.orochia.com (clip: gate, Home, Challenges, Auctions; credentials typed off-camera). iOS store build 1 (EAS-managed credentials) https://expo.dev/accounts/oussamaabid/projects/orochia/builds/39e47cd7-1ec5-48c3-b1f4-992f4d3ad70d is ready; internal TestFlight waits for the App Store Connect app record."
     },
     "mobile.ux-review": {
-      "evidence": null,
-      "gap": "No UX/IA review of the mobile app.",
-      "issue": "https://github.com/krizaka/orochia-mobile/issues/51"
+      "evidence": "https://github.com/krizaka/orochia/blob/main/docs/UX_DECISIONS.md#phone--the-orochia-app",
+      "checked": "2026-10-21",
+      "note": "UX/IA review of the phone app (five tabs at the thumb in the web's words; one job per screen, long jobs on the web), decision · problem · principle · refused · cost · signal (orochia#362). Shape test orochia-mobile src/__tests__/nav-shape.test.ts (five at most, Home first, You last, every tab a screen, 12 letters at most in EN and FR; orochia-mobile#82). Captures: Android 16 emulator, EAS preview build against dev.orochia.com, signed in as the demo persona Mira Castellanos, five tabs in dark and light: https://krizaka-assets.b-cdn.net/pr-assets/orochia-mobile/devpreview-mobile-ux-review/home.dark.android.png (and challenges, auctions, messages, you; .light.)."
     },
     "quality.ci-green": {
       "evidence": "https://github.com/krizaka/orochia/actions?query=branch%3Amain",
@@ -67,9 +67,9 @@
       "checked": "2026-10-19"
     },
     "ops.cost": {
-      "evidence": null,
-      "gap": "The organisation's cloud total is ≈ 106 USD/month (> 100 USD target, INFRA-COST 2026-10-16); ops.cost cannot be evidenced for any product until it is …",
-      "issue": "https://github.com/krizaka/.github/issues/78"
+      "evidence": "https://github.com/krizaka/orochia/blob/main/docs/DEPLOYMENT.md#monthly-cost-measured-2026-10-21-with-doctl",
+      "checked": "2026-10-21",
+      "note": "Measured 2026-10-21 with doctl over every App Platform app of the team: Orochia's dev deployment is one basic-xxs web app (5 USD) plus its share of the shared dev database (15 USD, counted once in the org total); the operator console is served by it on admin.orochia.com since the 2026-10-21 cutover (orochia#334), and the old app orochia-admin-dev (5 USD) is deleted from 2026-10-23T13:00Z after its 48 h rollback window. Organisation recurring cloud about 97 USD/month before and about 87 after both old admin apps are deleted (ceiling 100, GPU apart); the private cost table (§ 6.2) carries the same figures."
     },
     "admin.gated": {
       "evidence": "https://github.com/krizaka/orochia-admin/pull/58",
@@ -77,21 +77,23 @@
     },
     "admin.noindex": {
       "evidence": "https://admin.orochia.com/robots.txt",
-      "checked": "2026-10-16"
+      "checked": "2026-10-21",
+      "note": "After the cutover to orochia-dev, robots.txt answers 200 'User-agent: * / Disallow: /' with X-Robots-Tag noindex for any address, before the IP gate (orochia#365, test first)."
     },
     "admin.operator-tasks": {
-      "evidence": null,
-      "gap": "Operator tasks not proven end to end on the real DB: reports and takedown (#5, #220), moderation role (#179), users, payouts/credits, auction rules as…",
-      "issue": "https://github.com/krizaka/orochia-admin/issues/43"
+      "evidence": "https://krizaka-assets.b-cdn.net/pr-assets/orochia/devpreview-admin-operator-tasks/tasks-1-refused.dark.desktop.png",
+      "checked": "2026-10-21",
+      "note": "Operator tasks run on the real dev DB through the console (admin.orochia.com, from an allowed address), each audited with who, when, outcome and request id (audit screen: https://krizaka-assets.b-cdn.net/pr-assets/orochia/devpreview-admin-operator-tasks/audit.dark.desktop.png): content report triage as a persona's report (Mira Castellanos on a neutral video; start review then resolve with a reason); account suspend then reinstate of a demo account with reasons; app-version parameters as data: a refused publish (latest older than minimum, outcome refused), a publish (revision 2) and a rollback to revision 1 republished as a new revision (the admin API behind it was missing and shipped in orochia#366). The Tasks view (orochia#363) is the operator's queue derived from the platform counters and the audit: the refused publish appears as a task, the later success clears it (https://krizaka-assets.b-cdn.net/pr-assets/orochia/devpreview-admin-operator-tasks/tasks-2-cleared.dark.desktop.png). Not covered live: payouts, 2257 verification and takedown (covered by the console's unit tests; no payout request or unverified creator exists on dev) and a one-click retry."
     },
     "admin.audit-log": {
-      "evidence": "https://github.com/krizaka/orochia-admin/pull/57",
-      "checked": "2026-10-19"
+      "evidence": "https://krizaka-assets.b-cdn.net/pr-assets/orochia/devpreview-admin-operator-tasks/audit.dark.desktop.png",
+      "checked": "2026-10-21",
+      "note": "The operator log shows who, what, target, area, outcome (ok / refused / failed), request id and detail, filterable and exportable (orochia#363, same shape as krizaka/orazaka ADR-085); every console action goes through attempt() with a log entry (console/lib/audit.test.ts). Earlier evidence: orochia-admin#57."
     },
     "admin.shell": {
-      "evidence": null,
-      "gap": "Admin shell/themes unverified (#34 design-system redundancy).",
-      "issue": "https://github.com/krizaka/orochia-admin/issues/47"
+      "evidence": "https://krizaka-assets.b-cdn.net/pr-assets/orochia/devpreview-admin-shell/overview.dark.desktop.png",
+      "checked": "2026-10-21",
+      "note": "The console is the Krizaka UI shell: AppShell (sidebar, a drawer on a phone) with the DEV badge in the header and AuthLayout for the sign-in (orochia#364, test console/components/shell.test.ts). Live crawl 64/64 clean (16 screens x dark/light x desktop/phone, e2e/console-crawl.mjs, from an allowed address): DEV badge on every screen, one h1, no console error, no horizontal scroll. It found and fixed a hydration mismatch (orochia#367). Captures of the screens without account data are on Bunny under pr-assets/orochia/devpreview-admin-shell/."
     },
     "admin.ux-review": {
       "evidence": "https://github.com/krizaka/orochia-admin/blob/main/docs/UX_DECISIONS.md",
