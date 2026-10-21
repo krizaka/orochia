@@ -34,6 +34,19 @@ describe("the bar", () => {
   });
 });
 
+describe("the development notice is inside the footer, not a band under it", () => {
+  it("is the footer's own line when the deployment is closed, and the layout renders no separate notice", () => {
+    const layout = readFileSync(new URL("../app/[locale]/layout.tsx", import.meta.url), "utf8");
+    expect(layout).not.toContain("DevEnvironmentNotice");
+    expect(layout).toContain("devNotice={!INDEXABLE}");
+    expect(htmlIn("en", createElement(SiteFooter, { devNotice: true }))).toContain("Development environment: access by invitation");
+    expect(htmlIn("en", createElement(SiteFooter))).not.toContain("Development environment");
+  });
+  it("says it without an em dash (Cahier)", () => {
+    for (const l of ["en", "fr"]) expect(readFileSync(new URL(`../messages/${l}.json`, import.meta.url), "utf8")).not.toMatch(/"devNotice": "[^"]*—/);
+  });
+});
+
 describe("one footer, one contentinfo", () => {
   const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf8");
 
