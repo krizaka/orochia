@@ -38,8 +38,8 @@
     },
     "mobile.build": {
       "evidence": "https://krizaka-assets.b-cdn.net/pr-assets/orochia-mobile/mobile-store/orochia-android.mp4",
-      "checked": "2026-10-20",
-      "note": "EAS Android preview APK (internal distribution) https://expo.dev/accounts/oussamaabid/projects/orochia/builds/82a51094-ac6b-452e-9673-a14ac3461721 (orochia-mobile#78: fixes an Android Home crash found while recording) installed on an Android 16 emulator, 18+ gate, signs in as the persona against dev.orochia.com (clip: gate, Home, Challenges, Auctions; credentials typed off-camera). iOS store build 1 (EAS-managed credentials) https://expo.dev/accounts/oussamaabid/projects/orochia/builds/39e47cd7-1ec5-48c3-b1f4-992f4d3ad70d is ready; internal TestFlight waits for the App Store Connect app record."
+      "checked": "2026-10-21",
+      "note": "EAS Android preview APK (internal distribution) https://expo.dev/accounts/oussamaabid/projects/orochia/builds/82a51094-ac6b-452e-9673-a14ac3461721 installed on an Android 16 emulator, re-recorded 2026-10-21 as the demo persona Mira Castellanos against dev.orochia.com (clip: the 18+ gate, then Home, Challenges, Auctions, Messages and You; credentials typed off-camera; replaces the earlier clip, which showed a QA account). iOS store build 1 (EAS-managed credentials) https://expo.dev/accounts/oussamaabid/projects/orochia/builds/39e47cd7-1ec5-48c3-b1f4-992f4d3ad70d is ready; internal TestFlight waits for the App Store Connect app record."
     },
     "mobile.ux-review": {
       "evidence": "https://github.com/krizaka/orochia/blob/main/docs/UX_DECISIONS.md#phone--the-orochia-app",
