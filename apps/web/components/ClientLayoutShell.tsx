@@ -14,7 +14,7 @@ import { useI18n } from "@/lib/i18n-client";
 import { UploadManagerProvider } from "@/lib/upload-manager";
 import { usePathname } from "@/lib/use-pathname";
 
-export function ClientLayoutShell({ children }: { children: React.ReactNode }) {
+export function ClientLayoutShell({ children, footer }: { children: React.ReactNode; footer?: React.ReactNode }) {
   const { t } = useI18n();
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   // Pages enter with kz-page on navigation, not on the first load: the first paint is never held back by an
@@ -41,12 +41,14 @@ export function ClientLayoutShell({ children }: { children: React.ReactNode }) {
         <RailNav.Body className="min-w-0 flex-1">
           <AppBar onOpenSearch={() => setSearchModalOpen(true)} />
           {/* Room for the bottom tab bar on phones. */}
-          <main id="content" tabIndex={-1} className="min-h-[calc(100vh-3.5rem)] pb-20 outline-none md:pb-0">
+          <main id="content" tabIndex={-1} className="min-h-[calc(100vh-3.5rem)] outline-none">
             {/* Every chart in the app speaks its words and wears the Orochia palette. */}
             <Charts>
               <EmailVerificationGate>{children}</EmailVerificationGate>
             </Charts>
           </main>
+          {/* In the column, never under the rail: the rail (sticky, full height) stays beside the page down to the footer. */}
+          {footer}
         </RailNav.Body>
       </RailNav.Shell>
       <GlobalSearchBarOrDock />
