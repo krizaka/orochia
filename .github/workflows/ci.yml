@@ -25,19 +25,6 @@ jobs:
       after-build: scripts/ci-after-build.sh
       timeout-minutes: 45
 
-  # The required check keeps its name; it reads the gate's verdict. Goes when protection requires « ci / CI gate ».
-  verify:
-    name: Lint · Typecheck · Unit tests · Build
-    needs: ci
-    if: ${{ always() }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-    permissions: {}
-    env:
-      RESULT: ${{ needs.ci.outputs.result }}
-    steps:
-      - run: test "$RESULT" = success
-
   database:
     name: Migrations & seed on PostgreSQL 16
     runs-on: ubuntu-latest
