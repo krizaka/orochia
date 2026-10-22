@@ -69,7 +69,7 @@ export default async function RootLayout({ children, params }: Props & { childre
   setRequestLocale(requested);
   const { t, locale } = await getI18n();
   return (
-    <html lang={locale} suppressHydrationWarning className={cn(outfit.variable, jakarta.variable, "overflow-x-clip max-w-full w-full")}>
+    <html lang={locale} data-surface="product" suppressHydrationWarning className={cn(outfit.variable, jakarta.variable, "overflow-x-clip max-w-full w-full")}>
       <head>
         {/* Applies the persisted theme (`kz-theme`: dark · light · system) before the first paint: no flash. */}
         <ThemeScript />
