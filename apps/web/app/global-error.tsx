@@ -27,7 +27,7 @@ export default function GlobalError({ error, retry }: { error: Error & { digest?
   const locale = failedLayoutLocale();
   const { t } = toolsFor(locale);
   return (
-    <html lang={locale} suppressHydrationWarning className={cn(outfit.variable, jakarta.variable)}>
+    <html lang={locale} data-surface="product" suppressHydrationWarning className={cn(outfit.variable, jakarta.variable)}>
       <head>
         <title>{t("errorPages.serverMetaTitle")}</title>
         <meta name="robots" content="noindex" />

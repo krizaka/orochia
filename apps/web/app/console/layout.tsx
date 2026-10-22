@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const admin = await currentAdmin();
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-surface="product" suppressHydrationWarning>
       <head>
         <ThemeScript />
       </head>
