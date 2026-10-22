@@ -65,3 +65,14 @@ describe("one footer, one contentinfo", () => {
     expect(offenders).toEqual([]);
   });
 });
+
+describe("the rail stays fixed to the bottom of the page", () => {
+  it("the footer is inside the content column (RailNav.Body), never after the shell, so the rail spans the whole page", () => {
+    const layout = readFileSync(new URL("../app/[locale]/layout.tsx", import.meta.url), "utf8");
+    const shell = readFileSync(new URL("./ClientLayoutShell.tsx", import.meta.url), "utf8");
+    expect(layout).toMatch(/<ClientLayoutShell\s+footer=\{<SiteFooter/);
+    expect(layout).not.toMatch(/<\/ClientLayoutShell>\s*<MotionObserver \/>\s*<SiteFooter/);
+    expect(shell.indexOf("{footer}")).toBeGreaterThan(shell.indexOf("<RailNav.Body"));
+    expect(shell.indexOf("{footer}")).toBeLessThan(shell.indexOf("</RailNav.Body>"));
+  });
+});

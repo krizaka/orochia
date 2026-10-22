@@ -74,14 +74,13 @@ export default async function RootLayout({ children, params }: Props & { childre
         {/* Applies the persisted theme (`kz-theme`: dark · light · system) before the first paint: no flash. */}
         <ThemeScript />
       </head>
-      <body className="min-h-screen bg-surface-0 text-fg antialiased selection:bg-accent selection:text-on-accent pb-20 md:pb-0 overflow-x-clip max-w-full w-full relative">
+      <body className="min-h-screen bg-surface-0 text-fg antialiased selection:bg-accent selection:text-on-accent overflow-x-clip max-w-full w-full relative">
         <JsonLd data={siteGraph(t, locale)} />
         <ThemeProvider>
           <I18nProvider locale={locale}>
           <AuthProvider>
-            <ClientLayoutShell>{children}</ClientLayoutShell>
+            <ClientLayoutShell footer={<SiteFooter uiVersion={uiVersion()} devNotice={!INDEXABLE} />}>{children}</ClientLayoutShell>
             <MotionObserver />
-            <SiteFooter uiVersion={uiVersion()} devNotice={!INDEXABLE} />
           </AuthProvider>
           </I18nProvider>
         </ThemeProvider>
