@@ -14,31 +14,29 @@ permissions:
   contents: read
 
 jobs:
+  # Lint, typecheck, unit tests and build+checks run side by side (the org's node-ci, krizaka/.github#144).
+  ci:
+    permissions:
+      contents: read
+    uses: krizaka/.github/.github/workflows/node-ci.yml@babcdf0d85b0ef2ce30802ec8377d664d31fd118 # v1.3.3
+    with:
+      parallel: true
+      typecheck-script: typecheck
+      after-build: scripts/ci-after-build.sh
+      timeout-minutes: 45
+
+  # The required check keeps its name; it reads the gate's verdict. Goes when protection requires « ci / CI gate ».
   verify:
     name: Lint · Typecheck · Unit tests · Build
+    needs: ci
+    if: ${{ always() }}
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 2
+    permissions: {}
+    env:
+      RESULT: ${{ needs.ci.outputs.result }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - name: Lint (ESLint, package typecheck, i18n, UI debt ratchet — lint-ratchet.json)
-        run: npm run lint
-      - name: Typecheck web app
-        run: npm run typecheck
-      - name: Unit tests
-        run: npm test
-      - name: Docs are generated from this code
-        run: node scripts/generate-docs.mjs --check
-      - name: Production build
-        run: npm run build
-      - name: The public pages stay static, in each language
-        run: node scripts/check-static-pages.mjs
-        env:
-          NEXT_PUBLIC_APP_URL: http://localhost:3000
+      - run: test "$RESULT" = success
 
   database:
     name: Migrations & seed on PostgreSQL 16
@@ -72,10 +70,17 @@ jobs:
       - name: Development seed loads
         run: npm run db:seed
 
+  # The scenarios used to run as one serial job (10 min). The suites are independent and now run side by side, each on its
+  # own PostgreSQL / Valkey / dev server. The required check « Feature scenarios (API, real sessions, PostgreSQL 16) » is the
+  # shim `scenarios-gate` at the end.
   e2e:
-    name: Feature scenarios (API, real sessions, PostgreSQL 16)
+    name: ${{ format('Feature scenarios - {0}', matrix.suite) }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [integration, a11y, ui-crawl, smoke, scenarios]
     services:
       postgres:
         image: pgvector/pgvector:pg16
@@ -121,47 +126,73 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      - run: npm ci --prefer-offline --no-audit --no-fund
       - run: npm run db:migrate
+
       - name: Realtime bus contract — PostgreSQL and Valkey, two instances each
+        if: ${{ matrix.suite == 'integration' }}
         run: npx vitest run apps/web/lib/realtime.integration.test.ts
         env:
           REALTIME_IT: "1"
           REALTIME_REDIS_URL: redis://localhost:6379
       - name: Database failover — the pool and the LISTEN connection recover from resets, outages and silent peers
+        if: ${{ matrix.suite == 'integration' }}
         run: npx vitest run packages/db/src/client.reconnect.integration.test.ts
         env:
           DATABASE_RECONNECT_IT: "1"
       - run: npm run db:seed
       - name: Explorer index — pgvector, the discovery rules for meaning, the engine's failure
+        if: ${{ matrix.suite == 'integration' }}
         run: npx vitest run apps/web/lib/explorer-index.integration.test.ts
         env:
           EXPLORER_IT: "1"
       - name: Feed pages — keyset pagination over a real PostgreSQL (no row skipped or repeated)
+        if: ${{ matrix.suite == 'integration' }}
         run: npx vitest run apps/web/lib/feed-page.integration.test.ts
         env:
           FEED_IT: "1"
+
       - name: Start the app (development server)
+        if: ${{ matrix.suite == 'a11y' || matrix.suite == 'ui-crawl' || matrix.suite == 'scenarios' }}
         run: |
           npm run dev > web.log 2>&1 &
-          for i in $(seq 1 90); do curl -sf http://localhost:3000/api/health && break; sleep 2; done
+          for _ in $(seq 1 90); do curl -sf http://localhost:3000/api/health && break; sleep 2; done
       - name: Accessibility — axe (WCAG 2.2 A/AA) on the key pages, both themes, desktop and phone
+        if: ${{ matrix.suite == 'a11y' }}
         run: |
           npx playwright install --with-deps chromium
           npm run test:a11y
       - name: UI crawl — key screens in dark and light, phone and desktop (no console error, no cut content, one footer, no broken picture)
-        run: npm run test:ui-crawl
+        if: ${{ matrix.suite == 'ui-crawl' }}
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:ui-crawl
       - name: Smoke — the production build answers 200 on the key pages (a Server Component error is a 500)
+        if: ${{ matrix.suite == 'smoke' }}
         run: |
           npm run build
           PORT=3100 npm run start > web-prod.log 2>&1 &
-          for i in $(seq 1 60); do curl -s -o /dev/null http://localhost:3100/api/health && break; sleep 2; done
+          for _ in $(seq 1 60); do curl -s -o /dev/null http://localhost:3100/api/health && break; sleep 2; done
           for path in / /explore /fr /fr/how-it-works /en/legal/terms; do
             code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:3100$path")
             echo "$path -> $code"
             [ "$code" -lt 500 ] || { tail -100 web-prod.log; exit 1; }
           done
       - name: Scenarios
+        if: ${{ matrix.suite == 'scenarios' }}
         run: npm run test:e2e
-      - if: failure()
+      - if: failure() && (matrix.suite == 'a11y' || matrix.suite == 'ui-crawl' || matrix.suite == 'scenarios')
         run: tail -200 web.log
+
+  # The required check keeps its name; it reads every suite's result.
+  scenarios-gate:
+    name: Feature scenarios (API, real sessions, PostgreSQL 16)
+    needs: e2e
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions: {}
+    env:
+      RESULT: ${{ needs.e2e.result }}
+    steps:
+      - run: test "$RESULT" = success

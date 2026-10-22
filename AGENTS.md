@@ -523,9 +523,10 @@ orochia/                           npm workspaces
   PostgreSQL — followers, contacts, playlists, search, creator edits, takedowns, suspensions, role changes, wallet,
   auctions and challenges (time is moved forward in SQL to test closing; everything else goes through HTTP).
   A new feature adds its scenarios there.
-- **CI** (`.github/workflows/ci.yml`): verify (lint, types, unit, docs check, production build) · database
-  (bundled migrator twice, seed) · e2e (Postgres and Valkey services: the realtime bus contract against both —
-  two buses standing for two instances, `REALTIME_IT=1` — then the dev server and the scenarios).
+- **CI** (`.github/workflows/ci.yml`): `ci` = the org's `node-ci` (lint, types, unit and build + docs/static checks as parallel legs) · database
+  (bundled migrator twice, seed) · e2e, five suites side by side (integration: the realtime bus contract against Postgres and Valkey —
+  two buses standing for two instances, `REALTIME_IT=1` —, failover, explorer, feed · a11y · ui-crawl · smoke · scenarios). The required
+  checks keep their names through the `verify` and `scenarios-gate` shims.
 - **Load** (`node scripts/realtime-load.mjs`): N live streams and the time each message takes to reach them all, on
   one or two instances — run it when the realtime layer changes; results in ADR 0001.
 
