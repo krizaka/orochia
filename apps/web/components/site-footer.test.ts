@@ -75,3 +75,12 @@ describe("the rail stays fixed to the bottom of the page", () => {
     expect(shell.indexOf("{footer}")).toBeLessThan(shell.indexOf("</RailNav.Body>"));
   });
 });
+
+describe("the rail's sticky needs the viewport to scroll, not <body>", () => {
+  it("<html> does not clip (overflow-x on <html> stops <body>'s overflow reaching the viewport and body becomes the scroller)", () => {
+    const layout = readFileSync(new URL("../app/[locale]/layout.tsx", import.meta.url), "utf8");
+    const css = readFileSync(new URL("../app/[locale]/globals.css", import.meta.url), "utf8");
+    expect(layout).not.toMatch(/<html[^>]*overflow-x-clip/);
+    expect(css).not.toMatch(/\nhtml\s*\{[^}]*overflow/);
+  });
+});
