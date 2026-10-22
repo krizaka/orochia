@@ -22,9 +22,9 @@
     "@krizaka/orochia-design-system": "^4.1.1",
     "@krizaka/push": "^0.1.0",
     "@krizaka/realtime": "^0.1.0",
-    "@krizaka/tailwind": "^3.44.0",
-    "@krizaka/tokens": "^3.44.0",
-    "@krizaka/ui": "^3.44.0",
+    "@krizaka/tailwind": "^3.45.0",
+    "@krizaka/tokens": "^3.45.0",
+    "@krizaka/ui": "^3.45.0",
     "@orochia/db": "*",
     "@orochia/media": "*",
     "@orochia/payments": "*",
@@ -44,7 +44,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@krizaka/config": "^0.1.0",
+    "@krizaka/config": "^0.7.0",
     "@orochia/config": "*",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^24.19.2",
