@@ -126,10 +126,10 @@ services:
         type: SECRET
       - key: DATABASE_URL
         scope: RUN_AND_BUILD_TIME
-        value: ${orochia-db.DATABASE_URL}
+        value: ${krizaka-pg.DATABASE_URL}
       - key: DATABASE_CA_CERT
         scope: RUN_TIME
-        value: ${orochia-db.CA_CERT}
+        value: ${krizaka-pg.CA_CERT}
       # One pool per instance (2 in dev: krizaka-dev-pg has 22 usable slots, budget in the orazaka repo docs/DEV_DATABASE.md). (instances + 1 during a rolling deploy) × (this + 1 LISTEN) + migrate + admin
       # ≤ 70 % of the database's usable slots (~22 on the small plans) — docs/DEPLOYMENT.md, "Database connections".
       - key: DATABASE_MAX_CONNECTIONS
@@ -186,6 +186,13 @@ services:
       - key: APP_COMMIT_SHA
         scope: BUILD_TIME
         value: ${_self.COMMIT_HASH}
+      # The direct (unpooled) connection, for LISTEN/NOTIFY.
+      - key: DATABASE_DIRECT_URL
+        scope: RUN_TIME
+        value: ${krizaka-pg.DATABASE_URL}
+      - key: MEDIA_STORAGE_ENDPOINT
+        scope: RUN_TIME
+        value: storage.bunnycdn.com
       - key: MEDIA_STORAGE_PROVIDER
         scope: RUN_TIME
         value: "bunny"
@@ -376,14 +383,17 @@ jobs:
         type: SECRET
       - key: DATABASE_URL
         scope: RUN_TIME
-        value: ${orochia-db.DATABASE_URL}
+        value: ${krizaka-pg.DATABASE_URL}
       - key: DATABASE_CA_CERT
         scope: RUN_TIME
-        value: ${orochia-db.CA_CERT}
+        value: ${krizaka-pg.CA_CERT}
 
 databases:
-  # App Platform dev database (PostgreSQL only, not for production data).
-  - name: orochia-db
+  # The shared dev cluster (krizaka-dev-pg), database and role orochia_db, attached to the app.
+  - name: krizaka-pg
     engine: PG
-    version: "16"
-    production: false
+    version: "18"
+    production: true
+    cluster_name: krizaka-dev-pg
+    db_name: orochia_db
+    db_user: orochia_db
